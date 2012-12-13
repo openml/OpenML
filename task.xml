@@ -1,27 +1,60 @@
-<task id="">
-    <type>Classification</type>
-    <description>Evaluate a classification algorithm or workflow on a given dataset</description>
-    <evaluation> <!-- what are we optimizing for? -->
-        <evaluation_method>
-            <cross_validation nr_folds="10" nr_repeats="10"/> <!-- also holdout, subsampling, bootstrapping -->
-        </evaluation_method>
-        <evaluation_measure>PredictiveAccuracy</evaluation_measure> <!-- precision, recall -->
-        <evaluation_measure>ErrorRate</evaluation_measure>
-        <!-- todo: <constraint measure="recall" min="0.5" />  -->
-        <!-- todo: <cost_matrix>...</cost_matrix>  -->
-    </evaluation>
-    <data_set>
-        <id>123</id>
-        <target_feature>class</target_feature>
-    </data_set>
-    <repeat nr="1">
-        <fold nr="1">
-            <training_set>1,24,46,48,49,68</training_set>
-            <test_set>2,26,47,53,58,69</test_set>
-        </fold>
-        <fold nr="2">
-            <training_set>1,4,16,25,35,37</training_set>
-            <test_set>1,24,46,48,49,68</test_set>
-        </fold>
-    </repeat>
-</task>
+<oml:task xmlns:oml="http://openml.org/task">
+	<oml:task-id>1234</oml:task-id>
+	<oml:task-type>
+		<oml:prediction>
+			<oml:prediction-type>classification</oml:prediction-type>
+			<oml:data-set>
+				<oml:data-set-id>1</oml:data-set-id>
+				<oml:target-feature>class</oml:target-feature>
+			</oml:data-set>
+			<oml:evaluation-method>
+				<oml:cross-validation>
+  				<oml:number-of-repeats>2</oml:number-of-repeats>
+					<oml:number-of-folds>10</oml:number-of-folds>
+					<oml:repeat>
+						<oml:repeat-id>1</oml:repeat-id>
+						<oml:fold-train>
+							<oml:observations>
+								<oml:row-id>1</oml:row-id>
+								<oml:row-id>2</oml:row-id>
+								<oml:row-id>3</oml:row-id>
+								<oml:row-id>4</oml:row-id>
+								<oml:row-id>5</oml:row-id>
+								<oml:row-id>6</oml:row-id>
+								<oml:row-id>7</oml:row-id>
+							</oml:observations>
+						</oml:fold-train>
+						<oml:fold-test>
+							<oml:observations>
+								<oml:row-id>8</oml:row-id>
+								<oml:row-id>9</oml:row-id>
+								<oml:row-id>10</oml:row-id>
+							</oml:observations>
+						</oml:fold-test>
+					</oml:repeat>
+					<oml:repeat>
+						<oml:repeat-id>2</oml:repeat-id>
+						<oml:fold-train>
+							<oml:observations>
+								<oml:row-id>1</oml:row-id>
+								<oml:row-id>2</oml:row-id>
+								<oml:row-id>3</oml:row-id>
+								<oml:row-id>4</oml:row-id>
+								<oml:row-id>5</oml:row-id>
+								<oml:row-id>6</oml:row-id>
+								<oml:row-id>7</oml:row-id>
+							</oml:observations>
+						</oml:fold-train>
+						<oml:fold-test>
+							<oml:observations>
+								<oml:row-id>8</oml:row-id>
+								<oml:row-id>9</oml:row-id>
+								<oml:row-id>10</oml:row-id>
+							</oml:observations>
+						</oml:fold-test>
+					</oml:repeat>
+				</oml:cross-validation>
+			</oml:evaluation-method>
+		</oml:prediction>
+	</oml:task-type>		
+</oml:task>
