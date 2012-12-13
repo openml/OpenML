@@ -4,7 +4,7 @@
 		<oml:prediction>
 			<oml:prediction-type>classification</oml:prediction-type>
 			<oml:data-set>
-				<oml:dataset-id>1</oml:dataset-id>
+				<oml:data-set-id>1</oml:data-set-id>
 				<oml:target-feature>class</oml:target-feature>
 			</oml:data-set>
 			<oml:evaluation-method>
@@ -940,7 +940,7 @@
 								<oml:observations>45 26 27 17 33 146 147 131 124 141 67 68 73 83 63 </oml:observations>
 							</oml:fold-test>
 						</oml:fold>
-					</oml:repeat>
+					</oml:repeat>					
 				</oml:cross-validation>
 			</oml:evaluation-method>
 		</oml:prediction>
