@@ -1,0 +1,27 @@
+<task id="">
+    <type>Classification</type>
+    <description>Evaluate a classification algorithm or workflow on a given dataset</description>
+    <evaluation> <!-- what are we optimizing for? -->
+        <evaluation_method>
+            <cross_validation nr_folds="10" nr_repeats="10"/> <!-- also holdout, subsampling, bootstrapping -->
+        </evaluation_method>
+        <evaluation_measure>PredictiveAccuracy</evaluation_measure> <!-- precision, recall -->
+        <evaluation_measure>ErrorRate</evaluation_measure>
+        <!-- todo: <constraint measure="recall" min="0.5" />  -->
+        <!-- todo: <cost_matrix>...</cost_matrix>  -->
+    </evaluation>
+    <dataset>
+        <id>datasetid</id>
+        <targetfeature>class</targetfeature>
+    </dataset>
+    <repeat nr="1">
+        <fold nr="1">
+            <training_set>1,24,46,48,49,68</training_set>
+            <test_set>2,26,47,53,58,69</testset>
+        </fold>
+        <fold nr="2">
+            <training_set>1,4,16,25,35,37</training_set>
+            <test_set>1,24,46,48,49,68</testset>
+        </fold>
+    </repeat>
+</task>
