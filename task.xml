@@ -10,18 +10,18 @@
         <!-- todo: <constraint measure="recall" min="0.5" />  -->
         <!-- todo: <cost_matrix>...</cost_matrix>  -->
     </evaluation>
-    <dataset>
-        <id>datasetid</id>
-        <targetfeature>class</targetfeature>
-    </dataset>
+    <data_set>
+        <id>123</id>
+        <target_feature>class</target_feature>
+    </data_set>
     <repeat nr="1">
         <fold nr="1">
             <training_set>1,24,46,48,49,68</training_set>
-            <test_set>2,26,47,53,58,69</testset>
+            <test_set>2,26,47,53,58,69</test_set>
         </fold>
         <fold nr="2">
             <training_set>1,4,16,25,35,37</training_set>
-            <test_set>1,24,46,48,49,68</testset>
+            <test_set>1,24,46,48,49,68</test_set>
         </fold>
     </repeat>
 </task>
