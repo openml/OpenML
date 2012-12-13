@@ -1,0 +1,10 @@
+<DataSetDesc>
+    <id>123</id>
+    <name>Iris</name>
+    <url>http://repository.seasr.org/Datasets/UCI/arff/iris.arff</url>
+    <author>author</author>
+    <license>BSD</license>
+    <row_id_attribute>blabla</row_id_attribute>
+    <md5_checksum>adajsd</md5_checksum>
+</DataSetDesc>
+
