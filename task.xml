@@ -2,13 +2,12 @@
 	<oml:task-id>1234</oml:task-id>
 	<oml:task-type>
 		<oml:prediction>
-			<oml:prediction_type>classification</oml:prediction_type>
-			<oml:prediction_type>regression</oml:prediction_type>
-			<oml:dataset>
+			<oml:prediction-type>classification</oml:prediction-type>
+			<oml:data-set>
 				<oml:dataset-id>1</oml:dataset-id>
 				<oml:target-feature>class</oml:target-feature>
-			</oml:dataset>
-			<oml:evaluation_method>
+			</oml:data-set>
+			<oml:evaluation-method>
 				<oml:cross-validation>
 					<oml:number-of-folds>10</oml:number-of-folds>
 					<oml:number-of-repeats>2</oml:number-of-repeats>
@@ -55,9 +54,7 @@
 						</oml:fold>
 					</oml:repeat>
 				</oml:cross-validation>
-				<oml:hold-out/>
-				<oml:boot-straping/>
-			</oml:evaluation_method>
+			</oml:evaluation-method>
 		</oml:prediction>
 	</oml:task-type>		
 </oml:task>
