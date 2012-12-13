@@ -1,0 +1,15 @@
+<tasktemplate>
+    <type>Classification</type>
+    <description>Evaluate a classification algorithm or workflow on a given dataset</description>
+    <evaluation>
+        <evaluation_method>
+            <cross_validation> <!-- also holdout, subsampling, bootstrapping -->
+                <num_folds> 10 </num_folds>
+                <num_repeats> 10 </num_repeats> 
+            </cross_validation>
+        </evaluation_method>
+        <evaluation_measure>PredictiveAccuracy</evaluation_measure> 
+        <evaluation_measure>RootMeanSquaredError</evaluation_measure> 
+        <evaluation_measure>RootMeanSquaredError</evaluation_measure> 
+    </evaluation>
+</tasktemplate>
