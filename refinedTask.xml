@@ -15,35 +15,43 @@
 					<oml:repeat>
 						<oml:repeat-id>1</oml:repeat-id>
 						<oml:fold-train>
-							<oml:row-id>1</oml:row-id>
-							<oml:row-id>2</oml:row-id>
-							<oml:row-id>3</oml:row-id>
-							<oml:row-id>4</oml:row-id>
-							<oml:row-id>5</oml:row-id>
-							<oml:row-id>6</oml:row-id>
-							<oml:row-id>7</oml:row-id>
+							<oml:observations>
+								<oml:row-id>1</oml:row-id>
+								<oml:row-id>2</oml:row-id>
+								<oml:row-id>3</oml:row-id>
+								<oml:row-id>4</oml:row-id>
+								<oml:row-id>5</oml:row-id>
+								<oml:row-id>6</oml:row-id>
+								<oml:row-id>7</oml:row-id>
+							</oml:observations>
 						</oml:fold-train>
 						<oml:fold-test>
-							<oml:row-id>8</oml:row-id>
-							<oml:row-id>9</oml:row-id>
-							<oml:row-id>10</oml:row-id>
+							<oml:observations>
+								<oml:row-id>8</oml:row-id>
+								<oml:row-id>9</oml:row-id>
+								<oml:row-id>10</oml:row-id>
+							</oml:observations>
 						</oml:fold-test>
 					</oml:repeat>
 					<oml:repeat>
 						<oml:repeat-id>2</oml:repeat-id>
 						<oml:fold-train>
-							<oml:row-id>1</oml:row-id>
-							<oml:row-id>2</oml:row-id>
-							<oml:row-id>3</oml:row-id>
-							<oml:row-id>4</oml:row-id>
-							<oml:row-id>5</oml:row-id>
-							<oml:row-id>6</oml:row-id>
-							<oml:row-id>7</oml:row-id>
+							<oml:observations>
+								<oml:row-id>1</oml:row-id>
+								<oml:row-id>2</oml:row-id>
+								<oml:row-id>3</oml:row-id>
+								<oml:row-id>4</oml:row-id>
+								<oml:row-id>5</oml:row-id>
+								<oml:row-id>6</oml:row-id>
+								<oml:row-id>7</oml:row-id>
+							</oml:observations>
 						</oml:fold-train>
 						<oml:fold-test>
-							<oml:row-id>8</oml:row-id>
-							<oml:row-id>9</oml:row-id>
-							<oml:row-id>10</oml:row-id>
+							<oml:observations>
+								<oml:row-id>8</oml:row-id>
+								<oml:row-id>9</oml:row-id>
+								<oml:row-id>10</oml:row-id>
+							<oml:observations>
 						</oml:fold-test>
 					</oml:repeat>
 				</oml:cross-validation>
