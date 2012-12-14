@@ -1,5 +1,0 @@
-#!/usr/bin/env Rscript
-
-require("methods")
-require("devtools")
-build_win("pkg")
