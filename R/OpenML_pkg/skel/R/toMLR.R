@@ -1,5 +1,5 @@
 toMLR = function(task) {
-  dsd = readDataSetDescription("/home/bischl/cos/OpenML/data_set_desc.xml")
+  dsd = readDataSetDescription("/home/bischl/cos/OpenML/data_set_description.xml")
   dsd = retrieveData(dsd)
   requirePackages("mlr", why="toMLR")
   if (task$type == "classification")
@@ -12,6 +12,16 @@ toMLR = function(task) {
         folds = task$eval.method.args$number.of.folds)
   }
   mlr.rin = makeResampleInstance(mlr.rdesc, size = nrow(dsd$data))  
+  iter = 1L
+  for (i in seq_along(task$repeats)) {
+    r = task$repeats[[i]]
+    print(str(r))
+    for (j in seq_along(r)) {
+      mlr.rin$train.inds[[iter]] = r[[j]]$train
+      mlr.rin$test.inds[[iter]] = r[[j]]$test
+      iter = iter + 1L
+    }
+  }
   list(mlr.task = mlr.task, mlr.rin = mlr.rin)
 }
 
