@@ -7,10 +7,6 @@
         <xs:sequence>
 			<xs:element name="task-id" type="xs:int"/>
 			<xs:element name="task-type" type="oml:task-type"/>
-        </xs:sequence>
-  </xs:complexType>
-  <xs:complexType name="task-type">
-        <xs:sequence>
 			<xs:element name="prediction" type="oml:prediction"/>
         </xs:sequence>
   </xs:complexType>
@@ -31,7 +27,7 @@
         <xs:sequence>
 			<xs:element name="cross-validation" minOccurs="0" maxOccurs="1" type="oml:cross-validation"/>
 			<xs:element name="hold-out" minOccurs="0" maxOccurs="1" type="oml:hold-out"/>
-			<xs:element name="boot-straping" minOccurs="0" maxOccurs="1" type="oml:boot-straping"/>
+			<xs:element name="boot-straping" minOccurs="0" maxOccurs="1" type="oml:bootstrapping"/>
 			<xs:element name="sub-sampling" minOccurs="0" maxOccurs="1" type="oml:sub-sampling"/>
         </xs:sequence>
   </xs:complexType>
@@ -42,7 +38,7 @@
             <xs:element name="repeat" minOccurs="1" maxOccurs="unbounded" type="oml:repeat"/>
         </xs:sequence>
   </xs:complexType>
-  <xs:complexType name="boot-straping">
+  <xs:complexType name="bootstrapping">
         <xs:sequence>
 			<xs:element name="number-of-folds" type="xs:int"/>
             <xs:element name="fold" type="oml:fold"/>
@@ -86,6 +82,12 @@
        <xs:restriction base="xs:string">
           <xs:enumeration value="classification" />
           <xs:enumeration value="regression" />
+       </xs:restriction>
+  </xs:simpleType>
+    <xs:simpleType name="task-type">
+       <xs:restriction base="xs:string">
+          <xs:enumeration value="prediction" />
+          <xs:enumeration value="clustering" />
        </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="observations">
