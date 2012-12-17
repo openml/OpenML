@@ -59,7 +59,6 @@
   <xs:complexType name="repeat">
         <xs:sequence>
 			<xs:element name="repeat-id" type="xs:int"/>
-			<xs:element name="number-of-folds" type="xs:int"/>
             <xs:element name="fold" minOccurs="1" maxOccurs="unbounded" type="oml:fold"/>
         </xs:sequence>
   </xs:complexType>
