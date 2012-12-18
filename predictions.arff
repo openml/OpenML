@@ -9,6 +9,7 @@
 @ATTRIBUTE confidence.versicolor NUMERIC 
 @ATTRIBUTE confidence.virgina NUMERIC
 
+@data
 1,1,1,"setosa",0.6,0.2,0.2
 1,1,2,"versicolor",0.2,0.6,0.2
 1,2,1,"setosa",0.6,0.2,0.2
@@ -16,4 +17,3 @@
 2,1,2,"setosa",0.6,0.2,0.2
 2,1,2,"setosa",0.6,0.2,0.2
 2,2,2,"setosa",0.6,0.2,0.2
-
