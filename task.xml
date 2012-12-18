@@ -8,7 +8,7 @@
 			<oml:target-feature>class</oml:target-feature>
 		</oml:data-set>
 		<oml:evaluation-measures>
-			<oml:evaluation-measure>PredictiveAccurancy</oml:evaluation-measure>
+			<oml:evaluation-measure>predictive_accuracy</oml:evaluation-measure>
 		</oml:evaluation-measures>
 		<oml:evaluation-method>
 			<oml:cross-validation>
