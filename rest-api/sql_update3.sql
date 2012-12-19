@@ -1,8 +1,8 @@
 DROP TABLE `fold`;
 
 
-INSERT INTO `task` (`task_id`, `task_type`, `prediction_type`, `description`, `method`, `repeats`, `folds`, `dataset_description_id`, `target_feature`) VALUES
-(1, 'classification', 'Cross-validation', 'crossvalidation on iris', 'cross-validation', 2, 10, 61, 'class');
+INSERT INTO `task` (`task_id`, `task_type`, `description`, `method`, `repeats`, `folds`, `dataset_description_id`, `target_feature`) VALUES
+(1, 'classification', 'crossvalidation on iris', 'cross-validation', 2, 10, 61, 'class');
 
 
 CREATE TABLE IF NOT EXISTS `set` (
