@@ -1,7 +1,7 @@
 %task-id: 123
 %parameters?
 
-@relation predictions-classification-iris
+@relation openml_task_123_predictions
 
 @ATTRIBUTE repeat INTEGER
 @ATTRIBUTE fold INTEGER
