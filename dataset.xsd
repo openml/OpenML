@@ -10,8 +10,8 @@
 			<xs:element name="url" type="xs:string"/>
 			<xs:element name="author" type="xs:string"/>
 			<xs:element name="license" type="xs:string"/>
-			<xs:element name="row_id_attribute" type="xs:string"/>
-			<xs:element name="md5_checksum" type="xs:string"/>
+			<xs:element name="md5-checksum" type="xs:string"/>
+			<xs:element name="row-id-attribute" minOccurs="0" maxOccurs="1" type="xs:string"/>
         </xs:sequence>
   </xs:complexType>
 </xs:schema>
