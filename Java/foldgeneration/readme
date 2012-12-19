@@ -1,0 +1,15 @@
+FoldGenerator
+-------------
+Takes 4 command-line arguments:
+url - the path to the file
+nrfolds - the number of cross-validation folds
+nrrepeats - the number of repeats
+output - json or xml
+
+Prints json or xml representation of generated folds to standard out. Can also be used programmatically.
+
+Dependencies:
+WEKA, json-simple
+
+example:
+java FoldGenerator data/iris.arff 10 10 json
