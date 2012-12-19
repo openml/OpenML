@@ -1,6 +1,8 @@
 %task-id: 123
 %parameters?
 
+@relation predictions-classification-iris
+
 @ATTRIBUTE repeat INTEGER
 @ATTRIBUTE fold INTEGER
 @ATTRIBUTE rowid INTEGER
