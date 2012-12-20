@@ -13,7 +13,7 @@
 		<oml:evaluation-method>
 			<oml:cross-validation>
 				<oml:number-of-folds>10</oml:number-of-folds>
-				<oml:number-of-repeats>2</oml:number-of-repeats>
+				<oml:number-of-repeats>10</oml:number-of-repeats>
 				<oml:repeat>
 					<oml:repeat-id>0</oml:repeat-id>
 					<oml:fold>
