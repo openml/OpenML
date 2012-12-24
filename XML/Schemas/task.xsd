@@ -41,21 +41,48 @@
         <xs:sequence>
 			<xs:element name="number-of-folds" type="xs:int"/>
 			<xs:element name="number-of-repeats" type="xs:int"/>
+            <xs:element name="repeat" minOccurs="1" maxOccurs="unbounded" type="oml:repeat"/>
         </xs:sequence>
   </xs:complexType>
   <xs:complexType name="bootstrapping">
         <xs:sequence>
 			<xs:element name="number-of-folds" type="xs:int"/>
+            <xs:element name="fold" minOccurs="1" maxOccurs="unbounded" type="oml:fold"/>
         </xs:sequence>
   </xs:complexType>
   <xs:complexType name="hold-out">
         <xs:sequence>
 			<xs:element name="number-of-folds" type="xs:int"/>
+			<xs:element name="fold" minOccurs="1" maxOccurs="unbounded" type="oml:fold"/>
         </xs:sequence>
   </xs:complexType>
   <xs:complexType name="sub-sampling">
         <xs:sequence>
 			<xs:element name="number-of-folds" type="xs:int"/>
+            <xs:element name="fold" minOccurs="1" maxOccurs="unbounded" type="oml:fold"/>
+        </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="repeat">
+        <xs:sequence>
+			<xs:element name="repeat-id" type="xs:int"/>
+            <xs:element name="fold" minOccurs="1" maxOccurs="unbounded" type="oml:fold"/>
+        </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="fold">
+        <xs:sequence>
+			<xs:element name="fold-id" type="xs:int"/>
+            <xs:element name="fold-train" type="oml:fold-train"/>
+            <xs:element name="fold-test" type="oml:fold-test"/>
+        </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="fold-train">
+        <xs:sequence>
+            <xs:element name="observations" type="oml:observations"/>
+        </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="fold-test">
+        <xs:sequence>
+            <xs:element name="observations" type="oml:observations"/>
         </xs:sequence>
   </xs:complexType>
   <xs:simpleType name="prediction-type">
@@ -70,5 +97,8 @@
           <xs:enumeration value="clustering" />
        </xs:restriction>
   </xs:simpleType>
+  <xs:simpleType name="observations">
+    <xs:list itemType="xs:long"/>
+  </xs:simpleType>   
   <xs:element name="row-id" type="xs:long"/>
 </xs:schema>
