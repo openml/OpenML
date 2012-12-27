@@ -1,5 +1,5 @@
-<xs:schema targetNamespace="http://openml.org/data-des-description"
-    xmlns:oml="http://openml.org/data-des-description"
+<xs:schema targetNamespace="http://openml.org/data-set-description"
+    xmlns:oml="http://openml.org/data-set-description"
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
     elementFormDefault="qualified">
   <xs:element name="data-set-description" type="oml:data-set-description"/>
