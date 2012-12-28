@@ -1,0 +1,71 @@
+### Optimization Plugin for RapidMiner ###
+
+The optimization plugin for RapidMiner aims to introduce mathematical optimization based learning capability to RapidMiner. An unconstrained
+optimization problem, which is called learning (or) training in machine learning can be solved with different algorithms. Each algorithm has a
+set of configurable items, that are mainly function to be optimized, choice of search direction, regularization type,choice of learning rate 
+(line search) . There are different options or ways available to perform the task pertaining to each configuration. This plugin aims to give a clean
+separation of these configurable items, so that the user can configure these items before starting the learning. Thus, giving the user,
+an easily configurable optimization based learner. 
+
+Please note, the this is just experimental software and might contain bugs or 
+unfinished operators. If you have any questions, drop me a line. You can find
+me at: 
+
+   http://www-ai.cs.uni-dortmund.de/PERSONAL/umaashankar.html
+
+
+### Installation ###
+
+Just copy the file "rapidminer-Optimization-Extension-1.x.x.jar" to the
+/lib/plugins folder of your RapidMiner 5 installation. For windows users this 
+could be "C:\Program Files\RapidMiner\lib\plugins" or similar.
+
+### Sample Data and Sample Processes ###
+Untar the file optimrepo.tar.gz in your home directory. you will get a directory named "repo". configure it as a rapidminer local repository by pointing to 
+this sample repository, when creating a new repository in Rapidminer. The sample repository contains many sample processes which show case several configurable options of the optimization plugin. 
+
+### Operators ###
+
+In the current version (1.0.0) of the extension contains the following operators:
+
+Optimization Based Learner:
+OptimLearner
+
+
+### Logging ###
+
+  The optimization plugin uses SLF4j and Logback for logging. A sample logback.xml file is provided in the installJars folder.
+The Logback configuration file can be specified as shown below while starting the rapidminer
+
+java -Xmx3G -Dlogback.configurationFile=/usr/local/rapidminer/lib/plugins/logback.xml -jar /usr/local/rapidminer/lib/rapidminer.jar
+
+Depending on the loglevel, useful statuses and configuration details are logged. The default log level will be INFO and it does not require any configuration.
+
+
+### Building ###
+
+Prerequisites:
+You need a recent version of the RapidMiner 5.x source code. It should be 
+located at "../RapidMiner_Vega" relative to this directory. If this does not 
+apply, change the "rm.dir" property in the build.xml file.
+
+Go for it:
+Just type
+
+ ant
+
+for building the plugin. If you want it packaged, type
+
+ ant createJar
+
+and if you are running RapidMiner from your RapidMiner_Vega source directory
+you can also type
+
+ ant installJar
+
+which packages the plugin and places it in "RapidMiner_Vega/lib/plugins".
+
+[Then start RapidMiner.]
+
+That's it.
+
