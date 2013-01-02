@@ -1,0 +1,50 @@
+<project name="openML" default="install">
+	<description>Build file for the openML extension</description>
+
+	<property name="rm.dir" location="../RapidMiner_Unuk" />
+
+	<property name="build.build" location="build" />
+	<property name="build.resources" location="resources" />
+	<property name="build.lib" location="lib" />
+
+	<property name="check.sources" location = "src" />
+	
+	<property name="javadoc.targetDir" location="javadoc" />
+
+	<property name="extension.name" value="openML" />
+	<property name="extension.name.long" value="openML" />
+	<property name="extension.namespace" value="openml" />
+	<property name="extension.vendor" value="RapidMiner" />
+	<property name="extension.admin" value="Venkatesh Umaashankar" />
+	<property name="extension.url" value="http://sourceforge.net/projects/" />
+	<property name="extension.version" value="1" />
+	<property name="extension.revision" value="0" />
+	<property name="extension.update" value="0" />
+
+	<property name="extension.needsVersion" value="5.0" />
+	<property name="extension.dependencies" value="" />
+
+	<property name="extension.initClass" value="com.rapidminer.InitOpenMLExtension" />
+	<property name="extension.objectDefinition" value="/com/rapidminer/resources/IOObjectsOpenML.xml" />
+	<property name="extension.operatorDefinition" value="/com/rapidminer/resources/OperatorsOpenML.xml" />
+	<property name="extension.parseRuleDefinition" value="/com/rapidminer/resources/ParserulesOpenML.xml" />
+	<property name="extension.groupProperties" value="" />
+	<property name="extension.errorDescription" value="" />
+	<property name="extension.userErrors" value="" />
+	<property name="extension.guiDescription" value="/com/rapidminer/resources/i18n/GUIOpenMl.properties" />
+
+	<!-- Src files -->
+	<path id="build.sources.path">
+		<dirset dir="src">
+			<include name="**" />
+		</dirset>
+	</path>
+	<fileset dir="src" id="build.sources">
+		<include name="**/*.java" />
+	</fileset>
+	<fileset id="build.dependentExtensions" dir="..">
+		<exclude name="**/*"/>
+	</fileset>
+
+	<import file="${rm.dir}/build_extension.xml" />
+</project>
