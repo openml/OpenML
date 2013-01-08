@@ -31,10 +31,10 @@
   </xs:complexType>
   <xs:complexType name="evaluation-method">
         <xs:choice>
-			<xs:element name="cross-validation" minOccurs="0" maxOccurs="1" type="oml:cross-validation"/>
-			<xs:element name="hold-out" minOccurs="0" maxOccurs="1" type="oml:hold-out"/>
-			<xs:element name="boot-straping" minOccurs="0" maxOccurs="1" type="oml:bootstrapping"/>
-			<xs:element name="sub-sampling" minOccurs="0" maxOccurs="1" type="oml:sub-sampling"/>
+			<xs:element name="cross-validation" type="oml:cross-validation"/>
+			<xs:element name="hold-out" type="oml:hold-out"/>
+			<xs:element name="boot-straping" type="oml:bootstrapping"/>
+			<xs:element name="sub-sampling" type="oml:sub-sampling"/>
         </xs:choice>
   </xs:complexType>
   <xs:complexType name="cross-validation">
