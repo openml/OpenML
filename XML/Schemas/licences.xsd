@@ -1,0 +1,19 @@
+<xs:schema targetNamespace="http://openml.org/implementation-licences"
+		xmlns:oml="http://openml.org/implementation-licences"
+		xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		elementFormDefault="qualified">
+	<xs:element name="implementation-licences">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="licences">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="licence" minOccurs="1" maxOccurs="unbounded" type="xs:string"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>
+
