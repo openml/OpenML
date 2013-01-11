@@ -9,7 +9,7 @@
 			<xs:element name="name" type="xs:string"/>
 			<xs:element name="url" type="xs:string"/>
 			<xs:element name="author" type="xs:string"/>
-			<xs:element name="license" type="xs:string"/>
+			<xs:element name="licence" type="xs:string"/>
 			<xs:element name="row-id-attribute" minOccurs="0" maxOccurs="1" type="xs:string"/>
 			<xs:element name="md5-checksum" type="xs:string"/>
         </xs:sequence>
