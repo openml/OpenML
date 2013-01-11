@@ -1,0 +1,53 @@
+<xs:schema targetNamespace="http://openml.org/implementation"
+    xmlns:oml="http://openml.org/implementation"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    elementFormDefault="qualified">
+  <xs:element name="implementation" type="oml:implementation"/>
+  <xs:complexType name="implementation">
+        <xs:sequence>
+            <!-- dublin core -->
+            <xs:element name="name" type="xs:string"/>   
+            <xs:element name="version" type="xs:string"/>
+            <xs:element name="creator" type="xs:string"/>
+            <xs:element name="contributor" type="xs:string"/>
+            <xs:element name="date" type="xs:string"/>
+            <xs:element name="description" type="xs:string"/> <!-- user comments-->
+            <xs:element name="language" type="xs:string"/>
+            <xs:element name="format" type="xs:string"/> <!-- zip -->
+            <xs:element name="licence" type="xs:string"/>
+            <!-- structure -->
+            <xs:element name="structure" type="oml:implementation-structure"/>
+            <!-- technical info -->
+            <xs:element name="readme" type="xs:string"/> <!-- how to run this implementation -->
+            <xs:element name="library" type="xs:string"/> <!-- rename to dependency? -->
+            <xs:element name="programming_language" type="xs:string"/>
+            <xs:element name="operating_system" type="xs:string"/>
+            <!-- other -->
+            <xs:element name="bibliographical-reference" type="xs:string"/> <!-- link to paper -->
+            <xs:element name="implements" type="xs:string"/> <!-- ontological reference -->
+            <xs:element name="type" type="xs:string"/> <!-- workflow, implementation or function -->
+        </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="implementation-structure">
+        <xs:sequence>
+            <xs:element name="component" type="oml:implementation-component"/>  
+        </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="implementation-component">
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"/>   
+            <xs:element name="ontological-name" type="xs:string"/>
+            <xs:element name="version" type="xs:string"/>
+            <xs:element name="summary" type="xs:string"/>
+            <xs:element name="full-description" type="xs:string"/>
+            <xs:element name="technical-documentation" type="xs:string"/> 
+            <xs:element name="parameter-setting" type="oml:parameter-setting"/>
+        </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="parameter-setting">
+        <xs:sequence>
+            <xs:element name="parameter" type="xs:string"/>   
+            <xs:element name="value" type="xs:string"/>
+        </xs:sequence>
+  </xs:complexType>
+</xs:schema>

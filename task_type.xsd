@@ -1,0 +1,52 @@
+<xs:schema targetNamespace="http://openml.org/task-type-description"
+    xmlns:oml="http://openml.org/task-type-description"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    elementFormDefault="qualified">
+   <xs:element name="task-type-description" type="oml:task-type-description"/>
+   <xs:complexType name="task-type-description">
+        <xs:sequence> 
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="description" type="xs:string"/>
+            <xs:element name="author" type="xs:string"/>
+            <xs:element name="input" minOccurs="1" maxOccurs="unbounded" type="oml:task-type-input"/>
+            <xs:element name="parameter" type="oml:task-type-parameter"/>
+            <xs:element name="output" minOccurs="1" maxOccurs="unbounded" type="oml:task-type-parameter"/>
+       </xs:sequence>
+   </xs:complexType>
+   <xs:complexType name="task-type-input">  
+        <xs:sequence> 
+           <xs:element name="name" type="xs:string"/>
+           <xs:element name="description" type="xs:string"/>
+           <xs:element name="datatype" type="xs:string"/> 
+           <xs:element name="role" type="xs:string"/>
+       </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="task-type-parameter">
+       <xs:sequence> 
+           <xs:element name="name" type="xs:string"/>
+           <xs:element name="description" type="xs:string"/>
+           <xs:element name="datatype" type="xs:string"/>
+           <xs:element name="dependency" type="xs:string"/> 
+       </xs:sequence> 
+  </xs:complexType>
+  <xs:complexType name="task-type-output">
+       <xs:sequence> 
+           <xs:element name="name" type="xs:string"/>
+           <xs:element name="description" type="xs:string"/>
+           <xs:element name="datatype" type="xs:string"/> 
+           <xs:element name="role" type="xs:string"/>
+           <xs:element name="should-upload" type="xs:boolean"/>
+           <xs:element name="shared-feature" type="oml:shared-feature"/>
+           <xs:element name="instance-description" type="xs:string"/>
+       </xs:sequence> 
+  </xs:complexType>
+  <xs:complexType name="shared-feature">  
+        <xs:sequence> 
+           <xs:element name="name" type="xs:string"/>
+           <xs:element name="description" type="xs:string"/>
+           <xs:element name="datatype" type="xs:string"/>
+           <xs:element name="subfeatures" type="xs:string"/>
+       </xs:sequence>
+  </xs:complexType>
+</xs:schema>
+
