@@ -1,8 +1,8 @@
-<oml:data-set xmlns:oml="http://openml.org/dataset">
+<oml:data-set-description xmlns:oml="http://openml.org/data-set-description">
     <oml:id>123</oml:id>
     <oml:name>Iris</oml:name>
     <oml:url>http://repository.seasr.org/Datasets/UCI/arff/iris.arff</oml:url>
     <oml:author>R.A. Fisher</oml:author>
     <oml:licence>BSD</oml:licence>
     <oml:md5-checksum>25d7d5d689042a3816aa1598d5fd56ef</oml:md5-checksum>
-</oml:data-set>
+</oml:data-set-description>
