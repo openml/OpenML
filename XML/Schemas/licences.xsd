@@ -1,8 +1,8 @@
-<xs:schema targetNamespace="http://openml.org/implementation-licences"
-		xmlns:oml="http://openml.org/implementation-licences"
+<xs:schema targetNamespace="http://openml.org/implementation_licences"
+		xmlns:oml="http://openml.org/implementation_licences"
 		xmlns:xs="http://www.w3.org/2001/XMLSchema"
 		elementFormDefault="qualified">
-	<xs:element name="implementation-licences">
+	<xs:element name="implementation_licences">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="licences">
