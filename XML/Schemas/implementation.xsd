@@ -5,11 +5,14 @@
   <xs:element name="implementation" type="oml:implementation"/>
   <xs:complexType name="implementation">
         <xs:sequence>
+			<xs:element name="id" type="xs:string"/>
 			<xs:element name="name" type="xs:string"/>
 			<xs:element name="version" type="xs:string"/>
 			<xs:element name="implements" type="xs:string"/>
 			<xs:element name="type" type="xs:string"/>
 			<xs:element name="library" type="xs:string"/>
+			<xs:element name="url" type="xs:string"/>
+			<xs:element name="source_code_url" type="xs:string"/>
 			<xs:element name="licence" type="xs:string"/>
 			<xs:element name="programming_language" type="xs:string"/>
 			<xs:element name="operating_system" type="xs:string"/>
