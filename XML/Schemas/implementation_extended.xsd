@@ -9,46 +9,48 @@
             <xs:element name="name" type="xs:string"/>   
             <xs:element name="version" type="xs:string"/>
             <xs:element name="creator" type="xs:string"/>
-            <xs:element name="contributor" type="xs:string"/>
+            <xs:element name="contributor" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>
             <xs:element name="date" type="xs:string"/>
             <xs:element name="description" type="xs:string"/> <!-- user comments -->
-            <xs:element name="language" type="xs:string"/>
+            <xs:element name="language" minOccurs="0" maxOccurs="1" type="xs:string"/>
             <xs:element name="format" type="xs:string"/> <!-- zip -->
-            <xs:element name="licence" type="xs:string"/>
+            <xs:element name="licence" minOccurs="0" maxOccurs="1" type="xs:string"/>
             <!-- structure -->
-            <xs:element name="structure" type="oml:implementation_structure"/>
+            <xs:element name="structure" minOccurs="0" maxOccurs="1" type="oml:implementation_structure"/>
             <!-- technical info -->
             <xs:element name="readme" type="xs:string"/> <!-- how to run this implementation -->
-            <xs:element name="library" type="xs:string"/> <!-- rename to dependency? -->
-            <xs:element name="programming_language" type="xs:string"/>
-            <xs:element name="operating_system" type="xs:string"/>
+            <xs:element name="dependency" minOccurs="0" maxOccurs="1" type="xs:string"/> <!-- was: library -->
+            <xs:element name="programming_language" minOccurs="0" maxOccurs="1" type="xs:string"/>
+            <xs:element name="operating_system" minOccurs="0" maxOccurs="1" type="xs:string"/>
             <!-- other -->
-            <xs:element name="bibliographical-reference" type="xs:string"/> <!-- link to paper -->
-            <xs:element name="implements" type="xs:string"/> <!-- ontological reference -->
+            <xs:element name="bibliographical-reference" minOccurs="0" maxOccurs="unbounded" type="xs:string"/> <!-- link to paper -->
+            <xs:element name="implements" minOccurs="0" maxOccurs="1" type="xs:string"/> <!-- ontological reference -->
             <xs:element name="type" type="xs:string"/> <!-- workflow, implementation or function -->
-	    <xs:element name="md5_checksum" type="xs:string"/>
+	    <xs:element name="md5_checksum" minOccurs="0" maxOccurs="1" type="xs:string"/>
         </xs:sequence>
   </xs:complexType>
   <xs:complexType name="implementation_structure">
         <xs:sequence>
-            <xs:element name="component" type="oml:implementation_component"/>  
+            <xs:element name="component" minOccurs="1" maxOccurs="unbounded" type="oml:implementation_component"/>  
         </xs:sequence>
   </xs:complexType>
   <xs:complexType name="implementation_component">
         <xs:sequence>
             <xs:element name="name" type="xs:string"/>   
-            <xs:element name="ontological_name" type="xs:string"/>
             <xs:element name="version" type="xs:string"/>
-            <xs:element name="summary" type="xs:string"/>
-            <xs:element name="full_description" type="xs:string"/>
-            <xs:element name="technical_manual" type="xs:string"/> 
-            <xs:element name="parameter_setting" type="oml:parameter_setting"/>
+	    <xsd:choice minOccurs="0" maxOccurs="unbounded">
+            	<xs:element name="summary" type="xs:string"/>
+            	<xs:element name="full_description" type="xs:string"/>
+            	<xs:element name="technical_manual" type="xs:string"/> 
+	    </xsd:choice>
+            <xs:element name="parameter_setting" minOccurs="0" maxOccurs="unbounded" type="oml:parameter_setting"/>
+            <xs:element name="ontological_name" minOccurs="0" maxOccurs="1" type="xs:string"/>
         </xs:sequence>
   </xs:complexType>
   <xs:complexType name="parameter_setting">
         <xs:sequence>
-            <xs:element name="parameter" type="xs:string"/>   
-            <xs:element name="value" type="xs:string"/>
+            <xs:attribute name="parameter" type="xs:string"/>
+            <xs:attribute name="value" type="xs:string"/>
         </xs:sequence>
   </xs:complexType>
 </xs:schema>
