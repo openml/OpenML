@@ -26,6 +26,7 @@
             <xs:element name="bibliographical-reference" type="xs:string"/> <!-- link to paper -->
             <xs:element name="implements" type="xs:string"/> <!-- ontological reference -->
             <xs:element name="type" type="xs:string"/> <!-- workflow, implementation or function -->
+	    <xs:element name="md5_checksum" type="xs:string"/>
         </xs:sequence>
   </xs:complexType>
   <xs:complexType name="implementation-structure">
