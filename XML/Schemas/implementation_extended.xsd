@@ -30,7 +30,11 @@
             <xs:element name="programming_language" minOccurs="0" maxOccurs="1" type="xs:string"/>
             <xs:element name="operating_system" minOccurs="0" maxOccurs="1" type="xs:string"/>
             <!-- other -->
+<<<<<<< HEAD
             <xs:element name="bibliographical-reference" minOccurs="0" maxOccurs="unbounded" type="xs:bibliographical_reference"/>
+=======
+            <xs:element name="bibliographical_reference" minOccurs="0" maxOccurs="unbounded" type="xs:string"/> <!-- link to paper -->
+>>>>>>> f420aed767d46805f722d3e845327a90d10b6835
             <xs:element name="implements" minOccurs="0" maxOccurs="1" type="xs:string"/> <!-- ontological reference -->
             <xs:element name="type" type="xs:string"/> <!-- workflow, implementation or function -->
 	    <xs:element name="md5_checksum" minOccurs="0" maxOccurs="1" type="xs:string"/>
