@@ -48,12 +48,12 @@
         </xs:sequence>
   </xs:complexType>
   <xs:complexType name="bibliographical_reference">
-        <xs:sequence>
-            <xs:element name="title" type="xs:string"/>  
-            <xs:element name="url" type="xs:string"/>  
-            <xs:element name="authors" type="xs:string"/>  
-            <xs:element name="year" type="xs:int"/>  
-            <xs:element name="doi" type="xs:string"/>  
-        </xs:sequence>
-  </xs:complexType>
+	<xs:sequence>
+		<xs:element name="title" type="xs:string"/>
+		<xs:element name="url" type="xs:string"/>
+		<xs:element name="authors" type="xs:string"/>
+		<xs:element name="year" type="xs:int"/>
+		<xs:element name="doi" type="xs:string"/>
+	</xs:sequence>
+  </xs:complexType>
 </xs:schema>
