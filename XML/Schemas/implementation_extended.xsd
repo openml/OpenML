@@ -20,10 +20,10 @@
             <xs:element name="parameter_setting" minOccurs="0" maxOccurs="unbounded" type="oml:parameter_setting"/> <!-- defaults -->
             <!-- textual info (for search) -->
 			<xs:element name="description" type="xs:string"/> <!-- user comments -->
-			<xs:element name="readme" type="xs:string"/> <!-- how to run this implementation -->
-			<xs:element name="summary" type="xs:string"/> <!-- short glossary info -->
-			<xs:element name="full_description" type="xs:string"/> <!-- full description, e.g. scientific paper text -->
-			<xs:element name="technical_manual" type="xs:string"/> <!-- man pages,... -->
+			<xs:element name="readme" minOccurs="0" maxOccurs="1" type="xs:string"/> <!-- how to run this implementation -->
+			<xs:element name="summary" minOccurs="0" maxOccurs="1" type="xs:string"/> <!-- short glossary info -->
+			<xs:element name="full_description" minOccurs="0" maxOccurs="1" type="xs:string"/> <!-- full description, e.g. scientific paper text -->
+			<xs:element name="technical_manual" minOccurs="0" maxOccurs="1" type="xs:string"/> <!-- man pages,... -->
             <!-- technical info -->
             <xs:element name="dependency" minOccurs="0" maxOccurs="1" type="xs:string"/> <!-- was: library -->
             <xs:element name="programming_language" minOccurs="0" maxOccurs="1" type="xs:string"/>
@@ -32,7 +32,6 @@
             <xs:element name="bibliographical_reference" minOccurs="0" maxOccurs="unbounded" type="oml:bibliographical_reference"/>
             <xs:element name="implements" minOccurs="0" maxOccurs="1" type="xs:string"/> <!-- ontological reference -->
             <xs:element name="type" type="xs:string"/> <!-- workflow, implementation or function -->
-			<xs:element name="owned_by_library" type="xs:boolean"/>
 			<!-- source code -->
 			<xs:element name="source_code_url" minOccurs="0" maxOccurs="1" type="xs:string"/>
 			<xs:element name="source_code_md5" minOccurs="0" maxOccurs="1" type="xs:string"/>
