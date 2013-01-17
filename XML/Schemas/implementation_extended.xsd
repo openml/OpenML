@@ -5,6 +5,7 @@
   <xs:element name="implementation" type="oml:implementation"/>
   <xs:complexType name="implementation">
         <xs:sequence>
+            <xs:element name="fullName" type="xs:string"/>  <!-- the id -->
             <!-- dublin core -->
             <xs:element name="name" type="xs:string"/>   
             <xs:element name="version" type="xs:string"/>
@@ -32,6 +33,12 @@
             <xs:element name="implements" minOccurs="0" maxOccurs="1" type="xs:string"/> <!-- ontological reference -->
             <xs:element name="type" type="xs:string"/> <!-- workflow, implementation or function -->
 			<xs:element name="owned_by_library" type="xs:boolean"/>
+			<!-- source code -->
+			<xs:element name="source_code_url" minOccurs="0" maxOccurs="1" type="xs:string"/>
+			<xs:element name="source_code_md5" minOccurs="0" maxOccurs="1" type="xs:string"/>
+			<!-- binary -->
+			<xs:element name="binary_url" minOccurs="0" maxOccurs="1" type="xs:string"/>
+			<xs:element name="binary_md5" minOccurs="0" maxOccurs="1" type="xs:string"/>
         </xs:sequence>
   </xs:complexType>
   <xs:complexType name="components">
