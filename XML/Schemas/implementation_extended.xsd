@@ -5,7 +5,7 @@
   <xs:element name="implementation" type="oml:implementation"/>
   <xs:complexType name="implementation">
         <xs:sequence>
-            <xs:element name="fullName" type="xs:string"/>  <!-- the id -->
+            <xs:element name="id" type="xs:string"/>  <!-- the id -->
             <!-- dublin core -->
             <xs:element name="name" type="xs:string"/>   
             <xs:element name="version" type="xs:string"/>
