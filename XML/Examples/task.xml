@@ -10,11 +10,11 @@
 		<oml:predictions>
 			<oml:name>predictions</oml:name>
 			<oml:format>ARFF</oml:format>
-			<oml:feature name="repeat" type="integer" required="true"/>
-			<oml:feature name="fold"   type="integer" required="false"/>
-			<oml:feature name="row_id" type="integer" required="true"/>
-			<oml:feature name="prediction" type="string" required="true"/>
-			<oml:feature name="confidence.{classname}" type="numeric" required="false"/>
+			<oml:feature name="repeat" type="integer"/>
+			<oml:feature name="fold"   type="integer"/>
+			<oml:feature name="row_id" type="integer"/>
+			<oml:feature name="prediction" type="string"/>
+			<oml:feature name="confidence.{classname}" type="numeric"/>
 		</oml:predictions>
 	</oml:output>
         <oml:input>
