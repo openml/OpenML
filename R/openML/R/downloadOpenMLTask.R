@@ -8,23 +8,27 @@ downloadOpenMLTask <- function(id, file) {
 parseOpenMLTask <- function(file) {
   checkArg(file, "character", len = 1L, na.ok = FALSE)
   doc <- xmlParse(file)
-  task.id <- as.integer(xmlValue(getNodeSet(doc, "/oml:task/oml:task_id")[[1]]))
-  task.type <- xmlValue(getNodeSet(doc, "/oml:task/oml:task_type")[[1]])
   
+  # task
+  task.id <- as.integer(xmlValue(getNodeSet(doc, "/oml:task/oml:task_id")[[1]]))
+  task.type <- xmlValue(getNodeSet(doc, "/oml:task/oml:task_type")[[1]])  
   ns.parameters <- getNodeSet(doc, "/oml:task/oml:parameter")
   parameters <- lapply(ns.parameters, function(x) xmlValue(x))
   names(parameters) <- sapply(ns.parameters, function(x) xmlGetAttr(x, "name"))
 
+  # data set description
   data.set.id <- as.integer(xmlValue(getNodeSet(doc, "/oml:task/oml:input/oml:data_set/oml:data_set_id")[[1]]))
   data.set.format <- xmlValue(getNodeSet(doc, "/oml:task/oml:input/oml:data_set/oml:data_format")[[1]])
   data.splits.id <- as.integer(xmlValue(getNodeSet(doc, "/oml:task/oml:input/oml:data_splits/oml:data_set_id")[[1]]))
   data.splits.format <- xmlValue(getNodeSet(doc, "/oml:task/oml:input/oml:data_splits/oml:data_format")[[1]])
+  # FIXME
   dsd.file <- "../XML/Examples/dataset.xml"
   dsd <- parseOpenMLDataSetDescription(dsd.file)
-  n.preds.features <- getNodeSet(doc, "/oml:task/oml:output/oml:predictions/oml:feature")
-  preds.features <- lapply(n.preds.features, function(x) xmlGetAttr(x, "type"))
-  names(preds.features) <- sapply(n.preds.features, function(x) xmlGetAttr(x, "name"))
-                                                    
+  
+  # prediction
+  ns.preds.features <- getNodeSet(doc, "/oml:task/oml:output/oml:predictions/oml:feature")
+  preds.features <- lapply(ns.preds.features, function(x) xmlGetAttr(x, "type"))
+  names(preds.features) <- sapply(ns.preds.features, function(x) xmlGetAttr(x, "name"))
   task.preds <- list(
     name = xmlValue(getNodeSet(doc, "/oml:task/oml:output/oml:predictions/oml:name")[[1]]), 
     format = xmlValue(getNodeSet(doc, "/oml:task/oml:output/oml:predictions/oml:format")[[1]]),
