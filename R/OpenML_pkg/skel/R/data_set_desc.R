@@ -1,39 +1,42 @@
-#' Reads an XML data set description file from disk.
-#' 
-#' Produces an S3 object which basically contains the
-#' same information as the XML.
+#' Download and store XML data set description file from OpenML server.
+#'
+#' @param id [\code{integer(1)}]\cr
+#'   Data set id.
 #' @param file [\code{character(1)}]\cr
-#'   Path to XML file.
-#' @return [\code{DataSetDescription}]. 
-#'   S3 object as a list.
+#'   Path where XML file shall be stored.
+#' @return [Nothing].
 #' @export   
-readDataSetDescription = function(file) {
-  doc = xmlParse(file)
-  
-  structure(list(
-    id = xmlValue(getNodeSet(doc, "/data_set_description/id")[[1]]),
-    name = xmlValue(getNodeSet(doc, "/data_set_description/name")[[1]]),
-    url = xmlValue(getNodeSet(doc, "/data_set_description/url")[[1]]),
-    author = xmlValue(getNodeSet(doc, "/data_set_description/author")[[1]]),
-    license = xmlValue(getNodeSet(doc, "/data_set_description/license")[[1]]),
-    row.id.attribute = xmlValue(getNodeSet(doc, "/data_set_description/row_id_attribute")[[1]]),
-    md5.checksum = xmlValue(getNodeSet(doc, "/data_set_description/md5_checksum")[[1]])
-  ), class = "DataSetDescription")
+downloadOpenMLDataSetDescription = function(id, file) {
+  id = convertInteger(id)
+  checkArg(id, "integer", len = 1L, na.ok = FALSE)
+  checkArg(file, "character", len = 1L, na.ok = FALSE)
+  url = getServerFunctionURL("openml.data.description", data.id = id)
+  text = getURL(url)
+  cat(file = file, text)
+  invisible(NULL)
 }
 
-#' @S3method print Task
-print.DataSetDescription = function(x, ...) {
-  catf("Id:         %s", x$id)
-  catf("Name:       %s", x$name)
-  catf("URL:        %s", x$url)
-  catf("Author:     %s", x$author)
-  catf("License:    %s", x$license)
-  catf("Row Id:     %s", x$row.id.attribute)
-  if (is.null(x$data))
-  catf("Data:       <not loaded>")
-  else
-  catf("Data:       (%i, %i)", nrow(x$data), ncol(x$data))
+parseOpenMLDataSetDescription = function(file) {
+  checkArg(file, "character", len = 1L, na.ok = FALSE)
+  doc = xmlParse(file)
+  
+  OpenMLDataSetDescription(
+    id = as.integer(xmlValue(getNodeSet(doc, "/oml:data_set_description/oml:id")[[1]])),
+    name = xmlValue(getNodeSet(doc, "/oml:data_set_description/oml:name")[[1]]),
+    version = xmlValue(getNodeSet(doc, "/oml:data_set_description/oml:version")[[1]]),
+    creator = xmlValue(getNodeSet(doc, "/oml:data_set_description/oml:creator")[[1]]),
+    contributor = xmlValue(getNodeSet(doc, "/oml:data_set_description/oml:contributor")[[1]]),
+    date = xmlValue(getNodeSet(doc, "/oml:data_set_description/oml:date")[[1]]),
+    description = xmlValue(getNodeSet(doc, "/oml:data_set_description/oml:description")[[1]]),
+    language = xmlValue(getNodeSet(doc, "/oml:data_set_description/oml:language")[[1]]),
+    format = xmlValue(getNodeSet(doc, "/oml:data_set_description/oml:format")[[1]]),
+    licence = xmlValue(getNodeSet(doc, "/oml:data_set_description/oml:licence")[[1]]),
+    url = xmlValue(getNodeSet(doc, "/oml:data_set_description/oml:url")[[1]]),
+    rowid.attribute = xmlValue(getNodeSet(doc, "/oml:data_set_description/oml:row_id_attribute")[[1]]),
+    md5.checksum = xmlValue(getNodeSet(doc, "/oml:data_set_description/oml:md5_checksum")[[1]])
+  )
 }
+
 
 #' Get data of data set description object from URL.
 #'
@@ -47,7 +50,7 @@ print.DataSetDescription = function(x, ...) {
 #'   Changed object.   
 #' @export   
 retrieveData = function(dsd)  {
-  checkArg(dsd, "DataSetDescription")
+  checkArg(dsd, "OpenMLDataSetDescription")
   data = getURL(dsd$url)
   data = read.arff(textConnection(data))
   dsd$data = data 

@@ -1,8 +1,8 @@
 Package: OpenML
 Title: OpenML
 Description: OpenML
-Author: Luis Torgo <???>,
-  Bernd Bischl <bernd_bischl@gmx.net>
+Author: Bernd Bischl <bernd_bischl@gmx.net>,
+  Luis Torgo <???>
 Maintainer: Bernd Bischl <bernd_bischl@gmx.net>
 License: BSD
 Imports: BBmisc, RCurl, XML, RWeka

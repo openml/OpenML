@@ -1,10 +1,10 @@
 toMLR = function(task) {
-  dsd = readDataSetDescription("/home/bischl/cos/OpenML/data_set_description.xml")
+  dsd = readOpenMLDataSetDescription("/home/bischl/cos/OpenML/data_set_description.xml")
   dsd = retrieveData(dsd)
   requirePackages("mlr", why="toMLR")
   if (task$type == "classification")
     mlr.task = makeClassifTask(data = dsd$data, target = task$target.feature)
-  if (task$eval.method == "cross-validation") {
+  if (task$eval.method == "cross_validation") {
     if (task$eval.method.args$number.of.repeats == 1L)
       mlr.rdesc = makeResampleDesc("CV", iters = task$eval.method.args$number.of.folds)
     else 
@@ -15,7 +15,6 @@ toMLR = function(task) {
   iter = 1L
   for (i in seq_along(task$repeats)) {
     r = task$repeats[[i]]
-    print(str(r))
     for (j in seq_along(r)) {
       mlr.rin$train.inds[[iter]] = r[[j]]$train
       mlr.rin$test.inds[[iter]] = r[[j]]$test
