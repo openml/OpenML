@@ -14,7 +14,7 @@
 			<oml:feature name="fold"   type="integer"/>
 			<oml:feature name="row_id" type="integer"/>
 			<oml:feature name="prediction" type="string"/>
-			<oml:feature name="confidence.{classname}" type="numeric"/>
+			<oml:feature name="confidence.classname" type="numeric"/>
 		</oml:predictions>
 	</oml:output>
         <oml:input name="training_data">
