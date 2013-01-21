@@ -5,7 +5,7 @@
   <xs:element name="data_set_description" type="oml:data_set_description"/>
   <xs:complexType name="data_set_description">
         <xs:sequence>
-	    <xs:element name="id" type="xs:int"/>
+	    <xs:element name="id" minOccurs="0" maxOccurs="1" type="xs:int"/>  <!-- id, only needed on download, not on upload -->
             <!-- dublin core -->
             <xs:element name="name" type="xs:string"/>   
             <xs:element name="version" type="xs:string"/>
