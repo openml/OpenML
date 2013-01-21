@@ -1,4 +1,4 @@
-@RELATION RapidMinerData
+@RELATION Iris_splits
 
 @ATTRIBUTE 'type' {'TRAIN','TEST'}
 @ATTRIBUTE 'rowid' real
