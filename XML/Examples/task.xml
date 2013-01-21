@@ -8,8 +8,8 @@
         <oml:parameter name="target_feature">class</oml:parameter>
 	<oml:output>
 		<oml:predictions>
-			<oml:name>predictions</name>
-			<oml:format>ARFF</format>
+			<oml:name>predictions</oml:name>
+			<oml:format>ARFF</oml:format>
 			<oml:feature name="repeat" type="integer" required="true"/>
 			<oml:feature name="fold"   type="integer" required="false"/>
 			<oml:feature name="row_id" type="integer" required="true"/>
@@ -26,7 +26,7 @@
 	</oml:input>
 	<oml:input>
 		<oml:data_splits>
-			<oml:data_set_id>1001</oml:data_set>
+			<oml:data_set_id>1001</oml:data_set_id>
 			<oml:data_format>ARFF</oml:data_format>
 		</oml:data_split>
 	</oml:input>		
