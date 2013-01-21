@@ -7,30 +7,31 @@
         <xs:sequence> 
 	    <xs:element name="task_id" type="xs:integer"/>
 	    <xs:element name="task_type" type="xs:string"/>
-            <xs:element name="input" type="oml:task_input"/>
+            <xs:element name="input" minOccurs="1" maxOccurs="unbounded" type="oml:task_input"/>
             <xs:element name="parameter" minOccurs="0" maxOccurs="unbounded" type="oml:task_parameter"/>
-            <xs:element name="output" minOccurs="0" maxOccurs="1" type="oml:task_output"/>
+            <xs:element name="output" minOccurs="0" maxOccurs="unbounded" type="oml:task_output"/>
        </xs:sequence>
    </xs:complexType>
    <xs:complexType name="task_parameter">
        <xs:simpleContent>
            <xs:extension base="xs:string">
-            	<xs:attribute name="name" type="xs:string">
-                </xs:attribute>
+            	<xs:attribute name="name" type="xs:string"/>
            </xs:extension>
        </xs:simpleContent>
    </xs:complexType>
-   <xs:complexType name="task_input">  
-	<xs:sequence>
-            <xs:element name="data_set" minOccurs="0" maxOccurs="unbounded" type="oml:data_set"/>
-            <xs:element name="data_splits" minOccurs="0" maxOccurs="1" type="oml:data_set"/> <!-- enforce that there can only be one data splits input --> 
+   <xs:complexType name="task_input">
+	<xs:attribute name="name" type="xs:string"/>
+  	<xs:choice>
+            <xs:element name="data_set" type="oml:data_set"/>
+            <xs:element name="data_splits" type="oml:data_set"/>
         </xs:choice>
    </xs:complexType>
-   <xs:complexType name="task_output">   
-	<xs:sequence>
-	    <xs:element name="data_set" minOccurs="0" maxOccurs="unbounded" type="oml:data_set"/>
-            <xs:element name="predictions" minOccurs="0" maxOccurs="1" type="oml:predictions"/> <!-- enforce that there can only be one prediction output -->        
-   	</xs:sequence>
+   <xs:complexType name="task_output"> 
+	<xs:attribute name="name" type="xs:string"/>  
+	<xs:choice>
+	    <xs:element name="data_set" type="oml:data_set"/>
+            <xs:element name="predictions" type="oml:predictions"/>        
+   	</xs:choice>
    </xs:complexType>
    <xs:complexType name="data_set">
         <xs:sequence>
