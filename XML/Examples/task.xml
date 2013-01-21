@@ -29,5 +29,5 @@
 			<oml:data_set_id>1001</oml:data_set>
 			<oml:data_format>ARFF</oml:data_format>
 		</oml:data_split>
-	<oml:input>		
+	</oml:input>		
 </oml:task>
