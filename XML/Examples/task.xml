@@ -28,6 +28,6 @@
 		<oml:data_splits>
 			<oml:data_set_id>1001</oml:data_set_id>
 			<oml:data_format>ARFF</oml:data_format>
-		</oml:data_split>
+		</oml:data_splits>
 	</oml:input>		
 </oml:task>
