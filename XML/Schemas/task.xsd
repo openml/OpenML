@@ -37,7 +37,6 @@
         <xs:sequence>
 	    <xs:element name="data_set_id" type="xs:int"/>
 	    <xs:element name="data_format" type="xs:string"/> 
-	    <xs:element name="target_feature" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>
         </xs:sequence>
    </xs:complexType>
    <xs:complexType name="oml:predictions">

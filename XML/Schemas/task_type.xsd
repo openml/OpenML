@@ -7,12 +7,12 @@
         <xs:sequence> 
             <xs:element name="name" type="xs:string"/>
             <xs:element name="description" type="xs:string"/>
-            <xs:element name="author" type="xs:string"/
+            <xs:element name="author" type="xs:string"/>
             <xs:element name="contributors" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>
             <xs:element name="date" type="xs:string"/>
             <xs:element name="input" minOccurs="1" maxOccurs="unbounded" type="oml:task_type_input"/>
-            <xs:element name="parameter" type="oml:task_type_parameter"/>
-            <xs:element name="output" minOccurs="1" maxOccurs="unbounded" type="oml:task_type_parameter"/>
+            <xs:element name="parameter" minOccurs="0" maxOccurs="unbounded" type="oml:task_type_parameter"/>
+            <xs:element name="output" minOccurs="0" maxOccurs="unbounded" type="oml:task_type_parameter"/>
        </xs:sequence>
    </xs:complexType>
    <xs:complexType name="task_type_input">  
@@ -20,7 +20,6 @@
            <xs:element name="name" type="xs:string"/>
            <xs:element name="description" type="xs:string"/>
            <xs:element name="datatype" type="xs:string"/> 
-           <xs:element name="role" type="xs:string"/>
        </xs:sequence>
   </xs:complexType>
   <xs:complexType name="task_type_parameter">
@@ -35,11 +34,8 @@
        <xs:sequence> 
            <xs:element name="name" type="xs:string"/>
            <xs:element name="description" type="xs:string"/>
-           <xs:element name="datatype" type="xs:string"/> 
-           <xs:element name="role" type="xs:string"/>
+           <xs:element name="datatype" type="xs:string"/>
            <xs:element name="should_upload" type="xs:boolean"/>
-           <xs:element name="shared_feature" type="oml:shared_feature"/>
-           <xs:element name="instance_description" type="xs:string"/>
        </xs:sequence> 
   </xs:complexType>
   <xs:complexType name="shared_feature">  
