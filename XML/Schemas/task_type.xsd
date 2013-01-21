@@ -19,7 +19,7 @@
         <xs:sequence> 
            <xs:element name="name" type="xs:string"/>
            <xs:element name="description" type="xs:string"/>
-           <xs:element name="datatype" type="xs:string"/> 
+           <xs:element name="format" type="xs:string"/> 
        </xs:sequence>
   </xs:complexType>
   <xs:complexType name="task_type_parameter">
@@ -34,7 +34,7 @@
        <xs:sequence> 
            <xs:element name="name" type="xs:string"/>
            <xs:element name="description" type="xs:string"/>
-           <xs:element name="datatype" type="xs:string"/>
+           <xs:element name="format" type="xs:string"/>
            <xs:element name="should_upload" type="xs:boolean"/>
        </xs:sequence> 
   </xs:complexType>

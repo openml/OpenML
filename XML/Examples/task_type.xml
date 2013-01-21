@@ -42,17 +42,17 @@
 	<oml:input>
 		<oml:name>training_data</oml:name>
 		<oml:description>The input data the model can be trained on</oml:description>
-		<oml:datatype>ARFF dataset</oml:datatype>
+		<oml:format>ARFF</oml:format>
 	</oml:input>
 	<oml:input>
 		<oml:name>data_splits</oml:name>
 		<oml:description>The training and testing splits to evaluate the built model.</oml:description>
-		<oml:datatype>data_splits dataset (ARFF)</oml:datatype>
+		<oml:format>ARFF</oml:format>
 	</oml:input>
 	<oml:output>
 		<oml:name>predictions</oml:name>
 		<oml:description>The predictions built by the generated model.</oml:description>
-		<oml:datatype>predictions dataset (ARFF)</oml:datatype>
+		<oml:format>ARFF</oml:format>
 		<oml:should_upload>true</oml:should_upload>
 	</oml:output>	
 </oml:task_type>
