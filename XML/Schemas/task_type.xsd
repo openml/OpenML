@@ -7,7 +7,9 @@
         <xs:sequence> 
             <xs:element name="name" type="xs:string"/>
             <xs:element name="description" type="xs:string"/>
-            <xs:element name="author" type="xs:string"/>
+            <xs:element name="author" type="xs:string"/
+            <xs:element name="contributors" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>
+            <xs:element name="date" type="xs:string"/>
             <xs:element name="input" minOccurs="1" maxOccurs="unbounded" type="oml:task_type_input"/>
             <xs:element name="parameter" type="oml:task_type_parameter"/>
             <xs:element name="output" minOccurs="1" maxOccurs="unbounded" type="oml:task_type_parameter"/>
@@ -25,8 +27,8 @@
        <xs:sequence> 
            <xs:element name="name" type="xs:string"/>
            <xs:element name="description" type="xs:string"/>
-           <xs:element name="datatype" type="xs:string"/>
-           <xs:element name="dependency" type="xs:string"/> 
+           <xs:element name="datatype" type="xs:string"/> 
+           <xs:element name="dependency" minOccurs="0" maxOccurs="unbounded" type="xs:string"/> 
        </xs:sequence> 
   </xs:complexType>
   <xs:complexType name="task_type_output">
