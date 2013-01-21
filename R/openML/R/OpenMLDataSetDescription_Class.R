@@ -15,17 +15,19 @@
 # Luis Torgo, Bernd Bischl and Paula Branco, Jan 2013
 # ==============================================================
 
+#FIXME:  parse date as Date and change slot type
+
 setClass("OpenMLDataSetDescription",
          representation(id="numeric",
                         name="character",
                         version="character",
                         creator="character",
                         contributor="character",
-                        date="Date",
+                        date="character",
                         description="character",
                         language="character",
                         format="character",
-                        license="character",
+                        licence="character",
                         url="character",
                         row.id.attribute="character",
                         md5.checksum="character",
@@ -40,14 +42,14 @@ setClass("OpenMLDataSetDescription",
 OpenMLDataSetDescription <- function(id,
                           name,version,
                           creator,contributor="",date,
-                          description,language="",format,license="",
+                          description,language="",format,licence="",
                           url,row.id.attribute="",md5.checksum="", data.set)
 {
   new("OpenMLDataSetDescription",
       id=id,name=name,version=version,
-      creator=creator,contributor=contributor,date=as.Date(date),
+      creator=creator,contributor=contributor,date=date,
       description=description,language=language,format=format,
-      license=license,url=url,
+      licence=licence,url=url,
       row.id.attribute=row.id.attribute,md5.checksum=md5.checksum, data.set=data.set
       )
 }
@@ -71,8 +73,8 @@ setMethod("show","OpenMLDataSetDescription",
             if (object@contributor != '')
               cat('\tContributor : ',object@contributor,'\n')
             cat('\tDate        : ',object@date,'\n')
-            if (object@license != '')
-              cat('\tLicense     : ',object@license,'\n')
+            if (object@licence != '')
+              cat('\tlicence     : ',object@licence,'\n')
             cat('\tURL         : ',object@url,'\n')
             if (object@language != '')
               cat('\tLanguage    : ',object@language,'\n')

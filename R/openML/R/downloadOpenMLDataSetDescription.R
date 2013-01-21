@@ -20,7 +20,23 @@ parseOpenMLDataSetDescription = function(file) {
   checkArg(file, "character", len = 1L, na.ok = FALSE)
   doc = xmlParse(file)
   
-  OpenMLDataSetDescription(
+#   representation(id="numeric",
+#                  name="character",
+#                  version="character",
+#                  creator="character",
+#                  contributor="character",
+#                  date="Date",
+#                  description="character",
+#                  language="character",
+#                  format="character",
+#                  licence="character",
+#                  url="character",
+#                  row.id.attribute="character",
+#                  md5.checksum="character",
+#                  data.set="data.frame"
+#   ))
+
+OpenMLDataSetDescription(
     id = as.integer(xmlValue(getNodeSet(doc, "/oml:data_set_description/oml:id")[[1]])),
     name = xmlValue(getNodeSet(doc, "/oml:data_set_description/oml:name")[[1]]),
     version = xmlValue(getNodeSet(doc, "/oml:data_set_description/oml:version")[[1]]),
@@ -32,8 +48,9 @@ parseOpenMLDataSetDescription = function(file) {
     format = xmlValue(getNodeSet(doc, "/oml:data_set_description/oml:format")[[1]]),
     licence = xmlValue(getNodeSet(doc, "/oml:data_set_description/oml:licence")[[1]]),
     url = xmlValue(getNodeSet(doc, "/oml:data_set_description/oml:url")[[1]]),
-    rowid.attribute = xmlValue(getNodeSet(doc, "/oml:data_set_description/oml:row_id_attribute")[[1]]),
-    md5.checksum = xmlValue(getNodeSet(doc, "/oml:data_set_description/oml:md5_checksum")[[1]])
+    row.id.attribute = xmlValue(getNodeSet(doc, "/oml:data_set_description/oml:row_id_attribute")[[1]]),
+    md5.checksum = xmlValue(getNodeSet(doc, "/oml:data_set_description/oml:md5_checksum")[[1]]),
+    data.set = data.frame()
   )
 }
 

@@ -1,58 +1,81 @@
-#' Reads an XML task file from disk an produces an S3 object which basically contains the
-#' same information as the XML.
-#' @param file [\code{character(1)}]\cr
-#'   Path to XML file.
-#' @return [\code{Task}]. 
-#'   S3 object as a list.
-#' @export   
-readTaskFile = function(file) {
-  doc = xmlParse(file)
-  type = xmlValue(getNodeSet(doc, "/oml:task/oml:task-type/oml:prediction/oml:prediction-type")[[1]])
-  data.set.id = xmlValue(getNodeSet(doc, "/oml:task/oml:task-type/oml:prediction/oml:data-set/oml:data-set-id")[[1]])
-  target.feature= xmlValue(getNodeSet(doc, "/oml:task/oml:task-type/oml:prediction/oml:data-set/oml:target-feature")[[1]])
-  neval = getNodeSet(doc, "/oml:task/oml:task-type/oml:prediction/oml:evaluation-method")[[1]]
-  nevalmeth = xmlChildren(neval)[[1]]
-  eval.method = xmlName(nevalmeth)
-  nevalmeth.childs = xmlChildren(nevalmeth)
-  if (eval.method == "cross-validation") {
-    eval.method.args = list(
-      number.of.repeats = as.integer(xmlValue(nevalmeth.childs[["number-of-repeats"]])),
-      number.of.folds = as.integer(xmlValue(nevalmeth.childs[["number-of-folds"]]))
-    )  
-  }
-  ns = names(nevalmeth.childs)
-  reps = nevalmeth.childs[ns == "repeat"]
-  repeats = lapply(reps, function(r) {
-    chs = xmlChildren(r)
-    ns = names(chs)
-    folds = chs[ns == "fold"]
-    lapply(folds, function(f) {
-      obs1 = xmlChildren(xmlChildren(f)[["fold-train"]])[["observations"]]
-      obs2 = xmlChildren(xmlChildren(f)[["fold-test"]])[["observations"]]
-      list(
-        train = as.integer(strsplit(xmlValue(obs1), split = " ")[[1]]) + 1L,
-        test = as.integer(strsplit(xmlValue(obs2), split = " ")[[1]]) + 1L
-      )  
-    })
-  })
-  structure(list(
-    type = type,
-    data.set.id = data.set.id, 
-    target.feature = target.feature,
-    eval.method = eval.method,
-    eval.method.args = eval.method.args, 
-    repeats = repeats
-  ), class = "Task")
+downloadOpenMLTask <- function(id, file) {
+  id <- convertInteger(id)
+  checkArg(id, "integer", len = 1L, na.ok = FALSE)
+  checkArg(file, "character", len = 1L, na.ok = FALSE)
+  downloadFile(api.fun = "openml.tasks.search", file = file, task.id = id)  
 }
 
-#' @S3method print Task
-print.Task = function(x, ...) {
-  catf("Type:             %s", x$type)
-  catf("Target:           %s", x$target.feature)
-  if (x$eval.method == "cross-validation")
-  catf("Eval method:      %s (%i, %i)", x$eval.method, x$eval.method.args$number.of.repeats, 
-    x$eval.method.args$number.of.folds)
-  else
-  catf("Eval method:      %s", x$eval.method)
+parseOpenMLTask <- function(file) {
+  checkArg(file, "character", len = 1L, na.ok = FALSE)
+  doc <- xmlParse(file)
+  task.id <- as.integer(xmlValue(getNodeSet(doc, "/oml:task/oml:task_id")[[1]]))
+  task.type <- xmlValue(getNodeSet(doc, "/oml:task/oml:task_type")[[1]])
+  
+  ns.parameters <- getNodeSet(doc, "/oml:task/oml:parameter")
+  parameters <- lapply(ns.parameters, function(x) xmlValue(x))
+  names(parameters) <- sapply(ns.parameters, function(x) xmlGetAttr(x, "name"))
+    
+  data.set.id <- as.integer(xmlValue(getNodeSet(doc, "/oml:task/oml:input/oml:data_set/oml:data_set_id")[[1]]))
+  data.set.format <- xmlValue(getNodeSet(doc, "/oml:task/oml:input/oml:data_set/oml:data_format")[[1]])
+  data.splits.id <- as.integer(xmlValue(getNodeSet(doc, "/oml:task/oml:input/oml:data_splits/oml:data_set_id")[[1]]))
+  data.splits.format <- xmlValue(getNodeSet(doc, "/oml:task/oml:input/oml:data_splits/oml:data_format")[[1]])
+
+  output.predictions.name <- xmlValue(getNodeSet(doc, "/oml:task/oml:output/oml:predictions/oml:name")[[1]])
+  output.predictions.format <- xmlValue(getNodeSet(doc, "/oml:task/oml:output/oml:predictions/oml:format")[[1]])
+  ns.features <- getNodeSet(doc, "/oml:task/oml:output/oml:predictions/oml:feature")
+  getNodeAttr <- function(nodes, name, attr) xmlGetAttr(Filter(function(x) xmlGetAttr(x, "name") == name, nodes)[[1]], attr)
+  output.predictions.repeat.required <- getNodeAttr(ns.features, "repeat", "required")
+  output.predictions.fold.required <- getNodeAttr(ns.features, "fold", "required")
+  output.predictions.rowid.required <- getNodeAttr(ns.features, "row_id", "required")
+
+  OpenMLTask(
+    task.id = task.id,
+    task.type = task.type,
+    task.pars = parameters,
+    data.set.id = data.set.id, 
+    prediction.type = prediction.type,
+    target.feature = target.feature,
+    evaluation.measures = evaluation.measures,
+    evaluation.method = evaluation.method,
+    evaluation.method.args = evaluation.method.args, 
+    repeats = repeats
+  )
 }
+
+# parseOpenMLTask <- function(file) {
+#   checkArg(file, "character", len = 1L, na.ok = FALSE)
+#   doc <- xmlParse(file)
+#   task.id <- as.integer(xmlValue(getNodeSet(doc, "/oml:task/oml:task_id")[[1]]))
+#   task.type <- xmlValue(getNodeSet(doc, "/oml:task/oml:task_type")[[1]])
+#   ns.parameters <- getNodeSet(doc, "/oml:task/oml:parameter")
+#   parameters <- lapply(ns.parameters, function(x) xmlValue(x))
+#   names(parameters) <- sapply(ns.parameters, function(x) xmlGetAttr(x, "name"))
+#   print(parameters)
+#   stop()
+#   data.set.id <- as.integer(xmlValue(getNodeSet(doc, "/oml:task/oml:input/oml:data_set/oml:data_set_id")[[1]]))
+#   data.set.format <- xmlValue(getNodeSet(doc, "/oml:task/oml:input/oml:data_set/oml:data_format")[[1]])
+#   data.splits.id <- as.integer(xmlValue(getNodeSet(doc, "/oml:task/oml:input/oml:data_splits/oml:data_set_id")[[1]]))
+#   data.splits.format <- xmlValue(getNodeSet(doc, "/oml:task/oml:input/oml:data_splits/oml:data_format")[[1]])
+#   
+#   output.predictions.name <- xmlValue(getNodeSet(doc, "/oml:task/oml:output/oml:predictions/oml:name")[[1]])
+#   output.predictions.format <- xmlValue(getNodeSet(doc, "/oml:task/oml:output/oml:predictions/oml:format")[[1]])
+#   ns.features <- getNodeSet(doc, "/oml:task/oml:output/oml:predictions/oml:feature")
+#   getNodeAttr <- function(nodes, name, attr) xmlGetAttr(Filter(function(x) xmlGetAttr(x, "name") == name, nodes)[[1]], attr)
+#   output.predictions.repeat.required <- getNodeAttr(ns.features, "repeat", "required")
+#   output.predictions.fold.required <- getNodeAttr(ns.features, "fold", "required")
+#   output.predictions.rowid.required <- getNodeAttr(ns.features, "row_id", "required")
+#   
+#   OpenMLTask(
+#     task.id = task.id,
+#     task.type = task.type,
+#     data.set.id = data.set.id, 
+#     prediction.type = prediction.type,
+#     target.feature = target.feature,
+#     evaluation.measures = evaluation.measures,
+#     evaluation.method = evaluation.method,
+#     evaluation.method.args = evaluation.method.args, 
+#     repeats = repeats
+#   )
+# }
+
 

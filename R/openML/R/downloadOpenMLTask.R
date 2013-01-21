@@ -14,31 +14,30 @@ parseOpenMLTask <- function(file) {
   ns.parameters <- getNodeSet(doc, "/oml:task/oml:parameter")
   parameters <- lapply(ns.parameters, function(x) xmlValue(x))
   names(parameters) <- sapply(ns.parameters, function(x) xmlGetAttr(x, "name"))
-    
+
   data.set.id <- as.integer(xmlValue(getNodeSet(doc, "/oml:task/oml:input/oml:data_set/oml:data_set_id")[[1]]))
   data.set.format <- xmlValue(getNodeSet(doc, "/oml:task/oml:input/oml:data_set/oml:data_format")[[1]])
   data.splits.id <- as.integer(xmlValue(getNodeSet(doc, "/oml:task/oml:input/oml:data_splits/oml:data_set_id")[[1]]))
   data.splits.format <- xmlValue(getNodeSet(doc, "/oml:task/oml:input/oml:data_splits/oml:data_format")[[1]])
-
-  output.predictions.name <- xmlValue(getNodeSet(doc, "/oml:task/oml:output/oml:predictions/oml:name")[[1]])
-  output.predictions.format <- xmlValue(getNodeSet(doc, "/oml:task/oml:output/oml:predictions/oml:format")[[1]])
-  ns.features <- getNodeSet(doc, "/oml:task/oml:output/oml:predictions/oml:feature")
-  getNodeAttr <- function(nodes, name, attr) xmlGetAttr(Filter(function(x) xmlGetAttr(x, "name") == name, nodes)[[1]], attr)
-  output.predictions.repeat.required <- getNodeAttr(ns.features, "repeat", "required")
-  output.predictions.fold.required <- getNodeAttr(ns.features, "fold", "required")
-  output.predictions.rowid.required <- getNodeAttr(ns.features, "row_id", "required")
-
+  dsd.file <- "../XML/Examples/dataset.xml"
+  dsd <- parseOpenMLDataSetDescription(dsd.file)
+  n.preds.features <- getNodeSet(doc, "/oml:task/oml:output/oml:predictions/oml:feature")
+  preds.features <- lapply(n.preds.features, function(x) xmlGetAttr(x, "type"))
+  names(preds.features) <- sapply(n.preds.features, function(x) xmlGetAttr(x, "name"))
+                                                    
+  task.preds <- list(
+    name = xmlValue(getNodeSet(doc, "/oml:task/oml:output/oml:predictions/oml:name")[[1]]), 
+    format = xmlValue(getNodeSet(doc, "/oml:task/oml:output/oml:predictions/oml:format")[[1]]),
+    features = preds.features
+  )
+  
   OpenMLTask(
     task.id = task.id,
     task.type = task.type,
     task.pars = parameters,
-    data.set.id = data.set.id, 
-    prediction.type = prediction.type,
-    target.feature = target.feature,
-    evaluation.measures = evaluation.measures,
-    evaluation.method = evaluation.method,
-    evaluation.method.args = evaluation.method.args, 
-    repeats = repeats
+    task.data.set = dsd,
+    task.data.splits = data.frame(),
+    task.preds = task.preds
   )
 }
 

@@ -1,6 +1,6 @@
-Package: OpenML
-Title: OpenML
-Description: OpenML
+Package: openML
+Title: openML
+Description: openML
 Author: Bernd Bischl <bernd_bischl@gmx.net>,
   Luis Torgo <???>
 Maintainer: Bernd Bischl <bernd_bischl@gmx.net>
