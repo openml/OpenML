@@ -1,8 +1,15 @@
 <oml:data_set_description xmlns:oml="http://openml.org/data_set_description">
-    <oml:id>123</oml:id>
+    <oml:id>1</oml:id>
     <oml:name>Iris</oml:name>
-    <oml:url>http://repository.seasr.org/Datasets/UCI/arff/iris.arff</oml:url>
-    <oml:author>R.A. Fisher</oml:author>
-    <oml:licence>BSD</oml:licence>
-    <oml:md5_checksum>25d7d5d689042a3816aa1598d5fd56ef</oml:md5_checksum>
+    <oml:version>1.0</oml:version>
+    <oml:creator>R.A. Fisher</oml:creator>
+    <oml:contributor>Michael Marshall</oml:contributor>
+    <oml:date>July, 1988</oml:date>
+    <oml:description>Iris Plants Database</oml:description>
+    <oml:language>English</oml:language>
+    <oml:format>arff</oml:format>
+    <oml:licence>UCI</oml:licence>
+    <oml:url>http://expdb.cs.kuleuven.be/expdb/data/uci/nominal/iris.arff</oml:url>
+    <oml:row_id_attribute>mpg</oml:row_id_attribute>
+    <oml:md5_checksum>b031a685d8d40136449d94365f9a8b81</oml:md5_checksum>
 </oml:data_set_description>

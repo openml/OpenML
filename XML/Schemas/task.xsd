@@ -1,104 +1,78 @@
-<xs:schema targetNamespace="http://openml.org/task"
-    xmlns:oml="http://openml.org/task"
+<xs:schema targetNamespace="http://openml.org/task_type_description"
+    xmlns:oml="http://openml.org/task_type_description"
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
     elementFormDefault="qualified">
-  <xs:element name="task" type="oml:task"/>
-  <xs:complexType name="task">
-        <xs:sequence>
-			<xs:element name="task_id" type="xs:int"/>
-			<xs:element name="task_type" type="oml:task_type"/>
-			<xs:element name="prediction" type="oml:prediction"/>
-        </xs:sequence>
-  </xs:complexType>
-  <xs:complexType name="prediction">
-        <xs:sequence>
-			<xs:element name="prediction_type" type="oml:prediction_type"/>
-			<xs:element name="data_set" type="oml:data_set"/>
-			<xs:element name="evaluation_measures" type="oml:evaluation_measures"/>
-			<xs:element name="evaluation_method" type="oml:evaluation_method"/>
-        </xs:sequence>
-  </xs:complexType>
-  <xs:complexType name="data_set">
-        <xs:sequence>
-			<xs:element name="data_set_id" type="xs:int"/>
-			<xs:element name="target_feature" type="xs:string"/>
-        </xs:sequence>
-  </xs:complexType>
-  <xs:complexType name="evaluation_measures">
-        <xs:sequence>
-			<xs:element name="evaluation_measure" minOccurs="1" maxOccurs="unbounded" type="xs:string"/>
-        </xs:sequence>
-  </xs:complexType>
-  <xs:complexType name="evaluation_method">
-        <xs:choice>
-			<xs:element name="cross_validation" type="oml:cross_validation"/>
-			<xs:element name="hold_out" type="oml:hold_out"/>
-			<xs:element name="boot_straping" type="oml:bootstrapping"/>
-			<xs:element name="sub_sampling" type="oml:sub_sampling"/>
+   <xs:element name="task" type="oml:task_description"/>
+   <xs:complexType name="task_description">
+        <xs:sequence> 
+	    <xs:element name="task_id" type="xs:string"/>
+	    <xs:element name="task_type" type="xs:string"/>
+            <xs:element name="input" minOccurs="1" maxOccurs="unbounded" type="oml:task_data"/>
+            <xs:element name="parameter" type="oml:task_parameter"/>
+            <xs:element name="output" minOccurs="1" maxOccurs="unbounded" type="oml:task_data"/>
+       </xs:sequence>
+   </xs:complexType>
+   <xs:complexType name="task_parameter">
+       <xs:simpleContent>
+           <xs:extension base="xs:string">
+            	<xs:attribute name="name" type="xs:string">
+                </xs:attribute>
+           </xs:extension>
+       </xs:simpleContent>
+   </xs:complexType>
+   <xs:complexType name="task_data">  
+        <xs:choice minOccurs="1" maxOccurs="1"> 
+            <xs:element name="data_set" type="oml:data_set"/>
+            <xs:element name="data_splits" type="oml:data_set"/>
+            <xs:element name="predictions" type="oml:predictions"/>
         </xs:choice>
-  </xs:complexType>
-  <xs:complexType name="cross_validation">
+   </xs:complexType>
+   <xs:complexType name="data_set">
         <xs:sequence>
-			<xs:element name="number_of_folds" type="xs:int"/>
-			<xs:element name="number_of_repeats" type="xs:int"/>
+	    <xs:element name="data_set_id" type="xs:int"/>
+	    <xs:element name="data_format" type="xs:string"/> 
+	    <xs:element name="target_feature" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>
+        </xs:sequence>
+   </xs:complexType>
+   <xs:complexType name="oml:predictions">
+	<oml:element name="name" type="xs:string"/>
+	<oml:element name="format" type="xs:string"/>
+	<oml:element name="feature" minOccurs="1" maxOccurs="unbounded" type="oml:feature"/>
+   </xs:complexType>
+  <xs:complexType name="oml:feature">
+	<oml:element name="name" type="xs:string"/>
+	<oml:element name="type" type="xs:string"/>
+	<oml:element name="required" type="xs:boolean"/>
+   </xs:complexType>
+   <xs:complexType name="train_test_sets">
+        <xs:sequence>
+	    <xs:element name="number_of_folds" type="xs:int"/>
+	    <xs:element name="number_of_repeats" type="xs:int"/>
             <xs:element name="repeat" minOccurs="1" maxOccurs="unbounded" type="oml:repeat"/>
         </xs:sequence>
-  </xs:complexType>
-  <xs:complexType name="bootstrapping">
+   </xs:complexType>
+   <xs:complexType name="repeat">
         <xs:sequence>
-			<xs:element name="number_of_folds" type="xs:int"/>
+	    <xs:element name="repeat_id" type="xs:int"/>
             <xs:element name="fold" minOccurs="1" maxOccurs="unbounded" type="oml:fold"/>
         </xs:sequence>
-  </xs:complexType>
-  <xs:complexType name="hold_out">
+   </xs:complexType>
+   <xs:complexType name="fold">
         <xs:sequence>
-			<xs:element name="number_of_folds" type="xs:int"/>
-			<xs:element name="fold" minOccurs="1" maxOccurs="unbounded" type="oml:fold"/>
-        </xs:sequence>
-  </xs:complexType>
-  <xs:complexType name="sub_sampling">
-        <xs:sequence>
-			<xs:element name="number_of_folds" type="xs:int"/>
-            <xs:element name="fold" minOccurs="1" maxOccurs="unbounded" type="oml:fold"/>
-        </xs:sequence>
-  </xs:complexType>
-  <xs:complexType name="repeat">
-        <xs:sequence>
-			<xs:element name="repeat_id" type="xs:int"/>
-            <xs:element name="fold" minOccurs="1" maxOccurs="unbounded" type="oml:fold"/>
-        </xs:sequence>
-  </xs:complexType>
-  <xs:complexType name="fold">
-        <xs:sequence>
-			<xs:element name="fold_id" type="xs:int"/>
+	    <xs:element name="fold_id" type="xs:int"/>
             <xs:element name="fold_train" type="oml:fold_train"/>
             <xs:element name="fold_test" type="oml:fold_test"/>
         </xs:sequence>
-  </xs:complexType>
-  <xs:complexType name="fold_train">
+   </xs:complexType>
+   <xs:complexType name="fold_train">
         <xs:sequence>
             <xs:element name="observations" type="oml:observations"/>
         </xs:sequence>
-  </xs:complexType>
-  <xs:complexType name="fold_test">
+   </xs:complexType>
+   <xs:complexType name="fold_test">
         <xs:sequence>
             <xs:element name="observations" type="oml:observations"/>
         </xs:sequence>
-  </xs:complexType>
-  <xs:simpleType name="prediction_type">
-       <xs:restriction base="xs:string">
-          <xs:enumeration value="classification" />
-          <xs:enumeration value="regression" />
-       </xs:restriction>
-  </xs:simpleType>
-    <xs:simpleType name="task_type">
-       <xs:restriction base="xs:string">
-          <xs:enumeration value="prediction" />
-          <xs:enumeration value="clustering" />
-       </xs:restriction>
-  </xs:simpleType>
-  <xs:simpleType name="observations">
-    <xs:list itemType="xs:long"/>
-  </xs:simpleType>   
-  <xs:element name="row_id" type="xs:long"/>
+   </xs:complexType>
 </xs:schema>
+
