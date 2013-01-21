@@ -6,7 +6,7 @@
 	<oml:parameter name="number_repeats">10</oml:parameter>
 	<oml:parameter name="number_folds">10</oml:parameter>
         <oml:parameter name="target_feature">class</oml:parameter>
-	<oml:output>
+	<oml:output name="predictions">
 		<oml:predictions>
 			<oml:name>predictions</oml:name>
 			<oml:format>ARFF</oml:format>
@@ -17,14 +17,14 @@
 			<oml:feature name="confidence.{classname}" type="numeric"/>
 		</oml:predictions>
 	</oml:output>
-        <oml:input>
+        <oml:input name="training_data">
 		<oml:data_set>
 			<oml:data_set_id>1</oml:data_set_id>
 			<oml:data_format>ARFF</oml:data_format>
 			<oml:target_feature>class</oml:target_feature>
 		</oml:data_set>
 	</oml:input>
-	<oml:input>
+	<oml:input name="data_splits">
 		<oml:data_splits>
 			<oml:data_set_id>1001</oml:data_set_id>
 			<oml:data_format>ARFF</oml:data_format>
