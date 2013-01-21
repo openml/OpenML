@@ -15,7 +15,7 @@
 			<oml:feature name="row_id" type="integer" required="true"/>
 			<oml:feature name="prediction" type="string" required="true"/>
 			<oml:feature name="confidence.{classname}" type="numeric" required="false"/>
-		<oml:predictions>
+		</oml:predictions>
 	</oml:output>
         <oml:input>
 		<oml:data_set>
