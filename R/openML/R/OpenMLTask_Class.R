@@ -60,8 +60,7 @@ setMethod("show","OpenMLTask",
             cat('\tFormat = ',object@task.preds$format,'\n')
             cat('\tColumns:\n')
             for(i in 1:length(object@task.preds$features))
-              if (object@task.preds$features[[i]])
-                cat('\t\t',names(object@task.preds$features)[i],'\n')
+              cat('\t\t',names(object@task.preds$features)[i],' = ',object@task.preds$features[[i]],'\n')
           }
           )
 
