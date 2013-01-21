@@ -19,7 +19,7 @@ setClass("OpenMLTask",
          representation(task.id="numeric",
                         task.type="character",
                         task.pars="list",
-                        task.data.set="OpenMLDataSetDescription",
+                        task.data.set="OptionalOpenMLDataSetDescription",
                         task.data.splits="data.frame",
                         task.preds="list"
            ))
@@ -51,11 +51,13 @@ setMethod("show","OpenMLTask",
                 '\n\nTask Type :: ',object@task.type,'\n')
             for(i in 1:length(object@task.pars))
               cat('\t',names(object@task.pars)[i],' = ',object@task.pars[[i]],'\n')
-            cat('\nDataset :: ',object@task.data.set@name,
-                ' (openML ID = ',object@task.data.set@id,
-                ', version = ',object@task.data.set@version,')\n')
-            cat('\tData frame with ',nrow(object@task.data.set@data.set),
-                ' rows and ',ncol(object@task.data.set@data.set),' columns\n')
+            if (!is.null(object@task.data.set)) {
+              cat('\nDataset :: ',object@task.data.set@name,
+                  ' (openML ID = ',object@task.data.set@id,
+                  ', version = ',object@task.data.set@version,')\n')
+              cat('\tData frame with ',nrow(object@task.data.set@data.set),
+                  ' rows and ',ncol(object@task.data.set@data.set),' columns\n')
+            }
             cat('\nPredictions ::\n')
             cat('\tFormat = ',object@task.preds$format,'\n')
             cat('\tColumns:\n')

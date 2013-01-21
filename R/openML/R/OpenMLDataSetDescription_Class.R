@@ -34,23 +34,26 @@ setClass("OpenMLDataSetDescription",
                         data.set="data.frame"
                         ))
 
-
+setClassUnion("OptionalOpenMLDataSetDescription",
+              c("OpenMLDataSetDescription","NULL"))
 
 ## ============================================================
 ## CONSTRUCTOR FUNCTION
 ## ============================================================
 OpenMLDataSetDescription <- function(id,
-                          name,version,
-                          creator,contributor="",date,
-                          description,language="",format,licence="",
-                          url,row.id.attribute="",md5.checksum="", data.set)
+                                     name,version,
+                                     creator,contributor="",date,
+                                     description,language="",format,licence="",
+                                     url,row.id.attribute="",md5.checksum="",
+                                     data.set)
 {
   new("OpenMLDataSetDescription",
       id=id,name=name,version=version,
       creator=creator,contributor=contributor,date=date,
       description=description,language=language,format=format,
       licence=licence,url=url,
-      row.id.attribute=row.id.attribute,md5.checksum=md5.checksum, data.set=data.set
+      row.id.attribute=row.id.attribute,md5.checksum=md5.checksum,
+      data.set=data.set
       )
 }
 
@@ -86,7 +89,8 @@ setMethod("show","OpenMLDataSetDescription",
             cat('\tDescription :\n')
             cat(unlist(strsplit(object@description, split=" ")), fill=40)
             cat('\n')
-            
+            cat('\tData : \n')
+            str(object@data.set)
           }
           )
 
