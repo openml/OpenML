@@ -1,0 +1,68 @@
+################################################################# 
+# THIS FILE DEFINES CLASS OpenMLTask AND THE RESPECTIVE METHODS #
+#################################################################
+# Authors : L. Torgo, B. Bischl and P. Branco   Date: Jan 2013  #
+# License: GPL (>= 2)                                           #
+#################################################################
+
+
+# ==============================================================
+# CLASS: OpenMLTask
+# ==============================================================
+# Luis Torgo, Bernd Bischl and Paula Branco, Jan 2013
+# ==============================================================
+
+
+# --------------------------------------------------------------
+# class def
+setClass("OpenMLTask",
+         representation(task.id="numeric",
+                        task.type="character",
+                        task.pars="list",
+                        task.data.set="OpenMLDataSetDescription",
+                        task.data.splits="data.frame",
+                        task.preds="list"
+           ))
+
+
+# --------------------------------------------------------------
+# constructor function
+OpenMLTask <- function(task.id,task.type,task.pars,
+                       task.data.set,task.data.splits,
+                       task.preds)
+{
+  new("OpenMLTask",
+      task.id=task.id,task.type=task.type,task.pars=task.pars,
+      task.data.set=task.data.set,task.data.splits=task.data.splits,
+      task.preds=task.preds)
+}
+
+
+
+# --------------------------------------------------------------
+# Methods:
+
+
+# show
+# Note: The data splits and the predictions are not shown
+setMethod("show","OpenMLTask",
+          function(object) {
+            cat('\nTask ID :: ',object@task.id,
+                '\n\nTask Type :: ',object@task.type,'\n')
+            for(i in 1:length(object@task.pars))
+              cat('\t',names(object@task.pars)[i],' = ',object@task.pars[[i]],'\n')
+            cat('\nDataset :: ',object@task.data.set@name,
+                ' (openML ID = ',object@task.data.set@id,
+                ', version = ',object@task.data.set@version,')\n')
+            cat('\tData frame with ',nrow(object@task.data.set@data.set),
+                ' rows and ',ncol(object@task.data.set@data.set),' columns\n')
+            cat('\nPredictions ::\n')
+            cat('\tFormat = ',object@task.preds$format,'\n')
+            cat('\tColumns:\n')
+            for(i in 1:length(object@task.preds$features))
+              if (object@task.preds$features[[i]])
+                cat('\t\t',names(object@task.preds$features)[i],'\n')
+          }
+          )
+
+
