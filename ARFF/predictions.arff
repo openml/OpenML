@@ -1,0 +1,21 @@
+%task-id: 123
+%parameters?
+
+@relation openml_task_123_predictions
+
+@ATTRIBUTE repeat INTEGER
+@ATTRIBUTE fold INTEGER
+@ATTRIBUTE rowid INTEGER
+@ATTRIBUTE prediction {setosa,versicolor,virgina}
+@ATTRIBUTE confidence.setosa NUMERIC
+@ATTRIBUTE confidence.versicolor NUMERIC 
+@ATTRIBUTE confidence.virgina NUMERIC
+
+@data
+1,1,1,"setosa",0.6,0.2,0.2
+1,1,2,"versicolor",0.2,0.6,0.2
+1,2,1,"setosa",0.6,0.2,0.2
+1,2,2,"virgina",0.1,0.1,0.8
+2,1,2,"setosa",0.6,0.2,0.2
+2,1,2,"setosa",0.6,0.2,0.2
+2,2,2,"setosa",0.6,0.2,0.2
