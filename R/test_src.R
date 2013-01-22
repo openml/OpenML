@@ -7,14 +7,23 @@ library(RWeka)
 load_all("openML")
 
 
-fn.task = "../XML/Examples/task.xml"
-task = parseOpenMLTask(fn.task)
+fn.task <- "../XML/Examples/task.xml"
+fn.data.set.desc <- "../XML/Examples/dataset.xml"    
+fn.data.set <- "../ARFF/iris.arff"    
+fn.data.splits <- "../ARFF/foldconfig_task_1.arff"    
 
-#fn = "my_r_task.xml"
-#fn.dsd = "../../XML/Examples/dataset.xml"
-#fn2 = "../../data_set_description.xml"
-#fn.task = "mytask.xml"
-#fn.dsd = "mydsd.xml"
-#downloadOpenMLTask(id = 1, file = fn.task)
 
-#dsd = parseOpenMLDataSetDescription(fn.dsd)
+task <- parseOpenMLTask(fn.task)
+task@task.data.desc = parseOpenMLDataSetDescription(fn.data.set.desc)
+task@task.data.desc@data.set = parseOpenMLDataSet(fn.data.set)
+task@task.data.splits = parseOpenMLDataSplits(fn.data.splits)
+print(task)
+
+
+# task = downloadOpenMLTask(id = 12, fetch.data.set.description = TRUE,
+#   fetch.data.set = FALSE, fetch.data.splits = FALSE)
+# print(task)
+
+z <- toMLR(task)
+lrn <- makeLearner("classif.rpart")
+r <- resample(lrn, z$mlr.task, z$mlr.rin)
