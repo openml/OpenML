@@ -1,0 +1,31 @@
+#import(graphics)
+#import(abind)  # commented out as it does not have a name space
+#import(rpart)
+#import(xts)
+#import(quantmod)
+#importFrom(zoo,as.zoo)
+
+import(RWeka,read.arff)
+import(methods)
+
+
+
+exportClasses(
+  OpenMLTask,
+  OpenMLDataSetDescription
+  #, OpenMLResults
+  )
+
+
+exportMethods(show)
+
+
+export(
+       downloadOpenMLDataSetDescription,
+       downloadOpenMLTask,
+  
+       ## Constructors for the classes
+       OpenMLTask,OpenMLDataSetDescription
+  
+       )
+
