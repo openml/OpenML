@@ -1,6 +1,8 @@
 library(devtools)
 library(XML)
 library(RCurl)
+library(BBmisc)
+library(RWeka)
 
 load_all("openML")
 
