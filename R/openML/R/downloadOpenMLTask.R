@@ -20,14 +20,18 @@ downloadOpenMLTask <- function(id, dir = tempdir(), clean.up = TRUE, fetch.data.
   task <- parseOpenMLTask(fn.task)
   
   if (fetch.data.set.description) {
-    dsd <- parseOpenMLDataSetDescription(fn.data.set.desc)
-    downloadOpenMLDataSet(id, fn.data.set)
-    task@task.data.splits <- parseOpenMLDataSplits(fn.data.splits)
+    downloadOpenMLDataSetDescription(task@data.desc.id, fn.data.set.desc)
+    task@data.desc <- parseOpenMLDataSetDescription(fn.data.set.desc)
+  }
+
+  if (fetch.data.set) {
+    downloadOpenMLDataSet(task@task.data.desc@id, fn.data.set)
+    task@task.data.desc@data.set <- parseOpenMLDataSet(fn.data.set)
   }
   
-  if (fetch.data.set) {
-    downloadOpenMLDataSplits(id, fn.data.splits)
-    task@task.data.set <- parseOpenMLDataSet(fn.data.set)
+  if (fetch.data.splits) {
+    downloadOpenMLDataSplits(task@data.splits.id, fn.data.splits)
+    task@task.data.set <- parseOpenMLDataSet(fn.data.splits)
   }
   
   if (clean.up) {
@@ -52,11 +56,9 @@ parseOpenMLTask <- function(file) {
   names(parameters) <- sapply(ns.parameters, function(x) xmlGetAttr(x, "name"))
 
   # data set description
-  data.set.id <- as.integer(xmlValue(getNodeSet(doc, "/oml:task/oml:input/oml:data_set/oml:data_set_id")[[1]]))
-  data.set.format <- xmlValue(getNodeSet(doc, "/oml:task/oml:input/oml:data_set/oml:data_format")[[1]])
+  data.desc.id <- as.integer(xmlValue(getNodeSet(doc, "/oml:task/oml:input/oml:data_set/oml:data_set_id")[[1]]))
   data.splits.id <- as.integer(xmlValue(getNodeSet(doc, "/oml:task/oml:input/oml:data_splits/oml:data_set_id")[[1]]))
-  data.splits.format <- xmlValue(getNodeSet(doc, "/oml:task/oml:input/oml:data_splits/oml:data_format")[[1]])
-  dsd <- NULL
+  data.desc <- NULL
   
   # prediction
   ns.preds.features <- getNodeSet(doc, "/oml:task/oml:output/oml:predictions/oml:feature")
@@ -74,7 +76,9 @@ parseOpenMLTask <- function(file) {
     task.id = task.id,
     task.type = task.type,
     task.pars = parameters,
-    task.data.set = dsd,
+    task.data.desc.id = data.desc.id,
+    task.data.desc = data.desc,
+    task.data.splits.id = data.splits.id,
     task.data.splits = data.splits,
     task.preds = task.preds
   )
@@ -96,3 +100,4 @@ convertOpenMLTaskSlots = function(task) {
 
 
 
+#FIXME: respect row id attribute

@@ -58,7 +58,7 @@ setMethod("show","OpenMLTask",
             if (!is.null(object@task.data.desc)) {
               cat('\nDataset :: ',object@task.data.desc@name,
                   ' (openML ID = ',object@task.data.desc@id,
-                  ', version = ',object@task.data.desac@version,')\n')
+                  ', version = ',object@task.data.desc@version,')\n')
               cat('\tData frame with ',nrow(object@task.data.desc@data.set),
                   ' rows and ',ncol(object@task.data.desc@data.set),' columns\n')
             }
