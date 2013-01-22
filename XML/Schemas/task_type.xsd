@@ -17,6 +17,7 @@
         <xs:sequence>
             <xs:element name="name" type="xs:string" />
             <xs:element name="description" type="xs:string" />
+            <xs:element name="data_type" type="xs:string" />
             <xs:element name="format" type="xs:string" />
 			<xs:element name="parameter" minOccurs="0" maxOccurs="unbounded" type="oml:task_type_parameter" />
         </xs:sequence>

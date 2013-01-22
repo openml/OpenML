@@ -15,11 +15,13 @@
 	<oml:input>
 		<oml:name>source_dataset</oml:name>
 		<oml:description>The source dataset.</oml:description>
+		<oml:data_type>source_data</oml:data_type>
 		<oml:format>ARFF</oml:format>
 	</oml:input>
 	<oml:input>
 		<oml:name>data_splits</oml:name>
 		<oml:description>The training and testing splits to evaluate the built model.</oml:description>
+		<oml:data_type>data_splits</oml:data_type>
 		<oml:format>ARFF</oml:format>
 		<oml:parameter>
 			<oml:name>number_repeats</oml:name>
