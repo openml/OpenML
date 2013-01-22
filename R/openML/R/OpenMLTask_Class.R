@@ -79,7 +79,7 @@ taskType <- function(obj) {
 
 expSettings <- function(obj) {
   if (!is(obj,"OpenMLTask")) stop(obj,' needs to be of class "OpenMLTask".\n')
-  OpenMLExpSetts(obj@task.pars$evaluation_method,as.numeric(obj@task.pars$number_folds),as.numeric(obj@task.pars$number_repeats),obj@task.data.splits)
+  OpenMLExpSettings(obj@task.pars$evaluation_method,as.numeric(obj@task.pars$number_folds),as.numeric(obj@task.pars$number_repeats),obj@task.data.splits)
 }
 
 evaluationMeasures <- function(obj) {
