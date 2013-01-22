@@ -98,3 +98,8 @@ targetFeature <- function(obj) {
   obj@task.pars$target_feature
 }
   
+sourceData <- function(obj) {
+  if (!is(obj,"OpenMLTask")) stop(obj,' needs to be of class "OpenMLTask".\n')
+  obj@task.data.desc@data.set
+}
+  
