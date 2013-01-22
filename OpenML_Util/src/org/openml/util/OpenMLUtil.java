@@ -163,6 +163,20 @@ public class OpenMLUtil {
 		}
 
 	}
+	
+	public static Integer getDataSplitId(Document taskDocument) throws MissingValueException {
+		XPath xPath = XPathFactory.newInstance().newXPath();
+		xPath.setNamespaceContext(new OpenMLNameSpaceContext());
+		try {
+			Integer dataSetId = ((Double) xPath.evaluate("/oml:task/oml:input[@name=\"data_splits\"]/oml:data_set/oml:data_set_id",
+					taskDocument, XPathConstants.NUMBER)).intValue();
+			errorOnMissingValue(dataSetId);
+			return dataSetId;
+		} catch (XPathExpressionException e) {
+			return -1;
+		}
+
+	}
 
 	public static String getRowIdAttribute(Document dataSetDocument) throws MissingValueException {
 		XPath xPath = XPathFactory.newInstance().newXPath();
