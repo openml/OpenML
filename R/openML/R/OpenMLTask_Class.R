@@ -63,6 +63,7 @@ setMethod("show","OpenMLTask",
             cat('\tColumns:\n')
             for(i in 1:length(object@task.preds$features))
               cat('\t\t',names(object@task.preds$features)[i],' = ',object@task.preds$features[[i]],'\n')
+            cat('\nData splits for evaluation ::',ifelse(all(dim(object@task.data.splits) == 0),'Not Available','Available'),'\n')
           }
           )
 
