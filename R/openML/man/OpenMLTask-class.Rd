@@ -26,9 +26,15 @@
     \item{\code{task.pars}:}{Object of class \code{list} with a set of
       parameters specific to the task type.
     }
-    \item{\code{task.data.set}:}{Object of class union \code{OptionalOpenMLDataSet}
+    \item{\code{task.data.desc.id}:}{Object of class \code{numeric}
+      containing the OpenML ID of the data set associated with the task.
+    }
+    \item{\code{task.data.desc}:}{Object of class union \code{OptionalOpenMLDataSet}
       containing either an object of class \code{OpenMLDataSet} with the
   data set associated with the task, or the value \code{NULL}.
+    }
+    \item{\code{task.data.splits.id}:}{Object of class \code{numeric}
+      containing the OpenML ID of the data splits associated with the task.
     }
     \item{\code{task.data.splits}:}{Object of class \code{data.frame}
       containing the splits of the data set for the task.
