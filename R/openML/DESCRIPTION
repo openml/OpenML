@@ -5,7 +5,7 @@ Author: Bernd Bischl <bernd_bischl@gmx.net>,
   Luis Torgo <???>
 Maintainer: Bernd Bischl <bernd_bischl@gmx.net>
 License: BSD
-Imports: BBmisc, RCurl, XML, RWeka
+Imports: methods, BBmisc, RCurl, XML, RWeka
 Suggests: mlr
 LazyData: yes
 ByteCompile: yes

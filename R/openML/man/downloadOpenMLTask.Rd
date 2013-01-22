@@ -2,47 +2,34 @@
 \alias{downloadOpenMLTask}
 
 \title{
-  Downloading an openML task from the repository.
+  Download an OpenML task from the repository.
 }
 \description{
- This function downloads an openML task from the respository saving is
-  information into a local XML file and returning the task information
-  as a \code{OpenMLTask} object.
+ This function downloads an OpenML task and all associated files from the OpenML repository,
+ intermediatly stores them on disk and creates an S4 object which completely specifies the task.
 }
 
 \usage{
-downloadOpenMLTask(id, file)
+downloadOpenMLTask(id, dir)
 }
 
 \arguments{
   \item{id}{
-
+    ID number of task on OpenML server, used to retrieve the task.
   }
-  \item{file}{
-
+  \item{dir}{
+    Directory where downloaded files from the server are stored. 
+    Default is \code{tempdir()}.
   }
 }
 
-\details{
-
-}
-
-\references{ 
-
-  \url{http://www.dcc.fc.up.pt/~ltorgo/openML}  
-}
-
-\author{ Luis Torgo \email{ltorgo@dcc.fc.up.pt}, Bernd Bischl \email{}
-  and Paula Branco \email{paobranco@gmail.com}
-}
-
-\seealso{
-  \code{\link{downloadOpenMLDataSetDescription}}
+\value{
+  \code{OpenMLTask} object.
 }
 
 \examples{
-
+  \dontrun{
+  downloadOpenMLTask(id = 1)
+  }
 }
-
-\keyword{models}
 

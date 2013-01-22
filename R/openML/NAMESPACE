@@ -5,27 +5,35 @@
 #import(quantmod)
 #importFrom(zoo,as.zoo)
 
-import(RWeka,read.arff)
 import(methods)
-
+import(BBmisc)
+import(XML)
+importFrom(RWeka, read.arff)
+importFrom(RCurl, getURL)
 
 
 exportClasses(
   OpenMLTask,
   OpenMLDataSetDescription
+  #OpenMLExpSettings
   #, OpenMLResults
-  )
+)
 
 
 exportMethods(show)
 
 
 export(
-       downloadOpenMLDataSetDescription,
-       downloadOpenMLTask,
+  downloadOpenMLTask,
   
-       ## Constructors for the classes
-       OpenMLTask,OpenMLDataSetDescription
+  # Constructors for the classes
+  #OpenMLTask,
+  #OpenMLDataSetDescription
   
-       )
+  # Accessors for S4 objects
+  taskType,
+  targetFeature,
+  expSettings,
+  evaluationMeasures
+)
 
