@@ -12,44 +12,6 @@
 	<oml:contributor>Jan van Rijn</oml:contributor>
 	<oml:contributor>Bo Gao</oml:contributor>
     <oml:date>21-01-2013</oml:date>
-    <oml:parameter>
-		<oml:name>evaluation_method</oml:name>
-		<oml:description>The evaluation method used.</oml:description>
-		<oml:data_type>enum</oml:data_type>
-		<oml:allowed_values>cross-validation,holdout,bootstrapping,subsampling</oml:allowed_values>
-		<oml:required>true</oml:required>
-	</oml:parameter>
-	<oml:parameter>
-		<oml:name>evaluation_measure</oml:name>
-		<oml:description>Comma-separated list of evaluation measures to optimize for in this task</oml:description>
-		<oml:data_type>list</oml:data_type>
-		<oml:allowed_values>predictive_accuracy,...</oml:allowed_values>
-		<oml:required>true</oml:required>
-	</oml:parameter>
-	<oml:parameter>
-		<oml:name>number_repeats</oml:name>
-		<oml:description>Number of times the evaluation is repeated (with different random initializations)</oml:description>
-		<oml:data_type>integer</oml:data_type>
-		<oml:required>true</oml:required>
-	</oml:parameter>
-	<oml:parameter>
-		<oml:name>number_folds</oml:name>
-		<oml:description>Number of folds within each repetition. Typically 1, except when cross-validation is used.</oml:description>
-		<oml:data_type>integer</oml:data_type>
-		<oml:required>true</oml:required>
-	</oml:parameter>
-	<oml:parameter>
-		<oml:name>target_feature</oml:name>
-		<oml:description>The target feature for classification. Must be one of input dataset's features.</oml:description>
-		<oml:data_type>string</oml:data_type>
-		<oml:required>true</oml:required>
-	</oml:parameter>
-	<oml:parameter>
-		<oml:name>input_feature_set</oml:name>
-		<oml:description>Optional. Comma-separated list of features that you can use in this task. This should be a subset of the features in the source dataset.</oml:description>
-		<oml:data_type>string</oml:data_type>
-		<oml:required>false</oml:required>
-	</oml:parameter>
 	<oml:input>
 		<oml:name>source_dataset</oml:name>
 		<oml:description>The source dataset.</oml:description>
@@ -59,6 +21,24 @@
 		<oml:name>data_splits</oml:name>
 		<oml:description>The training and testing splits to evaluate the built model.</oml:description>
 		<oml:format>ARFF</oml:format>
+		<oml:parameter>
+			<oml:name>number_repeats</oml:name>
+			<oml:description>Number of times the evaluation is repeated (with different random initializations)</oml:description>
+			<oml:data_type>integer</oml:data_type>
+			<oml:required>false</oml:required>
+		</oml:parameter>
+		<oml:parameter>
+			<oml:name>number_folds</oml:name>
+			<oml:description>Number of folds within each repetition. Typically 1, except when cross-validation is used.</oml:description>
+			<oml:data_type>integer</oml:data_type>
+			<oml:required>false</oml:required>
+		</oml:parameter>
+		<oml:parameter>
+			<oml:name>stratified_sampling</oml:name>
+			<oml:description>Determains whether the folds will be stratified. </oml:description>
+			<oml:data_type>boolean</oml:data_type>
+			<oml:required>false</oml:required>
+		</oml:parameter>
 	</oml:input>
 	<oml:output>
 		<oml:name>predictions</oml:name>
