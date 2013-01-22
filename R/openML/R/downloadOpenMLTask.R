@@ -21,12 +21,12 @@ downloadOpenMLTask <- function(id, dir = tempdir(), clean.up = TRUE, fetch.data.
   
   if (fetch.data.set.description) {
     dsd <- parseOpenMLDataSetDescription(fn.data.set.desc)
-    downLoadOpenMLDataSet(id, fn.data.set)
+    downloadOpenMLDataSet(id, fn.data.set)
     task@task.data.splits <- parseOpenMLDataSplits(fn.data.splits)
   }
   
   if (fetch.data.set) {
-    downLoadOpenMLDatasplits(id, fn.data.splits)
+    downloadOpenMLDataSplits(id, fn.data.splits)
     task@task.data.set <- parseOpenMLDataSet(fn.data.set)
   }
   
