@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<oml:implementation xmlns:oml="http://openml.org/implementation">
+<oml:implementation xmlns:oml="http://open-ml.org/openml">
     <oml:id>knime.janvanrijn.solveTaskA_1.3.0</oml:id>
     <oml:name>knime.janvanrijn.solveTaskA</oml:name>
     <oml:version>1.3.0</oml:version>
