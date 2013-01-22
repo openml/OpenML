@@ -4,6 +4,8 @@
     <oml:version>1.0</oml:version>
     <oml:creator>R.A. Fisher</oml:creator>
     <oml:contributor>Michael Marshall</oml:contributor>
+    <oml:contributor>Bo Gao</oml:contributor>
+    <oml:contributor>Rijn, Jan van</oml:contributor>
     <oml:date>July, 1988</oml:date>
     <oml:description>Iris Plants Database</oml:description>
     <oml:language>English</oml:language>
