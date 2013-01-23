@@ -19,6 +19,17 @@ CREATE TABLE IF NOT EXISTS `task_type_input` (
   PRIMARY KEY (`ttid`,`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+CREATE TABLE IF NOT EXISTS `task_type_parameter` (
+  `ttid` int(10) NOT NULL,
+  `name` varchar(128) NOT NULL,
+  `description` text NOT NULL,
+  `data_type` varchar(128) NOT NULL,
+  `allowed_values` text NOT NULL,
+  `required` ENUM(TRUE, FALSE) NOT NULL,
+  `dependency` text NOT NULL
+  PRIMARY KEY (`ttid`,`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 CREATE TABLE IF NOT EXISTS `task_type_output` (
   `ttid` int(10) NOT NULL,
   `name` varchar(128) NOT NULL,
