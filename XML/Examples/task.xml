@@ -5,17 +5,22 @@
         <oml:input name="source_data">
 		<oml:data_set>
 			<oml:data_set_id>1</oml:data_set_id>
-			<oml:target_feature>class</oml:target_feature>
+			<oml:target_features>class</oml:target_features>
 		</oml:data_set>
 	</oml:input>
-	<oml:input name="data_splits">
-		<oml:data_splits>
+	<oml:input name="estimation_procedure">
+		<oml:estimation_procedure>
+		        <oml:type>cross-validation</oml:type>
 			<oml:data_splits_id>1001</oml:data_splits_id>
-		        <oml:evaluation_method>cross-validation</oml:evaluation_method>
 			<oml:parameter name="number_repeats">10</oml:parameter>
 			<oml:parameter name="number_folds">10</oml:parameter>
 			<oml:parameter name="stratified_sampling">true</oml:parameter>
-		</oml:data_splits>
+		</oml:estimation_procedure>
+	</oml:input>
+	<oml:input name="evaluation_measures">
+	        <oml:evaluation_measures> <!-- in order of importance -->
+			<oml:evaluation_measure>predictive_accuracy</oml:evaluation_measure>
+		</oml:evaluation_measures>
 	</oml:input>
 	<oml:output name="predictions">
 		<oml:predictions>
@@ -28,7 +33,4 @@
 			<oml:feature name="confidence.classname" type="numeric"/>
 		</oml:predictions>
 	</oml:output>
-        <oml:evaluation> <!-- in order of importance -->
-		<oml:evaluation_measure>predictive_accuracy</oml:evaluation_measure>
-	</oml:evaluation>
 </oml:task>
