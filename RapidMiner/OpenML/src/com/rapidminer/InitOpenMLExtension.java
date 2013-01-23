@@ -25,6 +25,7 @@ package com.rapidminer;
 
 import com.rapidminer.gui.MainFrame;
 import com.rapidminer.openml.gui.openMLTab;
+import com.rapidminer.parameter.ParameterTypeDirectory;
 import com.rapidminer.parameter.ParameterTypeRepositoryLocation;
 import com.rapidminer.tools.ParameterService;
 
@@ -46,6 +47,7 @@ public class InitOpenMLExtension {
 	public static void initGui(MainFrame mainframe) {
 		final openMLTab simpleWindow = new openMLTab();
 		mainframe.getDockingDesktop().registerDockable(simpleWindow);
-		ParameterService.registerParameter(new ParameterTypeRepositoryLocation("OpenML Directory", "Directory for stroring openML Tasks", false, true, false), "openML");
+		ParameterService.registerParameter(new ParameterTypeDirectory(openMLTab.readFromBundle("gui.pref.open_ml_fs_dir"), openMLTab.readFromBundle("gui.pref.open_ml_fs_dir.desc"), false), "openML");
+		ParameterService.registerParameter(new ParameterTypeRepositoryLocation(openMLTab.readFromBundle("gui.pref.open_ml_repo_loc"), openMLTab.readFromBundle("gui.pref.open_ml_repo_loc.desc"), false, true, false), "openML");
 	}
 }

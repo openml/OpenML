@@ -31,7 +31,7 @@
 	<property name="extension.groupProperties" value="" />
 	<property name="extension.errorDescription" value="" />
 	<property name="extension.userErrors" value="" />
-	<property name="extension.guiDescription" value="/com/rapidminer/resources/i18n/GUIOpenMl.properties" />
+	<property name="extension.guiDescription" value="/com/rapidminer/resources/i18n/OpenML.properties" />
 
 	<!-- Src files -->
 	<path id="build.sources.path">

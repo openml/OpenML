@@ -2,121 +2,123 @@
 package com.rapidminer.openml.task;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.List;
+import java.text.MessageFormat;
+import java.util.logging.Level;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+import org.openml.util.MissingValueException;
+import org.openml.util.OpenMLUtil;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 import com.rapidminer.Process;
 import com.rapidminer.RapidMiner;
 import com.rapidminer.RepositoryProcessLocation;
-import com.rapidminer.example.Attribute;
 import com.rapidminer.example.ExampleSet;
-import com.rapidminer.example.table.AttributeFactory;
-import com.rapidminer.example.table.DataRow;
-import com.rapidminer.example.table.LongArrayDataRow;
-import com.rapidminer.example.table.MemoryExampleTable;
-import com.rapidminer.gui.RapidMinerGUI;
 import com.rapidminer.gui.actions.OpenAction;
 import com.rapidminer.gui.actions.SaveAction;
-import com.rapidminer.openml.task.jaxb.beans.Bootstrapping;
-import com.rapidminer.openml.task.jaxb.beans.CrossValidation;
-import com.rapidminer.openml.task.jaxb.beans.DataSetDescription;
-import com.rapidminer.openml.task.jaxb.beans.Fold;
-import com.rapidminer.openml.task.jaxb.beans.HoldOut;
-import com.rapidminer.openml.task.jaxb.beans.Repeat;
-import com.rapidminer.openml.task.jaxb.beans.SubSampling;
-import com.rapidminer.openml.task.jaxb.beans.Task;
-import com.rapidminer.openml.task.jaxb.beans.TaskType;
+import com.rapidminer.openml.gui.openMLTab;
 import com.rapidminer.repository.MalformedRepositoryLocationException;
 import com.rapidminer.repository.RepositoryException;
 import com.rapidminer.repository.RepositoryLocation;
 import com.rapidminer.repository.RepositoryManager;
-import com.rapidminer.tools.Ontology;
+import com.rapidminer.tools.LogService;
 import com.rapidminer.tools.ParameterService;
-import com.rapidminer.tools.ProgressListener;
-import com.rapidminer.tools.WebServiceTools;
 import com.rapidminer.tools.XMLException;
+import com.rapidminer.tools.container.Pair;
 
 public class OpenMLTaskManager {
 
-	private static final String TASK_URL = "http://expdb.cs.kuleuven.be/expdb/api/?f=openml.task.search&task_id=";
-	private static final String DATASET_URL = "http://expdb.cs.kuleuven.be/expdb/api/?f=openml.data.description&data_id=";
+	private static  String TASK_URL = openMLTab.readFromBundle("openml.task.url");
+	private static  String DATASET_URL = openMLTab.readFromBundle("openml.data.url");
+	private static  String DATASPLIT_URL = openMLTab.readFromBundle("openml.datasplits.url");
+	
+	private static boolean isLocal = true;
 
-	private OpenMLTaskManager() {
-		// TODO Auto-generated constructor stub
-	}
+	private OpenMLTaskManager() {}
 
-	public static Task fetchTask(String taskId) throws JAXBException, IOException {
-
-		URL taskUrl = new URL(TASK_URL + taskId);
-		BufferedReader in = new BufferedReader(new InputStreamReader(WebServiceTools.openStreamFromURL(taskUrl)));
-
-		JAXBContext jaxbContext = JAXBContext.newInstance(Task.class);
-
-		Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-		JAXBElement<Task> root = jaxbUnmarshaller.unmarshal(new StreamSource(in), Task.class);
-		Task task = root.getValue();
-		System.out.println(task.getTaskId());
-
-		return task;
-
-	}
-
-	public static void fetchDataForTask(Task task) throws IOException, JAXBException {
-
-		String openMLDir = ParameterService.getParameterValue("OpenML Directory");
-
-		Integer dataSetId = task.getPrediction().getDataSet().getDataSetId();
-		URL dataSetUrl = new URL(DATASET_URL + dataSetId);
-		BufferedReader in = new BufferedReader(new InputStreamReader(WebServiceTools.openStreamFromURL(dataSetUrl)));
-
-		JAXBContext jaxbContext = JAXBContext.newInstance(DataSetDescription.class);
-
-		Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-		JAXBElement<DataSetDescription> root = jaxbUnmarshaller.unmarshal(new StreamSource(in), DataSetDescription.class);
-		DataSetDescription dataset = root.getValue();
-
-		String process = null;
-
-		String rowIdAttribute = dataset.getRowIdAttribute();
-
-		if (rowIdAttribute == null || rowIdAttribute.length() == 0) {
-
-			process = readProcessXML("/com/rapidminer/resources/util/rmprocess/GenerateId.xml");
-
-		} else {
-			process = readProcessXML("/com/rapidminer/resources/util/rmprocess/ImportDatawithID.xml");
-			process = process.replace("$ROWID$", rowIdAttribute);
+	public static Document fetchTask(String taskId) throws JAXBException, IOException, ParserConfigurationException, SAXException {
+		
+		if(isLocal){
+			try {
+				TASK_URL = new File("/home/venkatesh/workspace/OpenML/sample_xml/task.xml").toURI().toURL().toString();
+				DATASET_URL = new File("/home/venkatesh/workspace/OpenML/sample_xml/dataset.xml").toURI().toURL().toString();
+				DATASPLIT_URL = new File("/home/venkatesh/workspace/OpenML/sample_xml/datasplits.arff").toURI().toURL().toString();
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			}
 		}
 
-		process = process.replace("$ARFF_LINK$", dataset.getUrl());
-		process = process.replace("$REPO_PATH$", openMLDir + "Data/" + dataSetId);
+		URL taskUrl = isLocal?new URL(TASK_URL):new URL(TASK_URL + taskId);
+		return OpenMLUtil.readDocumentfromURL(taskUrl);
+
+	}
+
+	public static void fetchDataForTask(Document task) throws IOException, JAXBException, MissingValueException, ParserConfigurationException, SAXException {
+
+		String openMLDir = ParameterService.getParameterValue(openMLTab.readFromBundle("gui.pref.open_ml_repo_loc"));
+		Integer dataSetId = OpenMLUtil.getDataSetId(task);
+		URL dataSetUrl = isLocal? new URL(DATASET_URL):new URL(DATASET_URL + dataSetId);
+		Document dataSet = OpenMLUtil.readDocumentfromURL(dataSetUrl);
+
+		String rowIdAttribute = null;
+		boolean idExists = false;
+		try {
+			rowIdAttribute = OpenMLUtil.getRowIdAttribute(dataSet);
+			idExists = true;
+		} catch (MissingValueException e1) {
+			idExists = false;
+		}
+
+		String process;
+		if (!idExists) {
+
+			process = readXMLFromResource("/com/rapidminer/resources/util/rmprocess/GenerateId.xml");
+
+		} else {
+			process = readXMLFromResource("/com/rapidminer/resources/util/rmprocess/ImportDatawithID.xml");
+			idExists = true;
+		}
 
 		try {
 			RapidMiner.setExecutionMode(com.rapidminer.RapidMiner.ExecutionMode.COMMAND_LINE);
 			RapidMiner.init();
 
 			Process importProcess = new Process(process);
-
-			// perform process
+			importProcess.getContext().addMacro(new Pair<String, String>("ARFF_LINK", OpenMLUtil.getDataSetURL(dataSet).toString()));
+			importProcess.getContext().addMacro(new Pair<String, String>("REPO_PATH", openMLDir + "Data/" + dataSetId));
+			if (idExists) {
+				importProcess.getContext().addMacro(new Pair<String, String>("ROWID", openMLDir + rowIdAttribute));
+			}
 			importProcess.run();
 		} catch (Exception e) {
-			e.printStackTrace();
+			LogService.getRoot().log(Level.SEVERE, openMLTab.readFromBundle("openml.fetch_data_fail"));
 		}
 	}
 
-	private static String readProcessXML(String path) throws IOException {
+	private static String readXMLFromResource(String path) throws IOException {
 		InputStream inputStream;
 		String process;
 		inputStream = OpenMLTaskManager.class.getResourceAsStream(path);
@@ -126,119 +128,182 @@ public class OpenMLTaskManager {
 		return process;
 	}
 
-	public static void fetchMetadataForTask(Task task) throws MalformedRepositoryLocationException, RepositoryException {
+	public static void fetchMetadataForTask(Document task) throws MalformedRepositoryLocationException, RepositoryException, MissingValueException, IOException, ParserConfigurationException, SAXException {
 
-		String openMLDir = ParameterService.getParameterValue("OpenML Directory");
+		String openMLDir = ParameterService.getParameterValue(openMLTab.readFromBundle("gui.pref.open_ml_repo_loc"));
 
-		TaskType taskType = task.getTaskType();
-		if (taskType.equals(TaskType.PREDICTION)) {
+		String taskType = OpenMLUtil.getTaskType(task);
+		if (taskType.equals("Supervised Classification")) {
 
-			CrossValidation crossValidation = task.getPrediction().getEvaluationMethod().getCrossValidation();
-			HoldOut holdOut = task.getPrediction().getEvaluationMethod().getHoldOut();
-			Bootstrapping bootstrapping = task.getPrediction().getEvaluationMethod().getBootStraping();
-			SubSampling subSampling = task.getPrediction().getEvaluationMethod().getSubSampling();
+			Integer taskId = OpenMLUtil.getTaskId(task);
+     		Integer dataSplitId = OpenMLUtil.getDataSetId(task);
+			URL dataSplitUrl = isLocal?new URL(DATASPLIT_URL):new URL(DATASPLIT_URL + dataSplitId);
+		
 
-			if (crossValidation != null) {
-				Integer numberOfFolds = crossValidation.getNumberOfFolds();
-				Integer numberOfRepeats = crossValidation.getNumberOfRepeats();
-				List<Repeat> repeats = crossValidation.getRepeat();
+			String process = readXMLFromResource("/com/rapidminer/resources/util/rmprocess/ImportDataSplits.xml");
 
-				for (int i = 0; i < numberOfRepeats; i++) {
-					Repeat repeat = repeats.get(i);
-					List<Fold> folds = repeat.getFold();
+			try {
+				RapidMiner.setExecutionMode(com.rapidminer.RapidMiner.ExecutionMode.COMMAND_LINE);
+				RapidMiner.init();
 
-					Attribute id = AttributeFactory.createAttribute("rowid", Ontology.INTEGER);
-					Attribute rep = AttributeFactory.createAttribute("repeat", Ontology.INTEGER);
-					Attribute fold = AttributeFactory.createAttribute("fold", Ontology.INTEGER);
-					Attribute[] attributes = new Attribute[] { rep, fold, id };
-
-					for (int j = 0; j < numberOfFolds; j++) {
-
-						MemoryExampleTable trainTable = new MemoryExampleTable(attributes);
-						MemoryExampleTable testTable = new MemoryExampleTable(attributes);
-
-						List<Long> trainObservations = folds.get(j).getFoldTrain().getObservations();
-						List<Long> testObservations = folds.get(j).getFoldTest().getObservations();
-
-						for (Long rowId : trainObservations) {
-							DataRow dataRow = new LongArrayDataRow(new long[] { (i + 1), (j + 1), (rowId + 1) });
-							trainTable.addDataRow(dataRow);
-
-						}
-
-						for (Long rowId : testObservations) {
-							DataRow dataRow = new LongArrayDataRow(new long[] { (i + 1), (j + 1), (rowId + 1) });
-							testTable.addDataRow(dataRow);
-
-						}
-
-						ExampleSet trainExampleSet = trainTable.createExampleSet();
-						ExampleSet testExampleSet = testTable.createExampleSet();
-
-						trainExampleSet.getAttributes().setSpecialAttribute(id, "id");
-						testExampleSet.getAttributes().setSpecialAttribute(id, "id");
-
-						trainExampleSet.getAttributes().setSpecialAttribute(rep, "repeat");
-						testExampleSet.getAttributes().setSpecialAttribute(rep, "repeat");
-
-						trainExampleSet.getAttributes().setSpecialAttribute(fold, "fold");
-						testExampleSet.getAttributes().setSpecialAttribute(fold, "fold");
-
-						RepositoryLocation trainLocation = new RepositoryLocation(openMLDir + "Tasks/" + task.getTaskId() + "/train/fold_" + (j + 1) + "_repeat_" + (i + 1));
-						RepositoryLocation testLocation = new RepositoryLocation(openMLDir + "Tasks/" + task.getTaskId() + "/test/fold_" + (j + 1) + "_repeat_" + (i + 1));
-
-						RepositoryManager.getInstance(null).store(trainExampleSet, trainLocation, null);
-						RepositoryManager.getInstance(null).store(testExampleSet, testLocation, null);
-
-					}
-
-				}
-			} else if (holdOut != null) {
-
-			} else if (bootstrapping != null) {
-
-			} else if (subSampling != null) {
-
+				Process importProcess = new Process(process);
+				importProcess.getContext().addMacro(new Pair<String, String>("ARFF_LINK", dataSplitUrl.toString()));
+				importProcess.getContext().addMacro(new Pair<String, String>("REPO_TRAIN_CONFIG", openMLDir + "Tasks/" + taskId + "/train/trainconfig"));
+				importProcess.getContext().addMacro(new Pair<String, String>("REPO_TEST_CONFIG", openMLDir + "Tasks/" + taskId + "/test/testconfig"));
+				importProcess.run();
+			} catch (Exception e) {
+				LogService.getRoot().log(Level.SEVERE, openMLTab.readFromBundle("openml.fetch_meta_data_fail"));
 			}
+
+		}
+
+	}
+
+	private static void storeInRepo(ExampleSet exampleSet, String configPath) throws MalformedRepositoryLocationException, RepositoryException {
+		RepositoryLocation trainLocation = new RepositoryLocation(configPath);
+		RepositoryManager.getInstance(null).store(exampleSet, trainLocation, null);
+	}
+
+	public static void prepareProcessforTask(Document task) throws IOException, XMLException, MalformedRepositoryLocationException, MissingValueException {
+
+		String openMLDir = ParameterService.getParameterValue(openMLTab.readFromBundle("gui.pref.open_ml_repo_loc"));
+		String openMLExpDir = ParameterService.getParameterValue(openMLTab.readFromBundle("gui.pref.open_ml_fs_dir"));
+
+		String taskType = OpenMLUtil.getTaskType(task);
+		if (taskType.equals("Supervised Classification")) {
+
+			String process = readXMLFromResource("/com/rapidminer/resources/util/rmprocess/OpenMLSupervisedClassification.xml");
+			
+			Integer taskId = OpenMLUtil.getTaskId(task);
+			Integer dataSetId = OpenMLUtil.getDataSetId(task);
+			String targetFeature = OpenMLUtil.getTargetFeature(task);
+			Process openMLCVTaskProcess = new Process(process);
+			openMLCVTaskProcess.getContext().addMacro(new Pair<String, String>("DATA_PATH", "../../Data/" + dataSetId));
+			openMLCVTaskProcess.getContext().addMacro(new Pair<String, String>("REPO_TRAIN_CONFIG", "train/trainconfig"));
+			openMLCVTaskProcess.getContext().addMacro(new Pair<String, String>("REPO_TEST_CONFIG", "test/testconfig"));
+			openMLCVTaskProcess.getContext().addMacro(new Pair<String, String>("TARGET_FEATURE", targetFeature));
+			openMLCVTaskProcess.getContext().addMacro(new Pair<String, String>("RESULTS_PATH", "results/predictions"));
+			openMLCVTaskProcess.getContext().addMacro(new Pair<String, String>("RESULTS_EXPORT_PATH", openMLExpDir + "/tasks/" + taskId + "/results/predictions.arff"));
+			saveProcessforTask(task, openMLDir, openMLCVTaskProcess);
+
 		}
 	}
 
-	public static void prepareProcessforTask(Task task) throws IOException, XMLException, MalformedRepositoryLocationException {
+	private static void saveProcessforTask(Document task, String openMLDir, Process openMLCVTaskProcess) throws MalformedRepositoryLocationException, MissingValueException {
+		Integer taskId = OpenMLUtil.getTaskId(task);
+		RepositoryLocation location = new RepositoryLocation(openMLDir + "Tasks/" + taskId + "/execute_task_" +taskId);
+		RepositoryProcessLocation processLocation = new RepositoryProcessLocation(location);
+		openMLCVTaskProcess.setProcessLocation(processLocation);
+		SaveAction.save(openMLCVTaskProcess);
+		OpenAction.open(processLocation, true);
+	}
 
-		String openMLDir = ParameterService.getParameterValue("OpenML Directory");
+	public static void uploadImplementation(Document task) throws IOException, MalformedRepositoryLocationException, MissingValueException {
+		String openMLDir = ParameterService.getParameterValue(openMLTab.readFromBundle("gui.pref.open_ml_repo_loc"));
+		String openMLExpDir = ParameterService.getParameterValue(openMLTab.readFromBundle("gui.pref.open_ml_fs_dir"));
 
-		TaskType taskType = task.getTaskType();
-		if (taskType.equals(TaskType.PREDICTION)) {
+		String URL = openMLTab.readFromBundle("openml.implementation.url");
+		Integer taskId = OpenMLUtil.getTaskId(task);
 
-			CrossValidation crossValidation = task.getPrediction().getEvaluationMethod().getCrossValidation();
-			HoldOut holdOut = task.getPrediction().getEvaluationMethod().getHoldOut();
-			Bootstrapping bootstrapping = task.getPrediction().getEvaluationMethod().getBootStraping();
-			SubSampling subSampling = task.getPrediction().getEvaluationMethod().getSubSampling();
+		RepositoryProcessLocation location = new RepositoryProcessLocation(new RepositoryLocation(openMLDir + "Tasks/" + taskId + "/execute_task_" + taskId));
+		String process = location.getRawXML();
+		String impl = readXMLFromResource("/com/rapidminer/resources/util/rmprocess/implementation.xml");
 
-			if (crossValidation != null) {
+		File processFile = new File(openMLExpDir + "/tasks/" + taskId + "/execute_task_" + taskId + ".xml");
+		File implFile = new File(openMLExpDir + "/tasks/" + taskId + "/implementation.xml");
 
-				String process = readProcessXML("/com/rapidminer/resources/util/rmprocess/OpenMLPredictionCVTask.xml");
-				Integer dataSetId = task.getPrediction().getDataSet().getDataSetId();
-				String targetFeature = task.getPrediction().getDataSet().getTargetFeature();
-				process = process.replace("$DATA_PATH$", openMLDir + "Data/" + dataSetId);
-				process = process.replace("$TRAIN_PATH$", openMLDir + "Tasks/" + task.getTaskId() + "/train/");
-				process = process.replace("$TARGET_FEATURE$", targetFeature);
-				process = process.replace("$RESULT_PATH$", openMLDir + "Tasks/" + task.getTaskId() + "/results/predictions");
+		FileWriter processWriter = new FileWriter(processFile);
+		FileWriter implWriter = new FileWriter(implFile);
 
-				Process openMLCVTaskProcess = new Process(process);
-				RepositoryLocation location = new RepositoryLocation(openMLDir + "Tasks/" + task.getTaskId() + "/execute_task_" + task.getTaskId());
-				RepositoryProcessLocation processLocation = new RepositoryProcessLocation(location);
-				openMLCVTaskProcess.setProcessLocation(processLocation);
-				SaveAction.save(openMLCVTaskProcess);
-				OpenAction.open(processLocation, true);
+		processWriter.write(process);
+		implWriter.write(impl);
+		processWriter.flush();
+		implWriter.flush();
+		processWriter.close();
+		implWriter.close();
 
-			} else if (holdOut != null) {
+		FileBody bin = new FileBody(implFile);
+		FileBody bin2 = new FileBody(processFile);
 
-			} else if (bootstrapping != null) {
+		MultipartEntity reqEntity = new MultipartEntity();
+		reqEntity.addPart("description", bin);
+		reqEntity.addPart("source", bin2);
 
-			} else if (subSampling != null) {
+		String responseMessage = httpPost(URL, reqEntity);
 
+		System.out.println(responseMessage);
+	}
+
+	private static void uploadResults(Document task, String implementationId, String WorkflowId) throws IOException, MissingValueException {
+
+		BufferedWriter newPredictionsWriter = null;
+		BufferedReader oldPredictionsReader = null;
+		Integer taskId = OpenMLUtil.getTaskId(task);
+
+		try {
+			String openMLExpDir = ParameterService.getParameterValue(openMLTab.readFromBundle("gui.pref.open_ml_fs_dir"));
+			String URL = openMLTab.readFromBundle("openml.runupload.url");
+			URL = MessageFormat.format(URL, taskId, WorkflowId, implementationId);
+			File oldPredictionsFile = new File(openMLExpDir + "/tasks/" + taskId + "/results/predictions.arff");
+			File newPredictionsFile = new File(openMLExpDir + "/tasks/" + taskId + "/results/new_predictions.arff");
+			newPredictionsWriter = new BufferedWriter(new FileWriter(newPredictionsFile));
+			oldPredictionsReader = new BufferedReader(new FileReader(oldPredictionsFile));
+			newPredictionsWriter.write("%task-id:" + taskId + "\n");
+			newPredictionsWriter.write("%parameters:?\n");
+			String line;
+			boolean isRelationReplaced = false;
+			while ((line = oldPredictionsReader.readLine()) != null) {
+				if (!isRelationReplaced && line.contains("@relation")) {
+					newPredictionsWriter.write("@relation " + "openml_task_" + taskId + "_predictions");
+					isRelationReplaced = true;
+				}
+				newPredictionsWriter.write(line + "\n");
 			}
+			newPredictionsWriter.flush();
+			newPredictionsWriter.close();
+			oldPredictionsReader.close();
+
+			FileBody bin = new FileBody(newPredictionsFile);
+			MultipartEntity reqEntity = new MultipartEntity();
+			reqEntity.addPart("predictions", bin);
+
+			String responseMessage = httpPost(URL, reqEntity);
+
+			System.out.println(responseMessage);
+
+		} catch (IOException e) {
+			throw e;
+		} finally {
+			newPredictionsWriter.flush();
+			newPredictionsWriter.close();
+			oldPredictionsReader.close();
 		}
+
+	}
+
+	private static String httpPost(String URL, MultipartEntity reqEntity) throws ClientProtocolException, IOException {
+
+		HttpClient httpclient = new DefaultHttpClient();
+		StringBuffer responseMessage = new StringBuffer();
+
+		try {
+			HttpPost httppost = new HttpPost(URL);
+			httppost.setEntity(reqEntity);
+			HttpResponse response = httpclient.execute(httppost);
+			HttpEntity resEntity = response.getEntity();
+			if (resEntity != null) {
+				BufferedReader br = new BufferedReader(new InputStreamReader(resEntity.getContent()));
+				while (br.ready())
+					responseMessage.append(br.readLine() + "\n");
+			}
+			EntityUtils.consume(resEntity);
+		} finally {
+			try {
+				httpclient.getConnectionManager().shutdown();
+			} catch (Exception ignore) {}
+		}
+
+		return responseMessage.toString();
+
 	}
 }
