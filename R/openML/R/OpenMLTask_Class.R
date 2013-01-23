@@ -76,30 +76,30 @@ setMethod("show","OpenMLTask",
 # --------------------------------------------------------------
 # Accessor functions
 
-taskType <- function(obj) {
-  if (!is(obj,"OpenMLTask")) stop(obj,' needs to be of class "OpenMLTask".\n')
-  obj@task.type
+taskType <- function(task) {
+  checkArg(task, "OpenMLTask")
+  task@task.type
 }
 
 
 expSettings <- function(obj) {
-  if (!is(obj,"OpenMLTask")) stop(obj,' needs to be of class "OpenMLTask".\n')
-  OpenMLExpSettings(obj@task.pars$evaluation_method,as.numeric(obj@task.pars$number_folds),as.numeric(obj@task.pars$number_repeats),obj@task.data.splits)
+  checkArg(task, "OpenMLTask")
+  OpenMLExpSettings(task@task.pars$evaluation_method,as.numeric(task@task.pars$number_folds),as.numeric(task@task.pars$number_repeats),task@task.data.splits)
 }
 
 evaluationMeasures <- function(obj) {
-  if (!is(obj,"OpenMLTask")) stop(obj,' needs to be of class "OpenMLTask".\n')
-  obj@task.pars$evaluation_measure
+  checkArg(task, "OpenMLTask")
+  task@task.pars$evaluation_measure
 }
 
 
 targetFeature <- function(obj) {
-  if (!is(obj,"OpenMLTask")) stop(obj,' needs to be of class "OpenMLTask".\n')
-  obj@task.pars$target_feature
+  checkArg(task, "OpenMLTask")
+  task@task.pars$target_feature
 }
   
 sourceData <- function(obj) {
-  if (!is(obj,"OpenMLTask")) stop(obj,' needs to be of class "OpenMLTask".\n')
-  obj@task.data.desc@data.set
+  checkArg(task, "OpenMLTask")
+  task@task.data.desc@data.set
 }
   
