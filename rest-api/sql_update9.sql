@@ -40,3 +40,10 @@ CREATE TABLE IF NOT EXISTS `task_type_output` (
   `should_upload` enum('true','false') NOT NULL,
   PRIMARY KEY (`ttid`,`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE IF NOT EXISTS`task` (
+  `tid` int(10) NOT NULL AUTO_INCREMENT,
+  `ttid` int(10) NOT NULL,
+  PRIMARY KEY (`tid`)
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=latin1; 
+
