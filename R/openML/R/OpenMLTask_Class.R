@@ -80,30 +80,30 @@ setMethod("show","OpenMLTask",
 # --------------------------------------------------------------
 # Accessor functions
 
-taskType <- function(obj) {
-  if (!is(obj,"OpenMLTask")) stop(obj,' needs to be of class "OpenMLTask".\n')
-  obj@task.type
+taskType <- function(task) {
+  checkArg(task, "OpenMLTask")
+  task@task.type
 }
 
 
-dataSplits <- function(obj) {
-  if (!is(obj,"OpenMLTask")) stop(obj,' needs to be of class "OpenMLTask".\n')
-  obj@task.data.split
+dataSplits <- function(task) {
+  checkArg(task, "OpenMLTask")
+  task@task.data.split
 }
 
-evaluationMeasures <- function(obj) {
-  if (!is(obj,"OpenMLTask")) stop(obj,' needs to be of class "OpenMLTask".\n')
-  obj@task.evaluation.measures
+evaluationMeasures <- function(task) {
+  checkArg(task, "OpenMLTask")
+  task@task.evaluation.measures
 }
 
 
-targetFeature <- function(obj) {
-  if (!is(obj,"OpenMLTask")) stop(obj,' needs to be of class "OpenMLTask".\n')
-  obj@task.pars$target_feature
+targetFeature <- function(task) {
+  checkArg(task, "OpenMLTask")
+  task@task.pars$target_feature
 }
   
-sourceData <- function(obj) {
-  if (!is(obj,"OpenMLTask")) stop(obj,' needs to be of class "OpenMLTask".\n')
-  obj@task.data.desc@data.set
+sourceData <- function(task) {
+  checkArg(task, "OpenMLTask")
+  task@task.data.desc@data.set
 }
   
