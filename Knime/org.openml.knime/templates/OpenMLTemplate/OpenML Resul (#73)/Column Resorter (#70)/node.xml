@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="settings.xml">
+<entry key="name" type="xstring" value="Column Resorter"/>
+<config key="model">
+<config key="ColumnOrder">
+<entry key="array-size" type="xint" value="8"/>
+<entry key="0" type="xstring" value="repeat"/>
+<entry key="1" type="xstring" value="fold"/>
+<entry key="2" type="xstring" value="rowid"/>
+<entry key="3" type="xstring" value="&lt;any unknown new column&gt;"/>
+<entry key="4" type="xstring" value="prediction"/>
+<entry key="5" type="xstring" value="confidence.Iris-setosa"/>
+<entry key="6" type="xstring" value="confidence.Iris-versicolor"/>
+<entry key="7" type="xstring" value="confidence.Iris-virginica"/>
+</config>
+</config>
+<entry key="hasContent" type="xboolean" value="false"/>
+<entry key="isInactive" type="xboolean" value="false"/>
+<config key="ports">
+<config key="port_1">
+<entry key="index" type="xint" value="1"/>
+<entry key="port_dir_location" type="xstring" isnull="true" value=""/>
+</config>
+</config>
+<config key="filestores">
+<entry key="file_store_location" type="xstring" isnull="true" value=""/>
+<entry key="file_store_id" type="xstring" isnull="true" value=""/>
+</config>
+</config>

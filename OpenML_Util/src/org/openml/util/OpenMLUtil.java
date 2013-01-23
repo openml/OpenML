@@ -1,7 +1,6 @@
 
 package org.openml.util;
 
-import org.openml.util.OpenMLNameSpaceContext;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -181,7 +180,7 @@ public class OpenMLUtil {
 		XPath xPath = XPathFactory.newInstance().newXPath();
 		xPath.setNamespaceContext(new OpenMLNameSpaceContext());
 		try {
-			Integer dataSetId = ((Double) xPath.evaluate("/oml:task/oml:input[@name=\"data_splits\"]/oml:data_set/oml:data_set_id",
+			Integer dataSetId = ((Double) xPath.evaluate("/oml:task/oml:input[@name=\"data_splits\"]/oml:data_splits/oml:data_set_id",
 					taskDocument, XPathConstants.NUMBER)).intValue();
 			errorOnMissingValue(dataSetId);
 			return dataSetId;

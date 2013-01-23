@@ -5,6 +5,7 @@ DROP TABLE `task`;
 CREATE TABLE IF NOT EXISTS `task_type` (
   `ttid` int(10) NOT NULL AUTO_INCREMENT,
   `name` varchar(128) NOT NULL,
+  `description` TEXT NOT NULL,
   `author` varchar(128) NOT NULL,
   `contributors` text NULL DEFAULT NULL,
   `date` date NOT NULL,

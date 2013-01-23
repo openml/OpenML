@@ -149,7 +149,7 @@ public class UploaderNodeModel extends NodeModel {
                     m_config.setUploadWorkflow(false);
                 }
                 if (!uploadResults.equals(UploadPolicies.NO.getName())) {
-                    String taskId = peekFlowVariableString("OpenML-TaskId");
+                    int taskId = peekFlowVariableInt("OpenML-TaskId");
                     String implementationId = m_config.getWorkflowId();
                     File[] files =
                             new File[]{new File(m_config.getResultFile())};

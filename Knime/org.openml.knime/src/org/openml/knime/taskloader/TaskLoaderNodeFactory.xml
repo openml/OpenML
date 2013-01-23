@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="./taskloader16x16.png" type="Meta">
+    <name>OpenML Task Loader</name>
+
+    <shortDescription>
+        Loads a task from the OpenML database.
+    </shortDescription>
+
+    <fullDescription>
+        <intro>
+            Loads a task from the OpenML database.
+        </intro>
+        <option name="Task ID">
+            ID of the OpenML task.
+        </option>
+    </fullDescription>
+
+    <ports>
+        <outPort name="Variable port" index="0">
+            Port containing the
+            parameters of the loaded task.
+        </outPort>
+    </ports>
+
+    <views>
+        <view name="Task files" index="0">
+            Shows the files: task.xml,
+            data-set-description.xml, data-set.arff and splits.arff.
+        </view>
+    </views>
+</knimeNode>
