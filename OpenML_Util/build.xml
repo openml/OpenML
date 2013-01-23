@@ -11,7 +11,7 @@
 	<property name="debuglevel" value="source,lines,vars"/>
 	<property name="target" value="1.6"/>
 	<property name="source" value="1.6"/>
-	<property name="install.dir" value="../../workspace/OpenML/lib"/>
+	<property name="install.dir" value="/home/venkatesh/workspace/RapidMiner/OpenML/lib"/>
 	<path id="OpenML_Util.classpath">
 		<pathelement location="bin"/>
 	</path>
