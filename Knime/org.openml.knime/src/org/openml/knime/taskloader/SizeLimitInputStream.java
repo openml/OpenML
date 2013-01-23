@@ -15,7 +15,7 @@
  *
  * See LICENSE.txt for details.
  */
-package org.openml.knime.taskconfig;
+package org.openml.knime.taskloader;
 
 import java.io.*;
 

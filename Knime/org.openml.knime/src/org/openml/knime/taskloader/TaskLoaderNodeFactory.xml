@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
-<knimeNode icon="./taskconfig16x16.png" type="Meta">
-    <name>OpenML Task Config</name>
+<knimeNode icon="./taskloader16x16.png" type="Meta">
+    <name>OpenML Task Loader</name>
 
     <shortDescription>
-        Setup a task of the OpenML database.
+        Loads a task from the OpenML database.
     </shortDescription>
 
     <fullDescription>
         <intro>
-            Setup a task of the OpenML database.
+            Loads a task from the OpenML database.
         </intro>
         <option name="Task ID">
             ID of the OpenML task.
@@ -26,7 +26,7 @@
     <views>
         <view name="Task files" index="0">
             Shows the files: task.xml,
-            data-set-description.xml and data-set.arff.
+            data-set-description.xml, data-set.arff and splits.arff.
         </view>
     </views>
 </knimeNode>

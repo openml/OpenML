@@ -48,7 +48,7 @@
  * History
  *   Oct 30, 2012 (Patrick Winter): created
  */
-package org.openml.knime.taskconfig;
+package org.openml.knime.taskloader;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -71,7 +71,7 @@ import org.knime.core.node.port.PortObjectSpec;
  * 
  * @author Patrick Winter, KNIME.com, Zurich, Switzerland
  */
-class TaskConfigNodeDialog extends NodeDialogPane {
+class TaskLoaderNodeDialog extends NodeDialogPane {
 
     private JLabel m_taskIdLabel;
 
@@ -80,7 +80,7 @@ class TaskConfigNodeDialog extends NodeDialogPane {
     /**
      * New pane for configuring the node dialog.
      */
-    public TaskConfigNodeDialog() {
+    public TaskLoaderNodeDialog() {
         // Task Id
         m_taskIdLabel = new JLabel("Task ID:");
         m_taskId = new JTextField();
@@ -112,7 +112,7 @@ class TaskConfigNodeDialog extends NodeDialogPane {
     @Override
     protected void saveSettingsTo(final NodeSettingsWO settings)
             throws InvalidSettingsException {
-        TaskConfigConfiguration config = new TaskConfigConfiguration();
+        TaskLoaderConfiguration config = new TaskLoaderConfiguration();
         config.setTaskid(m_taskId.getText());
         config.save(settings);
     }
@@ -123,7 +123,7 @@ class TaskConfigNodeDialog extends NodeDialogPane {
     @Override
     protected void loadSettingsFrom(final NodeSettingsRO settings,
             final PortObjectSpec[] specs) throws NotConfigurableException {
-        TaskConfigConfiguration config = new TaskConfigConfiguration();
+        TaskLoaderConfiguration config = new TaskLoaderConfiguration();
         config.load(settings);
         m_taskId.setText(config.getTaskid());
     }

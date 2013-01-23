@@ -48,7 +48,7 @@
  * History
  *   Sep 5, 2012 (Patrick Winter): created
  */
-package org.openml.knime.taskconfig;
+package org.openml.knime.taskloader;
 
 import java.io.File;
 import java.io.IOException;
@@ -77,14 +77,14 @@ import org.w3c.dom.Document;
  * 
  * @author Patrick Winter, KNIME.com, Zurich, Switzerland
  */
-public class TaskConfigNodeModel extends NodeModel {
+public class TaskLoaderNodeModel extends NodeModel {
 
-    private TaskConfigConfiguration m_configuration;
+    private TaskLoaderConfiguration m_configuration;
 
     /**
      * Constructor for the node model.
      */
-    protected TaskConfigNodeModel() {
+    protected TaskLoaderNodeModel() {
         super(new PortType[]{}, new PortType[]{FlowVariablePortObject.TYPE});
     }
 
@@ -176,7 +176,7 @@ public class TaskConfigNodeModel extends NodeModel {
     @Override
     protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
             throws InvalidSettingsException {
-        TaskConfigConfiguration config = new TaskConfigConfiguration();
+        TaskLoaderConfiguration config = new TaskLoaderConfiguration();
         config.loadAndValidate(settings);
         m_configuration = config;
     }
@@ -187,7 +187,7 @@ public class TaskConfigNodeModel extends NodeModel {
     @Override
     protected void validateSettings(final NodeSettingsRO settings)
             throws InvalidSettingsException {
-        new TaskConfigConfiguration().loadAndValidate(settings);
+        new TaskLoaderConfiguration().loadAndValidate(settings);
     }
 
     /**

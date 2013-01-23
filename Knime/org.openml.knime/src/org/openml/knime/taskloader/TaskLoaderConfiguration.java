@@ -46,60 +46,84 @@
  * ------------------------------------------------------------------------
  * 
  * History
- *   Nov 13, 2012 (Patrick Winter): created
+ *   Dec 13, 2012 (Patrick Winter): created
  */
-package org.openml.knime.taskconfig;
+package org.openml.knime.taskloader;
 
-import org.knime.core.node.NodeDialogPane;
-import org.knime.core.node.NodeFactory;
-import org.knime.core.node.NodeView;
+import org.knime.core.node.InvalidSettingsException;
+import org.knime.core.node.NodeSettingsRO;
+import org.knime.core.node.NodeSettingsWO;
 
 /**
- * <code>NodeFactory</code> for node.
+ * Configuration for the node.
  * 
  * 
  * @author Patrick Winter, KNIME.com, Zurich, Switzerland
  */
-public class TaskConfigNodeFactory extends NodeFactory<TaskConfigNodeModel> {
+public class TaskLoaderConfiguration {
+
+    private String m_taskid;
 
     /**
-     * {@inheritDoc}
+     * @return the taskid
      */
-    @Override
-    public TaskConfigNodeModel createNodeModel() {
-        return new TaskConfigNodeModel();
+    public String getTaskid() {
+        return m_taskid;
     }
 
     /**
-     * {@inheritDoc}
+     * @param taskid the taskid to set
      */
-    @Override
-    public int getNrNodeViews() {
-        return 1;
+    public void setTaskid(final String taskid) {
+        m_taskid = taskid;
     }
 
     /**
-     * {@inheritDoc}
+     * Save this configuration into the settings.
+     * 
+     * 
+     * @param settings The <code>NodeSettings</code> to write to
      */
-    @Override
-    public NodeView<TaskConfigNodeModel> createNodeView(final int viewIndex,
-            final TaskConfigNodeModel nodeModel) {
-        return new TaskConfigNodeView(nodeModel);
+    void save(final NodeSettingsWO settings) {
+        settings.addString("taskid", m_taskid);
     }
 
     /**
-     * {@inheritDoc}
+     * Load this configuration from the settings.
+     * 
+     * 
+     * @param settings The <code>NodeSettings</code> to read from
      */
-    @Override
-    public boolean hasDialog() {
-        return true;
+    void load(final NodeSettingsRO settings) {
+        m_taskid = settings.getString("taskid", "");
     }
 
     /**
-     * {@inheritDoc}
+     * Load and validate this configuration from the settings.
+     * 
+     * 
+     * @param settings The <code>NodeSettings</code> to read from
+     * @throws InvalidSettingsException If one of the settings is not valid
      */
-    @Override
-    public NodeDialogPane createNodeDialogPane() {
-        return new TaskConfigNodeDialog();
+    void loadAndValidate(final NodeSettingsRO settings)
+            throws InvalidSettingsException {
+        m_taskid = settings.getString("taskid");
+        validate(m_taskid, "Task ID");
     }
+
+    /**
+     * Checks if the string is not null or empty.
+     * 
+     * 
+     * @param string The string to check
+     * @param settingName The name of the setting
+     * @throws InvalidSettingsException If the string is null or empty
+     */
+    private void validate(final String string, final String settingName)
+            throws InvalidSettingsException {
+        if (string == null || string.length() == 0) {
+            throw new InvalidSettingsException(settingName + " missing");
+        }
+    }
+
 }

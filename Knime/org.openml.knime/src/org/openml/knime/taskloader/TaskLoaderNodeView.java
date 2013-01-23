@@ -48,7 +48,7 @@
  * History
  *   Dec 21, 2012 (Patrick Winter): created
  */
-package org.openml.knime.taskconfig;
+package org.openml.knime.taskloader;
 
 import java.net.URL;
 
@@ -71,7 +71,7 @@ import xmleditorkit.XMLEditorKit;
  * 
  * @author Patrick Winter, KNIME.com, Zurich, Switzerland
  */
-public class TaskConfigNodeView extends NodeView<TaskConfigNodeModel> {
+public class TaskLoaderNodeView extends NodeView<TaskLoaderNodeModel> {
 
     /**
      * Create the view object.
@@ -79,7 +79,7 @@ public class TaskConfigNodeView extends NodeView<TaskConfigNodeModel> {
      * 
      * @param nodeModel The node model
      */
-    protected TaskConfigNodeView(final TaskConfigNodeModel nodeModel) {
+    protected TaskLoaderNodeView(final TaskLoaderNodeModel nodeModel) {
         super(nodeModel);
     }
 
@@ -104,7 +104,7 @@ public class TaskConfigNodeView extends NodeView<TaskConfigNodeModel> {
      */
     @Override
     protected void modelChanged() {
-        TaskConfigNodeModel nodeModel = getNodeModel();
+        TaskLoaderNodeModel nodeModel = getNodeModel();
         JTabbedPane tabbedPane = new JTabbedPane();
         JEditorPane taskEditorPane = new JEditorPane();
         taskEditorPane.setEditorKit(new XMLEditorKit());
