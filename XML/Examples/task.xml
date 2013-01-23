@@ -5,7 +5,7 @@
         <oml:input name="source_data">
 		<oml:data_set>
 			<oml:data_set_id>1</oml:data_set_id>
-			<oml:target_feature>class</oml:target_feature>
+			<oml:target_features>class</oml:target_features>
 		</oml:data_set>
 	</oml:input>
 	<oml:input name="estimation_procedure">
