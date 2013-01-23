@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="settings.xml">
+<entry key="name" type="xstring" value="ARFF Writer"/>
+<config key="model">
+<entry key="ARFFoutput" type="xstring" value="/tmp/knime_tempcreator_7816b9fd-6ae1-4d56-aeac-d059f80f5dad/results.arff"/>
+<entry key="overwriteOK" type="xboolean" value="true"/>
+</config>
+<config key="variables">
+<config key="ARFFoutput">
+<entry key="used_variable" type="xstring" value="results"/>
+<entry key="exposed_variable" type="xstring" isnull="true" value=""/>
+</config>
+</config>
+<entry key="hasContent" type="xboolean" value="false"/>
+<entry key="isInactive" type="xboolean" value="false"/>
+<config key="ports"/>
+<config key="filestores">
+<entry key="file_store_location" type="xstring" isnull="true" value=""/>
+<entry key="file_store_id" type="xstring" isnull="true" value=""/>
+</config>
+</config>
