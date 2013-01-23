@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="./partitioner16x16.png" type="Meta">
+    <name>OpenML Partitioner</name>
+
+    <shortDescription>
+        Partitions the data set from an OpenML task for
+        the current repeat and fold.
+    </shortDescription>
+
+    <fullDescription>
+        <intro>
+            Partitions the data set from an OpenML task for the current repeat and fold.
+        </intro>
+        <option name="Repeat number">
+            Number of the current repeat.
+        </option>
+        <option name="Fold number">
+            Number of the current fold.
+        </option>
+    </fullDescription>
+
+    <ports>
+        <inPort name="Data set" index="0">
+            Table with the data set.
+        </inPort>
+        <inPort name="Splits" index="1">
+            Table with the splits.
+        </inPort>
+        <outPort name="Train set" index="0">
+            The train set.
+        </outPort>
+        <outPort name="Test set" index="1">
+            The test set.
+        </outPort>
+    </ports>
+</knimeNode>

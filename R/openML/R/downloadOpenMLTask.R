@@ -1,12 +1,51 @@
-downloadOpenMLTask <- function(id, file) {
+#FIXME: check file io errorsr, dir writable and so on
+downloadOpenMLTask <- function(id, dir = tempdir(), clean.up = TRUE, fetch.data.set.description = TRUE, fetch.data.set = TRUE, fetch.data.splits = TRUE) {
   id <- convertInteger(id)
   checkArg(id, "integer", len = 1L, na.ok = FALSE)
-  checkArg(file, "character", len = 1L, na.ok = FALSE)
-  downloadFile(api.fun = "openml.tasks.search", file = file, task.id = id)  
+  checkArg(dir, "character", len = 1L, na.ok = FALSE)
+  checkArg(clean.up, "logical", len = 1L, na.ok = FALSE)
+  checkArg(fetch.data.set.description, "logical", len = 1L, na.ok = FALSE)
+  checkArg(fetch.data.set, "logical", len = 1L, na.ok = FALSE)
+  checkArg(fetch.data.splits, "logical", len = 1L, na.ok = FALSE)
+  
+  fn.task <- file.path(dir, "task.xml")
+  fn.data.set.desc <- file.path(dir, "data_set_description.xml")
+  fn.data.set <- file.path(dir, "data_set.ARFF")
+  fn.data.splits <- file.path(dir, "data_splits.ARFF")
+  
+  messagef("Downloading task %i from OpenML repository.", id)
+  messagef("Intermediate files (XML and ARFF) will be stored in : %s", dir)
+
+  downloadFile(api.fun = "openml.tasks.search", file = fn.task, task.id = id)  
+  task <- parseOpenMLTask(fn.task)
+  
+  if (fetch.data.set.description) {
+    downloadOpenMLDataSetDescription(task@data.desc.id, fn.data.set.desc)
+    task@data.desc <- parseOpenMLDataSetDescription(fn.data.set.desc)
+  }
+
+  if (fetch.data.set) {
+    downloadOpenMLDataSet(task@task.data.desc@id, fn.data.set)
+    task@task.data.desc@data.set <- parseOpenMLDataSet(fn.data.set)
+  }
+  
+  if (fetch.data.splits) {
+    downloadOpenMLDataSplits(task@data.splits.id, fn.data.splits)
+    task@task.data.set <- parseOpenMLDataSet(fn.data.splits)
+  }
+  
+  if (clean.up) {
+    unlink(fn.task)
+    unlink(fn.data.set.desc)
+    unlink(fn.data.set)
+    unlink(fn.data.splits)
+    unlink(fn.task)
+    messagef("All intermediate XML and ARFF files are now removed.")
+  }
+  return(task)
 }
 
-parseOpenMLTask <- function(file, fetch.data.set.description = TRUE, fetch.data.set = TRUE, fetch.data.splits = TRUE) {
-  checkArg(file, "character", len = 1L, na.ok = FALSE)
+parseOpenMLTask <- function(file) {
   doc <- xmlParse(file)
   
   # task
@@ -17,17 +56,9 @@ parseOpenMLTask <- function(file, fetch.data.set.description = TRUE, fetch.data.
   names(parameters) <- sapply(ns.parameters, function(x) xmlGetAttr(x, "name"))
 
   # data set description
-  if (fetch.data.set.description) {
-    data.set.id <- as.integer(xmlValue(getNodeSet(doc, "/oml:task/oml:input/oml:data_set/oml:data_set_id")[[1]]))
-    data.set.format <- xmlValue(getNodeSet(doc, "/oml:task/oml:input/oml:data_set/oml:data_format")[[1]])
-    data.splits.id <- as.integer(xmlValue(getNodeSet(doc, "/oml:task/oml:input/oml:data_splits/oml:data_set_id")[[1]]))
-    data.splits.format <- xmlValue(getNodeSet(doc, "/oml:task/oml:input/oml:data_splits/oml:data_format")[[1]])
-    # FIXME
-    dsd.file <- "../XML/Examples/dataset.xml"
-    dsd <- parseOpenMLDataSetDescription(dsd.file, fetch.data.set)
-  } else {
-    dsd = NULL
-  }
+  data.desc.id <- as.integer(xmlValue(getNodeSet(doc, "/oml:task/oml:input/oml:data_set/oml:data_set_id")[[1]]))
+  data.splits.id <- as.integer(xmlValue(getNodeSet(doc, "/oml:task/oml:input/oml:data_splits/oml:data_set_id")[[1]]))
+  data.desc <- NULL
   
   # prediction
   ns.preds.features <- getNodeSet(doc, "/oml:task/oml:output/oml:predictions/oml:feature")
@@ -39,27 +70,25 @@ parseOpenMLTask <- function(file, fetch.data.set.description = TRUE, fetch.data.
     features = preds.features
   )
   
-  # data splits
-  if (fetch.data.splits) {
-    data.splits = read.arff("../foldconfig_task_1.arff")
-  } else {
-    data.splits = data.frame() 
-  }
+  data.splits <- data.frame() 
   
   task = OpenMLTask(
     task.id = task.id,
     task.type = task.type,
     task.pars = parameters,
-    task.data.set = dsd,
+    task.data.desc.id = data.desc.id,
+    task.data.desc = data.desc,
+    task.data.splits.id = data.splits.id,
     task.data.splits = data.splits,
     task.preds = task.preds
   )
   convertOpenMLTaskSlots(task)
 }
 
+
 convertOpenMLTaskSlots = function(task) {
   # parameters
-  convpars = function(name, fun) 
+  convpars <- function(name, fun) 
     if(!is.null(task@task.pars[[name]]))
       task@task.pars[[name]] <<- fun(task@task.pars[[name]])
   convpars("number_repeats", as.integer)
@@ -69,40 +98,6 @@ convertOpenMLTaskSlots = function(task) {
   return(task)
 }
 
-# parseOpenMLTask <- function(file) {
-#   checkArg(file, "character", len = 1L, na.ok = FALSE)
-#   doc <- xmlParse(file)
-#   task.id <- as.integer(xmlValue(getNodeSet(doc, "/oml:task/oml:task_id")[[1]]))
-#   task.type <- xmlValue(getNodeSet(doc, "/oml:task/oml:task_type")[[1]])
-#   ns.parameters <- getNodeSet(doc, "/oml:task/oml:parameter")
-#   parameters <- lapply(ns.parameters, function(x) xmlValue(x))
-#   names(parameters) <- sapply(ns.parameters, function(x) xmlGetAttr(x, "name"))
-#   print(parameters)
-#   stop()
-#   data.set.id <- as.integer(xmlValue(getNodeSet(doc, "/oml:task/oml:input/oml:data_set/oml:data_set_id")[[1]]))
-#   data.set.format <- xmlValue(getNodeSet(doc, "/oml:task/oml:input/oml:data_set/oml:data_format")[[1]])
-#   data.splits.id <- as.integer(xmlValue(getNodeSet(doc, "/oml:task/oml:input/oml:data_splits/oml:data_set_id")[[1]]))
-#   data.splits.format <- xmlValue(getNodeSet(doc, "/oml:task/oml:input/oml:data_splits/oml:data_format")[[1]])
-#   
-#   output.predictions.name <- xmlValue(getNodeSet(doc, "/oml:task/oml:output/oml:predictions/oml:name")[[1]])
-#   output.predictions.format <- xmlValue(getNodeSet(doc, "/oml:task/oml:output/oml:predictions/oml:format")[[1]])
-#   ns.features <- getNodeSet(doc, "/oml:task/oml:output/oml:predictions/oml:feature")
-#   getNodeAttr <- function(nodes, name, attr) xmlGetAttr(Filter(function(x) xmlGetAttr(x, "name") == name, nodes)[[1]], attr)
-#   output.predictions.repeat.required <- getNodeAttr(ns.features, "repeat", "required")
-#   output.predictions.fold.required <- getNodeAttr(ns.features, "fold", "required")
-#   output.predictions.rowid.required <- getNodeAttr(ns.features, "row_id", "required")
-#   
-#   OpenMLTask(
-#     task.id = task.id,
-#     task.type = task.type,
-#     data.set.id = data.set.id, 
-#     prediction.type = prediction.type,
-#     target.feature = target.feature,
-#     evaluation.measures = evaluation.measures,
-#     evaluation.method = evaluation.method,
-#     evaluation.method.args = evaluation.method.args, 
-#     repeats = repeats
-#   )
-# }
 
 
+#FIXME: respect row id attribute

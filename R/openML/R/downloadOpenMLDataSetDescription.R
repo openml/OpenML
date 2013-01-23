@@ -8,16 +8,11 @@ downloadOpenMLDataSetDescription = function(id, file) {
   invisible(NULL)
 }
 
-parseOpenMLDataSetDescription = function(file, fetch.data.set) {
+parseOpenMLDataSetDescription = function(file) {
   checkArg(file, "character", len = 1L, na.ok = FALSE)
   doc = xmlParse(file)
   url = xmlValue(getNodeSet(doc, "/oml:data_set_description/oml:url")[[1]])
-  if (fetch.data.set) {
-    data = getURL(url)
-    data = read.arff(textConnection(data))
-  } else {
-    data = data.frame()
-  }
+  data = data.frame()
   
   OpenMLDataSetDescription(
     id = as.integer(xmlValue(getNodeSet(doc, "/oml:data_set_description/oml:id")[[1]])),
@@ -36,4 +31,3 @@ parseOpenMLDataSetDescription = function(file, fetch.data.set) {
     data.set = data
   )
 }
-

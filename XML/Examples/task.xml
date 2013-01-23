@@ -1,11 +1,27 @@
 <oml:task xmlns:oml="http://open-ml.org/openml">
 	<oml:task_id>1234</oml:task_id>
 	<oml:task_type>Supervised Classification</oml:task_type>
-        <oml:parameter name="evaluation_method">cross-validation</oml:parameter>
-        <oml:parameter name="evaluation_measure">predictive_accuracy,auroc</oml:parameter>
-	<oml:parameter name="number_repeats">10</oml:parameter>
-	<oml:parameter name="number_folds">10</oml:parameter>
-        <oml:parameter name="target_feature">class</oml:parameter>
+	<!-- <oml:parameter name="bla">...</oml:parameter> -->
+        <oml:input name="source_data">
+		<oml:data_set>
+			<oml:data_set_id>1</oml:data_set_id>
+			<oml:target_features>class</oml:target_features>
+		</oml:data_set>
+	</oml:input>
+	<oml:input name="estimation_procedure">
+		<oml:estimation_procedure>
+		        <oml:type>cross-validation</oml:type>
+			<oml:data_splits_id>1001</oml:data_splits_id>
+			<oml:parameter name="number_repeats">10</oml:parameter>
+			<oml:parameter name="number_folds">10</oml:parameter>
+			<oml:parameter name="stratified_sampling">true</oml:parameter>
+		</oml:estimation_procedure>
+	</oml:input>
+	<oml:input name="evaluation_measures">
+	        <oml:evaluation_measures> <!-- in order of importance -->
+			<oml:evaluation_measure>predictive_accuracy</oml:evaluation_measure>
+		</oml:evaluation_measures>
+	</oml:input>
 	<oml:output name="predictions">
 		<oml:predictions>
 			<oml:name>predictions</oml:name>
@@ -17,17 +33,4 @@
 			<oml:feature name="confidence.classname" type="numeric"/>
 		</oml:predictions>
 	</oml:output>
-        <oml:input name="training_data">
-		<oml:data_set>
-			<oml:data_set_id>1</oml:data_set_id>
-			<oml:data_format>ARFF</oml:data_format>
-			<oml:target_feature>class</oml:target_feature>
-		</oml:data_set>
-	</oml:input>
-	<oml:input name="data_splits">
-		<oml:data_splits>
-			<oml:data_set_id>1001</oml:data_set_id>
-			<oml:data_format>ARFF</oml:data_format>
-		</oml:data_splits>
-	</oml:input>		
 </oml:task>
