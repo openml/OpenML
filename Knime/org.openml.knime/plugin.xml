@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?eclipse version="3.2"?>
+
+<plugin>
+   <extension point="org.knime.workbench.repository.nodes">
+   <node category-path="/community/openml" factory-class="org.openml.knime.taskconfig.TaskConfigNodeFactory" id="org.knime.ext.openml.taskconfig.TaskConfigNodeFactory" />
+   <node category-path="/community/openml" factory-class="org.openml.knime.uploader.UploaderNodeFactory" id="org.knime.ext.openml.uploader.UploaderNodeFactory" />
+   <node category-path="/community/openml" factory-class="org.openml.knime.partitioner.PartitionerNodeFactory" id="org.knime.ext.openml.partitioner.PartitionerNodeFactory" />
+</extension>
+   <extension point="org.knime.workbench.repository.categories">
+      <category description="Nodes to create OpenML workflows" icon="icons/openml16x16.png" level-id="openml" name="OpenML (Alpha)" path="/community" />
+   </extension>
+
+</plugin>
