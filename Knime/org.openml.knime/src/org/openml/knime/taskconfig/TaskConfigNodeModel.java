@@ -95,10 +95,11 @@ public class TaskConfigNodeModel extends NodeModel {
     protected PortObject[] execute(final PortObject[] inData,
             final ExecutionContext exec) throws Exception {
         try {
-            pushFlowVariableString("OpenML-TaskId", m_configuration.getTaskid());
             Document taskDoc =
                     OpenMLUtil.readDocumentfromURL(OpenMLWebservice
                             .getTaskURL(m_configuration.getTaskid()));
+            int taskId = OpenMLUtil.getTaskId(taskDoc);
+            pushFlowVariableInt("OpenML-TaskId", taskId);
             int numRepeats = OpenMLUtil.getNumberOfRepeats(taskDoc);
             int numFolds = OpenMLUtil.getNumberOfFolds(taskDoc);
             pushFlowVariableInt("OpenML-NumRepeats", numRepeats);
