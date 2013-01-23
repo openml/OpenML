@@ -1,0 +1,17 @@
+<oml:data_set_description xmlns:oml="http://open-ml.org/openml">
+<script/>
+<oml:id>61</oml:id>
+<oml:name>iris</oml:name>
+<oml:version/>
+<oml:creator/>
+<oml:date>0000-00-00</oml:date>
+<oml:description/>
+<oml:language/>
+<oml:format>ARFF</oml:format>
+<oml:licence>public domain</oml:licence>
+<oml:url>
+http://expdb.cs.kuleuven.be/expdb/data/uci/nominal/iris.arff
+</oml:url>
+<oml:row_id_attribute/>
+<oml:md5_checksum/>
+</oml:data_set_description>

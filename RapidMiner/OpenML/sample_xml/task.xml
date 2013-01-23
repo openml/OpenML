@@ -1,0 +1,34 @@
+<oml:task xmlns:oml="http://open-ml.org/openml">
+<script/>
+<oml:task_id>1234</oml:task_id>
+<oml:task_type>Supervised Classification</oml:task_type>
+<oml:parameter name="evaluation_method">cross-validation</oml:parameter>
+<oml:parameter name="evaluation_measure">predictive_accuracy,auroc</oml:parameter>
+<oml:parameter name="number_repeats">10</oml:parameter>
+<oml:parameter name="number_folds">10</oml:parameter>
+<oml:parameter name="target_feature">class</oml:parameter>
+<oml:input name="training_data">
+<oml:data_set>
+<oml:data_set_id>1</oml:data_set_id>
+<oml:data_format>ARFF</oml:data_format>
+<oml:target_feature>class</oml:target_feature>
+</oml:data_set>
+</oml:input>
+<oml:input name="data_splits">
+<oml:data_splits>
+<oml:data_set_id>1001</oml:data_set_id>
+<oml:data_format>ARFF</oml:data_format>
+</oml:data_splits>
+</oml:input>
+<oml:output name="predictions">
+<oml:predictions>
+<oml:name>predictions</oml:name>
+<oml:format>ARFF</oml:format>
+<oml:feature name="repeat" type="integer"/>
+<oml:feature name="fold" type="integer"/>
+<oml:feature name="row_id" type="integer"/>
+<oml:feature name="prediction" type="string"/>
+<oml:feature name="confidence.classname" type="numeric"/>
+</oml:predictions>
+</oml:output>
+</oml:task>
