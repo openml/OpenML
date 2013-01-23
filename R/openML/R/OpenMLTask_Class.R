@@ -16,14 +16,15 @@
 # --------------------------------------------------------------
 # class def
 setClass("OpenMLTask",
-         representation(task.id="numeric",
+         representation(task.id="integer",
                         task.type="character",
                         task.pars="list",
-                        task.data.desc.id="numeric",
+                        task.data.desc.id="integer",
                         task.data.desc="OptionalOpenMLDataSetDescription",
-                        task.data.splits.id="numeric",
-                        task.data.splits="data.frame",
-                        task.preds="list"
+                        task.data.splits.id="integer",
+                        task.data.splits="OptionalOpenMLDataSplits",
+                        task.preds="list",
+                        task.evaluation.measures="character"
            ))
 
 
@@ -32,13 +33,13 @@ setClass("OpenMLTask",
 OpenMLTask <- function(task.id,task.type,task.pars,
                        task.data.desc.id,task.data.desc,
                        task.data.splits.id,task.data.splits,
-                       task.preds)
+                       task.preds,task.evaluation.measures)
 {
   new("OpenMLTask",
       task.id=task.id,task.type=task.type,task.pars=task.pars,
       task.data.desc.id=task.data.desc.id,task.data.desc=task.data.desc,
       task.data.splits.id=task.data.splits.id,task.data.splits=task.data.splits,
-      task.preds=task.preds)
+      task.preds=task.preds,task.evaluation.measures=task.evaluation.measures)
 }
 
 
@@ -67,7 +68,10 @@ setMethod("show","OpenMLTask",
             cat('\tColumns:\n')
             for(i in 1:length(object@task.preds$features))
               cat('\t\t',names(object@task.preds$features)[i],' = ',object@task.preds$features[[i]],'\n')
-            cat('\nData splits for evaluation ::',ifelse(all(dim(object@task.data.splits) == 0),'Not Available','Available'),'\n')
+            cat('\nData splits for evaluation ::',ifelse(is.null(object@task.data.splits),'Not Available','Available'),'\n')
+            cat('\nEvaluation Measures ::\n')
+            for(i in 1:length(object@task.evaluation.measures))
+              cat('\t',object@task.evaluation.measures[i],'\n')
           }
           )
 
@@ -82,14 +86,14 @@ taskType <- function(obj) {
 }
 
 
-expSettings <- function(obj) {
+dataSplits <- function(obj) {
   if (!is(obj,"OpenMLTask")) stop(obj,' needs to be of class "OpenMLTask".\n')
-  OpenMLExpSettings(obj@task.pars$evaluation_method,as.numeric(obj@task.pars$number_folds),as.numeric(obj@task.pars$number_repeats),obj@task.data.splits)
+  obj@task.data.split
 }
 
 evaluationMeasures <- function(obj) {
   if (!is(obj,"OpenMLTask")) stop(obj,' needs to be of class "OpenMLTask".\n')
-  obj@task.pars$evaluation_measure
+  obj@task.evaluation.measures
 }
 
 
