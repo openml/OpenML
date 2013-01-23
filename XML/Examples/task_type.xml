@@ -19,9 +19,9 @@
 		<oml:format>ARFF</oml:format>
 	</oml:input>
 	<oml:input>
-		<oml:name>data_splits</oml:name>
-		<oml:description>The training and testing splits to evaluate the built model.</oml:description>
-		<oml:data_type>data_splits</oml:data_type>
+		<oml:name>estimation_procedure</oml:name>
+		<oml:description>The method to estimate the quality of the built model.</oml:description>
+		<oml:data_type>estimation_procedure</oml:data_type>
 		<oml:format>ARFF</oml:format>
 		<oml:parameter>
 			<oml:name>number_repeats</oml:name>
