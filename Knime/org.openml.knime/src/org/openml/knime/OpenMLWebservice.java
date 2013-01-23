@@ -196,7 +196,7 @@ public class OpenMLWebservice {
      * @return Response from the server
      * @throws Exception
      */
-    public static String sendRuns(final String taskId,
+    public static String sendRuns(final int taskId,
             final String implementationId, final Param[] params,
             final File[] files, final String user, final String password)
             throws Exception {

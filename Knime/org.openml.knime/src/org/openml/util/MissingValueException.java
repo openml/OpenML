@@ -1,11 +1,7 @@
 package org.openml.util;
 
-@SuppressWarnings("javadoc")
+
+@SuppressWarnings({"javadoc", "serial"})
 public class MissingValueException extends Exception {
-
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 6123781377956531253L;
-
+//
 }
