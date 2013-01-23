@@ -12,7 +12,7 @@ public class OpenMLNameSpaceContext implements NamespaceContext {
 	@Override
 	public String getNamespaceURI(String prefix) {
 		if (prefix.equals("oml"))
-            return "http://openml.org/task";
+            return "http://open-ml.org/openml";
        else
             return XMLConstants.NULL_NS_URI;
 	}

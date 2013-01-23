@@ -120,6 +120,19 @@ public class OpenMLUtil {
 
 	}
 	
+	public static String getTargetFeature(Document taskDocument) throws MissingValueException {
+		XPath xPath = XPathFactory.newInstance().newXPath();
+		xPath.setNamespaceContext(new OpenMLNameSpaceContext());
+		try {
+			String targetFeature = xPath.evaluate("/oml:task/oml:parameter[@name=\"target_feature\"]", taskDocument);
+			errorOnMissingValue(targetFeature);
+			return targetFeature;
+		} catch (XPathExpressionException e) {
+			return null;
+		}
+
+	}
+	
 	public static Integer getNumberOfFolds(Document taskDocument) throws MissingValueException {
 		XPath xPath = XPathFactory.newInstance().newXPath();
 		xPath.setNamespaceContext(new OpenMLNameSpaceContext());
