@@ -1,5 +1,6 @@
 DROP TABLE `task_set`;
 DROP TABLE `set`;
+DROP TABLE `task`;
 
 CREATE TABLE IF NOT EXISTS `task_type` (
   `ttid` int(10) NOT NULL AUTO_INCREMENT,
