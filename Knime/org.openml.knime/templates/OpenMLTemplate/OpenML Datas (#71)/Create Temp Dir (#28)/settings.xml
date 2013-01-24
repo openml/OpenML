@@ -12,13 +12,13 @@
 <entry key="type" type="xstring" value="variable"/>
 <entry key="name" type="xstring" value="temp_path"/>
 <entry key="class" type="xstring" value="STRING"/>
-<entry key="value" type="xstring" value="/tmp/knime_tempcreator_5b6d5d8e-8483-48a9-bfa4-122446dfbb9e"/>
+<entry key="value" type="xstring" value="/tmp/knime_tempcreator_8da9a400-14a8-432f-b7a3-6e7be5fbbd37"/>
 </config>
 <config key="Variable_1">
 <entry key="type" type="xstring" value="variable"/>
 <entry key="name" type="xstring" value="splits"/>
 <entry key="class" type="xstring" value="STRING"/>
-<entry key="value" type="xstring" value="/tmp/knime_tempcreator_5b6d5d8e-8483-48a9-bfa4-122446dfbb9e/splits.arff"/>
+<entry key="value" type="xstring" value="/tmp/knime_tempcreator_8da9a400-14a8-432f-b7a3-6e7be5fbbd37/splits.arff"/>
 </config>
 </config>
 <config key="internal_node_subsettings">
