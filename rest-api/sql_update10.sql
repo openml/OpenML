@@ -8,7 +8,7 @@ ALTER TABLE implementation
   CHANGE column `language` `language` varchar(128) NULL DEFAULT NULL AFTER `licence`,
   CHANGE column `date` `date` DATETIME NULL DEFAULT NULL,
   CHANGE column `sourceCodeUrl` `sourceUrl` VARCHAR(256) NULL DEFAULT NULL,
-  CHANGE column `sourceCodeMd5` `sourceCodeMd5` VARCHAR(64) NULL DEFAULT NULL,
+  CHANGE column `sourceCodeMd5` `sourceMd5` VARCHAR(64) NULL DEFAULT NULL,
   ADD `binaryFormat` VARCHAR(64) NULL DEFAULT NULL AFTER `binaryUrl`,
   ADD `sourceFormat` VARCHAR(64) NULL DEFAULT NULL AFTER `sourceUrl`;
 
