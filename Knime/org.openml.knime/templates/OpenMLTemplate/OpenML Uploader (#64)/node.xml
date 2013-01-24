@@ -2,13 +2,13 @@
 <config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="settings.xml">
 <entry key="name" type="xstring" value="OpenML Uploader"/>
 <config key="model">
-<entry key="uploadworkflow" type="xboolean" value="true"/>
+<entry key="uploadworkflow" type="xboolean" value="false"/>
 <entry key="version" type="xstring" value="1.0"/>
 <entry key="implements" type="xstring" value="Bayes"/>
 <entry key="licence" type="xstring" value="public domain"/>
 <entry key="uploadresult" type="xstring" value="Always"/>
-<entry key="resultfile" type="xstring" value="/tmp/knime_tempcreator_7816b9fd-6ae1-4d56-aeac-d059f80f5dad/results.arff"/>
-<entry key="workflowid" type="xstring" value="knime.user.OpenMLTemplate2_3.5"/>
+<entry key="resultfile" type="xstring" value="/tmp/knime_tempcreator_5eca0ddb-0958-4d90-a6b0-930f150925a2/results.arff"/>
+<entry key="workflowid" type="xstring" value="knime.user.OpenMLTemplate_1.0dsfs"/>
 <entry key="dependency" type="xstring" value="none"/>
 <entry key="workflowcredentials" type="xstring" value="cred"/>
 <entry key="creator" type="xstring" value=""/>

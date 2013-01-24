@@ -2,7 +2,7 @@
 <config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="settings.xml">
 <entry key="name" type="xstring" value="ARFF Reader"/>
 <config key="model">
-<entry key="FileURL" type="xstring" value="file:/tmp/knime_tempcreator_5b6d5d8e-8483-48a9-bfa4-122446dfbb9e/splits.arff"/>
+<entry key="FileURL" type="xstring" value="file:/tmp/knime_tempcreator_8da9a400-14a8-432f-b7a3-6e7be5fbbd37/splits.arff"/>
 <entry key="RowPrefix" type="xstring" value=""/>
 </config>
 <config key="variables">
