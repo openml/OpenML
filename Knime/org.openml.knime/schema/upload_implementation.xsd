@@ -1,13 +1,12 @@
 <xs:schema targetNamespace="http://openml.org/upload_implementation"
-		xmlns:oml="http://openml.org/upload_implementation"
-		xmlns:xs="http://www.w3.org/2001/XMLSchema"
-		elementFormDefault="qualified">
-	<xs:element name="upload_implementation">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="id" type="xs:string" />
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
+    xmlns:oml="http://openml.org/upload_implementation" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    elementFormDefault="qualified">
+    <xs:element name="upload_implementation">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="id" type="xs:string" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
 </xs:schema>
 

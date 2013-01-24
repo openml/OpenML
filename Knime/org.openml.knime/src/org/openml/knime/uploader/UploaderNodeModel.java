@@ -256,7 +256,9 @@ public class UploaderNodeModel extends NodeModel {
         String date =
                 new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
         impl.setDate(date);
-        new WorkflowDescription(getWorkflowManager()).exportToOpenMLXML(impl);
+        // new
+        // WorkflowDescription(getWorkflowManager()).exportToOpenMLXML(impl);
+        new WorkflowDescription(getWorkflowManager()).exportWorkflow(impl);
         Map<String, String> prefixMap = new HashMap<String, String>();
         prefixMap.put("http://openml.org/implementation", "oml");
         implDoc.save(file, new XmlOptions().setSavePrettyPrint()

@@ -60,6 +60,7 @@ import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.SingleNodeContainer;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.openml.implementation.Components;
 import org.openml.implementation.Implementation;
 import org.openml.implementation.ParameterSetting;
 
@@ -178,6 +179,30 @@ public class WorkflowDescription {
                 int i = 0;
                 for (NodeContainer node : wfm.getNodeContainers()) {
                     m_nodes[i++] = new NodeDescription(node);
+                }
+            }
+        }
+
+        /**
+         * Exports the node into the implementation object.
+         * 
+         * 
+         * @param impl The implementation object
+         */
+        public void exportNode(final Implementation impl) {
+            impl.setName(m_name);
+            impl.setDescription(m_annotation);
+            if (m_metanode && m_nodes.length > 0) {
+                Components comps = impl.addNewComponents();
+                for (int i = 0; i < m_nodes.length; i++) {
+                    Implementation impl2 = comps.addNewImplementation();
+                    m_nodes[i].exportNode(impl2);
+                }
+            } else {
+                for (int i = 0; i < m_settings.length; i++) {
+                    ParameterSetting param = impl.addNewParameterSetting();
+                    param.setParameter(m_settings[i].getKey());
+                    param.setValue(m_settings[i].getValue());
                 }
             }
         }
@@ -337,4 +362,24 @@ public class WorkflowDescription {
         }
     }
 
+    /**
+     * Exports the workflow into the implementation object.
+     * 
+     * 
+     * @param impl The implementation object
+     */
+    public void exportWorkflow(final Implementation impl) {
+        String desc = "";
+        for (int i = 0; i < m_annotations.length; i++) {
+            desc += m_annotations[i] + "\n";
+        }
+        impl.setDescription(desc);
+        if (m_nodes.length > 0) {
+            Components comps = impl.addNewComponents();
+            for (int i = 0; i < m_nodes.length; i++) {
+                Implementation impl2 = comps.addNewImplementation();
+                m_nodes[i].exportNode(impl2);
+            }
+        }
+    }
 }
