@@ -83,6 +83,7 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.openml.implementation.BibliographicalReference;
 import org.openml.implementation.Implementation;
 import org.openml.implementation.ImplementationDocument;
+import org.openml.knime.OpenMLVariables;
 import org.openml.knime.OpenMLWebservice;
 import org.openml.knime.OpenMLWebservice.Param;
 import org.openml.knime.uploader.UploaderConfiguration.NameVariablePair;
@@ -149,7 +150,7 @@ public class UploaderNodeModel extends NodeModel {
                     m_config.setUploadWorkflow(false);
                 }
                 if (!uploadResults.equals(UploadPolicies.NO.getName())) {
-                    int taskId = peekFlowVariableInt("OpenML-TaskId");
+                    int taskId = peekFlowVariableInt(OpenMLVariables.TASKID);
                     String implementationId = m_config.getWorkflowId();
                     File[] files =
                             new File[]{new File(m_config.getResultFile())};

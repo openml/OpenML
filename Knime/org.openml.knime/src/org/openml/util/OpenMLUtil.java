@@ -137,7 +137,7 @@ public class OpenMLUtil {
         try {
             String targetFeature =
                     xPath.evaluate(
-                            "/oml:task/oml:parameter[@name=\"target_feature\"]",
+                            "/oml:task/oml:input[@name=\"source_data\"]/oml:data_set/oml:target_features",
                             taskDocument);
             errorOnMissingValue(targetFeature);
             return targetFeature;
