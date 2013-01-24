@@ -16,11 +16,8 @@
 	<oml:programming_language>R</oml:programming_language>
 	<oml:operating_system>Linux</oml:operating_system>
 	<oml:bibliographical_reference>
-		<oml:title>The best way of solving Task A</oml:title>
+		<oml:citation>free form</oml:citation>
 		<oml:url>www.janvanrijn.eu/taskA</oml:url>
-		<oml:authors>van Rijn en al</oml:authors>
-		<oml:year>2013</oml:year>
-		<oml:doi>123456789</oml:doi>
 	</oml:bibliographical_reference>
 	<oml:components>
 		<oml:implementation>
