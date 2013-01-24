@@ -30,7 +30,7 @@ setClass("OpenMLTask",
 
 # --------------------------------------------------------------
 # constructor function
-OpenMLTask <- function(task.id,task.type,task.pars,task.target.feaures,
+OpenMLTask <- function(task.id,task.type,task.pars,task.target.features,
                        task.data.desc.id,task.data.desc,
                        task.estimation.procedure,
                        task.preds,task.evaluation.measures)
@@ -125,9 +125,9 @@ evaluationMeasures <- function(task) {
 }
 
 
-targetFeature <- function(task) {
+targetFeatures <- function(task) {
   checkArg(task, "OpenMLTask")
-  task@task.pars$target_feature
+  task@task.target.features
 }
   
 sourceData <- function(task) {

@@ -2,22 +2,21 @@ toMLR <- function(task) {
   requirePackages("mlr", why="toMLR")
   task.type <- taskType(task)
   data.set.desc <- task@task.data.desc
-  data <- task@task.data.desc@data.set
-  target <- targetFeature(task)
-  expset <- expSettings(task)
+  data <- sourceData(task)
+  target <- targetFeatures(task)
+  estim.proc <- task@task.estimation.procedure
   if (task.type == "Supervised Classification") {
     mlr.task <- makeClassifTask(data = data, target = target)
   }
-  mlr.rin <- createMLRResampleInstance(expset, mlr.task)
+  mlr.rin <- createMLRResampleInstance(estim.proc, mlr.task)
   list(mlr.task = mlr.task, mlr.rin = mlr.rin)
 }
 
-createMLRResampleInstance <- function(expset, mlr.task) {
-  type <- expset@type
-  n.repeats <- expset@n.repeats
-  n.folds <- expset@n.folds
-  data.splits <- expset@data.splits
-
+createMLRResampleInstance <- function(estim.proc, mlr.task) {
+  type <- estim.proc@type
+  n.repeats <- estim.proc@parameters[["number_repeats"]]
+  n.folds <- estim.proc@parameters[["number_folds"]]
+  data.splits <- estim.proc@data.splits
   # FIXME : more resampling
   if (type == "cross-validation") {
     if (n.repeats == 1L)
@@ -26,7 +25,7 @@ createMLRResampleInstance <- function(expset, mlr.task) {
       mlr.rdesc <- makeResampleDesc("RepCV", reps = n.repeats, folds = n.folds, stratify = TRUE)
   }
   mlr.rin = makeResampleInstance(mlr.rdesc, task = mlr.task)  
-  
+  print(mlr.rin)
   iter = 1L
   for (r in 1:n.repeats) {
     for (f in 1:n.folds) {

@@ -1,39 +1,34 @@
-<xs:schema targetNamespace="http://openml.org/implementation"
-    xmlns:oml="http://openml.org/implementation" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+<xs:schema targetNamespace="http://open-ml.org/openml"
+    xmlns:oml="http://open-ml.org/openml" xmlns:xs="http://www.w3.org/2001/XMLSchema"
     elementFormDefault="qualified">
     <xs:element name="implementation" type="oml:implementation" />
     <xs:complexType name="implementation">
         <xs:sequence>
+            <xs:element name="id" minOccurs="0" maxOccurs="1"
+                type="xs:string" />  <!-- the id, not needed on upload, only on download -->
             <!-- dublin core -->
             <xs:element name="name" type="xs:string" />
             <xs:element name="version" type="xs:string" />
             <xs:element name="creator" minOccurs="0"
-                maxOccurs="1" type="xs:string" />
+                maxOccurs="unbounded" type="xs:string" />
             <xs:element name="contributor" minOccurs="0"
                 maxOccurs="unbounded" type="xs:string" />
-            <xs:element name="date" minOccurs="0" maxOccurs="1"
-                type="xs:string" />
+            <!-- server <xs:element name="date" minOccurs="0" maxOccurs="1" 
+                type="xs:string"/> -->
             <xs:element name="language" minOccurs="0"
                 maxOccurs="1" type="xs:string" />
-            <xs:element name="format" minOccurs="0"
+            <xs:element name="source_format" minOccurs="0"
+                maxOccurs="1" type="xs:string" /> <!-- zip -->
+            <xs:element name="binary_format" minOccurs="0"
                 maxOccurs="1" type="xs:string" /> <!-- zip -->
             <xs:element name="licence" minOccurs="0"
                 maxOccurs="1" type="xs:string" />
-            <!-- structure -->
-            <xs:element name="components" minOccurs="0"
-                maxOccurs="1" type="oml:components" />
-            <xs:element name="parameter_setting" minOccurs="0"
-                maxOccurs="unbounded" type="oml:parameter_setting" /> <!-- defaults -->
             <!-- textual info (for search) -->
             <xs:element name="description" type="xs:string" /> <!-- user comments -->
-            <xs:element name="readme" minOccurs="0"
-                maxOccurs="1" type="xs:string" /> <!-- how to run this implementation -->
-            <xs:element name="summary" minOccurs="0"
-                maxOccurs="1" type="xs:string" /> <!-- short glossary info -->
             <xs:element name="full_description" minOccurs="0"
                 maxOccurs="1" type="xs:string" /> <!-- full description, e.g. scientific paper text -->
-            <xs:element name="technical_manual" minOccurs="0"
-                maxOccurs="1" type="xs:string" /> <!-- man pages,... -->
+            <xs:element name="installation_notes" minOccurs="0"
+                maxOccurs="1" type="xs:string" /> <!-- how to run this implementation -->
             <!-- technical info -->
             <xs:element name="dependency" minOccurs="0"
                 maxOccurs="1" type="xs:string" /> <!-- was: library -->
@@ -44,10 +39,21 @@
             <!-- other -->
             <xs:element name="bibliographical_reference"
                 minOccurs="0" maxOccurs="unbounded" type="oml:bibliographical_reference" />
-            <xs:element name="implements" minOccurs="0"
-                maxOccurs="1" type="xs:string" /> <!-- ontological reference -->
-            <xs:element name="type" type="xs:string" /> <!-- workflow, implementation or function -->
-            <xs:element name="owned_by_library" type="xs:boolean" />
+            <!-- source code -->
+            <xs:element name="source_code_url" minOccurs="0"
+                maxOccurs="1" type="xs:string" />
+            <xs:element name="source_code_md5" minOccurs="0"
+                maxOccurs="1" type="xs:string" />
+            <!-- binary -->
+            <xs:element name="binary_url" minOccurs="0"
+                maxOccurs="1" type="xs:string" />
+            <xs:element name="binary_md5" minOccurs="0"
+                maxOccurs="1" type="xs:string" />
+            <!-- structure -->
+            <xs:element name="parameter_default" minOccurs="0"
+                maxOccurs="unbounded" type="oml:parameter_default" /> <!-- defaults -->
+            <xs:element name="components" minOccurs="0"
+                maxOccurs="1" type="oml:components" />
         </xs:sequence>
     </xs:complexType>
     <xs:complexType name="components">
@@ -56,9 +62,15 @@
                 maxOccurs="unbounded" type="oml:implementation" />
         </xs:sequence>
     </xs:complexType>
-    <xs:complexType name="parameter_setting">
-        <xs:attribute use="required" name="parameter" type="xs:string" />
-        <xs:attribute use="required" name="value" type="xs:string" />
+    <xs:complexType name="parameter_default">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute use="required" name="parameter"
+                    type="xs:string" />
+                <xs:attribute use="required" name="datatype"
+                    type="xs:string" />
+            </xs:extension>
+        </xs:simpleContent>
     </xs:complexType>
     <xs:complexType name="bibliographical_reference">
         <xs:sequence>

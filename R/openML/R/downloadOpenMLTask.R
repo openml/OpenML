@@ -47,16 +47,18 @@ downloadOpenMLTask <- function(id, dir = tempdir(), clean.up = TRUE, fetch.data.
 
 parseOpenMLTask <- function(file) {
   doc <- xmlParse(file)
-  
-  # task
-  task.id <- as.integer(xmlValue(getNodeSet(doc, "/oml:task/oml:task_id")[[1]]))
-  task.type <- xmlValue(getNodeSet(doc, "/oml:task/oml:task_type")[[1]])  
+
   getParams <- function(path) {
     ns.parameters <- getNodeSet(doc, paste(path, "oml:parameter", sep ="/"))
     parameters <- lapply(ns.parameters, function(x) xmlValue(x))
     names(parameters) <- sapply(ns.parameters, function(x) xmlGetAttr(x, "name"))
     parameters
   }
+  
+  # task
+  task.id <- as.integer(xmlValue(getNodeSet(doc, "/oml:task/oml:task_id")[[1]]))
+  task.type <- xmlValue(getNodeSet(doc, "/oml:task/oml:task_type")[[1]])  
+  targets <- sapply(getNodeSet(doc, "/oml:task/oml:input/oml:data_set/oml:target_feature"), xmlValue)
   params <- getParams("oml:task")
   
   # data set description
@@ -79,7 +81,7 @@ parseOpenMLTask <- function(file) {
     type = xmlValue(getNodeSet(doc, "/oml:task/oml:input/oml:estimation_procedure/oml:type")[[1]]), 
     data.splits.id  = as.integer(xmlValue(getNodeSet(doc, "/oml:task/oml:input/oml:estimation_procedure/oml:data_splits_id")[[1]])), 
     data.splits = data.frame(),
-    parameters = getParams("/oml:task/oml:input/oml:estimation_procedure/oml:type")
+    parameters = getParams("/oml:task/oml:input/oml:estimation_procedure")
   )
 
   # measures
@@ -89,6 +91,7 @@ parseOpenMLTask <- function(file) {
   task = OpenMLTask(
     task.id = task.id,
     task.type = task.type,
+    task.target.features = targets,
     task.pars = params,
     task.data.desc.id = data.desc.id,
     task.data.desc = data.desc,
@@ -99,15 +102,19 @@ parseOpenMLTask <- function(file) {
   convertOpenMLTaskSlots(task)
 }
 
+convertParam <- function(params, name, fun) {
+  if(!is.null(params[[name]]))
+    params[[name]] <- fun(params[[name]])
+  return(params)
+}
 
 convertOpenMLTaskSlots = function(task) {
-  # parameters
-  convpars <- function(name, fun) 
-    if(!is.null(task@task.pars[[name]]))
-      task@task.pars[[name]] <<- fun(task@task.pars[[name]])
-  convpars("number_repeats", as.integer)
-  convpars("number_folds", as.integer)
-  convpars("evaluation_measure", function(x) strsplit(x, split=",")[[1]])
+  p <- task@task.estimation.procedure@parameters
+  p <- convertParam(p, "number_repeats", as.integer)
+  p <- convertParam(p, "number_folds", as.integer)
+  task@task.estimation.procedure@parameters <- p
+
+  task@task.evaluation.measures <- strsplit(task@task.evaluation.measures, split=",")[[1]]
   
   return(task)
 }
