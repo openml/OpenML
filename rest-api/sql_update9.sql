@@ -92,7 +92,7 @@ CREATE TABLE IF NOT EXISTS `task_dataset` (
 
 CREATE TABLE IF NOT EXISTS `task_estimation_procedure` (
   `task_id` int(10) NOT NULL,
-  `datasplit_id` int(10) NOT NULL,
+  `epid` int(10) NOT NULL,
   PRIMARY KEY (`task_id`,`datasplit_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
