@@ -100,6 +100,8 @@ public class UploaderConfiguration {
 
     private Reference[] m_references;
 
+    private String m_uploadedWorkflow;
+
     /**
      * @return the workflowcredentials
      */
@@ -339,6 +341,20 @@ public class UploaderConfiguration {
     }
 
     /**
+     * @return the uploadedWorkflow
+     */
+    public String getUploadedWorkflow() {
+        return m_uploadedWorkflow;
+    }
+
+    /**
+     * @param uploadedWorkflow the uploadedWorkflow to set
+     */
+    public void setUploadedWorkflow(final String uploadedWorkflow) {
+        m_uploadedWorkflow = uploadedWorkflow;
+    }
+
+    /**
      * Save this configuration into the settings.
      * 
      * 
@@ -360,6 +376,7 @@ public class UploaderConfiguration {
         settings.addString("description", m_description);
         settings.addString("summary", m_summary);
         settings.addString("fulldescription", m_fullDescription);
+        settings.addString("uploadedworkflow", m_uploadedWorkflow);
         NodeSettingsWO pairs = settings.addNodeSettings("name_variable_pairs");
         if (m_pairs != null) {
             for (int i = 0; i < m_pairs.length; i++) {
@@ -406,6 +423,11 @@ public class UploaderConfiguration {
         m_description = settings.getString("description", "");
         m_summary = settings.getString("summary", "");
         m_fullDescription = settings.getString("fulldescription", "");
+        try {
+            m_uploadedWorkflow = settings.getString("uploadedworkflow");
+        } catch (InvalidSettingsException e) {
+            m_uploadedWorkflow = null;
+        }
         try {
             NodeSettingsRO pairs =
                     settings.getNodeSettings("name_variable_pairs");
@@ -490,6 +512,11 @@ public class UploaderConfiguration {
         m_resultFile = settings.getString("resultfile");
         m_workflowId = settings.getString("workflowid", "");
         m_workflowcredentials = settings.getString("workflowcredentials");
+        try {
+            m_uploadedWorkflow = settings.getString("uploadedworkflow");
+        } catch (InvalidSettingsException e) {
+            m_uploadedWorkflow = null;
+        }
         if (m_uploadWorkflow
                 || !m_uploadResult.equals(UploadPolicies.NO.getName())) {
             validate(m_workflowcredentials, "Credentials");

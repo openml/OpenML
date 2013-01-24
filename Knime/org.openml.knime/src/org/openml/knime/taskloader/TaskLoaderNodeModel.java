@@ -103,10 +103,6 @@ public class TaskLoaderNodeModel extends NodeModel {
             pushFlowVariableInt(OpenMLVariables.TASKID, taskId);
             int numRepeats = OpenMLUtil.getNumberOfRepeats(taskDoc);
             int numFolds = OpenMLUtil.getNumberOfFolds(taskDoc);
-
-            // TODO change this
-            numRepeats = 2;
-
             pushFlowVariableInt(OpenMLVariables.REPEATS, numRepeats);
             pushFlowVariableInt(OpenMLVariables.FOLDS, numFolds);
             int datasetID = OpenMLUtil.getDataSetId(taskDoc);

@@ -50,6 +50,7 @@
  */
 package org.openml.knime.uploader;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import org.knime.core.node.InvalidSettingsException;
@@ -70,7 +71,14 @@ import org.openml.implementation.ParameterSetting;
  * 
  * @author Patrick Winter, KNIME.com, Zurich, Switzerland
  */
-public class WorkflowDescription {
+public class WorkflowDescription implements Serializable {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -2607620130946020757L;
+
+    private static final String USERNODE = "OpenML Workflow";
 
     private String m_name;
 
@@ -100,6 +108,22 @@ public class WorkflowDescription {
     }
 
     /**
+     * Returns the node configured by the user.
+     * 
+     * 
+     * @param wfm WorkflowManager
+     * @return User configured node
+     */
+    public static NodeDescription getUserNode(final WorkflowManager wfm) {
+        for (NodeContainer nodeContainer : wfm.getNodeContainers()) {
+            if (nodeContainer.getName().equals(USERNODE)) {
+                return new NodeDescription(nodeContainer);
+            }
+        }
+        return null;
+    }
+
+    /**
      * @return the name
      */
     public String getName() {
@@ -126,9 +150,13 @@ public class WorkflowDescription {
      * 
      * @author Patrick Winter, KNIME.com, Zurich, Switzerland
      */
-    public class NodeDescription {
+    public static class NodeDescription implements Serializable {
 
-        @SuppressWarnings("hiding")
+        /**
+         * 
+         */
+        private static final long serialVersionUID = -3794934308779132724L;
+
         private String m_name;
 
         private String m_annotation;
@@ -137,7 +165,6 @@ public class WorkflowDescription {
 
         private String m_description;
 
-        @SuppressWarnings("hiding")
         private NodeDescription[] m_nodes;
 
         private SettingDescription[] m_settings;
@@ -181,6 +208,39 @@ public class WorkflowDescription {
                     m_nodes[i++] = new NodeDescription(node);
                 }
             }
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean equals(Object obj) {
+            if (!(obj instanceof NodeDescription)) {
+                return false;
+            }
+            NodeDescription node = (NodeDescription)obj;
+            if (!m_name.equals(node.m_name)
+                    || !m_annotation.equals(node.m_annotation)
+                    || this.m_metanode != node.m_metanode) {
+                return false;
+            }
+            if (m_metanode) {
+                if (m_nodes.length != node.m_nodes.length) {
+                    return false;
+                }
+                for (int i = 0; i < m_nodes.length; i++) {
+                    if (!m_nodes[i].equals(node.m_nodes[i])) {
+                        return false;
+                    }
+                }
+            } else {
+                for (int i = 0; i < m_settings.length; i++) {
+                    if (!m_settings[i].equals(node.m_settings[i])) {
+                        return false;
+                    }
+                }
+            }
+            return true;
         }
 
         /**
@@ -257,7 +317,12 @@ public class WorkflowDescription {
      * 
      * @author Patrick Winter, KNIME.com, Zurich, Switzerland
      */
-    public class SettingDescription {
+    public static class SettingDescription implements Serializable {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = -5272094071277588310L;
 
         private String m_key;
 
@@ -293,6 +358,35 @@ public class WorkflowDescription {
                 m_complex = false;
                 m_value = entry.toStringValue();
             }
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean equals(Object obj) {
+            if (!(obj instanceof SettingDescription)) {
+                return false;
+            }
+            SettingDescription setting = (SettingDescription)obj;
+            if (m_key != setting.m_key || m_complex != setting.m_complex) {
+                return false;
+            }
+            if (m_complex) {
+                if (m_settings.length != setting.m_settings.length) {
+                    return false;
+                }
+                for (int i = 0; i < m_settings.length; i++) {
+                    if (!m_settings[i].equals(setting.m_settings[i])) {
+                        return false;
+                    }
+                }
+            } else {
+                if (m_value != setting.m_value) {
+                    return false;
+                }
+            }
+            return true;
         }
 
         /**

@@ -88,6 +88,7 @@ import org.openml.knime.OpenMLWebservice;
 import org.openml.knime.OpenMLWebservice.Param;
 import org.openml.knime.uploader.UploaderConfiguration.NameVariablePair;
 import org.openml.knime.uploader.UploaderConfiguration.Reference;
+import org.openml.knime.uploader.WorkflowDescription.NodeDescription;
 import org.openml.uploadImplementation.UploadImplementationDocument;
 
 /**
@@ -113,6 +114,22 @@ public class UploaderNodeModel extends NodeModel {
     @Override
     protected PortObject[] execute(final PortObject[] inData,
             final ExecutionContext exec) throws Exception {
+        
+        // TODO move this when its working
+        NodeDescription curUserNode =
+                WorkflowDescription
+                        .getUserNode(getWorkflowManager());
+        String oldNodeString = m_config.getUploadedWorkflow();
+        if (oldNodeString != null) {
+            NodeDescription oldUserNode =
+                    (NodeDescription)Util.fromString(m_config
+                            .getUploadedWorkflow());
+            if (oldUserNode.equals(curUserNode)) {
+                throw new Exception("Workflow has not changed");
+            }
+        }
+        
+        m_config.setUploadedWorkflow(Util.toString(curUserNode));
         boolean uploadWorkflow = m_config.getUploadWorkflow();
         String uploadResults = m_config.getUploadResult();
         if (uploadWorkflow
