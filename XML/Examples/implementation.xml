@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <oml:implementation xmlns:oml="http://open-ml.org/openml">
-	<oml:name>knime.janvanrijn.solveTaskA</oml:name> <!-- Required -->  <!-- name+version must be unique -->
-	<oml:version>1.3.0</oml:version>   <!-- Required -->
+	<oml:id>knime.janvanrijn.solveTaskA</oml:id> <!-- optional, define your own id -->
+	<oml:name>knime.janvanrijn.solveTaskA</oml:name>  <!-- optional -->
+	<oml:version>1.3.0</oml:version>   <!-- optional -->
 	<oml:creator>Jan N. van Rijn</oml:creator>
 	<oml:creator>Bo Gao</oml:creator>
 	<oml:contributor>Joaquin Vanschoren</oml:contributor>
@@ -43,7 +44,5 @@
 
 <!-- Minimal example -->
 <oml:implementation xmlns:oml="http://open-ml.org/openml">
-	<oml:name>knime.janvanrijn.solveTaskA</oml:name>
-	<oml:version>1.3.0</oml:version>
 	<oml:description>Solving task A in an ingenious way</oml:description>
 </oml:implementation>

@@ -2,11 +2,11 @@
 <xs:element name="implementation" type="oml:implementation"/>
 <xs:complexType name="implementation">
 	<xs:sequence>
-		<xs:element name="id" minOccurs="0" maxOccurs="1" type="xs:string"/>  <!-- added server-side -->
+		<xs:element name="id" minOccurs="0" maxOccurs="1" type="xs:string"/>  <!-- optional, if not given, added server-side -->
 		<xs:element name="uploader" minOccurs="0" maxOccurs="1" type="xs:string"/>  <!-- added server-side -->
 		<!-- dublin core -->
-		<xs:element name="name" type="xs:string"/>
-		<xs:element name="version" type="xs:string"/>
+		<xs:element name="name" minOccurs="0" maxOccurs="1" type="xs:string"/>
+		<xs:element name="version" minOccurs="0" maxOccurs="1" type="xs:string"/>
 		<xs:element name="creator" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>
 		<xs:element name="contributor" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>
 		<xs:element name="date" minOccurs="0" maxOccurs="1" type="xs:string"/>  <!-- added server-side-->
