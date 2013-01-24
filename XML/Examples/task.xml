@@ -12,7 +12,7 @@
 		<oml:estimation_procedure>
 		        <oml:type>cross-validation</oml:type>
 			<oml:data_splits_id>1001</oml:data_splits_id>
-			<oml:parameter name="number_repeats">10</oml:parameter>
+			<oml:parameter name="number_repeats">2</oml:parameter>
 			<oml:parameter name="number_folds">10</oml:parameter>
 			<oml:parameter name="stratified_sampling">true</oml:parameter>
 		</oml:estimation_procedure>
