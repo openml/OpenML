@@ -21,4 +21,6 @@ Export-Package: org.openml.dataSetDescription,
  org.openml.implementation.impl,
  org.openml.implementationLicences,
  org.openml.implementationLicences.impl,
+ org.openMl.openml,
+ org.openMl.openml.impl,
  xmleditorkit
