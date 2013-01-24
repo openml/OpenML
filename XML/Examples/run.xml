@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
+<oml:run xmlns:oml="http://open-ml.org/openml">
+	<oml:task_id>1</oml:task_id>
+	<oml:implementation_id>knime.user.myworkflow_1.2</oml:implementation_id>
+	<oml:parameter_setting>
+		<oml:name>C</oml:name>
+		<oml:value>0.01</oml:value>
+		<oml:component>knime.component</oml:component> <!-- optional -->
+	</oml:parameter_setting>
+	<oml:parameter_setting>
+		<oml:name>C</oml:name>
+		<oml:value>0.01</oml:value>
+		<oml:component>knime.component2</oml:component> <!-- optional -->
+	</oml:parameter_setting>
+</oml:run>
+
+<!-- parameter value guidelines:
+	floats: .-based and/or scientific notation (E-notation) -> 0.5
+	strings: Unicode, except characters &,<,>,]]
+	array: [a,b,c] (no spaces)
+	matrix: [[a,b,c],[d,e,f]] (items are columns, no spaces)
+	complex data: use <![CDATA[ ... ]]>
+-->
+		
+
