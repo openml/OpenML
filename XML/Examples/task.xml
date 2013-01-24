@@ -5,7 +5,7 @@
 	<oml:input name="source_data">
 		<oml:data_set>
 			<oml:data_set_id>1</oml:data_set_id>
-			<oml:target_features>class</oml:target_features>
+			<oml:target_feature>class</oml:target_feature> <!-- can be more than 1 element -->
 		</oml:data_set>
 	</oml:input>
 	<oml:input name="estimation_procedure">
@@ -26,11 +26,11 @@
 		<oml:predictions>
 			<oml:name>predictions</oml:name>
 			<oml:format>ARFF</oml:format>
-			<oml:feature name="repeat" type="integer"/>
-			<oml:feature name="fold"   type="integer"/>
-			<oml:feature name="row_id" type="integer"/>
-			<oml:feature name="prediction" type="string"/>
-			<oml:feature name="confidence.classname" type="numeric"/>
+			<oml:feature name="repeat" type="integer" required="true"/>
+			<oml:feature name="fold"   type="integer" required="true"/>
+			<oml:feature name="row_id" type="integer" required="true"/>
+			<oml:feature name="prediction" type="string" required="true"/>
+			<oml:feature name="confidence.classvalue" type="numeric" required="false"/>
 		</oml:predictions>
 	</oml:output>
 </oml:task>

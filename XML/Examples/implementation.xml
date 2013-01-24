@@ -1,18 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <oml:implementation xmlns:oml="http://open-ml.org/openml">
-	<!-- server-side  <oml:id>knime.user27.greatWorkflow_1.3.0</oml:id> -->
-	<oml:name>knime.janvanrijn.solveTaskA</oml:name>   <!-- name+version must be unique -->
-	<oml:version>1.3.0</oml:version>
+	<oml:name>knime.janvanrijn.solveTaskA</oml:name> <!-- Required -->  <!-- name+version must be unique -->
+	<oml:version>1.3.0</oml:version>   <!-- Required -->
 	<oml:creator>Jan N. van Rijn</oml:creator>
 	<oml:creator>Bo Gao</oml:creator>
 	<oml:contributor>Joaquin Vanschoren</oml:contributor>
 	<oml:contributor>Patrick Winter</oml:contributor>
-	<!-- server-side <oml:date>2013-01-18</oml:date> -->
-	<oml:language>English</oml:language>
-	<oml:source_format>zip</oml:source_format>
-	<oml:binary_format>zip</oml:binary_format>
 	<oml:licence>public domain</oml:licence>
-	<oml:description>Solving task A in an ingenious way</oml:description>
+	<oml:language>English</oml:language>
+	<oml:description>Solving task A in an ingenious way</oml:description>  <!-- Required -->
 	<oml:full_description>Solving task A in an ingenious way</oml:full_description>
 	<oml:installation_notes>Download and run 'make install'</oml:installation_notes>
 	<oml:dependencies>KNIME 2.7.1</oml:dependencies>
@@ -25,17 +21,27 @@
 		<oml:year>2013</oml:year>
 		<oml:doi>123456789</oml:doi>
 	</oml:bibliographical_reference>
-	<!-- server-side, manual <oml:implements>C4.5</oml:implements> -->
-	<oml:parameter_default parameter="H" datatype="float"/>0.5</oml:parameter_default> <!-- defaults, can be checked on server for formatting: floats: .-notation, e-notation, arrays: [ a , b , c], matrices (columns): [[a,b,c],[c,d,e]], strings: Unicode, invalid are: &,<,> -->
-	<oml:parameter_default parameter="P" datatype="string"/>RBF</oml:parameter_default>
+	<oml:parameter_default parameter="H" datatype="float">0.5</oml:parameter_default> <!-- defaults, can be checked on server for formatting: floats: .-notation, e-notation, arrays: [ a , b , c], matrices (columns): [[a,b,c],[c,d,e]], strings: Unicode, invalid are: &,<,> -->
+	<oml:parameter_default parameter="P" datatype="string">RBF</oml:parameter_default>
 	<oml:components>
 		<oml:implementation>
 			<oml:name>knime.algorithmA</oml:name>
 			<oml:version>4.0</oml:version>
+			<oml:description>Implementation of SVM</oml:description>
+			<oml:dependencies>KNIME 2.7.1</oml:dependencies>
 			<oml:parameter_default parameter="P" datatype="float">0.5</oml:parameter_default>
 			<oml:parameter_default parameter="Q" datatype="integer">-1</oml:parameter_default>
-			<oml:description>Implementation of SVM</oml:description>
-			<oml:dependency>KNIME 2.7.1</oml:dependency>
 		</oml:implementation>
 	</oml:components>
+	<oml:source_format>zip</oml:source_format>
+	<oml:binary_format>zip</oml:binary_format>
+	<oml:source_md5>9e107d9d372bb6826bd81d3542a419d6</oml:source_md5>
+	<oml:binary_md5>e4d909c290d0fb1ca068ffaddf22cbd0</oml:binary_md5>
+</oml:implementation>
+
+<!-- Minimal example -->
+<oml:implementation xmlns:oml="http://open-ml.org/openml">
+	<oml:name>knime.janvanrijn.solveTaskA</oml:name>
+	<oml:version>1.3.0</oml:version>
+	<oml:description>Solving task A in an ingenious way</oml:description>
 </oml:implementation>
