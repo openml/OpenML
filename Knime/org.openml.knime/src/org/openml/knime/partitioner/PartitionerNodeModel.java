@@ -138,11 +138,9 @@ public class PartitionerNodeModel extends NodeModel {
                     ((StringValue)row.getCell(typeIndex)).getStringValue();
             int fold =
                     (int)((DoubleValue)row.getCell(foldIndex)).getDoubleValue();
-            fold--;
             int repeat =
                     (int)((DoubleValue)row.getCell(repeatIndex))
                             .getDoubleValue();
-            repeat--;
             if (type.equals(splitType) && fold == splitFold
                     && repeat == splitRepeat) {
                 String rowid =

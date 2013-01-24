@@ -5,7 +5,8 @@ Bundle-SymbolicName: org.openml.knime;singleton:=true
 Bundle-Version: 0.5.0.qualifier
 Bundle-ClassPath: .,
  lib/schemas.jar,
- lib/xmleditorkit.jar
+ lib/xmleditorkit.jar,
+ lib/commons-codec-1.7.jar
 Bundle-Vendor: OpenML Team
 Require-Bundle: org.apache.commons.lang;bundle-version="2.4.0",
  org.apache.commons.io;bundle-version="1.4.0",
@@ -15,12 +16,13 @@ Require-Bundle: org.apache.commons.lang;bundle-version="2.4.0",
  org.apache.httpcomponents.httpcore;bundle-version="4.1.4"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
-Export-Package: org.openml.dataSetDescription,
+Export-Package: org.apache.commons.codec.binary,
+ org.openMl.openml,
+ org.openMl.openml.impl,
+ org.openml.dataSetDescription,
  org.openml.dataSetDescription.impl,
  org.openml.implementation,
  org.openml.implementation.impl,
  org.openml.implementationLicences,
  org.openml.implementationLicences.impl,
- org.openMl.openml,
- org.openMl.openml.impl,
  xmleditorkit
