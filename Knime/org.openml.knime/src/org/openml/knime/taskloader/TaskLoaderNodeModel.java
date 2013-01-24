@@ -102,6 +102,10 @@ public class TaskLoaderNodeModel extends NodeModel {
             pushFlowVariableInt("OpenML-TaskId", taskId);
             int numRepeats = OpenMLUtil.getNumberOfRepeats(taskDoc);
             int numFolds = OpenMLUtil.getNumberOfFolds(taskDoc);
+
+            // TODO change this
+            numRepeats = 2;
+
             pushFlowVariableInt("OpenML-NumRepeats", numRepeats);
             pushFlowVariableInt("OpenML-NumFolds", numFolds);
             int datasetID = OpenMLUtil.getDataSetId(taskDoc);
@@ -112,14 +116,8 @@ public class TaskLoaderNodeModel extends NodeModel {
                     DataSetDescriptionDocument.Factory.parse(datasetIn);
             String datasetURL = datasetDoc.getDataSetDescription().getUrl();
             pushFlowVariableString("OpenML-DatasetURL", datasetURL);
-            InputStream splitsIn =
-                    OpenMLWebservice.getDatasetDescURL(+splitsID).openStream();
-            DataSetDescriptionDocument splitsDoc =
-                    DataSetDescriptionDocument.Factory.parse(splitsIn);
-            String splitsURL = splitsDoc.getDataSetDescription().getUrl();
-            // TODO change this
-            splitsURL =
-                    "http://expdb.cs.kuleuven.be/expdb/api/?f=openml.task.splits";
+            String splitsURL =
+                    OpenMLWebservice.getSplitsURL(splitsID).toString();
             pushFlowVariableString("OpenML-SplitsURL", splitsURL);
             String idRow =
                     datasetDoc.getDataSetDescription().getRowIdAttribute();

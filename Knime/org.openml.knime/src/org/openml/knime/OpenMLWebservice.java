@@ -125,6 +125,25 @@ public class OpenMLWebservice {
     }
 
     /**
+     * Returns URL to the specified splits.
+     * 
+     * 
+     * @param splitsId ID of the splits
+     * @return URL to splits with splitsId
+     */
+    public static URL getSplitsURL(final int splitsId) {
+        URL url = null;
+        try {
+            url =
+                    new URL(WEBSERVICEURL + "?f=openml.task.splits&splits_id="
+                            + splitsId);
+        } catch (MalformedURLException e) {
+            // return null
+        }
+        return url;
+    }
+
+    /**
      * Upload an implementation.
      * 
      * 

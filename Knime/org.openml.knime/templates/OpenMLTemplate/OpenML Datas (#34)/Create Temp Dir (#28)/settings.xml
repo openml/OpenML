@@ -12,19 +12,19 @@
 <entry key="type" type="xstring" value="variable"/>
 <entry key="name" type="xstring" value="temp_path"/>
 <entry key="class" type="xstring" value="STRING"/>
-<entry key="value" type="xstring" value="/tmp/knime_tempcreator_85eadd4a-2d30-441c-881c-b94e3541491b"/>
+<entry key="value" type="xstring" value="/tmp/knime_tempcreator_6ffed373-667d-4b02-ac3e-d14942de0a6c"/>
 </config>
 <config key="Variable_1">
 <entry key="type" type="xstring" value="variable"/>
 <entry key="name" type="xstring" value="dataset"/>
 <entry key="class" type="xstring" value="STRING"/>
-<entry key="value" type="xstring" value="/tmp/knime_tempcreator_85eadd4a-2d30-441c-881c-b94e3541491b/dataset.arff"/>
+<entry key="value" type="xstring" value="/tmp/knime_tempcreator_6ffed373-667d-4b02-ac3e-d14942de0a6c/dataset.arff"/>
 </config>
 <config key="Variable_2">
 <entry key="type" type="xstring" value="variable"/>
 <entry key="name" type="xstring" value="results"/>
 <entry key="class" type="xstring" value="STRING"/>
-<entry key="value" type="xstring" value="/tmp/knime_tempcreator_85eadd4a-2d30-441c-881c-b94e3541491b/results.arff"/>
+<entry key="value" type="xstring" value="/tmp/knime_tempcreator_6ffed373-667d-4b02-ac3e-d14942de0a6c/results.arff"/>
 </config>
 </config>
 <config key="internal_node_subsettings">
