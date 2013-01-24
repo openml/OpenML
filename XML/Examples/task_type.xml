@@ -24,15 +24,14 @@
 		<oml:description>The evaluation procedure used to evaluate the model</oml:description>
 		<oml:estimation_procedure>
 		        <oml:type>input:3</oml:type>
-			<oml:data_splits_id>input:4</oml:data_splits_id>
-			<oml:parameter name="number_repeats">input:5</oml:parameter>
-			<oml:parameter name="number_folds">input:6</oml:parameter>
-			<oml:parameter name="stratified_sampling">input:7</oml:parameter>
+			<oml:parameter name="number_repeats">input:4</oml:parameter>
+			<oml:parameter name="number_folds">input:5</oml:parameter>
+			<oml:parameter name="stratified_sampling">input:6</oml:parameter>
 		</oml:estimation_procedure>
 	</oml:input>
 	<oml:input name="evaluation_measures">
 		<oml:description>Optional. A list of evaluation measures to optimize for</oml:description>
-	        <oml:evaluation_measures>input:8</oml:evaluation_measures>
+	        <oml:evaluation_measures>input:7</oml:evaluation_measures>
 	</oml:input>
 	<oml:output name="predictions">
 		<oml:description>The predictions returned by your implementation.</oml:description>
@@ -61,11 +60,10 @@
 			<oml:format>JPG</oml:format>
 		</oml:image>
 	</oml:output> -->
-
 </oml:task_type>
 
 <!-- 
 Generating a task requires key-value pairs: 
-[1:"1",2:"class",3:"cross-validation",4:"1001",5:"10",6:"10",7:"true"]
+[1:"1",2:"class",3:"cross-validation",4:"10",5:"10",6:"true"]
 -->
 
