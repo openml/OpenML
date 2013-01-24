@@ -12,6 +12,6 @@
     <oml:format>arff</oml:format>
     <oml:licence>UCI</oml:licence>
     <oml:url>http://expdb.cs.kuleuven.be/expdb/data/uci/nominal/iris.arff</oml:url>
-    <oml:row_id_attribute>mpg</oml:row_id_attribute>
+    <!-- <oml:row_id_attribute>mpg</oml:row_id_attribute> -->
     <oml:md5_checksum>b031a685d8d40136449d94365f9a8b81</oml:md5_checksum>
 </oml:data_set_description>
