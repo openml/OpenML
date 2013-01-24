@@ -63,9 +63,9 @@ public class OpenMLTaskManager {
 		
 		if(isLocal){
 			try {
-				TASK_URL = new File("/home/venkatesh/OpenML/RapidMiner/OpenML/sample_xml/task.xml").toURI().toURL().toString();
-				DATASET_URL = new File("/home/venkatesh/OpenML/RapidMiner/OpenML/sample_xml/dataset.xml").toURI().toURL().toString();
-				DATASPLIT_URL = new File("/home/venkatesh/OpenML/RapidMiner/OpenML/sample_xml/datasplits.arff").toURI().toURL().toString();
+				TASK_URL = new File("../../XML/Examples/task.xml").toURI().toURL().toString();
+				DATASET_URL = new File("../../XML/Examples/dataset.xml").toURI().toURL().toString();
+				DATASPLIT_URL = new File("../../ARFFfoldconfig_task_1.arff").toURI().toURL().toString();
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			}
