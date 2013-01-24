@@ -10,7 +10,7 @@ ALTER TABLE implementation
   CHANGE column `sourceCodeUrl` `sourceUrl` VARCHAR(256) NULL DEFAULT NULL,
   CHANGE column `sourceCodeMd5` `sourceCodeMd5` VARCHAR(64) NULL DEFAULT NULL,
   ADD `binaryFormat` VARCHAR(64) NULL DEFAULT NULL AFTER `binaryUrl`,
-  ADD `sourceFormat` VARCHAR(64) NULL DEFAULT NULL AFTER `sourceCodeUrl`;
+  ADD `sourceFormat` VARCHAR(64) NULL DEFAULT NULL AFTER `sourceUrl`;
 
 ALTER TABLE `bibliographical_reference`
 	CHANGE `implementation_id` `implementation` VARCHAR(128) NOT NULL;
