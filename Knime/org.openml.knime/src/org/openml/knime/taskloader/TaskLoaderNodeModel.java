@@ -67,6 +67,7 @@ import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObjectSpec;
 import org.openml.dataSetDescription.DataSetDescriptionDocument;
+import org.openml.knime.OpenMLVariables;
 import org.openml.knime.OpenMLWebservice;
 import org.openml.util.OpenMLUtil;
 import org.w3c.dom.Document;
@@ -99,30 +100,32 @@ public class TaskLoaderNodeModel extends NodeModel {
                     OpenMLUtil.readDocumentfromURL(OpenMLWebservice
                             .getTaskURL(m_configuration.getTaskid()));
             int taskId = OpenMLUtil.getTaskId(taskDoc);
-            pushFlowVariableInt("OpenML-TaskId", taskId);
+            pushFlowVariableInt(OpenMLVariables.TASKID, taskId);
             int numRepeats = OpenMLUtil.getNumberOfRepeats(taskDoc);
             int numFolds = OpenMLUtil.getNumberOfFolds(taskDoc);
 
             // TODO change this
             numRepeats = 2;
 
-            pushFlowVariableInt("OpenML-NumRepeats", numRepeats);
-            pushFlowVariableInt("OpenML-NumFolds", numFolds);
+            pushFlowVariableInt(OpenMLVariables.REPEATS, numRepeats);
+            pushFlowVariableInt(OpenMLVariables.FOLDS, numFolds);
             int datasetID = OpenMLUtil.getDataSetId(taskDoc);
             int splitsID = OpenMLUtil.getDataSplitId(taskDoc);
+            String targetFeature = OpenMLUtil.getTargetFeature(taskDoc);
+            pushFlowVariableString(OpenMLVariables.TARGETFEATURE, targetFeature);
             InputStream datasetIn =
                     OpenMLWebservice.getDatasetDescURL(+datasetID).openStream();
             DataSetDescriptionDocument datasetDoc =
                     DataSetDescriptionDocument.Factory.parse(datasetIn);
             String datasetURL = datasetDoc.getDataSetDescription().getUrl();
-            pushFlowVariableString("OpenML-DatasetURL", datasetURL);
+            pushFlowVariableString(OpenMLVariables.DATASETURL, datasetURL);
             String splitsURL =
                     OpenMLWebservice.getSplitsURL(splitsID).toString();
-            pushFlowVariableString("OpenML-SplitsURL", splitsURL);
+            pushFlowVariableString(OpenMLVariables.SPLITSURL, splitsURL);
             String idRow =
                     datasetDoc.getDataSetDescription().getRowIdAttribute();
             if (idRow != null) {
-                pushFlowVariableString("OpenML-IDRow", idRow);
+                pushFlowVariableString(OpenMLVariables.IDROW, idRow);
             }
         } catch (Exception e) {
             e.printStackTrace();
