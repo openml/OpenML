@@ -1,15 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <oml:implementation xmlns:oml="http://open-ml.org/openml">
-    <oml:id>knime.janvanrijn.solveTaskA_1.3.0</oml:id>
-    <oml:name>knime.janvanrijn.solveTaskA</oml:name>
+    <!-- server-side  <oml:id>knime.user27.greatWorkflow_1.3.0</oml:id> -->
+    <oml:name>knime.janvanrijn.solveTaskA</oml:name>   <!-- name+version must be unique -->
     <oml:version>1.3.0</oml:version>
     <oml:creator>Jan N. van Rijn</oml:creator>
+    <oml:creator>Bo Gao</oml:creator>
     <oml:contributor>Joaquin Vanschoren</oml:contributor>
-    <oml:contributor>Anonymous KNIME contributor</oml:contributor>
-    <oml:date>2013-01-18</oml:date>
+    <oml:contributor>Patrick Winter</oml:contributor>
+    <!-- server-side <oml:date>2013-01-18</oml:date> -->
     <oml:language>English</oml:language>
-    <oml:format>xml</oml:format>
+    <oml:format>zip</oml:format> 
+    <oml:format>zip</oml:format> 
     <oml:licence>public domain</oml:licence>
+    <oml:parameter_setting parameter="H" value="inf" /> <!-- defaults -->
+    <oml:parameter_setting parameter="P" value="true" />
+    <oml:description>Solving task A in an ingenious way</oml:description>
+    <oml:installation_notes>Do a make install and ...</oml:installation_notes>
+    <oml:full_description>Solving task A in an ingenious way</oml:full_description>
+    <oml:dependencies>weka 3.7.0</oml:dependencies>
+    <oml:programming_language>R</oml:programming_language>
+    <oml:operating_system>Linux</oml:operating_system>
+    <oml:bibliographical_reference>
+        <oml:title>The best way of solving Task A</oml:title>
+        <oml:url>www.janvanrijn.eu/taskA</oml:url>
+        <oml:authors>van Rijn en al</oml:authors>
+        <oml:year>2013</oml:year>
+        <oml:doi>123456789</oml:doi>
+    </oml:bibliographical_reference>
+   <!-- server-side <oml:implements>C4.5</oml:implements> -->
     <oml:components>
         <oml:implementation>
             <oml:id>weka.extended.awesomeAlgorithm_4.0</oml:id>
@@ -18,7 +36,7 @@
             <oml:contributor>Waikato University</oml:contributor>
             <oml:parameter_setting parameter="P" value="true" />
             <oml:parameter_setting parameter="Q" value="-1" />
-            <oml:description>Weka is a great tool, which is a dependacy for almost al the algorithms in the janvanrijn package.</oml:description>
+            <oml:description>Implementation of SVM</oml:description>
             <oml:dependency>weka-4.0</oml:dependency>
             <oml:programming_language>Java</oml:programming_language>
             <oml:operating_system>Linux</oml:operating_system>
@@ -32,30 +50,5 @@
             <oml:type>algorithm</oml:type>
         </oml:implementation>
     </oml:components>
-    <oml:parameter_setting parameter="H" value="inf" />
-    <oml:parameter_setting parameter="P" value="true" />
-    <oml:description>Solving task A in an ingenious way</oml:description>
-    <oml:readme>Created by Jan N. van Rijn. Please give credit.</oml:readme>
-    <oml:summary>Solving task A in an ingenious way</oml:summary>
-    <oml:full_description>Solving task A in an ingenious way</oml:full_description>
-    <oml:technical_manual>run main(p,h) with values for p and h</oml:technical_manual>
-    <oml:dependency>weka</oml:dependency>
-    <oml:programming_language>Java</oml:programming_language>
-    <oml:operating_system>Linux</oml:operating_system>
-    <oml:bibliographical_reference>
-        <oml:title>The best way of solving Task A</oml:title>
-        <oml:url>www.janvanrijn.eu/taskA</oml:url>
-        <oml:authors>van Rijn en all</oml:authors>
-        <oml:year>2013</oml:year>
-        <oml:doi>123456789</oml:doi>
-    </oml:bibliographical_reference>
-    <oml:bibliographical_reference>
-        <oml:title>An analysis of task A and my analysis</oml:title>
-        <oml:url>www.janvanrijn.eu/taskA</oml:url>
-        <oml:authors>van Rijn en all</oml:authors>
-        <oml:year>2013</oml:year>
-        <oml:doi>123459</oml:doi>
-    </oml:bibliographical_reference>
-    <oml:implements>C4.5</oml:implements>
-    <oml:type>workflow</oml:type>
+
 </oml:implementation>

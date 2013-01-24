@@ -1,7 +1,4 @@
-<xs:schema targetNamespace="http://openml.org/task_type_description"
-    xmlns:oml="http://openml.org/task_type_description"
-    xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    elementFormDefault="qualified">
+<xs:schema xmlns:oml="http://open-ml.org/openml" xmlns:xs="http://www.w3.org/2001/XMLSchema">
    <xs:element name="task" type="oml:task_description"/>
    <xs:complexType name="task_description">
         <xs:sequence> 
