@@ -1,0 +1,7 @@
+- produce ARFF and XML output files for results and inplementation. upload them to the server.
+
+- query the server for results. IMHO we should focus on getting the data into R, not already analyzing and
+visualizing it. later on we can provide convenience functions for this, but many users disagree on what
+king of tool / framework they want to use. so first of all: provide data in a reasonable format (IMHO: data.frame)
+example query: get all results for a task nr (e.g. 10CV on iris)
+

@@ -51,13 +51,17 @@ parseOpenMLTask <- function(file) {
   # task
   task.id <- as.integer(xmlValue(getNodeSet(doc, "/oml:task/oml:task_id")[[1]]))
   task.type <- xmlValue(getNodeSet(doc, "/oml:task/oml:task_type")[[1]])  
-  ns.parameters <- getNodeSet(doc, "/oml:task/oml:parameter")
-  parameters <- lapply(ns.parameters, function(x) xmlValue(x))
-  names(parameters) <- sapply(ns.parameters, function(x) xmlGetAttr(x, "name"))
-
+  getParams <- function(path) {
+    ns.parameters <- getNodeSet(doc, paste(path, "oml:parameter", sep ="/"))
+    parameters <- lapply(ns.parameters, function(x) xmlValue(x))
+    names(parameters) <- sapply(ns.parameters, function(x) xmlGetAttr(x, "name"))
+    parameters
+  }
+  params <- getParams("oml:task")
+  
   # data set description
   data.desc.id <- as.integer(xmlValue(getNodeSet(doc, "/oml:task/oml:input/oml:data_set/oml:data_set_id")[[1]]))
-  data.splits.id <- as.integer(xmlValue(getNodeSet(doc, "/oml:task/oml:input/oml:data_splits/oml:data_set_id")[[1]]))
+  data.splits.id <- as.integer(xmlValue(getNodeSet(doc, "/oml:task/oml:input/oml:estimation_procedure/oml:data_splits_id")[[1]]))
   data.desc <- NULL
   
   # prediction
@@ -70,17 +74,27 @@ parseOpenMLTask <- function(file) {
     features = preds.features
   )
   
-  data.splits <- data.frame() 
+  # estimation procedure
+  estim.proc <- OpenMLEstimationProcedure(
+    type = xmlValue(getNodeSet(doc, "/oml:task/oml:input/oml:estimation_procedure/oml:type")[[1]]), 
+    data.splits.id  = as.integer(xmlValue(getNodeSet(doc, "/oml:task/oml:input/oml:estimation_procedure/oml:data_splits_id")[[1]])), 
+    data.splits = data.frame(),
+    parameters = getParams("/oml:task/oml:input/oml:estimation_procedure/oml:type")
+  )
+
+  # measures
+  ns.eval <- getNodeSet(doc, "/oml:task/oml:input/oml:evaluation_measures/oml:evaluation_measure")
+  measures <- sapply(ns.eval, xmlValue)
   
   task = OpenMLTask(
     task.id = task.id,
     task.type = task.type,
-    task.pars = parameters,
+    task.pars = params,
     task.data.desc.id = data.desc.id,
     task.data.desc = data.desc,
-    task.data.splits.id = data.splits.id,
-    task.data.splits = data.splits,
-    task.preds = task.preds
+    task.estimation.procedure = estim.proc,
+    task.preds = task.preds,
+    task.evaluation.measures = measures
   )
   convertOpenMLTaskSlots(task)
 }

@@ -31,13 +31,13 @@ setClass("OpenMLTask",
 # constructor function
 OpenMLTask <- function(task.id,task.type,task.pars,
                        task.data.desc.id,task.data.desc,
-                       task.data.splits.id,task.data.splits,
+                       task.estimation.procedure,
                        task.preds,task.evaluation.measures)
 {
   new("OpenMLTask",
       task.id=task.id,task.type=task.type,task.pars=task.pars,
       task.data.desc.id=task.data.desc.id,task.data.desc=task.data.desc,
-      task.data.splits.id=task.data.splits.id,task.data.splits=task.data.splits,
+      task.estimation.procedure=task.estimation.procedure,
       task.preds=task.preds,task.evaluation.measures=task.evaluation.measures)
 }
 

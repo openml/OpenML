@@ -16,7 +16,7 @@ fn.data.splits <- "../ARFF/foldconfig_task_1.arff"
 task <- parseOpenMLTask(fn.task)
 task@task.data.desc = parseOpenMLDataSetDescription(fn.data.set.desc)
 task@task.data.desc@data.set = parseOpenMLDataSet(fn.data.set)
-task@task.data.splits = parseOpenMLDataSplits(fn.data.splits)
+task@task.estimation.procedure@data.splits = parseOpenMLDataSplits(fn.data.splits)
 print(task)
 
 

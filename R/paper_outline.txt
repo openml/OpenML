@@ -1,0 +1,16 @@
+
+General description of OpenML
+
+What Machine Learning tasks ar ecurreently covered
+
+Description of the Server API
+(very brief)
+
+Description of the we interface functionality
+
+Description of the R package
+
+Connecting the R package with R frameworks for ML experiments 
+
+Outlook: what ML tasks and what functionality should be corvered in the future
+

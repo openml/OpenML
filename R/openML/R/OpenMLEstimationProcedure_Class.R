@@ -26,7 +26,7 @@ setClass("OpenMLEstimationProcedure",
 
 
 setClassUnion("OptionalOpenMLEstimationProcedure",
-              c("OpenMLEstimationPrecedure","NULL"))
+              c("OpenMLEstimationProcedure","NULL"))
 
 # --------------------------------------------------------------
 # constructor function
