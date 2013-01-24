@@ -19,6 +19,7 @@ setClass("OpenMLTask",
          representation(task.id="integer",
                         task.type="character",
                         task.pars="list",
+                        task.target.features="character",
                         task.data.desc.id="integer",
                         task.data.desc="OptionalOpenMLDataSetDescription",
                         task.estimation.procedure="OptionalOpenMLEstimationProcedure",
@@ -29,13 +30,14 @@ setClass("OpenMLTask",
 
 # --------------------------------------------------------------
 # constructor function
-OpenMLTask <- function(task.id,task.type,task.pars,
+OpenMLTask <- function(task.id,task.type,task.pars,task.target.feaures,
                        task.data.desc.id,task.data.desc,
                        task.estimation.procedure,
                        task.preds,task.evaluation.measures)
 {
   new("OpenMLTask",
       task.id=task.id,task.type=task.type,task.pars=task.pars,
+      task.target.features=task.target.features,
       task.data.desc.id=task.data.desc.id,task.data.desc=task.data.desc,
       task.estimation.procedure=task.estimation.procedure,
       task.preds=task.preds,task.evaluation.measures=task.evaluation.measures)
@@ -57,6 +59,15 @@ setMethod("show","OpenMLTask",
             if (length(object@task.pars)) {
               for(i in 1:length(object@task.pars))
                 cat('\t',names(object@task.pars)[i],' = ',object@task.pars[[i]],'\n')
+            }
+
+            ## Target variables info
+            if (length(object@task.target.features) > 1)
+              cat('\nTask Target Feature :: ',object@task.target.features[1],'\n')
+            else {
+              cat('\nTask Target Features ::\n ')
+              for(i in 1:length(object@task.target.features))
+                cat('\t',object@task.target.features[i],'\n')
             }
             
             ## Data set info
