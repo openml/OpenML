@@ -24,7 +24,7 @@
 		<xs:element name="bibliographical_reference" minOccurs="0" maxOccurs="unbounded" type="oml:bibliographical_reference"/>
 		<xs:element name="implements" minOccurs="0" maxOccurs="1" type="xs:string"/> <!-- ontological reference -->
 		<!-- structure -->
-		<xs:element name="parameter_default" minOccurs="0" maxOccurs="unbounded" type="oml:parameter_default"/> <!-- defaults -->
+		<xs:element name="parameter" minOccurs="0" maxOccurs="unbounded" type="oml:parameter"/> <!-- defaults -->
 		<xs:element name="components" minOccurs="0" maxOccurs="1" type="oml:components"/>
 		<!-- upload -->
 		<xs:element name="source_format" minOccurs="0" maxOccurs="1" type="xs:string"/> <!-- zip -->
@@ -38,13 +38,13 @@
 		<xs:element name="implementation" minOccurs="1" maxOccurs="unbounded" type="oml:implementation"/>  
 	</xs:sequence>
 </xs:complexType>
-<xs:complexType name="parameter_default">
-	<xs:simpleContent>
-		<xs:extension base="xs:string">
-			<xs:attribute use="required" name="parameter" type="xs:string"/>
-			<xs:attribute use="required" name="datatype" type="xs:string"/>
-		</xs:extension>
-	</xs:simpleContent>
+<xs:complexType name="parameter">
+	<xs:sequence>
+		<xs:element name="name" type="xs:string"/>
+		<xs:element name="data_type" minOccurs="0" maxOccurs="1" type="xs:string"/>
+		<xs:element name="default_value" minOccurs="0" maxOccurs="1" type="xs:string"/>
+		<xs:element name="description" minOccurs="0" maxOccurs="1" type="xs:string"/>
+	</xs:sequence>
 </xs:complexType>
 <xs:complexType name="bibliographical_reference">
 	<xs:sequence>

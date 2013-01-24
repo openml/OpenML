@@ -21,16 +21,18 @@
 		<oml:year>2013</oml:year>
 		<oml:doi>123456789</oml:doi>
 	</oml:bibliographical_reference>
-	<oml:parameter_default parameter="H" datatype="float">0.5</oml:parameter_default> <!-- defaults, can be checked on server for formatting: floats: .-notation, e-notation, arrays: [ a , b , c], matrices (columns): [[a,b,c],[c,d,e]], strings: Unicode, invalid are: &,<,> -->
-	<oml:parameter_default parameter="P" datatype="string">RBF</oml:parameter_default>
 	<oml:components>
 		<oml:implementation>
 			<oml:name>knime.algorithmA</oml:name>
 			<oml:version>4.0</oml:version>
 			<oml:description>Implementation of SVM</oml:description>
 			<oml:dependencies>KNIME 2.7.1</oml:dependencies>
-			<oml:parameter_default parameter="P" datatype="float">0.5</oml:parameter_default>
-			<oml:parameter_default parameter="Q" datatype="integer">-1</oml:parameter_default>
+			<oml:parameter>
+				<oml:name>C</oml:name>
+				<oml:data_type>float</oml:data_type>
+				<oml:default_value>0.01</oml:default_value>
+				<oml:description>Controls complexity</oml:description>
+			</oml:parameter>
 		</oml:implementation>
 	</oml:components>
 	<oml:source_format>zip</oml:source_format>
