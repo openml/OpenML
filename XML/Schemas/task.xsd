@@ -1,6 +1,6 @@
 <xs:schema xmlns:oml="http://open-ml.org/openml" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-   <xs:element name="task" type="oml:task_description"/>
-   <xs:complexType name="task_description">
+   <xs:element name="task" type="oml:task"/>
+   <xs:complexType name="task">
         <xs:sequence> 
 	    <xs:element name="task_id" type="xs:integer"/>
 	    <xs:element name="task_type" type="xs:string"/>
