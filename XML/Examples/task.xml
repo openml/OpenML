@@ -28,7 +28,7 @@
 			<oml:format>ARFF</oml:format>
 			<oml:feature name="repeat" type="integer" required="true"/>
 			<oml:feature name="fold"   type="integer" required="true"/>
-			<oml:feature name="row_id" type="integer" required="true"/>
+			<oml:feature name="row_id" type="string" required="true"/>
 			<oml:feature name="prediction" type="string" required="true"/>
 			<oml:feature name="confidence.classvalue" type="numeric" required="false"/>
 		</oml:predictions>
