@@ -1,9 +1,20 @@
 ALTER TABLE implementation
   DROP `format`,
   DROP `type`,
+  DROP `readme`,
+  DROP `summary`,
+  CHANGE column `technicalManual` `installationNotes` TEXT NULL DEFAULT NULL,
+  CHANGE column `dependency` `dependencies` TEXT NULL DEFAULT NULL,
+  CHANGE column `language` `language` varchar(128) NULL DEFAULT NULL AFTER `licence`,
+  CHANGE column `date` `date` DATETIME NULL DEFAULT NULL,
+  CHANGE column `sourceCodeUrl` `sourceUrl` VARCHAR(256) NULL DEFAULT NULL,
+  CHANGE column `sourceCodeMd5` `sourceCodeMd5` VARCHAR(64) NULL DEFAULT NULL,
   ADD `binaryFormat` VARCHAR(64) NULL DEFAULT NULL AFTER `binaryUrl`,
-  ADD `sourceCodeFormat` VARCHAR(64) NULL DEFAULT NULL AFTER `sourceCodeUrl`;
+  ADD `sourceFormat` VARCHAR(64) NULL DEFAULT NULL AFTER `sourceCodeUrl`;
 
+ALTER TABLE `bibliographical_reference`
+	CHANGE `implementation_id` `implementation` VARCHAR(128) NOT NULL;
+  
 DROP TABLE `estimation_procedure`;
 DROP TABLE `estimation_procedure_parameter`;
 DROP TABLE `prediction`;
