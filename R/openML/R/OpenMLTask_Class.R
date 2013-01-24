@@ -21,8 +21,7 @@ setClass("OpenMLTask",
                         task.pars="list",
                         task.data.desc.id="integer",
                         task.data.desc="OptionalOpenMLDataSetDescription",
-                        task.data.splits.id="integer",
-                        task.data.splits="OptionalOpenMLDataSplits",
+                        task.estimation.procedure="OptionalOpenMLEstimationProcedure",
                         task.preds="list",
                         task.evaluation.measures="character"
            ))
