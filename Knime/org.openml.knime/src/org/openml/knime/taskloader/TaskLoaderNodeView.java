@@ -57,10 +57,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
 import org.knime.core.node.NodeView;
+import org.openMl.openml.TaskDocument;
+import org.openMl.openml.TaskInput;
 import org.openml.dataSetDescription.DataSetDescriptionDocument;
 import org.openml.knime.OpenMLWebservice;
-import org.openml.util.OpenMLUtil;
-import org.w3c.dom.Document;
 
 import xmleditorkit.XMLDocument;
 import xmleditorkit.XMLEditorKit;
@@ -119,8 +119,18 @@ public class TaskLoaderNodeView extends NodeView<TaskLoaderNodeModel> {
         try {
             URL taskURL = OpenMLWebservice.getTaskURL(nodeModel.getTaskid());
             taskEditorPane.read(taskURL.openStream(), new XMLDocument());
-            Document taskDoc = OpenMLUtil.readDocumentfromURL(taskURL);
-            int datasetID = OpenMLUtil.getDataSetId(taskDoc);
+            TaskDocument taskDoc =
+                    TaskDocument.Factory.parse(OpenMLWebservice
+                            .getTaskURL(nodeModel.getTaskid()));
+            TaskInput[] taskInputs = taskDoc.getTask().getInputArray();
+            Integer datasetID = null;
+            for (int i = 0; i < taskInputs.length; i++) {
+                if (taskInputs[i].isSetDataSet()) {
+                    datasetID =
+                            taskInputs[i].getDataSet().getDataSetId()
+                                    .intValue();
+                }
+            }
             URL datasetdescURL = OpenMLWebservice.getDatasetDescURL(datasetID);
             datasetdescEditorPane.read(datasetdescURL.openStream(),
                     new XMLDocument());
