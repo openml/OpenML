@@ -4,57 +4,43 @@
     <xs:element name="implementation" type="oml:implementation" />
     <xs:complexType name="implementation">
         <xs:sequence>
+            <!-- field "id" not allowed here -->
+            <!-- field "uploader" not allowed here -->
             <xs:element name="id" minOccurs="0" maxOccurs="1"
                 type="xs:string" />  <!-- optional, if not given, added server-side -->
             <xs:element name="uploader" minOccurs="0"
                 maxOccurs="1" type="xs:string" />  <!-- added server-side -->
             <!-- dublin core -->
-            <xs:element name="name" minOccurs="0" maxOccurs="1"
-                type="xs:string" />
-            <xs:element name="version" minOccurs="0"
-                maxOccurs="1" type="xs:string" />
+            <xs:element name="name" type="xs:string" />
+            <xs:element name="version" minOccurs="0" type="xs:string" />
             <xs:element name="creator" minOccurs="0"
-                maxOccurs="unbounded" type="xs:string" />
+                maxOccurs="unbounded" type="xs:string" /> <!-- main creators of workflow -->
             <xs:element name="contributor" minOccurs="0"
-                maxOccurs="unbounded" type="xs:string" />
+                maxOccurs="unbounded" type="xs:string" /> <!-- minor contributors -->
+            <!-- field "upload_date" not allowed here -->
             <xs:element name="date" minOccurs="0" maxOccurs="1"
                 type="xs:string" />  <!-- added server-side -->
-            <xs:element name="licence" minOccurs="0"
-                maxOccurs="1" type="xs:string" />
+            <xs:element name="licence" minOccurs="0" type="xs:string" /> <!-- if not there means: Public Domain or "dont know / care" :) -->
             <!-- textual info (for search) -->
-            <xs:element name="language" minOccurs="0"
-                maxOccurs="1" type="xs:string" />
+            <xs:element name="language" minOccurs="0" type="xs:string" /> <!-- if there, starts with 1 upper case latter, rest lower case -->
             <xs:element name="description" type="xs:string" /> <!-- user comments -->
             <xs:element name="full_description" minOccurs="0"
-                maxOccurs="1" type="xs:string" /> <!-- full description, e.g. man pages -->
+                type="xs:string" /> <!-- full description, e.g. man pages filled in by tool -->
             <xs:element name="installation_notes" minOccurs="0"
-                maxOccurs="1" type="xs:string" /> <!-- how to run the binary -->
+                type="xs:string" /> <!-- how to run the workflow, are there additional hints? -->
             <!-- technical info -->
             <xs:element name="dependencies" minOccurs="0"
-                maxOccurs="1" type="xs:string" /> <!-- was: library -->
-            <xs:element name="programming_language"
-                minOccurs="0" maxOccurs="1" type="xs:string" />
-            <xs:element name="operating_system" minOccurs="0"
-                maxOccurs="1" type="xs:string" />
+                type="xs:string" /> <!-- free form, BUT every tool should probably specify a suitable format 
+                here and stick to it -->
             <!-- other -->
             <xs:element name="bibliographical_reference"
                 minOccurs="0" maxOccurs="unbounded" type="oml:bibliographical_reference" />
-            <xs:element name="implements" minOccurs="0"
-                maxOccurs="1" type="xs:string" /> <!-- ontological reference -->
             <!-- structure -->
             <xs:element name="parameter" minOccurs="0"
-                maxOccurs="unbounded" type="oml:parameter" /> <!-- defaults -->
+                maxOccurs="unbounded" type="oml:parameter" /> <!-- global / general parameters of the workflow -->
+            <!-- dont repeat params here which are in componnets in the XML! -->
             <xs:element name="components" minOccurs="0"
                 maxOccurs="1" type="oml:components" />
-            <!-- upload -->
-            <xs:element name="source_format" minOccurs="0"
-                maxOccurs="1" type="xs:string" /> <!-- zip -->
-            <xs:element name="binary_format" minOccurs="0"
-                maxOccurs="1" type="xs:string" /> <!-- zip -->
-            <xs:element name="source_md5" minOccurs="0"
-                maxOccurs="1" type="xs:string" />
-            <xs:element name="binary_md5" minOccurs="0"
-                maxOccurs="1" type="xs:string" />
         </xs:sequence>
     </xs:complexType>
     <xs:complexType name="components">
@@ -67,17 +53,17 @@
         <xs:sequence>
             <xs:element name="name" type="xs:string" />
             <xs:element name="data_type" minOccurs="0"
-                maxOccurs="1" type="xs:string" />
+                type="xs:string" /> <!-- use these names if possible: int, real, string, vector, matrix, object -->
             <xs:element name="default_value" minOccurs="0"
-                maxOccurs="1" type="xs:string" />
+                type="xs:string" />
             <xs:element name="description" minOccurs="0"
-                maxOccurs="1" type="xs:string" />
+                type="xs:string" />
         </xs:sequence>
     </xs:complexType>
     <xs:complexType name="bibliographical_reference">
         <xs:sequence>
-            <xs:element name="citation" type="xs:string" />
-            <xs:element name="url" type="xs:string" />
+            <xs:element name="citation" type="xs:string" /> <!-- free form ref, like it would appear in a paper -->
+            <xs:element name="url" type="xs:string" /> <!-- URL to e.g. pdf form ref, like it would appear in a paper -->
         </xs:sequence>
     </xs:complexType>
 </xs:schema>

@@ -152,12 +152,12 @@ public class UploaderNodeModel extends NodeModel {
                             OpenMLWebservice.sendImplementation(
                                     implementationFile, workflowFile, user,
                                     password);
-                    ImplementationDocument uploadImpl =
+                    ImplementationDocument responseImpl =
                             ImplementationDocument.Factory.parse(response);
-                    if (!uploadImpl.validate()) {
+                    if (!responseImpl.validate()) {
                         throw new Exception("Response from server not valid");
                     }
-                    m_config.setWorkflowId(uploadImpl.getImplementation()
+                    m_config.setWorkflowId(responseImpl.getImplementation()
                             .getId());
                     m_config.setUploadedWorkflow(Util.toString(curUserNode));
                     uploadWorkflow = false;
@@ -257,7 +257,6 @@ public class UploaderNodeModel extends NodeModel {
         Implementation impl = implDoc.addNewImplementation();
         impl.setName(name);
         impl.setVersion(m_config.getVersion());
-        impl.setImplements(m_config.getImplements());
         impl.setLicence(m_config.getLicence());
         impl.setDependencies(m_config.getDependency());
         impl.setDescription(m_config.getDescription());
