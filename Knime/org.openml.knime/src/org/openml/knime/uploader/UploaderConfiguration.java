@@ -94,10 +94,6 @@ public class UploaderConfiguration {
 
     private String m_description;
 
-    private String m_summary;
-
-    private String m_fullDescription;
-
     private Reference[] m_references;
 
     private String m_uploadedWorkflow;
@@ -299,34 +295,6 @@ public class UploaderConfiguration {
     }
 
     /**
-     * @return the summary
-     */
-    public String getSummary() {
-        return m_summary;
-    }
-
-    /**
-     * @param summary the summary to set
-     */
-    public void setSummary(final String summary) {
-        m_summary = summary;
-    }
-
-    /**
-     * @return the fullDescription
-     */
-    public String getFullDescription() {
-        return m_fullDescription;
-    }
-
-    /**
-     * @param fullDescription the fullDescription to set
-     */
-    public void setFullDescription(final String fullDescription) {
-        m_fullDescription = fullDescription;
-    }
-
-    /**
      * @return the references
      */
     public Reference[] getReferences() {
@@ -374,8 +342,6 @@ public class UploaderConfiguration {
         settings.addString("contributor", m_contributor);
         settings.addString("language", m_language);
         settings.addString("description", m_description);
-        settings.addString("summary", m_summary);
-        settings.addString("fulldescription", m_fullDescription);
         settings.addString("uploadedworkflow", m_uploadedWorkflow);
         NodeSettingsWO pairs = settings.addNodeSettings("name_variable_pairs");
         if (m_pairs != null) {
@@ -390,12 +356,9 @@ public class UploaderConfiguration {
         if (m_references != null) {
             for (int i = 0; i < m_references.length; i++) {
                 NodeSettingsWO ref =
-                        refs.addNodeSettings(m_references[i].getTitle());
-                ref.addString("title", m_references[i].getTitle());
+                        refs.addNodeSettings(m_references[i].getCitation());
+                ref.addString("citation", m_references[i].getCitation());
                 ref.addString("url", m_references[i].getUrl());
-                ref.addString("authors", m_references[i].getAuthors());
-                ref.addInt("year", m_references[i].getYear());
-                ref.addString("doi", m_references[i].getDoi());
             }
         }
     }
@@ -421,8 +384,6 @@ public class UploaderConfiguration {
         m_contributor = settings.getString("contributor", "");
         m_language = settings.getString("language", "");
         m_description = settings.getString("description", "");
-        m_summary = settings.getString("summary", "");
-        m_fullDescription = settings.getString("fulldescription", "");
         try {
             m_uploadedWorkflow = settings.getString("uploadedworkflow");
         } catch (InvalidSettingsException e) {
@@ -458,15 +419,10 @@ public class UploaderConfiguration {
             for (String key : keySet) {
                 try {
                     NodeSettingsRO ref = refs.getNodeSettings(key);
-                    String title = ref.getString("title");
+                    String citation = ref.getString("citation");
                     String url = ref.getString("url");
-                    String authors = ref.getString("authors");
-                    int year = ref.getInt("year");
-                    String doi = ref.getString("doi");
-                    if (title != null && url != null && authors != null
-                            && doi != null) {
-                        refList.add(new Reference(title, url, authors, year,
-                                doi));
+                    if (citation != null && url != null) {
+                        refList.add(new Reference(citation, url));
                     }
                 } catch (InvalidSettingsException ise) {
                     // ignore
@@ -499,8 +455,6 @@ public class UploaderConfiguration {
         if (m_uploadWorkflow) {
             validate(m_description, "Description");
         }
-        m_summary = settings.getString("summary", "");
-        m_fullDescription = settings.getString("fulldescription", "");
         validate(m_licence, "Licence");
         if (m_uploadWorkflow) {
             validate(m_version, "Version");
@@ -540,13 +494,10 @@ public class UploaderConfiguration {
         m_references = new Reference[keySet.size()];
         for (String key : refKeySet) {
             NodeSettingsRO ref = refs.getNodeSettings(key);
-            String title = ref.getString("title");
+            String citation = ref.getString("citation");
             String url = ref.getString("url");
-            String authors = ref.getString("authors");
-            int year = ref.getInt("year");
-            String doi = ref.getString("doi");
-            if (title != null && url != null && authors != null && doi != null) {
-                refList.add(new Reference(title, url, authors, year, doi));
+            if (citation != null && url != null) {
+                refList.add(new Reference(citation, url));
             }
         }
         m_references = refList.toArray(new Reference[refList.size()]);
@@ -615,40 +566,27 @@ public class UploaderConfiguration {
      */
     public static class Reference {
 
-        private String m_title;
+        private String m_citation;
 
         private String m_url;
-
-        private String m_authors;
-
-        private int m_year;
-
-        private String m_doi;
 
         /**
          * Create a reference.
          * 
          * 
-         * @param title
+         * @param citation
          * @param url
-         * @param authors
-         * @param year
-         * @param doi
          */
-        public Reference(final String title, final String url,
-                final String authors, final int year, final String doi) {
-            m_title = title;
+        public Reference(final String citation, final String url) {
+            m_citation = citation;
             m_url = url;
-            m_authors = authors;
-            m_year = year;
-            m_doi = doi;
         }
 
         /**
-         * @return the title
+         * @return the citation
          */
-        public String getTitle() {
-            return m_title;
+        public String getCitation() {
+            return m_citation;
         }
 
         /**
@@ -656,27 +594,6 @@ public class UploaderConfiguration {
          */
         public String getUrl() {
             return m_url;
-        }
-
-        /**
-         * @return the authors
-         */
-        public String getAuthors() {
-            return m_authors;
-        }
-
-        /**
-         * @return the year
-         */
-        public int getYear() {
-            return m_year;
-        }
-
-        /**
-         * @return the doi
-         */
-        public String getDoi() {
-            return m_doi;
         }
 
     }

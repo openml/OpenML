@@ -122,7 +122,6 @@ public class UploaderNodeModel extends NodeModel {
             String password = credentials.getPassword();
             String workflowName = getWorkflowManager().getName();
             String name = "knime." + user + "." + workflowName;
-            m_config.setWorkflowId(name + "_" + m_config.getVersion());
             File tmpDir = File.createTempFile("OpenMLTemp", "");
             try {
                 tmpDir.delete();
@@ -151,15 +150,20 @@ public class UploaderNodeModel extends NodeModel {
                                     password);
                     ImplementationDocument uploadImpl =
                             ImplementationDocument.Factory.parse(response);
-                    if (uploadImpl.validate()) {
-                        m_config.setWorkflowId(uploadImpl.getImplementation()
-                                .getId());
+                    if (!uploadImpl.validate()) {
+                        throw new Exception("Response from server not valid");
                     }
+                    m_config.setWorkflowId(uploadImpl.getImplementation()
+                            .getId());
                     m_config.setUploadedWorkflow(Util.toString(curUserNode));
                     uploadWorkflow = false;
                     m_config.setUploadWorkflow(false);
                 }
                 if (!uploadResults.equals(UploadPolicies.NO.getName())) {
+                    if (m_config.getWorkflowId() == null) {
+                        throw new Exception(
+                                "Implementation has not been uploaded yet");
+                    }
                     int taskId = peekFlowVariableInt(OpenMLVariables.TASKID);
                     String implementationId = m_config.getWorkflowId();
                     File[] files =
@@ -226,6 +230,7 @@ public class UploaderNodeModel extends NodeModel {
         impl.setVersion(m_config.getVersion());
         impl.setImplements(m_config.getImplements());
         impl.setLicence(m_config.getLicence());
+        impl.setDependencies(m_config.getDependency());
         impl.setOperatingSystem(System.getProperty("os.name") + "_"
                 + System.getProperty("os.arch") + "_"
                 + System.getProperty("os.version"));
@@ -242,22 +247,19 @@ public class UploaderNodeModel extends NodeModel {
         if (language != null && language.length() > 0) {
             impl.setLanguage(language);
         }
-        String fullDescription = m_config.getFullDescription();
-        if (fullDescription != null && fullDescription.length() > 0) {
-            impl.setFullDescription(fullDescription);
-        }
         Reference[] references = m_config.getReferences();
         for (int i = 0; i < references.length; i++) {
             BibliographicalReference ref =
                     impl.addNewBibliographicalReference();
-            ref.setCitation(references[i].getTitle());
+            ref.setCitation(references[i].getCitation());
             ref.setUrl(references[i].getUrl());
         }
-        // new
-        // WorkflowDescription(getWorkflowManager()).exportToOpenMLXML(impl);
-        new WorkflowDescription(getWorkflowManager()).exportWorkflow(impl);
+        // WorkflowDescription wd = new
+        // WorkflowDescription(getWorkflowManager());
+        // impl.setFullDescription(wd.exportToOpenMLXML());
+        // wd.exportWorkflow(impl);
         Map<String, String> prefixMap = new HashMap<String, String>();
-        prefixMap.put("http://openml.org/implementation", "oml");
+        prefixMap.put("http://open-ml.org/openml", "oml");
         implDoc.save(file, new XmlOptions().setSavePrettyPrint()
                 .setSaveSuggestedPrefixes(prefixMap));
     }

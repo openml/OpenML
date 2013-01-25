@@ -152,14 +152,6 @@ class UploaderNodeDialog extends NodeDialogPane {
 
     private JTextArea m_description;
 
-    private JLabel m_summaryLabel;
-
-    private JTextArea m_summary;
-
-    private JLabel m_fullDescriptionLabel;
-
-    private JTextArea m_fullDescription;
-
     private JTable m_references;
 
     private DefaultTableModel m_referencesModel;
@@ -210,21 +202,13 @@ class UploaderNodeDialog extends NodeDialogPane {
         m_contributor = new JTextField();
         m_languageLabel = new JLabel("Language");
         m_language = new JTextField();
-        m_descriptionLabel = new JLabel("Short description");
+        m_descriptionLabel = new JLabel("Description");
         m_description = new JTextArea();
         m_description.setLineWrap(true);
         m_description.setRows(5);
-        m_summaryLabel = new JLabel("Summary");
-        m_summary = new JTextArea();
-        m_summary.setLineWrap(true);
-        m_summary.setRows(5);
-        m_fullDescriptionLabel = new JLabel("Full description");
-        m_fullDescription = new JTextArea();
-        m_fullDescription.setLineWrap(true);
-        m_fullDescription.setRows(5);
         m_referencesModel =
-                new DefaultTableModel(new Object[0][], new Object[]{"title",
-                        "url", "authors", "year", "doi"});
+                new DefaultTableModel(new Object[0][], new Object[]{"citation",
+                        "url"});
         m_references = new JTable(m_referencesModel);
         m_no.addChangeListener(new UpdateListener());
         m_once.addChangeListener(new UpdateListener());
@@ -355,21 +339,7 @@ class UploaderNodeDialog extends NodeDialogPane {
         panel.add(m_descriptionLabel, gbc);
         gbc.weightx = 1;
         gbc.gridx++;
-        panel.add(m_description, gbc);
-        gbc.gridx = 0;
-        gbc.weightx = 0;
-        gbc.gridy++;
-        panel.add(m_summaryLabel, gbc);
-        gbc.weightx = 1;
-        gbc.gridx++;
-        panel.add(m_summary, gbc);
-        gbc.gridx = 0;
-        gbc.weightx = 0;
-        gbc.gridy++;
-        panel.add(m_fullDescriptionLabel, gbc);
-        gbc.weightx = 1;
-        gbc.gridx++;
-        panel.add(m_fullDescription, gbc);
+        panel.add(new JScrollPane(m_description), gbc);
         return panel;
     }
 
@@ -434,10 +404,6 @@ class UploaderNodeDialog extends NodeDialogPane {
         m_languageLabel.setEnabled(uploadWorkflow);
         m_description.setEnabled(uploadWorkflow);
         m_descriptionLabel.setEnabled(uploadWorkflow);
-        m_summary.setEnabled(uploadWorkflow);
-        m_summaryLabel.setEnabled(uploadWorkflow);
-        m_fullDescription.setEnabled(uploadWorkflow);
-        m_fullDescriptionLabel.setEnabled(uploadWorkflow);
         m_add.setEnabled(uploadWorkflow);
         m_remove.setEnabled(uploadWorkflow);
         m_references.setEnabled(uploadWorkflow);
@@ -481,8 +447,6 @@ class UploaderNodeDialog extends NodeDialogPane {
         config.setContributor(m_contributor.getText());
         config.setLanguage(m_language.getText());
         config.setDescription(m_description.getText());
-        config.setSummary(m_summary.getText());
-        config.setFullDescription(m_fullDescription.getText());
         String[] names = m_params.getKeys();
         String[] variables = m_params.getValues();
         NameVariablePair[] pairs = new NameVariablePair[names.length];
@@ -491,26 +455,16 @@ class UploaderNodeDialog extends NodeDialogPane {
         }
         config.setPairs(pairs);
         Reference[] references = new Reference[m_referencesModel.getRowCount()];
-        int titleIndex = m_referencesModel.findColumn("title");
+        int citationIndex = m_referencesModel.findColumn("citation");
         int urlIndex = m_referencesModel.findColumn("url");
-        int authorsIndex = m_referencesModel.findColumn("authors");
-        int yearIndex = m_referencesModel.findColumn("year");
-        int doiIndex = m_referencesModel.findColumn("doi");
         for (int i = 0; i < references.length; i++) {
             try {
-                String title =
-                        m_referencesModel.getValueAt(i, titleIndex).toString();
+                String citation =
+                        m_referencesModel.getValueAt(i, citationIndex)
+                                .toString();
                 String url =
                         m_referencesModel.getValueAt(i, urlIndex).toString();
-                String authors =
-                        m_referencesModel.getValueAt(i, authorsIndex)
-                                .toString();
-                int year =
-                        Integer.parseInt(m_referencesModel.getValueAt(i,
-                                yearIndex).toString());
-                String doi =
-                        m_referencesModel.getValueAt(i, doiIndex).toString();
-                references[i] = new Reference(title, url, authors, year, doi);
+                references[i] = new Reference(citation, url);
             } catch (Exception e) {
                 throw new InvalidSettingsException("Reference " + i
                         + " is invalid");
@@ -552,8 +506,6 @@ class UploaderNodeDialog extends NodeDialogPane {
         m_contributor.setText(config.getContributor());
         m_language.setText(config.getLanguage());
         m_description.setText(config.getDescription());
-        m_summary.setText(config.getSummary());
-        m_fullDescription.setText(config.getFullDescription());
         NameVariablePair[] pairs = config.getPairs();
         String[] names = new String[pairs.length];
         String[] variables = new String[pairs.length];
@@ -563,19 +515,13 @@ class UploaderNodeDialog extends NodeDialogPane {
         }
         m_params.setTableData(names, variables);
         Reference[] references = config.getReferences();
-        int titleIndex = m_referencesModel.findColumn("title");
+        int citationIndex = m_referencesModel.findColumn("citation");
         int urlIndex = m_referencesModel.findColumn("url");
-        int authorsIndex = m_referencesModel.findColumn("authors");
-        int yearIndex = m_referencesModel.findColumn("year");
-        int doiIndex = m_referencesModel.findColumn("doi");
         m_referencesModel.setRowCount(0);
         for (int i = 0; i < references.length; i++) {
             Object[] objects = new Object[5];
-            objects[titleIndex] = references[i].getTitle();
+            objects[citationIndex] = references[i].getCitation();
             objects[urlIndex] = references[i].getUrl();
-            objects[authorsIndex] = references[i].getAuthors();
-            objects[yearIndex] = references[i].getYear();
-            objects[doiIndex] = references[i].getDoi();
             m_referencesModel.addRow(objects);
         }
         updateEnabledState();
