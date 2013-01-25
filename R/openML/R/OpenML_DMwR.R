@@ -24,7 +24,7 @@
 runOnTask <- function(taskID,
                       WFfunc,WFpars,
                       WFdeps,
-                      saveWF.script=F)
+                      saveWF.script=T)
 {
 
   ## Get task info
@@ -179,7 +179,7 @@ genScriptText <- function(fun,pars,deps) {
   for(d in deps) t <- c(t,paste('library(',d,')',sep=''),'\n')
 
   ## information on the workflow
-  t <- c(t,paste('.WFfunc <- "',fun,'"\n'))
+  t <- c(t,paste('.WFfunc <- "',fun,'"\n',sep=''))
   t <- c(t,'.WFpars <- ',deparse(pars),'\n')
   t
 }
@@ -188,3 +188,43 @@ genScriptText <- function(fun,pars,deps) {
 
 
 
+## ======================================================
+## Given and OpenML implementation ID, this runs it on a
+## predictive task the user has.
+## A predictive task is define by a formula, a training
+## data frame and a test data frame.
+## The result will be the predictions of the implementation
+## for the test set.
+## ======================================================
+## L. Torgo, Jan 2013
+## ======================================================
+##
+useImplementation <- function(implID,form,train,test,...) {
+
+  ## Load the implementation and associated script from OpenML
+  ## Note : this is not ready yet
+  ## It should return a list with the implementation object
+  ## and the filename of the R script
+  ## impl <- downnloadOpenMLImplementation(implID)
+  
+  ## For now, for testing purposes lets use an existing local script
+  impl <- list(scriptFN='standardWF.rpartXse.R')
+  
+  ## Assuming the R script follows "my rules" for correct upload
+  ## there will be a variable ".WFfunc" and another ".WFpars"
+  source(impl$scriptFN)
+  if (!(exists(".WFfunc") & exists(".WFpars")))
+    stop(paste("Both '.WFfunc' and '.WFpars' are required to exist in script file",impl$scriptFN))
+
+  ## The worflow DMwR object
+  wf <- learner(.WFfunc,c(.WFpars,...))
+
+  ## Now apply it to the user problem and return the results
+  res <- runLearner(wf,form,train,test)
+
+  ## some post-processing necessary for DMwR-based workflows
+  if (.WFfunc %in% c('standardWF','timeseriesWF'))
+    res <- attr(res,'itInfo')$preds
+
+  res
+}
