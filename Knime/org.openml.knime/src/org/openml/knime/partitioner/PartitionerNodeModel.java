@@ -141,11 +141,6 @@ public class PartitionerNodeModel extends NodeModel {
             int repeat =
                     (int)((DoubleValue)row.getCell(repeatIndex))
                             .getDoubleValue();
-
-            // TODO remove this when fixed on the server
-            fold--;
-            repeat--;
-
             if (type.equals(splitType) && fold == splitFold
                     && repeat == splitRepeat) {
                 String rowid =

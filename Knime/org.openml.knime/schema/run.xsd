@@ -1,17 +1,21 @@
-<xs:schema targetNamespace="http://open-ml.org/openml" xmlns:oml="http://open-ml.org/openml" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
-   <xs:element name="run" type="oml:run"/>
-   <xs:complexType name="run">
-        <xs:sequence> 
-	    <xs:element name="task_id" type="xs:integer"/>
-	    <xs:element name="implementation_id" type="xs:string"/>
-            <xs:element name="parameter_setting" minOccurs="0" maxOccurs="unbounded" type="oml:parameter_setting"/>
-       </xs:sequence>
-   </xs:complexType>
-   <xs:complexType name="parameter_setting">
-        <xs:sequence> 
-	    <xs:element name="name" type="xs:string"/>
-	    <xs:element name="value" type="xs:string"/>
-	    <xs:element name="component" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>
-       </xs:sequence>
-   </xs:complexType>
+<xs:schema targetNamespace="http://open-ml.org/openml"
+    xmlns:oml="http://open-ml.org/openml" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    elementFormDefault="qualified">
+    <xs:element name="run" type="oml:run" />
+    <xs:complexType name="run">
+        <xs:sequence>
+            <xs:element name="task_id" type="xs:integer" />
+            <xs:element name="implementation_id" type="xs:string" />
+            <xs:element name="parameter_setting" minOccurs="0"
+                maxOccurs="unbounded" type="oml:parameter_setting" />
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="parameter_setting">
+        <xs:sequence>
+            <xs:element name="name" type="xs:string" />
+            <xs:element name="value" type="xs:string" />
+            <xs:element name="component" minOccurs="0"
+                maxOccurs="unbounded" type="xs:string" />
+        </xs:sequence>
+    </xs:complexType>
 </xs:schema>

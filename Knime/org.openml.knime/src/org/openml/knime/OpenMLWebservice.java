@@ -55,7 +55,6 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.Scanner;
 
 import org.apache.http.HttpEntity;
@@ -211,19 +210,15 @@ public class OpenMLWebservice {
     /**
      * Upload a run.
      * 
-     * @param taskId ID of the task
-     * @param implementationId ID of the implementation
-     * @param params Parameters of the run
+     * @param description Description to the run
      * @param files Run files
      * @param user Name of the user
      * @param password Password of the user
      * @return Response from the server
      * @throws Exception
      */
-    public static String sendRuns(final int taskId,
-            final String implementationId, final Param[] params,
-            final File[] files, final String user, final String password)
-            throws Exception {
+    public static String sendRuns(final File description, final File[] files,
+            final String user, final String password) throws Exception {
         String result = "";
         DefaultHttpClient httpclient = new DefaultHttpClient();
         Credentials credentials =
@@ -231,24 +226,11 @@ public class OpenMLWebservice {
         AuthScope scope = new AuthScope(new URI(WEBSERVICEURL).getHost(), 80);
         httpclient.getCredentialsProvider().setCredentials(scope, credentials);
         try {
-            String url =
-                    WEBSERVICEURL + "?f=openml.run.upload&task_id=" + taskId
-                            + "&implementation_id=" + implementationId;
-            if (params != null && params.length > 0) {
-                url += "&params=";
-                for (int i = 0; i < params.length; i++) {
-                    url +=
-                            URLEncoder.encode(params[i].getKey(), "UTF-8")
-                                    + ":"
-                                    + URLEncoder.encode(params[i].getValue(),
-                                            "UTF-8");
-                    if (i + 1 < params.length) {
-                        url += "-";
-                    }
-                }
-            }
+            String url = WEBSERVICEURL + "?f=openml.run.upload";
             HttpPost httppost = new HttpPost(url);
             MultipartEntity reqEntity = new MultipartEntity();
+            FileBody descriptionBin = new FileBody(description);
+            reqEntity.addPart("description", descriptionBin);
             for (int i = 0; i < files.length; i++) {
                 FileBody bin = new FileBody(files[i]);
                 reqEntity.addPart("predictions", bin);
