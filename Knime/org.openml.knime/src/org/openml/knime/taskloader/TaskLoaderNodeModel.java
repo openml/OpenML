@@ -66,11 +66,12 @@ import org.knime.core.node.port.PortObjectSpec;
 import org.knime.core.node.port.PortType;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.port.flowvariable.FlowVariablePortObjectSpec;
+import org.openMl.openml.TaskDocument;
+import org.openMl.openml.TaskInput;
+import org.openMl.openml.TaskParameter;
 import org.openml.dataSetDescription.DataSetDescriptionDocument;
 import org.openml.knime.OpenMLVariables;
 import org.openml.knime.OpenMLWebservice;
-import org.openml.util.OpenMLUtil;
-import org.w3c.dom.Document;
 
 /**
  * This is the model implementation.
@@ -96,23 +97,50 @@ public class TaskLoaderNodeModel extends NodeModel {
     protected PortObject[] execute(final PortObject[] inData,
             final ExecutionContext exec) throws Exception {
         try {
-            Document taskDoc =
-                    OpenMLUtil.readDocumentfromURL(OpenMLWebservice
+            TaskDocument taskDoc =
+                    TaskDocument.Factory.parse(OpenMLWebservice
                             .getTaskURL(m_configuration.getTaskid()));
-            int taskId = OpenMLUtil.getTaskId(taskDoc);
+            int taskId = taskDoc.getTask().getTaskId().intValue();
             pushFlowVariableInt(OpenMLVariables.TASKID, taskId);
-            int numRepeats = OpenMLUtil.getNumberOfRepeats(taskDoc);
-            int numFolds = OpenMLUtil.getNumberOfFolds(taskDoc);
+            Integer numRepeats = null;
+            Integer numFolds = null;
+            Integer datasetID = null;
+            String splitsID = null;
+            TaskInput[] taskInputs = taskDoc.getTask().getInputArray();
+            for (int i = 0; i < taskInputs.length; i++) {
+                TaskParameter[] parameters = null;
+                if (taskInputs[i].isSetDataSet()) {
+                    datasetID =
+                            taskInputs[i].getDataSet().getDataSetId()
+                                    .intValue();
+                } else if (taskInputs[i].isSetEstimationProcedure()) {
+                    splitsID =
+                            taskInputs[i].getEstimationProcedure()
+                                    .getDataSplitsId();
+                    parameters =
+                            taskInputs[i].getEstimationProcedure()
+                                    .getParameterArray();
+                    for (int j = 0; j < parameters.length; j++) {
+                        TaskParameter param = parameters[j];
+                        if (param.getName().equals("number_folds")) {
+                            numFolds = Integer.parseInt(param.getStringValue());
+                        } else if (param.getName().equals("number_repeats")) {
+                            numRepeats =
+                                    Integer.parseInt(param.getStringValue());
+                        }
+                    }
+                }
+            }
+            if (numRepeats == null || numFolds == null || datasetID == null
+                    || splitsID == null) {
+                throw new Exception("Invalid response from server");
+            }
 
             // TODO remove this when fixed on the server
             numRepeats = 2;
 
             pushFlowVariableInt(OpenMLVariables.REPEATS, numRepeats);
             pushFlowVariableInt(OpenMLVariables.FOLDS, numFolds);
-            int datasetID = OpenMLUtil.getDataSetId(taskDoc);
-            int splitsID = OpenMLUtil.getDataSplitId(taskDoc);
-            String targetFeature = OpenMLUtil.getTargetFeature(taskDoc);
-            pushFlowVariableString(OpenMLVariables.TARGETFEATURE, targetFeature);
             InputStream datasetIn =
                     OpenMLWebservice.getDatasetDescURL(+datasetID).openStream();
             DataSetDescriptionDocument datasetDoc =

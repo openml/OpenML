@@ -51,6 +51,8 @@
 package org.openml.knime.uploader;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Set;
 
 import org.knime.core.node.InvalidSettingsException;
@@ -61,6 +63,13 @@ import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.SingleNodeContainer;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowManager;
+import org.knime.workflowDescription.Annotations;
+import org.knime.workflowDescription.Metanode;
+import org.knime.workflowDescription.Node;
+import org.knime.workflowDescription.Nodes;
+import org.knime.workflowDescription.Setting;
+import org.knime.workflowDescription.Settings;
+import org.knime.workflowDescription.WorkflowDescriptionDocument;
 import org.openMl.openml.Components;
 import org.openMl.openml.Implementation;
 import org.openMl.openml.Parameter;
@@ -423,34 +432,65 @@ public class WorkflowDescription implements Serializable {
      * Exports this workflow description to the OpenML implementation XML.
      * 
      * 
-     * @param impl Implementation element of the XML
+     * @return The description
      */
-    public void exportToOpenMLXML(final Implementation impl) {
-        addSettingsForNodes(impl, m_nodes);
+    public String exportToOpenMLXML() {
+        WorkflowDescriptionDocument wdDoc =
+                WorkflowDescriptionDocument.Factory.newInstance();
+        org.knime.workflowDescription.WorkflowDescription wd =
+                wdDoc.addNewWorkflowDescription();
+        wd.setCreator(System.getProperty("user.name"));
+        String date =
+                new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+        wd.setDate(date);
+        wd.setName(m_name);
+        Annotations annotations = Annotations.Factory.newInstance();
+        for (int i = 0; i < m_annotations.length; i++) {
+            annotations.addAnnotation(m_annotations[i]);
+        }
+        wd.setAnnotations(annotations);
+        Nodes nodes = Nodes.Factory.newInstance();
+        addNodes(nodes, m_nodes);
+        wd.setNodes(nodes);
+        return wdDoc.getDomNode().getTextContent();
     }
 
-    private static void addSettingsForNodes(final Implementation impl,
-            final NodeDescription[] nodesArray) {
-        for (int i = 0; i < nodesArray.length; i++) {
-            if (nodesArray[i].isMetanode()) {
-                addSettingsForNodes(impl, nodesArray[i].getNodes());
+    private static void addNodes(final Nodes nodes,
+            final NodeDescription[] nodeArray) {
+        for (int i = 0; i < nodeArray.length; i++) {
+            if (nodeArray[i].isMetanode()) {
+                Metanode node = nodes.addNewMetanode();
+                node.setName(nodeArray[i].getName());
+                node.setAnnotation(nodeArray[i].getAnnotation());
+                Nodes innerNodes = Nodes.Factory.newInstance();
+                addNodes(innerNodes, nodeArray[i].getNodes());
+                node.setNodes(innerNodes);
             } else {
-                addSettings(impl, nodesArray[i].getSettings());
+                Node node = nodes.addNewNode();
+                node.setName(nodeArray[i].getName());
+                node.setAnnotation(nodeArray[i].getAnnotation());
+                node.setDescription(nodeArray[i].getDescription());
+                Settings settings = Settings.Factory.newInstance();
+                settings.setKey("");
+                addSettings(settings, nodeArray[i].getSettings());
+                node.setSettings(settings);
             }
         }
     }
 
-    private static void addSettings(final Implementation impl,
+    private static void addSettings(final Settings settings,
             final SettingDescription[] settingArray) {
         for (int i = 0; i < settingArray.length; i++) {
             String key = settingArray[i].getKey();
             if (!key.endsWith("_Internals")) {
                 if (settingArray[i].isComplex()) {
-                    addSettings(impl, settingArray[i].getSettings());
+                    Settings setting = settings.addNewSettings();
+                    setting.setKey(key);
+                    addSettings(setting, settingArray[i].getSettings());
                 } else {
-                    Parameter setting = impl.addNewParameter();
-                    setting.setName(key);
-                    setting.setDefaultValue(settingArray[i].getValue());
+                    Setting setting = settings.addNewSetting();
+                    setting.setKey(key);
+                    setting.setValue(settingArray[i].getValue());
                 }
             }
         }

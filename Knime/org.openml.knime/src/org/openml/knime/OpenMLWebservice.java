@@ -131,7 +131,7 @@ public class OpenMLWebservice {
      * @param splitsId ID of the splits
      * @return URL to splits with splitsId
      */
-    public static URL getSplitsURL(final int splitsId) {
+    public static URL getSplitsURL(final String splitsId) {
         URL url = null;
         try {
             url =
@@ -188,7 +188,6 @@ public class OpenMLWebservice {
             } catch (Exception e) {
                 // no error XML should mean no error
             }
-            System.out.println(result);
             if (errorDoc != null && errorDoc.validate()) {
                 ErrorDocument.Error error = errorDoc.getError();
                 String errorMessage =
