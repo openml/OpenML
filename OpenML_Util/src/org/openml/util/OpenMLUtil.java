@@ -1,11 +1,13 @@
 
 package org.openml.util;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -38,6 +40,44 @@ public class OpenMLUtil {
 
 		}
 	}
+	
+	public static String readStringfromURL(URL url) throws IOException{
+		
+		if (url == null) {
+			throw new IllegalArgumentException("url must not be null!");
+		}
+
+		URLConnection connection = url.openConnection();
+		connection.setConnectTimeout(TIMEOUT_URL_CONNECTION);
+		connection.setReadTimeout(TIMEOUT_URL_CONNECTION);
+		InputStream inputStream = connection.getInputStream();
+		
+		ByteArrayOutputStream bout = new ByteArrayOutputStream();
+
+		int i;
+		while((i = inputStream.read()) != -1) {
+		bout.write(i);
+		}
+
+		byte[] data = bout.toByteArray();
+		String urlToString = new String(data);
+		
+		
+		return urlToString;
+		
+	}
+	
+	public static Document getDocumentfromXml(String XML) throws SAXException, IOException, ParserConfigurationException{
+		
+		DocumentBuilderFactory builderFactory = DocumentBuilderFactory
+				.newInstance();
+		builderFactory.setNamespaceAware(true);
+		DocumentBuilder builder = builderFactory.newDocumentBuilder();
+		InputSource is = new InputSource(new StringReader(XML));
+
+		return builder.parse(is);
+		
+	}
 
 	public static Document readDocumentfromURL(URL url) throws IOException, ParserConfigurationException, SAXException {
 
@@ -58,6 +98,7 @@ public class OpenMLUtil {
 
 		InputSource inputSource = new InputSource(inputStreamReader);
 		return builder.parse(inputSource);
+		
 
 	}
 
@@ -110,7 +151,7 @@ public class OpenMLUtil {
 		XPath xPath = XPathFactory.newInstance().newXPath();
 		xPath.setNamespaceContext(new OpenMLNameSpaceContext());
 		try {
-			String evaluationMethod = xPath.evaluate("/oml:task/oml:parameter[@name=\"evaluation_method\"]", taskDocument);
+			String evaluationMethod = xPath.evaluate("/oml:task/oml:estimation_procedure/oml:type", taskDocument);
 			errorOnMissingValue(evaluationMethod);
 			return evaluationMethod;
 		} catch (XPathExpressionException e) {
@@ -123,7 +164,7 @@ public class OpenMLUtil {
 		XPath xPath = XPathFactory.newInstance().newXPath();
 		xPath.setNamespaceContext(new OpenMLNameSpaceContext());
 		try {
-			String targetFeature = xPath.evaluate("/oml:task/oml:parameter[@name=\"target_feature\"]", taskDocument);
+			String targetFeature = xPath.evaluate("/oml:task/oml:data_set/oml:target_feature", taskDocument);
 			errorOnMissingValue(targetFeature);
 			return targetFeature;
 		} catch (XPathExpressionException e) {
@@ -136,7 +177,7 @@ public class OpenMLUtil {
 		XPath xPath = XPathFactory.newInstance().newXPath();
 		xPath.setNamespaceContext(new OpenMLNameSpaceContext());
 		try {
-			Integer numberOfFolds = ((Double) xPath.evaluate("/oml:task/oml:parameter[@name=\"number_folds\"]",
+			Integer numberOfFolds = ((Double) xPath.evaluate("//oml:parameter[@name=\"number_folds\"]",
 					taskDocument, XPathConstants.NUMBER)).intValue();
 			errorOnMissingValue(numberOfFolds);
 			return numberOfFolds;
@@ -150,7 +191,7 @@ public class OpenMLUtil {
 		XPath xPath = XPathFactory.newInstance().newXPath();
 		xPath.setNamespaceContext(new OpenMLNameSpaceContext());
 		try {
-			Integer numberOfRepeats = ((Double) xPath.evaluate("/oml:task/oml:parameter[@name=\"number_repeats\"]",
+			Integer numberOfRepeats = ((Double) xPath.evaluate("//oml:parameter[@name=\"number_repeats\"]",
 					taskDocument, XPathConstants.NUMBER)).intValue();
 			errorOnMissingValue(numberOfRepeats);
 			return numberOfRepeats;
@@ -166,7 +207,7 @@ public class OpenMLUtil {
 		XPath xPath = XPathFactory.newInstance().newXPath();
 		xPath.setNamespaceContext(new OpenMLNameSpaceContext());
 		try {
-			Integer dataSetId = ((Double) xPath.evaluate("/oml:task/oml:input[@name=\"training_data\"]/oml:data_set/oml:data_set_id",
+			Integer dataSetId = ((Double) xPath.evaluate("/oml:task/oml:data_set/oml:data_set_id",
 					taskDocument, XPathConstants.NUMBER)).intValue();
 			errorOnMissingValue(dataSetId);
 			return dataSetId;
@@ -180,7 +221,7 @@ public class OpenMLUtil {
 		XPath xPath = XPathFactory.newInstance().newXPath();
 		xPath.setNamespaceContext(new OpenMLNameSpaceContext());
 		try {
-			Integer dataSetId = ((Double) xPath.evaluate("/oml:task/oml:input[@name=\"data_splits\"]/oml:data_splits/oml:data_set_id",
+			Integer dataSetId = ((Double) xPath.evaluate("//oml:data_splits_id",
 					taskDocument, XPathConstants.NUMBER)).intValue();
 			errorOnMissingValue(dataSetId);
 			return dataSetId;
@@ -219,5 +260,6 @@ public class OpenMLUtil {
 		}
 
 	}
+
 
 }
