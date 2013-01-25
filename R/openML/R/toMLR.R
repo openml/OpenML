@@ -9,7 +9,8 @@ toMLR <- function(task) {
     mlr.task <- makeClassifTask(data = data, target = target)
   }
   mlr.rin <- createMLRResampleInstance(estim.proc, mlr.task)
-  list(mlr.task = mlr.task, mlr.rin = mlr.rin)
+  mlr.measures <- createMLRMeasures(task@task.evaluation.measures)
+  list(mlr.task = mlr.task, mlr.rin = mlr.rin, mlr.measures = mlr.measures)
 }
 
 createMLRResampleInstance <- function(estim.proc, mlr.task) {
@@ -25,15 +26,22 @@ createMLRResampleInstance <- function(estim.proc, mlr.task) {
       mlr.rdesc <- makeResampleDesc("RepCV", reps = n.repeats, folds = n.folds, stratify = TRUE)
   }
   mlr.rin = makeResampleInstance(mlr.rdesc, task = mlr.task)  
-  print(mlr.rin)
   iter = 1L
   for (r in 1:n.repeats) {
     for (f in 1:n.folds) {
       d = subset(data.splits, rep ==  r & data.splits$fold == f)
-      mlr.rin$train.inds[[iter]] = subset(d, type == "TRAIN")$rowid + 1
-      mlr.rin$test.inds[[iter]] = subset(d, type == "TEST")$rowid + 1
+      mlr.rin$train.inds[[iter]] = subset(d, type == "TRAIN")$rowid 
+      mlr.rin$test.inds[[iter]] = subset(d, type == "TEST")$rowid
       iter = iter + 1L
     }
   }
   return(mlr.rin)
+}
+
+createMLRMeasures <- function(measures) {
+  lapply(measures, function(m) {
+    switch(m, 
+      predictive_accuracy = acc           
+    )
+  })
 }

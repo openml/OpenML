@@ -109,13 +109,13 @@ convertParam <- function(params, name, fun) {
 }
 
 convertOpenMLTaskSlots = function(task) {
+  # convert estim params to correct types
   p <- task@task.estimation.procedure@parameters
   p <- convertParam(p, "number_repeats", as.integer)
   p <- convertParam(p, "number_folds", as.integer)
   task@task.estimation.procedure@parameters <- p
 
   task@task.evaluation.measures <- strsplit(task@task.evaluation.measures, split=",")[[1]]
-  
   return(task)
 }
 

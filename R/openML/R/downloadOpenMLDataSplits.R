@@ -12,7 +12,13 @@ downloadOpenMLDataSplits = function(id, file) {
 
 parseOpenMLDataSplits = function(file, fetch.data.set) {
   checkArg(file, "character", len = 1L, na.ok = FALSE)  
-  d <- read.arff(file)
-  colnames(d)[colnames(d) == "repeat"] <- "rep" 
-  d
+  read.arff(file)
+}
+
+convertOpenMLDataSplits = function(ds) {
+  colnames(ds)[colnames(ds) == "repeat"] <- "rep" 
+  ds$rowid <- ds$rowid + 1
+  ds$rep <- ds$rep + 
+  ds$fold <- ds$fold + 1
+  return(ds)
 }
