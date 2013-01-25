@@ -6,7 +6,8 @@
     <oml:contributor>Michael Marshall</oml:contributor>
     <oml:contributor>Bo Gao</oml:contributor>
     <oml:contributor>Rijn, Jan van</oml:contributor>
-    <oml:date>July, 1988</oml:date>
+    <oml:collection_date>July, 1988</oml:collection_date>
+    <oml:upload_date>YYYY-mm-dd hh:MM:SS</oml:upload_date>
     <oml:description>Iris Plants Database</oml:description>
     <oml:language>English</oml:language>
     <oml:format>arff</oml:format>
