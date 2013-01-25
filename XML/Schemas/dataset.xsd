@@ -2,24 +2,28 @@
     xmlns:oml="http://openml.org/data_set_description"
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
     elementFormDefault="qualified">
+
   <xs:element name="data_set_description" type="oml:data_set_description"/>
   <xs:complexType name="data_set_description">
-        <xs:sequence>
-	    <xs:element name="id" minOccurs="0" maxOccurs="1" type="xs:int"/>  <!-- id, only needed on download, not on upload -->
-            <!-- dublin core -->
-            <xs:element name="name" type="xs:string"/>   
-            <xs:element name="version" type="xs:string"/>
-            <xs:element name="creator" type="xs:string"/> <!-- was:author -->
-            <xs:element name="contributor" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>
-            <xs:element name="date" type="xs:string"/>
-            <xs:element name="description" type="xs:string"/> <!-- user comments-->
-	    <xs:element name="language" minOccurs="0" maxOccurs="1" type="xs:string"/>
-            <xs:element name="format" type="xs:string"/> <!-- arff,... -->
-            <xs:element name="licence" minOccurs="0" maxOccurs="1" type="xs:string"/>
-	    <!-- other -->
-	    <xs:element name="url" type="xs:string"/>
-	    <xs:element name="row_id_attribute" minOccurs="0" maxOccurs="1" type="xs:string"/>
-	    <xs:element name="md5_checksum" minOccurs="0" maxOccurs="1" type="xs:string"/>
+  <xs:sequence>
+  <xs:element name="id" minOccurs="0" type="xs:int"/>  <!-- not allowed on upload, will be there on download  -->
+  <!-- dublin core -->
+  <xs:element name="name" type="xs:string"/>   
+  <xs:element name="version" type="xs:string"/>
+  <xs:element name="creator" type="xs:string"/> 
+  <xs:element name="contributor" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>
+  <xs:element name="upload_date" type="xs:string"/>  <!-- not allowed on upload, will be there on download, format YYYY-mm-dd hh:MM:SS -->
+  <xs:element name="collection_date" type="xs:string"/>  <!-- not allowed on upload, will be there on download, format YYYY-mm-dd hh:MM:SS -->
+  <xs:element name="description" minOccurs="0" type="xs:string"/>  <!-- user comments-->
+  <xs:element name="language" minOccurs="0" type="xs:string"/> <!-- default in tool should be: English, starts with 1 upper case latter, rest lower case -->
+  <xs:element name="format" type="xs:string"/> <!-- default in tool should be: arff, all lower case, no dot -->
+  <xs:element name="licence" minOccurs="0" type="xs:string"/> <!-- default in tool should be: not there, meanining Public Domain or "dont know / care" :) -->
+  <!-- other -->
+  <xs:element name="url" type="xs:string"/> <!-- if not set, provide a file on upload, URL will be there on download -->
+  <xs:element name="row_id_attribute" minOccurs="0" type="xs:string"/>  <!-- if not set, the tool should create a string rowid from 0 to (n.obs - 1), 
+                                                                        <!-- this is what is then used in the data splits object-->
+                                                                        <!-- if set, of course exclude it in modeling ... -->  
+   <xs:element name="md5_checksum" minOccurs="0" maxOccurs="1" type="xs:string"/> <!-- not allowed on upload, will be there on download  -->
 	</xs:sequence>
   </xs:complexType>
 </xs:schema>
