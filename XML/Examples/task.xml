@@ -17,7 +17,7 @@
 			<oml:parameter name="stratified_sampling">true</oml:parameter>
 		</oml:estimation_procedure>
 	</oml:input>
-	<oml:input name="evaluation_measures">
+	<oml:input name="evaluation_measures">  
 		<oml:evaluation_measures> <!-- in order of importance -->
 			<oml:evaluation_measure>predictive_accuracy</oml:evaluation_measure>
 		</oml:evaluation_measures>

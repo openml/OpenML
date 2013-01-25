@@ -27,7 +27,7 @@
 			<oml:dependencies>KNIME 2.7.1</oml:dependencies>
 			<oml:parameter>
 				<oml:name>C</oml:name>
-				<oml:data_type>float</oml:data_type>
+				<oml:data_type>numeric</oml:data_type>
 				<oml:default_value>0.01</oml:default_value>
 				<oml:description>Controls complexity</oml:description>
 			</oml:parameter>
