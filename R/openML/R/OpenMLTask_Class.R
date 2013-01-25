@@ -116,7 +116,7 @@ taskType <- function(task) {
 
 dataSplits <- function(task) {
   checkArg(task, "OpenMLTask")
-  task@task.data.split
+  task@task.estimation.procedure@data.split
 }
 
 evaluationMeasures <- function(task) {
