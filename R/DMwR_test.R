@@ -93,3 +93,31 @@ head(r$runResults)
 103      1    1    103           0               0              1
 17       1    1     17           1               0              0
 
+
+##################################################################
+## USE CASE 2:
+## - A user has seen at the OpenML web site that a certain implementation
+## (read workflow implemented in R) works well on tasks similar to
+## the one he currently has.
+## - He wants to apply this workflow to his task to get the results
+##################################################################
+## Tested and working (ltorgo, 25Jan2013)
+##
+
+data(iris)
+idx <- sample(1:150,100)
+tr <- iris[idx,]
+ts <- iris[-idx,]
+
+WFpreds <- useImplementation("impl1234",Species ~ .,tr,ts)
+
+head(WFpreds)
+
+## the resulting output:
+   setosa versicolor virginica
+2       1          0         0
+3       1          0         0
+4       1          0         0
+5       1          0         0
+8       1          0         0
+17      1          0         0
