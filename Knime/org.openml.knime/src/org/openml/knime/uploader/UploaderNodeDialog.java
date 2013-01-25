@@ -102,10 +102,6 @@ class UploaderNodeDialog extends NodeDialogPane {
 
     private JTextField m_version;
 
-    private JLabel m_implementsLabel;
-
-    private JTextField m_implements;
-
     private JLabel m_licenceLabel;
 
     private JComboBox m_licence;
@@ -170,8 +166,6 @@ class UploaderNodeDialog extends NodeDialogPane {
         m_uploadWorkflow.addChangeListener(new UpdateListener());
         m_versionLabel = new JLabel("Version");
         m_version = new JTextField();
-        m_implementsLabel = new JLabel("Implements");
-        m_implements = new JTextField();
         m_dependencyLabel = new JLabel("Dependencies");
         m_dependency = new JTextField();
         m_licenceLabel = new JLabel("Licence");
@@ -277,13 +271,6 @@ class UploaderNodeDialog extends NodeDialogPane {
         panel.add(m_uploadWorkflow, gbc);
         gbc.gridwidth = 1;
         gbc.gridy++;
-        panel.add(m_implementsLabel, gbc);
-        gbc.weightx = 1;
-        gbc.gridx++;
-        panel.add(m_implements, gbc);
-        gbc.gridx = 0;
-        gbc.weightx = 0;
-        gbc.gridy++;
         panel.add(m_dependencyLabel, gbc);
         gbc.weightx = 1;
         gbc.gridx++;
@@ -386,8 +373,6 @@ class UploaderNodeDialog extends NodeDialogPane {
         boolean uploadResult =
                 !m_uploadResult.getSelection().getActionCommand()
                         .equals(UploadPolicies.NO.getName());
-        m_implements.setEnabled(uploadWorkflow);
-        m_implementsLabel.setEnabled(uploadWorkflow);
         m_dependency.setEnabled(uploadWorkflow);
         m_dependencyLabel.setEnabled(uploadWorkflow);
         m_licence.setEnabled(uploadWorkflow);
@@ -439,7 +424,6 @@ class UploaderNodeDialog extends NodeDialogPane {
         config.setUploadWorkflow(m_uploadWorkflow.isSelected());
         config.setUploadResult(m_uploadResult.getSelection().getActionCommand());
         config.setVersion(m_version.getText());
-        config.setImplements(m_implements.getText());
         config.setLicence(m_licence.getSelectedItem().toString());
         config.setWorkflowId(m_workflowId);
         config.setDependency(m_dependency.getText());
@@ -498,7 +482,6 @@ class UploaderNodeDialog extends NodeDialogPane {
             m_uploadResult.setSelected(m_always.getModel(), true);
         }
         m_version.setText(config.getVersion());
-        m_implements.setText(config.getImplements());
         m_licence.setSelectedItem(config.getLicence());
         m_workflowId = config.getWorkflowId();
         m_dependency.setText(config.getDependency());

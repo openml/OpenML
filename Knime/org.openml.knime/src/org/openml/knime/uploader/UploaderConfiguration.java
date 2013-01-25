@@ -70,8 +70,6 @@ public class UploaderConfiguration {
 
     private String m_version;
 
-    private String m_implements;
-
     private String m_licence;
 
     private String m_uploadResult;
@@ -138,20 +136,6 @@ public class UploaderConfiguration {
      */
     public void setVersion(final String version) {
         m_version = version;
-    }
-
-    /**
-     * @return the implements
-     */
-    public String getImplements() {
-        return m_implements;
-    }
-
-    /**
-     * @param implements1 the implements to set
-     */
-    public void setImplements(final String implements1) {
-        m_implements = implements1;
     }
 
     /**
@@ -331,7 +315,6 @@ public class UploaderConfiguration {
     void save(final NodeSettingsWO settings) {
         settings.addBoolean("uploadworkflow", m_uploadWorkflow);
         settings.addString("version", m_version);
-        settings.addString("implements", m_implements);
         settings.addString("licence", m_licence);
         settings.addString("uploadresult", m_uploadResult);
         settings.addString("resultfile", m_resultFile);
@@ -373,7 +356,6 @@ public class UploaderConfiguration {
         m_workflowcredentials = settings.getString("workflowcredentials", "");
         m_uploadWorkflow = settings.getBoolean("uploadworkflow", false);
         m_version = settings.getString("version", "");
-        m_implements = settings.getString("implements", "");
         m_licence = settings.getString("licence", "");
         m_uploadResult =
                 settings.getString("uploadresult", UploadPolicies.NO.getName());
@@ -445,7 +427,6 @@ public class UploaderConfiguration {
             throws InvalidSettingsException {
         m_uploadWorkflow = settings.getBoolean("uploadworkflow");
         m_version = settings.getString("version");
-        m_implements = settings.getString("implements");
         m_dependency = settings.getString("dependency");
         m_licence = settings.getString("licence");
         m_creator = settings.getString("creator", "");
@@ -458,7 +439,6 @@ public class UploaderConfiguration {
         validate(m_licence, "Licence");
         if (m_uploadWorkflow) {
             validate(m_version, "Version");
-            validate(m_implements, "Implements");
             validate(m_dependency, "Dependencies");
         }
         m_uploadResult = settings.getString("uploadresult");
