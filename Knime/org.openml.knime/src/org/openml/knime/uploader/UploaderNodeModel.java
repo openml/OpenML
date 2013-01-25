@@ -54,6 +54,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -81,6 +82,9 @@ import org.knime.core.node.workflow.WorkflowManager;
 import org.openMl.openml.BibliographicalReference;
 import org.openMl.openml.Implementation;
 import org.openMl.openml.ImplementationDocument;
+import org.openMl.openml.ParameterSetting;
+import org.openMl.openml.Run;
+import org.openMl.openml.RunDocument;
 import org.openml.knime.OpenMLVariables;
 import org.openml.knime.OpenMLWebservice;
 import org.openml.knime.OpenMLWebservice.Param;
@@ -164,12 +168,12 @@ public class UploaderNodeModel extends NodeModel {
                         throw new Exception(
                                 "Implementation has not been uploaded yet");
                     }
-                    int taskId = peekFlowVariableInt(OpenMLVariables.TASKID);
-                    String implementationId = m_config.getWorkflowId();
                     File[] files =
                             new File[]{new File(m_config.getResultFile())};
-                    OpenMLWebservice.sendRuns(taskId, implementationId,
-                            getParams(), files, user, password);
+                    File runDescFile = new File(tmpDir, "run.xml");
+                    genRunXML(runDescFile);
+                    OpenMLWebservice.sendRuns(runDescFile, files, user,
+                            password);
                     if (uploadResults.equals(UploadPolicies.ONCE.getName())) {
                         uploadResults = UploadPolicies.NO.getName();
                         m_config.setUploadResult(UploadPolicies.NO.getName());
@@ -214,6 +218,31 @@ public class UploaderNodeModel extends NodeModel {
     }
 
     /**
+     * Generate the run XML file.
+     * 
+     * 
+     * @param file File to save into
+     * @throws IOException If writing to the file failed
+     */
+    private void genRunXML(final File file) throws Exception {
+        RunDocument implDoc = RunDocument.Factory.newInstance();
+        Run run = implDoc.addNewRun();
+        run.setTaskId(BigInteger
+                .valueOf(peekFlowVariableInt(OpenMLVariables.TASKID)));
+        run.setImplementationId(m_config.getWorkflowId());
+        Param[] params = getParams();
+        for (int i = 0; i < params.length; i++) {
+            ParameterSetting parameter = run.addNewParameterSetting();
+            parameter.setName(params[i].getKey());
+            parameter.setValue(params[i].getValue());
+        }
+        Map<String, String> prefixMap = new HashMap<String, String>();
+        prefixMap.put("http://open-ml.org/openml", "oml");
+        implDoc.save(file, new XmlOptions().setSavePrettyPrint()
+                .setSaveSuggestedPrefixes(prefixMap));
+    }
+
+    /**
      * Generate the implementation XML file.
      * 
      * 
@@ -231,9 +260,6 @@ public class UploaderNodeModel extends NodeModel {
         impl.setImplements(m_config.getImplements());
         impl.setLicence(m_config.getLicence());
         impl.setDependencies(m_config.getDependency());
-        impl.setOperatingSystem(System.getProperty("os.name") + "_"
-                + System.getProperty("os.arch") + "_"
-                + System.getProperty("os.version"));
         impl.setDescription(m_config.getDescription());
         String creator = m_config.getCreator();
         if (creator != null && creator.length() > 0) {

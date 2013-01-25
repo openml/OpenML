@@ -146,9 +146,19 @@ public class TaskLoaderNodeModel extends NodeModel {
             DataSetDescriptionDocument datasetDoc =
                     DataSetDescriptionDocument.Factory.parse(datasetIn);
             String datasetURL = datasetDoc.getDataSetDescription().getUrl();
+
+            // TODO remove this when fixed on the server
+            datasetURL =
+                    "https://github.com/joaquinvanschoren/OpenML/raw/master/ARFF/iris.arff";
+
             pushFlowVariableString(OpenMLVariables.DATASETURL, datasetURL);
             String splitsURL =
                     OpenMLWebservice.getSplitsURL(splitsID).toString();
+
+            // TODO remove this when fixed on the server
+            splitsURL =
+                    "https://github.com/joaquinvanschoren/OpenML/raw/master/ARFF/folds_task_1.arff";
+
             pushFlowVariableString(OpenMLVariables.SPLITSURL, splitsURL);
             String idRow =
                     datasetDoc.getDataSetDescription().getRowIdAttribute();
