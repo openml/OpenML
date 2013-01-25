@@ -61,9 +61,9 @@ import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.SingleNodeContainer;
 import org.knime.core.node.workflow.WorkflowAnnotation;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.openml.implementation.Components;
-import org.openml.implementation.Implementation;
-import org.openml.implementation.ParameterSetting;
+import org.openMl.openml.Components;
+import org.openMl.openml.Implementation;
+import org.openMl.openml.Parameter;
 
 /**
  * Represents information contained in a workflow.
@@ -260,9 +260,9 @@ public class WorkflowDescription implements Serializable {
                 }
             } else {
                 for (int i = 0; i < m_settings.length; i++) {
-                    ParameterSetting param = impl.addNewParameterSetting();
-                    param.setParameter(m_settings[i].getKey());
-                    param.setValue(m_settings[i].getValue());
+                    Parameter param = impl.addNewParameter();
+                    param.setName(m_settings[i].getKey());
+                    param.setDefaultValue(m_settings[i].getValue());
                 }
             }
         }
@@ -369,7 +369,7 @@ public class WorkflowDescription implements Serializable {
                 return false;
             }
             SettingDescription setting = (SettingDescription)obj;
-            if (m_key != setting.m_key || m_complex != setting.m_complex) {
+            if (!m_key.equals(setting.m_key) || m_complex != setting.m_complex) {
                 return false;
             }
             if (m_complex) {
@@ -382,7 +382,7 @@ public class WorkflowDescription implements Serializable {
                     }
                 }
             } else {
-                if (m_value != setting.m_value) {
+                if (!m_value.equals(setting.m_value)) {
                     return false;
                 }
             }
@@ -448,9 +448,9 @@ public class WorkflowDescription implements Serializable {
                 if (settingArray[i].isComplex()) {
                     addSettings(impl, settingArray[i].getSettings());
                 } else {
-                    ParameterSetting setting = impl.addNewParameterSetting();
-                    setting.setParameter(key);
-                    setting.setValue(settingArray[i].getValue());
+                    Parameter setting = impl.addNewParameter();
+                    setting.setName(key);
+                    setting.setDefaultValue(settingArray[i].getValue());
                 }
             }
         }

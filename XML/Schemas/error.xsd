@@ -7,6 +7,7 @@
 			<xs:sequence>
 				<xs:element name="code" type="xs:int" />
 				<xs:element name="message" type="xs:string" />
+				<xs:element name="additional_information" minOccurs="0" type="xs:string" />
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>

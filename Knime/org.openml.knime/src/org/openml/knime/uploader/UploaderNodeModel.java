@@ -54,8 +54,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -80,16 +78,15 @@ import org.knime.core.node.port.flowvariable.FlowVariablePortObject;
 import org.knime.core.node.workflow.ICredentials;
 import org.knime.core.node.workflow.NodeContainer;
 import org.knime.core.node.workflow.WorkflowManager;
-import org.openml.implementation.BibliographicalReference;
-import org.openml.implementation.Implementation;
-import org.openml.implementation.ImplementationDocument;
+import org.openMl.openml.BibliographicalReference;
+import org.openMl.openml.Implementation;
+import org.openMl.openml.ImplementationDocument;
 import org.openml.knime.OpenMLVariables;
 import org.openml.knime.OpenMLWebservice;
 import org.openml.knime.OpenMLWebservice.Param;
 import org.openml.knime.uploader.UploaderConfiguration.NameVariablePair;
 import org.openml.knime.uploader.UploaderConfiguration.Reference;
 import org.openml.knime.uploader.WorkflowDescription.NodeDescription;
-import org.openml.uploadImplementation.UploadImplementationDocument;
 
 /**
  * This is the model implementation.
@@ -114,22 +111,6 @@ public class UploaderNodeModel extends NodeModel {
     @Override
     protected PortObject[] execute(final PortObject[] inData,
             final ExecutionContext exec) throws Exception {
-        
-        // TODO move this when its working
-        NodeDescription curUserNode =
-                WorkflowDescription
-                        .getUserNode(getWorkflowManager());
-        String oldNodeString = m_config.getUploadedWorkflow();
-        if (oldNodeString != null) {
-            NodeDescription oldUserNode =
-                    (NodeDescription)Util.fromString(m_config
-                            .getUploadedWorkflow());
-            if (oldUserNode.equals(curUserNode)) {
-                throw new Exception("Workflow has not changed");
-            }
-        }
-        
-        m_config.setUploadedWorkflow(Util.toString(curUserNode));
         boolean uploadWorkflow = m_config.getUploadWorkflow();
         String uploadResults = m_config.getUploadResult();
         if (uploadWorkflow
@@ -147,6 +128,18 @@ public class UploaderNodeModel extends NodeModel {
                 tmpDir.delete();
                 tmpDir.mkdir();
                 if (uploadWorkflow) {
+                    NodeDescription curUserNode =
+                            WorkflowDescription
+                                    .getUserNode(getWorkflowManager());
+                    String oldNodeString = m_config.getUploadedWorkflow();
+                    if (oldNodeString != null) {
+                        NodeDescription oldUserNode =
+                                (NodeDescription)Util.fromString(m_config
+                                        .getUploadedWorkflow());
+                        if (oldUserNode.equals(curUserNode)) {
+                            throw new Exception("Workflow has not changed");
+                        }
+                    }
                     File implementationFile =
                             new File(tmpDir, "implementation.xml");
                     genWorkflowFile(tmpDir, exec);
@@ -156,13 +149,13 @@ public class UploaderNodeModel extends NodeModel {
                             OpenMLWebservice.sendImplementation(
                                     implementationFile, workflowFile, user,
                                     password);
-                    UploadImplementationDocument uploadImpl =
-                            UploadImplementationDocument.Factory
-                                    .parse(response);
+                    ImplementationDocument uploadImpl =
+                            ImplementationDocument.Factory.parse(response);
                     if (uploadImpl.validate()) {
-                        m_config.setWorkflowId(uploadImpl
-                                .getUploadImplementation().getId());
+                        m_config.setWorkflowId(uploadImpl.getImplementation()
+                                .getId());
                     }
+                    m_config.setUploadedWorkflow(Util.toString(curUserNode));
                     uploadWorkflow = false;
                     m_config.setUploadWorkflow(false);
                 }
@@ -232,8 +225,6 @@ public class UploaderNodeModel extends NodeModel {
         impl.setName(name);
         impl.setVersion(m_config.getVersion());
         impl.setImplements(m_config.getImplements());
-        impl.setType("workflow");
-        impl.setDependency(m_config.getDependency());
         impl.setLicence(m_config.getLicence());
         impl.setOperatingSystem(System.getProperty("os.name") + "_"
                 + System.getProperty("os.arch") + "_"
@@ -241,7 +232,7 @@ public class UploaderNodeModel extends NodeModel {
         impl.setDescription(m_config.getDescription());
         String creator = m_config.getCreator();
         if (creator != null && creator.length() > 0) {
-            impl.setCreator(creator);
+            impl.addCreator(creator);
         }
         String contributor = m_config.getContributor();
         if (contributor != null && contributor.length() > 0) {
@@ -251,10 +242,6 @@ public class UploaderNodeModel extends NodeModel {
         if (language != null && language.length() > 0) {
             impl.setLanguage(language);
         }
-        String summary = m_config.getSummary();
-        if (summary != null && summary.length() > 0) {
-            impl.setSummary(summary);
-        }
         String fullDescription = m_config.getFullDescription();
         if (fullDescription != null && fullDescription.length() > 0) {
             impl.setFullDescription(fullDescription);
@@ -263,16 +250,9 @@ public class UploaderNodeModel extends NodeModel {
         for (int i = 0; i < references.length; i++) {
             BibliographicalReference ref =
                     impl.addNewBibliographicalReference();
-            ref.setTitle(references[i].getTitle());
+            ref.setCitation(references[i].getTitle());
             ref.setUrl(references[i].getUrl());
-            ref.setAuthors(references[i].getAuthors());
-            ref.setYear(references[i].getYear());
-            ref.setDoi(references[i].getDoi());
         }
-        impl.setOwnedByLibrary(false);
-        String date =
-                new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-        impl.setDate(date);
         // new
         // WorkflowDescription(getWorkflowManager()).exportToOpenMLXML(impl);
         new WorkflowDescription(getWorkflowManager()).exportWorkflow(impl);

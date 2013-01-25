@@ -188,9 +188,15 @@ public class OpenMLWebservice {
             } catch (Exception e) {
                 // no error XML should mean no error
             }
+            System.out.println(result);
             if (errorDoc != null && errorDoc.validate()) {
-                throw new Exception(errorDoc.getError().getCode() + " : "
-                        + errorDoc.getError().getMessage());
+                ErrorDocument.Error error = errorDoc.getError();
+                String errorMessage =
+                        error.getCode() + " : " + error.getMessage();
+                if (error.isSetAdditionalInformation()) {
+                    errorMessage += " : " + error.getAdditionalInformation();
+                }
+                throw new Exception(errorMessage);
             }
             EntityUtils.consume(resEntity);
         } finally {
@@ -264,8 +270,13 @@ public class OpenMLWebservice {
                 // no error XML should mean no error
             }
             if (errorDoc != null && errorDoc.validate()) {
-                throw new Exception(errorDoc.getError().getCode() + " : "
-                        + errorDoc.getError().getMessage());
+                ErrorDocument.Error error = errorDoc.getError();
+                String errorMessage =
+                        error.getCode() + " : " + error.getMessage();
+                if (error.isSetAdditionalInformation()) {
+                    errorMessage += " : " + error.getAdditionalInformation();
+                }
+                throw new Exception(errorMessage);
             }
             EntityUtils.consume(resEntity);
         } finally {
