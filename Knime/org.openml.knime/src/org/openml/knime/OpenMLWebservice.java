@@ -188,7 +188,6 @@ public class OpenMLWebservice {
             } catch (Exception e) {
                 // no error XML should mean no error
             }
-            System.out.println(result);
             if (errorDoc != null && errorDoc.validate()) {
                 ErrorDocument.Error error = errorDoc.getError();
                 String errorMessage =

@@ -17,12 +17,14 @@ Require-Bundle: org.apache.commons.lang;bundle-version="2.4.0",
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: org.apache.commons.codec.binary,
- org.openml.error,
- org.openml.error.impl,
+ org.knime.workflowDescription,
+ org.knime.workflowDescription.impl,
  org.openMl.openml,
  org.openMl.openml.impl,
  org.openml.dataSetDescription,
  org.openml.dataSetDescription.impl,
+ org.openml.error,
+ org.openml.error.impl,
  org.openml.implementationLicences,
  org.openml.implementationLicences.impl,
  xmleditorkit
