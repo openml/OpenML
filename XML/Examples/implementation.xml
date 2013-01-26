@@ -1,23 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <oml:implementation xmlns:oml="http://open-ml.org/openml">
-	<oml:id>knime.janvanrijn.solveTaskA</oml:id> <!-- optional, define your own id -->
-	<oml:name>knime.janvanrijn.solveTaskA</oml:name>  <!-- optional -->
-	<oml:version>1.3.0</oml:version>   <!-- optional -->
-	<oml:creator>Jan N. van Rijn</oml:creator>
-	<oml:creator>Bo Gao</oml:creator>
-	<oml:contributor>Joaquin Vanschoren</oml:contributor>
-	<oml:contributor>Patrick Winter</oml:contributor>
+	<oml:id>weka.J48_1.2</oml:id> <!-- optional, define your own id -->
+	<oml:name>weka.J48</oml:name>  <!-- optional -->
+	<oml:version>1.2</oml:version>   <!-- optional -->
+	<oml:creator>Eibe Frank</oml:creator>
 	<oml:licence>public domain</oml:licence>
 	<oml:language>English</oml:language>
-	<oml:description>Solving task A in an ingenious way</oml:description>  <!-- Required -->
-	<oml:full_description>Solving task A in an ingenious way</oml:full_description>
-	<oml:installation_notes>Download and run 'make install'</oml:installation_notes>
-	<oml:dependencies>KNIME 2.7.1</oml:dependencies>
-	<oml:programming_language>R</oml:programming_language>
-	<oml:operating_system>Linux</oml:operating_system>
+	<oml:description>Class for generating an unpruned or a pruned C4.5 decision tree.</oml:description>  <!-- Required -->
+	<oml:full_description>...</oml:full_description>
+	<oml:installation_notes>...</oml:installation_notes>
+	<oml:dependencies>WEKA 3.7</oml:dependencies>
 	<oml:bibliographical_reference>
-		<oml:citation>free form</oml:citation>
-		<oml:url>www.janvanrijn.eu/taskA</oml:url>
+		<oml:citation>Ross Quinlan (1993). C4.5: Programs for Machine Learning, Morgan Kaufmann Publishers, San Mateo, CA.</oml:citation>
+		<oml:url>http://...</oml:url>
 	</oml:bibliographical_reference>
 	<oml:components>
 		<oml:implementation>
@@ -41,5 +36,6 @@
 
 <!-- Minimal example -->
 <oml:implementation xmlns:oml="http://open-ml.org/openml">
+	<oml:name>weka.J4.8</oml:name>
 	<oml:description>Solving task A in an ingenious way</oml:description>
 </oml:implementation>

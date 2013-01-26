@@ -1,6 +1,3 @@
-%task-id: 123
-%parameters?
-
 @relation openml_task_123_predictions
 
 @ATTRIBUTE repeat INTEGER
