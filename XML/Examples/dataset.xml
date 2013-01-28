@@ -1,16 +1,16 @@
+<!-- Example of a downloaded dataset -->
+
 <oml:data_set_description xmlns:oml="http://open-ml.org/openml">
     <oml:id>1</oml:id>
     <oml:name>Iris</oml:name>
     <oml:version>1.0</oml:version>
+    <oml:description>Iris Plants Database</oml:description>
+    <oml:format>arff</oml:format>
     <oml:creator>R.A. Fisher</oml:creator>
     <oml:contributor>Michael Marshall</oml:contributor>
-    <oml:contributor>Bo Gao</oml:contributor>
-    <oml:contributor>Rijn, Jan van</oml:contributor>
     <oml:collection_date>July, 1988</oml:collection_date>
     <oml:upload_date>2013-01-25 12:10:04</oml:upload_date>
-    <oml:description>Iris Plants Database</oml:description>
     <oml:language>English</oml:language>
-    <oml:format>arff</oml:format>
     <oml:licence>UCI</oml:licence>
     <oml:url>http://expdb.cs.kuleuven.be/expdb/data/uci/nominal/iris.arff</oml:url>
     <!-- <oml:row_id_attribute>mpg</oml:row_id_attribute> -->
