@@ -5,7 +5,7 @@
         <xs:sequence>
             <xs:element name="name" type="xs:string" />
             <xs:element name="description" type="xs:string" />
-            <xs:element name="author" type="xs:string" />
+            <xs:element name="creator" type="xs:string" />
             <xs:element name="contributor" minOccurs="0" maxOccurs="unbounded" type="xs:string" />
             <xs:element name="date" type="xs:string" />
             <xs:element name="parameter" minOccurs="0" maxOccurs="unbounded" type="oml:task_type_parameter" />
