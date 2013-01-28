@@ -40,6 +40,9 @@ import com.rapidminer.example.ExampleSet;
 import com.rapidminer.gui.actions.OpenAction;
 import com.rapidminer.gui.actions.SaveAction;
 import com.rapidminer.openml.gui.openMLTab;
+import com.rapidminer.operator.IOContainer;
+import com.rapidminer.operator.IOObject;
+import com.rapidminer.repository.IOObjectEntry;
 import com.rapidminer.repository.MalformedRepositoryLocationException;
 import com.rapidminer.repository.RepositoryException;
 import com.rapidminer.repository.RepositoryLocation;
@@ -51,37 +54,104 @@ import com.rapidminer.tools.container.Pair;
 
 public class OpenMLTaskManager {
 
-	private static  String TASK_URL = openMLTab.readFromBundle("openml.task.url");
-	private static  String DATASET_URL = openMLTab.readFromBundle("openml.data.url");
-	private static  String DATASPLIT_URL = openMLTab.readFromBundle("openml.datasplits.url");
-	
+	private static String TASK_URL = openMLTab.readFromBundle("openml.task.url");
+	private static String DATASET_URL = openMLTab.readFromBundle("openml.data.url");
+	private static String DATASPLIT_URL = openMLTab.readFromBundle("openml.datasplits.url");
+
 	private static boolean isLocal = true;
 
 	private OpenMLTaskManager() {}
 
-	public static Document fetchTask(String taskId) throws JAXBException, IOException, ParserConfigurationException, SAXException {
-		
-		if(isLocal){
+	public static SuperVisedClassificationTask fetchClassificationTask(String taskId) throws SAXException, IOException, ParserConfigurationException, MissingValueException {
+
+		String openMLDir = ParameterService.getParameterValue(openMLTab.readFromBundle("gui.pref.open_ml_repo_loc"));
+		/*
+		 * Check if a cached task is available in the openML repo location, if not read the url prepare tasks
+		 */
+		RepositoryLocation loc;
+		try {
+			loc = new RepositoryLocation(openMLDir + "Tasks/" + taskId);
+			IOObjectEntry entry = (IOObjectEntry) loc.locateEntry();
+			if (entry != null) {
+				SuperVisedClassificationTask taskIOObject = (SuperVisedClassificationTask) entry.retrieveData(null);
+				LogService.getRoot().info("Fetching task from the repository cache location: " + loc.getAbsoluteLocation());
+				return taskIOObject;
+			}
+		} catch (MalformedRepositoryLocationException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		} catch (RepositoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		if (isLocal) {
 			try {
-				TASK_URL = new File("../../XML/Examples/task.xml").toURI().toURL().toString();
-				DATASET_URL = new File("../../XML/Examples/dataset.xml").toURI().toURL().toString();
-				DATASPLIT_URL = new File("../../ARFFfoldconfig_task_1.arff").toURI().toURL().toString();
+				TASK_URL = new File("/home/venkatesh/OpenML/XML/Examples/task.xml").toURI().toURL().toString();
+				DATASET_URL = new File("/home/venkatesh/OpenML/XML/Examples/dataset.xml").toURI().toURL().toString();
+				DATASPLIT_URL = new File("/home/venkatesh/OpenML/ARFF/folds_task_1.arff").toURI().toURL().toString();
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			}
 		}
 
-		URL taskUrl = isLocal?new URL(TASK_URL):new URL(TASK_URL + taskId);
-		return OpenMLUtil.readDocumentfromURL(taskUrl);
+		URL taskUrl = isLocal ? new URL(TASK_URL) : new URL(TASK_URL + taskId);
+		String taskXML = OpenMLUtil.readStringfromURL(taskUrl);
+		Document taskDocument = OpenMLUtil.getDocumentfromXml(taskXML);
+		OpenMLData data = fetchDataForTask(taskDocument);
+		IOContainer taskMetaData = fetchMetadataForTask(taskDocument);
+		ExampleSet trainConfig = null;
+		ExampleSet testConfig = null;
+		if (taskMetaData != null) {
+
+			if (taskMetaData.getElementAt(0) instanceof ExampleSet) {
+				trainConfig = (ExampleSet) taskMetaData.getElementAt(0);
+			}
+
+			if (taskMetaData.getElementAt(1) instanceof ExampleSet) {
+				testConfig = (ExampleSet) taskMetaData.getElementAt(1);
+			}
+		}
+		String taskType = OpenMLUtil.getTaskType(taskDocument);
+		if (taskType.equals("Supervised Classification")) {
+			SuperVisedClassificationTask superVisedClassificationTask = new SuperVisedClassificationTask(OpenMLUtil.getTaskId(taskDocument), taskXML, data, trainConfig, testConfig);
+			try {
+				storeInRepo(superVisedClassificationTask, openMLDir + "Tasks/" + taskId);
+				LogService.getRoot().info("cached task in the repository location: " +  openMLDir + "Tasks/" + taskId);
+			} catch (MalformedRepositoryLocationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (RepositoryException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return superVisedClassificationTask;
+		}
+		return null;
 
 	}
 
-	public static void fetchDataForTask(Document task) throws IOException, JAXBException, MissingValueException, ParserConfigurationException, SAXException {
+	public static OpenMLData fetchDataForTask(Document task) throws IOException, MissingValueException, ParserConfigurationException, SAXException {
 
 		String openMLDir = ParameterService.getParameterValue(openMLTab.readFromBundle("gui.pref.open_ml_repo_loc"));
 		Integer dataSetId = OpenMLUtil.getDataSetId(task);
-		URL dataSetUrl = isLocal? new URL(DATASET_URL):new URL(DATASET_URL + dataSetId);
-		Document dataSet = OpenMLUtil.readDocumentfromURL(dataSetUrl);
+
+		RepositoryLocation loc = null;
+		try {
+			loc = new RepositoryLocation(openMLDir + "Data/" + dataSetId);
+			IOObjectEntry entry = (IOObjectEntry) loc.locateEntry();
+			if (entry != null) {
+				OpenMLData dataIOObject = (OpenMLData) entry.retrieveData(null);
+				LogService.getRoot().info("Fetching data from the repository cache location: " + loc.getAbsoluteLocation());
+				return dataIOObject;
+			}
+		} catch (Exception e) {
+			LogService.getRoot().severe("Unable to cache task in the repository location:" + loc.getAbsoluteLocation());
+		}
+
+		URL dataSetUrl = isLocal ? new URL(DATASET_URL) : new URL(DATASET_URL + dataSetId);
+		String dataDescXML = OpenMLUtil.readStringfromURL(dataSetUrl);
+		Document dataSet = OpenMLUtil.getDocumentfromXml(dataDescXML);
 
 		String rowIdAttribute = null;
 		boolean idExists = false;
@@ -104,21 +174,31 @@ public class OpenMLTaskManager {
 
 		try {
 			RapidMiner.setExecutionMode(com.rapidminer.RapidMiner.ExecutionMode.COMMAND_LINE);
-			RapidMiner.init();
+//			RapidMiner.init();
 
 			Process importProcess = new Process(process);
 			importProcess.getContext().addMacro(new Pair<String, String>("ARFF_LINK", OpenMLUtil.getDataSetURL(dataSet).toString()));
-			importProcess.getContext().addMacro(new Pair<String, String>("REPO_PATH", openMLDir + "Data/" + dataSetId));
+//			importProcess.getContext().addMacro(new Pair<String, String>("REPO_PATH", openMLDir + "Data/" + dataSetId));
 			if (idExists) {
 				importProcess.getContext().addMacro(new Pair<String, String>("ROWID", openMLDir + rowIdAttribute));
 			}
-			importProcess.run();
+			IOContainer ioResult = importProcess.run();
+
+			if (ioResult.getElementAt(0) instanceof ExampleSet) {
+				ExampleSet resultSet = (ExampleSet) ioResult.getElementAt(0);
+				OpenMLData openMLData = new OpenMLData(dataSetId, dataDescXML, resultSet);
+				storeInRepo(openMLData, openMLDir + "Data/" + dataSetId);
+				LogService.getRoot().info("cached data in the repository location: " +  openMLDir + "Data/" + dataSetId);
+				return openMLData;
+			}
+
 		} catch (Exception e) {
 			LogService.getRoot().log(Level.SEVERE, openMLTab.readFromBundle("openml.fetch_data_fail"));
 		}
+		return null;
 	}
 
-	private static String readXMLFromResource(String path) throws IOException {
+	public static String readXMLFromResource(String path) throws IOException {
 		InputStream inputStream;
 		String process;
 		inputStream = OpenMLTaskManager.class.getResourceAsStream(path);
@@ -128,7 +208,7 @@ public class OpenMLTaskManager {
 		return process;
 	}
 
-	public static void fetchMetadataForTask(Document task) throws MalformedRepositoryLocationException, RepositoryException, MissingValueException, IOException, ParserConfigurationException, SAXException {
+	private static IOContainer fetchMetadataForTask(Document task) throws MissingValueException, IOException, ParserConfigurationException, SAXException {
 
 		String openMLDir = ParameterService.getParameterValue(openMLTab.readFromBundle("gui.pref.open_ml_repo_loc"));
 
@@ -136,32 +216,31 @@ public class OpenMLTaskManager {
 		if (taskType.equals("Supervised Classification")) {
 
 			Integer taskId = OpenMLUtil.getTaskId(task);
-     		Integer dataSplitId = OpenMLUtil.getDataSetId(task);
-			URL dataSplitUrl = isLocal?new URL(DATASPLIT_URL):new URL(DATASPLIT_URL + dataSplitId);
-		
+			Integer dataSplitId = OpenMLUtil.getDataSetId(task);
+			URL dataSplitUrl = isLocal ? new URL(DATASPLIT_URL) : new URL(DATASPLIT_URL + dataSplitId);
 
 			String process = readXMLFromResource("/com/rapidminer/resources/util/rmprocess/ImportDataSplits.xml");
 
 			try {
 				RapidMiner.setExecutionMode(com.rapidminer.RapidMiner.ExecutionMode.COMMAND_LINE);
-				RapidMiner.init();
+//				RapidMiner.init();
 
 				Process importProcess = new Process(process);
 				importProcess.getContext().addMacro(new Pair<String, String>("ARFF_LINK", dataSplitUrl.toString()));
-				importProcess.getContext().addMacro(new Pair<String, String>("REPO_TRAIN_CONFIG", openMLDir + "Tasks/" + taskId + "/train/trainconfig"));
-				importProcess.getContext().addMacro(new Pair<String, String>("REPO_TEST_CONFIG", openMLDir + "Tasks/" + taskId + "/test/testconfig"));
-				importProcess.run();
+				IOContainer ioResult = importProcess.run();
+				return ioResult;
 			} catch (Exception e) {
 				LogService.getRoot().log(Level.SEVERE, openMLTab.readFromBundle("openml.fetch_meta_data_fail"));
 			}
 
 		}
+		return null;
 
 	}
 
-	private static void storeInRepo(ExampleSet exampleSet, String configPath) throws MalformedRepositoryLocationException, RepositoryException {
-		RepositoryLocation trainLocation = new RepositoryLocation(configPath);
-		RepositoryManager.getInstance(null).store(exampleSet, trainLocation, null);
+	private static void storeInRepo(IOObject ioObject, String configPath) throws MalformedRepositoryLocationException, RepositoryException {
+		RepositoryLocation repoLocation = new RepositoryLocation(configPath);
+		RepositoryManager.getInstance(null).store(ioObject, repoLocation, null);
 	}
 
 	public static void prepareProcessforTask(Document task) throws IOException, XMLException, MalformedRepositoryLocationException, MissingValueException {
@@ -173,7 +252,7 @@ public class OpenMLTaskManager {
 		if (taskType.equals("Supervised Classification")) {
 
 			String process = readXMLFromResource("/com/rapidminer/resources/util/rmprocess/OpenMLSupervisedClassification.xml");
-			
+
 			Integer taskId = OpenMLUtil.getTaskId(task);
 			Integer dataSetId = OpenMLUtil.getDataSetId(task);
 			String targetFeature = OpenMLUtil.getTargetFeature(task);
@@ -191,7 +270,7 @@ public class OpenMLTaskManager {
 
 	private static void saveProcessforTask(Document task, String openMLDir, Process openMLCVTaskProcess) throws MalformedRepositoryLocationException, MissingValueException {
 		Integer taskId = OpenMLUtil.getTaskId(task);
-		RepositoryLocation location = new RepositoryLocation(openMLDir + "Tasks/" + taskId + "/execute_task_" +taskId);
+		RepositoryLocation location = new RepositoryLocation(openMLDir + "Tasks/" + taskId + "/execute_task_" + taskId);
 		RepositoryProcessLocation processLocation = new RepositoryProcessLocation(location);
 		openMLCVTaskProcess.setProcessLocation(processLocation);
 		SaveAction.save(openMLCVTaskProcess);

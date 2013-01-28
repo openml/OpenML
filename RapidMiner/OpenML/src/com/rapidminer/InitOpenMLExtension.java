@@ -45,8 +45,8 @@ public class InitOpenMLExtension {
 	}
 
 	public static void initGui(MainFrame mainframe) {
-		final openMLTab simpleWindow = new openMLTab();
-		mainframe.getDockingDesktop().registerDockable(simpleWindow);
+//		final openMLTab simpleWindow = new openMLTab();
+//		mainframe.getDockingDesktop().registerDockable(simpleWindow);
 		ParameterService.registerParameter(new ParameterTypeDirectory(openMLTab.readFromBundle("gui.pref.open_ml_fs_dir"), openMLTab.readFromBundle("gui.pref.open_ml_fs_dir.desc"), false), "openML");
 		ParameterService.registerParameter(new ParameterTypeRepositoryLocation(openMLTab.readFromBundle("gui.pref.open_ml_repo_loc"), openMLTab.readFromBundle("gui.pref.open_ml_repo_loc.desc"), false, true, false), "openML");
 	}

@@ -2,6 +2,20 @@
 <operatorHelp lang="en_EN">
 	<group>
 		<key>openml</key>
-		<name>open ML</name>
+		<name>OpenML</name>
 	</group>
+	<operator>
+		<name>Read OpenML Task</name>
+		<shortName>OpenMLTaskReader</shortName>
+		<synopsis>Operator to read OpenML Tasks</synopsis>
+		<help>Operator to read OpenML Tasks</help>
+		<key>read_openml_task</key>
+	</operator>
+    <operator>
+        <name>X-Config-Prediction</name>
+        <synopsis>X-Config-Prediction encapsulates a multi fold prediction based on the provided fold configuration. i.e if the folds for a cross validation, sub sampled validation,
+         are defined in a external file, this operator uses that configuration to perform the task</synopsis>
+    <key>x_config_prediction</key>
+    <shortName>Prediction</shortName>
+  </operator>
 </operatorHelp>
