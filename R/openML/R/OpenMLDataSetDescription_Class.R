@@ -16,6 +16,7 @@
 # ==============================================================
 
 #FIXME:  parse date as Date and change slot type
+#FIXME:  check that slots are in same order (here and other classes) as in XSD
 
 setClass("OpenMLDataSetDescription",
          representation(id="numeric",
@@ -23,7 +24,8 @@ setClass("OpenMLDataSetDescription",
                         version="character",
                         creator="character",
                         contributor="character",
-                        date="character",
+                        collection.date="character",
+                        upload.date="POSIXt",
                         description="character",
                         language="character",
                         format="character",
@@ -42,14 +44,16 @@ setClassUnion("OptionalOpenMLDataSetDescription",
 ## ============================================================
 OpenMLDataSetDescription <- function(id,
                                      name,version,
-                                     creator,contributor="",date,
+                                     creator,contributor="",
+																		 collection.date="", upload.date,
                                      description,language="",format,licence="",
                                      url,row.id.attribute="",md5.checksum="",
                                      data.set)
 {
   new("OpenMLDataSetDescription",
       id=id,name=name,version=version,
-      creator=creator,contributor=contributor,date=date,
+      creator=creator,contributor=contributor,
+			collection.date=collection.date, upload.date=upload.date,
       description=description,language=language,format=format,
       licence=licence,url=url,
       row.id.attribute=row.id.attribute,md5.checksum=md5.checksum,
@@ -67,31 +71,32 @@ OpenMLDataSetDescription <- function(id,
 ## ------------------------------------------------------------
 ## show method
 
-setMethod("show","OpenMLDataSetDescription",
-          function(object) {
-            cat('\nDataset :: ',object@name,
-                ' (openML ID = ',object@id,
-                ', version = ',object@version,')\n')
-            cat('\tCreator     : ',object@creator,'\n')
-            if (object@contributor != '')
-              cat('\tContributor : ',object@contributor,'\n')
-            cat('\tDate        : ',object@date,'\n')
-            if (object@licence != '')
-              cat('\tlicence     : ',object@licence,'\n')
-            cat('\tURL         : ',object@url,'\n')
-            if (object@language != '')
-              cat('\tLanguage    : ',object@language,'\n')
-            cat('\tFormat      : ',object@format,'\n')
-            if (object@row.id.attribute != '')
-              cat('\tRow Id Attr.  = ',object@row.id.attribute,'\n')
-            if (object@md5.checksum != '')
-              cat('\tmd5 Check Sum = ',object@md5.checksum,'\n')
-            cat('\tDescription :\n')
-            cat(unlist(strsplit(object@description, split=" ")), fill=40)
-            cat('\n')
-            cat('\tData : \n')
-            str(object@data.set)
-          }
-          )
+setMethod("show", "OpenMLDataSetDescription",
+	function(object) {
+	  # incorrect indentation to see aligment!
+		catf('\nDataset %s :: (openML ID = %i, version = %s)', object@name, object@id, object@version)
+		catf('\tCreator          : %s', object@creator)
+		if (object@contributor != '')
+		catf('\tContributor      : %s', object@contributor)
+		catf('\tCollection Date  : %s', object@collection.date)
+		catf('\tUpload Date      : %s', object@upload.date)
+		if (object@licence != '')
+		catf('\tLicence          : %s', object@licence)
+		catf('\tURL              : %s', object@url)
+		if (object@language != '')
+		catf('\tLanguage         : %s', object@language)
+		catf('\tFormat           : %s', object@format)
+		if (object@row.id.attribute != '')
+		catf('\tRow Id Attr.  	 : %s', object@row.id.attribute)
+		if (object@md5.checksum != '')
+		catf('\tmd5 Check Sum    : %s', object@md5.checksum)
+		catf('\tDescription :')
+		cat(collapse(paste('\t\t', strwrap(object@description), '\n'), sep=''))
+		cat('\n')
+		catf('\tData :')
+		x <- printToChar(str(object@data.set), collapse=NULL)
+		catf('\t\t%s', x[-length(x)])
+	}
+)
 
 

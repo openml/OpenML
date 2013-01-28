@@ -13,7 +13,10 @@ xmlNs = function(doc, path, optional) {
 
 xmlVal = function(doc, path, optional, fun) {
   ns = xmlNs(doc, path, optional)
-   if (length(ns) == 1L) {
+	# path not found, also cant be no optional, otherwise exception in call before
+	if (is.null(ns))
+	  return(NULL)		
+  if (length(ns) == 1L) {
     fun(xmlValue(ns[[1]]))
   } else {
     stopf("Multiple XML nodes found: %s", path)
@@ -49,7 +52,7 @@ xmlRValR = function(doc, path) {
 }
 
 xmlRValD = function(doc, path) {
-  xmlVal(doc, path, FALSE, as.Date)
+  xmlVal(doc, path, FALSE, as.POSIXct)
 }
 
 xmlValsMultNs = function(doc, path, fun) {

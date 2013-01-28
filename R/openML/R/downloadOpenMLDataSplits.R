@@ -1,6 +1,6 @@
 
 
-downloadOpenMLDataSplits = function(id, file) {
+downloadOpenMLDataSplits = function(dsd, file) {
   id = convertInteger(id)
   checkArg(id, "integer", len = 1L, na.ok = FALSE)
   checkArg(file, "character", len = 1L, na.ok = FALSE)
@@ -10,15 +10,22 @@ downloadOpenMLDataSplits = function(id, file) {
   invisible(NULL)
 }
 
-parseOpenMLDataSplits = function(file, fetch.data.set) {
+parseOpenMLDataSplits = function(ds, file) {
+  checkArg(ds, "data.frame")
   checkArg(file, "character", len = 1L, na.ok = FALSE)  
-  read.arff(file)
+  splits <- read.arff(file)
+	convertOpenMLDataSplits(ds, splits)
 }
 
-convertOpenMLDataSplits = function(ds) {
-  colnames(ds)[colnames(ds) == "repeat"] <- "rep" 
-  ds$rowid <- ds$rowid + 1
-  ds$rep <- ds$rep + 
-  ds$fold <- ds$fold + 1
-  return(ds)
+convertOpenMLDataSplits = function(ds, splits) {
+  # 'repeat' is a BAD col. name in R
+  colnames(splits)[colnames(splits) == "repeat"] <- "rep" 
+	# all counters in OpenML (server) are 0-based, R is 1-based
+  ri <- splits$rowid
+	rns <- rownames(ds)
+	# FIXME: possibly inefficient
+	splits$rowid <- sapply(ri, function(x) which(x == rns))
+  splits$rep <- splits$rep + 1
+	splits$fold <- splits$fold + 1
+  return(splits)
 }

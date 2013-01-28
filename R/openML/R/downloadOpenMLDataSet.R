@@ -1,5 +1,6 @@
-downloadOpenMLDataSet = function(dsd, file) {
-  checkArg(dsd, "OpenMLDataSetDescription")
+downloadOpenMLDataSet = function(id, file) {
+	id <- convertInteger(id)
+  checkArg(id, "integer", len = 1L, na.ok = FALSE)
   checkArg(file, "character", len = 1L, na.ok = FALSE)
   url = getServerFunctionURL("openml.data.description", data.id = id)
   text = getURL(url)
@@ -17,7 +18,6 @@ parseOpenMLDataSet = function(dsd, file) {
 
 convertOpenMLDataSet <- function(dsd, ds) {
   #FIXME what is missing value for row_id? check defaults?
-  print(dsd)
   # remove rowid from data and set as rownames  
   if (dsd@row.id.attribute != "") {
     rowid <- ds[, dsd@row.id.attribute]

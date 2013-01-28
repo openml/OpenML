@@ -56,14 +56,14 @@ parseOpenMLTask <- function(file) {
   }
   
   # task
-  task.id <- as.integer(xmlValue(getNodeSet(doc, "/oml:task/oml:task_id")[[1]]))
-  task.type <- xmlValue(getNodeSet(doc, "/oml:task/oml:task_type")[[1]])  
+  task.id <- xmlRValI(doc, "/oml:task/oml:task_id")
+  task.type <- xmlRValS(doc, "/oml:task/oml:task_type")
   targets <- sapply(getNodeSet(doc, "/oml:task/oml:input/oml:data_set/oml:target_feature"), xmlValue)
   params <- getParams("oml:task")
   
   # data set description
-  data.desc.id <- as.integer(xmlValue(getNodeSet(doc, "/oml:task/oml:input/oml:data_set/oml:data_set_id")[[1]]))
-  data.splits.id <- as.integer(xmlValue(getNodeSet(doc, "/oml:task/oml:input/oml:estimation_procedure/oml:data_splits_id")[[1]]))
+  data.desc.id <- xmlRValI(doc, "/oml:task/oml:input/oml:data_set/oml:data_set_id")
+  data.splits.id <- xmlRValI(doc, "/oml:task/oml:input/oml:estimation_procedure/oml:data_splits_id")
   data.desc <- NULL
   
   # prediction
@@ -71,15 +71,15 @@ parseOpenMLTask <- function(file) {
   preds.features <- lapply(ns.preds.features, function(x) xmlGetAttr(x, "type"))
   names(preds.features) <- sapply(ns.preds.features, function(x) xmlGetAttr(x, "name"))
   task.preds <- list(
-    name = xmlValue(getNodeSet(doc, "/oml:task/oml:output/oml:predictions/oml:name")[[1]]), 
-    format = xmlValue(getNodeSet(doc, "/oml:task/oml:output/oml:predictions/oml:format")[[1]]),
+    name = xmlRValS(doc, "/oml:task/oml:output/oml:predictions/oml:name"), 
+    format = xmlRValS(doc, "/oml:task/oml:output/oml:predictions/oml:format"),
     features = preds.features
   )
   
   # estimation procedure
   estim.proc <- OpenMLEstimationProcedure(
-    type = xmlValue(getNodeSet(doc, "/oml:task/oml:input/oml:estimation_procedure/oml:type")[[1]]), 
-    data.splits.id  = as.integer(xmlValue(getNodeSet(doc, "/oml:task/oml:input/oml:estimation_procedure/oml:data_splits_id")[[1]])), 
+    type = xmlRValS(doc, "/oml:task/oml:input/oml:estimation_procedure/oml:type"), 
+    data.splits.id  = xmlRValI(doc, "/oml:task/oml:input/oml:estimation_procedure/oml:data_splits_id"),
     data.splits = data.frame(),
     parameters = getParams("/oml:task/oml:input/oml:estimation_procedure")
   )
