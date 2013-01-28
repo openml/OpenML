@@ -58,7 +58,7 @@ parseOpenMLTask <- function(file) {
   # task
   task.id <- xmlRValI(doc, "/oml:task/oml:task_id")
   task.type <- xmlRValS(doc, "/oml:task/oml:task_type")
-  targets <- sapply(getNodeSet(doc, "/oml:task/oml:input/oml:data_set/oml:target_feature"), xmlValue)
+  targets <- xmlValsMultNsS(doc, "/oml:task/oml:input/oml:data_set/oml:target_feature")
   params <- getParams("oml:task")
   
   # data set description
@@ -85,8 +85,7 @@ parseOpenMLTask <- function(file) {
   )
 
   # measures
-  ns.eval <- getNodeSet(doc, "/oml:task/oml:input/oml:evaluation_measures/oml:evaluation_measure")
-  measures <- sapply(ns.eval, xmlValue)
+  measures <- xmlValsMultNsS(doc, "/oml:task/oml:input/oml:evaluation_measures/oml:evaluation_measure")
   
   task = OpenMLTask(
     task.id = task.id,
@@ -115,7 +114,7 @@ convertOpenMLTaskSlots = function(task) {
   p <- convertParam(p, "number_folds", as.integer)
   task@task.estimation.procedure@parameters <- p
 
-  task@task.evaluation.measures <- strsplit(task@task.evaluation.measures, split=",")[[1]]
+  #task@task.evaluation.measures <- strsplit(task@task.evaluation.measures, split=",")[[1]]
   return(task)
 }
 

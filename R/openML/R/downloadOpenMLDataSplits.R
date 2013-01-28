@@ -1,6 +1,6 @@
 
 
-downloadOpenMLDataSplits = function(dsd, file) {
+downloadOpenMLDataSplits = function(file) {
   id = convertInteger(id)
   checkArg(id, "integer", len = 1L, na.ok = FALSE)
   checkArg(file, "character", len = 1L, na.ok = FALSE)
