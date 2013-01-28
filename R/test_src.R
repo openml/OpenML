@@ -6,6 +6,7 @@ library(RWeka)
 
 load_all("openML")
 
+options(warn = 2)
 
 fn.task <- "../XML/Examples/task.xml"
 fn.data.set.desc <- "../XML/Examples/dataset.xml"    
@@ -24,6 +25,6 @@ print(task)
 #   fetch.data.set = FALSE, fetch.data.splits = FALSE)
 # print(task)
 
- z <- toMLR(task)
- lrn <- makeLearner("classif.rpart")
- r <- resample(lrn, z$mlr.task, z$mlr.rin, measures = z$mlr.measures)
+#  z <- toMLR(task)
+#  lrn <- makeLearner("classif.rpart")
+#  r <- resample(lrn, z$mlr.task, z$mlr.rin, measures = z$mlr.measures)
