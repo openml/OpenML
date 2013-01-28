@@ -22,6 +22,7 @@
 		<!-- structure -->
 		<xs:element name="parameter" minOccurs="0" maxOccurs="unbounded" type="oml:parameter"/> <!-- Optional. Statement of the (global/top-level) parameters of the workflow (see below). Don't repeat parameters here which are already stated in the components in the XML!-->
 		<xs:element name="components" minOccurs="0" maxOccurs="1" type="oml:components"/> <!-- Optional. Descriptions of sub-implementations of this implementations. Typically components (operators/nodes) of a workflow or subfunctions of an algorithm (e.g. kernels). Components can have their own parameters. -->
+		<!-- upload -->
 		<xs:element name="source_format" minOccurs="0" maxOccurs="1" type="xs:string"/> <!-- Format in which the source code will be uploaded. -->
 		<xs:element name="binary_format" minOccurs="0" maxOccurs="1" type="xs:string"/> <!-- Format in which the binary code will be uploaded.  -->
 		<xs:element name="source_md5" minOccurs="0" maxOccurs="1" type="xs:string"/> <!-- MD5 checksum to check if the source code was correctly uploaded -->
