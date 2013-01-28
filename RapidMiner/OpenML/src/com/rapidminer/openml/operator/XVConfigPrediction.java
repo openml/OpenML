@@ -149,8 +149,8 @@ public class XVConfigPrediction extends OperatorChain implements CapabilityProvi
 		MemoryExampleTable predictionsExampleTable = null;
 		Map<Attribute, String> specialAttributesMap = new HashMap<Attribute, String>();
 
-		for (int i = 0; i <= numberOfTrainRepeats; i++) {
-			for (int j = 0; j <= numberOfTrainfolds; j++) {
+		for (int i = 0; i < numberOfTrainRepeats; i++) {
+			for (int j = 0; j < numberOfTrainfolds; j++) {
 				currentRepeat = i;
 				currentFold = j;
 				ExampleSet trainingSet = filterRepeatsandFolds(i, j, trainConfig, inputSet);
