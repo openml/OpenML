@@ -164,7 +164,7 @@ public class OpenMLUtil {
 		XPath xPath = XPathFactory.newInstance().newXPath();
 		xPath.setNamespaceContext(new OpenMLNameSpaceContext());
 		try {
-			String targetFeature = xPath.evaluate("/oml:task/oml:data_set/oml:target_feature", taskDocument);
+			String targetFeature = xPath.evaluate("//oml:data_set/oml:target_feature", taskDocument);
 			errorOnMissingValue(targetFeature);
 			return targetFeature;
 		} catch (XPathExpressionException e) {
@@ -207,7 +207,7 @@ public class OpenMLUtil {
 		XPath xPath = XPathFactory.newInstance().newXPath();
 		xPath.setNamespaceContext(new OpenMLNameSpaceContext());
 		try {
-			Integer dataSetId = ((Double) xPath.evaluate("/oml:task/oml:data_set/oml:data_set_id",
+			Integer dataSetId = ((Double) xPath.evaluate("//oml:data_set/oml:data_set_id",
 					taskDocument, XPathConstants.NUMBER)).intValue();
 			errorOnMissingValue(dataSetId);
 			return dataSetId;

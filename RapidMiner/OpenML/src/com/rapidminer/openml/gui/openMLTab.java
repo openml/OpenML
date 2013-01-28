@@ -131,6 +131,7 @@ public class openMLTab extends JPanel implements Dockable, ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		/*
 		if (e.getSource() == fetchTask) {
 			new Thread(new Runnable() {
 
@@ -199,6 +200,7 @@ public class openMLTab extends JPanel implements Dockable, ActionListener {
 		} else if (e.getSource() == uploadResults) {
 
 		}
+		*/
 
 	}
 

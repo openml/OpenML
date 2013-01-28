@@ -1,2 +1,10 @@
 <ioobjects>
+ <ioobject
+        name="SupervisedClassificationTask"
+        class="com.rapidminer.openml.task.SuperVisedClassificationTask"
+        reportable="false"/> 
+  <ioobject
+        name="OpenMLData"
+        class="com.rapidminer.openml.task.OpenMLData"
+        reportable="false"/> 
 </ioobjects>

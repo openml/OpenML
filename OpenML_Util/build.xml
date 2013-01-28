@@ -4,7 +4,7 @@
               To include a user specific buildfile here, simply create one in the same
               directory with the processing instruction <?eclipse.ant.import?>
               as the first entry and export the buildfile again. -->
-<project basedir="." default="build" name="OpenML_Util">
+<project basedir="." default="install" name="OpenML_Util">
 	<property environment="env"/>
 	<property name="OpenML.location" value="../../workspace/OpenML"/>
 	<property name="ECLIPSE_HOME" value="../../../../usr/local/eclipse"/>
