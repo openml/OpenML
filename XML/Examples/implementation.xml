@@ -1,12 +1,13 @@
+<!-- Example for a uploading an implementation -->
+
 <?xml version="1.0" encoding="UTF-8"?>
 <oml:implementation xmlns:oml="http://open-ml.org/openml">
-	<oml:id>weka.J48_1.2</oml:id> <!-- optional, define your own id -->
-	<oml:name>weka.J48</oml:name>  <!-- optional -->
-	<oml:version>1.2</oml:version>   <!-- optional -->
+	<oml:name>weka.J48</oml:name> 
+	<oml:version>1.2</oml:version>
+	<oml:description>Class for generating an unpruned or a pruned C4.5 decision tree.</oml:description>
 	<oml:creator>Eibe Frank</oml:creator>
 	<oml:licence>public domain</oml:licence>
 	<oml:language>English</oml:language>
-	<oml:description>Class for generating an unpruned or a pruned C4.5 decision tree.</oml:description>  <!-- Required -->
 	<oml:full_description>...</oml:full_description>
 	<oml:installation_notes>...</oml:installation_notes>
 	<oml:dependencies>WEKA 3.7</oml:dependencies>
@@ -34,7 +35,7 @@
 	<oml:binary_md5>e4d909c290d0fb1ca068ffaddf22cbd0</oml:binary_md5>
 </oml:implementation>
 
-<!-- Minimal example -->
+<!-- Minimal example for uploading an implementation -->
 <oml:implementation xmlns:oml="http://open-ml.org/openml">
 	<oml:name>weka.J4.8</oml:name>
 	<oml:description>Solving task A in an ingenious way</oml:description>
