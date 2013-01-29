@@ -11,7 +11,7 @@ ALTER TABLE dataset
 	
 ALTER TABLE `implementation`
 	ADD COLUMN `uploader` int(10) NOT NULL DEFAULT -1 AFTER `fullName`,
-	CHANGE COLUMN `date` `upload_date` DATETIME NOT NULL,
+	CHANGE COLUMN `date` `uploadDate` DATETIME NOT NULL,
 	DROP `programmingLanguage`,
 	DROP `operatingSystem`;
 	
