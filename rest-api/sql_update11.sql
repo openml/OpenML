@@ -6,7 +6,7 @@ ALTER TABLE dataset
 	CHANGE COLUMN `description` `description` TEXT NOT NULL AFTER `version`,
 	CHANGE COLUMN `format` `format` VARCHAR(64) NOT NULL DEFAULT 'arff' AFTER `description`,
 	ADD COLUMN `collection_date` VARCHAR(128) NULL DEFAULT NULL AFTER `contributor`,
-	CHANGE COLUMN `date` `uploadDate` DATETIME NOT NULL AFTER `collection_date`,
+	CHANGE COLUMN `date` `upload_date` DATETIME NOT NULL AFTER `collection_date`,
 	CHANGE COLUMN `licence` `licence` VARCHAR(64) NULL DEFAULT NULL AFTER `language`;
 	
 ALTER TABLE `implementation`
