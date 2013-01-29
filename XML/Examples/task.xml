@@ -11,7 +11,7 @@
 	<oml:input name="estimation_procedure">
 		<oml:estimation_procedure>
 		        <oml:type>cross-validation</oml:type>
-			<oml:data_splits_id>1001</oml:data_splits_id>
+			<oml:data_splits_url>http://expdb.kuleuven.be/expdb/data/splits/splits_task_1.arff</oml:data_splits_url>
 			<oml:parameter name="number_repeats">2</oml:parameter>
 			<oml:parameter name="number_folds">10</oml:parameter>
 			<oml:parameter name="stratified_sampling">true</oml:parameter>
@@ -24,7 +24,6 @@
 	</oml:input>
 	<oml:output name="predictions">
 		<oml:predictions>
-			<oml:name>predictions</oml:name>
 			<oml:format>ARFF</oml:format>
 			<oml:feature name="repeat" type="integer" required="true"/>
 			<oml:feature name="fold"   type="integer" required="true"/>

@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?xml version="1.0" encoding="UTF-8"?>
 <oml:run xmlns:oml="http://open-ml.org/openml">
 	<oml:task_id>1</oml:task_id>
 	<oml:implementation_id>knime.user.myworkflow_1.2</oml:implementation_id>

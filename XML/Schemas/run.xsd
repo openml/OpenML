@@ -2,16 +2,16 @@
    <xs:element name="run" type="oml:run"/>
    <xs:complexType name="run">
         <xs:sequence> 
-	    <xs:element name="task_id" type="xs:integer"/>
-	    <xs:element name="implementation_id" type="xs:string"/>
-            <xs:element name="parameter_setting" minOccurs="0" maxOccurs="unbounded" type="oml:parameter_setting"/>
+	    <xs:element name="task_id" type="xs:integer"/> <!-- The id of the task that is solved in this run. This id is given in the task description. --> 
+	    <xs:element name="implementation_id" type="xs:string"/> <!-- The id of the implementation (algorithm, workflow,...) used to solve the task. This id is returned by the API when you first upload the implementation, or given in the implementation description when you download an existing implementation. -->
+            <xs:element name="parameter_setting" minOccurs="0" maxOccurs="unbounded" type="oml:parameter_setting"/> <!-- The parameter settings used in this run -->
        </xs:sequence>
    </xs:complexType>
    <xs:complexType name="parameter_setting">
         <xs:sequence> 
-	    <xs:element name="name" type="xs:string"/>
-	    <xs:element name="value" type="xs:string"/>
-	    <xs:element name="component" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>
+	    <xs:element name="name" type="xs:string"/> <!-- The name of the parameter that is set -->
+	    <xs:element name="value" type="xs:string"/> <!-- The value used for this parameter --> 
+	    <xs:element name="component" minOccurs="0" maxOccurs="1" type="xs:string"/> <!-- If the parameter belongs to a subcomponent of an implementation, the implementation name of that component. This name must match a component of the implementation that is stated above (in 'implementation_id'). --> 
        </xs:sequence>
    </xs:complexType>
 </xs:schema>
