@@ -6,7 +6,7 @@ ALTER TABLE dataset
 	CHANGE COLUMN `description` `description` TEXT NOT NULL AFTER `version`,
 	CHANGE COLUMN `format` `format` VARCHAR(64) NOT NULL DEFAULT 'arff' AFTER `description`,
 	ADD COLUMN `collection_date` VARCHAR(128) NULL DEFAULT NULL AFTER `contributor`,
-	CHANGE COLUMN `date` `upload_date` DATETIME NOT NULL AFTER `collection_date`,
+	CHANGE COLUMN `date` `uploadDate` DATETIME NOT NULL AFTER `collection_date`,
 	CHANGE COLUMN `licence` `licence` VARCHAR(64) NULL DEFAULT NULL AFTER `language`;
 	
 ALTER TABLE `implementation`
@@ -21,8 +21,6 @@ ALTER TABLE `bibliographical_reference`
 	DROP `authors`,
 	DROP `year`,
 	DROP `doi`;
-	
-ALTER TABLE `task_type_estimation_procedure` CHANGE `data_splits_url` `data_splits_path` VARCHAR( 64 ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL;	
 	
 #------------------- COMMUNITY DATABASE -------------------#
 
