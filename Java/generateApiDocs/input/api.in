@@ -1,0 +1,296 @@
+6
+authenticate
+1
+openml.authenticate
+returns a session_hash, which can be used for writing to the API
+http://localhost/api-example/openml.authenticate.xml
+2
+username
+POST
+true
+The username to be authenticated with
+password
+POST
+true
+An md5 hash of the password, corresponding to the username
+3
+250
+Please provide username
+Please provide the username as a POST variable
+251
+Please provide password
+Please provide the password (hashed as a MD5) as a POST variable
+252
+Authentication failed
+The username and password did not match any record in the database. Please note that the password should be hashed using md5
+
+data
+4
+openml.data.description
+returns dataset descriptions in XML
+http://expdb.cs.kuleuven.be/expdb/api/?f=openml.data.description&data_id=719290
+1
+data_id
+GET
+true
+The dataset id
+2
+110
+Please provide data_id
+Please provide data_id
+111
+Unknown dataset
+Data set description with data_id was not found in the database
+
+openml.data.features
+returns the features, or attributes, of a given dataset
+http://expdb.cs.kuleuven.be/expdb/api/?f=openml.data.features&data_id=61
+1
+data_id
+GET
+true
+The dataset id
+3
+270
+Please provide data_id
+Please provide data_id
+271
+Unknown dataset
+Data set description with data_id was not found in the database
+272
+No features found
+The registered dataset did not contain any features
+
+openml.data.licences
+returns a list of known data licences
+http://expdb.cs.kuleuven.be/expdb/api/?f=openml.data.licences
+0
+0
+
+openml.data.upload
+uploads and registers new datasets
+http://localhost/api-example/openml.data.upload.xml
+2
+description
+POST
+true
+An XML file containing the data set description
+dataset
+POST
+true
+The dataset file to be stored on the server
+10
+130
+Problem with file uploading
+There was a problem with the file upload
+131
+Problem validating uploaded description file
+The XML description format does not meet the standards
+132
+Failed to move the files
+Internal server error, please contact api administrators
+133
+Failed to make checksum of datafile
+Internal server error, please contact api administrators
+134
+Failed to insert record in database
+Internal server error, please contact api administrators
+135
+Please provide description xml
+Please provide description xml
+136
+Please provide dataset file
+Please provide dataset file
+137
+Please provide session_hash
+In order to share content, please authenticate (openml.authenticate) and provide session_hash
+138
+Authentication failed
+The session_hash was not valid. Please try to login again, or contact api administrators
+139
+Combination name / version already exists
+The combination of name and version of this dataset already exists. Leave version out for auto increment
+
+Tasks
+3
+openml.tasks.types
+returns a list of known machine learning task types
+http://expdb.cs.kuleuven.be/expdb/api/?f=openml.tasks.types
+0
+0
+
+openml.tasks.type.search
+returns a definition (template) of a certain task type
+http://expdb.cs.kuleuven.be/expdb/api/?f=openml.tasks.types.search&task_type_id=1
+1
+task_type_id
+GET
+true
+The task type id
+2
+240
+Please provide task_type_id
+Please provide task_type_id
+241
+Unknown task type
+The task type with this id was not found in the database
+
+openml.tasks.search
+returns tasks in XML
+http://expdb.cs.kuleuven.be/expdb/api/?f=openml.tasks.search&task_id=1
+1
+task_id
+GET
+true
+The task id
+2
+140
+Please provide task_id
+Please provide task_id
+141
+Unknown task
+The task with this id was not found in the database
+
+implementations
+3
+openml.implementation.licences
+returns a list of known implementation licences
+http://expdb.cs.kuleuven.be/expdb/api/?f=openml.implementation.licences
+0
+0
+
+openml.implementation.upload
+uploads and registers new implementations
+http://localhost/api-example/openml.implementation.upload.xml
+3
+description
+POST
+true
+An XML file containing the implementation meta data
+source
+POST
+false
+The source code of the implementation. If multiple files, please zip them. Either source or binary is required.
+binary
+POST
+false
+The binary of the implementation. If multiple files, please zip them. Either source or binary is required.
+11
+160
+Error in file uploading
+There was a problem with the file upload
+161
+Please provide description xml
+Please provide description xml
+162
+Please provide source or binary file
+Please provide source or binary file. It is also allowed to upload both
+163
+Problem validating uploaded description file
+The XML description format does not meet the standards
+164
+Implementation already stored in database
+Please change name or version number
+165
+Failed to move the files
+Internal server error, please contact api administrators
+166
+Failed to add implementation to database
+Internal server error, please contact api administrators
+167
+Illegal files uploaded
+An non required file was uploaded.
+168
+The provided md5 hash equals not the server generated md5 hash of the file
+The provided md5 hash equals not the server generated md5 hash of the file
+169
+Please provide session_hash
+In order to share content, please authenticate (openml.authenticate) and provide session_hash
+170
+Authentication failed
+The session_hash was not valid. Please try to login again, or contact api administrators
+
+openml.implementation.get
+returns the description file of an implementation
+http://expdb.cs.kuleuven.be/expdb/api/?f=openml.implementation.get&implementation_id=knime.janvanrijn.solveTaskA_1.5.9
+1
+implementation_id
+GET
+true
+The implementation id (typically: name_version)
+2
+180
+Please provide implementation_id
+Please provide implementation_id
+181
+Unknown implementation
+The implementation with this ID was not found in the database
+
+evaluations
+2
+openml.evaluation.measures
+returns a list of supported evaluation measures
+http://expdb.cs.kuleuven.be/expdb/api/?f=openml.evaluation.measures
+0
+0
+
+openml.evaluation.methods
+returns a list of supported evaluation methods
+http://expdb.cs.kuleuven.be/expdb/api/?f=openml.evaluation.methods
+0
+0
+
+runs
+1
+openml.run.upload
+uploads new runs
+http://localhost/api-example/openml.run.upload.xml
+2
+description
+POST
+true
+An XML file describing the run
+&lt;output_files&gt;
+POST
+true
+All output files that should be generated by the run, as described in the task xml. For supervised classification tasks, this is typically a file containing predictions
+13
+200
+Please provide session_hash
+In order to share content, please authenticate (openml.authenticate) and provide session_hash
+201
+Authentication failed
+The session_hash was not valid. Please try to login again, or contact api administrators
+202
+Please provide run xml
+Please provide run xml
+203
+Could not validate run xml by xsd
+Please double check that the xml is valid. 
+204
+Unknown task
+The task with this id was not found in the database
+205
+Unknown implementation
+The implementation with this id was not found in the database
+206
+Invalid number of files
+The number of uploaded files did not match the number of files expected for this task type
+207
+File upload failed
+One of the files uploaded has a problem
+208
+Error inserting setup record
+Internal server error, please contact api administrators
+209
+Unable to store cvrun
+Internal server error, please contact api administrators
+210
+Unable to store run
+Internal server error, please contact api administrators
+211
+Dataset not in databse
+One of the datasets of this task was not included in database, please contact api administrators
+212
+Unable to store file
+Internal server error, please contact api administrators
