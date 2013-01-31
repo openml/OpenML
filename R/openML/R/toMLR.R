@@ -19,14 +19,17 @@ createMLRResampleInstance <- function(estim.proc, mlr.task) {
   n.folds <- estim.proc@parameters[["number_folds"]]
   data.splits <- estim.proc@data.splits
   # FIXME : more resampling
-  if (type == "cross-validation") {
+  if (type == "cross_validation") {
     if (n.repeats == 1L)
       mlr.rdesc <- makeResampleDesc("CV", iters = n.folds, stratify = TRUE)
     else 
       mlr.rdesc <- makeResampleDesc("RepCV", reps = n.repeats, folds = n.folds, stratify = TRUE)
+  } else {
+    stopf("Unsupported estimation procedure type: %s", type)
   }
   mlr.rin = makeResampleInstance(mlr.rdesc, task = mlr.task)  
   iter = 1L
+  print(table(data.splits$rep, data.splits$fold, data.splits$type))
   for (r in 1:n.repeats) {
     for (f in 1:n.folds) {
       d = subset(data.splits, rep ==  r & data.splits$fold == f)

@@ -17,10 +17,10 @@
 # class def
 setClass("OpenMLEstimationProcedure",
          representation(
-                        type="character",
-                        data.splits.id="integer",
-                        data.splits="data.frame",
-                        parameters="list"
+                        type = "character",
+                        data.splits.url = "character",
+                        data.splits = "data.frame",
+                        parameters = "list"
            ))
 
 
@@ -30,13 +30,13 @@ setClassUnion("OptionalOpenMLEstimationProcedure",
 
 # --------------------------------------------------------------
 # constructor function
-OpenMLEstimationProcedure <- function(type,data.splits.id,data.splits,parameters)
-{
+OpenMLEstimationProcedure <- function(type, data.splits.url, data.splits, parameters) {
   new("OpenMLEstimationProcedure",
-      type=type,
-      data.splits.id=data.splits.id,
-      data.splits=data.splits,
-      parameters=parameters)
+    type = type,
+    data.splits.url = data.splits.url,
+    data.splits = data.splits,
+    parameters = parameters
+  )
 }
 
 
@@ -46,13 +46,13 @@ OpenMLEstimationProcedure <- function(type,data.splits.id,data.splits,parameters
 
 # show
 # Note: The data splits and the predictions are not shown
-setMethod("show","OpenMLEstimationProcedure",
-          function(object) {
-            cat('\nEstimation Method :: ',object@type,'\n')
-            cat('Parameters         ::\n')
-            for(i in 1:length(object@parameters))
-              cat('\t',names(object@parameters)[i],' = ',object@parameters[[i]],'\n')
-            cat('Data Splits        :: \n')
-            str(object@data.splits)
-          }
-          )
+setMethod("show", "OpenMLEstimationProcedure",
+  function(object) {
+    catf('\nEstimation Method :: %s',object@type)
+    catf('Parameters         ::')
+    for(i in 1:length(object@parameters))
+      catf('\t%s = %s', names(object@parameters)[i], object@parameters[[i]])
+    catf('Data Splits        :: ')
+    str(object@data.splits)
+  }
+)

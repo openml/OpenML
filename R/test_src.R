@@ -16,18 +16,19 @@ fn.data.splits <- "../ARFF/folds_task_1.arff"
 #dsd <- parseOpenMLDataSetDescription(fn.data.set.desc)
 #print(dsd)
 
-task <- parseOpenMLTask(fn.task)
-task@task.data.desc <- parseOpenMLDataSetDescription(fn.data.set.desc)
-task@task.data.desc@data.set <- parseOpenMLDataSet(task@task.data.desc, fn.data.set)
-task@task.estimation.procedure@data.splits <- parseOpenMLDataSplits(task@task.data.desc@data.set, fn.data.splits)
+
+#task <- parseOpenMLTask(fn.task)
+#task@task.data.desc <- parseOpenMLDataSetDescription(fn.data.set.desc)
+#task@task.data.desc@data.set <- parseOpenMLDataSet(task@task.data.desc, fn.data.set)
+#task@task.estimation.procedure@data.splits <- parseOpenMLDataSplits(task@task.data.desc@data.set, fn.data.splits)
 #print(task)
 
-print(summary(task@task.estimation.procedure@data.splits))
-print(head(task@task.estimation.procedure@data.splits))
+#print(summary(task@task.estimation.procedure@data.splits))
+#print(head(task@task.estimation.procedure@data.splits))
 
-# task = downloadOpenMLTask(id = 12, fetch.data.set.description = TRUE,
-#   fetch.data.set = FALSE, fetch.data.splits = FALSE)
-# print(task)
+task = downloadOpenMLTask(id = 1, fetch.data.set.description = TRUE,
+   fetch.data.set = TRUE, fetch.data.splits = TRUE)
+ print(task)
 
   z <- toMLR(task)
   lrn <- makeLearner("classif.rpart")

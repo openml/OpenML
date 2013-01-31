@@ -1,11 +1,7 @@
 downloadOpenMLDataSetDescription = function(id, file) {
-  id = convertInteger(id)
   checkArg(id, "integer", len = 1L, na.ok = FALSE)
   checkArg(file, "character", len = 1L, na.ok = FALSE)
-  url = getServerFunctionURL("openml.data.description", data.id = id)
-  text = getURL(url)
-  cat(file = file, text)
-  invisible(NULL)
+  downloadAPICallFile(api.fun = "openml.data.description", file = file, data.id = id)  
 }
 
 parseOpenMLDataSetDescription = function(file) {
@@ -18,10 +14,12 @@ parseOpenMLDataSetDescription = function(file) {
   args[["version"]] = xmlRValS(doc, "/oml:data_set_description/oml:version")
   args[["description"]] = xmlRValS(doc, "/oml:data_set_description/oml:description")
   args[["format"]] = xmlRValS(doc, "/oml:data_set_description/oml:format")
-  args[["creator"]] = xmlOValS(doc, "/oml:data_set_description/oml:creator")
+  args[["creator"]] = xmlValsMultNsS(doc, "/oml:data_set_description/oml:creator")
   args[["contributor"]] = xmlValsMultNsS(doc, "/oml:data_set_description/oml:contributor")
   args[["collection.date"]] = xmlOValS(doc, "/oml:data_set_description/oml:collection_date")
-  args[["upload.date"]] = xmlRValD(doc, "/oml:data_set_description/oml:upload_date")
+  # FIXME
+  #args[["upload.date"]] = xmlRValD(doc, "/oml:data_set_description/oml:upload_date")
+  args[["upload.date"]] = as.POSIXct(Sys.time())
   args[["language"]] = xmlOValS(doc, "/oml:data_set_description/oml:language")
   args[["licence"]] = xmlOValS(doc, "/oml:data_set_description/oml:licence")
   args[["url"]] = xmlRValS(doc, "/oml:data_set_description/oml:url")

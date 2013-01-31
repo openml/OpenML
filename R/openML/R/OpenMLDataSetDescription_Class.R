@@ -19,22 +19,24 @@
 #FIXME:  check that slots are in same order (here and other classes) as in XSD
 
 setClass("OpenMLDataSetDescription",
-         representation(id="numeric",
-                        name="character",
-                        version="character",
-                        creator="character",
-                        contributor="character",
-                        collection.date="character",
-                        upload.date="POSIXt",
-                        description="character",
-                        language="character",
-                        format="character",
-                        licence="character",
-                        url="character",
-                        row.id.attribute="character",
-                        md5.checksum="character",
-                        data.set="data.frame"
-                        ))
+  representation(
+    id = "numeric",
+    name = "character",
+    version = "character",
+    creator = "character",
+    contributor = "character",
+    collection.date = "character",
+    upload.date = "POSIXt",
+    description = "character",
+    language = "character",
+    format = "character",
+    licence = "character",
+    url = "character",
+    row.id.attribute = "character",
+    md5.checksum = "character",
+    data.set = "data.frame"
+  )
+)
 
 setClassUnion("OptionalOpenMLDataSetDescription",
               c("OpenMLDataSetDescription","NULL"))

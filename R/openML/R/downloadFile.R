@@ -1,7 +1,15 @@
-downloadFile = function(api.fun, file, ...) {
-  messagef("Downloading file: %s", file)
+downloadAPICallFile = function(api.fun, file, ...) {
+  checkArg(api.fun, "character", len = 1L, na.ok = FALSE)
+  checkArg(file, "character", len = 1L, na.ok = FALSE)
   url = getServerFunctionURL(api.fun, ...)
-  text = getURL(url)
-  cat(file = file, text)
+  downloadBinaryFile(url, file)
+}
+
+downloadBinaryFile= function(url, file) {
+  checkArg(url, "character", len = 1L, na.ok = FALSE)
+  checkArg(file, "character", len = 1L, na.ok = FALSE)
+  messagef("Downloading file: %s from:\n  %s", file, url)
+  content = getURL(url)
+  write(content, file = file)
   invisible(NULL)
 }

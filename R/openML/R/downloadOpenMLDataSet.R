@@ -1,11 +1,7 @@
-downloadOpenMLDataSet = function(id, file) {
-	id <- convertInteger(id)
-  checkArg(id, "integer", len = 1L, na.ok = FALSE)
+downloadOpenMLDataSet = function(url, file) {
+  checkArg(url, "character", len = 1L, na.ok = FALSE)
   checkArg(file, "character", len = 1L, na.ok = FALSE)
-  url = getServerFunctionURL("openml.data.description", data.id = id)
-  text = getURL(url)
-  cat(file = file, text)
-  invisible(NULL)
+  downloadBinaryFile(url, file)
 }
 
 parseOpenMLDataSet = function(dsd, file) {

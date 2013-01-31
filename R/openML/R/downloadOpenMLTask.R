@@ -16,22 +16,22 @@ downloadOpenMLTask <- function(id, dir = tempdir(), clean.up = TRUE, fetch.data.
   messagef("Downloading task %i from OpenML repository.", id)
   messagef("Intermediate files (XML and ARFF) will be stored in : %s", dir)
 
-  downloadFile(api.fun = "openml.tasks.search", file = fn.task, task.id = id)  
+  downloadAPICallFile(api.fun = "openml.tasks.search", file = fn.task, task.id = id)  
   task <- parseOpenMLTask(fn.task)
   
   if (fetch.data.set.description) {
-    downloadOpenMLDataSetDescription(task@data.desc.id, fn.data.set.desc)
-    task@data.desc <- parseOpenMLDataSetDescription(fn.data.set.desc)
+    downloadOpenMLDataSetDescription(task@task.data.desc.id, fn.data.set.desc)
+    task@task.data.desc <- parseOpenMLDataSetDescription(fn.data.set.desc)
   }
 
   if (fetch.data.set) {
-    downloadOpenMLDataSet(task@task.data.desc@id, fn.data.set)
-    task@task.data.desc@data.set <- parseOpenMLDataSet(fn.data.set)
+    downloadOpenMLDataSet(task@task.data.desc@url, fn.data.set)
+    task@task.data.desc@data.set <- parseOpenMLDataSet(task@task.data.desc, fn.data.set)
   }
   
   if (fetch.data.splits) {
-    downloadOpenMLDataSplits(task@data.splits.id, fn.data.splits)
-    task@task.data.set <- parseOpenMLDataSet(fn.data.splits)
+    downloadOpenMLDataSplits(task@task.estimation.procedure@data.splits.url, fn.data.splits)
+    task@task.estimation.procedure@data.splits <- parseOpenMLDataSplits(task@task.data.desc@data.set, fn.data.splits)
   }
   
   if (clean.up) {
@@ -63,7 +63,6 @@ parseOpenMLTask <- function(file) {
   
   # data set description
   data.desc.id <- xmlRValI(doc, "/oml:task/oml:input/oml:data_set/oml:data_set_id")
-  data.splits.id <- xmlRValI(doc, "/oml:task/oml:input/oml:estimation_procedure/oml:data_splits_id")
   data.desc <- NULL
   
   # prediction
@@ -71,7 +70,6 @@ parseOpenMLTask <- function(file) {
   preds.features <- lapply(ns.preds.features, function(x) xmlGetAttr(x, "type"))
   names(preds.features) <- sapply(ns.preds.features, function(x) xmlGetAttr(x, "name"))
   task.preds <- list(
-    name = xmlRValS(doc, "/oml:task/oml:output/oml:predictions/oml:name"), 
     format = xmlRValS(doc, "/oml:task/oml:output/oml:predictions/oml:format"),
     features = preds.features
   )
@@ -79,11 +77,11 @@ parseOpenMLTask <- function(file) {
   # estimation procedure
   estim.proc <- OpenMLEstimationProcedure(
     type = xmlRValS(doc, "/oml:task/oml:input/oml:estimation_procedure/oml:type"), 
-    data.splits.id  = xmlRValI(doc, "/oml:task/oml:input/oml:estimation_procedure/oml:data_splits_id"),
+    data.splits.url  = xmlRValS(doc, "/oml:task/oml:input/oml:estimation_procedure/oml:data_splits_url"),
     data.splits = data.frame(),
     parameters = getParams("/oml:task/oml:input/oml:estimation_procedure")
   )
-
+  
   # measures
   measures <- xmlValsMultNsS(doc, "/oml:task/oml:input/oml:evaluation_measures/oml:evaluation_measure")
   

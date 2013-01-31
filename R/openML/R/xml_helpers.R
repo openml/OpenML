@@ -55,12 +55,11 @@ xmlRValD = function(doc, path) {
   xmlVal(doc, path, FALSE, as.POSIXct)
 }
 
-xmlValsMultNs = function(doc, path, fun) {
+xmlValsMultNs = function(doc, path, fun, val) {
   ns = getNodeSet(doc, path)
-  sapply(ns, function(x) fun(xmlValue(x)))
+  vapply(ns, function(x) fun(xmlValue(x)), val)
 }
 
 xmlValsMultNsS = function(doc, path, fun) {
-  xmlValsMultNs(doc, path, as.character)
+  xmlValsMultNs(doc, path, as.character, character(1))
 }
-
