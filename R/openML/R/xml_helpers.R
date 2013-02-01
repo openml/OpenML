@@ -52,7 +52,7 @@ xmlRValR = function(doc, path) {
 }
 
 xmlRValD = function(doc, path) {
-  xmlVal(doc, path, FALSE, as.POSIXct)
+  xmlVal(doc, path, FALSE, function(x) as.POSIXct(x, tz="CET"))
 }
 
 xmlValsMultNs = function(doc, path, fun, val) {
