@@ -17,9 +17,7 @@ parseOpenMLDataSetDescription = function(file) {
   args[["creator"]] = xmlValsMultNsS(doc, "/oml:data_set_description/oml:creator")
   args[["contributor"]] = xmlValsMultNsS(doc, "/oml:data_set_description/oml:contributor")
   args[["collection.date"]] = xmlOValS(doc, "/oml:data_set_description/oml:collection_date")
-  # FIXME
-  #args[["upload.date"]] = xmlRValD(doc, "/oml:data_set_description/oml:upload_date")
-  args[["upload.date"]] = as.POSIXct(Sys.time())
+  args[["upload.date"]] = xmlRValD(doc, "/oml:data_set_description/oml:upload_date")
   args[["language"]] = xmlOValS(doc, "/oml:data_set_description/oml:language")
   args[["licence"]] = xmlOValS(doc, "/oml:data_set_description/oml:licence")
   args[["url"]] = xmlRValS(doc, "/oml:data_set_description/oml:url")

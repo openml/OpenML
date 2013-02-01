@@ -28,8 +28,8 @@ fn.data.splits <- "../ARFF/folds_task_1.arff"
 
 task = downloadOpenMLTask(id = 1, fetch.data.set.description = TRUE,
    fetch.data.set = TRUE, fetch.data.splits = TRUE)
- print(task)
+# print(task)
 
-  z <- toMLR(task)
-  lrn <- makeLearner("classif.rpart")
-  r <- resample(lrn, z$mlr.task, z$mlr.rin, measures = z$mlr.measures)
+#  z <- toMLR(task)
+#  lrn <- makeLearner("classif.rpart")
+#  r <- resample(lrn, z$mlr.task, z$mlr.rin, measures = z$mlr.measures)
