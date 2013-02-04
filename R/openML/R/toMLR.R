@@ -29,7 +29,7 @@ createMLRResampleInstance <- function(estim.proc, mlr.task) {
   }
   mlr.rin = makeResampleInstance(mlr.rdesc, task = mlr.task)  
   iter = 1L
-  print(table(data.splits$rep, data.splits$fold, data.splits$type))
+  #print(table(data.splits$rep, data.splits$fold, data.splits$type))
   for (r in 1:n.repeats) {
     for (f in 1:n.folds) {
       d = subset(data.splits, rep ==  r & data.splits$fold == f)
@@ -44,7 +44,8 @@ createMLRResampleInstance <- function(estim.proc, mlr.task) {
 createMLRMeasures <- function(measures) {
   lapply(measures, function(m) {
     switch(m, 
-      predictive_accuracy = acc           
+      predictive_accuracy = acc,
+      stopf("Unsupported evaluation measure: %s", m)     
     )
   })
 }
