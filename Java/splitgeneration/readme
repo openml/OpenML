@@ -1,14 +1,21 @@
 SplitGenerator
 -------------
 Takes 5 command-line arguments:
-url - the path to the dataset file
-nrfolds - the number of cross-validation folds
-nrrepeats - the number of repeats
-destination - the destination path of the split arff file
-option - cv or holdout (for cross validation and holdout respectively)
+	/*
+	 * args[0] url of the dataset
+	 * args[1] nr of folds if the option is "cv"
+	 * args[1] percentage of the dataset for training if the option is "holdout"
+	 * args[2] nr of repeats
+	 * args[3] destination folder where the generated splits file is stored
+	 * args[4] option {cv, holdout}
+	 */
 
 Dependencies:
 WEKA
 
-example:
+cross validation example:
 java SplitGenerator data/iris.arff 10 10 desktop cv
+
+
+holdout example:
+java SplitGenerator data/iris.arff 0.33 10 desktop holdout
