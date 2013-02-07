@@ -5,11 +5,13 @@ public class ErrorCode implements Comparable<ErrorCode> {
 	private int code;
 	private String error;
 	private String description;
+	private Function parent;
 	
-	public ErrorCode( int code, String error, String description ) {
+	public ErrorCode( int code, String error, String description, Function parent ) {
 		this.code = code;
 		this.error = error;
 		this.description = description;
+		this.parent = parent;
 	}
 
 	public int getCode() {
@@ -22,6 +24,10 @@ public class ErrorCode implements Comparable<ErrorCode> {
 
 	public String getDescription() {
 		return description;
+	}
+	
+	public String getParentName() {
+		return parent.getName('.');
 	}
 
 	@Override

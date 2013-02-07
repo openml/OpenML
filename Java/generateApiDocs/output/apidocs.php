@@ -179,6 +179,7 @@ None
 <h5>Arguments</h5>
 <dl><dt><code>POST description</code> (Required)</dt><dd>An XML file containing the data set description</dd></dl>
 <dl><dt><code>POST dataset</code> (Required)</dt><dd>The dataset file to be stored on the server</dd></dl>
+<dl><dt><code>POST session_hash</code> (Required)</dt><dd>The session hash, provided by the server on authentication (1 hour valid)</dd></dl>
 <h5>Example Response</h5><pre class="pre-scrollable">
 &lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;oml:upload_data_set xmlns:oml="http://open-ml.org/openml"&gt;
@@ -193,10 +194,12 @@ None
 <dl><dt>133: Failed to make checksum of datafile</dt><dd>Internal server error, please contact api administrators</dd></dl>
 <dl><dt>134: Failed to insert record in database</dt><dd>Internal server error, please contact api administrators</dd></dl>
 <dl><dt>135: Please provide description xml</dt><dd>Please provide description xml</dd></dl>
-<dl><dt>136: Please provide dataset file</dt><dd>Please provide dataset file</dd></dl>
+<dl><dt>136: Error slot open</dt><dd>Error slot open, will be filled by not yet defined error</dd></dl>
 <dl><dt>137: Please provide session_hash</dt><dd>In order to share content, please authenticate (openml.authenticate) and provide session_hash</dd></dl>
 <dl><dt>138: Authentication failed</dt><dd>The session_hash was not valid. Please try to login again, or contact api administrators</dd></dl>
 <dl><dt>139: Combination name / version already exists</dt><dd>The combination of name and version of this dataset already exists. Leave version out for auto increment</dd></dl>
+<dl><dt>140: Both dataset file and dataset url provided. Please provide only one</dt><dd>The system is confused since both a dataset file (post) and a dataset url (xml) are provided. Please remove one</dd></dl>
+<dl><dt>141: Neither dataset file or dataset url are provided</dt><dd>Please provide either a dataset file as POST variable, xor a dataset url in the description XML</dd></dl>
 </section>
 
 
@@ -299,7 +302,7 @@ None
   &lt;oml:input name="estimation_procedure"&gt;
     &lt;oml:estimation_procedure&gt;
       &lt;oml:type&gt;cross_validation&lt;/oml:type&gt;
-      &lt;oml:data_splits_url&gt;http://expdb.cs.kuleuven.be/expdb/data/splits/task_1_estimation_procedure.arff&lt;/oml:data_splits_url&gt;
+      &lt;oml:data_splits_url&gt;http://expdb.cs.kuleuven.be/expdb/data/splits/iris_splits_CV_10_2.arff&lt;/oml:data_splits_url&gt;
       &lt;oml:parameter name="number_folds"&gt;10&lt;/oml:parameter&gt;
       &lt;oml:parameter name="number_repeats"&gt;2&lt;/oml:parameter&gt;
       &lt;oml:parameter name="stratified_sampling"&gt;true&lt;/oml:parameter&gt;
@@ -324,8 +327,8 @@ None
 
 </pre>
 <h5>Error codes</h5>
-<dl><dt>140: Please provide task_id</dt><dd>Please provide task_id</dd></dl>
-<dl><dt>141: Unknown task</dt><dd>The task with this id was not found in the database</dd></dl>
+<dl><dt>150: Please provide task_id</dt><dd>Please provide task_id</dd></dl>
+<dl><dt>151: Unknown task</dt><dd>The task with this id was not found in the database</dd></dl>
 </section>
 
 
@@ -352,6 +355,7 @@ None
 <dl><dt><code>POST description</code> (Required)</dt><dd>An XML file containing the implementation meta data</dd></dl>
 <dl><dt><code>POST source</code></dt><dd>The source code of the implementation. If multiple files, please zip them. Either source or binary is required.</dd></dl>
 <dl><dt><code>POST binary</code></dt><dd>The binary of the implementation. If multiple files, please zip them. Either source or binary is required.</dd></dl>
+<dl><dt><code>POST session_hash</code> (Required)</dt><dd>The session hash, provided by the server on authentication (1 hour valid)</dd></dl>
 <h5>Example Response</h5><pre class="pre-scrollable">
 &lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;oml:upload_implementation xmlns:oml="http://open-ml.org/openml"&gt;
@@ -439,7 +443,7 @@ None
 &lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;oml:evaluation_measures xmlns:oml="http://open-ml.org/openml"&gt;
   &lt;oml:measures&gt;
-    &lt;oml:measure&gt;area_under_ROC_curve&lt;/oml:measure&gt;
+    &lt;oml:measure&gt;area_under_roc_curve&lt;/oml:measure&gt;
     &lt;oml:measure&gt;average_cost&lt;/oml:measure&gt;
     &lt;oml:measure&gt;build_cpu_time&lt;/oml:measure&gt;
     &lt;oml:measure&gt;build_memory&lt;/oml:measure&gt;
@@ -457,7 +461,7 @@ None
     &lt;oml:measure&gt;kononenko_bratko_information_score&lt;/oml:measure&gt;
     &lt;oml:measure&gt;matthews_correlation_coefficient&lt;/oml:measure&gt;
     &lt;oml:measure&gt;mean_absolute_error&lt;/oml:measure&gt;
-    &lt;oml:measure&gt;mean_area_under_ROC_curve&lt;/oml:measure&gt;
+    &lt;oml:measure&gt;mean_area_under_roc_curve&lt;/oml:measure&gt;
     &lt;oml:measure&gt;mean_class_complexity&lt;/oml:measure&gt;
     &lt;oml:measure&gt;mean_class_complexity_gain&lt;/oml:measure&gt;
     &lt;oml:measure&gt;mean_f_measure&lt;/oml:measure&gt;
@@ -481,7 +485,7 @@ None
     &lt;oml:measure&gt;run_cpu_time&lt;/oml:measure&gt;
     &lt;oml:measure&gt;run_memory&lt;/oml:measure&gt;
     &lt;oml:measure&gt;run_virtual_memory&lt;/oml:measure&gt;
-    &lt;oml:measure&gt;single_point_area_under_ROC_curve&lt;/oml:measure&gt;
+    &lt;oml:measure&gt;single_point_area_under_roc_curve&lt;/oml:measure&gt;
     &lt;oml:measure&gt;total_cost&lt;/oml:measure&gt;
     &lt;oml:measure&gt;unclassified_instance_count&lt;/oml:measure&gt;
     &lt;oml:measure&gt;webb_bias&lt;/oml:measure&gt;
@@ -522,6 +526,7 @@ None
 <h5>Arguments</h5>
 <dl><dt><code>POST description</code> (Required)</dt><dd>An XML file describing the run</dd></dl>
 <dl><dt><code>POST &lt;output_files&gt;</code> (Required)</dt><dd>All output files that should be generated by the run, as described in the task xml. For supervised classification tasks, this is typically a file containing predictions</dd></dl>
+<dl><dt><code>POST session_hash</code> (Required)</dt><dd>The session hash, provided by the server on authentication (1 hour valid)</dd></dl>
 <h5>Example Response</h5><pre class="pre-scrollable">
 &lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;oml:upload_run xmlns:oml="http://open-ml.org/openml"&gt;
@@ -543,6 +548,8 @@ None
 <dl><dt>210: Unable to store run</dt><dd>Internal server error, please contact api administrators</dd></dl>
 <dl><dt>211: Dataset not in databse</dt><dd>One of the datasets of this task was not included in database, please contact api administrators</dd></dl>
 <dl><dt>212: Unable to store file</dt><dd>Internal server error, please contact api administrators</dd></dl>
+<dl><dt>213: Parameter in run xml unknown</dt><dd>One of the parameters provided in the run xml is not registered as parameter for the implementation nor its components</dd></dl>
+<dl><dt>214: Unable to store input setting</dt><dd>Internal server error, please contact API support team</dd></dl>
 </section>
 
 

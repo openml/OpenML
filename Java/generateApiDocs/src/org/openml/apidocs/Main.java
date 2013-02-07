@@ -79,6 +79,7 @@ public class Main {
 		BufferedWriter bw = new BufferedWriter( new FileWriter( new File( filename ) ) );
 		bw.append("<?php\n\n");
 		for( ErrorCode e : errorCodes ) {
+			bw.append( "// for function: "+e.getParentName()+" \n");
 			bw.append( "$apiErrors["+e.getCode()+"][0] = '"+e.getError()+"';\n" );
 			bw.append( "$apiErrors["+e.getCode()+"][1] = '"+e.getDescription()+"';\n\n" );
 		}
@@ -120,7 +121,7 @@ public class Main {
 					Integer errorCode = Integer.parseInt( br.readLine() );
 					String errorError = br.readLine();
 					String errorDescription = br.readLine();
-					e = new ErrorCode(errorCode, errorError, errorDescription);
+					e = new ErrorCode(errorCode, errorError, errorDescription,f);
 					f.addErrorCode(e);
 					errorCodes.add(e);
 				}
