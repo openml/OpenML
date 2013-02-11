@@ -9,9 +9,12 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.apache.commons.lang3.ArrayUtils;
 
+import weka.classifiers.Classifier;
+import weka.classifiers.functions.LeastMedSq;
 import weka.classifiers.trees.J48;
 import weka.core.Attribute;
 import weka.core.FastVector;
@@ -32,6 +35,8 @@ public class GeneratePredictions {
 	private final int ATT_SPLITS_FOLD;
 	private final int ATT_SPLITS_ROWID;
 	
+	private Classifier classifier;
+	
 	private String[] classes;
 	
 	private final ArrayList<Integer>[][][] sets;
@@ -39,23 +44,25 @@ public class GeneratePredictions {
 	public static void main( String[] args ) throws Exception {
 		new GeneratePredictions( 
 			"http://expdb.cs.kuleuven.be/expdb/data/uci/nominal/iris.arff",
-			"http://expdb.cs.kuleuven.be/expdb/data/splits/iris_splits_CV_10_2.arff",
+			"http://localhost/arff/iris_splits_CV_10_2.arff",
 			"class", 2, 10 );
 	}
 	
+	@SuppressWarnings("unchecked")
 	public GeneratePredictions( String datasetPath, String splitsPath, String classAttribute, int repeats, int folds ) throws Exception {
 		int nrOfPredictions = 0;
+		boolean regression;
 		
 		dataset = new Instances( new BufferedReader( getURL( datasetPath ) ) );
 		splits = new Instances( new BufferedReader( getURL( splitsPath ) ) );
 		empty = new Instances( dataset );
 		empty.delete();
 		
-		writer = new BufferedWriter( new FileWriter( new File( "output/predictions.arff" ) ) );
+		writer = new BufferedWriter( new FileWriter( new File( "output/predictions_" + datasetPath.substring( datasetPath.lastIndexOf('/') + 1 ) ) ) );
 		sets = new ArrayList[2][repeats][folds];
 		
 		for( int i = 0; i < 2; i++ )
-			for( int j = 0; j < repeats; j++ ) 
+			for( int j = 0; j < repeats; j++ )
 				for( int k = 0; k < folds; k++ )
 					sets[i][j][k] = new ArrayList<Integer>();
 		
@@ -73,10 +80,13 @@ public class GeneratePredictions {
 		if( dataset.classIndex() < 0 ) { 
 			throw new RuntimeException("class not found.");
 		}
+		regression = dataset.classAttribute().isNumeric();
+		System.out.println( regression ? "Regression" : "classification" );
 		classes = new String[dataset.classAttribute().numValues()];
 		for( int i = 0; i < classes.length; i++ ) {
 			classes[i] = dataset.classAttribute().value( i );
 		}
+		System.out.println( Arrays.toString( classes ) );
 		
 		for( int i = 0; i < splits.numInstances(); i++ ) {
 			int repeat = (int) splits.instance( i ).value( ATT_SPLITS_REPEAT );
@@ -88,21 +98,24 @@ public class GeneratePredictions {
 			}
 			sets[type][repeat][fold].add( rowid );
 		}
-
-		predictions = new Instances( dataset.relationName() + "-predictions", generateAttributes( classes ), nrOfPredictions );
+		predictions = new Instances( dataset.relationName() + "-predictions", generateAttributes( classes, regression ), nrOfPredictions );
 		
 		for( int j = 0; j < repeats; j++ ) {
 			for( int k = 0; k < folds; k++ ) {
-				J48 classifier = new J48();
+				if( regression ) {
+					classifier = new LeastMedSq();
+				} else {
+					classifier = new J48();
+				}
 				classifier.buildClassifier( integerToInstances( sets[0][j][k] ) );
 				
 				for( int i = 0; i < sets[1][j][k].size(); i++ ) {
-					int rowid = sets[1][j][k].get( i );
-					int prediction = (int) classifier.classifyInstance( dataset.instance( rowid ) );
-					double[] confidences = classifier.distributionForInstance( dataset.instance( rowid ) );
-					double[] values = { j, k, rowid, prediction };
-					predictions.add( new Instance( 1.0, ArrayUtils.addAll( values, confidences ) ) );
-					//System.out.println( dataset.classAttribute().value( (int) label ) );
+					final int rowid = sets[1][j][k].get( i );
+					final double prediction = classifier.classifyInstance( dataset.instance( rowid ) );
+					final double[] values = { j, k, rowid, prediction };
+					final double[] confidences = classifier.distributionForInstance( dataset.instance( rowid ) );
+					final double[] total = regression ? values : ArrayUtils.addAll( values, confidences );
+					predictions.add( new Instance( 1.0, total ) );
 				}
 			}
 		}
@@ -126,7 +139,7 @@ public class GeneratePredictions {
 		return new InputStreamReader( urlConnection.getInputStream() );
 	}
 	
-	private static FastVector generateAttributes( String[] classes ) {
+	private static FastVector generateAttributes( String[] classes, boolean regression ) {
 		FastVector targetClasses = new FastVector();
 		for( int i = 0; i < classes.length; i++ )
 			targetClasses.addElement( classes[i] ); 
@@ -135,9 +148,13 @@ public class GeneratePredictions {
 		attributes.addElement(new Attribute("repeat"));
 		attributes.addElement(new Attribute("fold"));
 		attributes.addElement(new Attribute("rowid"));
-		attributes.addElement(new Attribute("prediction",targetClasses));
-		for( String c : classes ) {
-			attributes.addElement(new Attribute("confidence."+c));
+		if( regression ) {
+			attributes.addElement(new Attribute("prediction"));
+		} else {
+			attributes.addElement(new Attribute("prediction",targetClasses));
+			for( String c : classes ) {
+				attributes.addElement(new Attribute("confidence."+c));
+			}
 		}
 		return attributes;
 	}
