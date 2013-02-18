@@ -34,7 +34,7 @@ INSERT INTO `task_values` (`task_id`, `input`, `value`) VALUES
 (4, 4, 'http://expdb.cs.kuleuven.be/expdb/data/splits/sonar_splits_CV_10_10.arff'),
 (4, 5, '2'),
 (4, 6, '10'),
-(4, 8, 'precission'),
+(4, 8, 'precision'),
 
 (5, 1, '1'),
 (5, 2, 'class'),
