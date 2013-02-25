@@ -54,6 +54,7 @@ public class Main {
 	}
 	
 	public Main() throws IOException {
+		errorCodes.add( new ErrorCode(100, "Function not valid", "Function not valid", new Function("openml.global", "...")));
 		init( "input/api.in" );
 		writeApiDocs( "output/apidocs.php", "input/template.tpl.php" );
 		writeApiErrors( "output/api-errors.php" );
@@ -80,8 +81,8 @@ public class Main {
 		bw.append("<?php\n\n");
 		for( ErrorCode e : errorCodes ) {
 			bw.append( "// for function: "+e.getParentName()+" \n");
-			bw.append( "$apiErrors["+e.getCode()+"][0] = '"+e.getError()+"';\n" );
-			bw.append( "$apiErrors["+e.getCode()+"][1] = '"+e.getDescription()+"';\n\n" );
+			bw.append( "$this->apiErrors["+e.getCode()+"][0] = '"+e.getError()+"';\n" );
+			bw.append( "$this->apiErrors["+e.getCode()+"][1] = '"+e.getDescription()+"';\n\n" );
 		}
 		bw.append("\n\n?>");
 		bw.close();

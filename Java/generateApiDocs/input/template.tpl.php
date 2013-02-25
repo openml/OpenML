@@ -1,8 +1,3 @@
-<?php
-    $active="tutorial";
-    require_once("header.php");
-    require_once("api/helper.php");
-    ?>
 <div class="container">
     <div class="marketing" style="margin-top:10px;margin-left:auto;margin-right:auto;">
         <h1>OpenML API</h1>
@@ -42,4 +37,3 @@
     <!-- end row -->
 </div>
 <!-- end container -->
-<?php require_once("footer.php");?>

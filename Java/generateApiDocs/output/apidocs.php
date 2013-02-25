@@ -16,30 +16,30 @@
             <ul class="nav nav-list bs-docs-sidenav">
 
 <li class="nav-header">authenticate</li>
-<li class="onlychild"><a href="<?php echo $_SERVER['SCRIPT_NAME'] ?>#openml_authenticate">openml.authenticate</a></li>
+<li class="onlychild"><a href="<?php echo $_SERVER['REQUEST_URI'] ?>#openml_authenticate">openml.authenticate</a></li>
 
 <li class="nav-header">data</li>
-<li class="topchild "><a href="<?php echo $_SERVER['SCRIPT_NAME'] ?>#openml_data_description">openml.data.description</a></li>
-<li class=""><a href="<?php echo $_SERVER['SCRIPT_NAME'] ?>#openml_data_features">openml.data.features</a></li>
-<li class=""><a href="<?php echo $_SERVER['SCRIPT_NAME'] ?>#openml_data_licences">openml.data.licences</a></li>
-<li class=" bottomchild"><a href="<?php echo $_SERVER['SCRIPT_NAME'] ?>#openml_data_upload">openml.data.upload</a></li>
+<li class="topchild "><a href="<?php echo $_SERVER['REQUEST_URI'] ?>#openml_data_description">openml.data.description</a></li>
+<li class=""><a href="<?php echo $_SERVER['REQUEST_URI'] ?>#openml_data_features">openml.data.features</a></li>
+<li class=""><a href="<?php echo $_SERVER['REQUEST_URI'] ?>#openml_data_licences">openml.data.licences</a></li>
+<li class=" bottomchild"><a href="<?php echo $_SERVER['REQUEST_URI'] ?>#openml_data_upload">openml.data.upload</a></li>
 
 <li class="nav-header">Tasks</li>
-<li class="topchild "><a href="<?php echo $_SERVER['SCRIPT_NAME'] ?>#openml_tasks_types">openml.tasks.types</a></li>
-<li class=""><a href="<?php echo $_SERVER['SCRIPT_NAME'] ?>#openml_tasks_type_search">openml.tasks.type.search</a></li>
-<li class=" bottomchild"><a href="<?php echo $_SERVER['SCRIPT_NAME'] ?>#openml_tasks_search">openml.tasks.search</a></li>
+<li class="topchild "><a href="<?php echo $_SERVER['REQUEST_URI'] ?>#openml_tasks_types">openml.tasks.types</a></li>
+<li class=""><a href="<?php echo $_SERVER['REQUEST_URI'] ?>#openml_tasks_type_search">openml.tasks.type.search</a></li>
+<li class=" bottomchild"><a href="<?php echo $_SERVER['REQUEST_URI'] ?>#openml_tasks_search">openml.tasks.search</a></li>
 
 <li class="nav-header">implementations</li>
-<li class="topchild "><a href="<?php echo $_SERVER['SCRIPT_NAME'] ?>#openml_implementation_licences">openml.implementation.licences</a></li>
-<li class=""><a href="<?php echo $_SERVER['SCRIPT_NAME'] ?>#openml_implementation_upload">openml.implementation.upload</a></li>
-<li class=" bottomchild"><a href="<?php echo $_SERVER['SCRIPT_NAME'] ?>#openml_implementation_get">openml.implementation.get</a></li>
+<li class="topchild "><a href="<?php echo $_SERVER['REQUEST_URI'] ?>#openml_implementation_licences">openml.implementation.licences</a></li>
+<li class=""><a href="<?php echo $_SERVER['REQUEST_URI'] ?>#openml_implementation_upload">openml.implementation.upload</a></li>
+<li class=" bottomchild"><a href="<?php echo $_SERVER['REQUEST_URI'] ?>#openml_implementation_get">openml.implementation.get</a></li>
 
 <li class="nav-header">evaluations</li>
-<li class="topchild "><a href="<?php echo $_SERVER['SCRIPT_NAME'] ?>#openml_evaluation_measures">openml.evaluation.measures</a></li>
-<li class=" bottomchild"><a href="<?php echo $_SERVER['SCRIPT_NAME'] ?>#openml_evaluation_methods">openml.evaluation.methods</a></li>
+<li class="topchild "><a href="<?php echo $_SERVER['REQUEST_URI'] ?>#openml_evaluation_measures">openml.evaluation.measures</a></li>
+<li class=" bottomchild"><a href="<?php echo $_SERVER['REQUEST_URI'] ?>#openml_evaluation_methods">openml.evaluation.methods</a></li>
 
 <li class="nav-header">runs</li>
-<li class="onlychild"><a href="<?php echo $_SERVER['SCRIPT_NAME'] ?>#openml_run_upload">openml.run.upload</a></li>
+<li class="onlychild"><a href="<?php echo $_SERVER['REQUEST_URI'] ?>#openml_run_upload">openml.run.upload</a></li>
 
 
 
@@ -86,23 +86,14 @@
 <h5>Example Response</h5><pre class="pre-scrollable">
 &lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;oml:data_set_description xmlns:oml="http://open-ml.org/openml"&gt;
-  &lt;oml:id&gt;719290&lt;/oml:id&gt;
-  &lt;oml:name&gt;Auto 93&lt;/oml:name&gt;
-  &lt;oml:version&gt;1.2&lt;/oml:version&gt;
-  &lt;oml:description&gt;This is a great dataset for classification!&lt;/oml:description&gt;
-  &lt;oml:format&gt;arff&lt;/oml:format&gt;
-  &lt;oml:creator&gt;StatLib library&lt;/oml:creator&gt;
-  &lt;oml:creator&gt;UCI crew -test entry-&lt;/oml:creator&gt;
-  &lt;oml:contributor&gt;Jan N. van Rijn&lt;/oml:contributor&gt;
-  &lt;oml:contributor&gt;Joaquin Vanschoren&lt;/oml:contributor&gt;
-  &lt;oml:contributor&gt;RapidMiner Community&lt;/oml:contributor&gt;
-  &lt;oml:collection_date&gt;Juny, 2006&lt;/oml:collection_date&gt;
-  &lt;oml:upload_date&gt;2013-01-30 10:08:28&lt;/oml:upload_date&gt;
-  &lt;oml:language&gt;English&lt;/oml:language&gt;
-  &lt;oml:licence&gt;UCI&lt;/oml:licence&gt;
-  &lt;oml:url&gt;http://expdb.cs.kuleuven.be/expdb/data/dataset/api/auto93_9.arff&lt;/oml:url&gt;
-  &lt;oml:row_id_attribute&gt;mpg&lt;/oml:row_id_attribute&gt;
-  &lt;oml:md5_checksum&gt;b031a685d8d40136449d94365f9a8b81&lt;/oml:md5_checksum&gt;
+  &lt;oml:id/&gt;
+  &lt;oml:name/&gt;
+  &lt;oml:version/&gt;
+  &lt;oml:description/&gt;
+  &lt;oml:format/&gt;
+  &lt;oml:upload_date/&gt;
+  &lt;oml:url/&gt;
+  &lt;oml:md5_checksum/&gt;
 &lt;/oml:data_set_description&gt;
 
 </pre>
@@ -165,7 +156,6 @@ None
 &lt;oml:data_licences xmlns:oml="http://open-ml.org/openml"&gt;
   &lt;oml:licences&gt;
     &lt;oml:licence&gt;public domain&lt;/oml:licence&gt;
-    &lt;oml:licence&gt;UCI&lt;/oml:licence&gt;
   &lt;/oml:licences&gt;
 &lt;/oml:data_licences&gt;
 
@@ -216,6 +206,12 @@ None
     &lt;oml:description&gt;Given a dataset with a classification target and a set of train/test splits, e.g. generated by a cross-validation procedure, train a model and return the predictions of that model.&lt;/oml:description&gt;
     &lt;oml:creator&gt;Joaquin Vanschoren&lt;/oml:creator&gt;
   &lt;/oml:task_type&gt;
+  &lt;oml:task_type&gt;
+    &lt;oml:id&gt;2&lt;/oml:id&gt;
+    &lt;oml:name&gt;Supervised Regression&lt;/oml:name&gt;
+    &lt;oml:description&gt;Given a dataset with a numeric target and a set of train/test splits, e.g. generated by a cross-validation procedure, train a model and return the predictions of that model.&lt;/oml:description&gt;
+    &lt;oml:creator&gt;Joaquin Vanschoren&lt;/oml:creator&gt;
+  &lt;/oml:task_type&gt;
 &lt;/oml:task_types&gt;
 
 </pre>
@@ -236,7 +232,7 @@ None
   &lt;oml:creator&gt;Joaquin Vanschoren&lt;/oml:creator&gt;
   &lt;oml:contributor&gt;Jan van Rijn&lt;/oml:contributor&gt;
   &lt;oml:contributor&gt;Bo Gao&lt;/oml:contributor&gt;
-  &lt;oml:contributor&gt;Simon Fisher&lt;/oml:contributor&gt;
+  &lt;oml:contributor&gt;Simon Fischer&lt;/oml:contributor&gt;
   &lt;oml:contributor&gt;Venkatesh Umaashankar&lt;/oml:contributor&gt;
   &lt;oml:contributor&gt;Luis Torgo&lt;/oml:contributor&gt;
   &lt;oml:contributor&gt;Bernd Bischl&lt;/oml:contributor&gt;
@@ -339,9 +335,7 @@ None
 <h5>Example Response</h5><pre class="pre-scrollable">
 &lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;oml:implementation_licences xmlns:oml="http://open-ml.org/openml"&gt;
-  &lt;oml:licences&gt;
-    &lt;oml:licence&gt;public domain&lt;/oml:licence&gt;
-  &lt;/oml:licences&gt;
+  &lt;oml:licences/&gt;
 &lt;/oml:implementation_licences&gt;
 
 </pre>
@@ -383,50 +377,10 @@ None
 <dl><dt><code>GET implementation_id</code> (Required)</dt><dd>The implementation id (typically: name_version)</dd></dl>
 <h5>Example Response</h5><pre class="pre-scrollable">
 &lt;?xml version="1.0" encoding="UTF-8"?&gt;
-&lt;oml:implementation xmlns:oml="http://open-ml.org/openml"&gt;
-  &lt;oml:id&gt;knime.janvanrijn.solveTaskA_1.5.9&lt;/oml:id&gt;
-  &lt;oml:uploader&gt;-1&lt;/oml:uploader&gt;
-  &lt;oml:name&gt;knime.janvanrijn.solveTaskA&lt;/oml:name&gt;
-  &lt;oml:version&gt;1.5.9&lt;/oml:version&gt;
-  &lt;oml:description&gt;Solving task A in an ingenious way&lt;/oml:description&gt;
-  &lt;oml:creator&gt;Jan N. van Rijn&lt;/oml:creator&gt;
-  &lt;oml:creator&gt;Bo Gao&lt;/oml:creator&gt;
-  &lt;oml:contributor&gt;Joaquin Vanschoren&lt;/oml:contributor&gt;
-  &lt;oml:contributor&gt;Patrick Winter&lt;/oml:contributor&gt;
-  &lt;oml:upload_date&gt;2013-01-30 10:49:16&lt;/oml:upload_date&gt;
-  &lt;oml:licence&gt;public domain&lt;/oml:licence&gt;
-  &lt;oml:language&gt;English&lt;/oml:language&gt;
-  &lt;oml:full_description&gt;Solving task A in an ingenious way&lt;/oml:full_description&gt;
-  &lt;oml:installation_notes&gt;Download and run 'make install'&lt;/oml:installation_notes&gt;
-  &lt;oml:dependencies&gt;KNIME 2.7.1&lt;/oml:dependencies&gt;
-  &lt;oml:bibliographical_reference&gt;
-    &lt;oml:citation&gt;free form&lt;/oml:citation&gt;
-    &lt;oml:url&gt;www.janvanrijn.eu/taskA&lt;/oml:url&gt;
-  &lt;/oml:bibliographical_reference&gt;
-  &lt;oml:components&gt;
-    &lt;oml:implementation xmlns:oml="http://open-ml.org/openml"&gt;
-      &lt;oml:id&gt;knime.algorithmA_4.0&lt;/oml:id&gt;
-      &lt;oml:uploader&gt;-1&lt;/oml:uploader&gt;
-      &lt;oml:name&gt;knime.algorithmA&lt;/oml:name&gt;
-      &lt;oml:version&gt;4.0&lt;/oml:version&gt;
-      &lt;oml:description&gt;Implementation of SVM&lt;/oml:description&gt;
-      &lt;oml:contributor/&gt;
-      &lt;oml:upload_date&gt;2013-01-24 17:39:13&lt;/oml:upload_date&gt;
-      &lt;oml:dependencies&gt;KNIME 2.7.1&lt;/oml:dependencies&gt;
-      &lt;oml:parameter&gt;
-        &lt;oml:name&gt;C&lt;/oml:name&gt;
-        &lt;oml:data_type&gt;float&lt;/oml:data_type&gt;
-        &lt;oml:default_value&gt;0.01&lt;/oml:default_value&gt;
-        &lt;oml:description&gt;Controls complexity&lt;/oml:description&gt;
-      &lt;/oml:parameter&gt;
-    &lt;/oml:implementation&gt;
-  &lt;/oml:components&gt;
-  &lt;oml:source_url&gt;http://expdb.cs.kuleuven.be/expdb/data/implementation/source/run_1.xml&lt;/oml:source_url&gt;
-  &lt;oml:binary_url&gt;http://expdb.cs.kuleuven.be/expdb/data/implementation/binary/run_1.xml&lt;/oml:binary_url&gt;
-  &lt;oml:source_format&gt;xml&lt;/oml:source_format&gt;
-  &lt;oml:source_md5&gt;474e9941a87469ec2bd2bdb327235b05&lt;/oml:source_md5&gt;
-  &lt;oml:binary_md5&gt;474e9941a87469ec2bd2bdb327235b05&lt;/oml:binary_md5&gt;
-&lt;/oml:implementation&gt;
+&lt;oml:error xmlns:oml="http://open-ml.org/openml"&gt;
+  &lt;oml:code&gt;181&lt;/oml:code&gt;
+  &lt;oml:message&gt;Unknown implementation&lt;/oml:message&gt;
+&lt;/oml:error&gt;
 
 </pre>
 <h5>Error codes</h5>
@@ -550,6 +504,8 @@ None
 <dl><dt>212: Unable to store file</dt><dd>Internal server error, please contact api administrators</dd></dl>
 <dl><dt>213: Parameter in run xml unknown</dt><dd>One of the parameters provided in the run xml is not registered as parameter for the implementation nor its components</dd></dl>
 <dl><dt>214: Unable to store input setting</dt><dd>Internal server error, please contact API support team</dd></dl>
+<dl><dt>215: Unable to evaluate predictions</dt><dd>Internal server error, please contact API support team</dd></dl>
+<dl><dt>216: Error thrown by Java Application</dt><dd>The Java application has thrown an error. Additional information field is provided</dd></dl>
 </section>
 
 

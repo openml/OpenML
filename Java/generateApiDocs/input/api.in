@@ -272,7 +272,7 @@ session_hash
 POST
 true
 The session hash, provided by the server on authentication (1 hour valid)
-15
+17
 200
 Please provide session_hash
 In order to share content, please authenticate (openml.authenticate) and provide session_hash
@@ -318,3 +318,9 @@ One of the parameters provided in the run xml is not registered as parameter for
 214
 Unable to store input setting
 Internal server error, please contact API support team
+215
+Unable to evaluate predictions
+Internal server error, please contact API support team
+216
+Error thrown by Java Application
+The Java application has thrown an error. Additional information field is provided

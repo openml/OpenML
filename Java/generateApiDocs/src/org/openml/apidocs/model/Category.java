@@ -44,7 +44,7 @@ public class Category {
 				bottom = "onlychild";
 			}
 			
-			sb.append( "<li class=\""+top+bottom+"\"><a href=\"<?php echo $_SERVER['SCRIPT_NAME'] ?>#"+functions.get(i).getName('_')+"\">"+functions.get(i).getName('.')+"</a></li>" + "\n" );
+			sb.append( "<li class=\""+top+bottom+"\"><a href=\"<?php echo $_SERVER['REQUEST_URI'] ?>#"+functions.get(i).getName('_')+"\">"+functions.get(i).getName('.')+"</a></li>" + "\n" );
 		}
 		
 		return sb.toString();

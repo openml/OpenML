@@ -16,6 +16,12 @@ public class Function {
 	private ArrayList<Argument> arguments = new ArrayList<Argument>();
 	private ArrayList<ErrorCode> errorCodes = new ArrayList<ErrorCode>();
 	
+	public Function( String name, String description ) throws IOException {
+		this.name = name;
+		this.description = description;
+		this.exampleRespons = "";
+	}
+	
 	public Function( String name, String description, String exampleUrl ) throws IOException {
 		this.name = name;
 		this.description = description;
