@@ -1,15 +1,11 @@
 package lucene;
 
-import java.io.FileInputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.SQLWarning;
 import java.sql.Statement;
-import java.util.Date;
-import java.util.Properties;
 import java.util.Stack;
 
 /**
@@ -22,17 +18,23 @@ public class DatabaseConnection {
   private Statement statement = null;
   private PreparedStatement preparedStatement = null;
   private Stack<Connection> connectionPool = new Stack<Connection>();
+  
+  private String server;
+  private String mydatabase;
+  private String username;
+  private String password;
+  
+  public DatabaseConnection(String server, String mydatabase, String username, String password) {
+	  this.server = server;
+	  this.mydatabase = mydatabase;
+	  this.username = username;
+	  this.password = password;
+  }
 
 public Connection openConnection() {
 	if (connectionPool.isEmpty()) {
 		try {
 			 //read settings
-			 Properties props = new Properties(); 
-			 props.load(new FileInputStream("db.properties")); 
-			 String server = props.getProperty("dbservername"); 
-			 String mydatabase = props.getProperty("database"); 
-			 String username = props.getProperty("username"); 
-			 String password = props.getProperty("password");
 			 
 			 // Create a connection to the database 
 			 String url = "jdbc:mysql://" + server + "/" + mydatabase + "?user=" + username + "&password=" + password; 				 				

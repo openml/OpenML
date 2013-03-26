@@ -48,9 +48,11 @@ import java.util.Date;
  * Run it with no command-line arguments for usage information.
  */
 public class Indexer {
-  DatabaseConnection db = new DatabaseConnection();
+  DatabaseConnection db;
   
-  private Indexer() {}
+  private Indexer(String server, String mydatabase, String username, String password) {
+	 db = new DatabaseConnection(server, mydatabase, username, password);
+  }
 
   /** Index all text files under a directory. */
   public static void run(String[] args) {
@@ -61,13 +63,32 @@ public class Indexer {
     String indexPath = "index";
 
     boolean create = true;
+    String server = "__undefinied__";
+    String database = "__undefinied__";
+    String username = "__undefinied__";
+    String password = "__undefinied__"; 
+    
     for(int i=0;i<args.length;i++) {
       if ("-index".equals(args[i])) {
         indexPath = args[i+1];
         i++;
       } else if ("-update".equals(args[i])) {
         create = false;
+      } else if("-server".equals(args[i])) {
+    	  server = args[i+1];
+      } else if("-database".equals(args[i])) {
+    	  database = args[i+1];
+      } else if("-username".equals(args[i])) {
+    	  username = args[i+1];
+      } else if("-password".equals(args[i])) {
+    	  password = args[i+1];
       }
+    }
+    
+    if(server.equals("__undefinied__") || database.equals("__undefinied__") || 
+       username.equals("__undefinied__") || password.equals("__undefinied__") ) {
+    	System.out.println("Mandatory server connection arguments {-server,-database,-username,-password} where not provided. ");
+    	return;
     }
     
     Date start = new Date();
@@ -95,7 +116,7 @@ public class Indexer {
       // iwc.setRAMBufferSizeMB(256.0);
 
       IndexWriter writer = new IndexWriter(dir, iwc);
-      Indexer indexer = new Indexer(); 
+      Indexer indexer = new Indexer(server, database, username, password); 
       indexer.indexImplementations(writer);
       indexer.indexDatasets(writer);
       indexer.indexFunctions(writer);
