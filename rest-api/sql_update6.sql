@@ -1,1 +1,0 @@
-ALTER TABLE `dataset` CHANGE `license` `licence` VARCHAR( 64 ) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL ;
