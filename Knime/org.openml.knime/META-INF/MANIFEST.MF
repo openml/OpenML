@@ -10,10 +10,7 @@ Bundle-ClassPath: .,
 Bundle-Vendor: OpenML Team
 Require-Bundle: org.apache.commons.lang;bundle-version="2.4.0",
  org.apache.commons.io;bundle-version="1.4.0",
- org.knime.base;bundle-version="[2.5.0,3.0.0)",
- org.apache.commons.logging;bundle-version="1.1.1",
- org.apache.httpcomponents.httpclient;bundle-version="4.1.2",
- org.apache.httpcomponents.httpcore;bundle-version="4.1.4"
+ org.knime.base;bundle-version="[2.5.0,3.0.0)"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: org.apache.commons.codec.binary,
