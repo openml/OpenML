@@ -82,7 +82,7 @@ public class OpenMLWebservice {
      * Path to the webservice.
      */
     public static final String WEBSERVICEURL =
-            "http://expdb.cs.kuleuven.be/expdb/api/";
+            "http://www.openml.org/api/";
 
     /**
      * Returns URL to the specified task.
@@ -95,7 +95,7 @@ public class OpenMLWebservice {
         URL url = null;
         try {
             url =
-                    new URL(WEBSERVICEURL + "?f=openml.task.search&task_id="
+                    new URL(WEBSERVICEURL + "?f=openml.tasks.search&task_id="
                             + taskId);
         } catch (MalformedURLException e) {
             // return null
