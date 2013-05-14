@@ -21,10 +21,10 @@ public class PredictionCounter {
 	private final int NR_OF_FOLDS;
 	
 	private final ArrayList<Integer>[][] expected;
+	private final ArrayList<Integer>[][] actual;
 	
 	@SuppressWarnings("unchecked")
 	public PredictionCounter( Instances splits ) {
-		
 		ATT_SPLITS_TYPE = splits.attribute("type").index();
 		ATT_SPLITS_ROWID = splits.attribute("rowid").index();
 		ATT_SPLITS_REPEAT = splits.attribute("repeat").index();
@@ -37,14 +37,19 @@ public class PredictionCounter {
 		NR_OF_FOLDS = (int) foldStats.numericStats.max + 1;
 		
 		expected = new ArrayList[NR_OF_REPEATS][NR_OF_FOLDS];
-		for( int i = 0; i < NR_OF_REPEATS; i++ ) for( int j = 0; j < NR_OF_FOLDS; j++ ) expected[i][j] = new ArrayList<Integer>();
+		actual   = new ArrayList[NR_OF_REPEATS][NR_OF_FOLDS];
+		for( int i = 0; i < NR_OF_REPEATS; i++ ) for( int j = 0; j < NR_OF_FOLDS; j++ ) {
+			expected[i][j] = new ArrayList<Integer>();
+			actual[i][j]   = new ArrayList<Integer>();
+		}
 		
 		for( int i = 0; i < splits.numInstances(); i++ ) {
 			Instance instance = splits.instance( i );
 			if( instance.value( ATT_SPLITS_TYPE ) == splits.attribute( ATT_SPLITS_TYPE ).indexOfValue("TEST") ) {
 				int repeat = (int) instance.value( ATT_SPLITS_REPEAT );
 				int fold   = (int) instance.value( ATT_SPLITS_FOLD );
-				int rowid  = (int) instance.value( ATT_SPLITS_ROWID );
+				int rowidIndex  = (int) instance.value( ATT_SPLITS_ROWID );
+				int rowid = Integer.parseInt(splits.attribute( ATT_SPLITS_ROWID ).value(rowidIndex));
 				expected[repeat][fold].add( rowid );
 			}
 		}
@@ -54,5 +59,25 @@ public class PredictionCounter {
 				Collections.sort( expected[i][j] );
 			}
 		}
+	}
+	
+	public void addPrediction( int repeat, int fold, int rowid ) {
+		if( actual.length <= repeat )
+			throw new RuntimeException("Repeat #"+repeat+" not defined by task. ");
+		if( actual[repeat].length <= fold )
+			throw new RuntimeException("Fold #"+fold+" not defined by task. ");
+		actual[repeat][fold].add( rowid );
+	}
+	
+	public boolean check() {
+		for( int i = 0; i < NR_OF_REPEATS; i++ ) {
+			for( int j = 0; j < NR_OF_FOLDS; j++ ){
+				Collections.sort( actual[i][j] );
+				if( actual[i][j].equals( expected[i][j] ) == false ) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 }
