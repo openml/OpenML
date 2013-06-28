@@ -2,7 +2,7 @@
 	
 	<description>Build file for the openML extension</description>
 
-	<property name="rm.dir" location="/home/venkatesh/workspace/RapidMiner_Unuk" />
+	<property name="rm.dir" location="/home/venkatesh/gitrepos/rapidminer_and_extensions/rapidminer" />
 
 	<property name="build.build" location="build" />
 	<property name="build.resources" location="resources" />

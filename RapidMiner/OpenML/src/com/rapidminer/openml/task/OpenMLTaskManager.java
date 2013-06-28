@@ -58,7 +58,7 @@ public class OpenMLTaskManager {
 	private static String DATASET_URL = openMLTab.readFromBundle("openml.data.url");
 	private static String DATASPLIT_URL = openMLTab.readFromBundle("openml.datasplits.url");
 
-	private static boolean isLocal = true;
+	private static boolean isLocal = false;
 
 	private OpenMLTaskManager() {}
 
@@ -149,7 +149,7 @@ public class OpenMLTaskManager {
 			LogService.getRoot().severe("Unable to cache task in the repository location:" + loc.getAbsoluteLocation());
 		}
 
-		URL dataSetUrl = isLocal ? new URL(DATASET_URL) : new URL(DATASET_URL + dataSetId);
+		URL dataSetUrl = OpenMLUtil.getDataSetURL(task);
 		String dataDescXML = OpenMLUtil.readStringfromURL(dataSetUrl);
 		Document dataSet = OpenMLUtil.getDocumentfromXml(dataDescXML);
 
@@ -216,8 +216,7 @@ public class OpenMLTaskManager {
 		if (taskType.equals("Supervised Classification")) {
 
 			Integer taskId = OpenMLUtil.getTaskId(task);
-			Integer dataSplitId = OpenMLUtil.getDataSetId(task);
-			URL dataSplitUrl = isLocal ? new URL(DATASPLIT_URL) : new URL(DATASPLIT_URL + dataSplitId);
+			URL dataSplitUrl = new URL(OpenMLUtil.getDataSplitURL(task));
 
 			String process = readXMLFromResource("/com/rapidminer/resources/util/rmprocess/ImportDataSplits.xml");
 

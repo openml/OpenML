@@ -217,18 +217,17 @@ public class OpenMLUtil {
 
 	}
 	
-	public static Integer getDataSplitId(Document taskDocument) throws MissingValueException {
+	public static String getDataSplitURL(Document taskDocument) throws MissingValueException {
 		XPath xPath = XPathFactory.newInstance().newXPath();
 		xPath.setNamespaceContext(new OpenMLNameSpaceContext());
 		try {
-			Integer dataSetId = ((Double) xPath.evaluate("//oml:data_splits_id",
-					taskDocument, XPathConstants.NUMBER)).intValue();
-			errorOnMissingValue(dataSetId);
-			return dataSetId;
+			String dataSetURL = (String) xPath.evaluate("//oml:data_splits_url",taskDocument, XPathConstants.STRING);
+			errorOnMissingValue(dataSetURL);
+			return dataSetURL;
 		} catch (XPathExpressionException e) {
-			return -1;
+			errorOnMissingValue("");
 		}
-
+		return null;
 	}
 
 	public static String getRowIdAttribute(Document dataSetDocument) throws MissingValueException {

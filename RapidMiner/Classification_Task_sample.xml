@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<process version="5.3.009">
+  <context>
+    <input/>
+    <output/>
+    <macros/>
+  </context>
+  <operator activated="true" class="process" compatibility="5.3.009" expanded="true" name="Process">
+    <parameter key="logverbosity" value="init"/>
+    <parameter key="random_seed" value="2001"/>
+    <parameter key="send_mail" value="never"/>
+    <parameter key="notification_email" value=""/>
+    <parameter key="process_duration_for_mail" value="30"/>
+    <parameter key="encoding" value="SYSTEM"/>
+    <parameter key="parallelize_main_process" value="false"/>
+    <process expanded="true">
+      <operator activated="true" class="openml:read_openml_task" compatibility="1.0.000" expanded="true" height="94" name="OpenMLTaskReader" width="90" x="45" y="210">
+        <parameter key="open_ml_taskid" value="3"/>
+        <parameter key="num_repeats" value="num_repeats"/>
+        <parameter key="num_folds" value="num_folds"/>
+      </operator>
+      <operator activated="true" class="openml:x_config_prediction" compatibility="1.0.000" expanded="true" height="94" name="Prediction" width="90" x="313" y="210">
+        <parameter key="parallelize_training" value="false"/>
+        <parameter key="parallelize_model_application" value="false"/>
+        <process expanded="true">
+          <operator activated="true" class="naive_bayes" compatibility="5.3.009" expanded="true" height="76" name="Naive Bayes" width="90" x="112" y="30">
+            <parameter key="laplace_correction" value="true"/>
+          </operator>
+          <connect from_port="training" to_op="Naive Bayes" to_port="training set"/>
+          <connect from_op="Naive Bayes" from_port="model" to_port="model"/>
+          <portSpacing port="source_training" spacing="0"/>
+          <portSpacing port="sink_model" spacing="0"/>
+          <portSpacing port="sink_through 1" spacing="0"/>
+        </process>
+        <process expanded="true">
+          <operator activated="true" class="apply_model" compatibility="5.3.009" expanded="true" height="76" name="Apply Model" width="90" x="112" y="30">
+            <list key="application_parameters"/>
+            <parameter key="create_view" value="false"/>
+          </operator>
+          <connect from_port="model" to_op="Apply Model" to_port="model"/>
+          <connect from_port="unlabelled data" to_op="Apply Model" to_port="unlabelled data"/>
+          <connect from_op="Apply Model" from_port="labelled data" to_port="labelled data"/>
+          <portSpacing port="source_model" spacing="0"/>
+          <portSpacing port="source_unlabelled data" spacing="0"/>
+          <portSpacing port="source_through 1" spacing="0"/>
+          <portSpacing port="sink_labelled data" spacing="0"/>
+        </process>
+      </operator>
+      <connect from_op="OpenMLTaskReader" from_port="data" to_op="Prediction" to_port="example set"/>
+      <connect from_op="OpenMLTaskReader" from_port="training config" to_op="Prediction" to_port="training config"/>
+      <connect from_op="OpenMLTaskReader" from_port="test config" to_op="Prediction" to_port="test config"/>
+      <connect from_op="Prediction" from_port="labelled data" to_port="result 1"/>
+      <portSpacing port="source_input 1" spacing="0"/>
+      <portSpacing port="sink_result 1" spacing="0"/>
+      <portSpacing port="sink_result 2" spacing="0"/>
+    </process>
+  </operator>
+</process>
