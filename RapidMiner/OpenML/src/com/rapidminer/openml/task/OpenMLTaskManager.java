@@ -56,8 +56,7 @@ public class OpenMLTaskManager {
 
 	private static String TASK_URL = openMLTab.readFromBundle("openml.task.url");
 	private static String DATASET_URL = openMLTab.readFromBundle("openml.data.url");
-	private static String DATASPLIT_URL = openMLTab.readFromBundle("openml.datasplits.url");
-
+	
 	private static boolean isLocal = false;
 
 	private OpenMLTaskManager() {}
@@ -88,8 +87,7 @@ public class OpenMLTaskManager {
 		if (isLocal) {
 			try {
 				TASK_URL = new File("/home/venkatesh/OpenML/XML/Examples/task.xml").toURI().toURL().toString();
-				DATASET_URL = new File("/home/venkatesh/OpenML/XML/Examples/dataset.xml").toURI().toURL().toString();
-				DATASPLIT_URL = new File("/home/venkatesh/OpenML/ARFF/folds_task_1.arff").toURI().toURL().toString();
+				DATASET_URL = new File("/home/venkatesh/OpenML/XML/Examples/dataset.xml").toURI().toURL().toString();				
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			}
@@ -149,7 +147,7 @@ public class OpenMLTaskManager {
 			LogService.getRoot().severe("Unable to cache task in the repository location:" + loc.getAbsoluteLocation());
 		}
 
-		URL dataSetUrl = OpenMLUtil.getDataSetURL(task);
+		URL dataSetUrl = new URL(DATASET_URL + dataSetId);
 		String dataDescXML = OpenMLUtil.readStringfromURL(dataSetUrl);
 		Document dataSet = OpenMLUtil.getDocumentfromXml(dataDescXML);
 
