@@ -38,6 +38,37 @@ setClass("OpenMLDataSetDescription",
   )
 )
 
+}
+
+#' OpenMLDataSetDescription
+#'
+#' This class of objects contains the information describing a openML Data Set.
+#'  Objects can be created by calls of the form \code{OpenMLDataSetDescription(...)}.
+#'  The objects contain information on ... .
+#'
+#'  \section{Slots} {
+#'    \describe {
+#'      \item{\code{id}:}{Object of class \code{numeric} with the openML ID of the data set.}
+#'      \item{\code{name}:}{Object of class \code{character} with the name of the data set.}
+#'      \item{\code{version}:}{with the version of the data set.}
+#'      \item{\code{creator}:}{Object of class \code{character} containing the creator name.}
+#'      \item{\code{contributor}:}{Object of class \code{list} containing the contributors names.}
+#'      \item{\code{collection.date}:}{with the version of the data set.}
+#'      \item{\code{version}:}{with the version of the data set.}
+#'      \item{\code{description}:}{Object of class \code{character} containing the data set description.}
+#'      \item{\code{language}:}{Object of class \code{character} with the language.}
+#'      \item{\code{format}:}{Object of class \code{character} with the data set format.}
+#'      \item{\code{licence}:}{Object of class \code{character} with the license.}
+#'      \item{\code{url}:}{Object of class \code{character} with the dat set URL.}
+#'      \item{\code{row.id.attribute}:}{Object of class \code{character} containing the data set row id attribute.}
+#'      \item{\code{md5.checksum}:}{Object of class \code{character} containing the md5 checksum.}
+#'      \item{\code{data.set}:}{Object of class \code{data.frame} containing the data set.}
+#'   }
+#' }  
+#' @seealso \code{link{OpenMLTask}}
+#' @examples
+#' showClass("OpenMLDataSetDescription")
+
 setClassUnion("OptionalOpenMLDataSetDescription",
               c("OpenMLDataSetDescription","NULL"))
 
