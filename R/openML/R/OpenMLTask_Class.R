@@ -82,13 +82,7 @@ setMethod("show","OpenMLTask",
             }
             
             ## Target variables info
-            if (length(object@task.target.features) > 1)
-              cat('\nTask Target Feature :: ',object@task.target.features[1],'\n')
-            else {
-              cat('\nTask Target Features ::\n ')
-              for(i in 1:length(object@task.target.features))
-                cat('\t',object@task.target.features[i],'\n')
-            }
+            catf('\nTask Target Feature :: %s', collapse(object@task.target.features, "\t"))
             
             ## Data set info
             if (!is.null(object@task.data.desc)) {
