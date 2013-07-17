@@ -1,3 +1,33 @@
+#' This class of objects contains the information describing an openML task.
+#'
+#' Objects can be created by calls of the form \code{OpenMLTask(...)}.
+#' The objects contain information on ... .
+#'
+#' @param task.id [\code{\link{integer(1)}}]\cr 
+#'   The task's OpenML ID.
+#' @param task.type [\code{\link{character}}]\cr    
+#'   The task's type.
+#' @param task.pars [\code{\link{list}}]\cr    
+#'   A set of parameters specific to the task type.
+#' @param task.target.features [\code{\link{character(1)}}]\cr
+#'   The name(s) of the target feature(s). 
+#' @param task.data.desc.id [\code{\link{integer(1)}}]\cr    
+#'   The OpenML ID of the data set associated with the task.
+#' @param task.data.desc [\code{\link{OptionalOpenMLDataSet}}]\cr   
+#'   An \code{\link{OptionalOpenMLDataSet}} object that contains information about the data set.
+#' @param task.estimation.procedure [\code{\link{OptionalOpenMLEstimationProcedure}}]\cr  
+#'   An \code{\link{OptionalOpenMLEstimationProcedure}} object that contains information on the 
+#'   task's estimation method and the asoociated data splits.
+#' @param task.preds [\code{\link{list}}]\cr   
+#'   A list that contains information on the format of the predictions for the particular task.
+#'
+#' @method show \code{signature(object = "OpenMLTask")}: method used to show the contents of a OpenMLTask object.  }
+#'
+#' @references \url{http://www.dcc.fc.up.pt/~ltorgo/openML}  
+#' @author Luis Torgo \email{ltorgo@dcc.fc.up.pt}, Bernd Bischl \email{} and Paula Branco \email{paobranco@gmail.com} 
+#' @seealso \code{\linkS4class{OpenMLDataSetDescription}}
+#' @example showClass("OpenMLTask")
+
 ################################################################# 
 # THIS FILE DEFINES CLASS OpenMLTask AND THE RESPECTIVE METHODS #
 #################################################################

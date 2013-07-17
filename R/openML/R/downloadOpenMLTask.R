@@ -1,3 +1,36 @@
+#' Download a task from the OpenML repository.
+#'
+#' This function downloads an OpenML task and all associated files from the OpenML repository,
+#' intermediately stores the files on disk and creates an S4 object which completely specifies the task.
+#'
+#' Usually there is no reason to set the \code{fetch.*} arguments to \code{FALSE}, as you want all information
+#' completely encapsulated in the task object.
+#'
+#' @param id [\code{\link{integer(1)}}]\cr 
+#' ID number of task on OpenML server, used to retrieve the task.
+#' @param dir [\code{\link{integer(1)}}]\cr 
+#' Directory where downloaded files from the repository are stored. 
+#' @param clean.up [\code{\link{logical(1)}}]\cr 
+#' Should the downloaded files be removed from disk at the end?
+#' @param fetch.data.set.description [\code{\link{logical(1)}}]\cr 
+#' Should the data set description also be downloaded? 
+#' @param fetch.data.set [\code{\link{logical(1)}}]\cr 
+#' Should the data set also be downloaded? 
+#' @param fetch.data.splits [\code{\link{logical(1)}}]\cr 
+#' Should the data splits (for resampling) also be downloaded? 
+#' @return \code{\linkS4class{OpenMLTask}} object.
+#' @export
+#' @seealso \code{\link{taskType}}, \code{\link{targetFeature}}, \code{\link{expSettings}}, \code{\link{evaluationMeasures}}
+#' @examples
+#' ## Download task and access relevant information to start running experiments
+#' task <- downloadOpenMLTask(id = 1)
+#' task
+#' taskType(task)
+#' targetFeature(task)
+#' evaluationMeasures(task)
+#' expSettings(task)
+#' head(expSettings@data.splits(task))
+
 #FIXME: check file io errorsr, dir writable and so on
 downloadOpenMLTask <- function(id, dir = tempdir(), clean.up = TRUE, fetch.data.set.description = TRUE, fetch.data.set = TRUE, fetch.data.splits = TRUE) {
   id <- convertInteger(id)
