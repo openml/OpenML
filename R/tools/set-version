@@ -1,0 +1,7 @@
+#!/usr/bin/env Rscript --vanilla
+
+v = system("git rev-list HEAD --count", TRUE)
+revision = max(as.integer(v))
+desc = read.dcf("openML/DESCRIPTION")
+desc[,"Version"] = sprintf("%s-%i", desc[,"Version"], revision)
+write.dcf(desc, file="openML/DESCRIPTION")

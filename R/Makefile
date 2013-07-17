@@ -9,6 +9,7 @@ usage:
 	echo "Available targets:"
 	echo ""
 	echo " clean         - Clean everything up"
+	echo " roxygenize    - Convert roxygen docs to RD files
 	echo " package       - build source package"
 	echo " install       - install the package"
 	echo " test          - run tests"
@@ -19,12 +20,17 @@ clean:
 	${DELETE} openML.Rcheck
 	${DELETE} .RData .Rhistory
 
+roxygenize: clean
+	echo "Roxygenizing package ..."
+	${RSCRIPT} ./tools/roxygenize
+	echo "Setting version ..."
+	${RSCRIPT} ./tools/set-version
   
-package: clean
+package: roxygenize
 	echo "Building package file ..."
 	${R} CMD build openML
   
-install: clean
+install: roxygenize
 	echo "Installing package ..."
 	${R} CMD INSTALL openML
 
