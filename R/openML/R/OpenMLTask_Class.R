@@ -1,3 +1,11 @@
+################################################################# 
+# THIS FILE DEFINES CLASS OpenMLTask AND THE RESPECTIVE METHODS #
+#################################################################
+
+
+# FIXME @method show \code{signature(object = "OpenMLTask")}: method used to show the contents of a OpenMLTask object. 
+
+
 #' This class of objects contains the information describing an openML task.
 #'
 #' Objects can be created by calls of the form \code{OpenMLTask(...)}.
@@ -20,42 +28,23 @@
 #'   task's estimation method and the asoociated data splits.
 #' @param task.preds [\code{\link{list}}]\cr   
 #'   A list that contains information on the format of the predictions for the particular task.
-#'
-#' @method show \code{signature(object = "OpenMLTask")}: method used to show the contents of a OpenMLTask object.  }
-#'
-#' @references \url{http://www.dcc.fc.up.pt/~ltorgo/openML}  
-#' @author Luis Torgo \email{ltorgo@dcc.fc.up.pt}, Bernd Bischl \email{} and Paula Branco \email{paobranco@gmail.com} 
 #' @seealso \code{\linkS4class{OpenMLDataSetDescription}}
-#' @example showClass("OpenMLTask")
-
-################################################################# 
-# THIS FILE DEFINES CLASS OpenMLTask AND THE RESPECTIVE METHODS #
-#################################################################
-# Authors : L. Torgo, B. Bischl and P. Branco   Date: Jan 2013  #
-# License: GPL (>= 2)                                           #
-#################################################################
-
-
-# ==============================================================
-# CLASS: OpenMLTask
-# ==============================================================
-# Luis Torgo, Bernd Bischl and Paula Branco, Jan 2013
-# ==============================================================
-
+#' @examples
+#' showClass("OpenMLTask")
 
 # --------------------------------------------------------------
 # class def
 setClass("OpenMLTask",
-  representation(task.id = "integer",
-    task.type = "character",
-    task.pars = "list",
-    task.target.features = "character",
-    task.data.desc.id = "integer",
-    task.data.desc = "OptionalOpenMLDataSetDescription",
-    task.estimation.procedure = "OptionalOpenMLEstimationProcedure",
-    task.preds = "list",
-    task.evaluation.measures = "character"
-  )
+         representation(task.id = "integer",
+                        task.type = "character",
+                        task.pars = "list",
+                        task.target.features = "character",
+                        task.data.desc.id = "integer",
+                        task.data.desc = "OptionalOpenMLDataSetDescription",
+                        task.estimation.procedure = "OptionalOpenMLEstimationProcedure",
+                        task.preds = "list",
+                        task.evaluation.measures = "character"
+         )
 )
 
 
@@ -66,11 +55,11 @@ OpenMLTask <- function(task.id,task.type, task.pars,task.target.features,
                        task.estimation.procedure,
                        task.preds,task.evaluation.measures) {
   new("OpenMLTask",
-    task.id = task.id,task.type=task.type,task.pars=task.pars,
-    task.target.features = task.target.features,
-    task.data.desc.id = task.data.desc.id,task.data.desc=task.data.desc,
-    task.estimation.procedure = task.estimation.procedure,
-    task.preds = task.preds, task.evaluation.measures = task.evaluation.measures
+      task.id = task.id,task.type=task.type,task.pars=task.pars,
+      task.target.features = task.target.features,
+      task.data.desc.id = task.data.desc.id,task.data.desc=task.data.desc,
+      task.estimation.procedure = task.estimation.procedure,
+      task.preds = task.preds, task.evaluation.measures = task.evaluation.measures
   )
 }
 
@@ -91,7 +80,7 @@ setMethod("show","OpenMLTask",
               for(i in 1:length(object@task.pars))
                 cat('\t',names(object@task.pars)[i],' = ',object@task.pars[[i]],'\n')
             }
-
+            
             ## Target variables info
             if (length(object@task.target.features) > 1)
               cat('\nTask Target Feature :: ',object@task.target.features[1],'\n')
@@ -109,15 +98,15 @@ setMethod("show","OpenMLTask",
               cat('\tData frame with ',nrow(object@task.data.desc@data.set),
                   ' rows and ',ncol(object@task.data.desc@data.set),' columns\n')
             }
-
+            
             ## Estimation procedure info
             if (!is.null(object@task.estimation.procedure)) {
               cat('\nEstimation Procedure :: ',object@task.estimation.procedure@type,'\n')
               cat('\tData splits for estimation ',ifelse(all(dim(object@task.estimation.procedure@data.splits) == 0),'not available','available'),'\n')
               if (length(object@task.estimation.procedure@parameters)) {
-
+                
                 cat('\tParameters of the estimation procedure:\n')
-
+                
                 for(i in 1:length(object@task.estimation.procedure@parameters))
                   cat('\t\t',names(object@task.estimation.procedure@parameters)[i],' = ',object@task.estimation.procedure@parameters[[i]],'\n')
               }
@@ -127,12 +116,12 @@ setMethod("show","OpenMLTask",
             cat('\tColumns:\n')
             for(i in 1:length(object@task.preds$features))
               cat('\t\t',names(object@task.preds$features)[i],' = ',object@task.preds$features[[i]],'\n')
-
+            
             cat('\nEvaluation Measures ::\n')
             for(i in 1:length(object@task.evaluation.measures))
               cat('\t',object@task.evaluation.measures[i],'\n')
           }
-          )
+)
 
 
 
@@ -160,9 +149,9 @@ targetFeatures <- function(task) {
   checkArg(task, "OpenMLTask")
   task@task.target.features
 }
-  
+
 sourceData <- function(task) {
   checkArg(task, "OpenMLTask")
   task@task.data.desc@data.set
 }
-  
+

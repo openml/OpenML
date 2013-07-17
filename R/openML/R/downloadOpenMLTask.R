@@ -7,29 +7,20 @@
 #' completely encapsulated in the task object.
 #'
 #' @param id [\code{\link{integer(1)}}]\cr 
-#' ID number of task on OpenML server, used to retrieve the task.
+#'   ID number of task on OpenML server, used to retrieve the task.
 #' @param dir [\code{\link{integer(1)}}]\cr 
-#' Directory where downloaded files from the repository are stored. 
+#'   Directory where downloaded files from the repository are stored. 
 #' @param clean.up [\code{\link{logical(1)}}]\cr 
-#' Should the downloaded files be removed from disk at the end?
+#'   Should the downloaded files be removed from disk at the end?
 #' @param fetch.data.set.description [\code{\link{logical(1)}}]\cr 
-#' Should the data set description also be downloaded? 
+#'   Should the data set description also be downloaded? 
 #' @param fetch.data.set [\code{\link{logical(1)}}]\cr 
-#' Should the data set also be downloaded? 
+#'   Should the data set also be downloaded? 
 #' @param fetch.data.splits [\code{\link{logical(1)}}]\cr 
-#' Should the data splits (for resampling) also be downloaded? 
+#'   Should the data splits (for resampling) also be downloaded? 
 #' @return \code{\linkS4class{OpenMLTask}} object.
 #' @export
 #' @seealso \code{\link{taskType}}, \code{\link{targetFeature}}, \code{\link{expSettings}}, \code{\link{evaluationMeasures}}
-#' @examples
-#' ## Download task and access relevant information to start running experiments
-#' task <- downloadOpenMLTask(id = 1)
-#' task
-#' taskType(task)
-#' targetFeature(task)
-#' evaluationMeasures(task)
-#' expSettings(task)
-#' head(expSettings@data.splits(task))
 
 #FIXME: check file io errorsr, dir writable and so on
 downloadOpenMLTask <- function(id, dir = tempdir(), clean.up = TRUE, fetch.data.set.description = TRUE, fetch.data.set = TRUE, fetch.data.splits = TRUE) {
@@ -48,7 +39,7 @@ downloadOpenMLTask <- function(id, dir = tempdir(), clean.up = TRUE, fetch.data.
   
   messagef("Downloading task %i from OpenML repository.", id)
   messagef("Intermediate files (XML and ARFF) will be stored in : %s", dir)
-
+  
   downloadAPICallFile(api.fun = "openml.tasks.search", file = fn.task, task.id = id)  
   task <- parseOpenMLTask(fn.task)
   
@@ -56,7 +47,7 @@ downloadOpenMLTask <- function(id, dir = tempdir(), clean.up = TRUE, fetch.data.
     downloadOpenMLDataSetDescription(task@task.data.desc.id, fn.data.set.desc)
     task@task.data.desc <- parseOpenMLDataSetDescription(fn.data.set.desc)
   }
-
+  
   if (fetch.data.set) {
     downloadOpenMLDataSet(task@task.data.desc@url, fn.data.set)
     task@task.data.desc@data.set <- parseOpenMLDataSet(task@task.data.desc, fn.data.set)
@@ -80,7 +71,7 @@ downloadOpenMLTask <- function(id, dir = tempdir(), clean.up = TRUE, fetch.data.
 
 parseOpenMLTask <- function(file) {
   doc <- xmlParse(file)
-
+  
   getParams <- function(path) {
     ns.parameters <- getNodeSet(doc, paste(path, "oml:parameter", sep ="/"))
     parameters <- lapply(ns.parameters, function(x) xmlValue(x))
@@ -144,7 +135,7 @@ convertOpenMLTaskSlots = function(task) {
   p <- convertParam(p, "number_repeats", as.integer)
   p <- convertParam(p, "number_folds", as.integer)
   task@task.estimation.procedure@parameters <- p
-
+  
   #task@task.evaluation.measures <- strsplit(task@task.evaluation.measures, split=",")[[1]]
   return(task)
 }
