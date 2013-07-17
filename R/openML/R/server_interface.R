@@ -1,5 +1,5 @@
 
-OPEN_ML_SERVER_API_URL = "http://expdb.cs.kuleuven.be/expdb/api"
+OPEN_ML_SERVER_API_URL <- "http://expdb.cs.kuleuven.be/expdb/api"
 
 # FIXME use getForm?
 getServerFunctionURL <- function(fname, ...) {

@@ -32,8 +32,8 @@ export(
   
   # Accessors for S4 objects
   taskType,
-  targetFeature,
-  expSettings,
+  #targetFeature,
+  #expSettings,
   evaluationMeasures
 )
 

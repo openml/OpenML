@@ -42,11 +42,11 @@ OpenMLExpSettings <- function(type,n.folds,n.repeats,data.splits)
 # show
 # Note: The data splits and the predictions are not shown
 setMethod("show","OpenMLExpSettings",
-          function(object) {
-            cat('\nEvaluation Method :: ',object@type,'\n')
-            cat('Nr. of Folds      :: ',object@n.folds,'\n')
-            cat('Nr. of Repeats    :: ',object@n.repeats,'\n')
-            cat('Data Splits       :: \n')
-            str(object@data.splits)
-          }
-          )
+  function(object) {
+    cat('\nEvaluation Method :: ', object@type, '\n')
+    cat('Nr. of Folds      :: ', object@n.folds, '\n')
+    cat('Nr. of Repeats    :: ', object@n.repeats, '\n')
+    cat('Data Splits       :: \n')
+    str(object@data.splits)
+  }
+)
