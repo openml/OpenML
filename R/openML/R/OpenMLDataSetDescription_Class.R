@@ -38,7 +38,6 @@ setClass("OpenMLDataSetDescription",
   )
 )
 
-}
 
 #' OpenMLDataSetDescription
 #'
