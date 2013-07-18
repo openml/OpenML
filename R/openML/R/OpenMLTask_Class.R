@@ -50,14 +50,14 @@ setClass("OpenMLTask",
 
 # --------------------------------------------------------------
 # constructor function
-OpenMLTask <- function(task.id,task.type, task.pars,task.target.features,
+OpenMLTask <- function(task.id, task.type, task.pars, task.target.features,
                        task.data.desc.id, task.data.desc,
                        task.estimation.procedure,
-                       task.preds,task.evaluation.measures) {
+                       task.preds, task.evaluation.measures) {
   new("OpenMLTask",
-      task.id = task.id,task.type=task.type,task.pars=task.pars,
+      task.id = task.id, task.type = task.type, task.pars = task.pars,
       task.target.features = task.target.features,
-      task.data.desc.id = task.data.desc.id,task.data.desc=task.data.desc,
+      task.data.desc.id = task.data.desc.id, task.data.desc = task.data.desc,
       task.estimation.procedure = task.estimation.procedure,
       task.preds = task.preds, task.evaluation.measures = task.evaluation.measures
   )
@@ -74,11 +74,11 @@ OpenMLTask <- function(task.id,task.type, task.pars,task.target.features,
 setMethod("show","OpenMLTask",
           function(object) {
             ## Task general info
-            cat('\nTask ID :: ',object@task.id,
-                '\n\nTask Type :: ',object@task.type,'\n')
+            cat('\nTask ID :: ', object@task.id,
+                '\n\nTask Type :: ', object@task.type,'\n')
             if (length(object@task.pars)) {
               for(i in 1:length(object@task.pars))
-                cat('\t',names(object@task.pars)[i],' = ',object@task.pars[[i]],'\n')
+                cat('\t', names(object@task.pars)[i], ' = ', object@task.pars[[i]], '\n')
             }
             
             ## Target variables info
@@ -86,34 +86,35 @@ setMethod("show","OpenMLTask",
             
             ## Data set info
             if (!is.null(object@task.data.desc)) {
-              cat('\nDataset :: ',object@task.data.desc@name,
-                  ' (openML ID = ',object@task.data.desc@id,
-                  ', version = ',object@task.data.desc@version,')\n')
-              cat('\tData frame with ',nrow(object@task.data.desc@data.set),
-                  ' rows and ',ncol(object@task.data.desc@data.set),' columns\n')
+              cat('\nDataset :: ', object@task.data.desc@name,
+                  ' (openML ID = ', object@task.data.desc@id,
+                  ', version = ', object@task.data.desc@version, ')\n')
+              cat('\tData frame with ', nrow(object@task.data.desc@data.set),
+                  ' rows and ', ncol(object@task.data.desc@data.set),' columns\n')
             }
             
             ## Estimation procedure info
             if (!is.null(object@task.estimation.procedure)) {
-              cat('\nEstimation Procedure :: ',object@task.estimation.procedure@type,'\n')
-              cat('\tData splits for estimation ',ifelse(all(dim(object@task.estimation.procedure@data.splits) == 0),'not available','available'),'\n')
+              cat('\nEstimation Procedure :: ', object@task.estimation.procedure@type, '\n')
+              cat('\tData splits for estimation ', 
+                  ifelse(all(dim(object@task.estimation.procedure@data.splits) == 0), 'not available', 'available'), '\n')
               if (length(object@task.estimation.procedure@parameters)) {
                 
                 cat('\tParameters of the estimation procedure:\n')
                 
                 for(i in 1:length(object@task.estimation.procedure@parameters))
-                  cat('\t\t',names(object@task.estimation.procedure@parameters)[i],' = ',object@task.estimation.procedure@parameters[[i]],'\n')
+                  cat('\t\t', names(object@task.estimation.procedure@parameters)[i], ' = ', object@task.estimation.procedure@parameters[[i]], '\n')
               }
             }
             cat('\nPredictions ::\n')
-            cat('\tFormat = ',object@task.preds$format,'\n')
+            cat('\tFormat = ', object@task.preds$format, '\n')
             cat('\tColumns:\n')
             for(i in 1:length(object@task.preds$features))
-              cat('\t\t',names(object@task.preds$features)[i],' = ',object@task.preds$features[[i]],'\n')
+              cat('\t\t', names(object@task.preds$features)[i], ' = ', object@task.preds$features[[i]], '\n')
             
             cat('\nEvaluation Measures ::\n')
             for(i in 1:length(object@task.evaluation.measures))
-              cat('\t',object@task.evaluation.measures[i],'\n')
+              cat('\t', object@task.evaluation.measures[i], '\n')
           }
 )
 
@@ -127,7 +128,7 @@ taskType <- function(task) {
   task@task.type
 }
 
-
+#FIXME: Error: could not find function "dataSplits"
 dataSplits <- function(task) {
   checkArg(task, "OpenMLTask")
   task@task.estimation.procedure@data.split
@@ -138,7 +139,7 @@ evaluationMeasures <- function(task) {
   task@task.evaluation.measures
 }
 
-
+#FIXME: Error: could not find function "targetFeatures"
 targetFeatures <- function(task) {
   checkArg(task, "OpenMLTask")
   task@task.target.features
