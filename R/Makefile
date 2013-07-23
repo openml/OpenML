@@ -38,7 +38,7 @@ test: install
 	echo "Testing package ..."
 	${RSCRIPT} ./test_all.R
 
-check: clean 
+check: install 
 	echo "Running R CMD check ..."
 	${R} CMD check openML
 
