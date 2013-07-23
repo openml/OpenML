@@ -2,6 +2,8 @@ OpenML_Util/bin/
 RapidMiner/OpenML/bin/
 RapidMiner/OpenML/build/
 
+.Rhistory
 OpenML.Rproj
 .Rproj.user
 R/openML.Rcheck
+R/openML/man
