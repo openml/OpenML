@@ -1,7 +1,7 @@
-downloadOpenMLDataSet <- function(url, file) {
+downloadOpenMLDataSet <- function(url, file, show.info) {
   checkArg(url, "character", len = 1L, na.ok = FALSE)
   checkArg(file, "character", len = 1L, na.ok = FALSE)
-  downloadBinaryFile(url, file)
+  downloadBinaryFile(url, file, show.info)
 }
 
 parseOpenMLDataSet = function(dsd, file) {

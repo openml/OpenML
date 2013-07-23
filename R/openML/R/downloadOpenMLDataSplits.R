@@ -1,7 +1,7 @@
-downloadOpenMLDataSplits = function(url, file) {
+downloadOpenMLDataSplits = function(url, file, show.info) {
   checkArg(url, "character", len = 1L, na.ok = FALSE)
   checkArg(file, "character", len = 1L, na.ok = FALSE)
-  downloadBinaryFile(url, file)
+  downloadBinaryFile(url, file, show.info)
 }
 
 parseOpenMLDataSplits = function(ds, file) {

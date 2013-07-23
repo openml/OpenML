@@ -1,7 +1,7 @@
-downloadOpenMLDataSetDescription = function(id, file) {
+downloadOpenMLDataSetDescription = function(id, file, show.info) {
   checkArg(id, "integer", len = 1L, na.ok = FALSE)
   checkArg(file, "character", len = 1L, na.ok = FALSE)
-  downloadAPICallFile(api.fun = "openml.data.description", file = file, data.id = id)  
+  downloadAPICallFile(api.fun = "openml.data.description", file = file, data.id = id, show.info = show.info)  
 }
 
 parseOpenMLDataSetDescription = function(file) {

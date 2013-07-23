@@ -23,11 +23,16 @@
 #' @param fetch.data.splits [\code{logical(1)}]\cr 
 #'   Should the data splits (for resampling) also be downloaded? 
 #'   Default is \code{TRUE}.
+#' @param show.info [\code{logical(1)}]\cr 
+#'   Verbose output on console?
+#'   Default is \code{TRUE}.
 #' @return \code{\linkS4class{OpenMLTask}} object.
 #' @export
 
 #FIXME: check file io errorsr, dir writable and so on
-downloadOpenMLTask <- function(id, dir = tempdir(), clean.up = TRUE, fetch.data.set.description = TRUE, fetch.data.set = TRUE, fetch.data.splits = TRUE) {
+downloadOpenMLTask <- function(id, dir = tempdir(), clean.up = TRUE, 
+  fetch.data.set.description = TRUE, fetch.data.set = TRUE, fetch.data.splits = TRUE, show.info = TRUE) {
+  
   id <- convertInteger(id)
   checkArg(id, "integer", len = 1L, na.ok = FALSE)
   checkArg(dir, "character", len = 1L, na.ok = FALSE)
@@ -35,30 +40,33 @@ downloadOpenMLTask <- function(id, dir = tempdir(), clean.up = TRUE, fetch.data.
   checkArg(fetch.data.set.description, "logical", len = 1L, na.ok = FALSE)
   checkArg(fetch.data.set, "logical", len = 1L, na.ok = FALSE)
   checkArg(fetch.data.splits, "logical", len = 1L, na.ok = FALSE)
+  checkArg(show.info, "logical", len = 1L, na.ok = FALSE)
   
   fn.task <- file.path(dir, "task.xml")
   fn.data.set.desc <- file.path(dir, "data_set_description.xml")
   fn.data.set <- file.path(dir, "data_set.ARFF")
   fn.data.splits <- file.path(dir, "data_splits.ARFF")
   
-  messagef("Downloading task %i from OpenML repository.", id)
-  messagef("Intermediate files (XML and ARFF) will be stored in : %s", dir)
+  if (show.info) {
+    messagef("Downloading task %i from OpenML repository.", id)
+    messagef("Intermediate files (XML and ARFF) will be stored in : %s", dir)
+  }
   
-  downloadAPICallFile(api.fun = "openml.tasks.search", file = fn.task, task.id = id)  
+  downloadAPICallFile(api.fun = "openml.tasks.search", file = fn.task, task.id = id, show.info = show.info) 
   task <- parseOpenMLTask(fn.task)
   
   if (fetch.data.set.description) {
-    downloadOpenMLDataSetDescription(task@task.data.desc.id, fn.data.set.desc)
+    downloadOpenMLDataSetDescription(task@task.data.desc.id, fn.data.set.desc, show.info)
     task@task.data.desc <- parseOpenMLDataSetDescription(fn.data.set.desc)
   }
   
   if (fetch.data.set) {
-    downloadOpenMLDataSet(task@task.data.desc@url, fn.data.set)
+    downloadOpenMLDataSet(task@task.data.desc@url, fn.data.set, show.info)
     task@task.data.desc@data.set <- parseOpenMLDataSet(task@task.data.desc, fn.data.set)
   }
   
   if (fetch.data.splits) {
-    downloadOpenMLDataSplits(task@task.estimation.procedure@data.splits.url, fn.data.splits)
+    downloadOpenMLDataSplits(task@task.estimation.procedure@data.splits.url, fn.data.splits, show.info)
     task@task.estimation.procedure@data.splits <- parseOpenMLDataSplits(task@task.data.desc@data.set, fn.data.splits)
   }
   
@@ -68,7 +76,8 @@ downloadOpenMLTask <- function(id, dir = tempdir(), clean.up = TRUE, fetch.data.
     unlink(fn.data.set)
     unlink(fn.data.splits)
     unlink(fn.task)
-    messagef("All intermediate XML and ARFF files are now removed.")
+    if (show.info)
+      messagef("All intermediate XML and ARFF files are now removed.")
   }
   return(task)
 }

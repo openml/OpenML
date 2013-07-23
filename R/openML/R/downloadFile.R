@@ -10,12 +10,15 @@
 #' @param ... [any]\cr
 #'   Arguments for API call.
 #'   Passed through to \code{\link{getServerFunctionURL}}.
+#' @param show.info [\code{logical(1)}]\cr
+#'   Verbose output on console? 
+#'   Default is \code{TRUE}.
 #' @return [\code{invisible(NULL)}].
-downloadAPICallFile <- function(api.fun, file, ...) {
+downloadAPICallFile <- function(api.fun, file, ..., show.info = TRUE) {
   checkArg(api.fun, "character", len = 1L, na.ok = FALSE)
   checkArg(file, "character", len = 1L, na.ok = FALSE)
   url <- getServerFunctionURL(api.fun, ...)
-  downloadBinaryFile(url, file)
+  downloadBinaryFile(url, file, show.info)
 }
 
 #' Download a binary file from a given URL.
@@ -27,8 +30,8 @@ downloadAPICallFile <- function(api.fun, file, ...) {
 #'   The source URL.
 #' @param file [\code{character(1)}]\cr
 #'   The destination path.
-#' @param show.info [\code{character(1)}]\cr
-#'   Verbose mode? 
+#' @param show.info [\code{logical(1)}]\cr
+#'   Verbose output on console? 
 #'   Default is \code{TRUE}.
 #' @return [\code{invisible(NULL)}].
 downloadBinaryFile <- function(url, file, show.info = TRUE) {
