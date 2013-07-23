@@ -1,10 +1,3 @@
-################################################################# 
-# THIS FILE DEFINES CLASS OpenMLExpSetts AND THE RESPECTIVE METHODS #
-#################################################################
-# Authors : L. Torgo, B. Bischl and P. Branco   Date: Jan 2013  #
-# License: GPL (>= 2)                                           #
-#################################################################
-
 #' OpenMLExpSettings
 #'
 #' This class of objects contains the information on an experimental method.
@@ -32,31 +25,15 @@
 #' @aliases OpenMLExpSettings-class
 #' @exportClass OpenMLExpSettings
 
-# ==============================================================
-# CLASS: OpenMLExpSetts
-# ==============================================================
-# Luis Torgo, Bernd Bischl and Paula Branco, Jan 2013
-# ==============================================================
+setClass("OpenMLExpSettings", representation(
+  type="character",
+  n.folds="numeric",
+  n.repeats="numeric",
+  data.splits="data.frame"
+))
 
-
-# --------------------------------------------------------------
-# class def
-setClass("OpenMLExpSettings",
-         representation(
-                        type="character",
-                        n.folds="numeric",
-                        n.repeats="numeric",
-                        data.splits="data.frame"
-           ))
-
-
-# --------------------------------------------------------------
-# constructor function
-OpenMLExpSettings <- function(type,n.folds,n.repeats,data.splits)
-{
-  new("OpenMLExpSettings",
-      type=type,
-      n.folds=n.folds,n.repeats=n.repeats,
+OpenMLExpSettings <- function(type,n.folds,n.repeats,data.splits) {
+  new("OpenMLExpSettings", type=type, n.folds=n.folds,n.repeats=n.repeats,
       data.splits=data.splits)
 }
 

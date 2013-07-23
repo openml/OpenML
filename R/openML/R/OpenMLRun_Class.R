@@ -1,13 +1,7 @@
 ################################################################# 
 # THIS FILE DEFINES CLASS OpenMLRun AND THE RESPECTIVE METHODS #
 #################################################################
-# Authors : L. Torgo, B. Bischl and P. Branco   Date: Jan 2013  #
-# License: GPL (>= 2)                                           #
-#################################################################
 
-
-# --------------------------------------------------------------
-# class def
 setClass("RunParameter",
          representation(
                         name="character",

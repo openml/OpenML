@@ -1,7 +1,3 @@
-################################################################# 
-# THIS FILE DEFINES CLASS OpenMLTask AND THE RESPECTIVE METHODS #
-#################################################################
-
 # FIXME @method show \code{signature(object = "OpenMLTask")}: method used to show the contents of a OpenMLTask object. 
 
 #' OpenMLTask
@@ -40,25 +36,20 @@
 #' @aliases OpenMLTask-class
 #' @exportClass OpenMLTask
 
-
-# --------------------------------------------------------------
-# class def
-setClass("OpenMLTask",
-         representation(task.id = "integer",
-                        task.type = "character",
-                        task.pars = "list",
-                        task.target.features = "character",
-                        task.data.desc.id = "integer",
-                        task.data.desc = "OptionalOpenMLDataSetDescription",
-                        task.estimation.procedure = "OptionalOpenMLEstimationProcedure",
-                        task.preds = "list",
-                        task.evaluation.measures = "character"
-         )
-)
+setClass("OpenMLTask", representation(
+  task.id = "integer",
+  task.type = "character",
+  task.pars = "list",
+  task.target.features = "character",
+  task.data.desc.id = "integer",
+  task.data.desc = "OptionalOpenMLDataSetDescription",
+  task.estimation.procedure = "OptionalOpenMLEstimationProcedure",
+  task.preds = "list",
+  task.evaluation.measures = "character"
+))
 
 
-# --------------------------------------------------------------
-# constructor function
+# ***** Constructor *****
 OpenMLTask <- function(task.id, task.type, task.pars, task.target.features,
                        task.data.desc.id, task.data.desc,
                        task.estimation.procedure,
@@ -73,57 +64,52 @@ OpenMLTask <- function(task.id, task.type, task.pars, task.target.features,
 }
 
 
-
-# --------------------------------------------------------------
-# Methods:
-
+# ***** Methods *****
 
 # show
 # Note: The data splits and the predictions are not shown
-setMethod("show","OpenMLTask",
-          function(object) {
-            ## Task general info
-            cat('\nTask ID :: ', object@task.id,
-                '\n\nTask Type :: ', object@task.type,'\n')
-            if (length(object@task.pars)) {
-              for(i in 1:length(object@task.pars))
-                cat('\t', names(object@task.pars)[i], ' = ', object@task.pars[[i]], '\n')
-            }
-            
-            ## Target variables info
-            catf('\nTask Target Feature :: %s', collapse(object@task.target.features, "\t"))
-            
-            ## Data set info
-            if (!is.null(object@task.data.desc)) {
-              cat('\nDataset :: ', object@task.data.desc@name,
-                  ' (openML ID = ', object@task.data.desc@id,
-                  ', version = ', object@task.data.desc@version, ')\n')
-              cat('\tData frame with ', nrow(object@task.data.desc@data.set),
-                  ' rows and ', ncol(object@task.data.desc@data.set),' columns\n')
-            }
-            
-            ## Estimation procedure info
-            if (!is.null(object@task.estimation.procedure)) {
-              cat('\nEstimation Procedure :: ', object@task.estimation.procedure@type, '\n')
-              cat('\tData splits for estimation ', 
-                  ifelse(all(dim(object@task.estimation.procedure@data.splits) == 0), 'not available', 'available'), '\n')
-              if (length(object@task.estimation.procedure@parameters)) {
-                
-                cat('\tParameters of the estimation procedure:\n')
-                
-                for(i in 1:length(object@task.estimation.procedure@parameters))
-                  cat('\t\t', names(object@task.estimation.procedure@parameters)[i], ' = ', object@task.estimation.procedure@parameters[[i]], '\n')
-              }
-            }
-            cat('\nPredictions ::\n')
-            cat('\tFormat = ', object@task.preds$format, '\n')
-            cat('\tColumns:\n')
-            for(i in 1:length(object@task.preds$features))
-              cat('\t\t', names(object@task.preds$features)[i], ' = ', object@task.preds$features[[i]], '\n')
-            
-            cat('\nEvaluation Measures ::\n')
-            for(i in 1:length(object@task.evaluation.measures))
-              cat('\t', object@task.evaluation.measures[i], '\n')
-          }
-)
+setMethod("show", "OpenMLTask", function(object) {
+  ## Task general info
+  cat('\nTask ID :: ', object@task.id,
+      '\n\nTask Type :: ', object@task.type,'\n')
+  if (length(object@task.pars)) {
+    for(i in 1:length(object@task.pars))
+      cat('\t', names(object@task.pars)[i], ' = ', object@task.pars[[i]], '\n')
+  }
+  
+  ## Target variables info
+  catf('\nTask Target Feature :: %s', collapse(object@task.target.features, "\t"))
+  
+  ## Data set info
+  if (!is.null(object@task.data.desc)) {
+    cat('\nDataset :: ', object@task.data.desc@name,
+        ' (openML ID = ', object@task.data.desc@id,
+        ', version = ', object@task.data.desc@version, ')\n')
+    cat('\tData frame with ', nrow(object@task.data.desc@data.set),
+        ' rows and ', ncol(object@task.data.desc@data.set),' columns\n')
+  }
+  
+  ## Estimation procedure info
+  if (!is.null(object@task.estimation.procedure)) {
+    cat('\nEstimation Procedure :: ', object@task.estimation.procedure@type, '\n')
+    cat('\tData splits for estimation ', 
+        ifelse(all(dim(object@task.estimation.procedure@data.splits) == 0), 'not available', 'available'), '\n')
+    if (length(object@task.estimation.procedure@parameters)) {
+      
+      cat('\tParameters of the estimation procedure:\n')
+      
+      for(i in 1:length(object@task.estimation.procedure@parameters))
+        cat('\t\t', names(object@task.estimation.procedure@parameters)[i], ' = ', object@task.estimation.procedure@parameters[[i]], '\n')
+    }
+  }
+  cat('\nPredictions ::\n')
+  cat('\tFormat = ', object@task.preds$format, '\n')
+  cat('\tColumns:\n')
+  for(i in 1:length(object@task.preds$features))
+    cat('\t\t', names(object@task.preds$features)[i], ' = ', object@task.preds$features[[i]], '\n')
+  
+  cat('\nEvaluation Measures ::\n')
+  for(i in 1:length(object@task.evaluation.measures))
+    cat('\t', object@task.evaluation.measures[i], '\n')
+})
 
