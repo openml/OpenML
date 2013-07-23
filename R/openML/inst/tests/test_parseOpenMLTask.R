@@ -1,3 +1,5 @@
+if (interactive()) {
+  
 context("parseOpenMLTask")
 
 test_that("parseOpenMLTask", {
@@ -5,3 +7,5 @@ test_that("parseOpenMLTask", {
   task = parseOpenMLTask(fn)
   capture.output(print(task))
 })  
+
+}

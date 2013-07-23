@@ -1,3 +1,5 @@
+if (interactive()) {
+
 context("download helpers")
 
 test_that("download helpers", {
@@ -11,3 +13,5 @@ test_that("download helpers", {
   downloadAPICallFile("openml.data.description", file = file, data.id = 1) 
   expect_true(file.exists(file))
 })  
+
+}
