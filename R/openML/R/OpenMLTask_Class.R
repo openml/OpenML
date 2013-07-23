@@ -2,35 +2,44 @@
 # THIS FILE DEFINES CLASS OpenMLTask AND THE RESPECTIVE METHODS #
 #################################################################
 
-
 # FIXME @method show \code{signature(object = "OpenMLTask")}: method used to show the contents of a OpenMLTask object. 
 
-
-#' This class of objects contains the information describing an openML task.
+#' OpenMLTask
 #'
+#' This class of objects contains the information describing an openML task.
+#' 
 #' Objects can be created by calls of the form \code{OpenMLTask(...)}.
 #' The objects contain information on ... .
 #'
-#' @param task.id [\code{\link{integer(1)}}]\cr 
-#'   The task's OpenML ID.
-#' @param task.type [\code{\link{character}}]\cr    
-#'   The task's type.
-#' @param task.pars [\code{\link{list}}]\cr    
-#'   A set of parameters specific to the task type.
-#' @param task.target.features [\code{\link{character(1)}}]\cr
-#'   The name(s) of the target feature(s). 
-#' @param task.data.desc.id [\code{\link{integer(1)}}]\cr    
-#'   The OpenML ID of the data set associated with the task.
-#' @param task.data.desc [\code{\link{OptionalOpenMLDataSet}}]\cr   
-#'   An \code{\link{OptionalOpenMLDataSet}} object that contains information about the data set.
-#' @param task.estimation.procedure [\code{\link{OptionalOpenMLEstimationProcedure}}]\cr  
-#'   An \code{\link{OptionalOpenMLEstimationProcedure}} object that contains information on the 
-#'   task's estimation method and the asoociated data splits.
-#' @param task.preds [\code{\link{list}}]\cr   
-#'   A list that contains information on the format of the predictions for the particular task.
+#'@section Slots: 
+#'  \describe{
+#'    \item{\code{task.id}}{[\code{integer(1)}]\cr
+#'    The task's OpenML ID.}
+#'    \item{\code{task.type}}{[\code{character}]\cr 
+#'    The task's type.}
+#'    \item{\code{task.pars}}{[\code{list}]\cr 
+#'    A set of parameters specific to the task type.}
+#'    \item{\code{task.target.features}}{[\code{character}]\cr 
+#'    The name(s) of the target feature(s)}
+#'    \item{\code{task.data.desc.id}}{[\code{integer(1)}]\cr 
+#'    The OpenML ID of the data set associated with the task.}
+#'    \item{\code{task.data.desc}}{[\code{\link{OptionalOpenMLDataSet}}]\cr 
+#'    Information on the data set.}
+#'    \item{\code{task.estimation.procedure}}{[\code{\link{OptionalOpenMLEstimationProcedure}}]\cr 
+#'    Information on the task's estimation method and the asoociated data splits.}
+#'    \item{\code{task.preds}}{[\code{list}]\cr 
+#'    A list that contains information on the format of the predictions for the particular task.}
+#'    
+#'  }
+#'
 #' @seealso \code{\linkS4class{OpenMLDataSetDescription}}
 #' @examples
 #' showClass("OpenMLTask")
+#' @name OpenMLTask
+#' @rdname OpenMLTask
+#' @aliases OpenMLTask-class
+#' @exportClass OpenMLTask
+
 
 # --------------------------------------------------------------
 # class def

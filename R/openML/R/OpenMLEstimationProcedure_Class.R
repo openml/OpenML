@@ -6,6 +6,32 @@
 #################################################################
 
 
+
+#' OpenMLEstimationProcedure
+#'
+#' This class of objects contains the information describing an openML estimation procedure.
+#' 
+#' Objects can be created by calls of the form \code{OpenMLEstimationProcedure(...)}.
+#' The objects contain information on ... .
+#'
+#'@section Slots: 
+#'  \describe{
+#'    \item{\code{type}}{[\code{character}]\cr
+#'    The type of the estimation procedure.}
+#'    \item{\code{data.splits.url}}{[\code{character}]\cr
+#'    The url of the data splits.}
+#'    \item{\code{data.splits}}{[\code{data.frame}]\cr
+#'    The data splits of the estimation procedure.}
+#'    \item{\code{parameters}}{[\code{list}]\cr
+#'    The parameters of the estimation procedure. E.g., the number of CV-folds, the number of repetitions, etc.}
+#'  }
+#'
+#' @name OpenMLEstimationProcedure
+#' @rdname OpenMLEstimationProcedure
+#' @aliases OpenMLEstimationProcedure-class
+#' @exportClass OpenMLEstimationProcedure
+
+
 # ==============================================================
 # CLASS: OpenMLEstimationProcedure
 # ==============================================================
