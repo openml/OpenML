@@ -1,9 +1,9 @@
 toMLR <- function(task) {
   requirePackages("mlr", why="toMLR")
-  task.type <- taskType(task)
+  task.type <- task@task.type
   data.set.desc <- task@task.data.desc
-  data <- sourceData(task)
-  target <- targetFeatures(task)
+  data <- task@task.data.desc@data.set
+  target <- task@task.target.features
   estim.proc <- task@task.estimation.procedure
   if (task.type == "Supervised Classification") {
     mlr.task <- makeClassifTask(data = data, target = target)
