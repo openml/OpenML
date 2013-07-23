@@ -42,6 +42,9 @@ downloadOpenMLTask <- function(id, dir = tempdir(), clean.up = TRUE,
   checkArg(fetch.data.splits, "logical", len = 1L, na.ok = FALSE)
   checkArg(show.info, "logical", len = 1L, na.ok = FALSE)
   
+  #FIXME stupid hack, remove
+  library(RWeka)
+  
   fn.task <- file.path(dir, "task.xml")
   fn.data.set.desc <- file.path(dir, "data_set_description.xml")
   fn.data.set <- file.path(dir, "data_set.ARFF")
