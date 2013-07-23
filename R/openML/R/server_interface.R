@@ -16,6 +16,9 @@ OPEN_ML_SERVER_API_URL <- "http://expdb.cs.kuleuven.be/expdb/api"
 getServerFunctionURL <- function(fname, ...) {
   url <- sprintf("%s/?f=%s", OPEN_ML_SERVER_API_URL, fname)
   args <- list(...)
-  args <- collapse(paste(names(args), args, sep="="), sep="&")
-  paste(url, args, sep="&")
+  if (length(args) > 0) {
+    args <- collapse(paste(names(args), args, sep="="), sep="&")
+    url = paste(url, args, sep="&")
+  }
+  return(url)
 }

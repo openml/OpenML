@@ -1,3 +1,4 @@
+export(authenticateUser)
 exportClasses(OpenMLDataSetDescription)
 exportClasses(OpenMLEstimationProcedure)
 exportClasses(OpenMLExpSettings)

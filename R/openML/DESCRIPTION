@@ -32,3 +32,4 @@ Collate:
     'writeOpenMLImplemtationXML.R'
     'xml_helpers.R'
     'zzz.R'
+    'authenticateUser.R'
