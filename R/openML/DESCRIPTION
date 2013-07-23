@@ -8,7 +8,8 @@ Imports:
     methods,
     BBmisc,
     RCurl,
-    XML
+    XML,
+    digest
 Suggests:
     mlr
 LazyData: yes
@@ -32,3 +33,4 @@ Collate:
     'writeOpenMLImplemtationXML.R'
     'xml_helpers.R'
     'zzz.R'
+    'authenticateUser.R'

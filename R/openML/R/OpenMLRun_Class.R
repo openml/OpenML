@@ -75,5 +75,3 @@ setMethod("show","OpenMLRun",
 
 
 
-# --------------------------------------------------------------
-# Accessor functions
