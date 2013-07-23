@@ -36,10 +36,10 @@ runOnTask <- function(taskID,
   } else task <- downloadOpenMLTask(taskID)
 
   ## preparing to run exp with task info
-  tgts <- targetFeatures(task)
-  sd  <- sourceData(task)
+  tgts <- task@task.target.features
+  sd  <- task@task.data.desc@data.set
   es  <- task@task.estimation.procedure
-  ev  <- evaluationMeasures(task)
+  ev  <- task@task.evaluation.measures
   
   ## constructing the predictive task(s) in DMwR format
   ## not working

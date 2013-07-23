@@ -23,7 +23,7 @@
 #'    The name(s) of the target feature(s)}
 #'    \item{\code{task.data.desc.id}}{[\code{integer(1)}]\cr 
 #'    The OpenML ID of the data set associated with the task.}
-#'    \item{\code{task.data.desc}}{[\code{\link{OptionalOpenMLDataSetDescriptions}}]\cr 
+#'    \item{\code{task.data.desc}}{[\code{\link{OptionalOpenMLDataSetDescription}}]\cr 
 #'    Information on the data set.}
 #'    \item{\code{task.estimation.procedure}}{[\code{\link{OptionalOpenMLEstimationProcedure}}]\cr 
 #'    Information on the task's estimation method and the asoociated data splits.}
@@ -126,36 +126,4 @@ setMethod("show","OpenMLTask",
               cat('\t', object@task.evaluation.measures[i], '\n')
           }
 )
-
-
-
-# --------------------------------------------------------------
-# Accessor functions
-
-taskType <- function(task) {
-  checkArg(task, "OpenMLTask")
-  task@task.type
-}
-
-#FIXME: Error: could not find function "dataSplits"
-dataSplits <- function(task) {
-  checkArg(task, "OpenMLTask")
-  task@task.estimation.procedure@data.split
-}
-
-evaluationMeasures <- function(task) {
-  checkArg(task, "OpenMLTask")
-  task@task.evaluation.measures
-}
-
-#FIXME: Error: could not find function "targetFeatures"
-targetFeatures <- function(task) {
-  checkArg(task, "OpenMLTask")
-  task@task.target.features
-}
-
-sourceData <- function(task) {
-  checkArg(task, "OpenMLTask")
-  task@task.data.desc@data.set
-}
 

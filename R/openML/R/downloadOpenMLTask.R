@@ -25,7 +25,6 @@
 #'   Default is \code{TRUE}.
 #' @return \code{\linkS4class{OpenMLTask}} object.
 #' @export
-#' @seealso \code{\link{taskType}}, \code{\link{targetFeature}}, \code{\link{expSettings}}, \code{\link{evaluationMeasures}}
 
 #FIXME: check file io errorsr, dir writable and so on
 downloadOpenMLTask <- function(id, dir = tempdir(), clean.up = TRUE, fetch.data.set.description = TRUE, fetch.data.set = TRUE, fetch.data.splits = TRUE) {
