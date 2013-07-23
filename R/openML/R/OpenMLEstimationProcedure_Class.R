@@ -49,7 +49,15 @@ setClass("OpenMLEstimationProcedure",
                         parameters = "list"
            ))
 
-
+#' OptionalOpenMLEstimationProcedure
+#'
+#' Either an object of class \code{\link{OpenMLEstimationProcedure}} or \code{NULL}.
+#' 
+#' @seealso \code{\link{OpenMLEstimationProcedure}}, \code{\link{OpenMLTask}}
+#' @name OptionalOpenMLEstimationProcedure
+#' @rdname OptionalOpenMLEstimationProcedure
+#' @aliases OptionalOpenMLEstimationProcedure-class
+#' @exportClass OptionalOpenMLEstimationProcedure
 
 setClassUnion("OptionalOpenMLEstimationProcedure",
               c("OpenMLEstimationProcedure","NULL"))

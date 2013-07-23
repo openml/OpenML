@@ -1,7 +1,7 @@
-#' Download a file form the OpenML server through a server API call.
+#' Download a file from the OpenML server through a server API call.
 #' 
 #' Gets the URL for the API call from \code{\link{getServerFunctionURL}}.
-#' Then retievs the file rom the URL by \code{\link{downloadBinaryFile}}.
+#' Then retrieves the file from the URL by \code{\link{downloadBinaryFile}}.
 #' 
 #' @param api.fun [\code{character(1)}]\cr
 #'   Name of API function to call on server.
@@ -29,7 +29,7 @@ downloadAPICallFile <- function(api.fun, file, ...) {
 #'   The destination path.
 #' @param show.info [\code{character(1)}]\cr
 #'   Verbose mode? 
-#'   Default ist \code{TRUE}.
+#'   Default is \code{TRUE}.
 #' @return [\code{invisible(NULL)}].
 downloadBinaryFile <- function(url, file, show.info = TRUE) {
   checkArg(url, "character", len = 1L, na.ok = FALSE)

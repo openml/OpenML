@@ -23,7 +23,7 @@
 #'    The name(s) of the target feature(s)}
 #'    \item{\code{task.data.desc.id}}{[\code{integer(1)}]\cr 
 #'    The OpenML ID of the data set associated with the task.}
-#'    \item{\code{task.data.desc}}{[\code{\link{OptionalOpenMLDataSet}}]\cr 
+#'    \item{\code{task.data.desc}}{[\code{\link{OptionalOpenMLDataSetDescriptions}}]\cr 
 #'    Information on the data set.}
 #'    \item{\code{task.estimation.procedure}}{[\code{\link{OptionalOpenMLEstimationProcedure}}]\cr 
 #'    Information on the task's estimation method and the asoociated data splits.}

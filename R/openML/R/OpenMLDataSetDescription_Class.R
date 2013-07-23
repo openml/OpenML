@@ -85,7 +85,15 @@ setClass("OpenMLDataSetDescription",
 )
 
 
-
+#' OptionalOpenMLDataSetDescription
+#'
+#' Either an object of class \code{\link{OpenMLDataSetDescription}} or \code{NULL}.
+#' 
+#' @seealso \code{\link{OpenMLDataSetDescription}}, \code{\link{OpenMLTask}}
+#' @name OptionalOpenMLDataSetDescription
+#' @rdname OptionalOpenMLDataSetDescription
+#' @aliases OptionalOpenMLDataSetDescription-class
+#' @exportClass OptionalOpenMLDataSetDescription
 
 setClassUnion("OptionalOpenMLDataSetDescription",
               c("OpenMLDataSetDescription","NULL"))

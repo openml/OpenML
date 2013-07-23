@@ -6,21 +6,21 @@
 #' Usually there is no reason to set the \code{fetch.*} arguments to \code{FALSE}, as you want all information
 #' completely encapsulated in the task object.
 #'
-#' @param id [\code{\link{integer(1)}}]\cr 
+#' @param id [\code{integer(1)}]\cr 
 #'   ID number of task on OpenML server, used to retrieve the task. 
-#' @param dir [\code{\link{integer(1)}}]\cr 
+#' @param dir [\code{integer(1)}]\cr 
 #'   Directory where downloaded files from the repository are stored. 
-#'   Default is the path of the per-session temporary directory \code{\link{tempdir()}}.
-#' @param clean.up [\code{\link{logical(1)}}]\cr 
+#'   Default is the path of the per-session temporary directory \code{tempdir()}.
+#' @param clean.up [\code{logical(1)}]\cr 
 #'   Should the downloaded files be removed from disk at the end?
 #'   Default is \code{TRUE}.
-#' @param fetch.data.set.description [\code{\link{logical(1)}}]\cr 
+#' @param fetch.data.set.description [\code{logical(1)}]\cr 
 #'   Should the data set description also be downloaded? 
 #'   Default is \code{TRUE}.
-#' @param fetch.data.set [\code{\link{logical(1)}}]\cr 
+#' @param fetch.data.set [\code{logical(1)}]\cr 
 #'   Should the data set also be downloaded? 
 #'   Default is \code{TRUE}.
-#' @param fetch.data.splits [\code{\link{logical(1)}}]\cr 
+#' @param fetch.data.splits [\code{logical(1)}]\cr 
 #'   Should the data splits (for resampling) also be downloaded? 
 #'   Default is \code{TRUE}.
 #' @return \code{\linkS4class{OpenMLTask}} object.
