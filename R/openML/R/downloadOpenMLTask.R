@@ -30,6 +30,7 @@
 #' @export
 
 #FIXME: check file io errorsr, dir writable and so on
+#FIXME not all combios of fetch-* make sense, also test them
 downloadOpenMLTask <- function(id, dir = tempdir(), clean.up = TRUE, 
   fetch.data.set.description = TRUE, fetch.data.set = TRUE, fetch.data.splits = TRUE, show.info = TRUE) {
   
