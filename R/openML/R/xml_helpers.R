@@ -32,7 +32,7 @@ xmlOValI = function(doc, path) {
 }
 
 xmlOValR = function(doc, path) {
-  xmlVal(doc, path, TRUE, as.number)
+  xmlVal(doc, path, TRUE, as.numeric)
 }
 
 xmlOValD = function(doc, path) {
