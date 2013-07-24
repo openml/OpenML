@@ -32,23 +32,21 @@ setClass("OpenMLExpSettings", representation(
   data.splits="data.frame"
 ))
 
+# ***** Constructor *****
 OpenMLExpSettings <- function(type,n.folds,n.repeats,data.splits) {
   new("OpenMLExpSettings", type=type, n.folds=n.folds,n.repeats=n.repeats,
       data.splits=data.splits)
 }
 
-
-# --------------------------------------------------------------
-# Methods:
-
+# ***** Methods *****
 
 # show
 # Note: The data splits and the predictions are not shown
 setMethod("show","OpenMLExpSettings",
   function(object) {
-    cat('\nEvaluation Method :: ', object@type, '\n')
-    cat('Nr. of Folds      :: ', object@n.folds, '\n')
-    cat('Nr. of Repeats    :: ', object@n.repeats, '\n')
+    catf('\nEvaluation Method :: %s', object@type)
+    catf('Nr. of Folds      :: %i', object@n.folds)
+    catf('Nr. of Repeats    :: %i', object@n.repeats)
     cat('Data Splits       :: \n')
     str(object@data.splits)
   }
