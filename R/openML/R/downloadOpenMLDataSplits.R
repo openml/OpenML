@@ -1,4 +1,6 @@
-downloadOpenMLDataSplits = function(url, file, show.info) {
+#FIXME provide helper functions for error xmls
+
+downloadOpenMLDataSplits = function(url, file, show.info = TRUE) {
   checkArg(url, "character", len = 1L, na.ok = FALSE)
   checkArg(file, "character", len = 1L, na.ok = FALSE)
   downloadBinaryFile(url, file, show.info)
