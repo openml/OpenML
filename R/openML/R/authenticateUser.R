@@ -18,7 +18,7 @@ authenticateUser <- function(username, password, show.info = TRUE) {
     messagef("Downloading response to: %s", file)
   }
   url <- getServerFunctionURL("openml.authenticate")
-  md5 <- digest(pwd, algo="md5", serialize=FALSE)
+  md5 <- digest(password, algo="md5", serialize=FALSE)
   params <- list(username = username, password = md5)
   content <- postForm(url, .params = params, .checkParams = FALSE)
   write(content, file = file)
