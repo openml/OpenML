@@ -157,18 +157,16 @@ setMethod("show", "OpenMLImplementation", function(object) {
   
   ## Authors and contributors
   if (length(object@creator)) {
-    cat('\nCreator(s) ::')
-    for(i in 1:length(object@creator))
-      cat(' ',object@creator[i])
+    cat('\nCreator(s)     :: ')
+    cat(collapse(object@creator, sep = ", "))
   }
   if (length(object@contributor)) {
-    cat('\nContributor(s) ::')
-    for(i in 1:length(object@contributor))
-      cat(' ',object@contributor[i])
+    cat('\nContributor(s) :: ')
+    cat(collapse(object@contributor, sep = ", "))
   }
   
   ## Other info
-  catf('Date :: %s', object@date)
+  catf('\nDate :: %s', object@date)
   catNotEmpty('Licence :: ', object@licence)
   catNotEmpty('Language :: ', object@language)
   
