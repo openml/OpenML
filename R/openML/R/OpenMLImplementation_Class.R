@@ -1,120 +1,96 @@
 
-setClass("ImplementationParameter", representation(
-  name="character",
-  data.type="character",
-  default.value="character",
-  description="character"
-))
-
-ImplementationParameter <- function(name,
-                                    data.type="",
-                                    default.value="",
-                                    description="")
-  new("ImplementationParameter",
-      name=name,data.type=data.type,
-      default.value=default.value,description=description)
-
-
-# show
-setMethod("show", "ImplementationParameter", function(object) {
-  cat(object@name)
-  if (object@data.type != "") cat(' : ',object@data.type)
-  if (object@default.value != "") cat(' (default value = ',object@default.value,' )')
-  if (object@description != "") cat('\n   Description : ',object@description)
-  cat('\n')
-})
-
 # --------------------------------------------------------------
 # class def
 setClass("OpenMLImplementation", representation(
   id = "character",
   name = "character",
   version = "character",
+  description = "character",
   creator = "character",
   contributor = "character",
-  date = "character",
   licence = "character",
   language = "character",
-  description = "character",
   full.description = "character",
+  date = "character",
   installation.notes = "character",
   dependencies = "character",
-  programming.language = "character",
-  operating.system = "character",
-  bib.citation = "character",
-  bib.url = "character",
-  implements = "character",
-  parameter = "list",
-  components = "list",
+  #FIXME add bib ref
+  #bibliographical.reference = "character",
+  #FIXME add paramater
+  #FIXME add components
+#  parameter = "list",
+#  components = "list",
   source.format = "character",
   binary.format = "character",
   source.md5 = "character",
   binary.md5 = "character"
+  
+#  programming.language = "character",
+#  operating.system = "character",
+#  bib.url = "character",
+#  implements = "character",
 ))
 
 
 # --------------------------------------------------------------
 # constructor function
-OpenMLImplementation <- function(id="",
-                                 name="",
-                                 version="",
-                                 creator=character(),
-                                 contributor=character(),
-                                 date=as.character(Sys.time()),
-                                 licence="",
-                                 language="English",
-                                 description,
-                                 full.description="",
-                                 installation.notes="",
-                                 dependencies="",
-                                 programming.language="R",
-                                 operating.system=R.version$os,
-                                 bib.citation="",
-                                 bib.url="",
-                                 implements="",
-                                 parameter=list(),
-                                 components=list(),
-                                 source.format="R script",
-                                 binary.format="",
-                                 source.md5="",
-                                 binary.md5=""
-                                 )
-{
+OpenMLImplementation <- function(
+  id = "",
+  name = "",
+  version = "",
+  description = "",
+  creator = character(),
+  contributor = character(),
+  licence = "",
+  language = "English",
+  full.description = "",
+  date = as.character(Sys.time()),
+  installation.notes = "",
+  dependencies = character(),
+  source.format = "R",
+  # FIXME: why do we specify this? We can see this from the 
+  # user provided file anyway?
+  binary.format = "zip",
+  source.md5 = "",
+  binary.md5 = ""
+  #programming.language = "R",
+  #operating.system = R.version$os,
+  #bib.citation="",
+  #bib.url = "",
+  #implements = "",
+  #parameter=list(),
+  #components=list(),
+) {
   new("OpenMLImplementation",
-      id=id,
-      name=name,
-      version=version,
-      creator=creator,
-      contributor=contributor,
-      date=date,
-      licence=licence,
-      language=language,
-      description=description,
-      full.description=full.description,
-      installation.notes=installation.notes,
-      dependencies=dependencies,
-      programming.language=programming.language,
-      operating.system=operating.system,
-      bib.citation=bib.citation,
-      bib.url=bib.url,
-      implements=implements,
-      parameter=parameter,
-      components=components,
-      source.format=source.format,
-      binary.format=binary.format,
-      source.md5=source.md5,
-      binary.md5=binary.md5
-      )
+    id = id,
+    name = name,
+    version = version,
+    description = description,
+    creator = creator,
+    contributor = contributor,
+    licence = licence,
+    language = language,
+    full.description = full.description,
+    date = date,
+    installation.notes = installation.notes,
+    dependencies = dependencies,
+    source.format = source.format,
+    binary.format = binary.format,
+    source.md5 = source.md5,
+    binary.md5 = binary.md5
+#    programming.language = programming.language,
+ #   operating.system = operating.system,
+#    bib.citation = bib.citation,
+#    bib.url = bib.url,
+#    implements = implements,
+#    parameter = parameter,
+#    components = components,
+  )
 }
 
-
-
-# --------------------------------------------------------------
-# Methods:
-
+# ***** Methods *****
 
 # show
-# Note: The data splits and the predictions are not shown
 setMethod("show", "OpenMLImplementation", function(object) {
   ## General implementation info
   cat('\n** Implementation Information ** \n')

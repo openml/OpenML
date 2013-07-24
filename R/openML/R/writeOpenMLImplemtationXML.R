@@ -1,4 +1,25 @@
-NULL
+
+writeOpenMLImplementationXML = function(description) {
+  doc = newXMLDoc()
+  top = newXMLNode("top", parent = doc, namespace = c(oml = "http://www.openml.org/implmentation"))
+  
+  mynode = function(name, val, parent = top)
+    newXMLNode(name, as.character(val), parent = parent, namespace = "oml")
+  
+  mynode("format", "xml")
+  mynode("licence", "public domain<<")
+  mynode("language", "English")
+  mynode("date", as.Date(Sys.time()))
+  
+  mynode("description", "bla bla")
+  mynode("readme", "bla bla")
+  
+  mynode("operating_system", Sys.info()["sysname"])
+  mynode("programming_language", "R")
+  print(top)
+}
+
+
 # library(XML)
 # 
 # 
