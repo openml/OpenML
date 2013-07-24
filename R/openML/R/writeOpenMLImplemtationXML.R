@@ -1,21 +1,46 @@
 
 writeOpenMLImplementationXML = function(description) {
-  doc = newXMLDoc()
-  top = newXMLNode("top", parent = doc, namespace = c(oml = "http://www.openml.org/implmentation"))
+  doc <- newXMLDoc()
+  top <- newXMLNode("oml:implementation", parent = doc, namespace = c(oml = "http://www.openml.org/implementation"))
   
-  mynode = function(name, val, parent = top)
+  mynode <- function(name, val, parent = top)
     newXMLNode(name, as.character(val), parent = parent, namespace = "oml")
   
-  mynode("format", "xml")
-  mynode("licence", "public domain<<")
-  mynode("language", "English")
-  mynode("date", as.Date(Sys.time()))
+  mynode("name", description@name)
+  mynode("version", description@version)
+  mynode("description", description@description)
+  mynode("creator", description@creator)
+  mynode("contributor", description@contributor)
+  mynode("licence", description@licence)
+  mynode("language", description@language)
+  mynode("full_description", description@full.description)
+  mynode("installation_notes", description@installation.notes)
+  mynode("dependencies", description@dependencies)
+  #mynode("bibliographical_reference", description@bibliographical.reference)
+  #mynode("parameter", description@parameter)
+  #mynode("components", description@components)
+  mynode("source_format", description@source.format)
+  mynode("binary_format", description@binary.format)
+  mynode("source_md5", description@source.md5)
+  mynode("binary_md5", description@binary.md5)
   
-  mynode("description", "bla bla")
-  mynode("readme", "bla bla")
+  comp <- newXMLNode("components", parent = top, namespace = "oml")
+  imp <- newXMLNode("implementation", parent = comp, namespace = "oml")
+  addChildren(imp,
+              mynode("name", "C"),
+              mynode("version", "1.0"))
+
   
-  mynode("operating_system", Sys.info()["sysname"])
-  mynode("programming_language", "R")
+#   mynode("format", "xml")
+#   mynode("licence", "public domain<<")
+#   mynode("language", "English")
+#   mynode("date", as.Date(Sys.time()))
+#   
+#   mynode("description", "bla bla")
+#   mynode("readme", "bla bla")
+#   
+#   mynode("operating_system", Sys.info()["sysname"])
+#   mynode("programming_language", "R")
   print(top)
 }
 
