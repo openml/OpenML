@@ -1,5 +1,5 @@
 
-writeOpenMLImplementationXML = function(description) {
+writeOpenMLImplementationXML = function(description, file) {
   doc <- newXMLDoc()
   top <- newXMLNode("oml:implementation", parent = doc, namespace = c(oml = "http://www.openml.org/implementation"))
   
@@ -23,16 +23,16 @@ writeOpenMLImplementationXML = function(description) {
   mynode("binary_format", description@binary.format)
   mynode("source_md5", description@source.md5)
   mynode("binary_md5", description@binary.md5)
-  
+  print(doc)
   # FIXME: add this later
   #comp <- newXMLNode("components", parent = top, namespace = "oml")
   #imp <- newXMLNode("implementation", parent = comp, namespace = "oml")
   #addChildren(imp, mynode("name", "C"), mynode("version", "1.0"))
+  saveXML(top, file = file)
 }
 
 
 # # 
-# # #saveXML(top, file="bla.xml")
 # cat(saveXML(doc))
 #  cat("\n")
 # # 
