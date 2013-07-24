@@ -143,11 +143,17 @@ OpenMLImplementation <- function(
 
 # show
 setMethod("show", "OpenMLImplementation", function(object) {
+  catNotEmpty = function(s, val) {
+    if (val != "") 
+      catf("%s %s", s, val)
+  }
+  
   ## General implementation info
-  cat('\n** Implementation Information ** \n')
-  if (object@id != "") cat('ID      :: ',object@id,'\n')
-  if (object@name != "") cat('Name    :: ',object@name,'\n')
-  if (object@version != "") cat('Version :: ',object@version,'\n')
+  catf('\n** Implementation Information **')
+  
+  catNotEmpty('ID      :: ', object@id)
+  catNotEmpty('Name    :: ', object@name)
+  catNotEmpty('Version :: ', object@version)
   
   ## Authors and contributors
   if (length(object@creator)) {
@@ -162,55 +168,47 @@ setMethod("show", "OpenMLImplementation", function(object) {
   }
   
   ## Other info
-  cat('\nDate :: ',object@date)
-  if (object@licence != "") cat('\nLicence :: ',object@licence)
-  if (object@language != "") cat('\nLanguage :: ',object@language)
+  catf('Date :: %s', object@date)
+  catNotEmpty('Licence :: ', object@licence)
+  catNotEmpty('Language :: ', object@language)
   
   ## Implementation specific info
-  cat('\n\nDescription of the implementation :\n')
-  cat(object@description,'\n')
-  if (object@full.description != "")
-    cat('\nFull description :: \n',object@full.description)
-  if (object@installation.notes != "")
-    cat('\nInstallation notes :: \n',object@installation.notes)
-  if (object@dependencies != "")
-    cat('\nDependencies :: ',object@dependencies)
-  if (object@programming.language != "")
-    cat('\nProgramming language :: ',object@programming.language)
-  if (object@operating.system != "")
-    cat('\nOperating system :: ',object@operating.system)
+  catf('\n\nDescription of the implementation :')
+  catf(object@description)
+  
+  catNotEmpty('Full description :: ', object@full.description)
+  #catNotEmpty('Installation notes :: ', object@installation.notes)
+  catNotEmpty('Dependencies :: ', collapse(object@dependencies, ", "))
+  #catNotEmpty('\nProgramming language :: ',object@programming.language)
+  #catNotEmpty('\nOperating system :: ',object@operating.system)
   
   ## Bibliographic info
-  if (object@bib.citation != "")
-    cat('\nBibliographic citation :: ',object@bib.citation)
-  if (object@bib.url != "")
-    cat('\nBibliographic URL :: ',object@bib.url)
+  #if (object@bib.citation != "")
+  #  catf('\nBibliographic citation :: ',object@bib.citation)
+  #if (object@bib.url != "")
+  #  catf('\nBibliographic URL :: ',object@bib.url)
   
   ## More implementation details
-  if (object@implements != "")
-    cat('\nImplements :: ',object@implements)
+  #if (object@implements != "")
+  #  catf('\nImplements :: ',object@implements)
   
   ## Implementation parameters
-  if (length(object@parameter)) {
-    cat('\nImplementation parameters :\n')
-    for(i in 1:length(object@parameter)) print(object@parameter[i])
-  }
+  #if (length(object@parameter)) {
+  #  catf('\nImplementation parameters :\n')
+  #  for(i in 1:length(object@parameter)) print(object@parameter[i])
+  #}
   
   ## Implementation components
-  if (length(object@components)) {
-    cat('\nDescription of Implementation Components ::\n')
-    for(i in 1:length(object@components)) print(object@components[i])
-  }
+  #if (length(object@components)) {
+  #  catf('\nDescription of Implementation Components ::')
+  #  for(i in 1:length(object@components)) print(object@components[i])
+  #}
   
   ## The implementation source information
-  if (object@source.format != "")
-    cat('\nSource format :: ',object@source.format)
-  if (object@binary.format != "")
-    cat('\nBinary format :: ',object@binary.format)
-  if (object@source.md5 != "")
-    cat('\nSource MD5 :: ',object@source.md5)
-  if (object@binary.md5 != "")
-    cat('\nBinary MD5 :: ',object@binary.md5)
+  catNotEmpty('Source format :: ', object@source.format)
+  catNotEmpty('Binary format :: ', object@binary.format)
+  catNotEmpty('Source MD5 :: ', object@source.md5)
+  catNotEmpty('Binary MD5 :: ', object@binary.md5)
   cat('\n\n')
 })
   
