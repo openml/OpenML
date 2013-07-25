@@ -63,3 +63,38 @@ xmlValsMultNs = function(doc, path, fun, val) {
 xmlValsMultNsS = function(doc, path, fun) {
   xmlValsMultNs(doc, path, as.character, character(1))
 }
+
+expectXMLType = function(file, doc, type) {
+  r <- xmlRoot(doc)
+  rootname <- xmlName(r)
+  if (rootname != type) 
+    stopf("Expected to find XML type %s, not %s, in file %s", type, rootname, file)
+}
+
+isErrorXML = function(doc) {
+  r <- xmlRoot(doc)
+  rootname <- xmlName(r)
+  if (rootname == "error") {
+    code <- xmlRValI(doc, "/oml:error/oml:code")
+    msg <- xmlRValS(doc, "/oml:error/oml:message")
+    return(list(code = code, msg = msg))
+  } else {
+    return(NULL)    
+  }
+}
+
+checkAndHandleErrorXML = function(file, doc, prefix.msg) {
+  z = isErrorXML(doc)
+  if (!is.null(z)) {
+    stopf("Error in server / XML response for: %s\n%s\nFile: %s", prefix.msg, z$msg, file)
+  }
+}
+
+parseXMLResponse = function(file, msg, type) {
+  doc <- xmlParse(file)
+  checkAndHandleErrorXML(file, doc, msg)
+  expectXMLType(file, doc, type)
+  return(doc)
+}
+
+# FIXME: add expectXMLType (otheriwise error) for the parser functions

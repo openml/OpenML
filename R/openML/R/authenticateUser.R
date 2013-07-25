@@ -26,22 +26,12 @@ authenticateUser <- function(username, password, show.info = TRUE) {
 }
   
 
-parseAuthenticateUserResponse = function(file) {
+parseAuthenticateUserResponse = function(file, show.info = TRUE) {
   checkArg(file, "character", len = 1L, na.ok = FALSE)
-  doc <- xmlParse(file)
-  r <- xmlRoot(doc)
-  rootname <- xmlName(r)
-  if (rootname == "error") {
-    code <- xmlRValI(doc, "/oml:error/oml:code")
-    msg <- xmlRValS(doc, "/oml:error/oml:message")
-    stopf("Could not authenticate user: %s", msg)
-  } else if (rootname == "authenticate") {
-    session.hash <- xmlRValS(doc, "/oml:authenticate/oml:session_hash")
-    valid.until <- xmlRValS(doc, "/oml:authenticate/oml:valid_until")
+  doc <- parseXMLResponse(file, "Authenticating user", "authenticate")  
+  session.hash <- xmlRValS(doc, "/oml:authenticate/oml:session_hash")
+  valid.until <- xmlRValS(doc, "/oml:authenticate/oml:valid_until")
+  if (show.info)
     messagef("Retrieved session hash. Valid until: %s", valid.until)
-  } else {
-    stop("Unknown server reponse!")
-    print(doc)
-  }
   return(session.hash)
 }

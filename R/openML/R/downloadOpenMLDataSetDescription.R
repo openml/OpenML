@@ -6,7 +6,7 @@ downloadOpenMLDataSetDescription = function(id, file, show.info) {
 
 parseOpenMLDataSetDescription = function(file) {
   checkArg(file, "character", len = 1L, na.ok = FALSE)
-  doc <- xmlParse(file)
+  doc <- parseXMLResponse(file, "Getting data set description", "data_set_description")
   
   args = list()
   args[["id"]] <- xmlRValI(doc, "/oml:data_set_description/oml:id")

@@ -87,7 +87,7 @@ downloadOpenMLTask <- function(id, dir = tempdir(), clean.up = TRUE,
 }
 
 parseOpenMLTask <- function(file) {
-  doc <- xmlParse(file)
+  doc <- parseXMLResponse(file, "Getting task", "task")
   
   getParams <- function(path) {
     ns.parameters <- getNodeSet(doc, paste(path, "oml:parameter", sep ="/"))
