@@ -28,6 +28,16 @@
 #'   Default is \code{TRUE}.
 #' @return \code{\linkS4class{OpenMLTask}} object.
 #' @export
+#' @examples
+#' # Download task and access relevant information to start running experiments
+#'\dontrun{
+#' task <- downloadOpenMLTask(id = 1)
+#' show(task)
+#' print(task@task.type)
+#' print(task@task.target.features)
+#' print(head(task@data.sec@data))
+#' }
+#' 
 
 #FIXME: check file io errorsr, dir writable and so on
 #FIXME not all combios of fetch-* make sense, also test them
