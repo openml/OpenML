@@ -1,19 +1,19 @@
 #FIXME provide helper functions for error xmls
 
-downloadOpenMLDataSplits = function(url, file, show.info = TRUE) {
+downloadOpenMLDataSplits <- function(url, file, show.info = TRUE) {
   checkArg(url, "character", len = 1L, na.ok = FALSE)
   checkArg(file, "character", len = 1L, na.ok = FALSE)
   downloadBinaryFile(url, file, show.info)
 }
 
-parseOpenMLDataSplits = function(ds, file) {
+parseOpenMLDataSplits <- function(ds, file) {
   checkArg(ds, "data.frame")
   checkArg(file, "character", len = 1L, na.ok = FALSE)  
   splits <- read.arff(file)
 	convertOpenMLDataSplits(ds, splits)
 }
 
-convertOpenMLDataSplits = function(ds, splits) {
+convertOpenMLDataSplits <- function(ds, splits) {
   # 'repeat' is a BAD col. name in R
   colnames(splits)[colnames(splits) == "repeat"] <- "rep" 
 	# all counters in OpenML (server) are 0-based, R is 1-based

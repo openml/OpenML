@@ -4,32 +4,37 @@ library(RCurl)
 library(BBmisc)
 library(RWeka)
 
-load_all("openML")
+load_all("openML", reset = TRUE)
+source('~/cos/OpenML/R/openML/R/uploadOpenMLRun.R')
 
 options(warn = 2)
 
-fn.task <- "../XML/Examples/task.xml"
-fn.data.set.desc <- "../XML/Examples/dataset.xml"    
-fn.data.set <- "../ARFF/iris.arff"    
-fn.data.splits <- "../ARFF/folds_task_1.arff"    
+un = "bernd_bischl@gmx.net"
+pwd = "jxaibdrm"
+session.hash = authenticateUser(username = un, password = pwd)
 
-#dsd <- parseOpenMLDataSetDescription(fn.data.set.desc)
-#print(dsd)
+file = "bla.xml"
 
 
-#task <- parseOpenMLTask(fn.task)
-#task@task.data.desc <- parseOpenMLDataSetDescription(fn.data.set.desc)
-#task@task.data.desc@data.set <- parseOpenMLDataSet(task@task.data.desc, fn.data.set)
-#task@task.estimation.procedure@data.splits <- parseOpenMLDataSplits(task@task.data.desc@data.set, fn.data.splits)
-#print(task)
+uploadOpenMLRun(description = file, output.files = file, session.hash)
 
-#print(summary(task@task.estimation.procedure@data.splits))
-#print(head(task@task.estimation.procedure@data.splits))
+#source('~/cos/OpenML/R/openML/R/authenticateUser.R')
+#downloadOpenMLImplementation("df", file, TRUE)
 
-task = downloadOpenMLTask(id = 1, fetch.data.set.description = TRUE,
-   fetch.data.set = TRUE, fetch.data.splits = TRUE)
-# print(task)
-
-#  z <- toMLR(task)
-#  lrn <- makeLearner("classif.rpart")
-#  r <- resample(lrn, z$mlr.task, z$mlr.rin, measures = z$mlr.measures)
+# 
+# <?xml version="1.0" encoding="UTF-8"?>
+#   <oml:authenticate xmlns:oml="http://open-ml.org/openml">
+#   <oml:session_hash>CYWJBLVYIPQ42IGB1NHSTGP181Y4TQIWE45GGQ4P</oml:session_hash>
+#   <oml:valid_until>2020-01-01 00:00:00</oml:valid_until>
+#   </oml:authenticate>
+#   
+#   Error codes
+# 
+# 250: Please provide username
+# Please provide the username as a POST variable
+# 251: Please provide password
+# Please provide the password (hashed as a MD5) as a POST variable
+# 252: Authentication failed
+# The username and password did not match any record in the database. Please note that the password should be hashed using md5
+# openml
+# 
