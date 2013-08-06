@@ -7,8 +7,8 @@
 #'
 #'@section Slots: 
 #'  \describe{
-#'    \item{\code{task.id}}{[\code{character}]\cr
-#'    .}
+#'    \item{\code{id}}{[\code{character}]\cr
+#'    The id of the implementation.}
 #'    \item{\code{name}}{[\code{character}]\cr
 #'    The name of the implementation. Name-version combinations should be unique.}
 #'    \item{\code{version}}{[\code{character}]\cr

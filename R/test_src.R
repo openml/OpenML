@@ -5,18 +5,20 @@ library(BBmisc)
 library(RWeka)
 
 load_all("openML", reset = TRUE)
-source('~/cos/OpenML/R/openML/R/uploadOpenMLRun.R')
 
-options(warn = 2)
-
-un = "bernd_bischl@gmx.net"
-pwd = "jxaibdrm"
-session.hash = authenticateUser(username = un, password = pwd)
-
-file = "bla.xml"
-
-
-uploadOpenMLRun(description = file, output.files = file, session.hash)
+test <- downloadOpenMLImplementation("weka.AODE(1.8.2.3)", file = "../../../test.R")
+# source('~/cos/OpenML/R/openML/R/uploadOpenMLRun.R')
+# 
+# options(warn = 2)
+# 
+# un = "bernd_bischl@gmx.net"
+# pwd = "jxaibdrm"
+# session.hash = authenticateUser(username = un, password = pwd)
+# 
+# file = "bla.xml"
+# 
+# 
+# uploadOpenMLRun(description = file, output.files = file, session.hash)
 
 #source('~/cos/OpenML/R/openML/R/authenticateUser.R')
 #downloadOpenMLImplementation("df", file, TRUE)
