@@ -30,14 +30,14 @@
 #' @export
 #' @examples
 #' # Download task and access relevant information to start running experiments
-#'\dontrun{
+#' \dontrun{
 #' task <- downloadOpenMLTask(id = 1)
 #' show(task)
-#' print(task@task.type)
-#' print(task@task.target.features)
-#' print(head(task@data.sec@data))
+#' print(task<at>task.type)
+#' print(task<at>task.target.features)
+#' print(head(task<at>data.desc<at>data.set))
 #' }
-#' 
+# FIXME: @-characters can't be used in the example   
 
 #FIXME: check file io errorsr, dir writable and so on
 #FIXME not all combios of fetch-* make sense, also test them
@@ -128,7 +128,7 @@ parseOpenMLTask <- function(file) {
   # estimation procedure
   estim.proc <- OpenMLEstimationProcedure(
     type = xmlRValS(doc, "/oml:task/oml:input/oml:estimation_procedure/oml:type"), 
-    data.splits.url  = xmlRValS(doc, "/oml:task/oml:input/oml:estimation_procedure/oml:data_splits_url"),
+    data.splits.url = xmlRValS(doc, "/oml:task/oml:input/oml:estimation_procedure/oml:data_splits_url"),
     data.splits = data.frame(),
     parameters = getParams("/oml:task/oml:input/oml:estimation_procedure")
   )
@@ -136,7 +136,7 @@ parseOpenMLTask <- function(file) {
   # measures
   measures <- xmlValsMultNsS(doc, "/oml:task/oml:input/oml:evaluation_measures/oml:evaluation_measure")
   
-  task = OpenMLTask(
+  task <- OpenMLTask(
     task.id = task.id,
     task.type = task.type,
     task.target.features = targets,
@@ -156,7 +156,7 @@ convertParam <- function(params, name, fun) {
   return(params)
 }
 
-convertOpenMLTaskSlots = function(task) {
+convertOpenMLTaskSlots <- function(task) {
   # convert estim params to correct types
   p <- task@task.estimation.procedure@parameters
   p <- convertParam(p, "number_repeats", as.integer)

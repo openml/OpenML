@@ -4,11 +4,11 @@ downloadOpenMLDataSetDescription = function(id, file, show.info) {
   downloadAPICallFile(api.fun = "openml.data.description", file = file, data.id = id, show.info = show.info)  
 }
 
-parseOpenMLDataSetDescription = function(file) {
+parseOpenMLDataSetDescription <- function(file) {
   checkArg(file, "character", len = 1L, na.ok = FALSE)
   doc <- parseXMLResponse(file, "Getting data set description", "data_set_description")
   
-  args = list()
+  args <- list()
   args[["id"]] <- xmlRValI(doc, "/oml:data_set_description/oml:id")
   args[["name"]] <- xmlRValS(doc, "/oml:data_set_description/oml:name")
   args[["version"]] <- xmlRValS(doc, "/oml:data_set_description/oml:version")

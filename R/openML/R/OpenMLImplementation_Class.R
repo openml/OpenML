@@ -143,7 +143,7 @@ OpenMLImplementation <- function(
 
 # show
 setMethod("show", "OpenMLImplementation", function(object) {
-  catNotEmpty = function(s, val) {
+  catNotEmpty <- function(s, val) {
     if (val != "") 
       catf("%s %s", s, val)
   }

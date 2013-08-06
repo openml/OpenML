@@ -1,6 +1,6 @@
 
 xmlNs <- function(doc, path, optional) {
-  ns = getNodeSet(doc, path)
+  ns <- getNodeSet(doc, path)
   if (length(ns) == 0L) {
     if (optional)
       NULL
@@ -56,7 +56,7 @@ xmlRValD <- function(doc, path) {
 }
 
 xmlValsMultNs <- function(doc, path, fun, val) {
-  ns = getNodeSet(doc, path)
+  ns <- getNodeSet(doc, path)
   vapply(ns, function(x) fun(xmlValue(x)), val)
 }
 
@@ -84,14 +84,14 @@ isErrorXML <- function(doc) {
 }
 
 checkAndHandleErrorXML <- function(file, doc, prefix.msg) {
-  z = isErrorXML(doc)
+  z <- isErrorXML(doc)
   if (!is.null(z)) {
     stopf("Error in server / XML response for: %s\n%s\nFile: %s", prefix.msg, z$msg, file)
   }
 }
 
 parseXMLResponse <- function(file, msg, type) {
-  doc = try(xmlParse(file))
+  doc <- try(xmlParse(file))
   if (is.error(doc)) {
     stopf("Error in parsing XML for type %s in file: %s", type, file)
   }
