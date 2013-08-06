@@ -4,7 +4,7 @@ downloadOpenMLDataSet <- function(url, file, show.info) {
   downloadBinaryFile(url, file, show.info)
 }
 
-parseOpenMLDataSet = function(dsd, file) {
+parseOpenMLDataSet <- function(dsd, file) {
   checkArg(dsd, "OpenMLDataSetDescription")  
   checkArg(file, "character", len = 1L, na.ok = FALSE)
   ds <- read.arff(file)
