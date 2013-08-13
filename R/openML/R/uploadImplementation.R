@@ -14,8 +14,6 @@
 #'   Verbose output on console?
 #'   Default is \code{TRUE}.
 #' @export
-
-# FIXME: Is 'description' a path to a file or the content of an XML file? 
 uploadOpenMLImplementation <- function(description, sourcefile, binaryfile, session.hash, 
   show.info = TRUE) {
   
@@ -26,16 +24,13 @@ uploadOpenMLImplementation <- function(description, sourcefile, binaryfile, sess
    }
   
   url <- getServerFunctionURL("openml.implementation.upload")
-  
-# FIXME: Either source or binary file.
-  params <- list(
-    description = description,
-    sourcefile = sourcefile,
-#    binaryfile = binaryfile,
-    session_hash = session.hash
+  #FIXME: handle binary
+  response <- postForm(url, 
+    session_hash = session.hash,
+    description = fileUpload(filename = description),
+    source = fileUpload(filename = sourcefile)
   )
-  content <- postForm(url, .params = params, .checkParams = FALSE)
-  write(content, file = file)
+  write(response, file = file)
   doc <- parseXMLResponse(file, "Uploading implementation", "response")
   if (show.info) 
     messagef("Implementation successfully uploaded.")
