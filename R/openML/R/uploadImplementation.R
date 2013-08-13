@@ -1,7 +1,25 @@
 #' @export
-uploadOpneMLImplementation = function(description, sourcefile, binaryfile, session.hash) {
-    
+uploadOpenMLImplementation <- function(description, sourcefile, binaryfile, session.hash, 
+                                       show.info = TRUE) {
   
+  file <- tempfile()
+   if (show.info) {
+     messagef("Uploading run to server.")
+     messagef("Downloading response to: %s", file)
+   }
+  
+  url <- getServerFunctionURL("openml.implementation.upload")
+  params <- list(
+    description = description,
+    sourcefile = sourcefile,
+#    binaryfile = binaryfile,
+    session_hash = session.hash
+  )
+  content <- postForm(url, .params = params, .checkParams = FALSE)
+  write(content, file = file)
+  doc <- parseXMLResponse(file, "Uploading implementation", "response")
+  if (show.info) 
+    messagef("Implementation successfully uploaded.")
 }
 
 # 
