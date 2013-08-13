@@ -3,12 +3,8 @@
 #' Solve a task with a specified learner from MLR, compute predictions and upload the results 
 #' to the OpenML server.
 #' 
-#' @param task.id [\code{integer(1)}]\cr 
-#'   An (optional) ID number of a task on the OpenML server, used to retrieve the task. 
-#'   Either \code{task.id} or \code{task} is required.
 #' @param task [\code{\linkS4class{OpenMLTask}}]\cr 
-#'   An (optional) OpenML task. 
-#'   Either \code{task.id} or \code{task} is required.
+#'   An OpenML task. Required.
 #' @param learner [\code{\link[mlr]{Learner}}]\cr 
 #'   Learner object from package mlr to solve the task.
 #' @param return.mlr.results [\code{logical(1)}]\cr 
