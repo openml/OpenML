@@ -1,3 +1,10 @@
+#' Convert an OpenML task to an MLR task object.
+#' 
+#' @param task [\code{\linkS4class{OpenMLTask}}]\cr 
+#'   An OpenML task object. Required.
+#' @return [\code{\link[mlr]{SupervisedTask}}] 
+#' @export 
+
 toMLR <- function(task) {
   requirePackages("mlr", why="toMLR")
   task.type <- task@task.type

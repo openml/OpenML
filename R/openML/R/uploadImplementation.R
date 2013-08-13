@@ -1,14 +1,18 @@
 #' @export
+
+# FIXME: Is 'description' a path to a file or the content of an XML file? 
 uploadOpenMLImplementation <- function(description, sourcefile, binaryfile, session.hash, 
-                                       show.info = TRUE) {
+  show.info = TRUE) {
   
   file <- tempfile()
    if (show.info) {
-     messagef("Uploading run to server.")
+     messagef("Uploading implementation to server.")
      messagef("Downloading response to: %s", file)
    }
   
   url <- getServerFunctionURL("openml.implementation.upload")
+  
+# FIXME: Either source or binary file.
   params <- list(
     description = description,
     sourcefile = sourcefile,
