@@ -1,3 +1,18 @@
+#' Upload an OpenML implementation to the server.
+#' 
+#' @param description [???]\cr 
+#'   An XML implementation description file. Should at least contain a name and a description.
+#' @param sourcefile [\code{character(1)}]\cr
+#'   The source code of the implementation. If multiple files, please zip them. 
+#'   Either source or binary is required.
+#' @param binaryfile [\code{character(1)}]\cr
+#'   The binary of the implementation. If multiple files, please zip them. 
+#'   Either source or binary is required.
+#' @param session.hash [\code{character(1)}]\cr
+#'   A session token returned by \code{\link{authenticateUser}}.
+#' @param show.info [\code{logical(1)}]\cr
+#'   Verbose output on console?
+#'   Default is \code{TRUE}.
 #' @export
 
 # FIXME: Is 'description' a path to a file or the content of an XML file? 

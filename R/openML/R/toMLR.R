@@ -6,6 +6,7 @@
 #' @export 
 
 toMLR <- function(task) {
+  checkArg(task, "OpenMLTask")
   requirePackages("mlr", why="toMLR")
   task.type <- task@task.type
   data.set.desc <- task@task.data.desc
