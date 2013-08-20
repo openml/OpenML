@@ -12,3 +12,6 @@ example query: get all results for a task nr (e.g. 10CV on iris)
   check that for a couple of datasets
 
 - anneal file looks strange with regard to missing values, really read description and check
+
+- do we really have to provide a source or binary file when uploading an implementation?
+  in R this doesn't always make sense (e.g., for "standard learners" like rpart).

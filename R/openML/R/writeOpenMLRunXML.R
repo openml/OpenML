@@ -17,7 +17,7 @@ writeOpenMLRunXML <- function(description, file) {
   mynode <- function(name, val, parent = top)
     newXMLNode(name, as.character(val), parent = parent, namespace = "oml")
   
-  mynode("task_id", description@name)
-  mynode("implementation_id", description@version)
+  mynode("task_id", description@task.id)
+  mynode("implementation_id", description@implementation.id)
   saveXML(top, file = file)
 }
