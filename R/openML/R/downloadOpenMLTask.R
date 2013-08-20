@@ -8,7 +8,7 @@
 #'
 #' @param id [\code{integer(1)}]\cr 
 #'   ID number of task on OpenML server, used to retrieve the task. 
-#' @param dir [\code{integer(1)}]\cr 
+#' @param dir [\code{character(1)}]\cr 
 #'   Directory where downloaded files from the repository are stored. 
 #'   Default is the path of the per-session temporary directory \code{tempdir()}.
 #' @param clean.up [\code{logical(1)}]\cr 
