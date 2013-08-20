@@ -1,7 +1,7 @@
 #' Upload an OpenML implementation to the server.
 #' 
-#' @param description [???]\cr 
-#'   An XML implementation description file. Should at least contain a name and a description.
+#' @param description [\code{\link{OpenMLImplementation}}]\cr 
+#'   An OpenMLImplementation object. Should at least contain a name and a description.
 #' @param sourcefile [\code{character(1)}]\cr
 #'   The source code of the implementation. If multiple files, please zip them. 
 #'   Either source or binary is required.
@@ -18,6 +18,9 @@ uploadOpenMLImplementation <- function(description, sourcefile, binaryfile, sess
   show.info = TRUE) {
   
   file <- tempfile()
+  
+  writeOpenMLImplementationXML(description, file)
+  
    if (show.info) {
      messagef("Uploading implementation to server.")
      messagef("Downloading response to: %s", file)
@@ -27,7 +30,7 @@ uploadOpenMLImplementation <- function(description, sourcefile, binaryfile, sess
   #FIXME: handle binary
   response <- postForm(url, 
     session_hash = session.hash,
-    description = fileUpload(filename = description),
+    description = fileUpload(filename = file),
     source = fileUpload(filename = sourcefile)
   )
   write(response, file = file)
