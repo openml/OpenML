@@ -18,3 +18,11 @@ example query: get all results for a task nr (e.g. 10CV on iris)
 
 - do we really have to provide a source or binary file when uploading an implementation?
   in R this doesn't always make sense (e.g., for "standard learners" like rpart).
+
+- completely checkl task 6 and its data, looks fishy
+
+- why does task 7 has > 800 obs, isn t that anneal data with 798 obs?
+
+- why does task 11 take so long to download / resample? is waveform5000 right?
+
+
