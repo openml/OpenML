@@ -12,3 +12,6 @@ example query: get all results for a task nr (e.g. 10CV on iris)
   check that for a couple of datasets
 
 - anneal file looks strange with regard to missing values, really read description and check
+
+- for measures istm ust be clear whether they are for classif or regression (on opneml server)
+  and how they are defined precisely
