@@ -1,0 +1,14 @@
+NAME                        XML-TYPE        R-TYPE          OPTIONAL?
+
+name                        string          numeric         FALSE
+version                     string          character(1)    TRUE
+description                 string          character(1)    FALSE
+format                      string          character(1)    FALSE
+creator                     string          character       TRUE
+contributor                 string          character       TRUE  
+collection_date             string          character(1)    TRUE
+language                    string          character(1)    TRUE    
+licence                     string          character(1)    TRUE
+url                         string          character(1)    TRUE
+row_id_attribute            string          character(1)    TRUE
+md5_checksum                string          character(1)    TRUE

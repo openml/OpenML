@@ -17,7 +17,7 @@ toMLR <- function(task) {
     mlr.task <- makeClassifTask(data = data, target = target)
   }
   mlr.rin <- createMLRResampleInstance(estim.proc, mlr.task)
-  mlr.measures <- createMLRMeasures(task@task.evaluation.measures)
+  mlr.measures <- createMLRMeasures(task@task.evaluation.measures, task.type)
   list(mlr.task = mlr.task, mlr.rin = mlr.rin, mlr.measures = mlr.measures)
 }
 
@@ -49,11 +49,33 @@ createMLRResampleInstance <- function(estim.proc, mlr.task) {
   return(mlr.rin)
 }
 
-createMLRMeasures <- function(measures) {
+# FIXME: add more metrics/measures.
+createMLRMeasures <- function(measures, type) {
   lapply(measures, function(m) {
-    switch(m, 
-      predictive_accuracy = acc,
-      stopf("Unsupported evaluation measure: %s", m)     
-    )
+    if(type == "Supervised Classification") {
+      switch(m, 
+             mean_absolute_error = mmce,
+             area_under_roc_curve = auc,
+             build_cpu_time = timetrain,     
+             f_measure = f1,
+             matthews_correlation_coefficient = mcc,
+             precision = ppv,
+             predictive_accuracy = acc,
+             recall = tpr,
+             stopf("Unsupported evaluation measure: %s", m)     
+      )
+    } else {
+      switch(m, 
+             mean_absolute_error = mae,
+             area_under_roc_curve = auc,
+             build_cpu_time = timetrain,     
+             f_measure = f1,
+             matthews_correlation_coefficient = mcc,
+             precision = ppv,
+             predictive_accuracy = acc,
+             recall = tpr,
+             stopf("Unsupported evaluation measure: %s", m)     
+      )
+    } 
   })
 }

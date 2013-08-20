@@ -1,0 +1,44 @@
+﻿NAME                        XML-TYPE                    R-TYPE            OPTIONAL?
+
+task
+  task_id                   integer                     integer  (1)  
+  task_type                 string                      character(1)
+  input                     task_input                                    FALSE
+  parameter                 task_parameter                                TRUE  
+  output                    task_output                                   TRUE
+
+task_parameter  
+  name                      string                      character(1)  
+
+task_IO (both task_input and task_output have a name)
+  name                      string                      character(1)
+  
+task_input (extends task_IO)
+  data_set                  data_set          
+  estimation_procedure      estimation_procedure
+  evaluation_measures        evaluation_measures
+
+estimation_procedure
+  type                      string                      character(1)
+  data_splits_url           string                      character(1)      TRUE
+  parameter                 task_parameter                                TRUE
+
+evaluation_measures
+  evaluation_measure        string                      character         FALSE
+  
+task_output (extends task_IO)
+  data_set                  data_set      
+  predictions               predictions
+
+data_set
+  data_set_id               integer                     integer(1)    
+  target_feature            string                      character         TRUE
+  
+predictions
+  format                    string
+  feature                   feature                                       FALSE
+  
+feature 
+  name                      string                      character(1)
+  type                      string                      character(1)
+  required                  boolean                     logical(1)
