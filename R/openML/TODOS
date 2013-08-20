@@ -5,3 +5,10 @@ visualizing it. later on we can provide convenience functions for this, but many
 king of tool / framework they want to use. so first of all: provide data in a reasonable format (IMHO: data.frame)
 example query: get all results for a task nr (e.g. 10CV on iris)
 
+- check for every class member field, whether it can bei missing, and how this is encoded.
+  Make this consistent and document it, both in R docs and the overview files rfom Dominik.
+
+- are missing values correctly encoded in the arffs and parsed by R? 
+  check that for a couple of datasets
+
+- anneal file looks strange with regard to missing values, really read description and check
