@@ -33,10 +33,14 @@
 #'    Installation notes.}
 #'    \item{\code{dependencies}}{[\code{character}]\cr
 #'    The dependencies of the implementation.}
-#'    \item{\code{source.format}}{[\code{character}]\cr
-#'    . Default is "R".}
+#'    \item{\code{source.url}{[\code{character}]\cr
+#'    URL of the source file.}
+#'    \item{\code{binary.url}{[\code{character}]\cr
+#'    URL of the binary file.}
 #'    \item{\code{binary.format}}{[\code{character}]\cr
-#'    .Default is "zip"}
+#'    Format of the binary file.}
+#'    \item{\code{source.format}}{[\code{character}]\cr
+#'    Format of the source file.}
 #'    \item{\code{source.md5}}{[\code{character}]\cr
 #'    MD5 checksum to check if the source code was uploaded correctly.}
 #'    \item{\code{binary.md5}}{[\code{character}]\cr
@@ -71,6 +75,8 @@ setClass("OpenMLImplementation", representation(
   #FIXME add components
 #  parameter = "list",
 #  components = "list",
+  source.url = "character",
+  binary.url = "character",
   source.format = "character",
   binary.format = "character",
   source.md5 = "character",
@@ -98,10 +104,14 @@ OpenMLImplementation <- function(
   date = as.character(Sys.time()),
   installation.notes = "",
   dependencies = character(),
-  source.format = "R",
+  source.url = "",
+  binary.url = "",
+  source.format = "",
   # FIXME: why do we specify this? We can see this from the 
   # user provided file anyway?
-  binary.format = "zip",
+  # actually we have to think about upload (known) and download here.
+  #FIXME should all these mising values be encoded as empty strings? probably not.
+  binary.format = "",
   source.md5 = "",
   binary.md5 = ""
   #programming.language = "R",
@@ -125,6 +135,8 @@ OpenMLImplementation <- function(
     date = date,
     installation.notes = installation.notes,
     dependencies = dependencies,
+    source.url = source.url,
+    binary.url = binary.url,
     source.format = source.format,
     binary.format = binary.format,
     source.md5 = source.md5,
@@ -203,6 +215,8 @@ setMethod("show", "OpenMLImplementation", function(object) {
   #}
   
   ## The implementation source information
+  catNotEmpty('Source URL :: ', object@source.url)
+  catNotEmpty('Binary URL :: ', object@binary.url)
   catNotEmpty('Source format :: ', object@source.format)
   catNotEmpty('Binary format :: ', object@binary.format)
   catNotEmpty('Source MD5 :: ', object@source.md5)
