@@ -104,7 +104,7 @@ setMethod("show", "OpenMLDataSetDescription",	function(object) {
   # incorrect indentation to see aligment!
 	catf('\nDataset %s :: (openML ID = %i, version = %s)', object@name, object@id, object@version)
 	catf('\tCreator          : %s', object@creator)
-	if (object@contributor != '')
+	if (length(object@contributor) > 0)
 	  catf('\tContributor      : %s', object@contributor)
 	catf('\tCollection Date  : %s', object@collection.date)
 	catf('\tUpload Date      : %s', object@upload.date)
@@ -122,7 +122,6 @@ setMethod("show", "OpenMLDataSetDescription",	function(object) {
 	cat(collapse(paste('\t\t', strwrap(object@description), '\n'), sep=''))
 	cat('\n')
 	catf('\tData :')
-	x <- printToChar(str(object@data.set), collapse=NULL)
-	catf('\t\t%s', x[-length(x)])
+	catf(printStrToChar(object@data.set))
 })
 
