@@ -31,14 +31,14 @@ downloadOpenMLImplementation <- function(id, dir = getwd(), download.source.bina
       # take 2nd from last element before "/download"
       # shoud be stored filename
       #FIXME is thsi correct?
-      fn.impl.src <- rev(str_split(impl@source.url, "/")[[1]])[2]
+      fn.impl.src <- rev(strsplit(impl@source.url, "/")[[1]])[2]
       fn.impl.src <- file.path(dir, fn.impl.src)  
       downloadBinaryFile(url = impl@source.url, file = fn.impl.src, show.info = show.info)
     }
     if (impl@binary.url != "") {
       if (show.info)
         messagef("Downloading implementation binary file.")
-      fn.impl.bin <- rev(str_split(impl@binary.url, "/")[[1]])[2]
+      fn.impl.bin <- rev(strsplit(impl@binary.url, "/")[[1]])[2]
       fn.impl.bin <- file.path(dir, fn.impl.bin)  
       downloadBinaryFile(url = impl@binary.url, file = fn.impl.bin, show.info = show.info)
     }
