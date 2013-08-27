@@ -5,7 +5,7 @@ setClass("OpenMLRunParameter", representation(
 ))
 
 # ***** Constructor *****
-OpenMLRunParameter <- function(name, value, component = "") {
+OpenMLRunParameter <- function(name, value, component = character(0)) {
   new("OpenMLRunParameter", 
     name = name,
     value = value,
@@ -17,7 +17,7 @@ OpenMLRunParameter <- function(name, value, component = "") {
 
 # show
 setMethod("show", "OpenMLRunParameter", function(object) {
-  s <- if (object@component != "")
+  s <- if(length(object@component))
     sprintf(' (parameter of component %s)', object@component)
   else
     ""
