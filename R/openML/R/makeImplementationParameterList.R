@@ -5,6 +5,11 @@
 #' @param learner [\code{\link[mlr]{Learner}}]\cr
 #'   An MLR learner object.
 #' @return A list of \code{\link{OpenMLImplementationParameter}s}.
+#' @examples
+#' library(mlr)
+#' lrn <- makeLearner("classif.randomForest")
+#' pars <- makeImplementationParameterList(lrn)
+#' pars
 #' @export
 makeImplementationParameterList <- function(learner) {
   pars <- learner$par.set$pars
@@ -19,7 +24,7 @@ makeImplementationParameterList <- function(learner) {
     if(pars[[i]]$has.default)
       default.value <- as.character(pars[[i]]$default)
     else
-      default.value <- ""
+      default.value <- character(0)
     impl.par <- OpenMLImplementationParameter(
       name = name, 
       data.type = data.type, 
