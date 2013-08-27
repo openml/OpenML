@@ -3,9 +3,11 @@ writeOpenMLImplementationXML = function(description, file) {
   doc <- newXMLDoc()
   top <- newXMLNode("oml:implementation", parent = doc, namespace = c(oml = "http://www.openml.org/implementation"))
   
-  mynode <- function(name, val, parent = top)
-    newXMLNode(name, as.character(val), parent = parent, namespace = "oml")
-  
+  mynode <- function(name, val, parent = top){
+    if(length(val)) 
+      newXMLNode(name, as.character(val), parent = parent, namespace = "oml")
+  }
+    
   mynode("name", description@name)
   mynode("version", description@version)
   mynode("description", description@description)
@@ -17,7 +19,16 @@ writeOpenMLImplementationXML = function(description, file) {
   mynode("installation_notes", description@installation.notes)
   mynode("dependencies", description@dependencies)
   #mynode("bibliographical_reference", description@bibliographical.reference)
-  #mynode("parameter", description@parameter)
+  if(length(description@parameter)) {
+    for(i in seq_along(description@parameter)) {
+      par <- newXMLNode("parameter", parent = top, namespace = "oml")
+      mynode("name", description@parameter[[i]]@name, parent = par)
+      mynode("data_type", description@parameter[[i]]@data.type, parent = par)
+      mynode("default_value", description@parameter[[i]]@default.value, parent = par)
+      mynode("description", description@parameter[[i]]@description, parent = par)
+    }
+  }
+    
   #mynode("components", description@components)
   mynode("source_format", description@source.format)
   mynode("binary_format", description@binary.format)

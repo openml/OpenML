@@ -35,7 +35,7 @@
 #'    The dependencies of the implementation.}
 #'    \item{\code{parameter}}{[\code{list}]\cr
 #'    The parameters of the implementation. A list contatining 
-#'    \code{\link{OpenMLImplementationParameter}}s.}
+#'    \code{\link{OpenMLImplementationParameter}s}.}
 #'    \item{\code{source.url}}{[\code{character}]\cr
 #'    URL of the source file.}
 #'    \item{\code{binary.url}}{[\code{character}]\cr

@@ -29,7 +29,12 @@ setClass("OpenMLImplementationParameter", representation(
 ))
 
 # ***** Constructor *****
-OpenMLImplementationParameter <- function(name, data.type = "", default.value = "", description = "") {
+OpenMLImplementationParameter <- function(
+  name, 
+  data.type = character(0), 
+  default.value = character(0), 
+  description = character(0)) {
+  
   new("OpenMLImplementationParameter", 
       name = name,
       data.type = data.type,
@@ -43,10 +48,10 @@ OpenMLImplementationParameter <- function(name, data.type = "", default.value = 
 # show
 setMethod("show", "OpenMLImplementationParameter", function(object) {  
   catf("Parameter %s", object@name)  
-  if(object@data.type != "")
+  if(length(object@data.type))
     catf("  type    :: %s", object@data.type)
-  if(object@default.value != "")
+  if(length(object@default.value))
     catf("  default :: %s", object@default.value)
-  if(object@description != "")
+  if(length(object@description))
     catf("\n%s", object@description)
 })

@@ -25,4 +25,5 @@ example query: get all results for a task nr (e.g. 10CV on iris)
 
 - why does task 11 take so long to download / resample? is waveform5000 right?
 
-
+- we need a possibility to get an implementation id of an existing implementation.
+  in SQL, this is for example: SELECT fullName FROM implementation WHERE name = "weka.AODE"
