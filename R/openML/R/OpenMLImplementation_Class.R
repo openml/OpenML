@@ -33,9 +33,12 @@
 #'    Installation notes.}
 #'    \item{\code{dependencies}}{[\code{character}]\cr
 #'    The dependencies of the implementation.}
-#'    \item{\code{source.url}{[\code{character}]\cr
+#'    \item{\code{parameter}}{[\code{list}]\cr
+#'    The parameters of the implementation. A list contatining 
+#'    \code{\link{OpenMLImplementationParameter}}s.}
+#'    \item{\code{source.url}}{[\code{character}]\cr
 #'    URL of the source file.}
-#'    \item{\code{binary.url}{[\code{character}]\cr
+#'    \item{\code{binary.url}}{[\code{character}]\cr
 #'    URL of the binary file.}
 #'    \item{\code{binary.format}}{[\code{character}]\cr
 #'    Format of the binary file.}
@@ -71,10 +74,9 @@ setClass("OpenMLImplementation", representation(
   dependencies = "character",
   #FIXME add bib ref
   #bibliographical.reference = "character",
-  #FIXME add paramater
   #FIXME add components
-#  parameter = "list",
-#  components = "list",
+  parameter = "list",
+  #  components = "list",
   source.url = "character",
   binary.url = "character",
   source.format = "character",
@@ -113,13 +115,13 @@ OpenMLImplementation <- function(
   #FIXME should all these mising values be encoded as empty strings? probably not.
   binary.format = "",
   source.md5 = "",
-  binary.md5 = ""
+  binary.md5 = "",
   #programming.language = "R",
   #operating.system = R.version$os,
   #bib.citation="",
   #bib.url = "",
   #implements = "",
-  #parameter=list(),
+  parameter = list()
   #components=list(),
 ) {
   new("OpenMLImplementation",
@@ -140,13 +142,13 @@ OpenMLImplementation <- function(
     source.format = source.format,
     binary.format = binary.format,
     source.md5 = source.md5,
-    binary.md5 = binary.md5
+    binary.md5 = binary.md5,
 #    programming.language = programming.language,
  #   operating.system = operating.system,
 #    bib.citation = bib.citation,
 #    bib.url = bib.url,
 #    implements = implements,
-#    parameter = parameter,
+    parameter = parameter
 #    components = components,
   )
 }
@@ -203,10 +205,11 @@ setMethod("show", "OpenMLImplementation", function(object) {
   #  catf('\nImplements :: ',object@implements)
   
   ## Implementation parameters
-  #if (length(object@parameter)) {
-  #  catf('\nImplementation parameters :\n')
-  #  for(i in 1:length(object@parameter)) print(object@parameter[i])
-  #}
+  if (length(object@parameter)) {
+    catf('\nImplementation parameters :\n')
+    for(i in 1:length(object@parameter)) 
+      print(object@parameter[i])
+  }
   
   ## Implementation components
   #if (length(object@components)) {

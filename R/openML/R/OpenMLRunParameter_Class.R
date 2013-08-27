@@ -17,10 +17,10 @@ OpenMLRunParameter <- function(name, value, component = "") {
 
 # show
 setMethod("show", "OpenMLRunParameter", function(object) {
-  s = if (object@component != "")
+  s <- if (object@component != "")
     sprintf(' (parameter of component %s)', object@component)
   else
     ""
   # FIXME does this work for arbitary values? unit test this
-  catf("% = %s %s", object@name, object@value)
+  catf("%s %s = %s", s, object@name, object@value)
 })
