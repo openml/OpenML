@@ -18,11 +18,11 @@ toMLR <- function(task) {
   data <- drop.levels(data)
   
   # FIXME: hack to convert bad feature names
-  feature.ind = which(colnames(data) %nin% target)
-  feature.names = colnames(data)[feature.ind]
-  feature.names = str_replace_all(feature.names, pattern=c("\\-"), replacement="_")  
-  feature.names = str_replace_all(feature.names, pattern=c("/"), replacement="_")  
-  colnames(data)[feature.ind] = feature.names
+  feature.ind <- which(colnames(data) %nin% target)
+  feature.names <- colnames(data)[feature.ind]
+  feature.names <- str_replace_all(feature.names, pattern=c("\\-"), replacement="_")  
+  feature.names <- str_replace_all(feature.names, pattern=c("/"), replacement="_")  
+  colnames(data)[feature.ind] <- feature.names
   
   estim.proc <- task@task.estimation.procedure
   if (task.type == "Supervised Classification") {
@@ -46,7 +46,7 @@ createMLRResampleInstance <- function(estim.proc, mlr.task) {
   if (type == "cross_validation") {
     #FIXME why is stratify TRUE here? does the server always prdoced stratified
     # resampling for classif? check this
-    stratify = (mlr.task$task.desc$type == "classif")
+    stratify <- (mlr.task$task.desc$type == "classif")
     if (n.repeats == 1L)
       mlr.rdesc <- makeResampleDesc("CV", iters = n.folds, stratify = stratify)
     else 
@@ -54,15 +54,15 @@ createMLRResampleInstance <- function(estim.proc, mlr.task) {
   } else {
     stopf("Unsupported estimation procedure type: %s", type)
   }
-  mlr.rin = makeResampleInstance(mlr.rdesc, task = mlr.task)  
-  iter = 1L
+  mlr.rin <- makeResampleInstance(mlr.rdesc, task = mlr.task)  
+  iter <- 1L
   #print(table(data.splits$rep, data.splits$fold, data.splits$type))
   for (r in 1:n.repeats) {
     for (f in 1:n.folds) {
-      d = subset(data.splits, rep ==  r & data.splits$fold == f)
-      mlr.rin$train.inds[[iter]] = subset(d, type == "TRAIN")$rowid 
-      mlr.rin$test.inds[[iter]] = subset(d, type == "TEST")$rowid
-      iter = iter + 1L
+      d <- subset(data.splits, rep ==  r & data.splits$fold == f)
+      mlr.rin$train.inds[[iter]] <- subset(d, type == "TRAIN")$rowid 
+      mlr.rin$test.inds[[iter]] <- subset(d, type == "TEST")$rowid
+      iter <- iter + 1L
     }
   }
   return(mlr.rin)
