@@ -6,7 +6,7 @@ task.id <- 1
 task <- downloadOpenMLTask(id = task.id)
 
 # Which Implementation/Learner should be used?
-lrn <- makeLearner("classif.rpart")
+lrn <- makeLearner("classif.rpart", minsplit = 1)
 session.hash <- authenticateUser("dominikkirchhoff", "testpasswort")
 # Check if implementation lrn is already registered. If not, upload it automatically.
 # This is not yet done. The API call is missing.
@@ -23,7 +23,10 @@ save(results$run.pred, file = output.file)
 
 # Generate a description object of the run. 
 # Maybe we should do this in uploadOpenMLRun and save a line of code?
-description <- OpenMLRun(task.id = task.id, implementation.id = implementation.id)
+description <- OpenMLRun(
+  task.id = task.id, 
+  implementation.id = implementation.id, 
+  parameter.settings = makeRunParameterList(lrn))
 
 # Upload the run.
 uploadOpenMLRun(description = description, output.files = output.file, session.hash = session.hash)

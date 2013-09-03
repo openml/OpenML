@@ -45,12 +45,11 @@ setMethod("show", "OpenMLRun", function(object) {
   catf('Task ID           :: %s', object@task.id)
   catf('Implementation ID :: %s', object@implementation.id)
   #FIXME reimplent
-  #if (length(object@parameter.settings)) {
-  #  cat('Parameter Settings used on the Run:\n')
-  #  for(i in 1:length(object@parameter.settings))
-  #    print(object@parameter.settings[i])
-  #}
-  #cat('\n')
+  if (length(object@parameter.settings)) {
+    cat('Parameter Settings used on the Run:\n')
+    print(object@parameter.settings)
+  }
+  cat('\n')
 })
 
 

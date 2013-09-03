@@ -24,7 +24,7 @@ writeOpenMLRunXML <- function(description, file) {
   
   if(length(description@parameter.settings)) {
     for(i in seq_along(description@parameter.settings)) {
-      par.setting <- newXMLNode("parameter.setting", parent = top, namespace = "oml")
+      par.setting <- newXMLNode("parameter_setting", parent = top, namespace = "oml")
       mynode("name", description@parameter.settings[[i]]@name, parent = par.setting)
       mynode("value", description@parameter.settings[[i]]@value, parent = par.setting)
       mynode("component", description@parameter.settings[[i]]@component, parent = par.setting)
