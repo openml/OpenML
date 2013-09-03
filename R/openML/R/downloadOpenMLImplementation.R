@@ -25,7 +25,7 @@ downloadOpenMLImplementation <- function(id, dir = getwd(), download.source.bina
   downloadAPICallFile(api.fun = "openml.implementation.get", file = fn.impl.xml, implementation_id = id, show.info = show.info)  
   impl <- parseOpenMLImplementation(fn.impl.xml)
   if (download.source.binary) {
-    if (impl@source.url != "") {
+    if (length(impl@source.url)) {
       if (show.info)
         messagef("Downloading implementation source file.")
       # take 2nd from last element before "/download"
@@ -35,7 +35,7 @@ downloadOpenMLImplementation <- function(id, dir = getwd(), download.source.bina
       fn.impl.src <- file.path(dir, fn.impl.src)  
       downloadBinaryFile(url = impl@source.url, file = fn.impl.src, show.info = show.info)
     }
-    if (impl@binary.url != "") {
+    if (length(impl@binary.url)) {
       if (show.info)
         messagef("Downloading implementation binary file.")
       fn.impl.bin <- rev(strsplit(impl@binary.url, "/")[[1]])[2]

@@ -19,7 +19,7 @@ uploadOpenMLImplementation <- function(description, sourcefile, binaryfile, sess
   
   file <- tempfile()
   
-  writeOpenMLImplementationXML(description, file)
+  #writeOpenMLImplementationXML(description, file)
   
    if (show.info) {
      messagef("Uploading implementation to server.")
@@ -30,13 +30,19 @@ uploadOpenMLImplementation <- function(description, sourcefile, binaryfile, sess
   #FIXME: handle binary
   response <- postForm(url, 
     session_hash = session.hash,
-    description = fileUpload(filename = file),
+    description = fileUpload(filename = description),
     source = fileUpload(filename = sourcefile)
   )
   write(response, file = file)
-  doc <- parseXMLResponse(file, "Uploading implementation", "response")
-  if (show.info) 
-    messagef("Implementation successfully uploaded.")
+  #FIXME: not very elegant, the XMLResponse can be of type "response" or "upload_implementation"...
+  doc <- try(parseXMLResponse(file, "Uploading implementation", "upload_implementation"), silent = TRUE)
+  if(is.error(doc))
+    doc <- parseXMLResponse(file, "Uploading implementation", "response")
+  
+  if (show.info) {
+    messagef("Implementation successfully uploaded. Implementation ID: %s", 
+             xmlOValS(doc, "/oml:upload_implementation/oml:id"))
+  }    
 }
 
 # 

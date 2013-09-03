@@ -10,7 +10,7 @@ writeOpenMLImplementationXML <- function(description, file = character(0)) {
   checkArg(file, "character")
   
   doc <- newXMLDoc()
-  top <- newXMLNode("oml:implementation", parent = doc, namespace = c(oml = "http://www.openml.org/implementation"))
+  top <- newXMLNode("oml:implementation", parent = doc, namespace = c(oml = "http://openml.org/openml"))
   
   addNodes <- function(description, doc, parent = top) {  
     mynode <- function(name, val, parent = top){
@@ -31,7 +31,7 @@ writeOpenMLImplementationXML <- function(description, file = character(0)) {
     #mynode("bibliographical_reference", description@bibliographical.reference)
     if(length(description@parameter)) {
       for(i in seq_along(description@parameter)) {
-        par <- newXMLNode("parameter", parent = top, namespace = "oml")
+        par <- newXMLNode("parameter", parent = parent, namespace = "oml")
         mynode("name", description@parameter[[i]]@name, parent = par)
         mynode("data_type", description@parameter[[i]]@data.type, parent = par)
         mynode("default_value", description@parameter[[i]]@default.value, parent = par)

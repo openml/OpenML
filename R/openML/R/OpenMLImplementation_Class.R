@@ -103,22 +103,22 @@ OpenMLImplementation <- function(
   description = "",
   creator = character(),
   contributor = character(),
-  licence = "",
+  licence = character(),
   language = "English",
-  full.description = "",
+  full.description = character(),
   date = as.character(Sys.time()),
-  installation.notes = "",
+  installation.notes = character(),
   dependencies = character(),
-  source.url = "",
-  binary.url = "",
-  source.format = "",
+  source.url = character(),
+  binary.url = character(),
+  source.format = character(),
   # FIXME: why do we specify this? We can see this from the 
   # user provided file anyway?
   # actually we have to think about upload (known) and download here.
   #FIXME should all these mising values be encoded as empty strings? probably not.
-  binary.format = "",
-  source.md5 = "",
-  binary.md5 = "",
+  binary.format = character(),
+  source.md5 = character(),
+  binary.md5 = character(),
   #programming.language = "R",
   #operating.system = R.version$os,
   #bib.citation="",
@@ -184,16 +184,17 @@ setMethod("show", "OpenMLImplementation", function(object) {
   
   ## Other info
   catf('\nDate :: %s', object@date)
-  catNotEmpty('Licence :: ', object@licence)
-  catNotEmpty('Language :: ', object@language)
+  #catNotEmpty('Licence :: ', object@licence)
+  #catNotEmpty('Language :: ', object@language)
   
   ## Implementation specific info
   catf('\n\nDescription of the implementation :')
   catf(object@description)
   
-  catNotEmpty('Full description :: ', object@full.description)
+  #FIXME: We need to reimplement these lines.
+  #catNotEmpty('Full description :: ', object@full.description)
   #catNotEmpty('Installation notes :: ', object@installation.notes)
-  catNotEmpty('Dependencies :: ', collapse(object@dependencies, ", "))
+  #catNotEmpty('Dependencies :: ', collapse(object@dependencies, ", "))
   #catNotEmpty('\nProgramming language :: ',object@programming.language)
   #catNotEmpty('\nOperating system :: ',object@operating.system)
   
@@ -221,12 +222,12 @@ setMethod("show", "OpenMLImplementation", function(object) {
   }
   
   ## The implementation source information
-  catNotEmpty('Source URL :: ', object@source.url)
-  catNotEmpty('Binary URL :: ', object@binary.url)
-  catNotEmpty('Source format :: ', object@source.format)
-  catNotEmpty('Binary format :: ', object@binary.format)
-  catNotEmpty('Source MD5 :: ', object@source.md5)
-  catNotEmpty('Binary MD5 :: ', object@binary.md5)
+  #catNotEmpty('Source URL :: ', object@source.url)
+  #catNotEmpty('Binary URL :: ', object@binary.url)
+  #catNotEmpty('Source format :: ', object@source.format)
+  #catNotEmpty('Binary format :: ', object@binary.format)
+  #catNotEmpty('Source MD5 :: ', object@source.md5)
+  #catNotEmpty('Binary MD5 :: ', object@binary.md5)
   #cat('\n\n')
 })
   
