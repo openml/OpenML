@@ -9,9 +9,12 @@
 #' @param show.info [\code{logical(1)}]\cr 
 #'   Verbose output on console?
 #'   Default is \code{TRUE}.
-#' @return [\code{character}]. Session hash for further communication.
+#' @return [\code{character(1)}]. Session hash for further communication.
 #' @export
 authenticateUser <- function(username, password, show.info = TRUE) {
+  checkArg(username, "character", len = 1L, na.ok = FALSE)
+  checkArg(password, "character", len = 1L, na.ok = FALSE)
+  checkArg(show.info, "logical", len = 1L, na.ok = FALSE)
   file <- tempfile()
   if (show.info) {
     messagef("Authenticating user at server: %s", username)
