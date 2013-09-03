@@ -36,14 +36,18 @@
 #'    \item{\code{parameter}}{[\code{list}]\cr
 #'    The parameters of the implementation. A list contatining 
 #'    \code{\link{OpenMLImplementationParameter}s}.}
+#'    \item{\code{components}}{[\code{list}]}\cr
+#'    A list contatining \code{\link{OpenMLImplementation}s}. Typically components of a workflow or 
+#'    subfunctions of an algorithm (e.g. kernels). Components can have their own parameters.
 #'    \item{\code{source.url}}{[\code{character}]\cr
 #'    URL of the source file.}
 #'    \item{\code{binary.url}}{[\code{character}]\cr
 #'    URL of the binary file.}
-#'    \item{\code{binary.format}}{[\code{character}]\cr
-#'    Format of the binary file.}
 #'    \item{\code{source.format}}{[\code{character}]\cr
 #'    Format of the source file.}
+#'    \item{\code{binary.format}}{[\code{character}]\cr
+#'    Format of the binary file.}
+#'    
 #'    \item{\code{source.md5}}{[\code{character}]\cr
 #'    MD5 checksum to check if the source code was uploaded correctly.}
 #'    \item{\code{binary.md5}}{[\code{character}]\cr
@@ -74,9 +78,8 @@ setClass("OpenMLImplementation", representation(
   dependencies = "character",
   #FIXME add bib ref
   #bibliographical.reference = "character",
-  #FIXME add components
   parameter = "list",
-  #  components = "list",
+  components = "list",
   source.url = "character",
   binary.url = "character",
   source.format = "character",
@@ -121,8 +124,8 @@ OpenMLImplementation <- function(
   #bib.citation="",
   #bib.url = "",
   #implements = "",
-  parameter = list()
-  #components=list(),
+  parameter = list(),
+  components=list()
 ) {
   new("OpenMLImplementation",
     id = id,
@@ -148,8 +151,8 @@ OpenMLImplementation <- function(
 #    bib.citation = bib.citation,
 #    bib.url = bib.url,
 #    implements = implements,
-    parameter = parameter
-#    components = components,
+    parameter = parameter,
+    components = components
   )
 }
 
@@ -212,10 +215,10 @@ setMethod("show", "OpenMLImplementation", function(object) {
   }
   
   ## Implementation components
-  #if (length(object@components)) {
-  #  catf('\nDescription of Implementation Components ::')
-  #  for(i in 1:length(object@components)) print(object@components[i])
-  #}
+  if (length(object@components)) {
+    catf('\nDescription of Implementation Components ::')
+    print(object@components)
+  }
   
   ## The implementation source information
   catNotEmpty('Source URL :: ', object@source.url)
@@ -224,7 +227,7 @@ setMethod("show", "OpenMLImplementation", function(object) {
   catNotEmpty('Binary format :: ', object@binary.format)
   catNotEmpty('Source MD5 :: ', object@source.md5)
   catNotEmpty('Binary MD5 :: ', object@binary.md5)
-  cat('\n\n')
+  #cat('\n\n')
 })
   
 
