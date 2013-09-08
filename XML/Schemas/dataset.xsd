@@ -9,19 +9,29 @@
 <xs:complexType name="data_set_description">
 	<xs:sequence>
 		<!-- dublin core -->
-		<xs:element name="name" type="xs:string"/>  <!-- Every dataset needs a good name, not conflicting with existing datasets on the server. Name-version combinations should be unique. -->  
-		<xs:element name="version" minOccurs="0" type="xs:string"/>  <!-- Every dataset needs a version, the default is 1.0 -->
+		<xs:element name="name" type="oml:system_string"/>  <!-- Every dataset needs a good name, not conflicting with existing datasets on the server. Name-version combinations should be unique. -->  
+		<xs:element name="version" minOccurs="0" type="oml:system_string"/>  <!-- Every dataset needs a version, the default is 1.0 -->
 		<xs:element name="description" type="xs:string"/>  <!-- Description of what this dataset is about. Required!-->
-		<xs:element name="format" type="xs:string"/> <!-- Default for now will be arff. All lower case, no dot -->
-		<xs:element name="creator" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>   <!-- Optional. The persons/institutions that created the dataset. -->
-		<xs:element name="contributor" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>  <!-- Optional. Datasets can have contributors, e.g. people that reformatted the data -->
-		<xs:element name="collection_date"  minOccurs="0" type="xs:string"/>  <!-- Optional. When was this data first collected? Free format, to be read only by humans. -->
-		<xs:element name="language" minOccurs="0" type="xs:string"/> <!-- Optional. Default is English. Starts with 1 upper case latter, rest lower case -->
-		<xs:element name="licence" minOccurs="0" type="xs:string"/> <!-- Optional. Default is none, meanining Public Domain or "dont know / care" -->
+		<xs:element name="format" type="oml:simple_string"/> <!-- Default for now will be arff. All lower case, no dot -->
+		<xs:element name="creator" minOccurs="0" maxOccurs="unbounded" type="oml:simple_string"/>   <!-- Optional. The persons/institutions that created the dataset. -->
+		<xs:element name="contributor" minOccurs="0" maxOccurs="unbounded" type="oml:simple_string"/>  <!-- Optional. Datasets can have contributors, e.g. people that reformatted the data -->
+		<xs:element name="collection_date"  minOccurs="0" type="oml:simple_string"/>  <!-- Optional. When was this data first collected? Free format, to be read only by humans. -->
+		<xs:element name="language" minOccurs="0" type="oml:simple_string"/> <!-- Optional. Default is English. Starts with 1 upper case latter, rest lower case -->
+		<xs:element name="licence" minOccurs="0" type="oml:simple_string"/> <!-- Optional. Default is none, meanining Public Domain or "dont know / care" -->
 		<!-- other -->
-		<xs:element name="url" minOccurs="0" type="xs:string"/> <!-- Optional. If not set, a file needs to be provided on upload. -->
-		<xs:element name="row_id_attribute" minOccurs="0" type="xs:string"/>  <!-- Optional. The attribute that reflects the row id for each row in tabular data. If not set, we will assume that there is no row-id column and that the rows should be ordered in the order they appear in the dataset (from 0 to (n.obs - 1)) -->
-		<xs:element name="md5_checksum" minOccurs="0" maxOccurs="1" type="xs:string"/> <!-- Optional, checksum to check whether the dataset was corrupted during upload -->
+		<xs:element name="url" minOccurs="0" type="oml:simple_string"/> <!-- Optional. If not set, a file needs to be provided on upload. -->
+		<xs:element name="row_id_attribute" minOccurs="0" type="oml:simple_string"/>  <!-- Optional. The attribute that reflects the row id for each row in tabular data. If not set, we will assume that there is no row-id column and that the rows should be ordered in the order they appear in the dataset (from 0 to (n.obs - 1)) -->
+		<xs:element name="md5_checksum" minOccurs="0" maxOccurs="1" type="oml:simple_string"/> <!-- Optional, checksum to check whether the dataset was corrupted during upload -->
 	</xs:sequence>
 </xs:complexType>
+<xs:simpleType name="system_string"> <!-- Subset on xs:string. Highly restricted form of string. URL-friendly -->
+	<xs:restriction base="xs:string">
+		 <xs:pattern value="([a-zA-Z0-9_\-\.])+"/>
+	</xs:restriction>
+</xs:simpleType>
+<xs:simpleType name="simple_string"> <!-- Subset on xs:string. Moderately restricted form of string. Not URL-friendly -->
+	<xs:restriction base="xs:token">
+		 <xs:pattern value="([a-zA-Z0-9_:/~@#=\?\-\.\(\)\s&amp;])+"/>
+	</xs:restriction>
+</xs:simpleType>
 </xs:schema>

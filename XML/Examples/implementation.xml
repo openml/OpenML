@@ -1,7 +1,7 @@
 <!-- Example for a uploading an implementation -->
 
 <?xml version="1.0" encoding="UTF-8"?>
-<oml:implementation xmlns:oml="http://open-ml.org/openml">
+<oml:implementation xmlns:oml="http://openml.org/openml">
 	<oml:name>weka.J48</oml:name> 
 	<oml:version>1.2</oml:version>
 	<oml:description>Class for generating an unpruned or a pruned C4.5 decision tree.</oml:description>

@@ -1,6 +1,6 @@
 <!-- Example of a downloaded dataset -->
 
-<oml:data_set_description xmlns:oml="http://open-ml.org/openml">
+<oml:data_set_description xmlns:oml="http://openml.org/openml">
     <oml:id>1</oml:id>
     <oml:name>Iris</oml:name>
     <oml:version>1.0</oml:version>
