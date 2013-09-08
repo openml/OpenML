@@ -1,4 +1,4 @@
-<xs:schema targetNamespace="http://open-ml.org/openml" xmlns:oml="http://open-ml.org/openml" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+<xs:schema targetNamespace="http://openml.org/openml" xmlns:oml="http://openml.org/openml" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
 <xs:element name="task" type="oml:task" />
 <xs:complexType name="task">
 	<xs:sequence>

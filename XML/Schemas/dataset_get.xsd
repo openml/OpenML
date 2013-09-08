@@ -1,7 +1,7 @@
 <!-- Schema for dataset description at download-time -->
 
-<xs:schema targetNamespace="http://open-ml.org/openml"
-    xmlns:oml="http://open-ml.org/openml"
+<xs:schema targetNamespace="http://openml.org/openml"
+    xmlns:oml="http://openml.org/openml"
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
     elementFormDefault="qualified">
 <xs:element name="data_set_description" type="oml:data_set_description"/>
