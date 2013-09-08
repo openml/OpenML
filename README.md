@@ -61,7 +61,7 @@ Jump to the following scenario's:
 
 The user wants the workbench to load a specific task. A task_id is sent to the API, which will return a task file, or an error if the task is unknown.
 
-#### Service: [openml.tasks.search](http://expdb.cs.kuleuven.be/expdb/api/index.php#openml_tasks_search) 
+#### Service: [openml.tasks.search](http://expdb.cs.kuleuven.be/expdb/api/#openml_tasks_search) 
 Returns a task given a task_id. [Try it!](http://expdb.cs.kuleuven.be/expdb/api/?f=openml.tasks.search&task_id=1)
 
 #### Returned file: [Task](https://raw.github.com/joaquinvanschoren/OpenML/master/XML/Schemas/task.xsd) 
@@ -135,7 +135,7 @@ TRAIN,104,9,1
 
 Tasks contain input datasets which need to be downloaded. Sending the data_set_id to the API returns an XML file which describes the dataset (or an error if the data_set_id is unknown). It also contains a url from which the data can be downloaded directly.
 
-#### Service: [openml.data.description](http://expdb.cs.kuleuven.be/expdb/api/index.php#openml_data_description)
+#### Service: [openml.data.description](http://expdb.cs.kuleuven.be/expdb/api/#openml_data_description)
 Returns a dataset description given a data_set_id. [Try it!](http://expdb.cs.kuleuven.be/expdb/api/?f=openml.data.description&data_id=1)
 
 #### Returned file: [Data set](https://raw.github.com/joaquinvanschoren/OpenML/master/XML/Schemas/dataset_get.xsd) 
@@ -166,7 +166,7 @@ Example:
 ![implementation.get](https://raw.github.com/joaquinvanschoren/OpenML/master/Documentation/openml.implementation.get.png)
 The user wants the workbench to import a previously shared implementation. Sending the implementation_id to the API returns an XML file which describes the implementation (or an error if the implementation_id is unknown). It also contains a url from which the implementation can be downloaded directly.
 
-#### Service: [openml.implementation.get](http://expdb.cs.kuleuven.be/expdb/api/index.php#openml_implementation_get) 
+#### Service: [openml.implementation.get](http://expdb.cs.kuleuven.be/expdb/api/#openml_implementation_get) 
 Returns an implementation description given an implementation_id. [Try it!](http://expdb.cs.kuleuven.be/expdb/api/?f=openml.implementation.get&implementation_id=1)
 
 #### Returned file: [Implementation](https://raw.github.com/joaquinvanschoren/OpenML/master/XML/Schemas/implementation.xsd) 
@@ -200,7 +200,7 @@ Example:
 ![authenticate](https://raw.github.com/joaquinvanschoren/OpenML/master/Documentation/openml.authenticate.png)
 To upload data, the user first has to authenticate herself. The workbench sends the username and hashed password to the API, which will return an authentication session token, or an error if the login failed.
 
-#### Service: [openml.authenticate](http://expdb.cs.kuleuven.be/expdb/api/index.php#openml_authenticate) 
+#### Service: [openml.authenticate](http://expdb.cs.kuleuven.be/expdb/api/#openml_authenticate) 
 Given a user name and hashed password, the service return an authentication session token, or an error if the login failed.
 
 ***
@@ -209,7 +209,7 @@ Given a user name and hashed password, the service return an authentication sess
 ![data.upload](https://raw.github.com/joaquinvanschoren/OpenML/master/Documentation/openml.data.upload.png)
 The user wants to share a new dataset. Given additional information about the dataset, the workbench creates an XML file to describe the dataset, which is uploaded together with the dataset file itself.
 
-#### Service: [openml.data.upload](http://expdb.cs.kuleuven.be/expdb/api/index.php#openml_data_upload) 
+#### Service: [openml.data.upload](http://expdb.cs.kuleuven.be/expdb/api/#openml_data_upload) 
 Given an authentication token, a dataset description file and the file holding the dataset itself, the service will store the dataset and return a dataset_id. Returns an error if the authentication token is invalid (e.g., expired).
 
 #### Required file: [Data set](https://raw.github.com/joaquinvanschoren/OpenML/master/XML/Schemas/dataset.xsd) 
@@ -233,7 +233,7 @@ The file containing the dataset. This should be an ARFF file.
 ![implementation.upload](https://raw.github.com/joaquinvanschoren/OpenML/master/Documentation/openml.implementation.upload.png)
 The user wants to share a new implementation. Given additional information about the implementation, the workbench creates an XML file to describe the implementation, which is uploaded together with the implementation's source and/or binary files.
 
-#### Service: [openml.implementation.upload](http://expdb.cs.kuleuven.be/expdb/api/index.php#openml_implementation_upload)
+#### Service: [openml.implementation.upload](http://expdb.cs.kuleuven.be/expdb/api/#openml_implementation_upload)
 Given an authentication token, an implementation description file and the file holding the implementation source and/or binary, the service will store the implementation and return an implementation_id. This id will be generated based on the implementation name and version, if given. An error is returned if the authentication token is invalid (e.g., expired), or if a name/version combination has been given that is not unique.
 
 #### Required file: [Implementation](https://raw.github.com/joaquinvanschoren/OpenML/master/XML/Schemas/implementation_upload.xsd) 
@@ -259,7 +259,7 @@ A file containing the implementation source code. Will often be a ZIP file.
 ![run.upload](https://raw.github.com/joaquinvanschoren/OpenML/master/Documentation/openml.run.upload.png)
 The users wants to share a run of his implementation on a given machine learning task. The workbench creates an XML file to describe the run, which is uploaded together with any result files generated by the run. Optionally, parameter variations can be added to the run description.
 
-#### Service: [openml.run.upload](http://expdb.cs.kuleuven.be/expdb/api/index.php#openml_run_upload) 
+#### Service: [openml.run.upload](http://expdb.cs.kuleuven.be/expdb/api/#openml_run_upload) 
 Given an authentication token, an run description file and any result files required for the task, the service will store the results and return a response depending on the task type. An error is returned if the authentication token is invalid, or if the given task_id or implementation_id are unknown.
 
 #### Required file: [Run](https://raw.github.com/joaquinvanschoren/OpenML/master/XML/Schemas/run.xsd) 
@@ -315,5 +315,5 @@ Example:
 ![implementation.check](https://raw.github.com/joaquinvanschoren/OpenML/master/Documentation/openml.implementation.check.png)
 The workbench wants to check whether an implementation with the given id is already registered.
 
-#### Service: [openml.implementation.check](http://expdb.cs.kuleuven.be/expdb/api/index.php#openml_implementation_check) 
+#### Service: [openml.implementation.check](http://expdb.cs.kuleuven.be/expdb/api/#openml_implementation_check) 
 Returns 'registered' if an implementation with the given id exists in the database, 'unregistered' otherwise.
