@@ -1,27 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <oml:implementation xmlns:oml="http://openml.org/openml">
 	<oml:name>knime.janvanrijn.solveTaskA</oml:name>
-	<oml:version>1.3.0</oml:version> 
+	<oml:version>1.4.0</oml:version> 
+	<oml:description>Solving task A in an ingenious way</oml:description> 
 	<oml:creator>Jan N. van Rijn</oml:creator>
 	<oml:creator>Bo Gao</oml:creator>
 	<oml:contributor>Joaquin Vanschoren</oml:contributor>
 	<oml:contributor>Patrick Winter</oml:contributor>
 	<oml:licence>public domain</oml:licence>
-	<oml:language>English</oml:language>
-	<oml:description>Solving task A in an ingenious way</oml:description>  
+	<oml:language>English</oml:language> 
 	<oml:full_description>Solving task A in an ingenious way</oml:full_description>
 	<oml:installation_notes>Download and run 'make install'</oml:installation_notes>
 	<oml:dependencies>KNIME 2.7.1</oml:dependencies>
-	<oml:bibliographical_reference>
-		<oml:citation>free form</oml:citation>
-		<oml:url>www.janvanrijn.eu/taskA</oml:url>
+  <oml:bibliographical_reference>
+		<oml:citation>yet another article</oml:citation>
+		<oml:url>www.janvanrijn.eu/implementations</oml:url>
 	</oml:bibliographical_reference>
+  <oml:parameter>
+		<oml:name>A</oml:name>
+		<oml:data_type>complex datastructure</oml:data_type>
+		<oml:default_value>-inf</oml:default_value>
+		<oml:description>type complex datastructure question mark</oml:description>
+	</oml:parameter>
 	<oml:components>
 		<oml:implementation>
 			<oml:name>knime.algorithmA</oml:name>
-			<oml:version>4.0</oml:version>
+			<oml:version>4.1</oml:version>
 			<oml:description>Implementation of SVM</oml:description>
 			<oml:dependencies>KNIME 2.7.1</oml:dependencies>
+	    <oml:bibliographical_reference>
+		    <oml:citation>free form</oml:citation>
+		    <oml:url>www.janvanrijn.eu/taskA</oml:url>
+	    </oml:bibliographical_reference>
 			<oml:parameter>
 				<oml:name>C</oml:name>
 				<oml:data_type>float</oml:data_type>
@@ -32,7 +42,7 @@
 	</oml:components>
 </oml:implementation>
 
-<!-- Minimal example -->
+<!-- Minimal example 
 <oml:implementation xmlns:oml="http://open-ml.org/openml">
 	<oml:description>Solving task A in an ingenious way</oml:description>
-</oml:implementation>
+</oml:implementation> -->
