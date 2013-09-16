@@ -1,0 +1,28 @@
+\begin{thebibliography}{1}
+\providecommand{\url}[1]{\texttt{#1}}
+\providecommand{\urlprefix}{URL }
+
+\bibitem{Hand2006}
+Hand, D.: Classifier technology and the illusion of progress. Statistical
+  Science  (Jan 2006)
+
+\bibitem{Hirsh2008}
+Hirsh, H.: Data mining research: Current status and future opportunities.
+  Statistical Analysis and Data Mining  1(2),  104--107 (Jan 2008)
+
+\bibitem{Nielsen2008}
+Nielsen, M.: The future of science: Building a better collective memory. APS
+  Physics  17(10) (2008)
+
+\bibitem{Peng2002}
+Peng, Y., Flach, P., Soares, C., Brazdil, P.: Improved dataset characterisation
+  for meta-learning. Lecture Notes in Computer Science  2534,  141--152 (Jan
+  2002)
+
+\bibitem{Vanschoren2012}
+Vanschoren, J., Blockeel, H., Pfahringer, B., Holmes, G.: Experiment databases.
+  {A} new way to share, organize and learn from experiments. Machine Learning
+  87(2),  127--158 (2012),
+  \url{https://lirias.kuleuven.be/handle/123456789/297378}
+
+\end{thebibliography}
