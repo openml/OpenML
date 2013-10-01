@@ -40,32 +40,48 @@ public class EvaluatePredictions {
 	}
 	
 	public EvaluatePredictions( String datasetPath, String splitsPath, String predictionsPath, String classAttribute ) throws Exception {
-		
+		// set all arff files needed for this operation. 
 		dataset 	= new Instances( new BufferedReader( Input.getURL( datasetPath ) ) );
 		splits 		= new Instances( new BufferedReader( Input.getURL( splitsPath ) ) );
 		predictions = new Instances( new BufferedReader( Input.getURL( predictionsPath ) ) ); 
 		
+		// initiate a class that will help us with checking the prediction count. 
 		predictionCounter = new PredictionCounter(splits);
 		
-		ATT_PREDICTION_ROWID = predictions.attribute("row_id").index();
-		ATT_PREDICTION_REPEAT = predictions.attribute("repeat").index();
-		ATT_PREDICTION_FOLD = predictions.attribute("fold").index();
-		
+		// Set class attribute to dataset ...
 		for( int i = 0; i < dataset.numAttributes(); i++ ) {
 			if( dataset.attribute( i ).name().equals( classAttribute ) )
 				dataset.setClass( dataset.attribute( i ) );
 		}
-		
+
+		// ... and throw an error if we failed to do so ... 
 		if( dataset.classIndex() < 0 ) { 
 			throw new RuntimeException( "Class attribute ("+classAttribute+") not found" );
 		}
-		
+		// ... and specify which task we are doing. classification or regression. 
 		if( dataset.classAttribute().isNominal() ) { 
 			task = Task.CLASSIFICATION;
 		} else {
 			task = Task.REGRESSION;
 		}
 		
+		// first check if the fields are present.
+		if(predictions.attribute("row_id") == null) 
+			throw new RuntimeException("Predictions file lacks attribute row_id");
+		if(predictions.attribute("fold") == null && predictions.attribute("repeat_nr") == null) 
+			throw new RuntimeException("Predictions file lacks attribute fold");
+		if(predictions.attribute("repeat") == null && predictions.attribute("repeat_nr") == null) 
+			throw new RuntimeException("Predictions file lacks attribute repeat");
+		
+		// and add those fields. 
+		ATT_PREDICTION_ROWID = predictions.attribute("row_id").index();
+		ATT_PREDICTION_REPEAT = (predictions.attribute("repeat") != null) ? 
+				predictions.attribute("repeat").index() : predictions.attribute("repeat_nr").index();
+		ATT_PREDICTION_FOLD = (predictions.attribute("fold") != null) ? 
+				predictions.attribute("fold").index() : predictions.attribute("fold_nr").index();
+		
+		// do the same for the confidence fields. This number is dependent on the number 
+		// of classes in the data set, hence the for-loop. 
 		nrOfClasses = dataset.classAttribute().numValues();
 		classes = new String[nrOfClasses];
 		ATT_PREDICTION_CONFIDENCE = new int[nrOfClasses];
@@ -78,6 +94,11 @@ public class EvaluatePredictions {
 				throw new RuntimeException( "Attribute " + attribute + " not found among predictions. " );
 		}
 		
+		// and do the actual evaluation. 
+		doEvaluation();
+	}
+	
+	private void doEvaluation() throws Exception {
 		Evaluation e = new Evaluation( dataset );
 		
 		for( int i = 0; i < predictions.numInstances(); i++ ) {
