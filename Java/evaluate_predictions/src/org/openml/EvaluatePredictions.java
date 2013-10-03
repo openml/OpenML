@@ -26,16 +26,16 @@ public class EvaluatePredictions {
 	private final String[] classes;
 	private final Task task;
 	
-	public static void main( String[] args ) throws Exception {
+	public static void main( String[] args ) {
 		
 		try {
 			if( args.length != 4 ) {
-				System.out.println( Output.styleToJson("error", "Wrong number of arguments for Java program", true) );
+				System.out.println( Output.styleToJsonError("Wrong number of arguments for Java program") );
 			} else {
 				new EvaluatePredictions( args[0], args[1], args[2], args[3] );
 			}
 		} catch( Exception e ) {
-			System.out.println( Output.styleToJson("error", e.getMessage(), true) );
+			System.out.println( Output.styleToJsonError(e.getMessage()) );
 		}
 	}
 	
@@ -131,9 +131,9 @@ public class EvaluatePredictions {
 	
 	private void output( Evaluation e, Task task ) throws Exception {
 		if( task == Task.CLASSIFICATION ) {
-			System.out.println( "{\n\"metrices\": [\n" + Output.globalMetrics( e ) + Output.classificationMetrics( e ) + "]\n}" );
+			System.out.println( "{\n\"metrices\": [\n" + Output.globalMetrics( e, classes.length ) + Output.classificationMetrics( e, classes.length ) + "]\n}" );
 		} else if( task == Task.REGRESSION ) {
-			System.out.println( "{\n\"metrices\": [\n" + Output.globalMetrics( e ) + Output.regressionMetrics( e ) + "]\n}" );
+			System.out.println( "{\n\"metrices\": [\n" + Output.globalMetrics( e, classes.length ) + Output.regressionMetrics( e, classes.length ) + "]\n}" );
 		} else {
 			throw new RuntimeException( "Task not defined" );
 		}
