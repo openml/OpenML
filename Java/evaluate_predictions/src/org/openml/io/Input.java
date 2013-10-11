@@ -14,4 +14,11 @@ public class Input {
 		urlConnection.setReadTimeout(30000);
 		return new InputStreamReader( urlConnection.getInputStream() );
 	}
+	
+	public static String filename( String sUrl ) {
+		if(sUrl.substring(sUrl.lastIndexOf('/') + 1).contains(".") == false ) {
+			return sUrl.substring( sUrl.lastIndexOf('/') + 1 );
+		}
+		return sUrl.substring( sUrl.lastIndexOf('/') + 1, sUrl.lastIndexOf('.') - 1 );
+	}
 }
