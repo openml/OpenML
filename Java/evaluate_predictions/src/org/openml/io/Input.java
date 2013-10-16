@@ -1,5 +1,7 @@
 package org.openml.io;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -15,10 +17,14 @@ public class Input {
 		return new InputStreamReader( urlConnection.getInputStream() );
 	}
 	
+	public static InputStreamReader getFile( String filename ) throws IOException {
+		return new InputStreamReader( new FileInputStream( new File( filename ) ) );
+	}
+	
 	public static String filename( String sUrl ) {
 		if(sUrl.substring(sUrl.lastIndexOf('/') + 1).contains(".") == false ) {
 			return sUrl.substring( sUrl.lastIndexOf('/') + 1 );
 		}
-		return sUrl.substring( sUrl.lastIndexOf('/') + 1, sUrl.lastIndexOf('.') - 1 );
+		return sUrl.substring( sUrl.lastIndexOf('/') + 1, sUrl.lastIndexOf('.') );
 	}
 }

@@ -22,11 +22,16 @@ public class PredictionCounter {
 	
 	private final ArrayList<Integer>[][] expected;
 	private final ArrayList<Integer>[][] actual;
+	private int expectedTotal;
 	
 	private String error_message;
 	
-	@SuppressWarnings("unchecked")
 	public PredictionCounter( Instances splits ) {
+		this(splits,"TEST");
+	}
+	
+	@SuppressWarnings("unchecked")
+	public PredictionCounter( Instances splits, String type ) {
 		ATT_SPLITS_TYPE = splits.attribute("type").index();
 		ATT_SPLITS_ROWID = splits.attribute("rowid").index();
 		ATT_SPLITS_REPEAT = splits.attribute("repeat").index();
@@ -37,7 +42,8 @@ public class PredictionCounter {
 
 		NR_OF_REPEATS = (int) repeatStats.numericStats.max + 1;
 		NR_OF_FOLDS = (int) foldStats.numericStats.max + 1;
-		
+
+		expectedTotal = 0;
 		expected = new ArrayList[NR_OF_REPEATS][NR_OF_FOLDS];
 		actual   = new ArrayList[NR_OF_REPEATS][NR_OF_FOLDS];
 		for( int i = 0; i < NR_OF_REPEATS; i++ ) for( int j = 0; j < NR_OF_FOLDS; j++ ) {
@@ -47,12 +53,12 @@ public class PredictionCounter {
 		
 		for( int i = 0; i < splits.numInstances(); i++ ) {
 			Instance instance = splits.instance( i );
-			if( instance.value( ATT_SPLITS_TYPE ) == splits.attribute( ATT_SPLITS_TYPE ).indexOfValue("TEST") ) {
+			if( instance.value( ATT_SPLITS_TYPE ) == splits.attribute( ATT_SPLITS_TYPE ).indexOfValue(type) ) {
 				int repeat = (int) instance.value( ATT_SPLITS_REPEAT );
 				int fold   = (int) instance.value( ATT_SPLITS_FOLD );
-				int rowidIndex  = (int) instance.value( ATT_SPLITS_ROWID );
-				int rowid = Integer.parseInt(splits.attribute( ATT_SPLITS_ROWID ).value(rowidIndex));
+				int rowid  = (int) instance.value( ATT_SPLITS_ROWID );
 				expected[repeat][fold].add( rowid );
+				expectedTotal++;
 			}
 		}
 		
@@ -87,6 +93,10 @@ public class PredictionCounter {
 		return true;
 	}
 	
+	public ArrayList<Integer> getExpectedRowids(int i, int j) {
+		return expected[i][j];
+	}
+	
 	public String getErrorMessage() {
 		return error_message;
 	}
@@ -97,5 +107,9 @@ public class PredictionCounter {
 	
 	public int getFolds() {
 		return NR_OF_FOLDS;
+	}
+	
+	public int getExpectedTotal() {
+		return expectedTotal;
 	}
 }

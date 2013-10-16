@@ -19,7 +19,7 @@ public class ArffMapping {
 		Attribute type = new Attribute("type",att_type_values);
 		Attribute rowid = new Attribute("rowid");
 		Attribute fold = new Attribute("fold");
-		Attribute repeat = new Attribute("fold");
+		Attribute repeat = new Attribute("repeat");
 		
 		attributes.addElement(type);
 		attributes.addElement(rowid);
@@ -31,12 +31,12 @@ public class ArffMapping {
 		return attributes;
 	}
 	
-	public Instance createInstance( boolean train, double rowid, int repeat, int fold ) {
+	public Instance createInstance( boolean train, int rowid, int repeat, int fold ) {
 		Instance instance = new Instance(4);
-		instance.setValue((Attribute)attributes.elementAt(0), train ? 1.0 : 0.0 );
+		instance.setValue((Attribute)attributes.elementAt(0), train ? 0.0 : 1.0 );
 		instance.setValue((Attribute)attributes.elementAt(1), rowid );
-		instance.setValue((Attribute)attributes.elementAt(1), repeat );
-		instance.setValue((Attribute)attributes.elementAt(1), fold );
+		instance.setValue((Attribute)attributes.elementAt(2), repeat );
+		instance.setValue((Attribute)attributes.elementAt(3), fold );
 		
 		return instance;
 	}

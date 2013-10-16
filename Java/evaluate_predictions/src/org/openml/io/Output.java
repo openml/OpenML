@@ -1,10 +1,17 @@
 package org.openml.io;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.Map;
 
 import org.openml.evaluate.Task;
 
 import weka.classifiers.Evaluation;
+import weka.core.Instances;
 
 public class Output {
 	
@@ -76,5 +83,9 @@ public class Output {
 			sb.append( ",\"" + key + "\":\"" + key_values.get(key) + "\"" );
 		}
 		return "{" + sb.toString().substring( 1 ) + "}";
+	}
+	
+	public static void instanes2file( Instances instances, String filepath ) throws IOException {
+		
 	}
 }

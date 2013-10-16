@@ -6,6 +6,7 @@ import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Options;
 import org.openml.evaluate.EvaluatePredictions;
 import org.openml.features.ExtractFeatures;
+import org.openml.generatefolds.GenerateFolds;
 import org.openml.io.Output;
 
 public class Main {
@@ -19,6 +20,8 @@ public class Main {
 		options.addOption("c", true, "The target class");
 		options.addOption("s", true, "The splitfile used");
 		options.addOption("p", true, "The prediction file used");
+		options.addOption("e", true, "The evaluation method");
+		options.addOption("o", true, "The output file");
 		
 		CommandLine cli;
 		try {
@@ -40,10 +43,16 @@ public class Main {
 						System.out.println( Output.styleToJsonError("Missing arguments for function 'data_features'. Need d (url to dataset). ") );
 					}
 				} else if( function.equals("generate_folds") ) {
-					if( cli.hasOption("-d") == true && cli.hasOption("o") == true && cli.hasOption("e") ) {
-						
+					if( cli.hasOption("-d") == true && cli.hasOption("o") == true && cli.hasOption("e") && cli.hasOption("c") ) {
+						new GenerateFolds(
+								cli.getOptionValue("d"), 
+								cli.getOptionValue("o"), 
+								cli.getOptionValue("e"), 
+								cli.getOptionValue("c"), 
+								"", 
+								0);
 					} else {
-						System.out.println( Output.styleToJsonError("Missing arguments for function 'generate_folds'. Need d (url to dataset), o (output file) and e (evaluation_method, {cv_{repeats}_{folds},holdout_{repeats}_{percentage},leave_one_out}). ") );
+						System.out.println( Output.styleToJsonError("Missing arguments for function 'generate_folds'. Need d (url to dataset), c (target feature), o (output file) and e (evaluation_method, {cv_{repeats}_{folds},holdout_{repeats}_{percentage},leave_one_out}). ") );
 					}
 				} else {
 					System.out.println( Output.styleToJsonError("call to unknown function: " + function) );
