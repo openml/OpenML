@@ -17,6 +17,7 @@ public class EvaluatePredictions {
 	private final int ATT_PREDICTION_ROWID;
 	private final int ATT_PREDICTION_FOLD;
 	private final int ATT_PREDICTION_REPEAT;
+	private final int ATT_PREDICTION_PREDICTION;
 	private final int[] ATT_PREDICTION_CONFIDENCE;
 	
 	private final Instances dataset;
@@ -69,6 +70,7 @@ public class EvaluatePredictions {
 				predictions.attribute("repeat").index() : predictions.attribute("repeat_nr").index();
 		ATT_PREDICTION_FOLD = (predictions.attribute("fold") != null) ? 
 				predictions.attribute("fold").index() : predictions.attribute("fold_nr").index();
+		ATT_PREDICTION_PREDICTION = predictions.attribute("prediction").index();
 		
 		// do the same for the confidence fields. This number is dependent on the number 
 		// of classes in the data set, hence the for-loop. 
@@ -106,12 +108,22 @@ public class EvaluatePredictions {
 			if( dataset.numInstances() <= rowid ) {
 				throw new RuntimeException( "Making a prediction for row_id" + rowid + " (0-based) while dataset has only " + dataset.numInstances() + " instances. " );
 			}
-			e.evaluateModelOnce( 
-				confidences( dataset, prediction ), 
-				dataset.instance( rowid ) );
-			foldEvaluation[repeat][fold].evaluateModelOnce(
-				confidences( dataset, prediction ), 
-				dataset.instance( rowid ) );
+			
+			if(task == Task.CLASSIFICATION) {
+				e.evaluateModelOnce( 
+					confidences( dataset, prediction ), 
+					dataset.instance( rowid ) );
+				foldEvaluation[repeat][fold].evaluateModelOnce(
+					confidences( dataset, prediction ), 
+					dataset.instance( rowid ) );
+			} else {
+				e.evaluateModelOnce( 
+					prediction.value( ATT_PREDICTION_PREDICTION ), 
+					dataset.instance( rowid ) );
+				foldEvaluation[repeat][fold].evaluateModelOnce(
+					prediction.value( ATT_PREDICTION_PREDICTION ), 
+					dataset.instance( rowid ) );
+			}
 		}
 		
 		if( predictionCounter.check() ) {

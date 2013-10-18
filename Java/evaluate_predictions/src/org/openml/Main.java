@@ -22,6 +22,7 @@ public class Main {
 		options.addOption("p", true, "The prediction file used");
 		options.addOption("e", true, "The evaluation method");
 		options.addOption("o", true, "The output file");
+		options.addOption("r", true, "The rowid");
 		
 		CommandLine cli;
 		try {
@@ -34,7 +35,7 @@ public class Main {
 						new EvaluatePredictions( cli.getOptionValue("d"), cli.getOptionValue("s"), cli.getOptionValue("p"), cli.getOptionValue("c") );
 
 					} else {
-						System.out.println( Output.styleToJsonError("Missing arguments for function 'evaluate_predictions'. Need d (url to dataset), c (string target feature), s (url to splits file) and p (url to predictions file). ") );
+						System.out.println( Output.styleToJsonError("Missing arguments for function 'evaluate_predictions'. Need d (url to dataset), c (string target feature), s (url to splits file), and p (url to predictions file). ") );
 					}
 				} else if( function.equals("data_features") ) {
 					if( cli.hasOption("-d") == true ) {
@@ -43,16 +44,20 @@ public class Main {
 						System.out.println( Output.styleToJsonError("Missing arguments for function 'data_features'. Need d (url to dataset). ") );
 					}
 				} else if( function.equals("generate_folds") ) {
-					if( cli.hasOption("-d") == true && cli.hasOption("o") == true && cli.hasOption("e") && cli.hasOption("c") ) {
-						new GenerateFolds(
+					if( cli.hasOption("-d") && cli.hasOption("e") && cli.hasOption("c") && cli.hasOption("r") ) {
+						GenerateFolds gf = new GenerateFolds(
 								cli.getOptionValue("d"), 
-								cli.getOptionValue("o"), 
 								cli.getOptionValue("e"), 
 								cli.getOptionValue("c"), 
-								"", 
+								cli.getOptionValue("r"), 
 								0);
+						if(cli.hasOption("o") == true) {
+							gf.toFile(cli.getOptionValue("o"));
+						} else {
+							gf.toStdout();
+						}
 					} else {
-						System.out.println( Output.styleToJsonError("Missing arguments for function 'generate_folds'. Need d (url to dataset), c (target feature), o (output file) and e (evaluation_method, {cv_{repeats}_{folds},holdout_{repeats}_{percentage},leave_one_out}). ") );
+						System.out.println( Output.styleToJsonError("Missing arguments for function 'generate_folds'. Need d (url to dataset), c (target feature), e (evaluation_method, {cv_{repeats}_{folds},holdout_{repeats}_{percentage},leave_one_out}), and r (row_id, textual). ") );
 					}
 				} else {
 					System.out.println( Output.styleToJsonError("call to unknown function: " + function) );

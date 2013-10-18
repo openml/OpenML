@@ -56,7 +56,7 @@ public class PredictionCounter {
 			if( instance.value( ATT_SPLITS_TYPE ) == splits.attribute( ATT_SPLITS_TYPE ).indexOfValue(type) ) {
 				int repeat = (int) instance.value( ATT_SPLITS_REPEAT );
 				int fold   = (int) instance.value( ATT_SPLITS_FOLD );
-				int rowid  = (int) instance.value( ATT_SPLITS_ROWID );
+				int rowid  = (int) instance.value( ATT_SPLITS_ROWID ); //TODO: maybe we need instance.stringValue() ...
 				expected[repeat][fold].add( rowid );
 				expectedTotal++;
 			}

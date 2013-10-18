@@ -1,11 +1,8 @@
 package org.openml.io;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.StringReader;
 import java.util.Map;
 
 import org.openml.evaluate.Task;
@@ -86,6 +83,16 @@ public class Output {
 	}
 	
 	public static void instanes2file( Instances instances, String filepath ) throws IOException {
-		
+		BufferedWriter bw = new BufferedWriter(new FileWriter(filepath));
+		// Important: We can not use a std Instances.toString() approach, as instance files can grow
+		bw.write("@relation " + instances.relationName() + "\n\n");
+		for( int i = 0; i < instances.numAttributes(); ++i ) {
+			bw.write( instances.attribute(i) + "\n" );
+		}
+		bw.write("\n@data\n");
+		for( int i = 0; i < instances.numInstances(); ++i ) {
+			bw.write( instances.instance(i) + "\n" );
+		}
+		bw.close();
 	}
 }

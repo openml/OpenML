@@ -7,7 +7,7 @@ import weka.core.Instances;
 public class EvaluationMethod {
 
 	public static enum EvaluationMethods {CROSSVALIDATION, LEAVEONEOUT, HOLDOUT}
-	public final static String[] evaluationMethods = {"cv","leaveoneout","holdout"};
+	public final static String[] evaluationMethods = {"crossvalidation","leaveoneout","holdout"};
 	
 	private final EvaluationMethods em;
 	private final int arg1;

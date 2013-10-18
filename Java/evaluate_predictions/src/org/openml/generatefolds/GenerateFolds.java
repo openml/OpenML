@@ -1,32 +1,31 @@
 package org.openml.generatefolds;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Random;
 
 import org.openml.io.Input;
+import org.openml.io.Output;
 
 import weka.core.Attribute;
 import weka.core.Instances;
 
 public class GenerateFolds {
-
+	public static final int MAX_SPLITS_SIZE = 1000000;
+	
 	private final Instances dataset;
 	private final Instances splits;
 	private final String splits_name;
 	private final Integer splits_size;
-	private final BufferedWriter bw;
 	
 	private final EvaluationMethod evaluationMethod;
 	
 	private final ArffMapping am;
 	private final Random rand;
 	
-	public GenerateFolds( String datasetPath, String splitsPath, String evaluation, String targetFeature, String rowid, int seed ) throws Exception {
+	public GenerateFolds( String datasetPath, String evaluation, String targetFeature, String rowid, int seed ) throws Exception {
 		am = new ArffMapping();
 		rand = new Random(seed);
-		bw = new BufferedWriter(new FileWriter(splitsPath));
 		
 		dataset = new Instances( new BufferedReader( Input.getURL( datasetPath ) ) );
 		evaluationMethod = new EvaluationMethod(evaluation,dataset);
@@ -36,16 +35,23 @@ public class GenerateFolds {
 		splits_name = Input.filename( datasetPath ) + "_splits";
 		splits_size = evaluationMethod.getSplitsSize(dataset);
 		
+		if(splits_size > MAX_SPLITS_SIZE)
+			throw new RuntimeException("Dataset to big for this type of evaluation method. ");
+		
 		if(rowid.equals("")) {
 			rowid = "rowid";
 			addRowId(dataset,rowid);
 		}
 		
 		splits = generateInstances(splits_name);
-		
-		bw.append(splits.toString());
-		bw.close();
-		
+	}
+	
+	public void toFile( String splitsPath ) throws IOException {
+		Output.instanes2file(splits, splitsPath);
+	}
+	
+	public void toStdout() {
+		System.out.println(splits.toString());
 	}
 	
 	private Instances generateInstances(String name) {
