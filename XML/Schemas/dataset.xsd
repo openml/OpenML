@@ -24,6 +24,7 @@
 		<xs:element name="licence" minOccurs="0" type="xs:string"/> <!-- Licence of the data. If not there, means: Public Domain or "dont know / care" -->
 		<!-- other -->
 		<xs:element name="url" minOccurs="0" type="xs:string"/> <!-- Valid URL, points to actual data file, on the OpenML server or another dataset repository. If not present, it will be added by the server. -->
+		<xs:element name="default_target_attribute" minOccurs="0" type="xs:string"/>  <!-- The default target attribute. Off course, tasks can be defined that use another attribute as target -->  
 		<xs:element name="row_id_attribute" minOccurs="0" type="xs:string"/>  <!-- The attribute that represents the row-id column, if present in the dataset. If not set, the tool should create a string rowid from 0 to (n.obs - 1). This is what is then used in the data splits object. If set, it should of course be excluded in modeling -->  
  		<xs:element name="md5_checksum" minOccurs="0" type="xs:string"/> <!-- MD5 checksum to check if the dataset is downloaded without corruption. -->
 	</xs:sequence>
