@@ -39,7 +39,9 @@ public class Main {
 					}
 				} else if( function.equals("data_features") ) {
 					if( cli.hasOption("-d") == true ) {
-						new ExtractFeatures( cli.getOptionValue("d") );
+						String default_class = null;
+						if( cli.hasOption("-c") == true ) default_class = cli.getOptionValue("c");
+						new ExtractFeatures( cli.getOptionValue("d"), default_class );
 					} else {
 						System.out.println( Output.styleToJsonError("Missing arguments for function 'data_features'. Need d (url to dataset). ") );
 					}
