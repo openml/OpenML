@@ -5,6 +5,7 @@ import java.io.BufferedReader;
 import org.apache.commons.lang3.StringUtils;
 import org.openml.io.Input;
 import org.openml.io.Output;
+import org.openml.models.ConfusionMatrix;
 
 import weka.classifiers.Evaluation;
 import weka.core.Instance;
@@ -92,11 +93,16 @@ public class EvaluatePredictions {
 	
 	private void doEvaluation() throws Exception {
 		// set global evaluation
+		ConfusionMatrix cm;
 		Evaluation e = new Evaluation( dataset );
+		
+		
 		// set local evaluations
 		for( int i = 0; i < foldEvaluation.length; ++i ) 
 			for( int j = 0; j < foldEvaluation[i].length; ++j )
 				foldEvaluation[i][j] = new Evaluation(dataset);
+		// init confusion matrix
+		cm = new ConfusionMatrix( task == Task.CLASSIFICATION ? dataset.classAttribute().numValues() : 0 );
 		
 		for( int i = 0; i < predictions.numInstances(); i++ ) {
 			Instance prediction = predictions.instance( i );
@@ -110,14 +116,15 @@ public class EvaluatePredictions {
 			}
 			
 			if(task == Task.CLASSIFICATION) {
-				e.evaluateModelOnce( 
+				e.evaluateModelOnce(
 					confidences( dataset, prediction ), 
 					dataset.instance( rowid ) );
 				foldEvaluation[repeat][fold].evaluateModelOnce(
 					confidences( dataset, prediction ), 
 					dataset.instance( rowid ) );
+				cm.add(dataset.instance( rowid ).classValue(), prediction.value(ATT_PREDICTION_PREDICTION));
 			} else {
-				e.evaluateModelOnce( 
+				e.evaluateModelOnce(
 					prediction.value( ATT_PREDICTION_PREDICTION ), 
 					dataset.instance( rowid ) );
 				foldEvaluation[repeat][fold].evaluateModelOnce(
@@ -127,7 +134,7 @@ public class EvaluatePredictions {
 		}
 		
 		if( predictionCounter.check() ) {
-			output( e, task );
+			output( e, cm, task );
 		} else {
 			throw new RuntimeException( "Prediction count does not match: " + predictionCounter.getErrorMessage() );
 		}
@@ -141,9 +148,10 @@ public class EvaluatePredictions {
 		return confidences;
 	}
 	
-	private void output( Evaluation e, Task task ) throws Exception {
+	private void output( Evaluation e, ConfusionMatrix cm, Task task ) throws Exception {
 		if( task == Task.CLASSIFICATION || task == Task.REGRESSION ) {
 			String globalMetrics = Output.printMetrics(e, nrOfClasses, task);
+			String confusionMatrix = Output.confusionMatrixToJson(cm);
 			String foldMetrics = "";
 			
 			String[] metricsPerRepeat = new String[predictionCounter.getRepeats()];
@@ -152,12 +160,16 @@ public class EvaluatePredictions {
 				for( int j = 0; j < metricsPerFold.length; j++ ) {
 					metricsPerFold[j] = Output.printMetrics(foldEvaluation[i][j], nrOfClasses, task);
 				}
-				metricsPerRepeat[i] = "[" + StringUtils.join( metricsPerFold, ",") + "]";
+				metricsPerRepeat[i] = "[" + StringUtils.join( metricsPerFold, "],\n[") + "]";
 			}
-			foldMetrics = "[" + StringUtils.join( metricsPerRepeat, ",") + "]";
+			foldMetrics = "[" + StringUtils.join( metricsPerRepeat, "],\n\n[") + "]";
+			
 			
 			System.out.println(
 				"{\n" + 
+					"\"confusion_matrix\":[\n" +
+						confusionMatrix +
+					"],\n" +
 					"\"global_metrices\":[\n" +
 						globalMetrics +
 					"],\n" +
@@ -170,5 +182,4 @@ public class EvaluatePredictions {
 			throw new RuntimeException( "Task not defined" );
 		}
 	}
-	
 }

@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import org.openml.io.Input;
+import org.openml.models.DataFeature;
+import org.openml.models.DataQuality;
 
 import weka.core.Attribute;
 import weka.core.AttributeStats;

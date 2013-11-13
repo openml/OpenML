@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.openml.evaluate.Task;
+import org.openml.models.ConfusionMatrix;
 
 import weka.classifiers.Evaluation;
 import weka.core.Instances;
@@ -94,5 +95,17 @@ public class Output {
 			bw.write( instances.instance(i) + "\n" );
 		}
 		bw.close();
+	}
+	
+	public static String confusionMatrixToJson( ConfusionMatrix cm ) {
+		StringBuilder sb = new StringBuilder();
+		
+		for( int i = 0; i < cm.size(); ++i ) {
+			for( int j = 0; j < cm.size(); ++j ) {
+				sb.append( ",{\"actual\":"+i+",\"predicted\":"+j+",\"count\":"+cm.get(i,j)+"}\n" );
+			}
+		}
+		
+		return sb.toString().substring(1);
 	}
 }
