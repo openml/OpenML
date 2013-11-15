@@ -36,6 +36,7 @@
     <xs:sequence>
       <xs:element name="did" minOccurs="0" type="xs:integer"/> <!-- A reference to the dataset table, by did. Ignored when uploading -->
       <xs:element name="name" type="xs:string"/> <!-- A reference to the math_function that was used -->
+      <xs:element name="implementation" type="xs:string"/> <!-- A reference to the implementation table entry (implementing this specific math function) -->
       <xs:element name="value" type="xs:decimal"/> <!-- The result of the math_function. (Sidenote: If you sumbit values of math_functions that are also run on line, it will be used to test whether the outcome is similar.) -->
     </xs:sequence>
   </xs:complexType>
