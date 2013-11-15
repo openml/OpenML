@@ -1,11 +1,14 @@
 package org.openml.evaluate;
 
 import java.io.BufferedReader;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openml.io.Input;
 import org.openml.io.Output;
 import org.openml.models.ConfusionMatrix;
+import org.openml.models.Metric;
+import org.openml.models.MetricCollector;
 
 import weka.classifiers.Evaluation;
 import weka.core.Instance;
@@ -150,20 +153,27 @@ public class EvaluatePredictions {
 	
 	private void output( Evaluation e, ConfusionMatrix cm, Task task ) throws Exception {
 		if( task == Task.CLASSIFICATION || task == Task.REGRESSION ) {
-			String globalMetrics = Output.printMetrics(e, nrOfClasses, task);
-			String confusionMatrix = Output.confusionMatrixToJson(cm);
+			Map<Metric, Double> metrics = Output.evaluatorToMap(e, nrOfClasses, task);
+			MetricCollector population = new MetricCollector();
+			
+			String globalMetrics = "";
+			String confusionMatrix = "";
 			String foldMetrics = "";
 			
 			String[] metricsPerRepeat = new String[predictionCounter.getRepeats()];
 			for(int i = 0; i < metricsPerRepeat.length; ++i ) {
 				String[] metricsPerFold = new String[predictionCounter.getFolds()];
 				for( int j = 0; j < metricsPerFold.length; j++ ) {
-					metricsPerFold[j] = Output.printMetrics(foldEvaluation[i][j], nrOfClasses, task);
+					Map<Metric, Double> localMetrics = Output.evaluatorToMap(foldEvaluation[i][j], nrOfClasses, task);
+					population.add(localMetrics);
+					metricsPerFold[j] = Output.printMetrics(localMetrics);
 				}
 				metricsPerRepeat[i] = "[" + StringUtils.join( metricsPerFold, "],\n[") + "]";
 			}
-			foldMetrics = "[" + StringUtils.join( metricsPerRepeat, "],\n\n[") + "]";
 			
+			foldMetrics = "[" + StringUtils.join( metricsPerRepeat, "],\n\n[") + "]";
+			globalMetrics = Output.printMetrics(metrics, population);
+			confusionMatrix = Output.confusionMatrixToJson(cm);
 			
 			System.out.println(
 				"{\n" + 
@@ -173,7 +183,7 @@ public class EvaluatePredictions {
 					"\"global_metrices\":[\n" +
 						globalMetrics +
 					"],\n" +
-					"\"fold_metrics\":[\n" +
+					"\"fold_metrices\":[\n" +
 						foldMetrics + 
 					"]" +
 				"}"

@@ -3,73 +3,75 @@ package org.openml.io;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.openml.evaluate.Task;
+import org.openml.helpers.MathHelper;
 import org.openml.models.ConfusionMatrix;
+import org.openml.models.Metric;
+import org.openml.models.MetricCollector;
 
 import weka.classifiers.Evaluation;
 import weka.core.Instances;
 
 public class Output {
 	
-	public static String printConfussionMatric( Evaluation evaluator, int classes ) {
+	public static Map<Metric, Double> evaluatorToMap( Evaluation evaluator, int classes, Task task ) throws Exception {
+		Map<Metric, Double> m = new HashMap<Metric, Double>();
+		
+		m.put(new Metric("number_of_instances", null), evaluator.numInstances());
+		m.put(new Metric("mean_absolute_error", null), evaluator.meanAbsoluteError() );
+		m.put(new Metric("mean_prior_absolute_error", null), evaluator.meanPriorAbsoluteError() );
+		m.put(new Metric("root_mean_squared_error", null), evaluator.rootMeanSquaredError() );
+		m.put(new Metric("root_mean_prior_squared_error", null), evaluator.rootMeanPriorSquaredError() );
+		m.put(new Metric("relative_absolute_error", null), evaluator.relativeAbsoluteError() / 100 );
+		m.put(new Metric("root_relative_squared_error", null), evaluator.rootRelativeSquaredError() / 100 );
+		
+		if( task == Task.REGRESSION ) {
+			// here all measures for regression tasks
+		}else if( task == Task.CLASSIFICATION ) {
+			m.put(new Metric("predictive_accuracy", null), evaluator.pctCorrect() / 100 );
+			m.put(new Metric("kappa", null), evaluator.kappa() );
+			m.put(new Metric("prior_entropy", null), evaluator.priorEntropy() );
+			m.put(new Metric("kb_relative_information_score", null), evaluator.KBRelativeInformation() / 100 );
+		}
+		return m;
+	}
+	
+	public static String printMetrics( Map<Metric, Double> metrics ) throws Exception {
 		StringBuilder sb = new StringBuilder();
+		boolean first = true;
+		for( Metric m : metrics.keySet() ) {
+			Double value = metrics.get(m);
+			sb.append( styleToJsonMetric( m.name, m.label, value, -1.0, first ) );
+			first = false;
+		}
 		
 		return sb.toString();
 	}
 	
-	
-	public static String printMetrics( Evaluation evaluator, int classes, Task task ) throws Exception {
+	public static String printMetrics( Map<Metric, Double> metrics, MetricCollector population ) throws Exception {
 		StringBuilder sb = new StringBuilder();
-		sb.append( styleToJsonMetric( "number_of_instances","",				evaluator.numInstances(), true ) );
-		sb.append( styleToJsonMetric( "mean_absolute_error","", 			evaluator.meanAbsoluteError() ) );
-		sb.append( styleToJsonMetric( "mean_prior_absolute_error","", 		evaluator.meanPriorAbsoluteError() ) );
-		sb.append( styleToJsonMetric( "root_mean_squared_error","",			evaluator.rootMeanSquaredError() ) );
-		sb.append( styleToJsonMetric( "root_mean_prior_squared_error","",	evaluator.rootMeanPriorSquaredError() ) );
-		sb.append( styleToJsonMetric( "relative_absolute_error","", 		evaluator.relativeAbsoluteError() / 100 ) );
-		sb.append( styleToJsonMetric( "root_relative_squared_error","",		evaluator.rootRelativeSquaredError() / 100 ) );
-		
-		if( task == Task.REGRESSION )
-			sb.append(regressionMetrics(evaluator, classes));
-		else if( task == Task.CLASSIFICATION ) 
-			sb.append( classificationMetrics(evaluator, classes));
+		boolean first = true;
+		for( Metric m : metrics.keySet() ) {
+			Double value = metrics.get(m);
+			Double[] p = population.get( m ).toArray( new Double[population.get( m ).size()] );
+			Double stdev = MathHelper.standard_deviation( p, false );
+			sb.append( styleToJsonMetric( m.name, m.label, value, stdev, first ) );
+			first = false;
+		}
 		
 		return sb.toString();
 	}
 	
-	public static String regressionMetrics( Evaluation evaluator, int classes ) throws Exception {
-		StringBuilder sb = new StringBuilder();
-		//sb.append( styleToJsonMetric( "correlationCoefficient","",	evaluator.correlationCoefficient() ) );
-		return sb.toString();
-	}
-	
-	public static String classificationMetrics( Evaluation evaluator, int classes ) throws Exception {
-		StringBuilder sb = new StringBuilder();
-		sb.append( styleToJsonMetric( "predictive_accuracy","",				evaluator.pctCorrect() / 100 ) );
-		sb.append( styleToJsonMetric( "kappa","",							evaluator.kappa() ) );
-		sb.append( styleToJsonMetric( "prior_entropy","",					evaluator.priorEntropy() ) );
-		//sb.append( styleToJsonMetric( "KBInformation","",					evaluator.KBInformation() ) );
-		//sb.append( styleToJsonMetric( "KBMeanInformation","",				evaluator.KBMeanInformation() ) );
-		sb.append( styleToJsonMetric( "kb_relative_information_score","",	evaluator.KBRelativeInformation() / 100 ) );
-		//sb.append( styleToJsonMetric( "pctUnclassified","",				evaluator.pctUnclassified() / 100 ) );
-		//sb.append( styleToJsonMetric( "avgCost","",						evaluator.avgCost() ) );
-		//sb.append( styleToJsonMetric( "totalCost","",						evaluator.totalCost() ) );
-		//sb.append( styleToJsonMetric( "SFSchemeEntropy","",				evaluator.SFSchemeEntropy() ) );
-		//sb.append( styleToJsonMetric( "SFMeanSchemeEntropy","",			evaluator.SFMeanSchemeEntropy() ) );
-		//sb.append( styleToJsonMetric( "SFPriorEntropy","",				evaluator.SFPriorEntropy() ) );
-		//sb.append( styleToJsonMetric( "SFMeanPriorEntropy","",			evaluator.SFMeanPriorEntropy() ) );
-		//sb.append( styleToJsonMetric( "SFEntropyGain","",					evaluator.SFEntropyGain() ) );
-		//sb.append( styleToJsonMetric( "SFMeanEntropyGain","",				evaluator.SFMeanEntropyGain() ) );
-		
-		return sb.toString();
-	}
-	
-	public static String styleToJsonMetric( String name, String label, double value ) { 
-		return styleToJsonMetric( name, label, value, false ); }
-	public static String styleToJsonMetric( String name, String label, double value, boolean first ) {
+	public static String styleToJsonMetric( String name, String label, double value, double stdev ) { 
+		return styleToJsonMetric( name, label, value, stdev, false ); }
+	public static String styleToJsonMetric( String name, String label, double value, double stdev, boolean first ) {
 		String delim = ( first == true ) ? "\n" : ",\n";
-		return delim + "{\"name\":\"" + name + "\",\n \"label\":\"" + label + "\",\n \"value\":\"" + value + "\"}";}
+		String labelString = (label != null) ? "\"label\":\"" + label + "\",\n" : "";
+		String stdevString = (stdev >= 0) ? "\"stdev\":" + stdev + ",\n" : "";
+		return delim + "{\"name\":\"" + name + "\",\n "+labelString+stdevString+" \"value\":" + value + "}";}
 	
 	public static String styleToJsonError( String value ) {
 		return "{\"error\":\"" + value + "\"}" + "\n";
