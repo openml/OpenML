@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<oml:implementation xmlns:oml="http://openml.org/openml">
+	<oml:name>openML.janvanrijn.abitcomplex</oml:name>
+	<oml:description>Solving task A in a so-so way</oml:description>  
+	<oml:creator>Jan N. van Rijn</oml:creator>
+	<oml:creator>Bo Gao</oml:creator>
+	<oml:contributor>Joaquin Vanschoren</oml:contributor>
+	<oml:contributor>Patrick Winter</oml:contributor>
+	<oml:licence>public domain</oml:licence>
+	<oml:language>English</oml:language>
+	<oml:full_description>Solving task A in a so-so way</oml:full_description>
+	<oml:installation_notes>Download and run 'make install'. You know...</oml:installation_notes>
+	<oml:dependencies>KNIME 2.7.1</oml:dependencies>
+	<oml:bibliographical_reference>
+		<oml:citation>free form</oml:citation>
+		<oml:url>www.janvanrijn.eu/taskA</oml:url>
+	</oml:bibliographical_reference>
+	<oml:parameter>
+		<oml:name>C</oml:name>
+		<oml:data_type>int</oml:data_type>
+		<oml:default_value>-1</oml:default_value>
+		<oml:description>Controls general complexity</oml:description>
+	</oml:parameter>
+	<oml:parameter>
+		<oml:name>D</oml:name>
+		<oml:data_type>int</oml:data_type>
+		<oml:default_value>1</oml:default_value>
+		<oml:description>Controls general destruction</oml:description>
+	</oml:parameter>
+	<oml:components>
+		<oml:implementation>
+			<oml:name>openML.janvanrijn.dependancy.nr1</oml:name>
+			<oml:description>Implementation of SVM</oml:description>
+			<oml:dependencies>KNIME 2.7.1</oml:dependencies>
+			<oml:parameter>
+				<oml:name>C</oml:name>
+				<oml:data_type>float</oml:data_type>
+				<oml:default_value>0.01</oml:default_value>
+				<oml:description>Controls complexity</oml:description>
+			</oml:parameter>
+		</oml:implementation>
+	</oml:components>
+	<oml:source_format>xml</oml:source_format>
+</oml:implementation>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<oml:implementation xmlns:oml="http://openml.org/openml">
+	<oml:name>openml.janvanrijn.testRun</oml:name>
+	<oml:description>Solving task A in an ingenious way</oml:description> 
+</oml:implementation>
