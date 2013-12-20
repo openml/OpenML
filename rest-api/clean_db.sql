@@ -13,3 +13,13 @@ DELETE FROM output_data WHERE run > 718190;
 
 DELETE FROM run WHERE rid > 718190;
 DELETE FROM cvrun WHERE rid > 718190;
+
+## cleaning runs:
+
+TRUNCATE run;
+TRUNCATE cvrun;
+TRUNCATE evaluation;
+TRUNCATE evaluation_fold;
+TRUNCATE confusion_matrix;
+TRUNCATE input_data;
+TRUNCATE output_data;
