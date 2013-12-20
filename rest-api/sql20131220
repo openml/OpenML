@@ -1,0 +1,14 @@
+INSERT INTO `openml_expdb`.`quality` (
+`name` ,
+`type` ,
+`formula` ,
+`description` ,
+`min` ,
+`max` ,
+`unit`
+)
+VALUES (
+'MajorityClassSize', 'DataQuality', NULL , 'The number of instances that have the majority (most occurring) class', '0', 'n', 'instances'
+), (
+'MinorityClassSize', 'DataQuality', NULL , 'The number of instances that have the minority (least occurring) class', '0', 'n', 'instances'
+);

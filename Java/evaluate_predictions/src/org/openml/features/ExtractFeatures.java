@@ -74,6 +74,7 @@ public class ExtractFeatures {
 		int NumberOfNumericFeatures = 0;
 		int NumberOfClasses = -1;
 		int MajorityClassSize = -1;
+		int MinorytyClassSize = Integer.MAX_VALUE;
 		
 		
 		for( int i = 0; i < dataset.numAttributes(); ++i ) {
@@ -91,6 +92,7 @@ public class ExtractFeatures {
 					int[] classDistribution = as.nominalCounts;
 					for( int nominalSize : classDistribution ) {
 						if(nominalSize > MajorityClassSize) MajorityClassSize = nominalSize;
+						if(nominalSize < MinorytyClassSize) MinorytyClassSize = nominalSize;
 					}
 				}
 			}
@@ -114,8 +116,9 @@ public class ExtractFeatures {
 		if( nominalTarget ) {
 			resultQualities.add( new DataQuality("NumberOfClasses", ""+NumberOfClasses) );
 			resultQualities.add( new DataQuality("DefaultAccuracy", ""+((MajorityClassSize*1.0) / (NumberOfInstances*1.0))) );
+			resultQualities.add( new DataQuality("MajorityClassSize", ""+MajorityClassSize ) );
+			resultQualities.add( new DataQuality("MinorityClassSize", ""+MinorytyClassSize ) );
 		}
-		
 		
 		return resultQualities;
 	}
