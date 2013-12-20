@@ -1,4 +1,4 @@
-INSERT INTO `openml_expdb`.`quality` (
+INSERT INTO `quality` (
 `name` ,
 `type` ,
 `formula` ,
@@ -12,3 +12,6 @@ VALUES (
 ), (
 'MinorityClassSize', 'DataQuality', NULL , 'The number of instances that have the minority (least occurring) class', '0', 'n', 'instances'
 );
+
+ALTER TABLE `dataset` CHANGE `processed` `processed` DATETIME NULL DEFAULT NULL ;
+UPDATE dataset SET processed = NULL, error = "false";
