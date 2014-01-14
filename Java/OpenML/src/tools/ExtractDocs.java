@@ -16,7 +16,7 @@ import java.util.Scanner;
 public class ExtractDocs {
 
 	public Map<String, String> getClassifiers(File dir, String prefix) {
-		Map<String, String> classpaths = new HashMap<>();
+		Map<String, String> classpaths = new HashMap<String, String>();
 		File directory = dir;
 		File[] fileList = directory.listFiles();
 		for (final File file : fileList) {
@@ -35,7 +35,7 @@ public class ExtractDocs {
 	}
 	
 	public Map<String, String> getDocs(File dir, String prefix) {
-		Map<String, String> pages = new HashMap<>();
+		Map<String, String> pages = new HashMap<String, String>();
 		File directory = dir;
 		File[] fileList = directory.listFiles();
 		for (final File file : fileList) {
@@ -54,7 +54,7 @@ public class ExtractDocs {
 	}
 	
 	public Map<String, String> getDataDocs(File dir, String prefix) {
-		Map<String, String> files = new HashMap<>();
+		Map<String, String> files = new HashMap<String, String>();
 		File directory = dir;
 		File[] fileList = directory.listFiles();
 		for (final File file : fileList) {
@@ -82,7 +82,8 @@ public class ExtractDocs {
 	public void getImplFullDescriptions(){
 		Map<String, String> map = getDocs(new File(
 				"data/doc/weka"), "data/doc/weka/");
-		try (PrintWriter out = new PrintWriter("implementation_fulldescriptions.sql")) {
+		try {
+			PrintWriter out = new PrintWriter("implementation_fulldescriptions.sql");
 			for (String s : map.keySet()) {
 				Scanner scanner = new Scanner(new File(map.get(s)));
 				boolean active = false;
@@ -107,6 +108,7 @@ public class ExtractDocs {
 					}
 				}
 			}
+			out.close();
 		} catch (IOException exc) {
 			exc.printStackTrace();
 		}
@@ -115,7 +117,8 @@ public class ExtractDocs {
 	public void getDataDescriptions(){
 		Map<String, String> map = getDataDocs(new File(
 				"data/data"), "data/data/");
-		try (PrintWriter out = new PrintWriter("data_descriptions.sql")) {
+		try {
+			PrintWriter out = new PrintWriter("data_descriptions.sql");
 			for (String s : map.keySet()) {
 				Scanner scanner = new Scanner(new File(map.get(s)));
 				out.print("UPDATE dataset set description=\'");
@@ -130,7 +133,9 @@ public class ExtractDocs {
 						break;
 					}
 				}
+				scanner.close();
 			}
+			out.close();
 		} catch (IOException exc) {
 			exc.printStackTrace();
 		}
@@ -139,7 +144,8 @@ public class ExtractDocs {
 	public void getImplDescriptions(){
 		Map<String, String> map = getClassifiers(new File(
 				"data/weka"), "weka.");
-		try (PrintWriter out = new PrintWriter("implementation_descriptions.sql")) {
+		try {
+			PrintWriter out = new PrintWriter("implementation_descriptions.sql");
 			for (String s : map.keySet()) {
 				String info = getGlobalInfo(map.get(s));
 				if (info != null){
@@ -149,6 +155,7 @@ public class ExtractDocs {
 					out.println("UPDATE implementation set description=\'"+info+"\' where name='weka."+s+"';");
 				}
 			}
+			out.close();
 		} catch (IOException exc) {
 		}
 	}
