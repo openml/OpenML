@@ -97,6 +97,21 @@ public class GenerateFolds {
 					}
 				}
 				break;
+			case LEARNINGCURVE:
+				for( int r = 0; r < evaluationMethod.getRepeats(); ++r ) {
+					dataset.randomize(rand);
+					// TODO: Think about stratification
+					
+					for( int f = 0; f < evaluationMethod.getFolds(); ++f ) {
+						// in this case, a fold is a sample. 
+						for( int i = 0; i < dataset.numInstances(); ++i ) {
+							boolean train = i < evaluationMethod.sampleSize( f );
+							int rowid = (int) dataset.instance(i).value(0);
+							splits.add(am.createInstance(train,rowid,r,f));
+						}
+					}
+				}
+				break;
 		}
 		return splits;
 	}

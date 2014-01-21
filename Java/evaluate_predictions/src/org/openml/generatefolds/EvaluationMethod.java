@@ -6,8 +6,8 @@ import weka.core.Instances;
 
 public class EvaluationMethod {
 
-	public static enum EvaluationMethods {CROSSVALIDATION, LEAVEONEOUT, HOLDOUT}
-	public final static String[] evaluationMethods = {"crossvalidation","leaveoneout","holdout"};
+	public static enum EvaluationMethods {CROSSVALIDATION, LEAVEONEOUT, HOLDOUT, LEARNINGCURVE}
+	public final static String[] evaluationMethods = {"crossvalidation","leaveoneout","holdout","learningcurve"};
 	
 	private final EvaluationMethods em;
 	private final int arg1;
@@ -28,8 +28,10 @@ public class EvaluationMethod {
 				throw new RuntimeException("Illigal evaluationMethod"); }
 			if( parts[0].equals(evaluationMethods[0] ) ) {
 				em = EvaluationMethods.CROSSVALIDATION;
-			} else {
+			} else if( parts[0].equals(evaluationMethods[2] ) ) {
 				em = EvaluationMethods.HOLDOUT;
+			} else { //if( parts[0].equals(evaluationMethods[3] ) ) {
+				em = EvaluationMethods.LEARNINGCURVE;
 			}
 			arg1 = Integer.valueOf(parts[1]);
 			arg2 = Integer.valueOf(parts[2]);
@@ -38,6 +40,10 @@ public class EvaluationMethod {
 	
 	public EvaluationMethods getEvaluationMethod() {
 		return em;
+	}
+	
+	public int sampleSize( int number ) {
+		return (int) Math.round( Math.pow( 2, 6.5 + ( number * 0.5 ) ) );
 	}
 	
 	public int getRepeats() {
@@ -54,6 +60,12 @@ public class EvaluationMethod {
 	
 	public int getSplitsSize( Instances dataset ) {
 		switch(em) {
+		case LEARNINGCURVE:
+			int totalsize = 0;
+			for( int i = 0; i < arg2; ++i ) {
+				totalsize += sampleSize(i);
+			}
+			return totalsize * arg1;
 		case LEAVEONEOUT:
 			return dataset.numInstances() * dataset.numInstances(); // repeats (== data set size) * data set size
 		case HOLDOUT:
@@ -66,6 +78,8 @@ public class EvaluationMethod {
 	
 	public String toString() {
 		switch( em ) {
+			case LEARNINGCURVE:
+				return evaluationMethods[3] + "_" + arg1 + "_" + arg2;
 			case HOLDOUT:
 				return evaluationMethods[2] + "_" + arg1 + "_" + arg2;
 			case LEAVEONEOUT:
