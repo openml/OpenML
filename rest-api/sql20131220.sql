@@ -15,3 +15,6 @@ VALUES (
 
 ALTER TABLE `dataset` CHANGE `processed` `processed` DATETIME NULL DEFAULT NULL ;
 UPDATE dataset SET processed = NULL, error = "false";
+
+ALTER TABLE `implementation_component` ADD `identifier` VARCHAR( 16 ) NULL DEFAULT NULL ;
+ALTER TABLE `estimation_procedure` CHANGE `type` `type` ENUM( 'crossvalidation', 'leaveoneout', 'holdout', 'bootstrapping', 'subsampling', 'learningcurve' );
