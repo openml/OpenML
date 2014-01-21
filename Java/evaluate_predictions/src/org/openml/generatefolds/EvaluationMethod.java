@@ -23,16 +23,19 @@ public class EvaluationMethod {
 			em = EvaluationMethods.LEAVEONEOUT;
 			arg1 = 1;
 			arg2 = dataset.numInstances();
+		} else if( parts[0].equals(evaluationMethods[3] ) ) { 
+			em = EvaluationMethods.LEARNINGCURVE;
+			arg1 = Integer.valueOf(parts[1]);
+			arg2 = getNumberOfSamples( dataset.numInstances() );
 		} else {
 			if( parts.length != 3 ) {
 				throw new RuntimeException("Illigal evaluationMethod"); }
+			
 			if( parts[0].equals(evaluationMethods[0] ) ) {
 				em = EvaluationMethods.CROSSVALIDATION;
-			} else if( parts[0].equals(evaluationMethods[2] ) ) {
+			} else  { //if( parts[0].equals(evaluationMethods[2] ) ) {
 				em = EvaluationMethods.HOLDOUT;
-			} else { //if( parts[0].equals(evaluationMethods[3] ) ) {
-				em = EvaluationMethods.LEARNINGCURVE;
-			}
+			} 
 			arg1 = Integer.valueOf(parts[1]);
 			arg2 = Integer.valueOf(parts[2]);
 		}
@@ -44,6 +47,12 @@ public class EvaluationMethod {
 	
 	public int sampleSize( int number ) {
 		return (int) Math.round( Math.pow( 2, 6.5 + ( number * 0.5 ) ) );
+	}
+	
+	public int getNumberOfSamples( int numberOfInstances ) {
+		int i = 0; // TODO: Think about the minimal test set size relative to dataset size
+		for( ; sampleSize( i ) < numberOfInstances; ++i ) { }
+		return i;
 	}
 	
 	public int getRepeats() {
