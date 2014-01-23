@@ -9,7 +9,7 @@ public class ArffMapping {
 	FastVector attributes;
 	
 	
-	public ArffMapping() {
+	public ArffMapping( boolean use_samples ) {
 		attributes = new FastVector();
 		
 		FastVector att_type_values = new FastVector(2);
@@ -25,6 +25,11 @@ public class ArffMapping {
 		attributes.addElement(rowid);
 		attributes.addElement(repeat);
 		attributes.addElement(fold);
+		
+		if(use_samples){
+			Attribute sample = new Attribute("sample");
+			attributes.addElement(sample);
+		}
 	}
 	
 	public FastVector getArffHeader() {
@@ -37,6 +42,17 @@ public class ArffMapping {
 		instance.setValue((Attribute)attributes.elementAt(1), rowid );
 		instance.setValue((Attribute)attributes.elementAt(2), repeat );
 		instance.setValue((Attribute)attributes.elementAt(3), fold );
+		
+		return instance;
+	}
+	
+	public Instance createInstance( boolean train, int rowid, int repeat, int fold, int sample ) {
+		Instance instance = new Instance(5);
+		instance.setValue((Attribute)attributes.elementAt(0), train ? 0.0 : 1.0 );
+		instance.setValue((Attribute)attributes.elementAt(1), rowid );
+		instance.setValue((Attribute)attributes.elementAt(2), repeat );
+		instance.setValue((Attribute)attributes.elementAt(3), fold );
+		instance.setValue((Attribute)attributes.elementAt(4), sample );
 		
 		return instance;
 	}

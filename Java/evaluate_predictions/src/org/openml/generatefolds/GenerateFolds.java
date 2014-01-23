@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Random;
 
+import org.openml.generatefolds.EvaluationMethod.EvaluationMethods;
 import org.openml.io.Input;
 import org.openml.io.Output;
 
@@ -24,13 +25,14 @@ public class GenerateFolds {
 	private final Random rand;
 	
 	public GenerateFolds( String datasetPath, String evaluation, String targetFeature, String rowid, int seed ) throws Exception {
-		am = new ArffMapping();
 		rand = new Random(seed);
 		
 		dataset = new Instances( new BufferedReader( Input.getURL( datasetPath ) ) );
 		evaluationMethod = new EvaluationMethod(evaluation,dataset);
 		
 		setTargetAttribute( dataset, targetFeature );
+		
+		am = new ArffMapping( evaluationMethod.getEvaluationMethod() == EvaluationMethods.LEARNINGCURVE);
 		
 		splits_name = Input.filename( datasetPath ) + "_splits";
 		splits_size = evaluationMethod.getSplitsSize(dataset);
@@ -100,14 +102,22 @@ public class GenerateFolds {
 			case LEARNINGCURVE:
 				for( int r = 0; r < evaluationMethod.getRepeats(); ++r ) {
 					dataset.randomize(rand);
-					// TODO: Think about stratification
+					if (dataset.classAttribute().isNominal())
+						dataset.stratify(evaluationMethod.getFolds());
 					
 					for( int f = 0; f < evaluationMethod.getFolds(); ++f ) {
-						// in this case, a fold is a sample. 
-						for( int i = 0; i < dataset.numInstances(); ++i ) {
-							boolean train = i < evaluationMethod.sampleSize( f );
-							int rowid = (int) dataset.instance(i).value(0);
-							splits.add(am.createInstance(train,rowid,r,f));
+						Instances train = dataset.trainCV(evaluationMethod.getFolds(), f);
+						Instances test = dataset.testCV(evaluationMethod.getFolds(), f);
+						// TODO: stratify the training set
+						for( int s = 0; s < evaluationMethod.getNumberOfSamples( train.numInstances() ); ++s ) {
+							for( int i = 0; i < evaluationMethod.sampleSize( f, train.numInstances() ); ++i ) {
+								int rowid = (int) train.instance(i).value(0);
+								splits.add(am.createInstance(true,rowid,r,f,i));
+							}
+							for( int i = 0; i < test.numInstances(); ++i ) {
+								int rowid = (int) train.instance(i).value(0);
+								splits.add(am.createInstance(false,rowid,r,f,i));
+							}
 						}
 					}
 				}

@@ -23,19 +23,17 @@ public class EvaluationMethod {
 			em = EvaluationMethods.LEAVEONEOUT;
 			arg1 = 1;
 			arg2 = dataset.numInstances();
-		} else if( parts[0].equals(evaluationMethods[3] ) ) { 
-			em = EvaluationMethods.LEARNINGCURVE;
-			arg1 = Integer.valueOf(parts[1]);
-			arg2 = getNumberOfSamples( dataset.numInstances() );
 		} else {
 			if( parts.length != 3 ) {
 				throw new RuntimeException("Illigal evaluationMethod"); }
 			
 			if( parts[0].equals(evaluationMethods[0] ) ) {
 				em = EvaluationMethods.CROSSVALIDATION;
-			} else  { //if( parts[0].equals(evaluationMethods[2] ) ) {
+			} else  if( parts[0].equals(evaluationMethods[2] ) ) {
 				em = EvaluationMethods.HOLDOUT;
-			} 
+			} else {// if( parts[0].equals(evaluationMethods[3] ) ) { 
+				em = EvaluationMethods.LEARNINGCURVE;
+			}
 			arg1 = Integer.valueOf(parts[1]);
 			arg2 = Integer.valueOf(parts[2]);
 		}
@@ -45,14 +43,14 @@ public class EvaluationMethod {
 		return em;
 	}
 	
-	public int sampleSize( int number ) {
-		return (int) Math.round( Math.pow( 2, 6.5 + ( number * 0.5 ) ) );
+	public int sampleSize( int number, int trainingsetSize ) {
+		return (int) Math.min(trainingsetSize, Math.round( Math.pow( 2, 6 + ( number * 0.5 ) ) ) );
 	}
 	
-	public int getNumberOfSamples( int numberOfInstances ) {
-		int i = 0; // TODO: Think about the minimal test set size relative to dataset size
-		for( ; sampleSize( i ) < numberOfInstances; ++i ) { }
-		return i;
+	public int getNumberOfSamples( int trainingsetSize ) {
+		int i = 0;
+		for( ; sampleSize( i, trainingsetSize ) < trainingsetSize; ++i ) { }
+		return i + 1; // + 1 for considering the "full" training set
 	}
 	
 	public int getRepeats() {
@@ -70,11 +68,14 @@ public class EvaluationMethod {
 	public int getSplitsSize( Instances dataset ) {
 		switch(em) {
 		case LEARNINGCURVE:
+			// TODO: might be good to find a neat closed formula. 
+			int foldsize = (int) Math.ceil(dataset.numInstances() / arg2);
+			int trainingsetsize = foldsize * (getFolds()-1);
 			int totalsize = 0;
 			for( int i = 0; i < arg2; ++i ) {
-				totalsize += sampleSize(i);
+				totalsize += sampleSize(i, trainingsetsize ) + foldsize;
 			}
-			return totalsize * arg1;
+			return totalsize * arg1; 
 		case LEAVEONEOUT:
 			return dataset.numInstances() * dataset.numInstances(); // repeats (== data set size) * data set size
 		case HOLDOUT:
