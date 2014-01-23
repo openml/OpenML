@@ -112,11 +112,11 @@ public class GenerateFolds {
 						for( int s = 0; s < evaluationMethod.getNumberOfSamples( train.numInstances() ); ++s ) {
 							for( int i = 0; i < evaluationMethod.sampleSize( f, train.numInstances() ); ++i ) {
 								int rowid = (int) train.instance(i).value(0);
-								splits.add(am.createInstance(true,rowid,r,f,i));
+								splits.add(am.createInstance(true,rowid,r,f,s));
 							}
 							for( int i = 0; i < test.numInstances(); ++i ) {
 								int rowid = (int) train.instance(i).value(0);
-								splits.add(am.createInstance(false,rowid,r,f,i));
+								splits.add(am.createInstance(false,rowid,r,f,s));
 							}
 						}
 					}
