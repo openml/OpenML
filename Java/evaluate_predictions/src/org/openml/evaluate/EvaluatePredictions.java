@@ -6,9 +6,9 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.openml.io.Input;
 import org.openml.io.Output;
-import org.openml.models.ConfusionMatrix;
 import org.openml.models.Metric;
 import org.openml.models.MetricCollector;
+import org.openml.models.MetricScore;
 
 import weka.classifiers.Evaluation;
 import weka.core.Instance;
@@ -22,6 +22,7 @@ public class EvaluatePredictions {
 	private final int ATT_PREDICTION_FOLD;
 	private final int ATT_PREDICTION_REPEAT;
 	private final int ATT_PREDICTION_PREDICTION;
+	private final int ATT_PREDICTION_SAMPLE;
 	private final int[] ATT_PREDICTION_CONFIDENCE;
 	
 	private final Instances dataset;
@@ -31,7 +32,7 @@ public class EvaluatePredictions {
 	private final PredictionCounter predictionCounter;
 	private final String[] classes;
 	private final Task task;
-	private final Evaluation[][] foldEvaluation;
+	private final Evaluation[][][] sampleEvaluation;
 	
 	public EvaluatePredictions( String datasetPath, String splitsPath, String predictionsPath, String classAttribute ) throws Exception {
 		// set all arff files needed for this operation. 
@@ -41,7 +42,10 @@ public class EvaluatePredictions {
 		
 		// initiate a class that will help us with checking the prediction count. 
 		predictionCounter = new PredictionCounter(splits);
-		foldEvaluation = new Evaluation[predictionCounter.getRepeats()][predictionCounter.getFolds()];
+		sampleEvaluation  = new Evaluation[predictionCounter.getRepeats()][predictionCounter.getFolds()][predictionCounter.getSamples()];
+		// *** A sample is considered to be a subset of a fold. In a normal n-times n-fold crossvalidation
+		//     setting, each fold consists of 1 sample. In a leaning curve example, each fold could consist
+		//     of more samples. 
 		
 		// Set class attribute to dataset ...
 		for( int i = 0; i < dataset.numAttributes(); i++ ) {
@@ -74,6 +78,8 @@ public class EvaluatePredictions {
 				predictions.attribute("repeat").index() : predictions.attribute("repeat_nr").index();
 		ATT_PREDICTION_FOLD = (predictions.attribute("fold") != null) ? 
 				predictions.attribute("fold").index() : predictions.attribute("fold_nr").index();
+		ATT_PREDICTION_SAMPLE = (predictions.attribute("sample") != null) ? 
+				predictions.attribute("sample").index() : -1;
 		ATT_PREDICTION_PREDICTION = predictions.attribute("prediction").index();
 		
 		// do the same for the confidence fields. This number is dependent on the number 
@@ -96,24 +102,26 @@ public class EvaluatePredictions {
 	
 	private void doEvaluation() throws Exception {
 		// set global evaluation
-		ConfusionMatrix cm;
 		Evaluation e = new Evaluation( dataset );
 		
 		
 		// set local evaluations
-		for( int i = 0; i < foldEvaluation.length; ++i ) 
-			for( int j = 0; j < foldEvaluation[i].length; ++j )
-				foldEvaluation[i][j] = new Evaluation(dataset);
-		// init confusion matrix
-		cm = new ConfusionMatrix( task == Task.CLASSIFICATION ? dataset.classAttribute().numValues() : 0 );
+		for( int i = 0; i < sampleEvaluation.length; ++i ) {
+			for( int j = 0; j < sampleEvaluation[i].length; ++j ) {
+				for( int k = 0; k < sampleEvaluation[i][j].length; ++k ) {
+					sampleEvaluation[i][j][k] = new Evaluation(dataset);
+				}
+			}
+		}
 		
 		for( int i = 0; i < predictions.numInstances(); i++ ) {
 			Instance prediction = predictions.instance( i );
 			int repeat = (int) prediction.value( ATT_PREDICTION_REPEAT );
 			int fold = (int) prediction.value( ATT_PREDICTION_FOLD );
+			int sample = ATT_PREDICTION_SAMPLE < 0 ? 0 : (int) prediction.value( ATT_PREDICTION_SAMPLE );
 			int rowid = (int) prediction.value( ATT_PREDICTION_ROWID );
 			
-			predictionCounter.addPrediction(repeat, fold, rowid);
+			predictionCounter.addPrediction(repeat, fold, sample, rowid);
 			if( dataset.numInstances() <= rowid ) {
 				throw new RuntimeException( "Making a prediction for row_id" + rowid + " (0-based) while dataset has only " + dataset.numInstances() + " instances. " );
 			}
@@ -122,22 +130,21 @@ public class EvaluatePredictions {
 				e.evaluateModelOnce(
 					confidences( dataset, prediction ), 
 					dataset.instance( rowid ) );
-				foldEvaluation[repeat][fold].evaluateModelOnce(
+				sampleEvaluation[repeat][fold][sample].evaluateModelOnce(
 					confidences( dataset, prediction ), 
 					dataset.instance( rowid ) );
-				cm.add(dataset.instance( rowid ).classValue(), prediction.value(ATT_PREDICTION_PREDICTION));
 			} else {
 				e.evaluateModelOnce(
 					prediction.value( ATT_PREDICTION_PREDICTION ), 
 					dataset.instance( rowid ) );
-				foldEvaluation[repeat][fold].evaluateModelOnce(
+				sampleEvaluation[repeat][fold][sample].evaluateModelOnce(
 					prediction.value( ATT_PREDICTION_PREDICTION ), 
 					dataset.instance( rowid ) );
 			}
 		}
 		
 		if( predictionCounter.check() ) {
-			output( e, cm, task );
+			output( e, task );
 		} else {
 			throw new RuntimeException( "Prediction count does not match: " + predictionCounter.getErrorMessage() );
 		}
@@ -151,39 +158,49 @@ public class EvaluatePredictions {
 		return confidences;
 	}
 	
-	private void output( Evaluation e, ConfusionMatrix cm, Task task ) throws Exception {
-		if( task == Task.CLASSIFICATION || task == Task.REGRESSION ) {
-			Map<Metric, Double> metrics = Output.evaluatorToMap(e, nrOfClasses, task);
+	private void output( Evaluation e, Task task ) throws Exception {
+		if( task == Task.CLASSIFICATION || task == Task.REGRESSION || task == Task.LEARNINGCURVE ) { // any task ...
+			Map<Metric, MetricScore> metrics = Output.evaluatorToMap(e, nrOfClasses, task);
 			MetricCollector population = new MetricCollector();
 			
 			String globalMetrics = "";
-			String confusionMatrix = "";
+			String foldMetricsLabel = "fold_metrices";
+			if( task == Task.LEARNINGCURVE ) {
+				foldMetricsLabel = "sample_metrices";
+			}
 			String foldMetrics = "";
 			
 			String[] metricsPerRepeat = new String[predictionCounter.getRepeats()];
 			for(int i = 0; i < metricsPerRepeat.length; ++i ) {
 				String[] metricsPerFold = new String[predictionCounter.getFolds()];
 				for( int j = 0; j < metricsPerFold.length; j++ ) {
-					Map<Metric, Double> localMetrics = Output.evaluatorToMap(foldEvaluation[i][j], nrOfClasses, task);
-					population.add(localMetrics);
-					metricsPerFold[j] = Output.printMetrics(localMetrics);
+					String[] metricsPerSample = new String[predictionCounter.getSamples()];
+					for( int k = 0; k < metricsPerSample.length; ++k ) {
+						Map<Metric, MetricScore> localMetrics = Output.evaluatorToMap(sampleEvaluation[i][j][k], nrOfClasses, task);
+						population.add(localMetrics);
+						metricsPerSample[k] = Output.printMetrics(localMetrics);
+					}
+					
+					if( task == Task.LEARNINGCURVE ) {
+						metricsPerFold[j] = "[" + StringUtils.join( metricsPerSample, "],\n[") + "]";
+					} else { 
+						// In any other case, we do not consider samples per fold. 
+						// Hence we will not add an additional dimension to the array.
+						metricsPerFold[j] = metricsPerSample[0];
+					}
 				}
 				metricsPerRepeat[i] = "[" + StringUtils.join( metricsPerFold, "],\n[") + "]";
 			}
 			
 			foldMetrics = "[" + StringUtils.join( metricsPerRepeat, "],\n\n[") + "]";
 			globalMetrics = Output.printMetrics(metrics, population);
-			confusionMatrix = Output.confusionMatrixToJson(cm);
 			
 			System.out.println(
 				"{\n" + 
-					"\"confusion_matrix\":[\n" +
-						confusionMatrix +
-					"],\n" +
 					"\"global_metrices\":[\n" +
 						globalMetrics +
 					"],\n" +
-					"\"fold_metrices\":[\n" +
+					"\""+foldMetricsLabel+"\":[\n" +
 						foldMetrics + 
 					"]" +
 				"}"

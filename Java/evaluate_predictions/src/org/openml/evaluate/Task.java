@@ -1,5 +1,5 @@
 package org.openml.evaluate;
 
 public enum Task {
-	CLASSIFICATION, REGRESSION
+	CLASSIFICATION, REGRESSION, LEARNINGCURVE
 }

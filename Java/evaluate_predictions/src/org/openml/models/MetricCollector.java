@@ -6,24 +6,30 @@ import java.util.Map;
 
 public class MetricCollector {
 
-	private Map<Metric, ArrayList<Double>> metrics;
+	private Map<Metric, ArrayList<MetricScore>> metrics;
 	
 	public MetricCollector() {
-		metrics = new HashMap<Metric, ArrayList<Double>>();
+		metrics = new HashMap<Metric, ArrayList<MetricScore>>();
 	}
 	
-	public void add( Map<Metric, Double> metricMap ) {
+	public void add( Map<Metric, MetricScore> metricMap ) {
 		for( Metric m : metricMap.keySet() ) {
 			if( metrics.containsKey(m) == false ) {
 				
-				metrics.put(m, new ArrayList<Double>());
+				metrics.put(m, new ArrayList<MetricScore>());
 			}
 			metrics.get(m).add( metricMap.get(m) );
 		}
 	}
 	
-	public ArrayList<Double> get( Metric m ) {
-		return metrics.get( m );
+	public ArrayList<Double> getScores( Metric m ) {
+		ArrayList<MetricScore> metricscores = metrics.get( m );
+		ArrayList<Double> scores = new ArrayList<Double>();
+		for( MetricScore s : metricscores ) {
+			if( s.getScore() != null )
+				scores.add( s.getScore() );
+		}
+		return scores;
 	}
 	
 	@Override

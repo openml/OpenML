@@ -20,4 +20,8 @@ public class MathHelper {
 		for( double add : array ) total += add;
 		return total;
 	}
+	
+	public static double mean( Double[] array ) {
+		return sum(array) / array.length;
+	}
 }

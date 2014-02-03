@@ -68,14 +68,14 @@ public class EvaluationMethod {
 	public int getSplitsSize( Instances dataset ) {
 		switch(em) {
 		case LEARNINGCURVE:
-			// TODO: might be good to find a neat closed formula. 
-			int foldsize = (int) Math.ceil(dataset.numInstances() / arg2);
+			// TODO: might be good to find a neat closed formula.
+			int foldsize = (int) Math.ceil(dataset.numInstances() * 1.0 / arg2);
 			int trainingsetsize = foldsize * (getFolds()-1);
 			int totalsize = 0;
-			for( int i = 0; i < arg2; ++i ) {
+			for( int i = 0; i < getNumberOfSamples( trainingsetsize ); ++i ) {
 				totalsize += sampleSize(i, trainingsetsize ) + foldsize;
 			}
-			return totalsize * arg1; 
+			return totalsize * arg1 * arg2; 
 		case LEAVEONEOUT:
 			return dataset.numInstances() * dataset.numInstances(); // repeats (== data set size) * data set size
 		case HOLDOUT:

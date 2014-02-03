@@ -77,6 +77,7 @@ public class ExtractFeatures {
 		int MinorytyClassSize = Integer.MAX_VALUE;
 		
 		
+		
 		for( int i = 0; i < dataset.numAttributes(); ++i ) {
 			Attribute att = dataset.attribute( i );
 			AttributeStats as = dataset.attributeStats( i );
@@ -94,6 +95,8 @@ public class ExtractFeatures {
 						if(nominalSize > MajorityClassSize) MajorityClassSize = nominalSize;
 						if(nominalSize < MinorytyClassSize) MinorytyClassSize = nominalSize;
 					}
+				} else if( att.isNumeric() ) {
+					
 				}
 			}
 		}
@@ -107,7 +110,8 @@ public class ExtractFeatures {
 			if(dataset.instance(i).hasMissingValue()) NumberOfInstancesWithMissingValues++;
 		}
 		
-		
+		resultQualities.add( new DataQuality("DefaultTargetNominal", nominalTarget ? "true" : "false" ) );
+		resultQualities.add( new DataQuality("DefaultTargetNumerical", nominalTarget ? "false" : "true" ) );
 		resultQualities.add( new DataQuality("NumberOfInstances", ""+NumberOfInstances ) );
 		resultQualities.add( new DataQuality("NumberOfFeatures", ""+dataset.numAttributes() ) );
 		resultQualities.add( new DataQuality("NumberOfInstancesWithMissingValues", ""+NumberOfInstancesWithMissingValues ) );
