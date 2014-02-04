@@ -5,8 +5,9 @@
       <xs:element name="run_id" minOccurs="0" type="xs:integer"/> <!-- The integer id of the run. Added by server. Ignored when uploading a run -->
       <xs:element name="uploader" minOccurs="0" type="xs:integer"/> <!-- The id of user that uploaded the run. Added by server. Ignored when uploading a run -->
       <xs:element name="task_id" type="xs:integer"/> <!-- The id of the task that is solved in this run. This id is given in the task description. -->
-      <xs:element name="implementation_id" type="xs:string"/> <!-- The id of the implementation (algorithm, workflow,...) used to solve the task. This id is returned by the API when you first upload the implementation, or given in the implementation description when you download an existing implementation. -->      
+      <xs:element name="implementation_id" type="xs:string"/> <!-- The id of the implementation (algorithm, workflow,...) used to solve the task. This id is returned by the API when you first upload the implementation, or given in the implementation description when you download an existing implementation. -->
       <xs:element name="setup_id" minOccurs="0" type="xs:integer"/> <!-- the setup id, will be ignored when uploading a run (i.e., it will be searched based on the parameter settings) -->
+      <xs:element name="error_message" minOccurs="0" type="xs:string"/> <!-- Whenever an error occurs during the run, this can be reported here for further inspection and on line logging purposes. -->
       <xs:element name="parameter_setting" minOccurs="0" maxOccurs="unbounded" type="oml:parameter_setting"/> <!-- The parameter settings used in this run -->
       <xs:element name="input_data" minOccurs="0" type="oml:data"/> <!-- all data that served as input for the run. Determined server side, will be ignored on uploading -->
       <xs:element name="output_data" minOccurs="0" type="oml:data"/> <!-- all data that was the output of this run, i.e., predictions, evaluation scores. Most of this will be determined server side, but users can also provide evaluation scores for their own evaluation measures. -->

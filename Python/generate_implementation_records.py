@@ -2,12 +2,13 @@ import urllib2
 import json
 from time import gmtime, strftime
 
-req = urllib2.Request("http://www.openml.org/api_query/free_query?q=SELECT+%2A+FROM+%60math_function%60")
+req = urllib2.Request("http://openml.liacs.nl/api_query/free_query?q=SELECT+%2A+FROM+%60math_function%60")
 opener = urllib2.build_opener()
 f = opener.open(req)
 json = json.loads(f.read())
 
 sql = [];
+sql.append('INSERT INTO `implementation`(`fullName`, `name`, `version`, `creator`, `contributor`, `uploadDate`, `licence`, `language`, `description`, `fullDescription`, `installationNotes`, `dependencies`, `implements`) VALUES ');
 
 for row in json['data']:
   name = "openml.evaluation." + row[0]
@@ -23,7 +24,7 @@ for row in json['data']:
   installationNotes = "Runs on OpenML servers"
   dependencies = "Build on top of Weka API (Jar version 3.?.?)"
   implements = row[0]
-  sql.append('INSERT INTO `implementation`(`fullName`, `name`, `version`, `creator`, `contributor`, `uploadDate`, `licence`, `language`, `description`, `fullDescription`, `installationNotes`, `dependencies`, `implements`) VALUES (\'' + str(fullName)  + "','" + str(name) + "','" + str(version) + "','" + str(creator) + "','" + str(contributor) + "','" + str(uploadDate) + "','" + str(licence) + "','" + str(language) + "','" + str(description) + "','" + str(fullDescription) + "','" + str(installationNotes) + "','" + str(dependencies) + "','" + str(implements) + '\');\n' )
+  sql.append('(\'' + str(fullName)  + "','" + str(name) + "','" + str(version) + "','" + str(creator) + "','" + str(contributor) + "','" + str(uploadDate) + "','" + str(licence) + "','" + str(language) + "','" + str(description) + "','" + str(fullDescription) + "','" + str(installationNotes) + "','" + str(dependencies) + "','" + str(implements) + '\'),' )
 
 for row in sql:
   
