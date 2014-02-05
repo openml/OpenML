@@ -1,5 +1,7 @@
 package org.openml.models;
 
+import java.text.DecimalFormat;
+
 import org.openml.helpers.MathHelper;
 
 public class MetricScore {
@@ -34,11 +36,11 @@ public class MetricScore {
 		return array != null || confusion_matrix != null;
 	}
 	
-	public String getArrayAsString() {
+	public String getArrayAsString( DecimalFormat decimalFormat ) {
 		StringBuilder sb = new StringBuilder();
 		if( array != null ) {
 			for( Double d : array ) {
-				sb.append( "," + d );
+				sb.append( "," + decimalFormat.format( d ) );
 			}
 			return "[" + sb.toString().substring( 1 ) + "]";
 		} else if( confusion_matrix != null ) {

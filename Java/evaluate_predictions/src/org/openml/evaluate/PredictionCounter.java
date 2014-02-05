@@ -8,9 +8,6 @@ import weka.core.Instance;
 import weka.core.Instances;
 
 public class PredictionCounter {
-	//private final int ATT_PREDICTION_ROWID;
-	//private final int ATT_PREDICTION_REPEAT;
-	//private final int ATT_PREDICTION_FOLD;
 	
 	private final int ATT_SPLITS_TYPE;
 	private final int ATT_SPLITS_ROWID;
@@ -26,14 +23,16 @@ public class PredictionCounter {
 	private final ArrayList<Integer>[][][] actual;
 	private int expectedTotal;
 	
+	private final int[][][] shadowTypeSize;
+	
 	private String error_message;
 	
 	public PredictionCounter( Instances splits ) {
-		this(splits,"TEST");
+		this(splits,"TEST","TRAIN");
 	}
 	
 	@SuppressWarnings("unchecked")
-	public PredictionCounter( Instances splits, String type ) {
+	public PredictionCounter( Instances splits, String type, String shadowType ) {
 		ATT_SPLITS_TYPE = splits.attribute("type").index();
 		ATT_SPLITS_ROWID = splits.attribute("rowid").index();
 		ATT_SPLITS_REPEAT = splits.attribute("repeat").index();
@@ -51,6 +50,7 @@ public class PredictionCounter {
 		expectedTotal = 0;
 		expected = new ArrayList[NR_OF_REPEATS][NR_OF_FOLDS][NR_OF_SAMPLES];
 		actual   = new ArrayList[NR_OF_REPEATS][NR_OF_FOLDS][NR_OF_SAMPLES];
+		shadowTypeSize = new int[NR_OF_REPEATS][NR_OF_FOLDS][NR_OF_SAMPLES];
 		for( int i = 0; i < NR_OF_REPEATS; i++ ) for( int j = 0; j < NR_OF_FOLDS; j++ ) for( int k = 0; k < NR_OF_SAMPLES; k++ ) {
 			expected[i][j][k] = new ArrayList<Integer>();
 			actual[i][j][k]   = new ArrayList<Integer>();
@@ -65,6 +65,12 @@ public class PredictionCounter {
 				int rowid  = (int) instance.value( ATT_SPLITS_ROWID ); //TODO: maybe we need instance.stringValue() ...
 				expected[repeat][fold][sample].add( rowid );
 				expectedTotal++;
+			} else if( instance.value( ATT_SPLITS_TYPE ) == splits.attribute( ATT_SPLITS_TYPE ).indexOfValue( shadowType ) ) {
+				int repeat = (int) instance.value( ATT_SPLITS_REPEAT );
+				int fold   = (int) instance.value( ATT_SPLITS_FOLD );
+				int sample = ATT_SPLITS_SAMPLE < 0 ? 0 : (int) instance.value( ATT_SPLITS_SAMPLE );
+				
+				shadowTypeSize[repeat][fold][sample]++;
 			}
 		}
 		
@@ -105,6 +111,10 @@ public class PredictionCounter {
 	
 	public ArrayList<Integer> getExpectedRowids(int i, int j, int k) {
 		return expected[i][j][k];
+	}
+	
+	public int getShadowTypeSize(int i, int j, int k) {
+		return shadowTypeSize[i][j][k];
 	}
 	
 	public String getErrorMessage() {

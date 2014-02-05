@@ -1,11 +1,13 @@
 package org.openml.evaluate;
 
 import java.io.BufferedReader;
+import java.util.ArrayList;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openml.io.Input;
 import org.openml.io.Output;
+import org.openml.models.JsonItem;
 import org.openml.models.Metric;
 import org.openml.models.MetricCollector;
 import org.openml.models.MetricScore;
@@ -58,8 +60,12 @@ public class EvaluatePredictions {
 			throw new RuntimeException( "Class attribute ("+classAttribute+") not found" );
 		}
 		// ... and specify which task we are doing. classification or regression. 
-		if( dataset.classAttribute().isNominal() ) { 
-			task = Task.CLASSIFICATION;
+		if( dataset.classAttribute().isNominal() ) {
+			if( predictions.attribute("sample") == null ) {
+				task = Task.CLASSIFICATION;
+			} else {
+				task = Task.LEARNINGCURVE;
+			}
 		} else {
 			task = Task.REGRESSION;
 		}
@@ -126,7 +132,7 @@ public class EvaluatePredictions {
 				throw new RuntimeException( "Making a prediction for row_id" + rowid + " (0-based) while dataset has only " + dataset.numInstances() + " instances. " );
 			}
 			
-			if(task == Task.CLASSIFICATION) {
+			if(task == Task.CLASSIFICATION || task == Task.LEARNINGCURVE) {
 				e.evaluateModelOnce(
 					confidences( dataset, prediction ), 
 					dataset.instance( rowid ) );
@@ -178,7 +184,11 @@ public class EvaluatePredictions {
 					for( int k = 0; k < metricsPerSample.length; ++k ) {
 						Map<Metric, MetricScore> localMetrics = Output.evaluatorToMap(sampleEvaluation[i][j][k], nrOfClasses, task);
 						population.add(localMetrics);
-						metricsPerSample[k] = Output.printMetrics(localMetrics);
+						
+						ArrayList<JsonItem> additionalItems = new ArrayList<JsonItem>();
+						additionalItems.add( new JsonItem("sample_size", predictionCounter.getShadowTypeSize(i, j, k) * 1.0 ) );
+						
+						metricsPerSample[k] = Output.printMetrics(localMetrics, task == Task.LEARNINGCURVE ? additionalItems : null );
 					}
 					
 					if( task == Task.LEARNINGCURVE ) {
@@ -193,7 +203,7 @@ public class EvaluatePredictions {
 			}
 			
 			foldMetrics = "[" + StringUtils.join( metricsPerRepeat, "],\n\n[") + "]";
-			globalMetrics = Output.printMetrics(metrics, population);
+			globalMetrics = Output.printMetrics(metrics, population, null);
 			
 			System.out.println(
 				"{\n" + 

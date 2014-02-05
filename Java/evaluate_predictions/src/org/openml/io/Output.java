@@ -3,11 +3,18 @@ package org.openml.io;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.openml.evaluate.Task;
 import org.openml.helpers.MathHelper;
+import org.openml.models.JsonItem;
 import org.openml.models.Metric;
 import org.openml.models.MetricCollector;
 import org.openml.models.MetricScore;
@@ -16,6 +23,8 @@ import weka.classifiers.Evaluation;
 import weka.core.Instances;
 
 public class Output {
+	
+	private static DecimalFormat decimalFormat = new DecimalFormat("#.######", DecimalFormatSymbols.getInstance( Locale.ENGLISH ));
 	
 	public static Map<Metric, MetricScore> evaluatorToMap( Evaluation evaluator, int classes, Task task ) throws Exception {
 		Map<Metric, MetricScore> m = new HashMap<Metric, MetricScore>();
@@ -30,7 +39,7 @@ public class Output {
 		
 		if( task == Task.REGRESSION ) {
 			// here all measures for regression tasks
-		}else if( task == Task.CLASSIFICATION ) {
+		}else if( task == Task.CLASSIFICATION || task == Task.LEARNINGCURVE ) {
 			m.put(new Metric("predictive_accuracy", "openml.evaluation.predictive_accuracy(1.0)", null), new MetricScore( evaluator.pctCorrect() / 100 ) );
 			m.put(new Metric("kappa", "openml.evaluation.kappa(1.0)", null), new MetricScore( evaluator.kappa() ) );
 			m.put(new Metric("prior_entropy", "openml.evaluation.prior_entropy(1.0)", null), new MetricScore( evaluator.priorEntropy() ) );
@@ -63,51 +72,71 @@ public class Output {
 	}
 	
 	public static String printMetrics( Map<Metric, MetricScore> metrics ) throws Exception {
-		StringBuilder sb = new StringBuilder();
-		boolean first = true;
-		for( Metric m : metrics.keySet() ) {
-			MetricScore value = metrics.get(m);
-			sb.append( styleToJsonMetric( m.name, m.implementation, m.label, value, null, first ) );
-			first = false;
-		}
-		
-		return sb.toString();
+		return printMetrics( metrics, null, null );
 	}
 	
-	public static String printMetrics( Map<Metric, MetricScore> metrics, MetricCollector population ) throws Exception {
-		StringBuilder sb = new StringBuilder();
-		boolean first = true;
-		for( Metric m : metrics.keySet() ) {
-			MetricScore value = metrics.get(m);
-			Double[] p = population.getScores( m ).toArray( new Double[population.getScores( m ).size()] ); 
-			Double stdev = (p.length == 0) ? null : MathHelper.standard_deviation( p, false );
-			sb.append( styleToJsonMetric( m.name, m.implementation, m.label, value, stdev, first ) );
-			first = false;
-		}
-		
-		return sb.toString();
+	public static String printMetrics( Map<Metric, MetricScore> metrics, ArrayList<JsonItem> additionalItems ) throws Exception {
+		return printMetrics( metrics, null, additionalItems );
 	}
 	
-	public static String styleToJsonMetric( String name, String implementation, String label, MetricScore value, Double stdev ) { 
-		return styleToJsonMetric( name, implementation, label, value, stdev, false ); }
-	public static String styleToJsonMetric( String name, String implementation, String label, MetricScore value, Double stdev, boolean first ) {
-		String delim = ( first == true ) ? "\n" : ",\n";
-		String labelString = (label != null) ? ",\n \"label\":\"" + label : "";
-		String stdevString = (stdev != null) ? ",\n \"stdev\":" + stdev : "";
-		String valueString = value.getScore() != null ? ",\n \"value\":" + value.getScore() : "";
-		String arrayString = value.hasArray() ? ",\n \"array_data\":" + value.getArrayAsString() : "";
-		return delim + "{\"name\":\"" + name + "\",\n \"implementation\":\"" + implementation + "\"" +labelString+stdevString+valueString+arrayString + "}";}
+	public static String printMetrics( Map<Metric, MetricScore> metrics, MetricCollector population, ArrayList<JsonItem> additionalItems ) throws Exception {
+		String[] strMetrics = new String[metrics.size()];
+		
+		int counter = 0; 
+		for( Metric m : metrics.keySet() ) {
+			MetricScore value = metrics.get(m);
+			Double[] p = null;
+			Double stdev = null;
+			
+			if( population != null ) {
+				p = population.getScores( m ).toArray( new Double[population.getScores( m ).size()] ); 
+			}
+			
+			if(p != null) {
+				if(p.length != 0) stdev = MathHelper.standard_deviation( p, false );
+			}
+			
+			ArrayList<JsonItem> jsonItems = new ArrayList<JsonItem>();
+			
+			jsonItems.add( new JsonItem( "name", m.name ) );
+			jsonItems.add( new JsonItem( "implementation", m.implementation ) );
+			jsonItems.add( new JsonItem( "label", m.label ) );
+			if(value.getScore() != null )
+				jsonItems.add( new JsonItem( "value", value.getScore() ) );
+			if( stdev != null )
+				jsonItems.add( new JsonItem( "stdev", stdev ) );
+			if(value.hasArray())
+				jsonItems.add( new JsonItem( "array_data", value.getArrayAsString( decimalFormat ), false ) );
+			if( additionalItems != null ) {
+				jsonItems.addAll( additionalItems );
+			}
+			
+			strMetrics[counter] = dataFeatureToJson( jsonItems );
+			//sb.append( styleToJsonMetric( m.name, m.implementation, m.label, value, stdev, first ) );
+			counter ++;
+		}
+		
+		return StringUtils.join( strMetrics, ", \n" );
+	}
 	
 	public static String styleToJsonError( String value ) {
 		return "{\"error\":\"" + value + "\"}" + "\n";
 	}
 	
-	public static String dataFeatureToJson( Map<String,String> key_values ) {
+	public static DecimalFormat getDecimalFormat() {
+		return decimalFormat;
+	}
+	
+	public static String dataFeatureToJson( List<JsonItem> jsonItems ) {
 		StringBuilder sb = new StringBuilder();
-		for( String key : key_values.keySet() ) {
-			sb.append( ",\"" + key + "\":\"" + key_values.get(key) + "\"" );
+		for( JsonItem item : jsonItems ) {
+			if( item.useQuotes() ) {
+				sb.append( ", \"" + item.getKey() + "\":\"" + item.getValue() + "\"" );
+			} else {
+				sb.append( ", \"" + item.getKey() + "\":" + item.getValue() );
+			}
 		}
-		return "{" + sb.toString().substring( 1 ) + "}";
+		return "{" + sb.toString().substring( 2 ) + "}";
 	}
 	
 	public static void instanes2file( Instances instances, String filepath ) throws IOException {

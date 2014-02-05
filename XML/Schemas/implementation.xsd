@@ -12,6 +12,7 @@
 		<!-- dublin core -->
 		<xs:element name="name" type="oml:system_string"/> <!-- The name given to this implementation -->
     <xs:element name="version" minOccurs="0" type="oml:system_string"/> <!-- The version of the implementation. Default is 1.0. Ignored at upload time. -->
+    <xs:element name="external_version" minOccurs="0" type="oml:system_string"/> <!-- A external version, defined by the user. In combination with the name, it must be unique. It is recommended to use the md5 hash of the source code, that way any change in source code will give a unique version number (like GitHub does). It can be used to retrieve the implementation later on. If left empty, an md5 hash of either the source or the binary file will be used. -->
 		<xs:element name="description" type="xs:string"/> <!-- Description of the implementation, given by the user who uploaded it. -->
 		<xs:element name="creator" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>  <!-- The persons/institutions that created the implementation. -->
 		<xs:element name="contributor" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>  <!-- Other people that contributed to the implementation. -->
@@ -51,6 +52,7 @@
 		<xs:element name="data_type" minOccurs="0" maxOccurs="1" type="xs:string"/> <!-- Data type of the parameter. Should be either integer, numeric, string, vector, matrix, object. -->
 		<xs:element name="default_value" minOccurs="0" maxOccurs="1" type="xs:string"/> <!-- Default value of the parameter. -->
 		<xs:element name="description" minOccurs="0" maxOccurs="1" type="xs:string"/> <!-- Description of what this parameter does. -->
+		<xs:element name="recommendedRange" minOccurs="0" maxOccurs="1" type="xs:string"/> <!-- Describes minimum value, maximun value and/or a recommended range of values. -->
 	</xs:sequence>
 </xs:complexType>
 <xs:complexType name="bibliographical_reference">

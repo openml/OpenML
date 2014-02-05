@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS `evaluation_sample` (
   `repeat` int(10) unsigned NOT NULL DEFAULT '0',
   `fold` int(10) unsigned NOT NULL DEFAULT '0',
   `sample` int(10) unsigned NULL DEFAULT NULL,
+  `sample_size` INT( 10 ) NOT NULL,
   `value` double NOT NULL,
   `array_data` text COLLATE utf8_unicode_ci,
   UNIQUE KEY `did` (`did`,`function`,`label`),
@@ -42,3 +43,13 @@ CREATE TABLE IF NOT EXISTS `evaluation_sample` (
   KEY `func` (`function`),
   KEY `impl` (`implementation_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+ ALTER TABLE `input`
+  DROP `generalName`,
+  DROP `suggestedDistribution`,
+  DROP `lowThreshold`,
+  DROP `highThreshold`,
+  DROP `min`,
+  DROP `max`,
+  DROP `setsComponent`;
+ALTER TABLE `input` CHANGE `suggestedValues` `recommendedRange` VARCHAR( 256 ) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL;
