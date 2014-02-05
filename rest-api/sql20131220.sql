@@ -53,3 +53,4 @@ CREATE TABLE IF NOT EXISTS `evaluation_sample` (
   DROP `max`,
   DROP `setsComponent`;
 ALTER TABLE `input` CHANGE `suggestedValues` `recommendedRange` VARCHAR( 256 ) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL;
+ALTER TABLE `implementation` ADD `external_version` VARCHAR( 128 ) NOT NULL AFTER `version`;
