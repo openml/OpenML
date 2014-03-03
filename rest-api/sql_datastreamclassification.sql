@@ -1,9 +1,9 @@
-INSERT INTO `openml_expdb`.`task_type` (`ttid`, `name`, `description`, `creator`, `contributors`, `date`) 
+INSERT INTO `task_type` (`ttid`, `name`, `description`, `creator`, `contributors`, `date`) 
 VALUES ('4', 'Supervised Data Stream Classification', 'Given a dataset with a nominal target, various data samples of increasing size are defined. A model is build for each individual data sample; from this a learning curve can be drawn.', '"Geoffrey Holmes","Bernhard Pfahringer","Jan van Rijn","Joaquin Vanschoren"', NULL, '2014-03-01');
 
 ALTER TABLE `estimation_procedure` CHANGE  `type`  `type` ENUM(  'crossvalidation',  'leaveoneout',  'holdout',  'bootstrapping',  'subsampling',  'learningcurve',  'testthentrain' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL ;
 ALTER TABLE `estimation_procedure` CHANGE `stratified_sampling` `stratified_sampling` ENUM( 'true', 'false' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL ;
-INSERT INTO  `openml_expdb`.`estimation_procedure` (
+INSERT INTO `estimation_procedure` (
  `id` ,`ttid` ,`name`,`type`,`repeats`,`folds`,`percentage`,`stratified_sampling`
 ) VALUES ( 
  NULL ,  '4',  'Interleaved Test then Train',  'testthentrain', NULL , NULL , NULL ,  NULL 
