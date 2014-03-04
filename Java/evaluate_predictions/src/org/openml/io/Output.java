@@ -1,8 +1,8 @@
 package org.openml.io;
 
 import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
@@ -139,8 +139,8 @@ public class Output {
 		return "{" + sb.toString().substring( 2 ) + "}";
 	}
 	
-	public static void instanes2file( Instances instances, String filepath ) throws IOException {
-		BufferedWriter bw = new BufferedWriter(new FileWriter(filepath));
+	public static void instanes2file( Instances instances, Writer out ) throws IOException {
+		BufferedWriter bw = new BufferedWriter( out );
 		// Important: We can not use a std Instances.toString() approach, as instance files can grow
 		bw.write("@relation " + instances.relationName() + "\n\n");
 		for( int i = 0; i < instances.numAttributes(); ++i ) {
@@ -148,7 +148,11 @@ public class Output {
 		}
 		bw.write("\n@data\n");
 		for( int i = 0; i < instances.numInstances(); ++i ) {
-			bw.write( instances.instance(i) + "\n" );
+			if( i + 1 == instances.numInstances() ) {
+				bw.write( instances.instance(i) + "" ); // fix for last instance
+			} else {
+				bw.write( instances.instance(i) + "\n" );
+			}
 		}
 		bw.close();
 	}

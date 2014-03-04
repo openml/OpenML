@@ -23,6 +23,7 @@ public class Main {
 		options.addOption("e", true, "The evaluation method");
 		options.addOption("o", true, "The output file");
 		options.addOption("r", true, "The rowid");
+		options.addOption("m", false, "Flag determining whether the output of the splits file should be presented as a md5 hash");
 		
 		CommandLine cli;
 		try {
@@ -55,7 +56,9 @@ public class Main {
 								0);
 						if(cli.hasOption("o") == true) {
 							gf.toFile(cli.getOptionValue("o"));
-						} else {
+						} else if(cli.hasOption("m") == true) {
+							gf.toStdOutMd5();
+						}else {
 							gf.toStdout();
 						}
 					} else {

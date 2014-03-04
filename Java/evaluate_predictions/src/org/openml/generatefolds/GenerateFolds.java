@@ -1,11 +1,16 @@
 package org.openml.generatefolds;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 
 import org.openml.generatefolds.EvaluationMethod.EvaluationMethods;
 import org.openml.io.Input;
+import org.openml.io.Md5Writer;
 import org.openml.io.Output;
 
 import weka.core.Attribute;
@@ -49,11 +54,16 @@ public class GenerateFolds {
 	}
 	
 	public void toFile( String splitsPath ) throws IOException {
-		Output.instanes2file(splits, splitsPath);
+		FileWriter f = new FileWriter( new File( splitsPath ) );
+		Output.instanes2file(splits, f );
 	}
 	
-	public void toStdout() {
-		System.out.println(splits.toString());
+	public void toStdout() throws IOException {
+		Output.instanes2file(splits, new OutputStreamWriter( System.out ) );
+	}
+	
+	public void toStdOutMd5() throws NoSuchAlgorithmException, IOException {
+		Output.instanes2file(splits, new Md5Writer() );
 	}
 	
 	private Instances generateInstances(String name) {
