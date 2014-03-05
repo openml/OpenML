@@ -2,8 +2,12 @@ package moa.tasks.openml;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 
+import org.openml.moa.ResultListener;
+
+import openml.xml.Task;
 import moa.classifiers.Classifier;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
@@ -52,6 +56,7 @@ public class OpenmlDataStreamClassification extends MainTask {
 			"File to append intermediate csv reslts to.", null, "csv", true);
 	
 	private InstanceStream stream;
+	private ResultListener resultListener;
 
 	@Override
 	public Class<?> getTaskResultType() {
@@ -66,7 +71,12 @@ public class OpenmlDataStreamClassification extends MainTask {
 
 		Classifier learner = (Classifier) getPreparedClassOption(this.learnerOption);
 		stream = new OpenmlTaskReader( openmlTaskIdOption.getValue() );
-
+		Task task = ((OpenmlTaskReader)stream).getTask();
+		
+		try { // TODO: FIXME ?!
+			resultListener = new ResultListener(task);
+		} catch (Exception e) {e.printStackTrace();}
+		
 		ClassificationPerformanceEvaluator evaluator = (ClassificationPerformanceEvaluator) getPreparedClassOption(this.evaluatorOption);
 		learner.setModelContext(stream.getHeader());
 		long instancesProcessed = 0;
@@ -95,6 +105,7 @@ public class OpenmlDataStreamClassification extends MainTask {
 		long evaluateStartTime = TimingUtils.getNanoCPUTimeOfCurrentThread();
 		long lastEvaluateStartTime = evaluateStartTime;
 		double RAMHours = 0.0;
+		int instanceCounter = 0;
 		while (stream.hasMoreInstances()) {
 			Instance trainInst = stream.nextInstance();
 			Instance testInst = (Instance) trainInst.copy();
@@ -103,8 +114,12 @@ public class OpenmlDataStreamClassification extends MainTask {
 			// evaluator.addClassificationAttempt(trueClass, prediction,
 			// testInst
 			// .weight());
-			evaluator.addResult(testInst, prediction);
+			
+			try {resultListener.addPrediction(instanceCounter++, prediction, (int) trainInst.classValue() );} catch (IOException e) {e.printStackTrace();}
 			learner.trainOnInstance(trainInst);
+			evaluator.addResult(testInst, prediction);
+			// TODO: FIXME?!
+			
 			instancesProcessed++;
 			if (instancesProcessed % this.sampleFrequencyOption.getValue() == 0 || stream.hasMoreInstances() == false) {
 				long evaluateTime = TimingUtils.getNanoCPUTimeOfCurrentThread();
@@ -149,6 +164,7 @@ public class OpenmlDataStreamClassification extends MainTask {
 		if (immediateResultStream != null) {
 			immediateResultStream.close();
 		}
+		try { resultListener.sendToOpenML(); } catch( IOException e ) { e.printStackTrace(); }
 		return learningCurve;
 	}
 

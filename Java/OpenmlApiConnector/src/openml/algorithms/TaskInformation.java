@@ -78,7 +78,8 @@ public class TaskInformation {
 		}
 		throw new Exception("Task does not define an predictions. ");
 	}
-	
+
+	// FIXME!!! This is not OK. This function reads the whole input dataset, which takes too much time.
 	public static String[] getClassNames( Task t ) throws Exception {
 		ArrayList<String> res = new ArrayList<String>();
 		Instances dataset = getSourceData(t).getDataSetDescription().getDataset();

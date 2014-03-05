@@ -150,6 +150,10 @@ public class OpenmlTaskReader extends AbstractOptionHandler implements InstanceS
                     "ArffFileStream failed to read instance from stream.", ioe);
         }
     }
+    
+    public Task getTask() {
+    	return openmlTask;
+    }
 
     @Override
     public void getDescription(StringBuilder sb, int indent) {
