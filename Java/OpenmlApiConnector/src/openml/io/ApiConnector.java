@@ -26,6 +26,7 @@ import openml.xml.UploadImplementation;
 import openml.xml.UploadRun;
 import openml.xstream.XstreamXmlMapping;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -187,6 +188,12 @@ public class ApiConnector {
 	
 	public static String getStringFromUrl( String url ) throws IOException {
 		return IOUtils.toString(  new URL( url ) );
+	}
+	
+	public static File getFileFromUrl( String url, String filepath ) throws IOException {
+		File file = new File( filepath );
+		FileUtils.copyURLToFile( new URL(url), file );
+		return file;
 	}
 	
 	private static Object doApiRequest(String function, String queryString) throws Exception {

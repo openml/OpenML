@@ -1,5 +1,6 @@
 package openml.xml;
 
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
 
@@ -129,7 +130,7 @@ public class Task implements Serializable {
 					String serverMd5 = ApiConnector.getStringFromUrl( getData_splits_url().replace("/get/", "/md5/") );
 					String identifier = getData_splits_url().substring( getData_splits_url().lastIndexOf('/') + 1 );
 					
-					dsCache = InstancesHelper.downloadAndCache( "splits", identifier, getData_splits_url(), serverMd5 );
+					dsCache = new Instances( new FileReader( InstancesHelper.downloadAndCache( "splits", identifier, getData_splits_url(), serverMd5 ) ) );
 				}
 				return dsCache;
 			}

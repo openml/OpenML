@@ -1,5 +1,6 @@
 package openml.xml;
 
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
 
@@ -122,7 +123,7 @@ public class DataSetDescription implements Serializable {
 	public Instances getDataset() throws IOException {
 		if(datasetCache == null ) {
 			String identifier = "dataset_" + getId() + "_" + getName() + ".arff";
-			datasetCache = InstancesHelper.downloadAndCache("dataset", identifier, getUrl(), getMd5_checksum() );
+			datasetCache = new Instances( new FileReader( InstancesHelper.downloadAndCache("dataset", identifier, getUrl(), getMd5_checksum() ) ) );
 		}
 		return datasetCache;
 	}

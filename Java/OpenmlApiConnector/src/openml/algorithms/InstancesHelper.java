@@ -2,15 +2,11 @@ package openml.algorithms;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.Writer;
 
 import openml.io.ApiConnector;
 import openml.settings.Settings;
-
-import org.apache.commons.io.FileUtils;
-
 import weka.core.Instances;
 
 public class InstancesHelper {
@@ -52,29 +48,27 @@ public class InstancesHelper {
 		bw.close();
 	}
 	
-	public static Instances downloadAndCache( String type, String identifier, String url, String serverMd5 ) throws IOException {
+	public static File downloadAndCache( String type, String identifier, String url, String serverMd5 ) throws IOException {
 		File directory = new File( Settings.CACHE_DIRECTORY + type + "/" );
 		File file = new File( directory.getAbsolutePath() + "/" + identifier );
+		File dataset;
 		
 		if( file.exists() ) {
 			String clientMd5 = Hashing.md5(file);
 			if( clientMd5.equals( serverMd5.trim() ) ) {
 				System.out.println("[Cache] Loaded " + type + " " + identifier + " from cache. " );
-				return new Instances( new FileReader( file ) );
+				return file;
 			} else {
 				System.out.println("[Cache ERROR] " + type + " " + identifier + " hash and cache not identical: \n- Client: " + clientMd5 + "\n- Server: " + serverMd5 );
 			}
 		}
 		
-		File dataset = Conversion.stringToTempFile( ApiConnector.getStringFromUrl( url ), identifier, "arff" );
 		if( Settings.CACHE_ALLOWED ) {
-			try {
-				directory.mkdirs();
-				FileUtils.copyFile( dataset, file );
-			} catch( IOException e ) {
-				e.printStackTrace();
-			}
+			directory.mkdirs();
+			dataset = ApiConnector.getFileFromUrl( url, file.getAbsolutePath() );
+		} else {
+			dataset = Conversion.stringToTempFile( ApiConnector.getStringFromUrl( url ), identifier, "arff" );
 		}
-		return new Instances(new FileReader(dataset));
+		return dataset;
 	}
 }
