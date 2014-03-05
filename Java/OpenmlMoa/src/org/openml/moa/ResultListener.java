@@ -4,10 +4,12 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import openml.algorithms.Conversion;
+import openml.algorithms.MathFunctions;
 import openml.algorithms.TaskInformation;
 import openml.xml.Task;
 import openml.xml.Task.Output.Predictions.Feature;
@@ -20,6 +22,7 @@ public class ResultListener {
 	private final File results;
 	private final InstancesHeader header;
 	private final BufferedWriter bw;
+	private final DecimalFormat df; 
 	
 	private int att_index_row_id = -1;
 	private int att_index_confidence = -1;
@@ -28,6 +31,7 @@ public class ResultListener {
 	private ArrayList<String> classes = new ArrayList<String>();
 	
 	public ResultListener( Task t ) throws Exception {
+		df = new DecimalFormat(".######");
 		header = createInstanceHeader( t );
 		results = Conversion.stringToTempFile( header.toString(), header.relationName(), "arff");
 		bw = new BufferedWriter( new FileWriter( results ) );
@@ -42,20 +46,17 @@ public class ResultListener {
 	
 	public void addPrediction( int row_id, double[] predictions, int correct ) throws IOException {
 		String line = "";
-		int    predicted = -1;
-		double predicted_best = 0;
 		String[] instance = new String[header.numAttributes()];
+		int predicted = MathFunctions.argmax(predictions, true);
+		instance[att_index_prediction] = ( predicted < 0 ) ? "?" : classes.get( predicted ); 
 		instance[att_index_row_id] = "" + row_id;
 		instance[att_index_correct] = classes.get( correct );
+		
 		for( int i = 0; i < classes.size(); ++i ) {
 			if( i < predictions.length ) {
-				instance[att_index_confidence+i] = predictions[i] + "";
-				if( predictions[i] > predicted_best ) {
-					predicted_best = predictions[i];
-					predicted = i;
-				}
+				instance[att_index_confidence+i] = df.format(predictions[i]);
 			} else {
-				instance[att_index_confidence+i] = "0.0";
+				instance[att_index_confidence+i] = "0";
 			}
 		}
 		

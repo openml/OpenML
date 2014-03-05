@@ -115,10 +115,10 @@ public class OpenmlDataStreamClassification extends MainTask {
 			// testInst
 			// .weight());
 			
+			// TODO: FIXME?!
 			try {resultListener.addPrediction(instanceCounter++, prediction, (int) trainInst.classValue() );} catch (IOException e) {e.printStackTrace();}
 			learner.trainOnInstance(trainInst);
 			evaluator.addResult(testInst, prediction);
-			// TODO: FIXME?!
 			
 			instancesProcessed++;
 			if (instancesProcessed % this.sampleFrequencyOption.getValue() == 0 || stream.hasMoreInstances() == false) {
