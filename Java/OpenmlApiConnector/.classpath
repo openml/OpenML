@@ -16,5 +16,6 @@
 	<classpathentry kind="lib" path="lib/scimark2lib.jar"/>
 	<classpathentry kind="lib" path="lib/xstream-1.4.4.jar"/>
 	<classpathentry kind="lib" path="lib/weka.jar"/>
+	<classpathentry kind="lib" path="lib/moa.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -111,6 +111,9 @@ public class OpenmlTaskReader extends AbstractOptionHandler implements InstanceS
             if(this.openmlTask == null) {
             	this.openmlTask = ApiConnector.openmlTasksSearch(this.openmlTaskIdOption.getValue());
             }
+            if( this.openmlTask.getTask_type().equals("Supervised Data Stream Classification") == false ) {
+            	throw new RuntimeException("Can only perform tasks of the type \"Supervised Data Stream Classification\".");
+            }
             
             DataSetDescription dsd = TaskInformation.getSourceData(this.openmlTask).getDataSetDescription();
             String classname = TaskInformation.getSourceData(this.openmlTask).getTarget_feature();

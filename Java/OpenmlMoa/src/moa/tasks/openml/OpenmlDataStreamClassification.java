@@ -7,6 +7,8 @@ import java.io.PrintStream;
 
 import org.openml.moa.ResultListener;
 
+import openml.io.ApiSessionHash;
+import openml.settings.Config;
 import openml.xml.Task;
 import moa.classifiers.Classifier;
 import moa.core.Measurement;
@@ -73,9 +75,14 @@ public class OpenmlDataStreamClassification extends MainTask {
 		stream = new OpenmlTaskReader( openmlTaskIdOption.getValue() );
 		Task task = ((OpenmlTaskReader)stream).getTask();
 		
-		try { // TODO: FIXME ?!
-			resultListener = new ResultListener(task);
-		} catch (Exception e) {e.printStackTrace();}
+		try { 
+			Config c = new Config();
+			ApiSessionHash ash = new ApiSessionHash();
+			ash.set( c.getUsername(), c.getPassword() );
+			resultListener = new ResultListener(task, ash );
+		} catch (Exception e) { 
+			throw new RuntimeException("Error initiating ResultListener. (Is file Openml.conf present?) " + e.getMessage() );
+		}
 		
 		ClassificationPerformanceEvaluator evaluator = (ClassificationPerformanceEvaluator) getPreparedClassOption(this.evaluatorOption);
 		learner.setModelContext(stream.getHeader());
@@ -115,8 +122,12 @@ public class OpenmlDataStreamClassification extends MainTask {
 			// testInst
 			// .weight());
 			
-			// TODO: FIXME?!
-			try {resultListener.addPrediction(instanceCounter++, prediction, (int) trainInst.classValue() );} catch (IOException e) {e.printStackTrace();}
+			try {
+				resultListener.addPrediction(instanceCounter++, prediction, (int) trainInst.classValue() );
+			} catch (IOException e) {
+				throw new RuntimeException("Error adding prediction: " + e.getMessage());
+			}
+			
 			learner.trainOnInstance(trainInst);
 			evaluator.addResult(testInst, prediction);
 			
@@ -164,7 +175,13 @@ public class OpenmlDataStreamClassification extends MainTask {
 		if (immediateResultStream != null) {
 			immediateResultStream.close();
 		}
-		try { resultListener.sendToOpenML(); } catch( IOException e ) { e.printStackTrace(); }
+		
+		try { 
+			resultListener.sendToOpenML( learner ); 
+		} catch( Exception e ) {
+			throw new RuntimeException("Error uploading result to OpenML: " + e.getMessage() );
+		}
+		
 		return learningCurve;
 	}
 

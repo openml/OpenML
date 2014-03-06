@@ -1,14 +1,8 @@
 package openml.xml;
 
-import java.util.ArrayList;
+import openml.settings.Constants;
 
 import org.apache.commons.lang3.ArrayUtils;
-
-import openml.algorithms.ParameterType;
-import openml.algorithms.WekaAlgorithm;
-import openml.settings.Constants;
-import openml.xml.Run.Parameter_setting;
-import weka.core.Utils;
 
 public class Implementation {
 	private final String oml = Constants.OPENML_XMLNS;
@@ -192,49 +186,6 @@ public class Implementation {
 			}
 		}
 		return false;
-	}
-	
-	public ArrayList<Parameter_setting> getParameterSetting( String[] parameters ) {
-		ArrayList<Parameter_setting> settings = new ArrayList<Parameter_setting>();
-		for( Parameter p : parameter ) {
-			try {
-				ParameterType type = ParameterType.fromString(p.getData_type());
-				switch( type ) {
-				case KERNEL:
-					String kernelvalue = Utils.getOption(p.getName(), parameters);
-					String[] kernelvalueSplitted = kernelvalue.split(" ");
-					if( WekaAlgorithm.existingClass( kernelvalueSplitted[0] ) ) {
-						String kernelname = kernelvalue.substring( 0, kernelvalue.indexOf(' ') );
-						String[] kernelsettings = Utils.splitOptions(kernelvalue.substring(kernelvalue.indexOf(' ')+1));
-						ArrayList<Parameter_setting> kernelresult = getSubImplementation( p.getName() ).getParameterSetting( kernelsettings );
-						settings.addAll( kernelresult );
-						settings.add( new Parameter_setting( getId(), p.getName(), kernelname ) );
-					} 
-					break;
-				case BASELEARNER:
-					String baselearnervalue = Utils.getOption(p.getName(), parameters);
-					if( WekaAlgorithm.existingClass( baselearnervalue ) ) {
-						String[] baselearnersettings = Utils.partitionOptions( parameters );
-						settings.addAll( getSubImplementation( p.getName() ).getParameterSetting( baselearnersettings ) );
-						settings.add( new Parameter_setting( getId(), p.getName(), baselearnervalue ) );
-					}
-					break;
-				case OPTION:
-					String optionvalue = Utils.getOption(p.getName(), parameters);
-					if( optionvalue != "") {
-						settings.add( new Parameter_setting( getId(), p.getName(), optionvalue ) );
-					}
-					break;
-				case FLAG:
-					boolean flagvalue = Utils.getFlag(p.getName(), parameters);
-					if( flagvalue ) {
-						settings.add( new Parameter_setting( getId(), p.getName(), "true" ) );
-					}
-					break;
-				}
-			} catch(Exception e) { /*Parameter not found. */ }
-		}
-		return settings;
 	}
 	
 	public Implementation getSubImplementation( String identifier ) throws Exception {

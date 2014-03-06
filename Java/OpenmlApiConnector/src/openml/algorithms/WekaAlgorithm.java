@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Enumeration;
 
 import org.apache.commons.lang3.StringUtils;
@@ -14,6 +15,8 @@ import openml.io.ApiConnector;
 import openml.xml.Implementation;
 import openml.xml.ImplementationExists;
 import openml.xml.UploadImplementation;
+import openml.xml.Implementation.Parameter;
+import openml.xml.Run.Parameter_setting;
 import openml.xstream.XstreamXmlMapping;
 import weka.classifiers.Classifier;
 import weka.core.Option;
@@ -47,7 +50,7 @@ public class WekaAlgorithm {
 			// First ask OpenML whether this implementation already exists
 			ImplementationExists result = ApiConnector.openmlImplementationExists( implementation.getName(), implementation.getExternal_version() );
 			if(result.exists()) return result.getId();
-		} catch( Exception e ) { System.err.println( e ); }
+		} catch( Exception e ) { /* Suppress Exception since it is totally OK. */ }
 		// It does not exist. Create it. 
 		String xml = XstreamXmlMapping.getInstance().toXML( implementation );
 		//System.err.println(xml);
@@ -68,7 +71,7 @@ public class WekaAlgorithm {
 		String classPath = classifier.getClass().getName();
 		String classifierName = classPath.substring( classPath.lastIndexOf('.') + 1 );
 		String name = "weka." + classifierName;
-		String version = ((RevisionHandler) classifier).getRevision();
+		String version = getVersion(classifier_name);
 		String description = "Weka implementation of " + classifierName;
 		String language = "English";
 		String dependencies = "Weka_" + Version.VERSION;
@@ -132,6 +135,49 @@ public class WekaAlgorithm {
 		}
 		
 		return i;
+	}
+	
+	public static ArrayList<Parameter_setting> getParameterSetting( String[] parameters, Implementation implementation ) {
+		ArrayList<Parameter_setting> settings = new ArrayList<Parameter_setting>();
+		for( Parameter p : implementation.getParameter() ) {
+			try {
+				ParameterType type = ParameterType.fromString(p.getData_type());
+				switch( type ) {
+				case KERNEL:
+					String kernelvalue = Utils.getOption(p.getName(), parameters);
+					String[] kernelvalueSplitted = kernelvalue.split(" ");
+					if( WekaAlgorithm.existingClass( kernelvalueSplitted[0] ) ) {
+						String kernelname = kernelvalue.substring( 0, kernelvalue.indexOf(' ') );
+						String[] kernelsettings = Utils.splitOptions(kernelvalue.substring(kernelvalue.indexOf(' ')+1));
+						ArrayList<Parameter_setting> kernelresult = getParameterSetting( kernelsettings, implementation.getSubImplementation( p.getName() ) );
+						settings.addAll( kernelresult );
+						settings.add( new Parameter_setting( implementation.getId(), p.getName(), kernelname ) );
+					} 
+					break;
+				case BASELEARNER:
+					String baselearnervalue = Utils.getOption(p.getName(), parameters);
+					if( WekaAlgorithm.existingClass( baselearnervalue ) ) {
+						String[] baselearnersettings = Utils.partitionOptions( parameters );
+						settings.addAll( getParameterSetting( baselearnersettings, implementation.getSubImplementation( p.getName() ) ) );
+						settings.add( new Parameter_setting( implementation.getId(), p.getName(), baselearnervalue ) );
+					}
+					break;
+				case OPTION:
+					String optionvalue = Utils.getOption(p.getName(), parameters);
+					if( optionvalue != "") {
+						settings.add( new Parameter_setting( implementation.getId(), p.getName(), optionvalue ) );
+					}
+					break;
+				case FLAG:
+					boolean flagvalue = Utils.getFlag(p.getName(), parameters);
+					if( flagvalue ) {
+						settings.add( new Parameter_setting( implementation.getId(), p.getName(), "true" ) );
+					}
+					break;
+				}
+			} catch(Exception e) { /*Parameter not found. */ }
+		}
+		return settings;
 	}
 	
 	public static boolean existingClass( String classpath ) {

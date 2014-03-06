@@ -16,7 +16,7 @@ public class DummyClassifier extends AbstractClassifier {
 	@Override
 	public double[] getVotesForInstance(Instance arg0) {
 		// TODO Auto-generated method stub
-		return null;
+		return new double[0];
 	}
 
 	@Override

@@ -10,23 +10,21 @@ public class Config {
 	private boolean loaded = false;
 	private HashMap<String, String> config;
 	
-	public Config() {
+	public Config() throws IOException {
 		load("openml.conf");
 	}
 	
-	public void load( String f ) {
+	public void load( String f ) throws IOException {
 		config = new HashMap<String, String>();
-		try {
-			BufferedReader br = new BufferedReader(new FileReader(f));
-			while( br.ready() ) {
-				String[] l = br.readLine().split("=");
-				if( l.length == 2 ) {
-					config.put( l[0].trim(), l[1].trim() );
-				}
+		BufferedReader br = new BufferedReader(new FileReader(f));
+		while( br.ready() ) {
+			String[] l = br.readLine().split("=");
+			if( l.length == 2 ) {
+				config.put( l[0].trim(), l[1].trim() );
 			}
-			br.close();
-			loaded = true;
-		} catch( IOException e ) { }
+		}
+		br.close();
+		loaded = true;
 	}
 	
 	public String getUsername() {
