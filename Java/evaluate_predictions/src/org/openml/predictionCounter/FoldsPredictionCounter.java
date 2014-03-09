@@ -34,8 +34,8 @@ public class FoldsPredictionCounter implements PredictionCounter {
 	
 	@SuppressWarnings("unchecked")
 	public FoldsPredictionCounter( Instances splits, String type, String shadowType ) {
-		ATT_SPLITS_ROWID = ArffHelper.getRowIndex( "type", splits );
-		ATT_SPLITS_TYPE = ArffHelper.getRowIndex( new String[] {"rowid", "row_id"}, splits );
+		ATT_SPLITS_TYPE = ArffHelper.getRowIndex( "type", splits );
+		ATT_SPLITS_ROWID = ArffHelper.getRowIndex( new String[] {"rowid", "row_id"}, splits );
 		ATT_SPLITS_REPEAT = ArffHelper.getRowIndex( new String[] {"repeat", "repeat_nr"}, splits ) ;
 		ATT_SPLITS_FOLD =  ArffHelper.getRowIndex( new String[] {"fold", "fold_nr"}, splits ) ;
 		ATT_SPLITS_SAMPLE =  ArffHelper.getRowIndex( new String[] {"sample", "sample_nr"}, splits ) ;

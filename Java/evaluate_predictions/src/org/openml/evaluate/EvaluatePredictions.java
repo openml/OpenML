@@ -92,7 +92,7 @@ public class EvaluatePredictions {
 		if( ATT_PREDICTION_PREDICTION < 0) throw new RuntimeException("Predictions file lacks attribute prediction");
 		if( ATT_PREDICTION_REPEAT < 0  && task != Task.TESTTHENTRAIN ) throw new RuntimeException("Predictions file lacks attribute repeat");
 		if( ATT_PREDICTION_FOLD < 0  && task != Task.TESTTHENTRAIN ) throw new RuntimeException("Predictions file lacks attribute fold");
-		if( ATT_PREDICTION_SAMPLE < 0  && task != Task.LEARNINGCURVE ) throw new RuntimeException("Predictions file lacks attribute sample");
+		if( ATT_PREDICTION_SAMPLE < 0  && task == Task.LEARNINGCURVE ) throw new RuntimeException("Predictions file lacks attribute sample");
 		
 		// do the same for the confidence fields. This number is dependent on the number 
 		// of classes in the data set, hence the for-loop. 
