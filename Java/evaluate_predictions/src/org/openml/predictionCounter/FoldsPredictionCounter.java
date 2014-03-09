@@ -1,13 +1,14 @@
-package org.openml.evaluate;
+package org.openml.predictionCounter;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
-import weka.core.AttributeStats;
+import org.openml.helpers.ArffHelper;
+
 import weka.core.Instance;
 import weka.core.Instances;
 
-public class PredictionCounter {
+public class FoldsPredictionCounter implements PredictionCounter {
 	
 	private final int ATT_SPLITS_TYPE;
 	private final int ATT_SPLITS_ROWID;
@@ -27,24 +28,20 @@ public class PredictionCounter {
 	
 	private String error_message;
 	
-	public PredictionCounter( Instances splits ) {
+	public FoldsPredictionCounter( Instances splits ) {
 		this(splits,"TEST","TRAIN");
 	}
 	
 	@SuppressWarnings("unchecked")
-	public PredictionCounter( Instances splits, String type, String shadowType ) {
-		ATT_SPLITS_TYPE = splits.attribute("type").index();
-		ATT_SPLITS_ROWID = splits.attribute("rowid").index();
-		ATT_SPLITS_REPEAT = splits.attribute("repeat").index();
-		ATT_SPLITS_FOLD = splits.attribute("fold").index();
-		ATT_SPLITS_SAMPLE = splits.attribute("sample") == null ? -1 : splits.attribute("sample").index();
+	public FoldsPredictionCounter( Instances splits, String type, String shadowType ) {
+		ATT_SPLITS_ROWID = ArffHelper.getRowIndex( "type", splits );
+		ATT_SPLITS_TYPE = ArffHelper.getRowIndex( new String[] {"rowid", "row_id"}, splits );
+		ATT_SPLITS_REPEAT = ArffHelper.getRowIndex( new String[] {"repeat", "repeat_nr"}, splits ) ;
+		ATT_SPLITS_FOLD =  ArffHelper.getRowIndex( new String[] {"fold", "fold_nr"}, splits ) ;
+		ATT_SPLITS_SAMPLE =  ArffHelper.getRowIndex( new String[] {"sample", "sample_nr"}, splits ) ;
 
-		AttributeStats repeatStats = splits.attributeStats( ATT_SPLITS_REPEAT );
-		NR_OF_REPEATS = (int) repeatStats.numericStats.max + 1;
-		
-		AttributeStats foldStats = splits.attributeStats( ATT_SPLITS_FOLD );
-		NR_OF_FOLDS = (int) foldStats.numericStats.max + 1;
-
+		NR_OF_REPEATS = splits.attribute("repeat") == null ? 1 : (int) splits.attributeStats( ATT_SPLITS_REPEAT ).numericStats.max + 1;
+		NR_OF_FOLDS = splits.attribute("fold") == null ? 1 : (int) splits.attributeStats( ATT_SPLITS_FOLD ).numericStats.max + 1;
 		NR_OF_SAMPLES = splits.attribute("sample") == null ? 1 : (int) splits.attributeStats( ATT_SPLITS_SAMPLE ).numericStats.max + 1;
 		
 		expectedTotal = 0;

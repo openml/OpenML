@@ -5,12 +5,16 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.openml.helpers.ArffHelper;
 import org.openml.io.Input;
 import org.openml.io.Output;
 import org.openml.models.JsonItem;
 import org.openml.models.Metric;
 import org.openml.models.MetricCollector;
 import org.openml.models.MetricScore;
+import org.openml.predictionCounter.FoldsPredictionCounter;
+import org.openml.predictionCounter.PredictionCounter;
+import org.openml.predictionCounter.StreamPredictionCounter;
 
 import weka.classifiers.Evaluation;
 import weka.core.Instance;
@@ -39,15 +43,8 @@ public class EvaluatePredictions {
 	public EvaluatePredictions( String datasetPath, String splitsPath, String predictionsPath, String classAttribute ) throws Exception {
 		// set all arff files needed for this operation. 
 		dataset 	= new Instances( new BufferedReader( Input.getURL( datasetPath ) ) );
-		splits 		= new Instances( new BufferedReader( Input.getURL( splitsPath ) ) );
 		predictions = new Instances( new BufferedReader( Input.getURL( predictionsPath ) ) ); 
-		
-		// initiate a class that will help us with checking the prediction count. 
-		predictionCounter = new PredictionCounter(splits);
-		sampleEvaluation  = new Evaluation[predictionCounter.getRepeats()][predictionCounter.getFolds()][predictionCounter.getSamples()];
-		// *** A sample is considered to be a subset of a fold. In a normal n-times n-fold crossvalidation
-		//     setting, each fold consists of 1 sample. In a leaning curve example, each fold could consist
-		//     of more samples. 
+		splits 		= splitsPath != "" ? new Instances( new BufferedReader( Input.getURL( splitsPath ) ) ) : null;
 		
 		// Set class attribute to dataset ...
 		for( int i = 0; i < dataset.numAttributes(); i++ ) {
@@ -63,6 +60,8 @@ public class EvaluatePredictions {
 		if( dataset.classAttribute().isNominal() ) {
 			if( predictions.attribute("sample") == null ) {
 				task = Task.CLASSIFICATION;
+			} else if( splits == null ) {
+				task = Task.TESTTHENTRAIN;
 			} else {
 				task = Task.LEARNINGCURVE;
 			}
@@ -70,23 +69,30 @@ public class EvaluatePredictions {
 			task = Task.REGRESSION;
 		}
 		
-		// first check if the fields are present.
-		if(predictions.attribute("row_id") == null) 
-			throw new RuntimeException("Predictions file lacks attribute row_id");
-		if(predictions.attribute("fold") == null && predictions.attribute("repeat_nr") == null) 
-			throw new RuntimeException("Predictions file lacks attribute fold");
-		if(predictions.attribute("repeat") == null && predictions.attribute("repeat_nr") == null) 
-			throw new RuntimeException("Predictions file lacks attribute repeat");
+		// initiate a class that will help us with checking the prediction count. 
+		if( task == Task.TESTTHENTRAIN ) {
+			predictionCounter = new StreamPredictionCounter();
+		} else {
+			predictionCounter = new FoldsPredictionCounter(splits);
+		}
+		sampleEvaluation  = new Evaluation[predictionCounter.getRepeats()][predictionCounter.getFolds()][predictionCounter.getSamples()];
+		// *** A sample is considered to be a subset of a fold. In a normal n-times n-fold crossvalidation
+		//     setting, each fold consists of 1 sample. In a leaning curve example, each fold could consist
+		//     of more samples. 
 		
-		// and add those fields. 
-		ATT_PREDICTION_ROWID = predictions.attribute("row_id").index();
-		ATT_PREDICTION_REPEAT = (predictions.attribute("repeat") != null) ? 
-				predictions.attribute("repeat").index() : predictions.attribute("repeat_nr").index();
-		ATT_PREDICTION_FOLD = (predictions.attribute("fold") != null) ? 
-				predictions.attribute("fold").index() : predictions.attribute("fold_nr").index();
-		ATT_PREDICTION_SAMPLE = (predictions.attribute("sample") != null) ? 
-				predictions.attribute("sample").index() : -1;
-		ATT_PREDICTION_PREDICTION = predictions.attribute("prediction").index();
+		// register row indexes. 
+		ATT_PREDICTION_ROWID = ArffHelper.getRowIndex( "row_id", predictions );
+		ATT_PREDICTION_REPEAT = ArffHelper.getRowIndex( new String[] {"repeat", "repeat_nr"}, predictions ) ;
+		ATT_PREDICTION_FOLD =  ArffHelper.getRowIndex( new String[] {"fold", "fold_nr"}, predictions ) ;
+		ATT_PREDICTION_SAMPLE =  ArffHelper.getRowIndex( new String[] {"sample", "sample_nr"}, predictions ) ;
+		ATT_PREDICTION_PREDICTION = ArffHelper.getRowIndex( new String[] {"prediction"}, predictions ) ;
+
+		// and throw an error if these not exists
+		if( ATT_PREDICTION_ROWID < 0) throw new RuntimeException("Predictions file lacks attribute row_id");
+		if( ATT_PREDICTION_PREDICTION < 0) throw new RuntimeException("Predictions file lacks attribute prediction");
+		if( ATT_PREDICTION_REPEAT < 0  && task != Task.TESTTHENTRAIN ) throw new RuntimeException("Predictions file lacks attribute repeat");
+		if( ATT_PREDICTION_FOLD < 0  && task != Task.TESTTHENTRAIN ) throw new RuntimeException("Predictions file lacks attribute fold");
+		if( ATT_PREDICTION_SAMPLE < 0  && task != Task.LEARNINGCURVE ) throw new RuntimeException("Predictions file lacks attribute sample");
 		
 		// do the same for the confidence fields. This number is dependent on the number 
 		// of classes in the data set, hence the for-loop. 
@@ -132,20 +138,20 @@ public class EvaluatePredictions {
 				throw new RuntimeException( "Making a prediction for row_id" + rowid + " (0-based) while dataset has only " + dataset.numInstances() + " instances. " );
 			}
 			
-			if(task == Task.CLASSIFICATION || task == Task.LEARNINGCURVE) {
+			if(task == Task.REGRESSION) {
 				e.evaluateModelOnce(
-					confidences( dataset, prediction ), 
-					dataset.instance( rowid ) );
-				sampleEvaluation[repeat][fold][sample].evaluateModelOnce(
-					confidences( dataset, prediction ), 
-					dataset.instance( rowid ) );
+						prediction.value( ATT_PREDICTION_PREDICTION ), 
+						dataset.instance( rowid ) );
+					sampleEvaluation[repeat][fold][sample].evaluateModelOnce(
+						prediction.value( ATT_PREDICTION_PREDICTION ), 
+						dataset.instance( rowid ) );
 			} else {
 				e.evaluateModelOnce(
-					prediction.value( ATT_PREDICTION_PREDICTION ), 
-					dataset.instance( rowid ) );
-				sampleEvaluation[repeat][fold][sample].evaluateModelOnce(
-					prediction.value( ATT_PREDICTION_PREDICTION ), 
-					dataset.instance( rowid ) );
+						confidences( dataset, prediction ), 
+						dataset.instance( rowid ) );
+					sampleEvaluation[repeat][fold][sample].evaluateModelOnce(
+						confidences( dataset, prediction ), 
+						dataset.instance( rowid ) );
 			}
 		}
 		
@@ -205,18 +211,24 @@ public class EvaluatePredictions {
 			foldMetrics = "[" + StringUtils.join( metricsPerRepeat, "],\n\n[") + "]";
 			globalMetrics = Output.printMetrics(metrics, population, null);
 			
-			System.out.println(
-				"{\n" + 
-					"\"global_metrices\":[\n" +
-						globalMetrics +
-					"],\n" +
-					"\""+foldMetricsLabel+"\":[\n" +
-						foldMetrics + 
-					"]" +
-				"}"
-			);
+			if( task == Task.TESTTHENTRAIN ) {
+				System.out.println( "{\n\"global_metrices\":[\n" + globalMetrics + "] }" );
+			} else {
+				System.out.println(
+					"{\n" + 
+						"\"global_metrices\":[\n" +
+							globalMetrics +
+						"],\n" +
+						"\""+foldMetricsLabel+"\":[\n" +
+							foldMetrics + 
+						"]" +
+					"}"
+				);
+			}
 		} else {
 			throw new RuntimeException( "Task not defined" );
 		}
 	}
+	
+	
 }
