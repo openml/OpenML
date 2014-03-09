@@ -44,7 +44,7 @@ public class EvaluatePredictions {
 		// set all arff files needed for this operation. 
 		dataset 	= new Instances( new BufferedReader( Input.getURL( datasetPath ) ) );
 		predictions = new Instances( new BufferedReader( Input.getURL( predictionsPath ) ) ); 
-		splits 		= splitsPath != "" ? new Instances( new BufferedReader( Input.getURL( splitsPath ) ) ) : null;
+		splits 		= splitsPath.equals("") ? new Instances( new BufferedReader( Input.getURL( splitsPath ) ) ) : null;
 		
 		// Set class attribute to dataset ...
 		for( int i = 0; i < dataset.numAttributes(); i++ ) {
