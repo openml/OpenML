@@ -39,7 +39,7 @@ public class Output {
 		
 		if( task == Task.REGRESSION ) {
 			// here all measures for regression tasks
-		}else if( task == Task.CLASSIFICATION || task == Task.LEARNINGCURVE ) {
+		}else if( task == Task.CLASSIFICATION || task == Task.LEARNINGCURVE || task == Task.TESTTHENTRAIN ) {
 			m.put(new Metric("predictive_accuracy", "openml.evaluation.predictive_accuracy(1.0)", null), new MetricScore( evaluator.pctCorrect() / 100 ) );
 			m.put(new Metric("kappa", "openml.evaluation.kappa(1.0)", null), new MetricScore( evaluator.kappa() ) );
 			m.put(new Metric("prior_entropy", "openml.evaluation.prior_entropy(1.0)", null), new MetricScore( evaluator.priorEntropy() ) );

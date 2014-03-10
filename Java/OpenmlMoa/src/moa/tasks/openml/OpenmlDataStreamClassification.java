@@ -7,6 +7,7 @@ import java.io.PrintStream;
 
 import org.openml.moa.ResultListener;
 
+import openml.algorithms.InstancesHelper;
 import openml.io.ApiSessionHash;
 import openml.settings.Config;
 import openml.xml.Task;
@@ -123,7 +124,7 @@ public class OpenmlDataStreamClassification extends MainTask {
 			// .weight());
 			
 			try {
-				resultListener.addPrediction(instanceCounter++, prediction, (int) trainInst.classValue() );
+				resultListener.addPrediction(instanceCounter++, InstancesHelper.toProbDist( prediction ), (int) trainInst.classValue() );
 			} catch (IOException e) {
 				throw new RuntimeException("Error adding prediction: " + e.getMessage());
 			}

@@ -30,6 +30,22 @@ public class InstancesHelper {
 		}
 	}
 	
+	public static double[] toProbDist( double[]  d ) {
+		double total = 0;
+		double[] result = new double[d.length];
+		for( int i = 0; i < d.length; ++i ) {
+			total += d[i];
+		}
+		
+		for( int i = 0; i < d.length; ++i ) {
+			if( total > 0.0 )
+				result[i] = d[i] / total;
+			else 
+				result[i] = d[i];
+		}
+		return result;
+	}
+	
 	public static void instanes2writer( Instances instances, Writer out ) throws IOException {
 		BufferedWriter bw = new BufferedWriter( out );
 		// Important: We can not use a std Instances.toString() approach, as instance files can grow

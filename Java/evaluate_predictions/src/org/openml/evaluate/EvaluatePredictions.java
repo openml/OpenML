@@ -44,7 +44,7 @@ public class EvaluatePredictions {
 		// set all arff files needed for this operation. 
 		dataset 	= new Instances( new BufferedReader( Input.getURL( datasetPath ) ) );
 		predictions = new Instances( new BufferedReader( Input.getURL( predictionsPath ) ) ); 
-		splits 		= splitsPath.equals("") ? new Instances( new BufferedReader( Input.getURL( splitsPath ) ) ) : null;
+		splits 		= splitsPath.equals("") == false ? new Instances( new BufferedReader( Input.getURL( splitsPath ) ) ) : null;
 		
 		// Set class attribute to dataset ...
 		for( int i = 0; i < dataset.numAttributes(); i++ ) {
@@ -58,10 +58,10 @@ public class EvaluatePredictions {
 		}
 		// ... and specify which task we are doing. classification or regression. 
 		if( dataset.classAttribute().isNominal() ) {
-			if( predictions.attribute("sample") == null ) {
-				task = Task.CLASSIFICATION;
-			} else if( splits == null ) {
+			 if( splits == null ) {
 				task = Task.TESTTHENTRAIN;
+			} else if( predictions.attribute("sample") == null ) {
+				task = Task.CLASSIFICATION;
 			} else {
 				task = Task.LEARNINGCURVE;
 			}
@@ -128,8 +128,8 @@ public class EvaluatePredictions {
 		
 		for( int i = 0; i < predictions.numInstances(); i++ ) {
 			Instance prediction = predictions.instance( i );
-			int repeat = (int) prediction.value( ATT_PREDICTION_REPEAT );
-			int fold = (int) prediction.value( ATT_PREDICTION_FOLD );
+			int repeat = ATT_PREDICTION_REPEAT < 0 ? 0 : (int) prediction.value( ATT_PREDICTION_REPEAT );
+			int fold = ATT_PREDICTION_FOLD < 0 ? 0 : (int) prediction.value( ATT_PREDICTION_FOLD );
 			int sample = ATT_PREDICTION_SAMPLE < 0 ? 0 : (int) prediction.value( ATT_PREDICTION_SAMPLE );
 			int rowid = (int) prediction.value( ATT_PREDICTION_ROWID );
 			
@@ -140,18 +140,18 @@ public class EvaluatePredictions {
 			
 			if(task == Task.REGRESSION) {
 				e.evaluateModelOnce(
-						prediction.value( ATT_PREDICTION_PREDICTION ), 
-						dataset.instance( rowid ) );
-					sampleEvaluation[repeat][fold][sample].evaluateModelOnce(
-						prediction.value( ATT_PREDICTION_PREDICTION ), 
-						dataset.instance( rowid ) );
+					prediction.value( ATT_PREDICTION_PREDICTION ), 
+					dataset.instance( rowid ) );
+				sampleEvaluation[repeat][fold][sample].evaluateModelOnce(
+					prediction.value( ATT_PREDICTION_PREDICTION ), 
+					dataset.instance( rowid ) );
 			} else {
 				e.evaluateModelOnce(
-						confidences( dataset, prediction ), 
-						dataset.instance( rowid ) );
-					sampleEvaluation[repeat][fold][sample].evaluateModelOnce(
-						confidences( dataset, prediction ), 
-						dataset.instance( rowid ) );
+					confidences( dataset, prediction ) , // TODO: catch error when no prob distribution is provided
+					dataset.instance( rowid ) );
+				sampleEvaluation[repeat][fold][sample].evaluateModelOnce(
+					confidences( dataset, prediction ) , // TODO: catch error when no prob distribution is provided
+					dataset.instance( rowid ) );
 			}
 		}
 		
@@ -171,7 +171,7 @@ public class EvaluatePredictions {
 	}
 	
 	private void output( Evaluation e, Task task ) throws Exception {
-		if( task == Task.CLASSIFICATION || task == Task.REGRESSION || task == Task.LEARNINGCURVE ) { // any task ...
+		if( task == Task.CLASSIFICATION || task == Task.REGRESSION || task == Task.LEARNINGCURVE || task == Task.TESTTHENTRAIN ) { // any task ...
 			Map<Metric, MetricScore> metrics = Output.evaluatorToMap(e, nrOfClasses, task);
 			MetricCollector population = new MetricCollector();
 			
