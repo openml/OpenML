@@ -1,8 +1,9 @@
-package org.openml.helpers;
+package org.openml.tests;
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+import org.openml.helpers.MathHelper;
 
 public class MathTester {
 
