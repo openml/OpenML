@@ -21,7 +21,7 @@ import weka.core.Instances;
 public class GenerateFolds {
 	public static final int MAX_SPLITS_SIZE = 1000000;
 	
-	private Instances dataset;
+	private final Instances dataset;
 	private final Instances splits;
 	private final String splits_name;
 	private final Integer splits_size;
@@ -115,13 +115,11 @@ public class GenerateFolds {
 				for( int r = 0; r < evaluationMethod.getRepeats(); ++r ) {
 					dataset.randomize(rand);
 					if (dataset.classAttribute().isNominal())
-						dataset = InstancesHelper.stratify(dataset); 
-						// do our own stratification
+						InstancesHelper.stratify(dataset); // do our own stratification
 					
 					for( int f = 0; f < evaluationMethod.getFolds(); ++f ) {
 						Instances train = dataset.trainCV(evaluationMethod.getFolds(), f);
 						Instances test = dataset.testCV(evaluationMethod.getFolds(), f);
-						
 						
 						for( int s = 0; s < evaluationMethod.getNumberOfSamples( train.numInstances() ); ++s ) {
 							for( int i = 0; i < evaluationMethod.sampleSize( s, train.numInstances() ); ++i ) {

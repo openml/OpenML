@@ -123,9 +123,9 @@ public class InstancesHelper {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static Instances stratify( Instances dataset ) {
-		Instances result = new Instances( dataset, 0, 0 );
+	public static void stratify( Instances dataset ) {
 		int numClasses = dataset.classAttribute().numValues();
+		int numInstances = dataset.numInstances();
 		double[] classRatios = classRatios( dataset );
 		double[] currentRatios = new double[numClasses];
 		int[] currentCounts = new int[numClasses];
@@ -134,23 +134,27 @@ public class InstancesHelper {
 		for( int i = 0; i < numClasses; ++i ) {
 			instancesSorted[i] = new LinkedList<Instance>();
 		}
+		
 		// first, sort all instances based on class in different lists
-		for( int i = 0; i < dataset.numInstances(); ++i ) {
+		for( int i = 0; i < numInstances; ++i ) {
 			Instance current = dataset.instance(i);
 			instancesSorted[(int) current.classValue()].add( current );
 		}
 		
-		for( int i = 0; i < dataset.numInstances(); ++i ) {
+		// now empty the original dataset, all instances are stored in the L.L.
+		for( int i = 0; i < numInstances; i++ ) {
+			dataset.delete( dataset.numInstances() - 1 );
+		}
+		
+		for( int i = 0; i < numInstances; ++i ) {
 			int idx = biggestDifference( classRatios, currentRatios );
-			result.add( instancesSorted[idx].remove( 0 ) );
+			dataset.add( instancesSorted[idx].remove( 0 ) );
 			currentCounts[idx]++;
 			
 			for( int j = 0; j < currentRatios.length; ++j ) {
 				currentRatios[j] = (currentCounts[j] * 1.0) / (i+1);
 			}
 		}
-		
-		return result;
 	}
 	
 	private static int biggestDifference( double[] target, double[] current ) {
