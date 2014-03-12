@@ -2,7 +2,7 @@ package org.openml.models;
 
 import java.text.DecimalFormat;
 
-import org.openml.helpers.MathHelper;
+import openml.algorithms.MathHelper;
 
 public class MetricScore {
 	

@@ -8,6 +8,8 @@ import java.io.OutputStreamWriter;
 import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 
+import openml.algorithms.InstancesHelper;
+
 import org.openml.generatefolds.EvaluationMethod.EvaluationMethods;
 import org.openml.io.Input;
 import org.openml.io.Md5Writer;
@@ -35,7 +37,7 @@ public class GenerateFolds {
 		dataset = new Instances( new BufferedReader( Input.getURL( datasetPath ) ) );
 		evaluationMethod = new EvaluationMethod(evaluation,dataset);
 		
-		setTargetAttribute( dataset, targetFeature );
+		InstancesHelper.setTargetAttribute( dataset, targetFeature );
 		
 		am = new ArffMapping( evaluationMethod.getEvaluationMethod() == EvaluationMethods.LEARNINGCURVE);
 		
@@ -118,7 +120,10 @@ public class GenerateFolds {
 					for( int f = 0; f < evaluationMethod.getFolds(); ++f ) {
 						Instances train = dataset.trainCV(evaluationMethod.getFolds(), f);
 						Instances test = dataset.testCV(evaluationMethod.getFolds(), f);
-						// TODO: stratify the training set
+						
+						// do our own stratification
+						train = InstancesHelper.stratify(train);
+						
 						for( int s = 0; s < evaluationMethod.getNumberOfSamples( train.numInstances() ); ++s ) {
 							for( int i = 0; i < evaluationMethod.sampleSize( s, train.numInstances() ); ++i ) {
 								int rowid = (int) train.instance(i).value(0);
@@ -141,15 +146,5 @@ public class GenerateFolds {
 		for( int i = 0; i < instances.numInstances(); ++i )
 			instances.instance(i).setValue(0, i);
 		return instances;
-	}
-	
-	public static void setTargetAttribute( Instances instances, String classAttribute ) throws Exception {
-		for(int i = 0; i < instances.numAttributes(); ++i ) {
-			if(instances.attribute(i).name().equals(classAttribute)) {
-				instances.setClassIndex(i);
-				return;
-			}
-		}
-		throw new Exception("classAttribute " + classAttribute + " non-existant on dataset. ");
 	}
 }

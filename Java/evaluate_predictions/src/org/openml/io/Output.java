@@ -11,9 +11,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import openml.algorithms.MathHelper;
+
 import org.apache.commons.lang3.StringUtils;
 import org.openml.evaluate.Task;
-import org.openml.helpers.MathHelper;
 import org.openml.models.JsonItem;
 import org.openml.models.Metric;
 import org.openml.models.MetricCollector;

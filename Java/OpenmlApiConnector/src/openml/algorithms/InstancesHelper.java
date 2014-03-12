@@ -4,9 +4,12 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.LinkedList;
+import java.util.List;
 
 import openml.io.ApiConnector;
 import openml.settings.Settings;
+import weka.core.Instance;
 import weka.core.Instances;
 
 public class InstancesHelper {
@@ -28,6 +31,18 @@ public class InstancesHelper {
 		} else {
 			return false;
 		}
+	}
+	
+	public static int getRowIndex( String[] names, Instances instances ) {
+		for( String name : names ) {
+			int probe = getRowIndex(name, instances);
+			if( probe >= 0 ) return probe;
+		}
+		return -1;
+	}
+	
+	public static int getRowIndex( String name, Instances instances ) {
+		return (instances.attribute( name ) != null) ? instances.attribute( name ).index() : -1;
 	}
 	
 	public static double[] toProbDist( double[]  d ) {
@@ -86,5 +101,68 @@ public class InstancesHelper {
 			dataset = Conversion.stringToTempFile( ApiConnector.getStringFromUrl( url ), identifier, "arff" );
 		}
 		return dataset;
+	}
+	
+	public static int[] classCounts( Instances dataset ) {
+		int[] count = new int[dataset.classAttribute().numValues()];
+		for( int i = 0; i < dataset.numInstances(); ++i ) {
+			count[(int)dataset.instance(i).classValue()]++;
+		}
+		return count;
+	}
+	
+	public static double[] classRatios( Instances dataset ) {
+		double[] result = new double[dataset.classAttribute().numValues()];
+		int[] count = classCounts( dataset );
+		
+		for( int i = 0; i < result.length; ++i ) {
+			result[i] = count[i] * 1.0 / dataset.numInstances();
+		}
+		
+		return result;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static Instances stratify( Instances dataset ) {
+		Instances result = new Instances( dataset, 0, 0 );
+		int numClasses = dataset.classAttribute().numValues();
+		double[] classRatios = classRatios( dataset );
+		double[] currentRatios = new double[numClasses];
+		int[] currentCounts = new int[numClasses];
+		List<Instance>[] instancesSorted = new LinkedList[numClasses];
+		
+		for( int i = 0; i < numClasses; ++i ) {
+			instancesSorted[i] = new LinkedList<Instance>();
+		}
+		// first, sort all instances based on class in different lists
+		for( int i = 0; i < dataset.numInstances(); ++i ) {
+			Instance current = dataset.instance(i);
+			instancesSorted[(int) current.classValue()].add( current );
+		}
+		
+		for( int i = 0; i < dataset.numInstances(); ++i ) {
+			int idx = biggestDifference( classRatios, currentRatios );
+			result.add( instancesSorted[idx].remove( 0 ) );
+			currentCounts[idx]++;
+			
+			for( int j = 0; j < currentRatios.length; ++j ) {
+				currentRatios[j] = (currentCounts[j] * 1.0) / (i+1);
+			}
+		}
+		
+		return result;
+	}
+	
+	private static int biggestDifference( double[] target, double[] current ) {
+		int biggestIdx = -1;
+		double biggestValue = Integer.MIN_VALUE;
+		for( int i = 0; i < target.length; ++i ) {
+			double currentValue = target[i] - current[i];
+			if( currentValue > biggestValue ) {
+				biggestIdx = i;
+				biggestValue = currentValue;
+			}
+		}
+		return biggestIdx;
 	}
 }

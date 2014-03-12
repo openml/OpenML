@@ -4,8 +4,9 @@ import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.Map;
 
+import openml.algorithms.InstancesHelper;
+
 import org.apache.commons.lang3.StringUtils;
-import org.openml.helpers.ArffHelper;
 import org.openml.io.Input;
 import org.openml.io.Output;
 import org.openml.models.JsonItem;
@@ -81,11 +82,11 @@ public class EvaluatePredictions {
 		//     of more samples. 
 		
 		// register row indexes. 
-		ATT_PREDICTION_ROWID = ArffHelper.getRowIndex( "row_id", predictions );
-		ATT_PREDICTION_REPEAT = ArffHelper.getRowIndex( new String[] {"repeat", "repeat_nr"}, predictions ) ;
-		ATT_PREDICTION_FOLD =  ArffHelper.getRowIndex( new String[] {"fold", "fold_nr"}, predictions ) ;
-		ATT_PREDICTION_SAMPLE =  ArffHelper.getRowIndex( new String[] {"sample", "sample_nr"}, predictions ) ;
-		ATT_PREDICTION_PREDICTION = ArffHelper.getRowIndex( new String[] {"prediction"}, predictions ) ;
+		ATT_PREDICTION_ROWID = InstancesHelper.getRowIndex( "row_id", predictions );
+		ATT_PREDICTION_REPEAT = InstancesHelper.getRowIndex( new String[] {"repeat", "repeat_nr"}, predictions ) ;
+		ATT_PREDICTION_FOLD =  InstancesHelper.getRowIndex( new String[] {"fold", "fold_nr"}, predictions ) ;
+		ATT_PREDICTION_SAMPLE =  InstancesHelper.getRowIndex( new String[] {"sample", "sample_nr"}, predictions ) ;
+		ATT_PREDICTION_PREDICTION = InstancesHelper.getRowIndex( new String[] {"prediction"}, predictions ) ;
 
 		// and throw an error if these not exists
 		if( ATT_PREDICTION_ROWID < 0) throw new RuntimeException("Predictions file lacks attribute row_id");

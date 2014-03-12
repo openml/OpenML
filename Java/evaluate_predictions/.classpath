@@ -3,7 +3,8 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="libs/commons-cli-1.2.jar"/>
-	<classpathentry kind="lib" path="libs/commons-lang3-3.1.jar"/>
-	<classpathentry kind="lib" path="libs/weka.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/OpenmlApiConnector"/>
+	<classpathentry kind="lib" path="/OpenmlApiConnector/lib/commons-lang3-3.1.jar"/>
+	<classpathentry kind="lib" path="/OpenmlApiConnector/lib/weka.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
