@@ -114,7 +114,8 @@ public class SplitsTester {
 	}
 	
 	private boolean withinBounds( double setSize, double totalSize, double targetSize ) {
-		if( (setSize - 1) / totalSize > targetSize || (setSize + 1) / totalSize < targetSize )
+		int bound = 2; // bound must be 2: 1 for sounding error of sample size, one for uneven samples
+		if( (setSize - bound) / totalSize > targetSize || (setSize + bound) / totalSize < targetSize )
 			return false;
 		return true;
 	}
