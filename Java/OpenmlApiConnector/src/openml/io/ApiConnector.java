@@ -49,7 +49,8 @@ import weka.core.Instances;
 
 public class ApiConnector {
 	
-	private static final String API_URL = Settings.BASE_URL + "api/";
+	public static String API_URL = Settings.BASE_URL; // can be altered outside the class
+	private static final String API_PART = "rest_api/";
 	private static XStream xstream = XstreamXmlMapping.getInstance();
 	
 	private static HttpClient httpclient;
@@ -131,7 +132,7 @@ public class ApiConnector {
 	public static UploadDataSet openmlDataUpload( File description, File dataset, String session_hash ) throws Exception {
 		MultipartEntity params = new MultipartEntity();
 		params.addPart("description", new FileBody(description));
-		params.addPart("dataset", new FileBody(dataset));
+		if( dataset != null) params.addPart("dataset", new FileBody(dataset));
 		params.addPart("session_hash",new StringBody(session_hash));
         
         Object apiResult = doApiRequest("openml.data.upload", "", params);
@@ -140,6 +141,10 @@ public class ApiConnector {
         } else {
         	throw new DataFormatException("Casting Api Object to UploadDataSet");
         }
+	}
+	
+	public static UploadDataSet openmlDataUpload( File description, String session_hash ) throws Exception {
+		return openmlDataUpload(description, null, session_hash);
 	}
 	
 	public static UploadImplementation openmlImplementationUpload( File description, File binary, File source, String session_hash ) throws Exception {
@@ -203,7 +208,7 @@ public class ApiConnector {
 	private static Object doApiRequest(String function, String queryString, HttpEntity entity) throws Exception {
 		String result = "";
 		httpclient = new DefaultHttpClient();
-		String requestUri = API_URL + "?f=" + function + queryString;
+		String requestUri = API_URL + API_PART + "?f=" + function + queryString;
 		long contentLength = 0;
 		try {
             HttpPost httppost = new HttpPost( requestUri );

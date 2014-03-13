@@ -44,9 +44,6 @@ public class GenerateFolds {
 		splits_name = Input.filename( datasetPath ) + "_splits";
 		splits_size = evaluationMethod.getSplitsSize(dataset);
 		
-		if(splits_size > MAX_SPLITS_SIZE)
-			throw new RuntimeException("Dataset to big for this type of evaluation method. ");
-		
 		if(rowid.equals("")) {
 			rowid = "rowid";
 			addRowId(dataset,rowid);

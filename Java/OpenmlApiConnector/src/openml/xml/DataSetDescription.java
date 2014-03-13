@@ -27,7 +27,6 @@ public class DataSetDescription implements Serializable {
 	private String url;
 	private String row_id_attribute;
 	private String md5_checksum;
-	private Instances datasetCache;
 	
 	/*
 	 *	Constructor used from the Register Dataset Dialog. Set "null" for unspecified values that are optional.
@@ -111,6 +110,10 @@ public class DataSetDescription implements Serializable {
 	public String getUrl() {
 		return url;
 	}
+	
+	public void unsetUrl() {
+		this.url = null;
+	}
 
 	public String getRow_id_attribute() {
 		return row_id_attribute;
@@ -121,10 +124,7 @@ public class DataSetDescription implements Serializable {
 	}
 	
 	public Instances getDataset() throws IOException {
-		if(datasetCache == null ) {
-			String identifier = "dataset_" + getId() + "_" + getName() + ".arff";
-			datasetCache = new Instances( new FileReader( InstancesHelper.downloadAndCache("dataset", identifier, getUrl(), getMd5_checksum() ) ) );
-		}
-		return datasetCache;
+		String identifier = "dataset_" + getId() + "_" + getName() + ".arff";
+		return new Instances( new FileReader( InstancesHelper.downloadAndCache("dataset", identifier, getUrl(), getMd5_checksum() ) ) );
 	}
 }

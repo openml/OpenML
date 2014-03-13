@@ -6,5 +6,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/OpenmlApiConnector"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/evaluate_predictions"/>
+	<classpathentry kind="lib" path="/OpenmlApiConnector/lib/xstream-1.4.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
