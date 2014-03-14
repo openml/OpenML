@@ -1,6 +1,7 @@
 package org.openml.generatefolds;
 
 import weka.core.Attribute;
+import weka.core.DenseInstance;
 import weka.core.FastVector;
 import weka.core.Instance;
 
@@ -37,7 +38,7 @@ public class ArffMapping {
 	}
 	
 	public Instance createInstance( boolean train, int rowid, int repeat, int fold ) {
-		Instance instance = new Instance(4);
+		Instance instance = new DenseInstance( 4 );
 		instance.setValue((Attribute)attributes.elementAt(0), train ? 0.0 : 1.0 );
 		instance.setValue((Attribute)attributes.elementAt(1), rowid );
 		instance.setValue((Attribute)attributes.elementAt(2), repeat );
@@ -47,7 +48,7 @@ public class ArffMapping {
 	}
 	
 	public Instance createInstance( boolean train, int rowid, int repeat, int fold, int sample ) {
-		Instance instance = new Instance(5);
+		Instance instance = new DenseInstance(5);
 		instance.setValue((Attribute)attributes.elementAt(0), train ? 0.0 : 1.0 );
 		instance.setValue((Attribute)attributes.elementAt(1), rowid );
 		instance.setValue((Attribute)attributes.elementAt(2), repeat );
