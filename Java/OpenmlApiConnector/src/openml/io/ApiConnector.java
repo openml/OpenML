@@ -20,6 +20,7 @@ import openml.xml.Authenticate;
 import openml.xml.DataSetDescription;
 import openml.xml.Implementation;
 import openml.xml.ImplementationExists;
+import openml.xml.Job;
 import openml.xml.Task;
 import openml.xml.UploadDataSet;
 import openml.xml.UploadImplementation;
@@ -180,6 +181,15 @@ public class ApiConnector {
         	return (UploadRun) apiResult;
         } else {
         	throw new DataFormatException("Casting Api Object to UploadRun");
+        }
+	}
+	
+	public static Job openmlRunGetjob( String workbench, String task_type_id ) throws Exception {
+		Object apiResult = doApiRequest("openml.run.getjob", "&workbench=" + workbench + "&task_type_id=" + task_type_id );
+        if( apiResult instanceof Job ){
+        	return (Job) apiResult;
+        } else {
+        	throw new DataFormatException("Casting Api Object to Job");
         }
 	}
 	

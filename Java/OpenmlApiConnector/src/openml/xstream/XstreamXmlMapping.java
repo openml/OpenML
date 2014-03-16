@@ -7,6 +7,7 @@ import openml.xml.Authenticate;
 import openml.xml.DataSetDescription;
 import openml.xml.ApiError;
 import openml.xml.Implementation;
+import openml.xml.Job;
 import openml.xml.Run;
 import openml.xml.Task;
 import openml.xml.UploadDataSet;
@@ -196,6 +197,11 @@ public class XstreamXmlMapping {
 		// upload run
 		xstream.alias("oml:upload_run", UploadRun.class);
 		xstream.aliasField("oml:run_id", UploadRun.class, "run_id");
+		
+		// run getjob
+		xstream.alias("oml:job", Job.class);
+		xstream.aliasField("oml:task_id", Job.class, "task_id");
+		xstream.aliasField("oml:learner", Job.class, "learner");
 		
 		return xstream;
 	}
