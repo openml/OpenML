@@ -61,7 +61,7 @@ public class ResultListener {
 		Implementation implementation = MoaAlgorithm.create(classifier);
 		int implementation_id = MoaAlgorithm.getImplementationId(implementation, classifier, ash.getSessionHash());
 		
-		Run run = new Run( task.getTask_id(), null, implementation_id, null );
+		Run run = new Run( task.getTask_id(), null, implementation_id, classifier.getCLICreationString(Classifier.class), null );
 		for( Metric m : userdefinedMeasures.keySet() ) {
 			MetricScore score = userdefinedMeasures.get(m);
 			run.addOutputEvaluation( m.name, m.implementation, score.getScore(), score.getArrayAsString( df ) );

@@ -11,14 +11,16 @@ public class Run {
 	private int task_id;
 	private int implementation_id;
 	private String error_message;
+	private String setup_string;
 	private Parameter_setting[] parameter_settings;
 	private Data input_data;
 	private Data output_data;
 	
-	public Run( int task_id, String error_message, int implementation_id, Parameter_setting[] parameter_settings ) {
+	public Run( int task_id, String error_message, int implementation_id, String setup_string, Parameter_setting[] parameter_settings ) {
 		this.task_id = task_id;
 		this.implementation_id = implementation_id;
 		this.error_message = error_message;
+		this.setup_string = setup_string;
 		this.parameter_settings = parameter_settings;
 		
 		this.output_data = new Data();
@@ -39,6 +41,10 @@ public class Run {
 	
 	public String getError_message() {
 		return error_message;
+	}
+	
+	public String getSetup_string() {
+		return setup_string;
 	}
 	
 	public Parameter_setting[] getParameter_settings() {
