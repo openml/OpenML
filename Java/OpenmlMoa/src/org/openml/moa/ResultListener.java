@@ -16,6 +16,8 @@ import openml.algorithms.MoaAlgorithm;
 import openml.algorithms.TaskInformation;
 import openml.io.ApiConnector;
 import openml.io.ApiSessionHash;
+import openml.models.Metric;
+import openml.models.MetricScore;
 import openml.xml.Implementation;
 import openml.xml.Run;
 import openml.xml.Task;
@@ -53,13 +55,18 @@ public class ResultListener {
 		bw.write(header.toString());
 	}
 	
-	public boolean sendToOpenML( Classifier classifier ) throws Exception {
+	public boolean sendToOpenML( Classifier classifier, Map<Metric, MetricScore> userdefinedMeasures ) throws Exception {
 		bw.close();
 		
 		Implementation implementation = MoaAlgorithm.create(classifier);
 		int implementation_id = MoaAlgorithm.getImplementationId(implementation, classifier, ash.getSessionHash());
 		
-		Run run = new Run( task.getTask_id(), null, implementation_id, null);
+		Run run = new Run( task.getTask_id(), null, implementation_id, null );
+		for( Metric m : userdefinedMeasures.keySet() ) {
+			MetricScore score = userdefinedMeasures.get(m);
+			run.addOutputEvaluation( m.name, m.implementation, score.getScore(), score.getArrayAsString( df ) );
+		}
+		
 		File descriptionXML = Conversion.stringToTempFile( XstreamXmlMapping.getInstance().toXML( run ), "moa_task_" + task.getTask_id(), "xml");
 		
 		Map<String, File> output_files = new HashMap<String, File>();

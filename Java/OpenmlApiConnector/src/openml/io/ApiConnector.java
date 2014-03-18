@@ -168,8 +168,8 @@ public class ApiConnector {
 	public static UploadRun openmlRunUpload( File description, Map<String,File> output_files, String session_hash ) throws Exception {
 		MultipartEntity params = new MultipartEntity();
 		if(Settings.API_VERBOSE) {
-			System.out.println( Conversion.fileToString(description) );
-			System.out.println("\n==========\n"+Conversion.fileToString(output_files.get("predictions"))+"\n==========");
+			System.out.println( Conversion.fileToString(output_files.get("predictions")) );
+			System.out.println("\n==========\n"+Conversion.fileToString(description)+"\n==========");
 		}
 		params.addPart("description", new FileBody(description));
 		for( String s : output_files.keySet() ) {

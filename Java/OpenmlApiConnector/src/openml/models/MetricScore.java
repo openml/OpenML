@@ -1,4 +1,4 @@
-package org.openml.models;
+package openml.models;
 
 import java.text.DecimalFormat;
 

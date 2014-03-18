@@ -4,8 +4,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.openml.moa.ResultListener;
+import openml.models.Metric;
+import openml.models.MetricScore;
 
 import openml.algorithms.InstancesHelper;
 import openml.io.ApiSessionHash;
@@ -114,6 +118,7 @@ public class OpenmlDataStreamClassification extends MainTask {
 		long lastEvaluateStartTime = evaluateStartTime;
 		double RAMHours = 0.0;
 		int instanceCounter = 0;
+		
 		while (stream.hasMoreInstances()) {
 			Instance trainInst = stream.nextInstance();
 			Instance testInst = (Instance) trainInst.copy();
@@ -176,9 +181,15 @@ public class OpenmlDataStreamClassification extends MainTask {
 		if (immediateResultStream != null) {
 			immediateResultStream.close();
 		}
+		long evaluateEndTime = TimingUtils.getNanoCPUTimeOfCurrentThread();
 		
 		try { 
-			resultListener.sendToOpenML( learner ); 
+			Map<Metric, MetricScore> m = new HashMap<Metric, MetricScore>();
+			m.put( new Metric("ram_hours", "openml.userdefined.ram_hours(1.0)", null), new MetricScore(RAMHours));
+			m.put( new Metric("run_cpu_time", "openml.evaluation.run_cpu_time(1.0)", null), 
+					new MetricScore( TimingUtils.nanoTimeToSeconds(evaluateEndTime - evaluateStartTime) ) );
+			
+			resultListener.sendToOpenML( learner, m ); 
 		} catch( Exception e ) {
 			throw new RuntimeException("Error uploading result to OpenML: " + e.getMessage() );
 		}

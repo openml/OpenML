@@ -129,13 +129,8 @@ public class XstreamXmlMapping {
 		
 		// tasks
 		xstream.alias("oml:task", Task.class);
-		//xstream.alias("oml:input", Task.Input.class);
 		xstream.alias("oml:data_set", Task.Input.Data_set.class);
 		xstream.alias("oml:estimation_procedure", Task.Input.Estimation_procedure.class);
-		//xstream.alias("oml:parameter", Task.Input.Estimation_procedure.Parameter.class);
-		//xstream.alias("oml:evaluation_measures", Task.Input.Evaluation_measures.class);
-		//xstream.alias("oml:output", Task.Output.class);
-		//xstream.alias("oml:predictions", Task.Output.Predictions.class);
 		xstream.alias("oml:feature", Task.Output.Predictions.Feature.class);
 		xstream.aliasAttribute(Task.class, "oml", "xmlns:oml");
 		

@@ -20,7 +20,7 @@ public class RunJob {
 		String[] taskArgs = new String[5];
 		taskArgs[0] = "openml.OpenmlDataStreamClassification";
 		taskArgs[1] = "-l";
-		taskArgs[2] = j.getLearner();
+		taskArgs[2] = "(" + j.getLearner() + ")";
 		taskArgs[3] = "-t";
 		taskArgs[4] = ""+j.getTask_id();
 		

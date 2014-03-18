@@ -57,6 +57,11 @@ public class Run {
 			Double value, String[] array_data ) {
 		output_data.addEvaluation( name, implementation, value, array_data);
 	}
+	
+	public void addOutputEvaluation( String name, String implementation,
+			Double value, String array_data ) {
+		output_data.addEvaluation( name, implementation, value, array_data);
+	}
 
 	public static class Parameter_setting {
 		private String name;
@@ -112,6 +117,12 @@ public class Run {
 			Evaluation e = new Evaluation( name, implementation, value, array_data);
 			evaluation = ArrayUtils.addAll( evaluation, e );
 		}
+		
+		public void addEvaluation( String name, String implementation,
+				Double value, String array_data ) {
+			Evaluation e = new Evaluation( name, implementation, value, array_data);
+			evaluation = ArrayUtils.addAll( evaluation, e );
+		}
 
 		public static class Dataset {
 			private int did;
@@ -148,6 +159,15 @@ public class Run {
 				this.implementation = implementation;
 				this.value = value;
 				this.array_data = "[ " + StringUtils.join( array_data, ", " ) + " ]";
+			}
+			
+			public Evaluation( String name, String implementation,
+					Double value, String array_data ) {
+				super();
+				this.name = name;
+				this.implementation = implementation;
+				this.value = value;
+				this.array_data = array_data;
 			}
 			
 			public int getDid() {

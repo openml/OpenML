@@ -5,14 +5,14 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import openml.algorithms.InstancesHelper;
+import openml.models.Metric;
+import openml.models.MetricCollector;
+import openml.models.MetricScore;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openml.io.Input;
 import org.openml.io.Output;
 import org.openml.models.JsonItem;
-import org.openml.models.Metric;
-import org.openml.models.MetricCollector;
-import org.openml.models.MetricScore;
 import org.openml.predictionCounter.FoldsPredictionCounter;
 import org.openml.predictionCounter.PredictionCounter;
 import org.openml.predictionCounter.StreamPredictionCounter;

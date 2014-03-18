@@ -12,13 +12,13 @@ import java.util.Locale;
 import java.util.Map;
 
 import openml.algorithms.MathHelper;
+import openml.models.Metric;
+import openml.models.MetricCollector;
+import openml.models.MetricScore;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openml.evaluate.Task;
 import org.openml.models.JsonItem;
-import org.openml.models.Metric;
-import org.openml.models.MetricCollector;
-import org.openml.models.MetricScore;
 
 import weka.classifiers.Evaluation;
 import weka.core.Instances;
