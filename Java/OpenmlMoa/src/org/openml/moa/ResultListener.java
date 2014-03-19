@@ -20,6 +20,7 @@ import openml.models.Metric;
 import openml.models.MetricScore;
 import openml.xml.Implementation;
 import openml.xml.Run;
+import openml.xml.Run.Parameter_setting;
 import openml.xml.Task;
 import openml.xml.Task.Output.Predictions.Feature;
 import openml.xstream.XstreamXmlMapping;
@@ -60,14 +61,18 @@ public class ResultListener {
 		
 		Implementation implementation = MoaAlgorithm.create(classifier);
 		int implementation_id = MoaAlgorithm.getImplementationId(implementation, classifier, ash.getSessionHash());
+		implementation = ApiConnector.openmlImplementationGet( implementation_id ); // updated
 		
-		Run run = new Run( task.getTask_id(), null, implementation_id, classifier.getCLICreationString(Classifier.class), null );
+		ArrayList<Parameter_setting> ps = MoaAlgorithm.getOptions( implementation, classifier.getOptions().getOptionArray() );
+		
+		Run run = new Run( task.getTask_id(), null, implementation_id, classifier.getCLICreationString(Classifier.class), ps.toArray(new Parameter_setting[ps.size()]) );
 		for( Metric m : userdefinedMeasures.keySet() ) {
 			MetricScore score = userdefinedMeasures.get(m);
 			run.addOutputEvaluation( m.name, m.implementation, score.getScore(), score.getArrayAsString( df ) );
 		}
-		
 		File descriptionXML = Conversion.stringToTempFile( XstreamXmlMapping.getInstance().toXML( run ), "moa_task_" + task.getTask_id(), "xml");
+		
+		
 		
 		Map<String, File> output_files = new HashMap<String, File>();
 		output_files.put( "predictions", results );

@@ -48,6 +48,8 @@ public class ApiSessionHash implements Serializable {
 	}
 
 	public String getSessionHash() {
+		if( isValid() == false )
+			update();
 		return sessionHash;
 	}
 }

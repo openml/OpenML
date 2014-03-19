@@ -6,10 +6,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 import openml.io.ApiConnector;
 import openml.xml.Implementation;
 import openml.xml.ImplementationExists;
+import openml.xml.Run;
+import openml.xml.Run.Parameter_setting;
 import openml.xml.UploadImplementation;
 import openml.xstream.XstreamXmlMapping;
 import moa.classifiers.Classifier;
@@ -36,6 +39,37 @@ public class MoaAlgorithm {
 		try { binary = getFile( classifier, "bin/", "class" ); } catch(IOException e) {}
 		UploadImplementation ui = ApiConnector.openmlImplementationUpload(implementationFile, binary, source, hash);
 		return ui.getId();
+	}
+	
+	public static ArrayList<Run.Parameter_setting> getOptions( Implementation i, Option[] options ) {
+		ArrayList<Run.Parameter_setting> result = new ArrayList<Run.Parameter_setting>();
+		for( Option option : options ) {
+			if( option instanceof FlagOption ) {
+				FlagOption o = (FlagOption) option;
+				result.add( new Parameter_setting(i.getId(), o.getCLIChar() + "", o.isSet() ? "true" : "false") );
+			} else if( option instanceof ClassOption ) {
+				ClassOption o = (ClassOption) option;
+				if( o.getRequiredType().isAssignableFrom( Classifier.class ) ) {
+					try {
+						Classifier subclassifier = (Classifier) ClassOption.cliStringToObject( o.getValueAsCLIString(), o.getRequiredType(), null );
+						String classPath = subclassifier.getClass().getName();
+						String name = "moa." + classPath.substring( classPath.lastIndexOf('.') + 1 );
+						// retrieve sub settings:
+						Implementation subimplementation = i.getComponentByName( name );
+						result.addAll( getOptions( subimplementation, subclassifier.getOptions().getOptionArray() ) );
+					} catch (Exception e) {
+						result.add( new Parameter_setting(i.getId(), option.getCLIChar() + "", option.getValueAsCLIString() ) );
+						e.printStackTrace(); 
+					}
+				} else {
+					result.add( new Parameter_setting(i.getId(), option.getCLIChar() + "", option.getValueAsCLIString() ) );
+				}
+			} else {
+				result.add( new Parameter_setting(i.getId(), option.getCLIChar() + "", option.getValueAsCLIString() ) );
+			}
+		}
+		
+		return result;
 	}
 	
 	public static Implementation create( Classifier classifier ) {

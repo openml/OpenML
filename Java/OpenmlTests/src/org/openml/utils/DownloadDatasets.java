@@ -13,20 +13,24 @@ import openml.xstream.XstreamXmlMapping;
 
 public class DownloadDatasets {
 
+	private static final String TO = "http://openml.liacs.nl/";
+	private static final String FROM = "http://www.openml.org/";
+	
 	public static void main( String[] args ) throws Exception {
 		new DownloadDatasets();
 	}
 	
 	public DownloadDatasets() throws Exception {
+		ApiConnector.API_URL = TO;
 		XStream xstream = XstreamXmlMapping.getInstance();
 		ApiSessionHash ash = new ApiSessionHash();
 		ash.set("janvanrijn@gmail.com", "Feyenoord2002");
 		
 		for( int i = 1; i <= 62; ++i ) {
 			try {
-				ApiConnector.API_URL = "http://www.openml.org/";
+				ApiConnector.API_URL = FROM;
 				DataSetDescription dsd = ApiConnector.openmlDataDescription( i );
-				ApiConnector.API_URL = "http://localhost/";
+				ApiConnector.API_URL = TO;
 				File dataset = Conversion.instancesToTempFile( dsd.getDataset(), dsd.getName(), "arff" );
 				dsd.unsetUrl();
 				String descriptionXML = xstream.toXML(dsd);

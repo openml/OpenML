@@ -171,6 +171,14 @@ public class Implementation {
 		this.parameter = ArrayUtils.addAll( this.parameter, p );
 	}
 	
+	public Implementation getComponentByName( String name ) throws Exception {
+		for( Component c : getComponent() ) {
+			if( c.getImplementation().getName().equals( name ) )
+				return c.getImplementation();
+		}
+		throw new Exception("Subimplementation not present.");
+	}
+	
 	public void addComponent( String identifier, Implementation implementation ) {
 		Component c = new Component( identifier, implementation );
 		this.component = ArrayUtils.addAll( this.component, c );
