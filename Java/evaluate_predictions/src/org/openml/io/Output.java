@@ -98,26 +98,32 @@ public class Output {
 			}
 			
 			ArrayList<JsonItem> jsonItems = new ArrayList<JsonItem>();
+			boolean mayPrint = false; // will be set to true if we find either a value or legal array. 
 			
 			jsonItems.add( new JsonItem( "name", m.name ) );
 			jsonItems.add( new JsonItem( "implementation", m.implementation ) );
 			jsonItems.add( new JsonItem( "label", m.label ) );
-			if(value.getScore() != null )
+			if(value.getScore() != null && value.getScore().isNaN() == false ) {
 				jsonItems.add( new JsonItem( "value", value.getScore() ) );
-			if( stdev != null )
+				mayPrint = true;
+			}
+			if( stdev != null && stdev.isNaN() == false )
 				jsonItems.add( new JsonItem( "stdev", stdev ) );
-			if(value.hasArray())
+			if(value.hasArray()) {
 				jsonItems.add( new JsonItem( "array_data", value.getArrayAsString( decimalFormat ), false ) );
+				mayPrint = true;
+			}
 			if( additionalItems != null ) {
 				jsonItems.addAll( additionalItems );
 			}
 			
-			strMetrics[counter] = dataFeatureToJson( jsonItems );
-			//sb.append( styleToJsonMetric( m.name, m.implementation, m.label, value, stdev, first ) );
-			counter ++;
+			if( mayPrint ) {
+				strMetrics[counter] = dataFeatureToJson( jsonItems );
+				counter ++;
+			}
 		}
 		
-		return StringUtils.join( strMetrics, ", \n" );
+		return StringUtils.join( strMetrics, ", \n", 0, counter );
 	}
 	
 	public static String styleToJsonError( String value ) {
