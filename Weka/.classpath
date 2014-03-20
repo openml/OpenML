@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<classpath>
-	<classpathentry kind="src" path=""/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/opt/xstream-1.4.3/lib/xstream-1.4.3.jar"/>
-	<classpathentry kind="lib" path="/opt/xpp3-1.1.3.4.C/xpp3-1.1.3.4.C.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/weka37"/>
-	<classpathentry kind="output" path=""/>
-</classpath>
