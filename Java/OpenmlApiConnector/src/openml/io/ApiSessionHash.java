@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.util.Date;
 
 import openml.algorithms.DateParser;
+import openml.settings.Constants;
 import openml.xml.Authenticate;
 
 public class ApiSessionHash implements Serializable {
@@ -22,7 +23,7 @@ public class ApiSessionHash implements Serializable {
 	
 	public boolean isValid() {
 		Date utilDate = new Date();
-		return validUntil > utilDate.getTime();
+		return validUntil > utilDate.getTime() + Constants.DEFAULT_TIME_MARGIN;
 	}
 	
 	public boolean set( String username, String password ) throws ParseException {
