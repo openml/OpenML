@@ -59,6 +59,11 @@ public class Run {
 		output_data.addDataset( name, url );
 	}
 	
+	public void addOutputEvaluation( String name, Integer repeat, Integer fold, 
+			Integer sample, String implementation, Double value ) {
+		output_data.addEvaluation(name, repeat, fold, sample, implementation, value);
+	}
+	
 	public void addOutputEvaluation( String name, String implementation,
 			Double value, String[] array_data ) {
 		output_data.addEvaluation( name, implementation, value, array_data);
@@ -118,6 +123,12 @@ public class Run {
 			dataset = ArrayUtils.addAll( dataset, d );
 		}
 		
+		public void addEvaluation( String name, Integer repeat, Integer fold, 
+					Integer sample, String implementation, Double value ) {
+			Evaluation e = new Evaluation(name, repeat, fold, sample, implementation, value);
+			evaluation = ArrayUtils.addAll( evaluation, e );
+		}
+		
 		public void addEvaluation( String name, String implementation,
 				Double value, String[] array_data ) {
 			Evaluation e = new Evaluation( name, implementation, value, array_data);
@@ -131,7 +142,7 @@ public class Run {
 		}
 
 		public static class Dataset {
-			private int did;
+			private Integer did;
 			private String name;
 			private String url;
 			
@@ -152,11 +163,25 @@ public class Run {
 		}
 		
 		public static class Evaluation {
-			private int did;
+			private Integer did;
+			private Integer repeat;
+			private Integer fold;
+			private Integer sample;
 			private String name;
 			private String implementation;
 			private Double value;
 			private String array_data;
+			
+			public Evaluation( String name, Integer repeat, Integer fold, 
+					Integer sample, String implementation, Double value ) {
+				super();
+				this.name = name;
+				this.implementation = implementation;
+				this.value = value;
+				this.repeat = repeat;
+				this.fold = fold;
+				this.sample = sample;
+			}
 			
 			public Evaluation( String name, String implementation,
 					Double value, String[] array_data) {
@@ -190,6 +215,18 @@ public class Run {
 			}
 			public String getArray_data() {
 				return array_data;
+			}
+
+			public Integer getRepeat() {
+				return repeat;
+			}
+
+			public Integer getFold() {
+				return fold;
+			}
+
+			public Integer getSample() {
+				return sample;
 			}
 		}
 	}

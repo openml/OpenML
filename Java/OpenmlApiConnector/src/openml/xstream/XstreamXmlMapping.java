@@ -190,6 +190,10 @@ public class XstreamXmlMapping {
 		xstream.aliasField("oml:value", Run.Data.Evaluation.class, "value");
 		xstream.aliasField("oml:array_data", Run.Data.Evaluation.class, "array_data");
 		
+		xstream.useAttributeFor(Run.Data.Evaluation.class, "repeat");
+		xstream.useAttributeFor(Run.Data.Evaluation.class, "fold");
+		xstream.useAttributeFor(Run.Data.Evaluation.class, "sample");
+		
 		// upload run
 		xstream.alias("oml:upload_run", UploadRun.class);
 		xstream.aliasField("oml:run_id", UploadRun.class, "run_id");
