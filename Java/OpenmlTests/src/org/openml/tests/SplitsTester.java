@@ -5,10 +5,10 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import openml.algorithms.TaskInformation;
-import openml.io.ApiConnector;
-import openml.io.ApiException;
-import openml.xml.Task;
+import org.openml.apiconnector.algorithms.TaskInformation;
+import org.openml.apiconnector.io.ApiConnector;
+import org.openml.apiconnector.io.ApiException;
+import org.openml.apiconnector.xml.Task;
 
 import org.junit.Test;
 

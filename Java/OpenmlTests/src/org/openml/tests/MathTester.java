@@ -1,7 +1,7 @@
 package org.openml.tests;
 
 import static org.junit.Assert.*;
-import openml.algorithms.MathHelper;
+import org.openml.apiconnector.algorithms.MathHelper;
 
 import org.junit.Test;
 

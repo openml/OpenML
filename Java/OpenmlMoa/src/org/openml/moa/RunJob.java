@@ -1,6 +1,7 @@
 package org.openml.moa;
-import openml.io.ApiConnector;
-import openml.xml.Job;
+
+import org.openml.apiconnector.io.ApiConnector;
+import org.openml.apiconnector.xml.Job;
 import weka.core.Utils;
 import moa.DoTask;
 

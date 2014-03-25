@@ -7,11 +7,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
-import openml.algorithms.InstancesHelper;
-import openml.algorithms.TaskInformation;
-import openml.io.ApiConnector;
-import openml.xml.DataSetDescription;
-import openml.xml.Task;
+import org.openml.apiconnector.algorithms.InstancesHelper;
+import org.openml.apiconnector.algorithms.TaskInformation;
+import org.openml.apiconnector.io.ApiConnector;
+import org.openml.apiconnector.xml.DataSetDescription;
+import org.openml.apiconnector.xml.Task;
 import weka.core.Instance;
 import weka.core.Instances;
 import moa.core.InputStreamProgressMonitor;

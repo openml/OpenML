@@ -8,13 +8,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.openml.moa.ResultListener;
-import openml.models.Metric;
-import openml.models.MetricScore;
+import org.openml.apiconnector.models.Metric;
+import org.openml.apiconnector.models.MetricScore;
 
-import openml.algorithms.InstancesHelper;
-import openml.io.ApiSessionHash;
-import openml.settings.Config;
-import openml.xml.Task;
+import org.openml.apiconnector.algorithms.InstancesHelper;
+import org.openml.apiconnector.io.ApiSessionHash;
+import org.openml.apiconnector.settings.Config;
+import org.openml.apiconnector.xml.Task;
 import moa.classifiers.Classifier;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
