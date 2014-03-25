@@ -5,5 +5,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/OpenmlApiConnector"/>
 	<classpathentry kind="lib" path="/OpenmlApiConnector/lib/xstream-1.4.4.jar"/>
 	<classpathentry kind="lib" path="lib/weka.jar"/>
+	<classpathentry kind="lib" path="/OpenmlApiConnector/lib/commons-lang3-3.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
