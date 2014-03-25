@@ -13,10 +13,10 @@
 	<classpathentry kind="lib" path="/OpenmlApiConnector/lib/java-cup.jar"/>
 	<classpathentry kind="lib" path="/OpenmlApiConnector/lib/JFlex.jar"/>
 	<classpathentry kind="lib" path="/OpenmlApiConnector/lib/junit.jar"/>
-	<classpathentry kind="lib" path="/OpenmlApiConnector/lib/moa.jar"/>
 	<classpathentry kind="lib" path="/OpenmlApiConnector/lib/mysql-connector-java-5.1.17-bin.jar"/>
 	<classpathentry kind="lib" path="/OpenmlApiConnector/lib/scimark2lib.jar"/>
-	<classpathentry kind="lib" path="/OpenmlApiConnector/lib/weka.jar"/>
 	<classpathentry kind="lib" path="/OpenmlApiConnector/lib/xstream-1.4.4.jar"/>
+	<classpathentry kind="lib" path="lib/moa.jar"/>
+	<classpathentry kind="lib" path="lib/weka.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
