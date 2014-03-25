@@ -7,11 +7,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
-import org.openml.apiconnector.algorithms.InstancesHelper;
+import org.openml.apiconnector.algorithms.ArffHelper;
 import org.openml.apiconnector.algorithms.TaskInformation;
 import org.openml.apiconnector.io.ApiConnector;
 import org.openml.apiconnector.xml.DataSetDescription;
 import org.openml.apiconnector.xml.Task;
+
 import weka.core.Instance;
 import weka.core.Instances;
 import moa.core.InputStreamProgressMonitor;
@@ -117,9 +118,9 @@ public class OpenmlTaskReader extends AbstractOptionHandler implements InstanceS
             
             DataSetDescription dsd = TaskInformation.getSourceData(this.openmlTask).getDataSetDescription();
             String classname = TaskInformation.getSourceData(this.openmlTask).getTarget_feature();
-            String identifier = "dataset_" + dsd.getId() + "_" + dsd.getName() + ".arff";
+            String identifier = dsd.getCacheFileName();
             
-            InputStream fileStream = new FileInputStream( InstancesHelper.downloadAndCache("dataset", identifier, dsd.getUrl(), dsd.getMd5_checksum() ) );
+            InputStream fileStream = new FileInputStream( ArffHelper.downloadAndCache("dataset", identifier, dsd.getUrl(), dsd.getMd5_checksum() ) );
             this.fileProgressMonitor = new InputStreamProgressMonitor(
                     fileStream);
             this.fileReader = new BufferedReader(new InputStreamReader(

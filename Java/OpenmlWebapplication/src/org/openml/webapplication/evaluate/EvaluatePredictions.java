@@ -4,11 +4,11 @@ import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.Map;
 
-import org.openml.apiconnector.algorithms.InstancesHelper;
 import org.openml.apiconnector.models.Metric;
 import org.openml.apiconnector.models.MetricCollector;
 import org.openml.apiconnector.models.MetricScore;
 import org.apache.commons.lang3.StringUtils;
+import org.openml.webapplication.algorithm.InstancesHelper;
 import org.openml.webapplication.io.Input;
 import org.openml.webapplication.io.Output;
 import org.openml.webapplication.models.JsonItem;

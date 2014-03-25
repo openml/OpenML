@@ -8,7 +8,7 @@ import java.io.OutputStreamWriter;
 import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 
-import org.openml.apiconnector.algorithms.InstancesHelper;
+import org.openml.webapplication.algorithm.InstancesHelper;
 import org.openml.webapplication.generatefolds.EvaluationMethod.EvaluationMethods;
 import org.openml.webapplication.io.Input;
 import org.openml.webapplication.io.Md5Writer;

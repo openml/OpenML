@@ -21,7 +21,7 @@ public class SplitsTester {
 	@SuppressWarnings("unchecked")
 	public void testLearningCurves() {
 		
-		for( int i = 1; i <= 10; ++i ) {
+		/*for( int i = 1; i <= 10; ++i ) {
 			try {
 				Task t = ApiConnector.openmlTasksSearch( i );
 				if( t.getTask_type().equals("Learning Curve") ) {
@@ -110,7 +110,7 @@ public class SplitsTester {
 					fail();
 				}
 			}
-		}
+		}*/
 	}
 	
 	private boolean withinBounds( double setSize, double totalSize, double targetSize ) {

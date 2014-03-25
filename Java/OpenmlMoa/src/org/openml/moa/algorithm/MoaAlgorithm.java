@@ -1,4 +1,4 @@
-package org.openml.apiconnector.algorithms;
+package org.openml.moa.algorithm;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
+import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.io.ApiConnector;
 import org.openml.apiconnector.xml.Implementation;
 import org.openml.apiconnector.xml.ImplementationExists;
@@ -15,6 +16,7 @@ import org.openml.apiconnector.xml.Run;
 import org.openml.apiconnector.xml.Run.Parameter_setting;
 import org.openml.apiconnector.xml.UploadImplementation;
 import org.openml.apiconnector.xstream.XstreamXmlMapping;
+
 import moa.classifiers.Classifier;
 import moa.options.ClassOption;
 import moa.options.FlagOption;
@@ -28,7 +30,7 @@ public class MoaAlgorithm {
 			// First ask OpenML whether this implementation already exists
 			ImplementationExists result = ApiConnector.openmlImplementationExists( implementation.getName(), implementation.getExternal_version() );
 			if(result.exists()) return result.getId();
-		} catch( Exception e ) { /* Suppress Exception since it is totally OK. */ }
+		} catch( Exception e ) { /* Suppress Exception since it is totally OK.*/ }
 		// It does not exist. Create it. 
 		String xml = XstreamXmlMapping.getInstance().toXML( implementation );
 		//System.err.println(xml);

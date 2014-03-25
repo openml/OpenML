@@ -1,14 +1,10 @@
 package org.openml.apiconnector.xml;
 
-import java.io.FileReader;
-import java.io.IOException;
 import java.io.Serializable;
 
-import org.openml.apiconnector.algorithms.InstancesHelper;
 import org.openml.apiconnector.algorithms.TaskInformation;
 import org.openml.apiconnector.io.ApiConnector;
 import org.openml.apiconnector.settings.Constants;
-import weka.core.Instances;
 
 public class Task implements Serializable {
 	private static final long serialVersionUID = 987612341009L;
@@ -111,7 +107,6 @@ public class Task implements Serializable {
 			private String type;
 			private String data_splits_url;
 			private Parameter[] parameters;
-			private Instances dsCache;
 			
 			public String getType() {
 				return type;
@@ -123,16 +118,6 @@ public class Task implements Serializable {
 
 			public Parameter[] getParameters() {
 				return parameters;
-			}
-			
-			public Instances getData_splits() throws IOException {
-				if(dsCache == null) {
-					String serverMd5 = ApiConnector.getStringFromUrl( getData_splits_url().replace("/get/", "/md5/") );
-					String identifier = getData_splits_url().substring( getData_splits_url().lastIndexOf('/') + 1 );
-					
-					dsCache = new Instances( new FileReader( InstancesHelper.downloadAndCache( "splits", identifier, getData_splits_url(), serverMd5 ) ) );
-				}
-				return dsCache;
 			}
 
 			public class Parameter implements Serializable {

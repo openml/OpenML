@@ -1,14 +1,8 @@
 package org.openml.apiconnector.xml;
 
-import java.io.FileReader;
-import java.io.IOException;
 import java.io.Serializable;
 
-import org.openml.apiconnector.algorithms.InstancesHelper;
 import org.openml.apiconnector.settings.Constants;
-
-import weka.core.Instances;
-
 
 public class DataSetDescription implements Serializable {
 	private static final long serialVersionUID = 987612341129L;
@@ -124,8 +118,7 @@ public class DataSetDescription implements Serializable {
 		return md5_checksum;
 	}
 	
-	public Instances getDataset() throws IOException {
-		String identifier = "dataset_" + getId() + "_" + getName() + ".arff";
-		return new Instances( new FileReader( InstancesHelper.downloadAndCache("dataset", identifier, getUrl(), getMd5_checksum() ) ) );
+	public String getCacheFileName() {
+		return "dataset_" + getId() + "_" + getName() + ".arff";
 	}
 }

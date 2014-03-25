@@ -1,4 +1,4 @@
-package org.openml.apiconnector.algorithms;
+package org.openml.moa.algorithm;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -10,7 +10,9 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 
 import org.apache.commons.lang3.StringUtils;
-
+import org.openml.apiconnector.algorithms.Conversion;
+import org.openml.apiconnector.algorithms.OptionParser;
+import org.openml.apiconnector.algorithms.ParameterType;
 import org.openml.apiconnector.io.ApiConnector;
 import org.openml.apiconnector.xml.Implementation;
 import org.openml.apiconnector.xml.ImplementationExists;
@@ -18,6 +20,7 @@ import org.openml.apiconnector.xml.UploadImplementation;
 import org.openml.apiconnector.xml.Implementation.Parameter;
 import org.openml.apiconnector.xml.Run.Parameter_setting;
 import org.openml.apiconnector.xstream.XstreamXmlMapping;
+
 import weka.classifiers.Classifier;
 import weka.core.Option;
 import weka.core.OptionHandler;

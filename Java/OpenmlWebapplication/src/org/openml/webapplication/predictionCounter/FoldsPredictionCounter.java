@@ -3,7 +3,7 @@ package org.openml.webapplication.predictionCounter;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import org.openml.apiconnector.algorithms.InstancesHelper;
+import org.openml.webapplication.algorithm.InstancesHelper;
 
 import weka.core.Instance;
 import weka.core.Instances;

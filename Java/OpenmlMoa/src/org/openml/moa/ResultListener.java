@@ -12,7 +12,6 @@ import java.util.Map;
 
 import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.algorithms.MathFunctions;
-import org.openml.apiconnector.algorithms.MoaAlgorithm;
 import org.openml.apiconnector.algorithms.TaskInformation;
 import org.openml.apiconnector.io.ApiConnector;
 import org.openml.apiconnector.io.ApiSessionHash;
@@ -24,6 +23,8 @@ import org.openml.apiconnector.xml.Run.Parameter_setting;
 import org.openml.apiconnector.xml.Task;
 import org.openml.apiconnector.xml.Task.Output.Predictions.Feature;
 import org.openml.apiconnector.xstream.XstreamXmlMapping;
+import org.openml.moa.algorithm.MoaAlgorithm;
+
 import weka.core.Attribute;
 import weka.core.Instances;
 import moa.classifiers.Classifier;

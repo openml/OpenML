@@ -1,12 +1,10 @@
 package org.openml.apiconnector.io;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -45,8 +43,6 @@ import org.openml.apiconnector.xml.ImplementationDelete;
 import org.openml.apiconnector.xml.ImplementationOwned;
 
 import com.thoughtworks.xstream.XStream;
-
-import weka.core.Instances;
 
 public class ApiConnector {
 	
@@ -193,13 +189,13 @@ public class ApiConnector {
         }
 	}
 	
-	public static Instances getDatasetFromUrl( String url ) throws IOException {
+	/*public static Instances getDatasetFromUrl( String url ) throws IOException {
 		URL openml_url = new URL(url);
 		URLConnection conn = openml_url.openConnection();
 		BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 		Instances dataset = new Instances(br);
 		return dataset;
-	}
+	}*/
 	
 	public static String getStringFromUrl( String url ) throws IOException {
 		return IOUtils.toString(  new URL( url ) );

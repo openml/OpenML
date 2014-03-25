@@ -7,19 +7,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import weka.core.Instances;
-
 public class Conversion {
 
-	public static File instancesToTempFile( Instances dataset, String filename, String format ) throws IOException {
-		File file = File.createTempFile(filename, '.' + format );
-		BufferedWriter br = new BufferedWriter(new FileWriter(file));
-		br.write(dataset.toString());
-		br.close();
-		file.deleteOnExit();
-		return file;
-	}
-	
 	public static File stringToTempFile( String string, String filename, String format ) throws IOException {
 		File file = File.createTempFile(filename, '.' + format );
 		BufferedWriter br = new BufferedWriter(new FileWriter(file));
@@ -28,14 +17,6 @@ public class Conversion {
 		file.deleteOnExit();
 		return file;
 	}
-	
-	/*public static String arrayToString( double[] array ) {
-		StringBuilder sb = new StringBuilder();
-		for( double d : array ) {
-			sb.append( ", " + d );
-		}
-		return "[" + sb.toString().substring( 1 ) + "]";
-	}*/
 	
 	public static int[] commaSeperatedStringToIntArray( String commaSeperated ) throws NumberFormatException {
 		String[] splitted = commaSeperated.replaceAll("\\s","").split(","); // remove spaces, split on comma

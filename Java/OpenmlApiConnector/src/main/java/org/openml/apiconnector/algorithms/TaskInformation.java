@@ -1,13 +1,13 @@
 package org.openml.apiconnector.algorithms;
 
-import java.util.ArrayList;
+import java.io.BufferedReader;
+import java.io.FileReader;
 
+import org.openml.apiconnector.xml.DataSetDescription;
 import org.openml.apiconnector.xml.Task;
 import org.openml.apiconnector.xml.Task.Input.Data_set;
 import org.openml.apiconnector.xml.Task.Input.Estimation_procedure;
 import org.openml.apiconnector.xml.Task.Output.Predictions;
-import weka.core.Attribute;
-import weka.core.Instances;
 
 public class TaskInformation {
 
@@ -41,7 +41,7 @@ public class TaskInformation {
 		throw new Exception("Tasks estimation procedure does not contain \"number_folds\"");
 	}
 	
-	public static int getNumberOfExpectedResults( Task t ) throws Exception {
+	/*public static int getNumberOfExpectedResults( Task t ) throws Exception {
 		Instances splits = getEstimationProcedure(t).getData_splits();
 		int count = 0;
 		for( int i = 0; i < splits.numInstances(); ++i ) {
@@ -50,7 +50,7 @@ public class TaskInformation {
 			}
 		}
 		return count;
-	}
+	}*/
 	
 	public static Estimation_procedure getEstimationProcedure( Task t ) throws Exception {
 		for( int i = 0; i < t.getInputs().length; ++i ) {
@@ -78,19 +78,26 @@ public class TaskInformation {
 		}
 		throw new Exception("Task does not define an predictions. ");
 	}
-
-	// FIXME!!! This is not OK. This function reads the whole input dataset, which takes too much time.
+	
 	public static String[] getClassNames( Task t ) throws Exception {
-		ArrayList<String> res = new ArrayList<String>();
-		Instances dataset = getSourceData(t).getDataSetDescription().getDataset();
-		Attribute targetFeature = dataset.attribute(getSourceData(t).getTarget_feature());
-		for( int i = 0; i < targetFeature.numValues(); ++i ) {
-			res.add(targetFeature.value(i));
+		DataSetDescription dsd = getSourceData(t).getDataSetDescription();
+		String targetFeature = getSourceData(t).getTarget_feature();
+		BufferedReader br = new BufferedReader( new FileReader( ArffHelper.downloadAndCache("dataset", dsd.getCacheFileName(), dsd.getUrl(), dsd.getMd5_checksum() ) ) );
+		
+		String line;
+		
+		while( (line = br.readLine()) != null) {
+			if( ArffHelper.isDataDeclaration(line) ) throw new Exception("Attribute not found.");
+			if( ArffHelper.isAttributeDeclaration(line) ) {
+				try {
+					if( ArffHelper.getAttributeName( line ).equals( targetFeature ) ) {
+						br.close();
+						return ArffHelper.getNominalValues( line );
+					}
+				} catch( Exception e ) {/*Not going to happen*/}
+			}
 		}
-		String[] resArray = new String[res.size()];
-		for(int i = 0; i < res.size(); ++i) {
-			resArray[i] = res.get(i);
-		}
-		return resArray;
+		br.close();
+		throw new Exception("Attribute not found.");
 	}
 }
