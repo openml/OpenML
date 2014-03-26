@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.openml.apiconnector.algorithms.Conversion;
-import org.openml.apiconnector.algorithms.MathFunctions;
+import org.openml.apiconnector.algorithms.MathHelper;
 import org.openml.apiconnector.algorithms.TaskInformation;
 import org.openml.apiconnector.io.ApiConnector;
 import org.openml.apiconnector.io.ApiSessionHash;
@@ -86,7 +86,7 @@ public class ResultListener {
 	public void addPrediction( int row_id, double[] predictions, int correct ) throws IOException {
 		String line = "";
 		String[] instance = new String[header.numAttributes()];
-		int predicted = MathFunctions.argmax(predictions, true);
+		int predicted = MathHelper.argmax(predictions, true);
 		instance[att_index_prediction] = ( predicted < 0 ) ? "?" : classes.get( predicted ); 
 		instance[att_index_row_id] = "" + row_id;
 		instance[att_index_correct] = classes.get( correct );

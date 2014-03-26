@@ -1,7 +1,6 @@
 package org.openml.tools.dataset;
 
 import java.io.File;
-import java.io.FileReader;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -11,8 +10,6 @@ import org.openml.apiconnector.io.ApiConnector;
 import org.openml.apiconnector.io.ApiSessionHash;
 import org.openml.apiconnector.xml.DataSetDescription;
 import org.openml.apiconnector.xstream.XstreamXmlMapping;
-
-import weka.core.Instances;
 
 public class DownloadDatasets {
 
