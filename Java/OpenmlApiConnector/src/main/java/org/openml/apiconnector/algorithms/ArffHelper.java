@@ -71,7 +71,7 @@ public class ArffHelper {
 		if( idxStartBracket > idxEndBracket ) {
 			throw new Exception("Not a legal nominal attribute. ");
 		}
-		return attributeLine.substring( idxStartBracket, idxEndBracket ).split(",");
+		return attributeLine.substring( idxStartBracket + 1, idxEndBracket ).split(",");
 	}
 	
 }

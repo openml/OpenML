@@ -81,13 +81,11 @@ public class Output {
 	
 	public static String printMetrics( Map<Metric, MetricScore> metrics, MetricCollector population, ArrayList<JsonItem> additionalItems ) throws Exception {
 		String[] strMetrics = new String[metrics.size()];
-		
 		int counter = 0; 
 		for( Metric m : metrics.keySet() ) {
 			MetricScore value = metrics.get(m);
 			Double[] p = null;
 			Double stdev = null;
-			
 			if( population != null ) {
 				p = population.getScores( m ).toArray( new Double[population.getScores( m ).size()] ); 
 			}
@@ -101,7 +99,8 @@ public class Output {
 			
 			jsonItems.add( new JsonItem( "name", m.name ) );
 			jsonItems.add( new JsonItem( "implementation", m.implementation ) );
-			jsonItems.add( new JsonItem( "label", m.label ) );
+			if( m.label != null )
+				jsonItems.add( new JsonItem( "label", m.label ) );
 			if(value.getScore() != null && value.getScore().isNaN() == false ) {
 				jsonItems.add( new JsonItem( "value", value.getScore() ) );
 				mayPrint = true;
