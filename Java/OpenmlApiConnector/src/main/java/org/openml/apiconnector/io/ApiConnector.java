@@ -71,6 +71,14 @@ public class ApiConnector {
 	
 	private static HttpClient httpclient;
 	
+	/**
+	 * @param username - The username that is used for authentication
+	 * @param password - The password used for authentication
+	 * @return Authenticate - An object containing the Api Session Hash 
+	 * (which can be used to authenticate without username / password)
+	 * @throws Exception - Can be: API Error (see documentation at openml.org), 
+	 * server down, etc.
+	 */
 	public static Authenticate openmlAuthenticate( String username, String password ) throws Exception {
 		List<NameValuePair> params = new ArrayList<NameValuePair>(2);
 		params.add(new BasicNameValuePair("username", username));
@@ -84,6 +92,12 @@ public class ApiConnector {
         }
 	}
 	
+	/**
+	 * @param did - The data_id of the data description to download. 
+	 * @return DataSetDescription - An object containing the description of the data
+	 * @throws Exception - Can be: API Error (see documentation at openml.org), 
+	 * server down, etc.
+	 */
 	public static DataSetDescription openmlDataDescription( int did ) throws Exception {
 		Object apiResult = doApiRequest("openml.data.description", "&data_id=" + did );
         if( apiResult instanceof DataSetDescription){
@@ -93,6 +107,12 @@ public class ApiConnector {
         }
 	}
 	
+	/**
+	 * @param implementation_id - Numeric ID of the implementation to be obtained. 
+	 * @return Implementation - An object containing the description of the implementation
+	 * @throws Exception - Can be: API Error (see documentation at openml.org), 
+	 * server down, etc.
+	 */
 	public static Implementation openmlImplementationGet(int implementation_id) throws Exception {
 		Object apiResult = doApiRequest("openml.implementation.get", "&implementation_id=" + implementation_id );
         if( apiResult instanceof Implementation){
@@ -102,6 +122,12 @@ public class ApiConnector {
         }
 	}
 	
+	/**
+	 * @param session_hash - A session hash (obtainable by openmlAuthenticate)
+	 * @return ImplementationOwned - An object containing all implementation_ids that are owned by the current user.
+	 * @throws Exception - Can be: API Error (see documentation at openml.org), 
+	 * server down, etc.
+	 */
 	public static ImplementationOwned openmlImplementationOwned( String session_hash ) throws Exception {
 		MultipartEntity params = new MultipartEntity();
 		params.addPart("session_hash",new StringBody(session_hash));
@@ -114,6 +140,13 @@ public class ApiConnector {
         }
 	}
 	
+	/**
+	 * @param id - The numeric id of the implementation to be deleted. 
+	 * @param session_hash - A session hash (obtainable by openmlAuthenticate)
+	 * @return
+	 * @throws Exception - Can be: API Error (see documentation at openml.org), 
+	 * server down, etc.
+	 */
 	public static ImplementationDelete openmlImplementationDelete( int id, String session_hash ) throws Exception {
 		MultipartEntity params = new MultipartEntity();
 		params.addPart("implementation_id",new StringBody(""+id));
@@ -127,6 +160,14 @@ public class ApiConnector {
         }
 	}
 	
+	/**
+	 * @param name - The name of the implementation to be checked
+	 * @param external_version - The external version (workbench version). If not a proper revision number is available, 
+	 * it is recommended to use a MD5 hash of the source code.
+	 * @return ImplementationExists - An object describing whether this implementation is already known on the server.
+	 * @throws Exception - Can be: API Error (see documentation at openml.org), 
+	 * server down, etc.
+	 */
 	public static ImplementationExists openmlImplementationExists( String name, String external_version ) throws Exception {
 		Object apiResult = doApiRequest("openml.implementation.exists", "&name=" + name + "&external_version=" + external_version );
         if( apiResult instanceof ImplementationExists){
@@ -136,6 +177,12 @@ public class ApiConnector {
         }
 	}
 	
+	/**
+	 * @param task_id - The numeric id of the task to be obtained.
+	 * @return Task - An object describing the task
+	 * @throws Exception - Can be: API Error (see documentation at openml.org), 
+	 * server down, etc.
+	 */
 	public static Task openmlTasksSearch( int task_id ) throws Exception {
 		Object apiResult = doApiRequest("openml.tasks.search", "&task_id=" + task_id );
         if( apiResult instanceof Task){
@@ -145,6 +192,14 @@ public class ApiConnector {
         }
 	}
 	
+	/**
+	 * @param description - An XML file describing the data. See documentation at openml.org
+	 * @param dataset - The actual dataset. Preferably in ARFF format, but almost everything is OK. 
+	 * @param session_hash - A session hash (obtainable by openmlAuthenticate)
+	 * @return UploadDataSet - An object containing information on the data upload. 
+	 * @throws Exception - Can be: API Error (see documentation at openml.org), 
+	 * server down, etc.
+	 */
 	public static UploadDataSet openmlDataUpload( File description, File dataset, String session_hash ) throws Exception {
 		MultipartEntity params = new MultipartEntity();
 		params.addPart("description", new FileBody(description));
@@ -159,10 +214,26 @@ public class ApiConnector {
         }
 	}
 	
+	/**
+	 * @param description - An XML file describing the data. See documentation at openml.org. Should contain the url field.
+	 * @param session_hash - A session hash (obtainable by openmlAuthenticate)
+	 * @return UploadDataSet - An object containing information on the data upload. 
+	 * @throws Exception - Can be: API Error (see documentation at openml.org), 
+	 * server down, etc.
+	 */
 	public static UploadDataSet openmlDataUpload( File description, String session_hash ) throws Exception {
 		return openmlDataUpload(description, null, session_hash);
 	}
 	
+	/**
+	 * @param descriptionUploadDataSet - An XML file describing the implementation. See documentation at openml.org.
+	 * @param binary - A file containing the implementation binary. 
+	 * @param source - A file containing the implementation source.
+	 * @param session_hash - A session hash (obtainable by openmlAuthenticate)
+	 * @return UploadImplementation - An object containing information on the implementation upload. 
+	 * @throws Exception - Can be: API Error (see documentation at openml.org), 
+	 * server down, etc.
+	 */
 	public static UploadImplementation openmlImplementationUpload( File description, File binary, File source, String session_hash ) throws Exception {
 		MultipartEntity params = new MultipartEntity();
 		params.addPart("description", new FileBody(description));
@@ -180,6 +251,15 @@ public class ApiConnector {
         }
 	}
 	
+	/**
+	 * @param description - An XML file describing the run. See documentation at openml.org.
+	 * @param output_files - A Map<String,File> containing all relevant output files. Key "predictions" 
+	 * usually contains the predictions that were generated by this run. 
+	 * @param session_hash - A session hash (obtainable by openmlAuthenticate)
+	 * @return UploadRun - An object containing information on the implementation upload. 
+	 * @throws Exception - Can be: API Error (see documentation at openml.org), 
+	 * server down, etc.
+	 */
 	public static UploadRun openmlRunUpload( File description, Map<String,File> output_files, String session_hash ) throws Exception {
 		MultipartEntity params = new MultipartEntity();
 		if(Settings.API_VERBOSE) {
@@ -199,6 +279,15 @@ public class ApiConnector {
         }
 	}
 	
+	/**
+	 * @param workbench - The workbench that will execute the task.
+	 * @param task_type_id - The task type id that the workbench should execute. 
+	 * Weka generally performs Supervised Classification tasks, whereas MOA performs 
+	 * Data Stream tasks. For task id's, please see openml.org.
+	 * @return Job - An object describing the task to be executed
+	 * @throws Exception - Can be: API Error (see documentation at openml.org), 
+	 * server down, no tasks available for this workbench.
+	 */
 	public static Job openmlRunGetjob( String workbench, String task_type_id ) throws Exception {
 		Object apiResult = doApiRequest("openml.run.getjob", "&workbench=" + workbench + "&task_type_id=" + task_type_id );
         if( apiResult instanceof Job ){
@@ -208,18 +297,21 @@ public class ApiConnector {
         }
 	}
 	
-	/*public static Instances getDatasetFromUrl( String url ) throws IOException {
-		URL openml_url = new URL(url);
-		URLConnection conn = openml_url.openConnection();
-		BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-		Instances dataset = new Instances(br);
-		return dataset;
-	}*/
-	
+	/**
+	 * @param url - The URL to obtain
+	 * @return String - The content of the URL
+	 * @throws IOException - Can be: server down, etc.
+	 */
 	public static String getStringFromUrl( String url ) throws IOException {
 		return IOUtils.toString(  new URL( url ) );
 	}
 	
+	/**
+	 * @param url - The URL to obtain
+	 * @param filepath - Where to safe the file.
+	 * @return File - a pointer to the file that was saved. 
+	 * @throws IOException - Can be: server down, etc.
+	 */
 	public static File getFileFromUrl( String url, String filepath ) throws IOException {
 		File file = new File( filepath );
 		FileUtils.copyURLToFile( new URL(url), file );
