@@ -11,16 +11,16 @@ import org.openml.apiconnector.io.ApiSessionHash;
 import org.openml.apiconnector.xml.DataSetDescription;
 import org.openml.apiconnector.xstream.XstreamXmlMapping;
 
-public class DownloadDatasets {
+public class TransferDatasets {
 
 	private static final String TO = "http://openml.liacs.nl/";
 	private static final String FROM = "http://www.openml.org/";
 	
 	public static void main( String[] args ) throws Exception {
-		new DownloadDatasets();
+		new TransferDatasets();
 	}
 	
-	public DownloadDatasets() throws Exception {
+	public TransferDatasets() throws Exception {
 		ApiConnector.API_URL = TO;
 		XStream xstream = XstreamXmlMapping.getInstance();
 		ApiSessionHash ash = new ApiSessionHash();

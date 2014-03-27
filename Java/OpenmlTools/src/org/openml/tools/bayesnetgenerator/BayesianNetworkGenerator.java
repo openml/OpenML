@@ -1,7 +1,9 @@
 package org.openml.tools.bayesnetgenerator;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -9,8 +11,10 @@ import org.apache.commons.lang3.StringUtils;
 
 import weka.classifiers.bayes.BayesNet;
 import weka.classifiers.bayes.net.ParentSet;
+import weka.classifiers.bayes.net.search.local.K2;
 import weka.classifiers.bayes.net.search.local.SimulatedAnnealing;
 import weka.core.DenseInstance;
+import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.OptionHandler;
 import weka.core.Utils;
@@ -20,10 +24,14 @@ import weka.filters.unsupervised.attribute.Discretize;
 
 public class BayesianNetworkGenerator {
 	
-	private static final Random randomGenerator = new Random( );
-
+	private static final Random RANDOMGENERATOR = new Random( );
+	private static final String INPUTDATA = "/Users/jan/Documents/datasets/anneal.arff";
+	private static final String OUTPUTDATA = "/Users/jan/Desktop/BNG_anneal.arff";
+	private static final int NUMINSTANCES = 1000000;
+	
 	public static void main( String[] args ) throws Exception {
-		Instances m_Instances = new Instances( new FileReader( new File("/Users/jan/Documents/openmltest/iris2.arff") ) );
+		Instances m_Instances = new Instances( new FileReader( new File( INPUTDATA ) ) );
+		BufferedWriter bw = new BufferedWriter( new FileWriter( new File( OUTPUTDATA ) ) );
 		String relationNameOriginal = m_Instances.relationName();
 		
 		ArrayList<Integer> variablesToDiscretize = new ArrayList<Integer>();
@@ -38,16 +46,22 @@ public class BayesianNetworkGenerator {
 		Instances m_Result = new Instances( m_Instances, 0, 0 );
 		m_Result.setRelationName( "BayesianNetworkGenerator(" + relationNameOriginal + ")" );
 		m_Instances.setClass( m_Instances.attribute( m_Instances.numAttributes() - 1 ) );
+		bw.write( m_Result.toString() );
 		
 		BayesNet bn = new BayesNet();
-		bn.setSearchAlgorithm( new SimulatedAnnealing() );
+		bn.setSearchAlgorithm( new K2() );
 		bn.buildClassifier( m_Instances );
 		
-		for( int i = 0; i < 150; ++i ) {
-			m_Result.add( new DenseInstance(1.0, generateInstance( bn, m_Instances ) ) );
+		for( int i = 0; i < NUMINSTANCES; ++i ) {
+			Instance inst = new DenseInstance( m_Result.numAttributes() );
+			inst.setDataset( m_Result );
+			double[] newValues = generateInstance( bn, m_Instances );
+			for( int j = 0; j < newValues.length; ++j ) {
+				inst.setValue( j, newValues[j] );
+			}
+			bw.write( inst.toString() + "\n" );
 		}
-		
-		System.out.println(m_Result);
+		bw.close();
 		
 	}
 	
@@ -83,7 +97,7 @@ public class BayesianNetworkGenerator {
 	}
 	
 	private static int getNominalValueByProbDist( Estimator e, int numValues ) {
-		Double current = randomGenerator.nextDouble();
+		Double current = RANDOMGENERATOR.nextDouble();
 		Double totalFound = 0.0;
 		for( int i = 0; i < numValues; ++i ) {
 			totalFound += e.getProbability( i );

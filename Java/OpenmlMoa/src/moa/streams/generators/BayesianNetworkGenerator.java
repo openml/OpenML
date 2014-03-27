@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import weka.classifiers.bayes.BayesNet;
 import weka.classifiers.bayes.net.ParentSet;
+import weka.classifiers.bayes.net.search.local.K2;
 import weka.classifiers.bayes.net.search.local.SimulatedAnnealing;
 import weka.core.DenseInstance;
 import weka.core.Instance;
@@ -80,6 +81,8 @@ public class BayesianNetworkGenerator extends AbstractOptionHandler implements
 		boolean[] attributesSet = new boolean[sourceData.numAttributes()];
 		boolean allAttribuesSet = false;
 		double[] result = new double[sourceData.numAttributes()];
+		Instance inst = new DenseInstance(getHeader().numAttributes());
+		inst.setDataset(getHeader());
 		
 		while( allAttribuesSet == false ) {
 			allAttribuesSet = true; // until proven otherwise
@@ -102,18 +105,23 @@ public class BayesianNetworkGenerator extends AbstractOptionHandler implements
 				}
 			}
 		}
-		return new DenseInstance( 1.0, result ) ;
+		for( int i = 0; i < getHeader().numAttributes(); ++i ) {
+			inst.setValue( i, result[i] );
+		}
+		
+		return inst;
 	}
 
 	@Override
 	public void restart() {
-        this.instanceRandom = new Random(this.instanceRandomSeedOption.getValue());
+        instanceRandom = new Random(this.instanceRandomSeedOption.getValue());
 
 	}
 
 	@Override
 	protected void prepareForUseImpl(TaskMonitor arg0, ObjectRepository arg1) {
 		try {
+	        instanceRandom = new Random(this.instanceRandomSeedOption.getValue());
 			sourceData = new Instances( new FileReader( this.arffFileOption.getFile() ) );
 			String relationNameOriginal = sourceData.relationName();
 			
@@ -132,7 +140,7 @@ public class BayesianNetworkGenerator extends AbstractOptionHandler implements
 			streamHeader.setRelationName( relationNameOriginal );
 			
 			bayesianNetwork = new BayesNet();
-			bayesianNetwork.setSearchAlgorithm( new SimulatedAnnealing() );
+			bayesianNetwork.setSearchAlgorithm( new K2() );
 			bayesianNetwork.buildClassifier( sourceData );
 		} catch ( Exception e) {
 			throw new RuntimeException("Failed to initiate stream from indicated ARFF file. ");

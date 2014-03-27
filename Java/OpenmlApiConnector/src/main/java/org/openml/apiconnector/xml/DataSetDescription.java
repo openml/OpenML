@@ -40,6 +40,7 @@ public class DataSetDescription implements Serializable {
 	private String licence;
 	private String url;
 	private String row_id_attribute;
+	private String default_target_attribute;
 	private String md5_checksum;
 	
 	/*
@@ -56,6 +57,7 @@ public class DataSetDescription implements Serializable {
 			String language, 
 			String licence, 
 			String row_id_attribute, 
+			String default_target_attribute,
 			String md5_checksum) {
 		this.id = null;
 		this.name = name;
@@ -70,7 +72,30 @@ public class DataSetDescription implements Serializable {
 		this.licence = licence;
 		this.url = null;
 		this.row_id_attribute = row_id_attribute;
+		this.default_target_attribute = default_target_attribute;
 		this.md5_checksum = md5_checksum;
+	}
+	
+	public DataSetDescription(
+			String name, 
+			String description, 
+			String format, 
+			String default_target_attribute ) {
+		this.id = null;
+		this.name = name;
+		this.version = null;
+		this.description = description;
+		this.creator = null;
+		this.contributor = null;
+		this.format = format;
+		this.collection_date = null;
+		this.language = null;
+		this.upload_date = null;
+		this.licence = null;
+		this.url = null;
+		this.row_id_attribute = null;
+		this.default_target_attribute = default_target_attribute;
+		this.md5_checksum = null;
 	}
 
 	public String getOml() {
@@ -131,6 +156,10 @@ public class DataSetDescription implements Serializable {
 
 	public String getRow_id_attribute() {
 		return row_id_attribute;
+	}
+
+	public String getDefault_target_attribute() {
+		return default_target_attribute;
 	}
 
 	public String getMd5_checksum() {
