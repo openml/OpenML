@@ -45,6 +45,9 @@ public class SciMark implements Serializable {
 		
 	}
 	
+	/**
+	 * Initiates a new SciMark instance. 
+	 */
 	public SciMark() {
 		benchmarkDone = false;
 		
@@ -55,6 +58,9 @@ public class SciMark implements Serializable {
 		os[4] = System.getProperty("os.version");
 	}
 	
+	/**
+	 * @return scores of the SciMark benchmark
+	 */
 	public double doBenchmark() {
 		double min_time = Constants.RESOLUTION_DEFAULT;
 
@@ -79,16 +85,16 @@ public class SciMark implements Serializable {
 		return average;
 	}
 	
+	/**
+	 * @return Array containing basic information about the OS. 
+	 */
 	public String[] getOsInfo() {
 		return os;
 	}
 	
-	public double[] getArray() {
-		if( benchmarkDone == false )
-			doBenchmark();
-		return results;
-	}
-	
+	/**
+	 * @return Scores from the benchmark converted to Strings. 
+	 */
 	public String[] getStringArray() {
 		String[] res = new String[results.length];
 		for(int i = 0; i < results.length; ++i) {
@@ -97,6 +103,9 @@ public class SciMark implements Serializable {
 		return res;
 	}
 	
+	/**
+	 * @return The average of all SciMark benchmarks
+	 */
 	public double getResult() {
 		if( benchmarkDone == false )
 			doBenchmark();

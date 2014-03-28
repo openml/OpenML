@@ -3,6 +3,7 @@ package org.openml.tools.twentynewsgroups;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -13,6 +14,7 @@ import java.util.List;
 
 import weka.core.Attribute;
 import weka.core.DenseInstance;
+import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.OptionHandler;
 import weka.core.Utils;
@@ -24,37 +26,44 @@ public class TwentyNewsgroupsGenerator {
 	
 	private static final String[] IGNORE = {".DS_Store"};
 	private static final List<String> NULL_LIST = null;
-	private static final int LIMIT = -1;
+	private static final int LIMIT = 0;
 	
-	private static BufferedWriter out;
-	private static ArrayList<Document> documents;
-	private static ArrayList<String> newsgroups;
-	private static int instanceCount = 0;
+	private static ArrayList<String> newsgroups; // will be set during documentsToInstances()
+	private static int instanceCount;
 	
 	public static void main( String[] args ) throws Exception {
-		new TwentyNewsgroupsGenerator( "/Users/jan/Desktop/20_newsgroups" );
+		new TwentyNewsgroupsGenerator( "/Users/jan/Desktop/", "20_newsgroups" );
 		
 	}
 	
-	public TwentyNewsgroupsGenerator( String root_directory ) throws Exception {
-		File root = new File( root_directory );
+	public TwentyNewsgroupsGenerator( String root_directory, String newsgroup_subdirectory ) throws Exception {
+		newsgroups = new ArrayList<String>(); 
+		String primaryClassName = "class";
+		String secondaryClassName = "class_newsgroup";
+		
+		Instances dataset = documentsToInstances( root_directory, newsgroup_subdirectory, primaryClassName, "20_newsgroups.arff" );
+		
+		dataset.renameAttribute( dataset.attribute( primaryClassName ), secondaryClassName );
+		
+		multilabelInstancesToBinaryDrift( root_directory, new Instances(dataset), secondaryClassName, primaryClassName, "20_newsgroups.drift.arff" );
+		
+		//testDriftDataset( dataset, root_directory + "20_newsgroups.drift.arff", primaryClassName );
+	}
+	
+	private Instances documentsToInstances( String root_directory, String newsgroup_subdirectory, String className, String filename ) throws Exception {
+		instanceCount = 0;
+		File root = new File( root_directory + newsgroup_subdirectory );
 		String relationName = root.getName();
-		
-		out = new BufferedWriter( new FileWriter( new File("20_newsgroups.arff") ) );
-		documents = new ArrayList<Document>();
-		newsgroups = new ArrayList<String>();
-		
-		traverseDirectory( root );
+		BufferedWriter outDefault = new BufferedWriter( new FileWriter( new File(root_directory + filename ) ) );
+		ArrayList<Document> documents = traverseDirectory( root, new ArrayList<Document>() );
 		
 		ArrayList<Attribute> attributes = new ArrayList<Attribute>();
 		attributes.add( new Attribute("document", NULL_LIST ) );
 		attributes.add( new Attribute("content", NULL_LIST ));
-		attributes.add( new Attribute("class", newsgroups ) );
+		attributes.add( new Attribute(className, newsgroups ) );
 		
 		Instances dataset = new Instances(relationName, attributes, instanceCount );
-		dataset.setClass( dataset.attribute("class") );
-		
-		Instances dataset_drift = new Instances( dataset, 0, 0 );
+		dataset.setClass( dataset.attribute(className) );
 		
 		Collections.sort( documents );
 		
@@ -67,17 +76,82 @@ public class TwentyNewsgroupsGenerator {
 		dataset = applyFilter( dataset, new NumericToBinary(), "" );
 		dataset.setRelationName(relationName);
 		
-		out.write( dataset.toString() );
-		out.close();
+		outDefault.write( dataset.toString() );
+		outDefault.close();
+		
+		return dataset;
 	}
 	
-	private void traverseDirectory( File filepointer ) throws IOException {
+	private void multilabelInstancesToBinaryDrift( String root_directory, Instances dataset, String classNameSource, String className, String filename ) throws IOException {
+		BufferedWriter outDrift = new BufferedWriter( new FileWriter( new File( root_directory + filename ) ));
+		String[] newClassValues = { "true", "false" };
+		Attribute newClass = new Attribute(className, Arrays.asList( newClassValues ) );
+		int oldClassIdx = dataset.attribute( classNameSource ).index();
+		
+		Instances dataset_drift = new Instances( dataset, 0, 0 );
+		dataset_drift.insertAttributeAt( newClass, oldClassIdx );
+		dataset_drift.setClass( newClass );
+		dataset_drift.setRelationName( dataset_drift.relationName() + "_drift" );
+		dataset_drift.deleteAttributeAt( dataset_drift.attribute( classNameSource ).index() );
+		
+		outDrift.write( dataset_drift.toString() );
+		
+		for( int iNewsgroup = 0; iNewsgroup < newsgroups.size(); ++iNewsgroup ) {
+			for( int iInstance = 0; iInstance < dataset.size(); ++iInstance ) {
+				Instance inst = new DenseInstance( dataset.numAttributes() );
+				inst.setDataset( dataset_drift );
+				Instance originalInstance = dataset.instance(iInstance);
+				
+				for( int iAttribute = 0; iAttribute < dataset.numAttributes(); ++iAttribute ) {
+					if( iAttribute == oldClassIdx ) {
+						if( originalInstance.stringValue( oldClassIdx ).equals( newsgroups.get( iNewsgroup ) ) ) {
+							inst.setValue( oldClassIdx, 0.0 );
+						} else {
+							inst.setValue( oldClassIdx, 1.0 );
+						}
+					} else {
+						inst.setValue( iAttribute, originalInstance.value( iAttribute ) );
+					}
+				}
+				
+				outDrift.write( inst.toString() + "\n" );
+			}
+		}
+	
+		outDrift.close();
+	}
+	
+	private void testDriftDataset( Instances original, String drift, String className ) throws IOException {
+		Instances instancesDrift = new Instances( new FileReader( new File( drift ) ) );
+		int classIdx = instancesDrift.attribute( className ).index();
+		Attribute classAtt = instancesDrift.attribute( className );
+		
+		int[] originalDistribution = new int[newsgroups.size()];
+		for( int iInstance = 0; iInstance < original.size(); ++iInstance ) {
+			Instance inst = original.instance(iInstance);
+			originalDistribution[(int) inst.value( classAtt )] ++;
+		}
+		
+		System.out.println("Original Distribution: \n" + Arrays.toString( originalDistribution ) );
+		
+		for( int iNewsgroup = 0; iNewsgroup < newsgroups.size(); ++iNewsgroup ) {
+			int currentCount = 0;
+			for( int iInstance = 0; iInstance < original.size(); ++iInstance ) {
+				int idx = iNewsgroup * original.size() + iInstance;
+				Instance inst = instancesDrift.instance(idx);
+				currentCount += inst.stringValue( classIdx ).equals("true") ? 1 : 0 ;
+			}
+			if( currentCount != originalDistribution[iNewsgroup] ) System.err.println("ERROR!!");
+			
+		}
+	}
+	
+	private ArrayList<Document> traverseDirectory( File filepointer, ArrayList<Document> documents ) throws IOException {
 		for( File f : filepointer.listFiles() ) {
 			if( Arrays.asList( IGNORE ).contains( f.getName() ) ) continue;
 			
 			if( f.isDirectory() ) {
-				traverseDirectory( f );
-				
+				traverseDirectory( f, documents );
 			} else {
 				if( instanceCount < LIMIT || LIMIT < 1 ) {
 					String contents = readFile( f );
@@ -90,6 +164,7 @@ public class TwentyNewsgroupsGenerator {
 				}
 			}
 		}
+		return documents;
 	}
 	
 	private static void addDocument( Instances dataset, Document document ) {
@@ -147,5 +222,4 @@ public class TwentyNewsgroupsGenerator {
 			return self - other;
 		}
 	}
-	
 }

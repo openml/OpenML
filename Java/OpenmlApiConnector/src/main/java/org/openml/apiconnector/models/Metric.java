@@ -27,6 +27,11 @@ public class Metric {
 	public String implementation;
 	public String label;
 	
+	/**
+	 * @param name - Name of the evaluation metric. Corresponds to name in OpenML table "math_function"
+	 * @param implementation - Name of the implementation of this metric. Corresponds to fullName in OpenML table "implementation"
+	 * @param label - Label of the metric. For example, a precision score "could" have a have a label specifying for which class it is. 
+	 */
 	public Metric( String name, String implementation, String label ) {
 		this.name = name;
 		this.implementation = implementation;

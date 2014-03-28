@@ -27,10 +27,18 @@ public class MetricCollector {
 
 	private Map<Metric, ArrayList<MetricScore>> metrics;
 	
+	/**
+	 * Default Constructor. Bundles the scores of evaluation measures in one class.
+	 * All the scores of the same measure are stored in an arraylist, so that we can
+	 * calculate the standard deviation of it. 
+	 */
 	public MetricCollector() {
 		metrics = new HashMap<Metric, ArrayList<MetricScore>>();
 	}
 	
+	/**
+	 * @param metricMap - A map containing metrics and their respective scores.
+	 */
 	public void add( Map<Metric, MetricScore> metricMap ) {
 		for( Metric m : metricMap.keySet() ) {
 			if( metrics.containsKey(m) == false ) {
@@ -41,6 +49,10 @@ public class MetricCollector {
 		}
 	}
 	
+	/**
+	 * @param m - The measure of which the scores should be returned
+	 * @return An ArrayList containing all the scores of measure m
+	 */
 	public ArrayList<Double> getScores( Metric m ) {
 		ArrayList<MetricScore> metricscores = metrics.get( m );
 		ArrayList<Double> scores = new ArrayList<Double>();

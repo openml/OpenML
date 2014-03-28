@@ -30,6 +30,11 @@ import org.openml.apiconnector.xml.Task.Output.Predictions;
 
 public class TaskInformation {
 
+	/**
+	 * @param t - Input Task. 
+	 * @return The number of repeats
+	 * @throws Exception
+	 */
 	public static int getNumberOfRepeats( Task t ) throws Exception {
 		Estimation_procedure ep = getEstimationProcedure(t);
 		for(int i = 0; i < ep.getParameters().length; ++i) {
@@ -40,6 +45,11 @@ public class TaskInformation {
 		throw new Exception("Tasks estimation procedure does not contain \"number_repeats\"");
 	}
 
+	/**
+	 * @param t - Input Task. 
+	 * @return The number of samples
+	 * @throws Exception
+	 */
 	public static int getNumberOfSamples( Task t ) throws Exception {
 		Estimation_procedure ep = getEstimationProcedure(t);
 		for(int i = 0; i < ep.getParameters().length; ++i) {
@@ -50,6 +60,11 @@ public class TaskInformation {
 		throw new Exception("Tasks estimation procedure does not contain \"number_samples\"");
 	}
 
+	/**
+	 * @param t - Input Task. 
+	 * @return The number of folds
+	 * @throws Exception
+	 */
 	public static int getNumberOfFolds( Task t ) throws Exception {
 		Estimation_procedure ep = getEstimationProcedure(t);
 		for(int i = 0; i < ep.getParameters().length; ++i) {
@@ -60,17 +75,11 @@ public class TaskInformation {
 		throw new Exception("Tasks estimation procedure does not contain \"number_folds\"");
 	}
 	
-	/*public static int getNumberOfExpectedResults( Task t ) throws Exception {
-		Instances splits = getEstimationProcedure(t).getData_splits();
-		int count = 0;
-		for( int i = 0; i < splits.numInstances(); ++i ) {
-			if( InstancesHelper.nominalColumnEqualsValue( splits, i, "type", "TEST" ) ) {
-				count++;
-			}
-		}
-		return count;
-	}*/
-	
+	/**
+	 * @param t - Input Task. 
+	 * @return The estimation procedure
+	 * @throws Exception
+	 */
 	public static Estimation_procedure getEstimationProcedure( Task t ) throws Exception {
 		for( int i = 0; i < t.getInputs().length; ++i ) {
 			if(t.getInputs()[i].getName().equals("estimation_procedure") ) {
@@ -80,6 +89,11 @@ public class TaskInformation {
 		throw new Exception("Task does not define an estimation procedure. ");
 	}
 	
+	/**
+	 * @param t - Input Task. 
+	 * @return The source data
+	 * @throws Exception
+	 */
 	public static Data_set getSourceData( Task t ) throws Exception {
 		for( int i = 0; i < t.getInputs().length; ++i ) {
 			if(t.getInputs()[i].getName().equals("source_data") ) {
@@ -89,6 +103,11 @@ public class TaskInformation {
 		throw new Exception("Task does not define an estimation procedure. ");
 	}
 	
+	/**
+	 * @param t - Input Task. 
+	 * @return The prediction format
+	 * @throws Exception
+	 */
 	public static Predictions getPredictions( Task t ) throws Exception {
 		for( int i = 0; i < t.getOutputs().length; ++i ) {
 			if(t.getOutputs()[i].getName().equals("predictions") ) {
@@ -98,6 +117,11 @@ public class TaskInformation {
 		throw new Exception("Task does not define an predictions. ");
 	}
 	
+	/**
+	 * @param t - Input Task. 
+	 * @return The classnames of the input data
+	 * @throws Exception
+	 */
 	public static String[] getClassNames( Task t ) throws Exception {
 		DataSetDescription dsd = getSourceData(t).getDataSetDescription();
 		String targetFeature = getSourceData(t).getTarget_feature();

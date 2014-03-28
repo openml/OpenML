@@ -27,6 +27,16 @@ import org.openml.apiconnector.settings.Settings;
 
 public class ArffHelper {
 	
+	/**
+	 * Looks whether a specified file exists in the cache directory. Downloads it if it does not exists. 
+	 * 
+	 * @param type - Either splits or dataset
+	 * @param identifier - The name of the arff file to look up (or store)
+	 * @param url - Url to obtain it from
+	 * @param serverMd5 - Md5 hash of the file to be downloaded. Used for checking the local version, if it exists.
+	 * @return A file pointer to the specified arff file.
+	 * @throws IOException
+	 */
 	public static File downloadAndCache( String type, String identifier, String url, String serverMd5 ) throws IOException {
 		File directory = new File( Settings.CACHE_DIRECTORY + type + "/" );
 		File file = new File( directory.getAbsolutePath() + "/" + identifier );
@@ -51,6 +61,10 @@ public class ArffHelper {
 		return dataset;
 	}
 	
+	/**
+	 * @param line - Line from an Arff File. 
+	 * @return true if this is the line declaring the start of the data field (@DATA); false otherwise
+	 */
 	public static boolean isDataDeclaration( String line ) {
 		if( line.length() == 0 ) return false;
 		if( line.charAt( 0 ) == '%' ) return false; // comment; 
@@ -59,6 +73,10 @@ public class ArffHelper {
 		return false;
 	}
 	
+	/**
+	 * @param line - Line from an Arff File. 
+	 * @return true if this is the line declaring an attribute (@ATTRIBUTE); false otherwise
+	 */
 	public static boolean isAttributeDeclaration( String line ) {
 		if( line.length() == 0 ) return false;
 		if( line.charAt( 0 ) == '%' ) return false; // comment; 
@@ -67,6 +85,11 @@ public class ArffHelper {
 		return false;
 	}
 	
+	/**
+	 * @param attributeLine - Line declaring an attribute from an Arff File. 
+	 * @return The name of the attribute
+	 * @throws Exception
+	 */
 	public static String getAttributeName( String attributeLine ) throws Exception {
 		if( isAttributeDeclaration( attributeLine ) == false )
 			throw new Exception("Not a valid attribute. ");
@@ -77,6 +100,11 @@ public class ArffHelper {
 		return words[1];
 	}
 	
+	/**
+	 * @param attributeLine - Line declaring a nominal attribute from an Arff File. 
+	 * @return The values of this nominal attribute
+	 * @throws Exception
+	 */
 	public static String[] getNominalValues( String attributeLine ) throws Exception {
 		if( isAttributeDeclaration( attributeLine ) == false )
 			throw new Exception("Not a valid attribute. ");

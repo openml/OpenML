@@ -39,7 +39,14 @@ import com.thoughtworks.xstream.io.naming.NoNameCoder;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
 public class XstreamXmlMapping {
-
+	
+	/**
+	 * Generates a bidirectional mapping between the XML Objects (server) and 
+	 * the Java Objects (OpenmlApiConnector package opg.openml.apiconnector.xml).
+	 * 
+	 * @return XStream - An XStream instance capable of mapping XML objects and
+	 * OpenmlApiConnector Objects to each other. 
+	 */
 	public static XStream getInstance() {
 		XStream xstream = new XStream(new DomDriver("UFT-8", new NoNameCoder()));
 		
@@ -61,6 +68,7 @@ public class XstreamXmlMapping {
 		xstream.aliasField("oml:licence", DataSetDescription.class, "licence");
 		xstream.aliasField("oml:url", DataSetDescription.class, "url");
 		xstream.aliasField("oml:row_id_attribute", DataSetDescription.class, "row_id_attribute");
+		xstream.aliasField("oml:default_target_attribute", DataSetDescription.class, "default_target_attribute");
 		xstream.aliasField("oml:md5_checksum", DataSetDescription.class, "md5_checksum");
 		
 		// upload data set

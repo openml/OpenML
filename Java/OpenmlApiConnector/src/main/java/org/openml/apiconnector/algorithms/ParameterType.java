@@ -20,29 +20,35 @@
 package org.openml.apiconnector.algorithms;
 
 public enum ParameterType {
-	  FLAG("flag"),
-	  KERNEL("kernel"),
-	  BASELEARNER("baselearner"),
-	  OPTION("option");
+	FLAG("flag"), KERNEL("kernel"), BASELEARNER("baselearner"), OPTION("option");
 
-	  private String text;
+	private String text;
 
-	  ParameterType(String text) {
-	    this.text = text;
-	  }
-
-	  public String getName() {
-	    return this.text;
-	  }
-
-	  public static ParameterType fromString(String text) {
-	    if (text != null) {
-	      for (ParameterType b : ParameterType.values()) {
-	        if (text.equalsIgnoreCase(b.text)) {
-	          return b;
-	        }
-	      }
-	    }
-	    return null;
-	  }
+	ParameterType(String text) {
+		this.text = text;
 	}
+
+	/**
+	 * @return The name of this parameter type;
+	 */
+	public String getName() {
+		return this.text;
+	}
+
+	/**
+	 * Converts a textual description of a parameter into a ParameterType
+	 * 
+	 * @param text (String)
+	 * @return the ParameterType
+	 */
+	public static ParameterType fromString(String text) {
+		if (text != null) {
+			for (ParameterType b : ParameterType.values()) {
+				if (text.equalsIgnoreCase(b.text)) {
+					return b;
+				}
+			}
+		}
+		return null;
+	}
+}

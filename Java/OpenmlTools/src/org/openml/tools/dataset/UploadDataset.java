@@ -22,7 +22,7 @@ public class UploadDataset {
 				"arff", 
 				"class", 
 				"janvanrijn@gmail.com", 
-				"", // TODO fill in.
+				"", // TODO fill in
 				"/Users/jan/Desktop/BNG_Sonar.arff");
 	}
 	
@@ -30,9 +30,11 @@ public class UploadDataset {
 		ApiSessionHash ash = new ApiSessionHash();
 		ash.set( username, password );
 		DataSetDescription dsd = new DataSetDescription( name, description, format, target );
+		String description_xml = xstream.toXML( dsd );
+		System.out.println( description_xml );
 		
 		File dataset = new File( filepath );
-		File desc = Conversion.stringToTempFile( xstream.toXML( dsd ), "description", "xml");
+		File desc = Conversion.stringToTempFile( description_xml, "description", "xml");
 		
 		UploadDataSet ud = ApiConnector.openmlDataUpload(desc, dataset, ash.getSessionHash() );
 		System.out.println( xstream.toXML( ud ) );

@@ -30,6 +30,13 @@ public class DateParser {
 	public static final DateFormat humanReadable = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 	public static final DateFormat defaultOrder  = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
+	/**
+	 * Parses MySQL date format to Unix Time Stamp.
+	 * 
+	 * @param mysqlTime - A string representing the date field.
+	 * @return Unix Time Stamp of mysqlTime
+	 * @throws ParseException
+	 */
 	public static long mysqlDateToTimeStamp(String mysqlTime) throws ParseException {
 		DateFormat current = (DateFormat) defaultOrder.clone();
 		Calendar cal = Calendar.getInstance();

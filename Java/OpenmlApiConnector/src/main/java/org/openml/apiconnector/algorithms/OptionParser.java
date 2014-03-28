@@ -21,6 +21,12 @@ package org.openml.apiconnector.algorithms;
 
 public class OptionParser {
 
+	/**
+	 * Removes the first element of an option string. Used for generating option strings in Weka plugin. 
+	 * 
+	 * @param old - The original option string
+	 * @return The processed option String
+	 */
 	public static String[] removeFirstElement( String[] old ) {
 		int n = old.length-1;
 		String[] newArray = new String[n];

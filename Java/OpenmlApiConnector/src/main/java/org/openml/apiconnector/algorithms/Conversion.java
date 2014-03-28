@@ -28,6 +28,15 @@ import java.io.IOException;
 
 public class Conversion {
 
+	/**
+	 * Stores a string into a temporarily existing file. 
+	 * 
+	 * @param string - The string to store in the file. 
+	 * @param filename - The name of the file.
+	 * @param format - The extension of the file. 
+	 * @return A pointer to the temp file that was created. 
+	 * @throws IOException
+	 */
 	public static File stringToTempFile( String string, String filename, String format ) throws IOException {
 		File file = File.createTempFile(filename, '.' + format );
 		BufferedWriter br = new BufferedWriter(new FileWriter(file));
@@ -37,8 +46,15 @@ public class Conversion {
 		return file;
 	}
 	
-	public static int[] commaSeperatedStringToIntArray( String commaSeperated ) throws NumberFormatException {
-		String[] splitted = commaSeperated.replaceAll("\\s","").split(","); // remove spaces, split on comma
+	/**
+	 * Parses a comma separated string to a integer array
+	 * 
+	 * @param commaSeparated - the comma separated string to parse
+	 * @return the resulting integer array
+	 * @throws NumberFormatException
+	 */
+	public static int[] commaSeparatedStringToIntArray( String commaSeparated ) throws NumberFormatException {
+		String[] splitted = commaSeparated.replaceAll("\\s","").split(","); // remove spaces, split on comma
 		int[] result = new int[splitted.length];
 		for(int i = 0; i < result.length; ++i) {
 			result[i] = Integer.parseInt(splitted[i]);
@@ -46,6 +62,13 @@ public class Conversion {
 		return result;
 	}
 	
+	/**
+	 * Reads a file and stores the content in a string
+	 * 
+	 * @param f - File pointer to the file that needs to be read. Should be non-binary. 
+	 * @return A string containing the content of the file. 
+	 * @throws IOException
+	 */
 	public static String fileToString( File f ) throws IOException {
 		BufferedReader br = new BufferedReader(new FileReader(f));
 		StringBuilder sb = new StringBuilder();

@@ -28,6 +28,13 @@ import java.security.NoSuchAlgorithmException;
 
 public class Hashing {
 
+	/**
+	 * Generates MD5 Hash of String
+	 * 
+	 * @param input - A string to be hashed.
+	 * @return MD5(input)
+	 * @throws NoSuchAlgorithmException
+	 */
 	public static String md5(String input) throws NoSuchAlgorithmException {
 		String result;
 		MessageDigest md = MessageDigest.getInstance("MD5"); // or "SHA-1"
@@ -40,6 +47,13 @@ public class Hashing {
 		return result;
 	}
 
+	/**
+	 * Generates MD5 Hash of file content
+	 * 
+	 * @param input - A pointer to the file to be hashed.
+	 * @return MD5(input)
+	 * @throws IOException
+	 */
 	public static String md5(File input) throws IOException {
 		FileInputStream fis = new FileInputStream(input);
 		return org.apache.commons.codec.digest.DigestUtils.md5Hex(fis);

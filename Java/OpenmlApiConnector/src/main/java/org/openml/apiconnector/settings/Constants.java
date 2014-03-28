@@ -20,8 +20,20 @@
 package org.openml.apiconnector.settings;
 
 public class Constants {
+	
+	/**
+	 * When doing an Api Request with an API session hash which is valid for
+	 * less than the DEFAULT_TIME_MARGIN, a new session hash will be loaded. 
+	 */
 	public static final int DEFAULT_TIME_MARGIN = 300000; // 5 minutes
 	
+	/**
+	 * Default Dataset format
+	 */
 	public static final String DATASET_FORMAT = "arff";
+	
+	/**
+	 * Default XMLNS String to be included in generated XML files.
+	 */
 	public static final String OPENML_XMLNS = "http://openml.org/openml";
 }

@@ -29,32 +29,68 @@ public class MetricScore {
 	private Double[] array = null;
 	private double[][] confusion_matrix = null;
 	
+	/**
+	 * Constructor creating a MetricScore that only contains the score field.
+	 * Used for measures that have no class specific values, like predictive_accurancy.
+	 * 
+	 * @param score
+	 */
 	public MetricScore( Double score ) {
 		this.score = score;
 	}
 
+	/**
+	 * Constructor creating a MetricScore that only contains the array field. Used for
+	 * measures that contain class specific values, but no global flat value.
+	 * 
+	 * @param array - 
+	 */
 	public MetricScore( Double[] array ) {
 		this.score = MathHelper.mean(array);
 		this.array = array;
 	}
 
+	/**
+	 * Constructor creating a MetricScore with both a score and array data. Used for
+	 * measures that contain both a global value and class specific value, like auroc
+	 * precision, recall. 
+	 * 
+	 * @param score 
+	 * @param array
+	 */
 	public MetricScore( Double score, Double[] array ) {
 		this.score = score;
 		this.array = array;
 	}
 
+	/**
+	 * Fills the metric score with a confussion matrix. 
+	 * 
+	 * @param confusion_matrix
+	 */
 	public MetricScore( double[][] confusion_matrix ) {
 		this.confusion_matrix = confusion_matrix;
 	}
 
+	/**
+	 * @return the score field
+	 */
 	public Double getScore() {
 		return score;
 	}
 
+	/**
+	 * @return true if this score contains array data (confusion matrix or class specific values);
+	 * false otherwise.
+	 */
 	public boolean hasArray() {
 		return array != null || confusion_matrix != null;
 	}
 	
+	/**
+	 * @param decimalFormat - An object specifying how to convert doubles to strings.
+	 * @return The array in string format. 
+	 */
 	public String getArrayAsString( DecimalFormat decimalFormat ) {
 		StringBuilder sb = new StringBuilder();
 		if( array != null ) {

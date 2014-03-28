@@ -35,16 +35,28 @@ public class ApiSessionHash implements Serializable {
 	private String sessionHash;
 	private long validUntil;
 	
+	/**
+	 * Creates a new session hash. 
+	 */
 	public ApiSessionHash() {
 		sessionHash = null;
 		username = null;
 	}
 	
+	/**
+	 * @return true if the API session hash is still valid, false otherwise
+	 */
 	public boolean isValid() {
 		Date utilDate = new Date();
 		return validUntil > utilDate.getTime() + Constants.DEFAULT_TIME_MARGIN;
 	}
 	
+	/**
+	 * @param username - Username to authenticate with
+	 * @param password - Password to authenticate with
+	 * @return true if authentication was successful; false otherwise.
+	 * @throws ParseException
+	 */
 	public boolean set( String username, String password ) throws ParseException {
 		this.username = username;
 		this.password = password;
@@ -52,6 +64,11 @@ public class ApiSessionHash implements Serializable {
 		return update();
 	}
 	
+	/**
+	 * Executes authentication request.
+	 * 
+	 * @return True on successful authentication; false otherwise. 
+	 */
 	public boolean update() {
 		try {
 			Authenticate auth = ApiConnector.openmlAuthenticate(username, password);
@@ -63,10 +80,16 @@ public class ApiSessionHash implements Serializable {
 		}
 	}
 
+	/**
+	 * @return The username that was set
+	 */
 	public String getUsername() {
 		return username;
 	}
 
+	/**
+	 * @return The password that was set
+	 */
 	public String getSessionHash() {
 		if( isValid() == false )
 			update();

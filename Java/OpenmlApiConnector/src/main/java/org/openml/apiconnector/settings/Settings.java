@@ -21,9 +21,22 @@ package org.openml.apiconnector.settings;
 
 public class Settings {
 	
+	/**
+	 * When set to true, API will output all downloaded and uploaded content. 
+	 */
 	public static final boolean API_VERBOSE = false;
+	/**
+	 * The webserver to which request are done. ends with tailing slash. 
+	 * (Api suffix will be added by ApiConnector)
+	 */
 	public static final String BASE_URL = "http://openml.liacs.nl/";
+	/**
+	 * Whether caching is allowed. Keep value to true.
+	 */
 	public static final boolean CACHE_ALLOWED = true;
+	/**
+	 * The directory where cache files are saved. 
+	 */
 	public static final String CACHE_DIRECTORY = "data/.openml/cache/";
 	
 }

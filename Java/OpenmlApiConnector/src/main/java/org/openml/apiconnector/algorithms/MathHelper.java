@@ -21,6 +21,13 @@ package org.openml.apiconnector.algorithms;
 
 public class MathHelper {
 
+	/**
+	 * Calculates the standard deviation of a population. 
+	 * 
+	 * @param population
+	 * @param sample
+	 * @return
+	 */
 	public static double standard_deviation( Double[] population, boolean sample ) {
 		double variance = 0;
 		double mean = sum(population) / population.length;
@@ -33,16 +40,35 @@ public class MathHelper {
 		return java.lang.Math.sqrt(variance);
 	}
 	
+	/**
+	 * Returns the sum of values in an array. 
+	 * 
+	 * @param array
+	 * @return
+	 */
 	public static double sum( Double[] array ) {
 		double total = 0;
 		for( double add : array ) total += add;
 		return total;
 	}
 	
+	/**
+	 * Returns the mean of values in an array
+	 * 
+	 * @param array
+	 * @return
+	 */
 	public static double mean( Double[] array ) {
 		return sum(array) / array.length;
 	}
 	
+	/**
+	 * Returns the index of the maximal value in a double[] 
+	 * 
+	 * @param array
+	 * @param naturalNumbers
+	 * @return
+	 */
 	public static int argmax( double[] array, boolean naturalNumbers ) {
 		int best = -1;
 		double value = (naturalNumbers) ? 0D : Double.MIN_VALUE;
