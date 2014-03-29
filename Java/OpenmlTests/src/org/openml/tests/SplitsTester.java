@@ -2,14 +2,17 @@ package org.openml.tests;
 
 import static org.junit.Assert.*;
 
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import org.openml.apiconnector.algorithms.ArffHelper;
 import org.openml.apiconnector.algorithms.TaskInformation;
 import org.openml.apiconnector.io.ApiConnector;
 import org.openml.apiconnector.io.ApiException;
+import org.openml.apiconnector.xml.DataSetDescription;
 import org.openml.apiconnector.xml.Task;
-
+import org.openml.apiconnector.xml.Task.Input.Estimation_procedure;
 import org.junit.Test;
 
 import weka.core.Instance;
@@ -21,13 +24,21 @@ public class SplitsTester {
 	@SuppressWarnings("unchecked")
 	public void testLearningCurves() {
 		
-		/*for( int i = 1; i <= 10; ++i ) {
+		for( int i = 1; i <= 10; ++i ) {
 			try {
 				Task t = ApiConnector.openmlTasksSearch( i );
 				if( t.getTask_type().equals("Learning Curve") ) {
 					System.out.println( "Task " + t.getTask_id() );
-					Instances splits = TaskInformation.getEstimationProcedure(t).getData_splits();
-					Instances data = TaskInformation.getSourceData(t).getDataSetDescription().getDataset();
+					
+					Estimation_procedure ep = TaskInformation.getEstimationProcedure(t);
+					String serverMd5 = ApiConnector.getStringFromUrl( ep.getData_splits_url().replace("/get/", "/md5/") );
+					String identifier = ep.getData_splits_url().substring( ep.getData_splits_url().lastIndexOf('/') + 1 );
+					Instances splits = new Instances( new FileReader( ArffHelper.downloadAndCache("splits", identifier, ep.getData_splits_url(), serverMd5 ) ) );
+
+					DataSetDescription dsd = TaskInformation.getSourceData(t).getDataSetDescription();
+					Instances data = new Instances( new FileReader( ArffHelper.downloadAndCache("dataset", dsd.getCacheFileName(), dsd.getUrl(), dsd.getMd5_checksum() ) ) );
+					
+					
 					String[] classValues = TaskInformation.getClassNames(t);
 					data.setClass( data.attribute( TaskInformation.getSourceData(t).getTarget_feature() ) );
 					
@@ -110,7 +121,7 @@ public class SplitsTester {
 					fail();
 				}
 			}
-		}*/
+		}
 	}
 	
 	private boolean withinBounds( double setSize, double totalSize, double targetSize ) {
