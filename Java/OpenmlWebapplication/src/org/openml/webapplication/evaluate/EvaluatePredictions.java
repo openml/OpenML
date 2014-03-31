@@ -96,7 +96,7 @@ public class EvaluatePredictions {
 		
 		// do the same for the confidence fields. This number is dependent on the number 
 		// of classes in the data set, hence the for-loop. 
-		nrOfClasses = dataset.classAttribute().numValues();
+		nrOfClasses = dataset.classAttribute().numValues(); // returns 0 if numeric, that's good.
 		classes = new String[nrOfClasses];
 		ATT_PREDICTION_CONFIDENCE = new int[nrOfClasses];
 		for( int i = 0; i < classes.length; i++ ) {

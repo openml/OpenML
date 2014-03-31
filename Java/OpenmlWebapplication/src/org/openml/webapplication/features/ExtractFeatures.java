@@ -88,6 +88,13 @@ public class ExtractFeatures {
 		int MajorityClassSize = -1;
 		int MinorytyClassSize = Integer.MAX_VALUE;
 		
+		// update attribute based quality counters
+		for( int i = 0; i < dataset.numAttributes(); ++i ) {
+			Attribute att = dataset.attribute( i );
+			if(att.isNumeric())	NumberOfNumericFeatures++;
+		}
+		
+		// we go through all the instances in only one loop. 
 		Instance currentInstance;
 		while( ( currentInstance = arffLoader.getNextInstance( dataset ) ) != null ) {
 			// increment instance counter
@@ -112,14 +119,7 @@ public class ExtractFeatures {
 			dataset.add(currentInstance);
 		}
 		
-		for( int i = 0; i < dataset.numAttributes(); ++i ) {
-			Attribute att = dataset.attribute( i );
-			
-			if(att.isNumeric()) {
-				NumberOfNumericFeatures++;
-			}
-		}
-		
+		// update statistics on class attribute
 		for( int nominalSize : classDistribution ) { // check will only be performed with nominal target
 			if(nominalSize > MajorityClassSize) MajorityClassSize = nominalSize;
 			if(nominalSize < MinorytyClassSize) MinorytyClassSize = nominalSize;
