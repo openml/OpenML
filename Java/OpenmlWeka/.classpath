@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src/main/java"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/OpenmlApiConnector"/>
+	<classpathentry kind="lib" path="lib/weka.jar" sourcepath="/OpenmlMoa/lib/weka-src.jar"/>
+	<classpathentry kind="lib" path="/OpenmlApiConnector/lib/xstream-1.4.4.jar"/>
+	<classpathentry kind="lib" path="/OpenmlApiConnector/lib/commons-lang3-3.1.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
