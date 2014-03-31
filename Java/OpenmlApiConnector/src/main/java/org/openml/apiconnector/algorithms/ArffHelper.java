@@ -48,7 +48,7 @@ public class ArffHelper {
 				System.err.println("[Cache] Loaded " + type + " " + identifier + " from cache. " );
 				return file;
 			} else {
-				System.err.println("[Cache ERROR] " + type + " " + identifier + " hash and cache not identical: \n- Client: " + clientMd5 + "\n- Server: " + serverMd5 );
+				System.err.println("[Cache Warning] " + type + " " + identifier + " hash and cache not identical: \n- Client: " + clientMd5 + "\n- Server: " + serverMd5 );
 			}
 		}
 		

@@ -3,27 +3,39 @@ package org.openml.webapplication.features;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import org.openml.webapplication.io.Input;
 import org.openml.webapplication.models.DataFeature;
 import org.openml.webapplication.models.DataQuality;
 
 import weka.core.Attribute;
 import weka.core.AttributeStats;
+import weka.core.Instance;
 import weka.core.Instances;
+import weka.core.converters.ArffLoader;
 
 public class ExtractFeatures {
 
 	private final Instances dataset;
+	private final ArffLoader arffLoader;
+	private final Attribute classAttribute;
 	
 	public ExtractFeatures( String url, String default_class ) throws IOException {
-		dataset = new Instances( Input.getURL( url ) );
+		arffLoader = new ArffLoader();
+		arffLoader.setURL(url);
 		
+		dataset = new Instances( arffLoader.getStructure() );
+		
+		classAttribute = dataset.attribute( default_class );
+		if( classAttribute == null ) throw new RuntimeException("Specified target class not found.");
+		
+		dataset.setClass( classAttribute );
+
+		ArrayList<DataQuality> qualities= getQualities();
 		ArrayList<DataFeature> features = getFeatures();
-		ArrayList<DataQuality> qualities= getQualities( default_class );
 		
 		output( features, qualities );
 	}
 	
+	// @pre: invoke getQualities, so that the attribute stats classes are ok
 	private ArrayList<DataFeature> getFeatures() {
 		final ArrayList<DataFeature> resultFeatures = new ArrayList<DataFeature>();
 		for( int i = 0; i < dataset.numAttributes(); i++ ) {
@@ -63,52 +75,56 @@ public class ExtractFeatures {
 		return resultFeatures;
 	}
 	
-	private ArrayList<DataQuality> getQualities( String default_class ) {
+	private ArrayList<DataQuality> getQualities( ) throws IOException {
 		final ArrayList<DataQuality> resultQualities = new ArrayList<DataQuality>();
-		boolean nominalTarget = false;
-		boolean classFound = false;
+		boolean nominalTarget = dataset.classAttribute().isNominal();
+		int[] classDistribution = new int[dataset.classAttribute().numValues()];
 		
-		int NumberOfInstances = dataset.numInstances();
+		int NumberOfInstances = 0;
 		int NumberOfMissingValues = 0;
 		int NumberOfInstancesWithMissingValues = 0;
 		int NumberOfNumericFeatures = 0;
-		int NumberOfClasses = -1;
+		int NumberOfClasses = dataset.classAttribute().numValues();
 		int MajorityClassSize = -1;
 		int MinorytyClassSize = Integer.MAX_VALUE;
 		
-		
+		Instance currentInstance;
+		while( ( currentInstance = arffLoader.getNextInstance( dataset ) ) != null ) {
+			// increment instance counter
+			NumberOfInstances ++;
+			
+			// increment total number of missing values counter
+			for( int j = 0; j < dataset.numAttributes(); ++j ) {
+				if( currentInstance.isMissing(j) ) ++NumberOfMissingValues;
+			}
+			
+			// increment instances / missing value(s) counter
+			if(currentInstance.hasMissingValue()) NumberOfInstancesWithMissingValues++;
+			
+			// increment class values counts
+			if( currentInstance.classAttribute().isNominal() ) {
+				classDistribution[(int) currentInstance.classValue()] ++;
+			}
+			
+			// TODO! In order to make this class scalable, 
+			// we need to remove the following line of code and
+			// think of something that replaces the AttributeStats counters. 
+			dataset.add(currentInstance);
+		}
 		
 		for( int i = 0; i < dataset.numAttributes(); ++i ) {
 			Attribute att = dataset.attribute( i );
-			AttributeStats as = dataset.attributeStats( i );
 			
 			if(att.isNumeric()) {
 				NumberOfNumericFeatures++;
 			}
-			if(att.name().equals( default_class )) {
-				classFound = true;
-				if(att.isNominal()) {
-					nominalTarget = true;
-					NumberOfClasses = att.numValues();
-					int[] classDistribution = as.nominalCounts;
-					for( int nominalSize : classDistribution ) {
-						if(nominalSize > MajorityClassSize) MajorityClassSize = nominalSize;
-						if(nominalSize < MinorytyClassSize) MinorytyClassSize = nominalSize;
-					}
-				} else if( att.isNumeric() ) {
-					
-				}
-			}
 		}
 		
-		if( classFound == false && default_class != null ) throw new RuntimeException("Specified target class not found.");
-		
-		for( int i = 0; i < dataset.numInstances(); ++i ) {
-			for( int j = 0; j < dataset.numAttributes(); ++j ) {
-				if( dataset.instance(i).isMissing(j) ) ++NumberOfMissingValues;
-			}
-			if(dataset.instance(i).hasMissingValue()) NumberOfInstancesWithMissingValues++;
+		for( int nominalSize : classDistribution ) { // check will only be performed with nominal target
+			if(nominalSize > MajorityClassSize) MajorityClassSize = nominalSize;
+			if(nominalSize < MinorytyClassSize) MinorytyClassSize = nominalSize;
 		}
+		
 		
 		resultQualities.add( new DataQuality("DefaultTargetNominal", nominalTarget ? "true" : "false" ) );
 		resultQualities.add( new DataQuality("DefaultTargetNumerical", nominalTarget ? "false" : "true" ) );
@@ -134,6 +150,8 @@ public class ExtractFeatures {
 		for( DataQuality res : qualitiesArray ) qualities.append(",\n\t" + res);
 		
 		
-		System.out.println("{\n\"data_features\":[" + features.toString().substring(1) + "\n],\n\"data_qualities\":[" + qualities.toString().substring(1) + "\n]}");
+		System.out.println("{\n\"data_features\":[" + 
+				(features.length() > 0 ? features.toString().substring(1) : "") + "\n],\n\"data_qualities\":[" + 
+				(qualities.length() > 0 ? qualities.toString().substring(1) : "") + "\n]}");
 	}
 }
