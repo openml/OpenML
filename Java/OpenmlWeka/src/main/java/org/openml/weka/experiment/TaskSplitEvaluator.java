@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectOutputStream;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
+import java.util.ArrayList;
 import java.util.List;
 
 import weka.classifiers.AbstractClassifier;
@@ -32,6 +33,15 @@ public class TaskSplitEvaluator extends ClassifierSplitEvaluator {
 	private static final String SCHEMA_VERSION_ID_FIELD_NAME = "Scheme_version_ID";
 
 	private transient FastVector recentPredictions = null;
+
+	/** 
+	 * JvR: Direct copies from weka.experiment.ClassifierSplitEvaluator. 
+	 * Change values if these also change there. */
+	protected static final int RESULT_SIZE = 30;
+	protected static final int NUM_IR_STATISTICS = 16;
+	protected static final int NUM_WEIGHTED_IR_STATISTICS = 10;
+	protected static final int NUM_UNWEIGHTED_IR_STATISTICS = 2;
+	protected final List<AbstractEvaluationMetric> m_pluginMetrics = new ArrayList<AbstractEvaluationMetric>();
 
 	  /**
 	   * Gets the results for the supplied train and test datasets. Now performs a
@@ -132,21 +142,21 @@ public class TaskSplitEvaluator extends ClassifierSplitEvaluator {
 	    result[current++] = new Double(eval.KBRelativeInformation());
 
 	    // IR stats
-	    result[current++] = new Double(eval.truePositiveRate(m_IRclass));
-	    result[current++] = new Double(eval.numTruePositives(m_IRclass));
-	    result[current++] = new Double(eval.falsePositiveRate(m_IRclass));
-	    result[current++] = new Double(eval.numFalsePositives(m_IRclass));
-	    result[current++] = new Double(eval.trueNegativeRate(m_IRclass));
-	    result[current++] = new Double(eval.numTrueNegatives(m_IRclass));
-	    result[current++] = new Double(eval.falseNegativeRate(m_IRclass));
-	    result[current++] = new Double(eval.numFalseNegatives(m_IRclass));
-	    result[current++] = new Double(eval.precision(m_IRclass));
-	    result[current++] = new Double(eval.recall(m_IRclass));
-	    result[current++] = new Double(eval.fMeasure(m_IRclass));
+	    result[current++] = new Double(eval.truePositiveRate(getClassForIRStatistics()));
+	    result[current++] = new Double(eval.numTruePositives(getClassForIRStatistics()));
+	    result[current++] = new Double(eval.falsePositiveRate(getClassForIRStatistics()));
+	    result[current++] = new Double(eval.numFalsePositives(getClassForIRStatistics()));
+	    result[current++] = new Double(eval.trueNegativeRate(getClassForIRStatistics()));
+	    result[current++] = new Double(eval.numTrueNegatives(getClassForIRStatistics()));
+	    result[current++] = new Double(eval.falseNegativeRate(getClassForIRStatistics()));
+	    result[current++] = new Double(eval.numFalseNegatives(getClassForIRStatistics()));
+	    result[current++] = new Double(eval.precision(getClassForIRStatistics()));
+	    result[current++] = new Double(eval.recall(getClassForIRStatistics()));
+	    result[current++] = new Double(eval.fMeasure(getClassForIRStatistics()));
 	    result[current++] = new Double(
-	        eval.matthewsCorrelationCoefficient(m_IRclass));
-	    result[current++] = new Double(eval.areaUnderROC(m_IRclass));
-	    result[current++] = new Double(eval.areaUnderPRC(m_IRclass));
+	        eval.matthewsCorrelationCoefficient(getClassForIRStatistics()));
+	    result[current++] = new Double(eval.areaUnderROC(getClassForIRStatistics()));
+	    result[current++] = new Double(eval.areaUnderPRC(getClassForIRStatistics()));
 
 	    // Weighted IR stats
 	    result[current++] = new Double(eval.weightedTruePositiveRate());
@@ -176,7 +186,7 @@ public class TaskSplitEvaluator extends ClassifierSplitEvaluator {
 	    }
 
 	    // sizes
-	    if (m_NoSizeDetermination) {
+	    if (getNoSizeDetermination()) {
 	      result[current++] = -1.0;
 	      result[current++] = -1.0;
 	      result[current++] = -1.0;
@@ -202,17 +212,17 @@ public class TaskSplitEvaluator extends ClassifierSplitEvaluator {
 	    // IDs
 	    if (getAttributeID() >= 0) {
 	      String idsString = "";
-	      if (test.attribute(m_attID).isNumeric()) {
+	      if (test.attribute(getAttributeID()).isNumeric()) {
 	        if (test.numInstances() > 0)
-	          idsString += test.instance(0).value(m_attID);
+	          idsString += test.instance(0).value(getAttributeID());
 	        for (int i = 1; i < test.numInstances(); i++) {
-	          idsString += "|" + test.instance(i).value(m_attID);
+	          idsString += "|" + test.instance(i).value(getAttributeID());
 	        }
 	      } else {
 	        if (test.numInstances() > 0)
-	          idsString += test.instance(0).stringValue(m_attID);
+	          idsString += test.instance(0).stringValue(getAttributeID());
 	        for (int i = 1; i < test.numInstances(); i++) {
-	          idsString += "|" + test.instance(i).stringValue(m_attID);
+	          idsString += "|" + test.instance(i).stringValue(getAttributeID());
 	        }
 	      }
 	      result[current++] = idsString;

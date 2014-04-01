@@ -64,6 +64,10 @@ public class TaskBasedExperiment extends Experiment {
 	public void setMode(boolean datasetBasedExperiment) {
 		this.datasetBasedExperiment = datasetBasedExperiment;
 	}
+
+	public boolean getMode() {
+		return datasetBasedExperiment;
+	}
 	
 	public DefaultListModel<Task> getTasks() {
 		return m_Tasks;

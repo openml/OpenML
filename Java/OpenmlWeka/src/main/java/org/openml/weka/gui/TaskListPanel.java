@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
+import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
@@ -13,6 +14,7 @@ import javax.swing.event.ListSelectionEvent;
 import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.io.ApiConnector;
 import org.openml.apiconnector.xml.Task;
+import org.openml.weka.experiment.TaskBasedExperiment;
 
 import weka.core.Utils;
 import weka.core.ClassDiscovery.StringCompare;
@@ -65,9 +67,10 @@ public class TaskListPanel extends DatasetListPanel {
 	 * @param exp
 	 *            a value of type 'TaskBasedExperiment'
 	 */
+	@Override
 	public void setExperiment(Experiment exp) {
 		m_Exp = exp;
-		m_List.setModel(datasetBased ? m_Exp.getDatasets() : m_Exp.getTasks());
+		m_List.setModel(getTasksControlled(m_Exp));
 		m_AddBut.setEnabled(true);
 		setButtons(null);
 	}
@@ -82,7 +85,7 @@ public class TaskListPanel extends DatasetListPanel {
 					.createTitledBorder("Datasets"));
 		} else {
 			m_relativeCheck.setEnabled(false);
-			m_List.setModel(m_Exp.getTasks());
+			m_List.setModel(getTasksControlled(m_Exp));
 			setBorder(BorderFactory.createTitledBorder("Tasks"));
 		}
 	}
@@ -119,8 +122,8 @@ public class TaskListPanel extends DatasetListPanel {
 				if (selected != null) {
 					for (int i = selected.length - 1; i >= 0; i--) {
 						int current = selected[i];
-						m_Exp.getTasks().removeElementAt(current);
-						if (m_Exp.getTasks().size() > current) {
+						getTasksControlled(m_Exp).removeElementAt(current);
+						if (getTasksControlled(m_Exp).size() > current) {
 							m_List.setSelectedIndex(current);
 						} else {
 							m_List.setSelectedIndex(current - 1);
@@ -262,13 +265,17 @@ public class TaskListPanel extends DatasetListPanel {
 		try {
 			int[] input_task_ids = Conversion.commaSeparatedStringToIntArray(s);
 			for (int i = 0; i < input_task_ids.length; ++i) {
-				if (m_Exp.getTasks().contains(new Task(input_task_ids[i])) == false) {
+				if (getTasksControlled(m_Exp).contains(new Task(input_task_ids[i])) == false) {
 					try {
 						Task t = ApiConnector
 								.openmlTasksSearch(input_task_ids[i]);
 						// download all data necessary for task execution
 
-						m_Exp.getTasks().addElement(t);
+						if( m_Exp instanceof TaskBasedExperiment ) {
+							getTasksControlled(m_Exp).addElement(t);
+						} else {
+							System.err.println("Could not add task to Queue... ");
+						}
 					} catch (Exception downloadException) {
 						JOptionPane
 								.showMessageDialog(
@@ -294,5 +301,16 @@ public class TaskListPanel extends DatasetListPanel {
 
 	public void actionPerformedTaskBasedEdit(ActionEvent e) {
 		System.out.println("TODO, function not yet implemented.");
+	}
+	
+	private DefaultListModel getTasksControlled( Experiment exp ) {
+		if( exp instanceof TaskBasedExperiment ) {
+			if( datasetBased )
+				return exp.getDatasets();
+			else 
+				return ((TaskBasedExperiment) exp).getTasks();
+		} else {
+			return exp.getDatasets();
+		}
 	}
 }

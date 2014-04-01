@@ -41,6 +41,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import org.openml.weka.experiment.TaskBasedExperiment;
 import org.openml.weka.experiment.TaskResultListener;
 
 import weka.core.SerializedObject;
@@ -177,9 +178,18 @@ public class RunPanel extends JPanel implements ActionListener {
 												.getClass().getName();
 								current += cname;
 							}
-							String dname = (m_ExpCopy.getMode()) ? ((File) m_ExpCopy.getDatasets()
-								      .elementAt(m_ExpCopy.getCurrentDatasetNumber()))
-							.getName() : "Task_" + m_ExpCopy.getCurrentDatasetNumber();
+							
+							String dname;
+							if( m_ExpCopy instanceof TaskBasedExperiment ) {
+								if( ( (TaskBasedExperiment) m_ExpCopy).getMode() == false ) {
+									dname = "Task_" + m_ExpCopy.getCurrentDatasetNumber();
+								} else {
+									dname = ((File) m_ExpCopy.getDatasets().elementAt(m_ExpCopy.getCurrentDatasetNumber())).getName();
+								}
+							} else {
+								dname = ((File) m_ExpCopy.getDatasets().elementAt(m_ExpCopy.getCurrentDatasetNumber())).getName();
+							}
+							
 							current += " Dataset=" + dname + " Run="
 									+ (m_ExpCopy.getCurrentRunNumber());
 							statusMessage(current);

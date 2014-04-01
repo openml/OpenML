@@ -61,6 +61,7 @@ import javax.swing.filechooser.FileFilter;
 import org.openml.apiconnector.algorithms.SciMark;
 import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.settings.Constants;
+import org.openml.weka.experiment.TaskBasedExperiment;
 import org.openml.weka.experiment.TaskResultListener;
 import org.openml.weka.experiment.TaskResultProducer;
 import org.openml.weka.gui.TaskListPanel;
@@ -98,7 +99,7 @@ public class SimpleSetupPanel extends JPanel {
 	private static final long serialVersionUID = 5257424515609176509L;
 
 	/** The experiment being configured */
-	protected Experiment m_Exp;
+	protected TaskBasedExperiment m_Exp;
 
 	/** The panel which switched between simple and advanced setup modes */
 	protected SetupModePanel m_modePanel = null;
@@ -259,14 +260,7 @@ public class SimpleSetupPanel extends JPanel {
 	 */
 	public SimpleSetupPanel() {
 		// TODO: OpenML addition:
-		try {
-			openmlconfig = new Config();
-		} catch (IOException e) { /*
-								 * Config not present. User has to login by
-								 * himself.
-								 */
-		}
-		;
+		try { openmlconfig = new Config(); } catch (IOException e) { /* Configfile not present. User has to login by himself. */ }
 
 		// everything disabled on startup
 		m_ResultsDestinationCBox.setEnabled(false);
@@ -701,8 +695,9 @@ public class SimpleSetupPanel extends JPanel {
 	 *            a value of type 'Experiment'
 	 * @return true if experiment could be configured, false otherwise
 	 */
-	public boolean setExperiment(Experiment exp) {
+	public boolean setExperiment(Experiment exp_old) {
 
+		TaskBasedExperiment exp = new TaskBasedExperiment( exp_old );
 		m_userHasBeenAskedAboutConversion = false;
 		m_Exp = null; // hold off until we are sure we want conversion
 		m_SaveBut.setEnabled(true);
