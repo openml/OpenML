@@ -3,6 +3,7 @@ package org.openml.webapplication.features;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.openml.webapplication.models.AttributeStatistics;
 import org.openml.webapplication.models.DataFeature;
 import org.openml.webapplication.models.DataQuality;
 
@@ -13,10 +14,19 @@ import weka.core.Instances;
 import weka.core.converters.ArffLoader;
 
 public class ExtractFeatures {
-
+	
 	private final Instances dataset;
 	private final ArffLoader arffLoader;
 	private final Attribute classAttribute;
+	
+	private static final int RAM_LIMIT = 10000;
+	private boolean allInstancesInRAM = true;
+	
+	// We create out own attribute stats class, so that we do not need to rely on Weka's class.
+	// This class has a much lower footprint, as it does not need to store the various values
+	// itself, but rather maintains some aggregated variables. In addition, we (currently) also
+	// use Weka's AttributeStats, but only uptil a certain number of instances. 
+	private final AttributeStatistics[] attributeStats;
 	
 	public ExtractFeatures( String url, String default_class ) throws IOException {
 		arffLoader = new ArffLoader();
@@ -29,6 +39,11 @@ public class ExtractFeatures {
 		
 		dataset.setClass( classAttribute );
 
+		attributeStats = new AttributeStatistics[dataset.numAttributes()];
+		for( int i = 0; i < dataset.numAttributes(); ++i ) {
+			attributeStats[i] = new AttributeStatistics( );
+		}
+		
 		ArrayList<DataQuality> qualities= getQualities();
 		ArrayList<DataFeature> features = getFeatures();
 		
@@ -40,25 +55,27 @@ public class ExtractFeatures {
 		final ArrayList<DataFeature> resultFeatures = new ArrayList<DataFeature>();
 		for( int i = 0; i < dataset.numAttributes(); i++ ) {
 			Attribute att = dataset.attribute( i );
-			AttributeStats as = dataset.attributeStats( i );
 			DataFeature key_values = new DataFeature(att.index(), att.name());
 			
-			key_values.put( "NumberOfDistinctValues", as.distinctCount );
-			key_values.put( "NumberOfUniqueValues", as.uniqueCount );
-			key_values.put( "NumberOfMissingValues", as.missingCount );
-			key_values.put( "NumberOfIntegerValues", as.intCount );
-			key_values.put( "NumberOfRealValues", as.realCount );
+			if( allInstancesInRAM ) {
+				AttributeStats as = dataset.attributeStats( i );
+				key_values.put( "NumberOfDistinctValues", as.distinctCount );
+				key_values.put( "NumberOfUniqueValues", as.uniqueCount );
+				key_values.put( "NumberOfMissingValues", as.missingCount );
+				key_values.put( "NumberOfIntegerValues", as.intCount );
+				key_values.put( "NumberOfRealValues", as.realCount );
+			}
 			
 			if( att.isNominal() ) {
-				key_values.put( "NumberOfNominalValues", as.nominalCounts.length ); 
+				key_values.put( "NumberOfNominalValues", att.numValues() ); 
 			}
-			key_values.put( "NumberOfValues", as.totalCount );
+			key_values.put( "NumberOfValues", attributeStats[i].getTotalObservations() );
 			
 			if( att.isNumeric() ) {
-				key_values.put( "MaximumValue", as.numericStats.max );
-				key_values.put( "MinimumValue", as.numericStats.min );
-				key_values.put( "MeanValue", as.numericStats.mean );
-				key_values.put( "StandardDeviation", as.numericStats.stdDev );
+				key_values.put( "MaximumValue", attributeStats[i].getMaximum() );
+				key_values.put( "MinimumValue", attributeStats[i].getMinimum() );
+				key_values.put( "MeanValue", attributeStats[i].getMean() );
+				key_values.put( "StandardDeviation", attributeStats[i].getStandardDeviation() );
 			}
 			
 			if( att.type() == 0 )
@@ -103,6 +120,7 @@ public class ExtractFeatures {
 			// increment total number of missing values counter
 			for( int j = 0; j < dataset.numAttributes(); ++j ) {
 				if( currentInstance.isMissing(j) ) ++NumberOfMissingValues;
+				attributeStats[j].addValue( currentInstance.value( j ) );
 			}
 			
 			// increment instances / missing value(s) counter
@@ -113,10 +131,16 @@ public class ExtractFeatures {
 				classDistribution[(int) currentInstance.classValue()] ++;
 			}
 			
-			// TODO! In order to make this class scalable, 
-			// we need to remove the following line of code and
-			// think of something that replaces the AttributeStats counters. 
-			dataset.add(currentInstance);
+			// Important!! In order to make this program scalable, we only keep the first
+			// RAM_LIMIT records in RAM. Datasets with more instances can of course be
+			// evaluated, but we will no longer rely on weka's AttributeStats class. Instead
+			// we'll use our own AttributeStatistics class, that does not require a lot of RAM.
+			// At the costs of information like unique values and distinct values. 
+			if( NumberOfInstances < RAM_LIMIT ) {
+				dataset.add(currentInstance);
+			} else {
+				allInstancesInRAM = false;
+			}
 		}
 		
 		// update statistics on class attribute
@@ -124,7 +148,6 @@ public class ExtractFeatures {
 			if(nominalSize > MajorityClassSize) MajorityClassSize = nominalSize;
 			if(nominalSize < MinorytyClassSize) MinorytyClassSize = nominalSize;
 		}
-		
 		
 		resultQualities.add( new DataQuality("DefaultTargetNominal", nominalTarget ? "true" : "false" ) );
 		resultQualities.add( new DataQuality("DefaultTargetNumerical", nominalTarget ? "false" : "true" ) );

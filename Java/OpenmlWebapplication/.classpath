@@ -6,6 +6,6 @@
 	<classpathentry kind="lib" path="/OpenmlApiConnector/lib/commons-lang3-3.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-cli-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/weka-src.jar"/>
-	<classpathentry kind="lib" path="lib/weka.jar"/>
+	<classpathentry kind="lib" path="lib/weka.jar" sourcepath="lib/weka-src.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
