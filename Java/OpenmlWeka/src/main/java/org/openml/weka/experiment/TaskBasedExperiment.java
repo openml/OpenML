@@ -7,7 +7,6 @@ import java.lang.reflect.Array;
 
 import javax.swing.DefaultListModel;
 
-import org.openml.apiconnector.algorithms.ArffHelper;
 import org.openml.apiconnector.algorithms.SciMark;
 import org.openml.apiconnector.algorithms.TaskInformation;
 import org.openml.apiconnector.io.ApiConnector;
@@ -134,7 +133,7 @@ public class TaskBasedExperiment extends Experiment {
 
 			Data_set ds = TaskInformation.getSourceData(m_CurrentTask);
 			DataSetDescription dsd = TaskInformation.getSourceData(m_CurrentTask).getDataSetDescription();
-			Instances instDataset = new Instances( new FileReader( ArffHelper.downloadAndCache("dataset", dsd.getCacheFileName(), dsd.getUrl(), dsd.getMd5_checksum() ) ) );
+			Instances instDataset = new Instances( new FileReader( dsd.getDataset() ) );
 					
 			InstancesHelper.setTargetAttribute(instDataset,
 					ds.getTarget_feature());

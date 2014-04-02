@@ -31,3 +31,8 @@ CREATE TABLE `schedule` (
 -- (5,  9, 'moa', 4),
 -- (6,  7, 'moa', 4),
 -- (7, 10, 'moa', 4);
+
+ALTER TABLE `data_feature` CHANGE `NumberOfDistinctValues` `NumberOfDistinctValues` INT( 11 ) NULL DEFAULT NULL ,
+CHANGE `NumberOfUniqueValues` `NumberOfUniqueValues` INT( 11 ) NULL DEFAULT NULL ,
+CHANGE `NumberOfIntegerValues` `NumberOfIntegerValues` INT( 11 ) NULL DEFAULT NULL ,
+CHANGE `NumberOfRealValues` `NumberOfRealValues` INT( 11 ) NULL DEFAULT NULL ;

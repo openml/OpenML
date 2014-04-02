@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
-import org.openml.apiconnector.algorithms.ArffHelper;
 import org.openml.apiconnector.algorithms.TaskInformation;
 import org.openml.apiconnector.io.ApiConnector;
 import org.openml.apiconnector.xml.DataSetDescription;
@@ -118,9 +117,8 @@ public class OpenmlTaskReader extends AbstractOptionHandler implements InstanceS
             
             DataSetDescription dsd = TaskInformation.getSourceData(this.openmlTask).getDataSetDescription();
             String classname = TaskInformation.getSourceData(this.openmlTask).getTarget_feature();
-            String identifier = dsd.getCacheFileName();
             
-            InputStream fileStream = new FileInputStream( ArffHelper.downloadAndCache("dataset", identifier, dsd.getUrl(), dsd.getMd5_checksum() ) );
+            InputStream fileStream = new FileInputStream( dsd.getDataset() );
             this.fileProgressMonitor = new InputStreamProgressMonitor(
                     fileStream);
             this.fileReader = new BufferedReader(new InputStreamReader(

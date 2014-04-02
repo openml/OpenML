@@ -19,9 +19,14 @@
  */
 package org.openml.apiconnector.xml;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 
+import org.openml.apiconnector.algorithms.ArffHelper;
 import org.openml.apiconnector.settings.Constants;
+
+import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
 public class DataSetDescription implements Serializable {
 	private static final long serialVersionUID = 987612341129L;
@@ -42,6 +47,9 @@ public class DataSetDescription implements Serializable {
 	private String row_id_attribute;
 	private String default_target_attribute;
 	private String md5_checksum;
+	
+	@XStreamOmitField
+	private File dataset_cache;
 	
 	/*
 	 *	Constructor used from the Register Dataset Dialog. Set "null" for unspecified values that are optional.
@@ -166,7 +174,13 @@ public class DataSetDescription implements Serializable {
 		return md5_checksum;
 	}
 	
-	public String getCacheFileName() {
+	private String getCacheFileName() {
 		return "dataset_" + getId() + "_" + getName() + ".arff";
+	}
+	
+	public File getDataset() throws IOException {
+		if( dataset_cache == null ) 
+			dataset_cache = ArffHelper.downloadAndCache( "dataset", getCacheFileName(), getUrl(), getMd5_checksum() );
+		return dataset_cache;
 	}
 }

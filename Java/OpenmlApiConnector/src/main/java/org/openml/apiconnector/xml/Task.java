@@ -19,11 +19,16 @@
  */
 package org.openml.apiconnector.xml;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 
+import org.openml.apiconnector.algorithms.ArffHelper;
 import org.openml.apiconnector.algorithms.TaskInformation;
 import org.openml.apiconnector.io.ApiConnector;
 import org.openml.apiconnector.settings.Constants;
+
+import com.thoughtworks.xstream.annotations.XStreamOmitField;
 
 public class Task implements Serializable {
 	private static final long serialVersionUID = 987612341009L;
@@ -105,6 +110,8 @@ public class Task implements Serializable {
 			private static final long serialVersionUID = 987612341029L;
 			private Integer data_set_id;
 			private String target_feature;
+			
+			@XStreamOmitField
 			private DataSetDescription dsdCache;
 			
 			public Integer getData_set_id() {
@@ -127,6 +134,9 @@ public class Task implements Serializable {
 			private String data_splits_url;
 			private Parameter[] parameters;
 			
+			@XStreamOmitField
+			private File data_splits_cache;
+			
 			public String getType() {
 				return type;
 			}
@@ -137,6 +147,16 @@ public class Task implements Serializable {
 
 			public Parameter[] getParameters() {
 				return parameters;
+			}
+			
+			public File getDataSplits() throws IOException {
+				if( data_splits_cache == null ) {
+					// TODO: we want to get rid of the server calculated Md5 ... 
+					String serverMd5 = ApiConnector.getStringFromUrl( getData_splits_url().replace("/get/", "/md5/") );
+					String identifier = getData_splits_url().substring( getData_splits_url().lastIndexOf('/') + 1 );
+					data_splits_cache = ArffHelper.downloadAndCache("splits", identifier, getData_splits_url(), serverMd5 );
+				}
+				return data_splits_cache;
 			}
 
 			public class Parameter implements Serializable {

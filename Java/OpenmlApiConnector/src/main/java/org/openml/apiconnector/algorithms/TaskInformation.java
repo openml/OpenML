@@ -125,7 +125,7 @@ public class TaskInformation {
 	public static String[] getClassNames( Task t ) throws Exception {
 		DataSetDescription dsd = getSourceData(t).getDataSetDescription();
 		String targetFeature = getSourceData(t).getTarget_feature();
-		BufferedReader br = new BufferedReader( new FileReader( ArffHelper.downloadAndCache("dataset", dsd.getCacheFileName(), dsd.getUrl(), dsd.getMd5_checksum() ) ) );
+		BufferedReader br = new BufferedReader( new FileReader( dsd.getDataset() ) );
 		
 		String line;
 		

@@ -4,7 +4,6 @@ import java.io.File;
 
 import com.thoughtworks.xstream.XStream;
 
-import org.openml.apiconnector.algorithms.ArffHelper;
 import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.io.ApiConnector;
 import org.openml.apiconnector.io.ApiSessionHash;
@@ -31,13 +30,12 @@ public class TransferDatasets {
 				ApiConnector.API_URL = FROM;
 				DataSetDescription dsd = ApiConnector.openmlDataDescription( i );
 				ApiConnector.API_URL = TO;
-				File dataset = ArffHelper.downloadAndCache( "dataset", dsd.getCacheFileName(), dsd.getUrl(), dsd.getMd5_checksum() );
 				dsd.unsetUrl();
 				String descriptionXML = xstream.toXML(dsd);
 				
 				File description = Conversion.stringToTempFile( descriptionXML, dsd.getName() + "_description", "xml" );
 				
-				ApiConnector.openmlDataUpload( description, dataset, ash.getSessionHash() );
+				ApiConnector.openmlDataUpload( description, dsd.getDataset(), ash.getSessionHash() );
 				System.out.println("Succes at #" + i);
 			} catch( Exception e ) {
 				e.printStackTrace();

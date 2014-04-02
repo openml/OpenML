@@ -5,9 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.openml.apiconnector.algorithms.ArffHelper;
 import org.openml.apiconnector.algorithms.TaskInformation;
-import org.openml.apiconnector.io.ApiConnector;
 import org.openml.apiconnector.models.Metric;
 import org.openml.apiconnector.models.MetricScore;
 import org.openml.apiconnector.xml.DataSetDescription;
@@ -54,13 +52,11 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 		Estimation_procedure ep = TaskInformation.getEstimationProcedure(m_Task);
 
 		DataSetDescription dsd = ds.getDataSetDescription();
-		m_Instances = new Instances( new FileReader( ArffHelper.downloadAndCache("dataset", dsd.getCacheFileName(), dsd.getUrl(), dsd.getMd5_checksum() ) ) );
+		m_Instances = new Instances( new FileReader( dsd.getDataset() ) );
 		
 		InstancesHelper.setTargetAttribute(m_Instances, ds.getTarget_feature());
 		
-		String serverMd5 = ApiConnector.getStringFromUrl( ep.getData_splits_url().replace("/get/", "/md5/") );
-		String identifier = ep.getData_splits_url().substring( ep.getData_splits_url().lastIndexOf('/') + 1 );
-		m_Splits = new Instances( new FileReader( ArffHelper.downloadAndCache("splits", identifier, ep.getData_splits_url(), serverMd5 ) ) );
+		m_Splits = new Instances( new FileReader( ep.getDataSplits() ) );
 
 		m_NumFolds = 1;
 		m_NumSamples = 1;

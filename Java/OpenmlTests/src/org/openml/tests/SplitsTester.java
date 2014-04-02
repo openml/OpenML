@@ -6,7 +6,6 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import org.openml.apiconnector.algorithms.ArffHelper;
 import org.openml.apiconnector.algorithms.TaskInformation;
 import org.openml.apiconnector.io.ApiConnector;
 import org.openml.apiconnector.io.ApiException;
@@ -31,12 +30,10 @@ public class SplitsTester {
 					System.out.println( "Task " + t.getTask_id() );
 					
 					Estimation_procedure ep = TaskInformation.getEstimationProcedure(t);
-					String serverMd5 = ApiConnector.getStringFromUrl( ep.getData_splits_url().replace("/get/", "/md5/") );
-					String identifier = ep.getData_splits_url().substring( ep.getData_splits_url().lastIndexOf('/') + 1 );
-					Instances splits = new Instances( new FileReader( ArffHelper.downloadAndCache("splits", identifier, ep.getData_splits_url(), serverMd5 ) ) );
+					Instances splits = new Instances( new FileReader( ep.getDataSplits() ) );
 
 					DataSetDescription dsd = TaskInformation.getSourceData(t).getDataSetDescription();
-					Instances data = new Instances( new FileReader( ArffHelper.downloadAndCache("dataset", dsd.getCacheFileName(), dsd.getUrl(), dsd.getMd5_checksum() ) ) );
+					Instances data = new Instances( new FileReader( dsd.getDataset() ) );
 					
 					
 					String[] classValues = TaskInformation.getClassNames(t);

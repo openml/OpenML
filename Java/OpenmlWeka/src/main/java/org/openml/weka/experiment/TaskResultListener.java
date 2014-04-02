@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.openml.apiconnector.algorithms.ArffHelper;
 import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.algorithms.SciMark;
 import org.openml.apiconnector.algorithms.TaskInformation;
@@ -192,7 +191,7 @@ public class TaskResultListener extends InstancesResultListener {
 			try {samples = TaskInformation.getNumberOfSamples(t);} catch( Exception e ){};
 			try {
 				DataSetDescription dsd = TaskInformation.getSourceData(t).getDataSetDescription();
-				inputData = new Instances( new FileReader( ArffHelper.downloadAndCache("dataset", dsd.getCacheFileName(), dsd.getUrl(), dsd.getMd5_checksum() ) ) );
+				inputData = new Instances( new FileReader( dsd.getDataset() ) );
 				inputData.setClass( inputData.attribute(TaskInformation.getSourceData(t).getTarget_feature()) );
 				inputDataSet = true;
 			} catch( Exception e ) {
