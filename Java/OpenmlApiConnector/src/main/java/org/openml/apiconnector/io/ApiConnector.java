@@ -66,7 +66,7 @@ import com.thoughtworks.xstream.XStream;
 public class ApiConnector {
 	
 	public static String API_URL = Settings.BASE_URL; // can be altered outside the class
-	private static final String API_PART = "rest_api/";
+	public static final String API_PART = "rest_api/";
 	private static XStream xstream = XstreamXmlMapping.getInstance();
 	
 	private static HttpClient httpclient;

@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintStream;
 
 public class Conversion {
 
@@ -79,5 +80,13 @@ public class Conversion {
 		}
 		br.close();
 		return sb.toString();
+	}
+	
+	public static void log( String status, String action, String message ) {
+		log( status, action, message, System.err );
+	}
+	
+	public static void log( String status, String action, String message, PrintStream writer ) {
+		writer.println( "["+DateParser.humanReadable.format( System.currentTimeMillis() )+"] ["+status+"] ["+action+"] " + message );
 	}
 }

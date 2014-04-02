@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.algorithms.TaskInformation;
 import org.openml.apiconnector.models.Metric;
 import org.openml.apiconnector.models.MetricScore;
@@ -14,7 +15,6 @@ import org.openml.apiconnector.xml.Task.Input.Data_set;
 import org.openml.apiconnector.xml.Task.Input.Estimation_procedure;
 import org.openml.weka.algorithm.InstancesHelper;
 
-import weka.core.FastVector;
 import weka.core.Instances;
 import weka.core.UnsupportedAttributeTypeException;
 import weka.core.Utils;
@@ -39,6 +39,9 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 
 	/** Number of samples, if applicable **/
 	protected int m_NumSamples = 1; // default to 1
+	
+	/** Current task information string **/
+	protected String currentTaskRepresentation = "";
 
 	public TaskResultProducer() {
 		super();
@@ -57,6 +60,8 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 		InstancesHelper.setTargetAttribute(m_Instances, ds.getTarget_feature());
 		
 		m_Splits = new Instances( new FileReader( ep.getDataSplits() ) );
+		
+		currentTaskRepresentation = "Task " + m_Task.getTask_id() + " (" + TaskInformation.getSourceData(m_Task).getDataSetDescription().getName() + ")";
 
 		m_NumFolds = 1;
 		m_NumSamples = 1;
@@ -115,6 +120,9 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 		int attFoldIndex = m_Splits.attribute("fold").index();
 		int attRepeatIndex = m_Splits.attribute("repeat").index();
 		int attSampleIndex = -1;
+		TaskSplitEvaluator tse = ((TaskSplitEvaluator) m_SplitEvaluator);
+		String currentRunRepresentation = currentTaskRepresentation + " with " + (String) tse.getKey()[0] + " - Repeat " + (run-1);
+		
 		if (m_Splits.attribute("sample") != null) {
 			attSampleIndex = m_Splits.attribute("sample").index();
 			useSamples = true;
@@ -147,7 +155,8 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 		}
 		
 		// This is the part where we sample all train and test sets.
-		// We should not measure time for doing so, since this is OpenML overhead. 
+		// We should not measure time for doing so, since this is OpenML overhead.
+		Conversion.log( "INFO", "Splits", "Obtaining folds for " + currentRunRepresentation );
 		for (int i = 0; i < m_Splits.numInstances(); ++i) {
 			int repeat = (int) m_Splits.instance(i).value(attRepeatIndex);
 			if (repeat == run - 1) { // 1-based/0-based correction
@@ -173,10 +182,13 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 				}
 			}
 		} // END OF OPENML SAMPLING
+		Conversion.log( "INFO", "Splits", "Folds obtained " );
 
 		for (int fold = 0; fold < m_NumFolds; fold++) {
 			for (int sample = 0; sample < m_NumSamples; ++sample) {
 				// Add in some fields to the key like run and fold number, data set, name
+				String currentFoldRepresentation = "fold " + fold + (useSamples ? ", sample " + sample : "");
+				Conversion.log( "INFO", "Perform Run", "Started on performing " + currentRunRepresentation + ", " + currentFoldRepresentation );
 				Object[] seKey = m_SplitEvaluator.getKey();
 				Object[] key = new Object[seKey.length + 5];
 				key[0] = Utils.backQuoteChars(m_Instances.relationName());
@@ -207,19 +219,17 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 						
 						if (m_ResultListener instanceof TaskResultListener) {
 							// TODO: key[7] can be unstable. Make this more stable. 
-							TaskSplitEvaluator tse = ((TaskSplitEvaluator) m_SplitEvaluator);
-							FastVector recentPredictions = tse.recentPredictions();
-							
 							// run - 1 is for 1-based/0-based correction
 							((TaskResultListener) m_ResultListener).acceptResultsForSending(  
 								m_Task, run - 1, fold, (useSamples ? sample : null), tse.getClassifier(),
-								(String) key[7], rowids.get(foldSampleIdx(fold,sample)),recentPredictions, userMeasures);
+								(String) key[7], rowids.get(foldSampleIdx(fold,sample)),tse.recentPredictions(), userMeasures);
 						}
 					} catch (UnsupportedAttributeTypeException ex) {
-						// Save the train and test datasets for debugging
-						// purposes?
+						// Save the train and test data sets for debugging purposes?
+						Conversion.log( "ERROR", "Perform Run", "Unable to finish " + currentRunRepresentation + ", " + 
+								currentFoldRepresentation + " with " + tse.getClassifier().getClass().getName() + ": " + 
+								ex.getMessage() );
 						if (m_ResultListener instanceof TaskResultListener) {
-							TaskSplitEvaluator tse = ((TaskSplitEvaluator) m_SplitEvaluator);
 							((TaskResultListener) m_ResultListener).acceptErrorResult(
 								m_Task, tse.getClassifier(), ex.getMessage(), (String) key[7]);
 						}

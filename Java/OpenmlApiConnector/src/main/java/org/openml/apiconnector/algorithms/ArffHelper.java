@@ -45,16 +45,17 @@ public class ArffHelper {
 		if( file.exists() ) {
 			String clientMd5 = Hashing.md5(file);
 			if( clientMd5.equals( serverMd5.trim() ) ) {
-				System.err.println("[Cache] Loaded " + type + " " + identifier + " from cache. " );
+				Conversion.log( "INFO", "ARFF Cache", "Loaded " + type + " " + identifier + " from cache. " );
 				return file;
 			} else {
-				System.err.println("[Cache Warning] " + type + " " + identifier + " hash and cache not identical: \n- Client: " + clientMd5 + "\n- Server: " + serverMd5 );
+				Conversion.log( "WARNING", "ARFF Cache", type + " " + identifier + " hash and cache not identical: \n- Client: " + clientMd5 + "\n- Server: " + serverMd5 );
 			}
 		}
 		
 		if( Settings.CACHE_ALLOWED ) {
 			directory.mkdirs();
 			dataset = ApiConnector.getFileFromUrl( url, file.getAbsolutePath() );
+			Conversion.log( "INFO", "ARFF Cache", "Stored " + type + " " + identifier + " to cache. " );
 		} else {
 			dataset = Conversion.stringToTempFile( ApiConnector.getStringFromUrl( url ), identifier, "arff" );
 		}

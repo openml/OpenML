@@ -2,6 +2,7 @@ package org.openml.weka.experiment;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.io.File;
 import java.io.FileReader;
 import java.lang.reflect.Array;
 
@@ -19,6 +20,8 @@ import org.openml.weka.algorithm.InstancesHelper;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
 import weka.core.Utils;
+import weka.core.converters.AbstractFileLoader;
+import weka.core.converters.ConverterUtils;
 import weka.experiment.ClassifierSplitEvaluator;
 import weka.experiment.CrossValidationResultProducer;
 import weka.experiment.Experiment;
@@ -67,7 +70,7 @@ public class TaskBasedExperiment extends Experiment {
 	public boolean getMode() {
 		return datasetBasedExperiment;
 	}
-	
+
 	public DefaultListModel<Task> getTasks() {
 		return m_Tasks;
 	}
@@ -128,19 +131,44 @@ public class TaskBasedExperiment extends Experiment {
 			}
 		}
 
-		if (m_CurrentTask == null) {
-			m_CurrentTask = getTasks().elementAt(m_DatasetNumber);
+		if (datasetBasedExperiment) {
 
-			Data_set ds = TaskInformation.getSourceData(m_CurrentTask);
-			DataSetDescription dsd = TaskInformation.getSourceData(m_CurrentTask).getDataSetDescription();
-			Instances instDataset = new Instances( new FileReader( dsd.getDataset() ) );
-					
-			InstancesHelper.setTargetAttribute(instDataset,
-					ds.getTarget_feature());
+			if (m_CurrentInstances == null) {
+				File currentFile = (File) getDatasets().elementAt(
+						m_DatasetNumber);
+				AbstractFileLoader loader = ConverterUtils
+						.getLoaderForFile(currentFile);
+				loader.setFile(currentFile);
+				Instances data = new Instances(loader.getDataSet());
+				// only set class attribute if not already done by loader
+				if (data.classIndex() == -1) {
+					if (m_ClassFirst) {
+						data.setClassIndex(0);
+					} else {
+						data.setClassIndex(data.numAttributes() - 1);
+					}
+				}
+				m_CurrentInstances = data;
+				m_ResultProducer.setInstances(m_CurrentInstances);
+			}
+		} else {
+			if (m_CurrentTask == null) {
+				m_CurrentTask = getTasks().elementAt(m_DatasetNumber);
 
-			((TaskResultProducer) m_ResultProducer).setTask(m_CurrentTask);
-			this.setRunUpper(TaskInformation.getNumberOfRepeats(m_CurrentTask));
-			m_ResultProducer.setInstances(instDataset);
+				Data_set ds = TaskInformation.getSourceData(m_CurrentTask);
+				DataSetDescription dsd = TaskInformation.getSourceData(
+						m_CurrentTask).getDataSetDescription();
+				Instances instDataset = new Instances(new FileReader(
+						dsd.getDataset()));
+
+				InstancesHelper.setTargetAttribute(instDataset,
+						ds.getTarget_feature());
+
+				((TaskResultProducer) m_ResultProducer).setTask(m_CurrentTask);
+				this.setRunUpper(TaskInformation
+						.getNumberOfRepeats(m_CurrentTask));
+				m_ResultProducer.setInstances(instDataset);
+			}
 		}
 
 		m_ResultProducer.doRun(m_RunNumber);
@@ -245,7 +273,7 @@ public class TaskBasedExperiment extends Experiment {
 		try {
 			TaskBasedExperiment exp = new TaskBasedExperiment();
 			ResultProducer rp = new TaskResultProducer();
-			TaskResultListener rl = new TaskResultListener( new SciMark() );
+			TaskResultListener rl = new TaskResultListener(new SciMark());
 			SplitEvaluator se = new TaskSplitEvaluator();
 			Classifier sec = null;
 

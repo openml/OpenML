@@ -7,6 +7,8 @@ import java.lang.management.ThreadMXBean;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openml.apiconnector.algorithms.Conversion;
+
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
@@ -87,7 +89,9 @@ public class TaskSplitEvaluator extends ClassifierSplitEvaluator {
 	    long thID = Thread.currentThread().getId();
 	    long CPUStartTime = -1, trainCPUTimeElapsed = -1, testCPUTimeElapsed = -1, trainTimeStart, trainTimeElapsed, testTimeStart, testTimeElapsed;
 
+	    /** ADDED BY JvR: In between the upcoming comment blocks, the only additions to this class are done. **/
 	    // training classifier
+	    Conversion.log( "INFO", "Build Model", "Start building model on training data (" + train.numInstances() + " instances)" );
 	    trainTimeStart = System.currentTimeMillis();
 	    if (canMeasureCPUTime)
 	      CPUStartTime = thMonitor.getThreadUserTime(thID);
@@ -95,20 +99,24 @@ public class TaskSplitEvaluator extends ClassifierSplitEvaluator {
 	    if (canMeasureCPUTime)
 	      trainCPUTimeElapsed = thMonitor.getThreadUserTime(thID) - CPUStartTime;
 	    trainTimeElapsed = System.currentTimeMillis() - trainTimeStart;
+	    Conversion.log( "INFO", "Build Model", "Done");
 
 	    // testing classifier
+	    Conversion.log( "INFO", "Test Model", "Start making predictions on test data (" + test.numInstances() + " instances)" );
 	    testTimeStart = System.currentTimeMillis();
 	    if (canMeasureCPUTime)
 	      CPUStartTime = thMonitor.getThreadUserTime(thID);
 	    predictions = eval.evaluateModel(m_Classifier, test);
 	    
-	    // ADDED BY JvR: the only "new thing" to this overridden function.
-	 	recentPredictions = eval.predictions();
-	    
 	    if (canMeasureCPUTime)
 	      testCPUTimeElapsed = thMonitor.getThreadUserTime(thID) - CPUStartTime;
 	    testTimeElapsed = System.currentTimeMillis() - testTimeStart;
 	    thMonitor = null;
+	    
+	    Conversion.log( "INFO", "Test Model", "Done");
+	    
+	 	recentPredictions = eval.predictions();
+	 	/** END ADDITIONS BY JvR **/
 
 	    m_result = eval.toSummaryString();
 	    // The results stored are all per instance -- can be multiplied by the

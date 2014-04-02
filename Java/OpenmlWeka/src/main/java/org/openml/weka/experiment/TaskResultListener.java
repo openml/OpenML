@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.openml.apiconnector.algorithms.Conversion;
+import org.openml.apiconnector.algorithms.DateParser;
 import org.openml.apiconnector.algorithms.SciMark;
 import org.openml.apiconnector.algorithms.TaskInformation;
 import org.openml.apiconnector.io.ApiConnector;
@@ -22,6 +23,7 @@ import org.openml.apiconnector.xml.Run;
 import org.openml.apiconnector.xml.Run.Parameter_setting;
 import org.openml.apiconnector.xml.Task;
 import org.openml.apiconnector.xml.Task.Output.Predictions.Feature;
+import org.openml.apiconnector.xml.UploadRun;
 import org.openml.apiconnector.xstream.XstreamXmlMapping;
 import org.openml.weka.algorithm.InstancesHelper;
 import org.openml.weka.algorithm.WekaAlgorithm;
@@ -124,6 +126,7 @@ public class TaskResultListener extends InstancesResultListener {
 	}
 
 	private void sendTask(OpenmlExecutedTask oet) throws Exception {
+		Conversion.log( "INFO", "Upload Run", "Starting to upload run... " );
 		XStream xstream = XstreamXmlMapping.getInstance();
 		File tmpPredictionsFile;
 		File tmpDescriptionFile;
@@ -140,13 +143,20 @@ public class TaskResultListener extends InstancesResultListener {
 		Map<String, File> output_files = new HashMap<String, File>();
 		
 		output_files.put("predictions", tmpPredictionsFile);
-		try { // TODO: Log this!! It is valuable information that goes to waste!!
-			ApiConnector.openmlRunUpload(tmpDescriptionFile, output_files, ash.getSessionHash());
-		} catch( ApiException ae ) {ae.printStackTrace(); }
+		try { 
+			UploadRun ur = ApiConnector.openmlRunUpload(tmpDescriptionFile, output_files, ash.getSessionHash());
+			Conversion.log( "INFO", "Upload Run", "Run was uploaded with rid " + ur.getRun_id() + 
+					". Obatainable at " + ApiConnector.API_URL + ApiConnector.API_PART + "?f=openml.run.get&run_id=" + 
+					ur.getRun_id() );
+		} catch( ApiException ae ) {
+			ae.printStackTrace(); 
+			Conversion.log( "ERROR", "Upload Run", "Failed to upload run: " + ae.getMessage() );
+		}
 
 	}
 
 	private void sendTaskWithError(OpenmlExecutedTask oet) throws Exception {
+		Conversion.log( "WARNING", "Upload Run", "Starting to upload run... (including error results) " );
 		XStream xstream = XstreamXmlMapping.getInstance();
 		File tmpDescriptionFile;
 		
@@ -154,9 +164,15 @@ public class TaskResultListener extends InstancesResultListener {
 		
 		tmpDescriptionFile = Conversion.stringToTempFile(
 				xstream.toXML(oet.getRun()), "weka_generated_run", Constants.DATASET_FORMAT);
-		try { // TODO: log it when this happens. 
-			ApiConnector.openmlRunUpload(tmpDescriptionFile, new HashMap<String, File>(), ash.getSessionHash());
-		} catch( ApiException ae ) { ae.printStackTrace(); }
+		try { 
+			UploadRun ur = ApiConnector.openmlRunUpload(tmpDescriptionFile, new HashMap<String, File>(), ash.getSessionHash());
+			Conversion.log( "WARNING", "Upload Run", "Run was uploaded with rid " + ur.getRun_id() + 
+					". It includes an error message. Obtainable at " + 
+					ApiConnector.API_URL + ApiConnector.API_PART +  "?f=openml.run.get&run_id=" + ur.getRun_id() );
+		} catch( ApiException ae ) { 
+			ae.printStackTrace(); 
+			Conversion.log( "ERROR", "Upload Run", "Failed to upload run: " + ae.getMessage() );
+		}
 	}
 
 	private void ashUpdate() throws Exception {
@@ -169,7 +185,6 @@ public class TaskResultListener extends InstancesResultListener {
 	}
 
 	private class OpenmlExecutedTask {
-
 		private Instances predictions;
 		private Instances inputData;
 		private boolean inputDataSet;
@@ -200,33 +215,30 @@ public class TaskResultListener extends InstancesResultListener {
 			
 			nrOfExpectedResultBatches = repeats * folds * samples;
 			nrOfResultBatches = 0;
-			FastVector attInfo = new FastVector();
+			ArrayList<Attribute> attInfo = new ArrayList<Attribute>();
 			for (Feature f : TaskInformation.getPredictions(t).getFeatures()) {
 				if (f.getName().equals("confidence.classname")) {
 					for (String s : TaskInformation.getClassNames(t)) {
-						attInfo.addElement(new Attribute("confidence." + s));
+						attInfo.add(new Attribute("confidence." + s));
 					}
 				} else if (f.getName().equals("prediction")) {
-					FastVector values = new FastVector(classnames.length);
+					ArrayList<String> values = new ArrayList<String>(classnames.length);
 					for (String classname : classnames)
-						values.addElement(classname);
-					attInfo.addElement(new Attribute(f.getName(), values));
+						values.add(classname);
+					attInfo.add(new Attribute(f.getName(), values));
 				} else {
-					attInfo.addElement(new Attribute(f.getName()));
+					attInfo.add(new Attribute(f.getName()));
 				}
 			}
 			
 			// this is an additional field, which is ignored on the server
 			if( inputDataSet ) {
-				if( inputData.classAttribute().isNominal() ) {
-					attInfo.addElement( inputData.classAttribute().copy("correct") );
-				} else {
-					attInfo.addElement( "correct" );
-				}
+				attInfo.add( inputData.classAttribute().copy("correct") );
 			}
 			
 			predictions = new Instances("openml_task_" + t.getTask_id()
 					+ "_predictions", attInfo, 0);
+			
 			
 			Implementation find = WekaAlgorithm.create( classifier.getClass().getName(), options );
 			
@@ -242,8 +254,7 @@ public class TaskResultListener extends InstancesResultListener {
 			run = new Run(t.getTask_id(), error_message, implementation.getId(), setup_string, list.toArray(new Parameter_setting[list.size()]) );
 		}
 		
-		public void addBatch(Integer fold, Integer repeat, Integer sample, Integer[] rowids,
-				FastVector batchPredictions) {
+		public void addBatch(Integer fold, Integer repeat, Integer sample, Integer[] rowids, FastVector batchPredictions) {
 			nrOfResultBatches += 1;
 			for (int i = 0; i < rowids.length; ++i) {
 				Prediction current = (Prediction) batchPredictions.elementAt(i);
