@@ -139,7 +139,7 @@ public class TaskResultListener extends InstancesResultListener {
 		tmpPredictionsFile = InstancesHelper.instancesToTempFile(
 				oet.getPredictions(), "weka_generated_predictions", Constants.DATASET_FORMAT);
 		tmpDescriptionFile = Conversion.stringToTempFile(
-				xstream.toXML(oet.getRun()), "weka_generated_run", ".xml");
+				xstream.toXML(oet.getRun()), "weka_generated_run", "xml");
 		Map<String, File> output_files = new HashMap<String, File>();
 		
 		output_files.put("predictions", tmpPredictionsFile);

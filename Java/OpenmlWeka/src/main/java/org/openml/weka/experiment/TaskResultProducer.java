@@ -216,6 +216,9 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 						userMeasures.put( 
 							new Metric("build_cpu_time", "openml.evaluation.build_cpu_time(1.0)", null), 
 							new MetricScore( (Double) splitEvaluatorResults.get("Elapsed_Time_training") ) );
+						userMeasures.put(
+							new Metric("predictive_accuracy", "openml.evaluation.predictive_accuracy(1.0)", null), 
+							new MetricScore( ((Double) splitEvaluatorResults.get("Percent_correct")) / 100 ) );
 						
 						if (m_ResultListener instanceof TaskResultListener) {
 							// TODO: key[7] can be unstable. Make this more stable. 
