@@ -30,12 +30,13 @@ public class TransferDatasets {
 				ApiConnector.API_URL = FROM;
 				DataSetDescription dsd = ApiConnector.openmlDataDescription( i );
 				ApiConnector.API_URL = TO;
+				File dataset = dsd.getDataset();
 				dsd.unsetUrl();
 				String descriptionXML = xstream.toXML(dsd);
 				
 				File description = Conversion.stringToTempFile( descriptionXML, dsd.getName() + "_description", "xml" );
-				
-				ApiConnector.openmlDataUpload( description, dsd.getDataset(), ash.getSessionHash() );
+				System.out.println( xstream.toXML(dsd)  );
+				ApiConnector.openmlDataUpload( description, dataset, ash.getSessionHash() );
 				System.out.println("Succes at #" + i);
 			} catch( Exception e ) {
 				e.printStackTrace();

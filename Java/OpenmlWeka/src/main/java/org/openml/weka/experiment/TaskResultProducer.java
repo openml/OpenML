@@ -218,7 +218,10 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 							new MetricScore( (Double) splitEvaluatorResults.get("Elapsed_Time_training") ) );
 						userMeasures.put(
 							new Metric("predictive_accuracy", "openml.evaluation.predictive_accuracy(1.0)", null), 
-							new MetricScore( ((Double) splitEvaluatorResults.get("Percent_correct")) / 100 ) );
+							new MetricScore( ( (Double) splitEvaluatorResults.get("Percent_correct")) / 100 ) ); // division 100 for percentages to pred_acc
+						userMeasures.put(
+							new Metric("kappa", "openml.evaluation.kappa(1.0)", null), 
+							new MetricScore( ( (Double) splitEvaluatorResults.get("Kappa_statistic")) ) );
 						
 						if (m_ResultListener instanceof TaskResultListener) {
 							// TODO: key[7] can be unstable. Make this more stable. 

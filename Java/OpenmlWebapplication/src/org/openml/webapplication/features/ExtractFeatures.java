@@ -34,7 +34,11 @@ public class ExtractFeatures {
 		
 		dataset = new Instances( arffLoader.getStructure() );
 		
-		classAttribute = dataset.attribute( default_class );
+		if( default_class != null ) {
+			classAttribute = dataset.attribute( default_class );
+		} else {
+			classAttribute = dataset.attribute( dataset.numAttributes() - 1 );
+		}
 		if( classAttribute == null ) throw new RuntimeException("Specified target class not found.");
 		
 		dataset.setClass( classAttribute );
