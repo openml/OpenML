@@ -5,10 +5,10 @@ import java.io.FileReader;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.openml.apiconnector.algorithms.Conversion;
-import org.openml.apiconnector.algorithms.DateParser;
 import org.openml.apiconnector.algorithms.SciMark;
 import org.openml.apiconnector.algorithms.TaskInformation;
 import org.openml.apiconnector.io.ApiConnector;
@@ -222,7 +222,7 @@ public class TaskResultListener extends InstancesResultListener {
 						attInfo.add(new Attribute("confidence." + s));
 					}
 				} else if (f.getName().equals("prediction")) {
-					ArrayList<String> values = new ArrayList<String>(classnames.length);
+					List<String> values = new ArrayList<String>(classnames.length);
 					for (String classname : classnames)
 						values.add(classname);
 					attInfo.add(new Attribute(f.getName(), values));
@@ -236,8 +236,7 @@ public class TaskResultListener extends InstancesResultListener {
 				attInfo.add( inputData.classAttribute().copy("correct") );
 			}
 			
-			predictions = new Instances("openml_task_" + t.getTask_id()
-					+ "_predictions", attInfo, 0);
+			predictions = new Instances("openml_task_" + t.getTask_id() + "_predictions", attInfo, 0);
 			
 			
 			Implementation find = WekaAlgorithm.create( classifier.getClass().getName(), options );
