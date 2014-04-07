@@ -1,7 +1,9 @@
 package org.openml.moa;
 
 import org.openml.apiconnector.io.ApiConnector;
+import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.Job;
+
 import weka.core.Utils;
 import moa.DoTask;
 
@@ -25,6 +27,9 @@ public class RunJob {
 	
 	public static void doTask(int ttid) {
 		try {
+			Config c = new Config();
+			if( c.getServer() != null ) { ApiConnector.API_URL = c.getServer(); }
+			
 			Job j = ApiConnector.openmlRunGetjob( "Moa_2014.03", "" + ttid );
 			
 			System.err.println( "task: " + j.getTask_id() + "; learner: " + j.getLearner() );

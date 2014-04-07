@@ -11,6 +11,7 @@ import org.openml.moa.ResultListener;
 import org.openml.moa.algorithm.InstancesHelper;
 import org.openml.apiconnector.models.Metric;
 import org.openml.apiconnector.models.MetricScore;
+import org.openml.apiconnector.io.ApiConnector;
 import org.openml.apiconnector.io.ApiSessionHash;
 import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.Task;
@@ -72,7 +73,15 @@ public class OpenmlDataStreamClassification extends MainTask {
 
 	@Override
 	protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
-
+		Config c;
+		
+		try {
+			c = new Config();
+			if( c.getServer() != null ) { ApiConnector.API_URL = c.getServer(); }
+		} catch (Exception e) { 
+			throw new RuntimeException("Error loading config file openml.conf. Please check whether it exists. " + e.getMessage() );
+		}
+		
 		String learnerString = this.learnerOption.getValueAsCLIString();
 		String streamString = "OpenmlTaskReader -t "+openmlTaskIdOption.getValue();
 
@@ -80,13 +89,12 @@ public class OpenmlDataStreamClassification extends MainTask {
 		stream = new OpenmlTaskReader( openmlTaskIdOption.getValue() );
 		Task task = ((OpenmlTaskReader)stream).getTask();
 		
-		try { 
-			Config c = new Config();
+		try {
 			ApiSessionHash ash = new ApiSessionHash();
 			ash.set( c.getUsername(), c.getPassword() );
 			resultListener = new ResultListener(task, ash );
-		} catch (Exception e) { 
-			throw new RuntimeException("Error initiating ResultListener. (Is file Openml.conf present?) " + e.getMessage() );
+		} catch ( Exception e )  {
+			throw new RuntimeException("Error initializing ResultListener. Please check server/username/password in openml.conf. " + e.getMessage() );
 		}
 		
 		ClassificationPerformanceEvaluator evaluator = (ClassificationPerformanceEvaluator) getPreparedClassOption(this.evaluatorOption);

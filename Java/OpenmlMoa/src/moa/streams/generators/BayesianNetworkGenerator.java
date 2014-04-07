@@ -8,8 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import weka.classifiers.bayes.BayesNet;
 import weka.classifiers.bayes.net.ParentSet;
-import weka.classifiers.bayes.net.search.local.K2;
-import weka.classifiers.bayes.net.search.local.SimulatedAnnealing;
+import weka.classifiers.bayes.net.search.SearchAlgorithm;
 import weka.core.DenseInstance;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -24,6 +23,7 @@ import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.options.FileOption;
 import moa.options.IntOption;
+import moa.options.WEKAClassOption;
 import moa.streams.InstanceStream;
 import moa.tasks.TaskMonitor;
 
@@ -36,6 +36,7 @@ public class BayesianNetworkGenerator extends AbstractOptionHandler implements
     private Instances sourceData;
     private Random instanceRandom;
 	private BayesNet bayesianNetwork;
+	private SearchAlgorithm searchAlgorithm;
 	
 	public IntOption instanceRandomSeedOption = new IntOption(
             "instanceRandomSeed", 'i',
@@ -43,6 +44,11 @@ public class BayesianNetworkGenerator extends AbstractOptionHandler implements
 	
 	public FileOption arffFileOption = new FileOption("arffFile", 'f',
             "ARFF file to load.", null, "arff", false);
+	
+	public WEKAClassOption searchAlgorithmOption = new WEKAClassOption(
+			"searchAlgorithm", 'a', 
+			"The search algorithm for generating the Bayesian Network", 
+			SearchAlgorithm.class, "weka.classifiers.bayes.net.search.local.K2");
 
 	@Override
 	public void getDescription(StringBuilder arg0, int arg1) {
@@ -115,7 +121,6 @@ public class BayesianNetworkGenerator extends AbstractOptionHandler implements
 	@Override
 	public void restart() {
         instanceRandom = new Random(this.instanceRandomSeedOption.getValue());
-
 	}
 
 	@Override
@@ -131,18 +136,29 @@ public class BayesianNetworkGenerator extends AbstractOptionHandler implements
 					variablesToDiscretize.add( i + 1 ); // 0-based/1-based
 				}
 			}
-			String options = "-Y -B 3 -R " + StringUtils.join( variablesToDiscretize, ',' );
-			sourceData = applyFilter(sourceData, new Discretize(), options );
+			
+			// only discretize variables if needed
+			if( variablesToDiscretize.size() > 0 ) {
+				String options = "-Y -B 3 -R " + StringUtils.join( variablesToDiscretize, ',' );
+				sourceData = applyFilter(sourceData, new Discretize(), options );
+			}
+			
 			sourceData = applyFilter(sourceData, new ReplaceMissingValues(), "" );
 			sourceData.setClass( sourceData.attribute( sourceData.numAttributes() - 1 ) );
 			
 			streamHeader = new InstancesHeader( sourceData );
 			streamHeader.setRelationName( relationNameOriginal );
 			
+			String searchAlgorithmString = searchAlgorithmOption.getValueAsCLIString();
+			
+			createWekaSearchAlgorithm( Utils.splitOptions( searchAlgorithmString ) );
+			// sets variable search algorithm
+			
 			bayesianNetwork = new BayesNet();
-			bayesianNetwork.setSearchAlgorithm( new K2() );
+			bayesianNetwork.setSearchAlgorithm( searchAlgorithm );
 			bayesianNetwork.buildClassifier( sourceData );
 		} catch ( Exception e) {
+			e.printStackTrace();
 			throw new RuntimeException("Failed to initiate stream from indicated ARFF file. ");
 		}
 
@@ -164,4 +180,10 @@ public class BayesianNetworkGenerator extends AbstractOptionHandler implements
 		return numValues - 1; // prevent an "off by epsilon" error.
 	}
 
+	private void createWekaSearchAlgorithm(String[] options) throws Exception {
+        String searchAlgorithmName = options[0];
+        String[] newoptions = options.clone();
+        newoptions[0] = "";
+        this.searchAlgorithm = (SearchAlgorithm) Utils.forName( SearchAlgorithm.class, searchAlgorithmName, newoptions );
+    }
 }
