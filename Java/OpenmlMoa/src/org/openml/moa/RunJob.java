@@ -14,6 +14,10 @@ public class RunJob {
 		
 		int n;
 		int ttid;
+		Config c = new Config();
+		
+		if( ApiSessionHash.checkCredentials(c.getUsername(), c.getPassword() ) == false ) {
+			throw new Exception("Username/password incorrect");}
 		
 		String strN = Utils.getOption('N', args);
 		String strTtid = Utils.getOption('T', args);
@@ -28,12 +32,6 @@ public class RunJob {
 	
 	public static void doTask(int ttid) {
 		try {
-			Config c = new Config();
-			
-			if( ApiSessionHash.checkCredentials(c.getUsername(), c.getPassword() ) == false ) {
-				throw new Exception("Username/password incorrect");
-			}
-			
 			Job j = ApiConnector.openmlRunGetjob( "Moa_2014.03", "" + ttid );
 			
 			System.err.println( "task: " + j.getTask_id() + "; learner: " + j.getLearner() );
