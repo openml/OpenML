@@ -21,7 +21,6 @@ public class UploadDataset {
 	
 	public static void main( String[] args ) throws Exception {
 		Config c = new Config();
-		if( c.getServer() != null ) { ApiConnector.API_URL = c.getServer(); }
 		
 		ApiSessionHash ash = new ApiSessionHash();
 		ash.set( c.getUsername(), c.getPassword() );

@@ -5,6 +5,8 @@ import java.util.Date;
 import org.apache.commons.lang3.ArrayUtils;
 import org.openml.apiconnector.algorithms.DateParser;
 import org.openml.apiconnector.io.ApiConnector;
+import org.openml.apiconnector.io.ApiSessionHash;
+import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.Job;
 
 import weka.core.Utils;
@@ -30,6 +32,11 @@ public class RunJob {
 	
 	public static void doTask( int ttid ) {
 		try{ 
+			Config c = new Config();
+			if( ApiSessionHash.checkCredentials( c.getUsername(), c.getPassword() ) == false ) {
+				throw new Exception("Authentication failed. ");
+			}
+			
 			Job j = ApiConnector.openmlRunGetjob( "Weka_" + Version.VERSION, "" + ttid );
 			
 			System.err.println( "[" + DateParser.humanReadable.format( new Date() ) + "] Task: " + j.getTask_id() + "; learner: " + j.getLearner() );

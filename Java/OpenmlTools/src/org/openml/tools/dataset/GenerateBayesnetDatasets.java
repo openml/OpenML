@@ -43,7 +43,6 @@ public class GenerateBayesnetDatasets {
 	public GenerateBayesnetDatasets() throws Exception {
 		ArrayList<Long> elapsedTimes = new ArrayList<Long>();
 		Config c = new Config();
-		if( c.getServer() != null ) { ApiConnector.API_URL = c.getServer(); }
 		ash.set(c.getUsername(), c.getPassword());
 		
 		for( int i = 1; i <= 62; ++i ) {

@@ -2,7 +2,6 @@ package org.openml.weka.experiment;
 
 import java.io.File;
 import java.io.FileReader;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -73,14 +72,8 @@ public class TaskResultListener extends InstancesResultListener {
 
 	public boolean acceptCredentials(String username, String password) {
 		ash = new ApiSessionHash();
-		try {
-			credentials = ash.set(username, password);
-			return credentials;
-		} catch (ParseException e) {
-			e.printStackTrace();
-			credentials = false;
-			return false;
-		}
+		credentials = ash.set(username, password);
+		return credentials;
 	}
 
 	public boolean gotCredentials() {

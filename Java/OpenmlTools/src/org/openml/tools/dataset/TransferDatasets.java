@@ -25,7 +25,9 @@ public class TransferDatasets {
 		ApiConnector.API_URL = TO;
 		XStream xstream = XstreamXmlMapping.getInstance();
 		ApiSessionHash ash = new ApiSessionHash();
-		ash.set(c.getUsername(), c.getPassword());
+		if( ash.set(c.getUsername(), c.getPassword() ) == false ) {
+			throw new Exception("Username/password incorrect");
+		}
 		
 		for( int i = 1; i <= 62; ++i ) {
 			try {

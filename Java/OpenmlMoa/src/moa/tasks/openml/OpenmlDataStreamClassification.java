@@ -77,9 +77,13 @@ public class OpenmlDataStreamClassification extends MainTask {
 		
 		try {
 			c = new Config();
-			if( c.getServer() != null ) { ApiConnector.API_URL = c.getServer(); }
 		} catch (Exception e) { 
 			throw new RuntimeException("Error loading config file openml.conf. Please check whether it exists. " + e.getMessage() );
+		}
+		
+		// check credentials...
+		if( ApiSessionHash.checkCredentials(c.getUsername(), c.getPassword()) == false ) {
+			throw new RuntimeException("Credentials could not be verified. ");
 		}
 		
 		String learnerString = this.learnerOption.getValueAsCLIString();

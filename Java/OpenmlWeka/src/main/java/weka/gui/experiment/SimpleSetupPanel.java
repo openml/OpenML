@@ -1076,9 +1076,8 @@ public class SimpleSetupPanel extends JPanel {
 
 				// try to load default config
 				if (openmlconfig.getUsername() != null) {
-					if (((TaskResultListener) m_Exp.getResultListener())
-							.acceptCredentials(openmlconfig.getUsername(),
-									openmlconfig.getPassword())) {
+					if (((TaskResultListener) m_Exp.getResultListener()).acceptCredentials(
+							openmlconfig.getUsername(), openmlconfig.getPassword())) {
 						str = openmlconfig.getUsername();
 					} else {
 						JOptionPane.showMessageDialog(null,

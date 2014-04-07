@@ -1,6 +1,7 @@
 package org.openml.moa;
 
 import org.openml.apiconnector.io.ApiConnector;
+import org.openml.apiconnector.io.ApiSessionHash;
 import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.Job;
 
@@ -28,7 +29,10 @@ public class RunJob {
 	public static void doTask(int ttid) {
 		try {
 			Config c = new Config();
-			if( c.getServer() != null ) { ApiConnector.API_URL = c.getServer(); }
+			
+			if( ApiSessionHash.checkCredentials(c.getUsername(), c.getPassword() ) == false ) {
+				throw new Exception("Username/password incorrect");
+			}
 			
 			Job j = ApiConnector.openmlRunGetjob( "Moa_2014.03", "" + ttid );
 			

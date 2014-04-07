@@ -279,10 +279,9 @@ public class TaskBasedExperiment extends Experiment {
 
 			Config openmlconfig = new Config();
 
-			if (rl.acceptCredentials(openmlconfig.getUsername(),
-					openmlconfig.getPassword()) == false)
-				throw new Exception(
-						"Please provide correct credentials in a config file (openml.conf)");
+			if (rl.acceptCredentials(openmlconfig.getUsername(),openmlconfig.getPassword()) == false) {
+				throw new Exception("Please provide correct credentials in a config file (openml.conf)");
+			}
 
 			exp.setMode(false);
 
