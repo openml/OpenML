@@ -6,5 +6,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/apiconnector"/>
 	<classpathentry kind="lib" path="lib/xstream-1.4.4.jar"/>
 	<classpathentry kind="lib" path="lib/commons-lang3-3.1.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/OpenmlMoa"/>
+	<classpathentry kind="lib" path="/OpenmlMoa/lib/moa.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
