@@ -7,6 +7,7 @@ import com.thoughtworks.xstream.XStream;
 import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.io.ApiConnector;
 import org.openml.apiconnector.io.ApiSessionHash;
+import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.DataSetDescription;
 import org.openml.apiconnector.xstream.XstreamXmlMapping;
 
@@ -20,10 +21,11 @@ public class TransferDatasets {
 	}
 	
 	public TransferDatasets() throws Exception {
+		Config c = new Config();
 		ApiConnector.API_URL = TO;
 		XStream xstream = XstreamXmlMapping.getInstance();
 		ApiSessionHash ash = new ApiSessionHash();
-		ash.set("janvanrijn@gmail.com", "Feyenoord2002");
+		ash.set(c.getUsername(), c.getPassword());
 		
 		for( int i = 1; i <= 62; ++i ) {
 			try {

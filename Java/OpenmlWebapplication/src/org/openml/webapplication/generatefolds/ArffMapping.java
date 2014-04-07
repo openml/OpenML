@@ -19,60 +19,61 @@
  */
 package org.openml.webapplication.generatefolds;
 
+import java.util.ArrayList;
+
 import weka.core.Attribute;
 import weka.core.DenseInstance;
-import weka.core.FastVector;
 import weka.core.Instance;
 
 public class ArffMapping {
 	
-	FastVector attributes;
+	ArrayList<Attribute> attributes;
 	
 	
 	public ArffMapping( boolean use_samples ) {
-		attributes = new FastVector();
+		attributes = new ArrayList<Attribute>();
 		
-		FastVector att_type_values = new FastVector(2);
-		att_type_values.addElement("TRAIN");
-		att_type_values.addElement("TEST");
+		ArrayList<String> att_type_values = new ArrayList<String>();
+		att_type_values.add("TRAIN");
+		att_type_values.add("TEST");
 		
 		Attribute type = new Attribute("type",att_type_values);
 		Attribute rowid = new Attribute("rowid");
 		Attribute fold = new Attribute("fold");
 		Attribute repeat = new Attribute("repeat");
 		
-		attributes.addElement(type);
-		attributes.addElement(rowid);
-		attributes.addElement(repeat);
-		attributes.addElement(fold);
+		attributes.add(type);
+		attributes.add(rowid);
+		attributes.add(repeat);
+		attributes.add(fold);
 		
 		if(use_samples){
 			Attribute sample = new Attribute("sample");
-			attributes.addElement(sample);
+			attributes.add(sample);
 		}
 	}
 	
-	public FastVector getArffHeader() {
+	public ArrayList<Attribute> getArffHeader() {
 		return attributes;
 	}
 	
 	public Instance createInstance( boolean train, int rowid, int repeat, int fold ) {
 		Instance instance = new DenseInstance( 4 );
-		instance.setValue((Attribute)attributes.elementAt(0), train ? 0.0 : 1.0 );
-		instance.setValue((Attribute)attributes.elementAt(1), rowid );
-		instance.setValue((Attribute)attributes.elementAt(2), repeat );
-		instance.setValue((Attribute)attributes.elementAt(3), fold );
+		instance.setValue( attributes.get(0), train ? 0.0 : 1.0 );
+		instance.setValue( attributes.get(1), rowid );
+		instance.setValue( attributes.get(2), repeat );
+		instance.setValue( attributes.get(3), fold );
 		
 		return instance;
 	}
 	
 	public Instance createInstance( boolean train, int rowid, int repeat, int fold, int sample ) {
 		Instance instance = new DenseInstance(5);
-		instance.setValue((Attribute)attributes.elementAt(0), train ? 0.0 : 1.0 );
-		instance.setValue((Attribute)attributes.elementAt(1), rowid );
-		instance.setValue((Attribute)attributes.elementAt(2), repeat );
-		instance.setValue((Attribute)attributes.elementAt(3), fold );
-		instance.setValue((Attribute)attributes.elementAt(4), sample );
+		instance.setValue( attributes.get(0), train ? 0.0 : 1.0 );
+		instance.setValue( attributes.get(1), rowid );
+		instance.setValue( attributes.get(2), repeat );
+		instance.setValue( attributes.get(3), fold );
+		instance.setValue( attributes.get(4), sample );
 		
 		return instance;
 	}
