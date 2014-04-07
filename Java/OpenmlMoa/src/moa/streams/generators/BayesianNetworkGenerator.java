@@ -1,6 +1,9 @@
 package moa.streams.generators;
 
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -22,6 +25,7 @@ import moa.core.InstancesHeader;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.options.FileOption;
+import moa.options.FlagOption;
 import moa.options.IntOption;
 import moa.options.WEKAClassOption;
 import moa.streams.InstanceStream;
@@ -49,7 +53,14 @@ public class BayesianNetworkGenerator extends AbstractOptionHandler implements
 			"searchAlgorithm", 'a', 
 			"The search algorithm for generating the Bayesian Network", 
 			SearchAlgorithm.class, "weka.classifiers.bayes.net.search.local.K2");
-
+	
+	//public FlagOption printNetworkOption = new FlagOption(
+	//		"printNetwork", 'p', "Indicates whether the network should also be printed to a file. ");
+	
+	public FileOption printNetworkOption = new FileOption(
+			"printNetwork", 'p', "If set, the generated Network will also be printed to a file.", 
+			null, "arff", true );
+	
 	@Override
 	public void getDescription(StringBuilder arg0, int arg1) {
 		String description = 
@@ -157,6 +168,13 @@ public class BayesianNetworkGenerator extends AbstractOptionHandler implements
 			bayesianNetwork = new BayesNet();
 			bayesianNetwork.setSearchAlgorithm( searchAlgorithm );
 			bayesianNetwork.buildClassifier( sourceData );
+			
+			if( printNetworkOption.getFile() != null ) {
+				BufferedWriter bw = new BufferedWriter( new FileWriter( printNetworkOption.getFile() ) );
+				bw.write( bayesianNetwork.toXMLBIF03() );
+				bw.close();
+			} 
+			
 		} catch ( Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException("Failed to initiate stream from indicated ARFF file. ");
