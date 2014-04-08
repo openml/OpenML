@@ -2,6 +2,7 @@ package org.openml.tools.dataset;
 
 import java.io.File;
 import java.io.FileReader;
+import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.util.Date;
 
@@ -36,7 +37,7 @@ public class GenerateBayesnetDatasets {
 	private static final ApiSessionHash ash = new ApiSessionHash();
 	private static final int MIN_ATTRIBUTES = 10;
 	private static final int MAX_ATTRIBUTES = 100;
-	private static final int TARGET_NUM_INSTANCES = 50000;
+	private static final int TARGET_NUM_INSTANCES = 1000000;
 	private static final boolean SEND_RESULT = true;
 	
 	private static final File outputDirectory = new File( "/Users/jan/Desktop/BayesNetTest/" );
@@ -51,7 +52,7 @@ public class GenerateBayesnetDatasets {
 		Config c = new Config();
 		ash.set(c.getUsername(), c.getPassword());
 		
-		for( int iDatasets = 1; iDatasets <= 62; ++iDatasets ) {
+		for( int iDatasets = 16; iDatasets <= 62; ++iDatasets ) {
 			Conversion.log("INFO", "Download Dataset", "Downloading dataset " + iDatasets);
 			DataSetDescription dsd = ApiConnector.openmlDataDescription( iDatasets );
 			
@@ -61,17 +62,17 @@ public class GenerateBayesnetDatasets {
 				continue;
 			}
 			
-			long maxDifferentOptions = 1;
+			BigInteger maxDifferentOptions = new BigInteger("1");
 			for( int iAttributes = 0; iAttributes < dataset.numAttributes(); ++iAttributes ) {
 				if( dataset.attribute( iAttributes ).isNominal() == false ) {
-					maxDifferentOptions *= 3;
+					maxDifferentOptions = maxDifferentOptions.multiply( new BigInteger("3") );
 				} else {
-					maxDifferentOptions *= dataset.attribute( iAttributes ).numValues();
+					maxDifferentOptions = maxDifferentOptions.multiply( new BigInteger( dataset.attribute( iAttributes ).numValues() + "" ) );
 				}
 			}
 			
 			long startTime = System.currentTimeMillis();
-			File generatedDataset = generateDataset( dsd, Math.min( Math.max( 0, maxDifferentOptions ), TARGET_NUM_INSTANCES ) );
+			File generatedDataset = generateDataset( dsd, maxDifferentOptions.min( new BigInteger( "" + TARGET_NUM_INSTANCES ) ).intValue() );
 			long elapsedTime = (System.currentTimeMillis() - startTime) / 1000;
 			Conversion.log("INFO", "Generating Dataset", "Generated dataset on " + dsd.getName() + " in " + elapsedTime + " seconds ");
 			
