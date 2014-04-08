@@ -24,6 +24,7 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Options;
 import org.openml.webapplication.evaluate.EvaluatePredictions;
+import org.openml.webapplication.evaluate.EvaluateStreamPredictions;
 import org.openml.webapplication.features.ExtractFeatures;
 import org.openml.webapplication.generatefolds.GenerateFolds;
 import org.openml.webapplication.io.Output;
@@ -51,11 +52,15 @@ public class Main {
 				String function = cli.getOptionValue("f");
 				if( function.equals("evaluate_predictions") ) {
 					if( cli.hasOption("-d") == true && cli.hasOption("-c") == true && cli.hasOption("-s") && cli.hasOption("-p") == true ) {
-
 						new EvaluatePredictions( cli.getOptionValue("d"), cli.getOptionValue("s"), cli.getOptionValue("p"), cli.getOptionValue("c") );
-
 					} else {
 						System.out.println( Output.styleToJsonError("Missing arguments for function 'evaluate_predictions'. Need d (url to dataset), c (string target feature), s (url to splits file), and p (url to predictions file). ") );
+					}
+				} else if( function.equals("evaluate_stream_predictions") ) {
+					if( cli.hasOption("-d") == true && cli.hasOption("-c") == true && cli.hasOption("-p") == true ) {
+						new EvaluateStreamPredictions( cli.getOptionValue("d"), cli.getOptionValue("p"), cli.getOptionValue("c") );
+					} else {
+						System.out.println( Output.styleToJsonError("Missing arguments for function 'evaluate_stream_predictions'. Need d (url to dataset), c (string target feature), s (url to splits file), and p (url to predictions file). ") );
 					}
 				} else if( function.equals("data_features") ) {
 					if( cli.hasOption("-d") == true ) {

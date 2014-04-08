@@ -47,18 +47,22 @@ public class FoldsPredictionCounter implements PredictionCounter {
 	
 	private String error_message;
 	
-	public FoldsPredictionCounter( Instances splits ) {
+	public FoldsPredictionCounter( Instances splits ) throws Exception {
 		this(splits,"TEST","TRAIN");
 	}
 	
 	@SuppressWarnings("unchecked")
-	public FoldsPredictionCounter( Instances splits, String type, String shadowType ) {
+	public FoldsPredictionCounter( Instances splits, String type, String shadowType ) throws Exception {
 		ATT_SPLITS_TYPE = InstancesHelper.getRowIndex( "type", splits );
 		ATT_SPLITS_ROWID = InstancesHelper.getRowIndex( new String[] {"rowid", "row_id"}, splits );
 		ATT_SPLITS_REPEAT = InstancesHelper.getRowIndex( new String[] {"repeat", "repeat_nr"}, splits ) ;
 		ATT_SPLITS_FOLD =  InstancesHelper.getRowIndex( new String[] {"fold", "fold_nr"}, splits ) ;
-		ATT_SPLITS_SAMPLE =  InstancesHelper.getRowIndex( new String[] {"sample", "sample_nr"}, splits ) ;
-
+		int att_splits_sample;
+		try {
+			att_splits_sample = InstancesHelper.getRowIndex( new String[] {"sample", "sample_nr"}, splits ) ;
+		} catch( Exception e ) { att_splits_sample = -1; }
+		ATT_SPLITS_SAMPLE = att_splits_sample;
+		
 		NR_OF_REPEATS = splits.attribute("repeat") == null ? 1 : (int) splits.attributeStats( ATT_SPLITS_REPEAT ).numericStats.max + 1;
 		NR_OF_FOLDS = splits.attribute("fold") == null ? 1 : (int) splits.attributeStats( ATT_SPLITS_FOLD ).numericStats.max + 1;
 		NR_OF_SAMPLES = splits.attribute("sample") == null ? 1 : (int) splits.attributeStats( ATT_SPLITS_SAMPLE ).numericStats.max + 1;

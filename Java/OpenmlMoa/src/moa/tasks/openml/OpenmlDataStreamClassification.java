@@ -11,7 +11,6 @@ import org.openml.moa.ResultListener;
 import org.openml.moa.algorithm.InstancesHelper;
 import org.openml.apiconnector.models.Metric;
 import org.openml.apiconnector.models.MetricScore;
-import org.openml.apiconnector.io.ApiConnector;
 import org.openml.apiconnector.io.ApiSessionHash;
 import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.Task;
@@ -195,11 +194,23 @@ public class OpenmlDataStreamClassification extends MainTask {
 		}
 		long evaluateEndTime = TimingUtils.getNanoCPUTimeOfCurrentThread();
 		
+		Map<String, Double> evaluatorResults = new HashMap<String, Double>();
+		for( Measurement m : evaluator.getPerformanceMeasurements() ) {
+			evaluatorResults.put( m.getName(), m.getValue() );
+		}
+		
+		System.out.println( evaluatorResults );
+		
 		try { 
 			Map<Metric, MetricScore> m = new HashMap<Metric, MetricScore>();
 			m.put( new Metric("ram_hours", "openml.userdefined.ram_hours(1.0)", null), new MetricScore(RAMHours));
 			m.put( new Metric("run_cpu_time", "openml.evaluation.run_cpu_time(1.0)", null), 
 					new MetricScore( TimingUtils.nanoTimeToSeconds(evaluateEndTime - evaluateStartTime) ) );
+			// TODO! Keys "Kappa Statistic (percent)" and "classifications correct (percent)" are dangerous to use in this way. 
+			m.put( new Metric("predictive_accuracy", "openml.evaluation.predictive_accuracy(1.0)", null), 
+					new MetricScore( evaluatorResults.get("classifications correct (percent)") / 100 ) ); // division 100 for percentages to pred_acc
+			m.put( new Metric("kappa", "openml.evaluation.kappa(1.0)", null), 
+					new MetricScore( ( evaluatorResults.get("Kappa Statistic (percent)") / 100 ) ) ); // division 100 for percentages to pred_acc
 			
 			resultListener.sendToOpenML( learner, m ); 
 		} catch( Exception e ) {

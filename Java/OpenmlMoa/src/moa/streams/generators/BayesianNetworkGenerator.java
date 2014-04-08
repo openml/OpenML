@@ -1,7 +1,6 @@
 package moa.streams.generators;
 
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
@@ -25,7 +24,6 @@ import moa.core.InstancesHeader;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.options.FileOption;
-import moa.options.FlagOption;
 import moa.options.IntOption;
 import moa.options.WEKAClassOption;
 import moa.streams.InstanceStream;
@@ -53,9 +51,6 @@ public class BayesianNetworkGenerator extends AbstractOptionHandler implements
 			"searchAlgorithm", 'a', 
 			"The search algorithm for generating the Bayesian Network", 
 			SearchAlgorithm.class, "weka.classifiers.bayes.net.search.local.K2");
-	
-	//public FlagOption printNetworkOption = new FlagOption(
-	//		"printNetwork", 'p', "Indicates whether the network should also be printed to a file. ");
 	
 	public FileOption printNetworkOption = new FileOption(
 			"printNetwork", 'p', "If set, the generated Network will also be printed to a file.", 
@@ -141,18 +136,8 @@ public class BayesianNetworkGenerator extends AbstractOptionHandler implements
 			sourceData = new Instances( new FileReader( this.arffFileOption.getFile() ) );
 			String relationNameOriginal = sourceData.relationName();
 			
-			ArrayList<Integer> variablesToDiscretize = new ArrayList<Integer>();
-			for( int i = 0; i < sourceData.numAttributes(); ++i ) {
-				if( sourceData.attribute( i ).isNominal() == false ) {
-					variablesToDiscretize.add( i + 1 ); // 0-based/1-based
-				}
-			}
-			
-			// only discretize variables if needed
-			if( variablesToDiscretize.size() > 0 ) {
-				String options = "-Y -B 3 -R " + StringUtils.join( variablesToDiscretize, ',' );
-				sourceData = applyFilter(sourceData, new Discretize(), options );
-			}
+			String discretizeOptions = getDiscretizationOptions( sourceData );
+			if( discretizeOptions != null ) { sourceData = applyFilter(sourceData, new Discretize(), discretizeOptions ); }
 			
 			sourceData = applyFilter(sourceData, new ReplaceMissingValues(), "" );
 			sourceData.setClass( sourceData.attribute( sourceData.numAttributes() - 1 ) );
@@ -179,10 +164,25 @@ public class BayesianNetworkGenerator extends AbstractOptionHandler implements
 			e.printStackTrace();
 			throw new RuntimeException("Failed to initiate stream from indicated ARFF file. ");
 		}
-
 	}
 	
-	private static Instances applyFilter( Instances dataset, Filter filter, String options ) throws Exception {
+	public static String getDiscretizationOptions( Instances sourceData ) {
+		ArrayList<Integer> variablesToDiscretize = new ArrayList<Integer>();
+		for( int i = 0; i < sourceData.numAttributes(); ++i ) {
+			if( sourceData.attribute( i ).isNominal() == false ) {
+				variablesToDiscretize.add( i + 1 ); // 0-based/1-based
+			}
+		}
+		
+		// only discretize variables if needed
+		if( variablesToDiscretize.size() > 0 ) {
+			return "-Y -B 3 -R " + StringUtils.join( variablesToDiscretize, ',' );
+		} else {
+			return null;
+		}
+	}
+	
+	public static Instances applyFilter( Instances dataset, Filter filter, String options ) throws Exception {
 		((OptionHandler) filter).setOptions( Utils.splitOptions( options ) );
 		filter.setInputFormat(dataset);
 		return Filter.useFilter(dataset, filter);

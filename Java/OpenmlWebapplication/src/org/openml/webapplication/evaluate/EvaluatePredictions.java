@@ -33,7 +33,6 @@ import org.openml.webapplication.io.Output;
 import org.openml.webapplication.models.JsonItem;
 import org.openml.webapplication.predictionCounter.FoldsPredictionCounter;
 import org.openml.webapplication.predictionCounter.PredictionCounter;
-import org.openml.webapplication.predictionCounter.StreamPredictionCounter;
 
 import weka.classifiers.Evaluation;
 import weka.core.Instance;
@@ -63,23 +62,18 @@ public class EvaluatePredictions {
 		// set all arff files needed for this operation. 
 		dataset 	= new Instances( new BufferedReader( Input.getURL( datasetPath ) ) );
 		predictions = new Instances( new BufferedReader( Input.getURL( predictionsPath ) ) ); 
-		splits 		= splitsPath.equals("") == false ? new Instances( new BufferedReader( Input.getURL( splitsPath ) ) ) : null;
+		splits 		= new Instances( new BufferedReader( Input.getURL( splitsPath ) ) );
 		
 		// Set class attribute to dataset ...
-		for( int i = 0; i < dataset.numAttributes(); i++ ) {
-			if( dataset.attribute( i ).name().equals( classAttribute ) )
-				dataset.setClass( dataset.attribute( i ) );
-		}
-
-		// ... and throw an error if we failed to do so ... 
-		if( dataset.classIndex() < 0 ) { 
+		if( dataset.attribute( classAttribute ) != null ) {
+			dataset.setClass( dataset.attribute( classAttribute ) );
+		} else {
 			throw new RuntimeException( "Class attribute ("+classAttribute+") not found" );
 		}
+		
 		// ... and specify which task we are doing. classification or regression. 
 		if( dataset.classAttribute().isNominal() ) {
-			 if( splits == null ) {
-				task = Task.TESTTHENTRAIN;
-			} else if( predictions.attribute("sample") == null ) {
+			if( predictions.attribute("sample") == null ) {
 				task = Task.CLASSIFICATION;
 			} else {
 				task = Task.LEARNINGCURVE;
@@ -89,12 +83,9 @@ public class EvaluatePredictions {
 		}
 		
 		// initiate a class that will help us with checking the prediction count. 
-		if( task == Task.TESTTHENTRAIN ) {
-			predictionCounter = new StreamPredictionCounter();
-		} else {
-			predictionCounter = new FoldsPredictionCounter(splits);
-		}
+		predictionCounter = new FoldsPredictionCounter(splits);
 		sampleEvaluation  = new Evaluation[predictionCounter.getRepeats()][predictionCounter.getFolds()][predictionCounter.getSamples()];
+		
 		// *** A sample is considered to be a subset of a fold. In a normal n-times n-fold crossvalidation
 		//     setting, each fold consists of 1 sample. In a leaning curve example, each fold could consist
 		//     of more samples. 
@@ -103,16 +94,12 @@ public class EvaluatePredictions {
 		ATT_PREDICTION_ROWID = InstancesHelper.getRowIndex( "row_id", predictions );
 		ATT_PREDICTION_REPEAT = InstancesHelper.getRowIndex( new String[] {"repeat", "repeat_nr"}, predictions ) ;
 		ATT_PREDICTION_FOLD =  InstancesHelper.getRowIndex( new String[] {"fold", "fold_nr"}, predictions ) ;
-		ATT_PREDICTION_SAMPLE =  InstancesHelper.getRowIndex( new String[] {"sample", "sample_nr"}, predictions ) ;
 		ATT_PREDICTION_PREDICTION = InstancesHelper.getRowIndex( new String[] {"prediction"}, predictions ) ;
-
-		// and throw an error if these not exists
-		if( ATT_PREDICTION_ROWID < 0) throw new RuntimeException("Predictions file lacks attribute row_id");
-		if( ATT_PREDICTION_PREDICTION < 0) throw new RuntimeException("Predictions file lacks attribute prediction");
-		if( ATT_PREDICTION_REPEAT < 0  && task != Task.TESTTHENTRAIN ) throw new RuntimeException("Predictions file lacks attribute repeat");
-		if( ATT_PREDICTION_FOLD < 0  && task != Task.TESTTHENTRAIN ) throw new RuntimeException("Predictions file lacks attribute fold");
-		if( ATT_PREDICTION_SAMPLE < 0  && task == Task.LEARNINGCURVE ) throw new RuntimeException("Predictions file lacks attribute sample");
-		
+		if( task == Task.LEARNINGCURVE ) {
+			ATT_PREDICTION_SAMPLE =  InstancesHelper.getRowIndex( new String[] {"sample", "sample_nr"}, predictions ) ;
+		} else {
+			ATT_PREDICTION_SAMPLE = -1;
+		}
 		// do the same for the confidence fields. This number is dependent on the number 
 		// of classes in the data set, hence the for-loop. 
 		nrOfClasses = dataset.classAttribute().numValues(); // returns 0 if numeric, that's good.
@@ -124,7 +111,7 @@ public class EvaluatePredictions {
 			if( predictions.attribute(attribute) != null )
 				ATT_PREDICTION_CONFIDENCE[i] = predictions.attribute( attribute ).index();
 			else
-				throw new RuntimeException( "Attribute " + attribute + " not found among predictions. " );
+				throw new Exception( "Attribute " + attribute + " not found among predictions. " );
 		}
 		
 		// and do the actual evaluation. 
@@ -166,10 +153,10 @@ public class EvaluatePredictions {
 					dataset.instance( rowid ) );
 			} else {
 				e.evaluateModelOnce(
-					confidences( dataset, prediction ) , // TODO: catch error when no prob distribution is provided
+					InstancesHelper.predictionToConfidences( dataset, prediction, ATT_PREDICTION_CONFIDENCE ), // TODO: catch error when no prob distribution is provided
 					dataset.instance( rowid ) );
 				sampleEvaluation[repeat][fold][sample].evaluateModelOnce(
-					confidences( dataset, prediction ) , // TODO: catch error when no prob distribution is provided
+						InstancesHelper.predictionToConfidences( dataset, prediction, ATT_PREDICTION_CONFIDENCE ) , // TODO: catch error when no prob distribution is provided
 					dataset.instance( rowid ) );
 			}
 		}
@@ -181,15 +168,7 @@ public class EvaluatePredictions {
 		}
 	}
 	
-	private double[] confidences( Instances dataset, Instance prediction ) {
-		double[] confidences = new double[dataset.numClasses()];
-		for( int i = 0; i < dataset.numClasses(); i++ ) {
-			confidences[i] = prediction.value( ATT_PREDICTION_CONFIDENCE[i] );
-		}
-		return confidences;
-	}
-	
-	private void output( Evaluation e, Task task ) throws Exception {
+	protected void output( Evaluation e, Task task ) throws Exception {
 		if( task == Task.CLASSIFICATION || task == Task.REGRESSION || task == Task.LEARNINGCURVE || task == Task.TESTTHENTRAIN ) { // any task ...
 			Map<Metric, MetricScore> metrics = Output.evaluatorToMap(e, nrOfClasses, task);
 			MetricCollector population = new MetricCollector();
@@ -230,20 +209,16 @@ public class EvaluatePredictions {
 			foldMetrics = "[" + StringUtils.join( metricsPerRepeat, "],\n\n[") + "]";
 			globalMetrics = Output.printMetrics(metrics, population, null);
 			
-			if( task == Task.TESTTHENTRAIN ) {
-				System.out.println( "{\n\"global_metrices\":[\n" + globalMetrics + "] }" );
-			} else {
-				System.out.println(
-					"{\n" + 
-						"\"global_metrices\":[\n" +
-							globalMetrics +
-						"],\n" +
-						"\""+foldMetricsLabel+"\":[\n" +
-							foldMetrics + 
-						"]" +
-					"}"
-				);
-			}
+			System.out.println(
+				"{\n" + 
+					"\"global_metrices\":[\n" +
+						globalMetrics +
+					"],\n" +
+					"\""+foldMetricsLabel+"\":[\n" +
+						foldMetrics + 
+					"]" +
+				"}"
+			);
 		} else {
 			throw new RuntimeException( "Task not defined" );
 		}

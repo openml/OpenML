@@ -22,12 +22,9 @@ package org.openml.webapplication.io;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import org.openml.apiconnector.algorithms.MathHelper;
@@ -42,8 +39,6 @@ import weka.classifiers.Evaluation;
 import weka.core.Instances;
 
 public class Output {
-	
-	private static DecimalFormat decimalFormat = new DecimalFormat("#.######", DecimalFormatSymbols.getInstance( Locale.ENGLISH ));
 	
 	public static Map<Metric, MetricScore> evaluatorToMap( Evaluation evaluator, int classes, Task task ) throws Exception {
 		Map<Metric, MetricScore> m = new HashMap<Metric, MetricScore>();
@@ -127,7 +122,7 @@ public class Output {
 			if( stdev != null && stdev.isNaN() == false )
 				jsonItems.add( new JsonItem( "stdev", stdev ) );
 			if(value.hasArray()) {
-				jsonItems.add( new JsonItem( "array_data", value.getArrayAsString( decimalFormat ), false ) );
+				jsonItems.add( new JsonItem( "array_data", value.getArrayAsString( MathHelper.defaultDecimalFormat ), false ) );
 				mayPrint = true;
 			}
 			if( additionalItems != null ) {
@@ -145,10 +140,6 @@ public class Output {
 	
 	public static String styleToJsonError( String value ) {
 		return "{\"error\":\"" + value + "\"}" + "\n";
-	}
-	
-	public static DecimalFormat getDecimalFormat() {
-		return decimalFormat;
 	}
 	
 	public static String dataFeatureToJson( List<JsonItem> jsonItems ) {

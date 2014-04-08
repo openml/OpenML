@@ -19,6 +19,7 @@
  */
 package org.openml.webapplication.algorithm;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -37,12 +38,12 @@ public class InstancesHelper {
 		throw new Exception("classAttribute " + classAttribute + " non-existant on dataset. ");
 	}
 	
-	public static int getRowIndex( String[] names, Instances instances ) {
+	public static int getRowIndex( String[] names, Instances instances ) throws Exception {
 		for( String name : names ) {
 			int probe = getRowIndex(name, instances);
 			if( probe >= 0 ) return probe;
 		}
-		return -1;
+		throw new Exception( "Arff file contains none of the specified attributes: " + Arrays.toString( names ) );
 	}
 	
 	public static int getRowIndex( String name, Instances instances ) {
@@ -66,6 +67,14 @@ public class InstancesHelper {
 		}
 		
 		return result;
+	}
+	
+	public static double[] predictionToConfidences( Instances dataset, Instance prediction, int[] att_prediction_confidence ) {
+		double[] confidences = new double[dataset.numClasses()];
+		for( int i = 0; i < dataset.numClasses(); i++ ) {
+			confidences[i] = prediction.value( att_prediction_confidence[i] );
+		}
+		return confidences;
 	}
 	
 	@SuppressWarnings("unchecked")

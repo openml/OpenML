@@ -13,7 +13,7 @@ import org.openml.apiconnector.xstream.XstreamXmlMapping;
 
 public class TransferDatasets {
 
-	private static final String TO = "http://openml.liacs.nl/";
+	private static final String TO = "http://localhost/";
 	private static final String FROM = "http://www.openml.org/";
 	
 	public static void main( String[] args ) throws Exception {
