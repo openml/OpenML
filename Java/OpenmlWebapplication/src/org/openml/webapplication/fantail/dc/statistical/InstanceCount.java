@@ -2,6 +2,7 @@
  *  Webapplication - Java library that runs on OpenML servers
  *  Copyright (C) 2014 
  *  @author Jan N. van Rijn (j.n.van.rijn@liacs.leidenuniv.nl)
+ *  @author Quan Sun (quan.sun.nz@gmail.com)
  *  
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,16 +18,27 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *  
  */
-package org.openml.webapplication.predictionCounter;
+package org.openml.webapplication.fantail.dc.statistical;
 
-public interface PredictionCounter {
-	
-	public int getRepeats();
-	public int getFolds();
-	public int getSamples();
-	public String getErrorMessage();
-	public int getShadowTypeSize( int repeat, int fold, int sample );
-	
-	public void addPrediction( int repeat, int fold, int sample, int prediction );
-	public boolean check();
+import java.util.HashMap;
+import java.util.Map;
+
+import org.openml.webapplication.fantail.dc.Characterizer;
+
+import weka.core.Instances;
+
+public class InstanceCount extends Characterizer {
+
+	protected final String[] ids = new String[] { "InstanceCount" };
+
+	public String[] getIDs() {
+		return ids;
+	}
+
+	public Map<String, Double> characterize(Instances instances) {
+
+		Map<String, Double> qualities = new HashMap<String, Double>();
+		qualities.put(ids[0], (double) instances.numInstances());
+		return qualities;
+	}
 }

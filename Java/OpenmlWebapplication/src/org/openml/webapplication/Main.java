@@ -1,5 +1,5 @@
 /*
- *  OpenmlApiConnector - Java integration of the OpenML Web API
+ *  Webapplication - Java library that runs on OpenML servers
  *  Copyright (C) 2014 
  *  @author Jan N. van Rijn (j.n.van.rijn@liacs.leidenuniv.nl)
  *  
@@ -26,6 +26,7 @@ import org.apache.commons.cli.Options;
 import org.openml.webapplication.evaluate.EvaluatePredictions;
 import org.openml.webapplication.evaluate.EvaluateStreamPredictions;
 import org.openml.webapplication.features.ExtractFeatures;
+import org.openml.webapplication.features.FantailConnector;
 import org.openml.webapplication.generatefolds.GenerateFolds;
 import org.openml.webapplication.io.Output;
 
@@ -65,10 +66,18 @@ public class Main {
 				} else if( function.equals("data_features") ) {
 					if( cli.hasOption("-d") == true ) {
 						String default_class = null;
-						if( cli.hasOption("-c") == true ) default_class = cli.getOptionValue("c");
+						if( cli.hasOption("-c") == true ) { default_class = cli.getOptionValue("c"); }
 						new ExtractFeatures( cli.getOptionValue("d"), default_class );
 					} else {
 						System.out.println( Output.styleToJsonError("Missing arguments for function 'data_features'. Need d (url to dataset). ") );
+					}
+				} else if( function.equals("data_qualities") ) {
+					if( cli.hasOption("-d") == true ) {
+						String default_class = null;
+						if( cli.hasOption("-c") == true ) { default_class = cli.getOptionValue("c"); }
+						FantailConnector.extractFeatures( cli.getOptionValue("d"), default_class );
+					} else {
+						System.out.println( Output.styleToJsonError("Missing arguments for function 'data_qualities'. Need d (url to dataset). ") );
 					}
 				} else if( function.equals("generate_folds") ) {
 					if( cli.hasOption("-d") && cli.hasOption("e") && cli.hasOption("c") && cli.hasOption("r") ) {

@@ -1,5 +1,5 @@
 /*
- *  OpenmlApiConnector - Java integration of the OpenML Web API
+ *  Webapplication - Java library that runs on OpenML servers
  *  Copyright (C) 2014 
  *  @author Jan N. van Rijn (j.n.van.rijn@liacs.leidenuniv.nl)
  *  
@@ -43,7 +43,6 @@ public class Output {
 	public static Map<Metric, MetricScore> evaluatorToMap( Evaluation evaluator, int classes, Task task ) throws Exception {
 		Map<Metric, MetricScore> m = new HashMap<Metric, MetricScore>();
 		
-		m.put(new Metric("number_of_instances", "openml.evaluation.number_of_instances(1.0)", null), new MetricScore( evaluator.numInstances() ) );
 		m.put(new Metric("mean_absolute_error", "openml.evaluation.mean_absolute_error(1.0)", null), new MetricScore( evaluator.meanAbsoluteError() ) );
 		m.put(new Metric("mean_prior_absolute_error", "openml.evaluation.mean_prior_absolute_error(1.0)", null), new MetricScore( evaluator.meanPriorAbsoluteError() ) );
 		m.put(new Metric("root_mean_squared_error", "openml.evaluation.root_mean_squared_error(1.0)", null), new MetricScore( evaluator.rootMeanSquaredError() ) );
@@ -63,22 +62,29 @@ public class Output {
 			Double[] recall = new Double[classes];
 			Double[] auroc = new Double[classes];
 			Double[] fMeasure = new Double[classes];
+			Double[] instancesPerClass = new Double[classes];
 			double[][] confussion_matrix = evaluator.confusionMatrix();
 			for( int i = 0; i < classes; ++i ) {
 				precision[i] = evaluator.precision(i);
 				recall[i] = evaluator.recall(i);
 				auroc[i] = evaluator.areaUnderROC(i);
 				fMeasure[i] = evaluator.fMeasure(i);
+				instancesPerClass[i] = 0.0;
+				for( int j = 0; j < classes; ++j ) {
+					instancesPerClass[i] += confussion_matrix[i][j]; 
+				}
 			}
-			// TODO: Fix AUROC!
-			m.put(new Metric("precision", "openml.evaluation.precision(1.0)",null),new MetricScore( precision ));
-			m.put(new Metric("recall", "openml.evaluation.recall(1.0)",null),new MetricScore( recall ));
-			m.put(new Metric("f_measure", "openml.evaluation.f_measure(1.0)",null),new MetricScore( fMeasure ));
-			//m.put(new Metric("area_under_the_roc_curve", "openml.evaluation.area_under_the_roc_curve(1.0)",null),new MetricScore( auroc ));
+			m.put(new Metric("number_of_instances", "openml.evaluation.number_of_instances(1.0)", null), new MetricScore( evaluator.numInstances(), instancesPerClass ) );
+			
+			m.put(new Metric("precision", "openml.evaluation.precision(1.0)",null),new MetricScore( evaluator.weightedPrecision(), precision ));
+			m.put(new Metric("recall", "openml.evaluation.recall(1.0)",null),new MetricScore( evaluator.weightedRecall(), recall ));
+			m.put(new Metric("f_measure", "openml.evaluation.f_measure(1.0)",null),new MetricScore( evaluator.weightedFMeasure(), fMeasure ));
+			
 			m.put(new Metric("mean_weighted_precision", "openml.evaluation.mean_weighted_precision(1.0)",null),new MetricScore( evaluator.weightedPrecision(), precision ));
 			m.put(new Metric("mean_weighted_recall", "openml.evaluation.mean_weighted_recall(1.0)",null),new MetricScore( evaluator.weightedRecall(), recall ));
 			m.put(new Metric("mean_weighted_f_measure", "openml.evaluation.mean_weighted_f_measure(1.0)",null),new MetricScore( evaluator.weightedFMeasure(), fMeasure ));
 			//m.put(new Metric("mean_weighted_area_under_the_roc_curve", "openml.evaluation.mean_weighted_area_under_the_roc_curve(1.0)",null),new MetricScore( evaluator.weightedAreaUnderROC(), auroc ));
+			// TODO: Fix AUROC!
 			
 			m.put(new Metric("confusion_matrix","openml.evaluation.confusion_matrix(1.0)",null), new MetricScore(confussion_matrix));
 		}

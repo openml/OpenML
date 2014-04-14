@@ -1,5 +1,5 @@
 /*
- *  OpenmlApiConnector - Java integration of the OpenML Web API
+ *  Webapplication - Java library that runs on OpenML servers
  *  Copyright (C) 2014 
  *  @author Jan N. van Rijn (j.n.van.rijn@liacs.leidenuniv.nl)
  *  

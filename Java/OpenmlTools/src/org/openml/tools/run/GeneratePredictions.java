@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.openml.apiconnector.algorithms.TaskInformation;
+import org.openml.apiconnector.io.ApiConnector;
+import org.openml.apiconnector.xml.Task;
 
 import weka.classifiers.Classifier;
 import weka.classifiers.functions.Logistic;
@@ -42,10 +45,14 @@ public class GeneratePredictions {
 	private final ArrayList<Integer>[][][] sets;
 	
 	public static void main( String[] args ) throws Exception {
+		Task t = ApiConnector.openmlTasksSearch( 1 );
+		
 		new GeneratePredictions( 
-			"http://expdb.cs.kuleuven.be/expdb/data/uci/nominal/iris.arff",
-			"http://localhost/arff/iris_splits_CV_10_2.arff",
-			"class", 2, 10 );
+			TaskInformation.getSourceData( t ).getDataSetDescription().getUrl(),
+			TaskInformation.getEstimationProcedure( t ).getData_splits_url(),
+			TaskInformation.getSourceData( t ).getTarget_feature(),
+			TaskInformation.getNumberOfRepeats( t ),
+			TaskInformation.getNumberOfFolds( t ) );
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -58,7 +65,7 @@ public class GeneratePredictions {
 		empty = new Instances( dataset );
 		empty.delete();
 		
-		writer = new BufferedWriter( new FileWriter( new File( "output/predictions_" + datasetPath.substring( datasetPath.lastIndexOf('/') + 1 ) ) ) );
+		writer = new BufferedWriter( new FileWriter( new File( "data/output/predictions_" + datasetPath.substring( datasetPath.lastIndexOf('/') + 1 ) ) ) );
 		sets = new ArrayList[2][repeats][folds];
 		
 		for( int i = 0; i < 2; i++ )

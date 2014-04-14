@@ -2,6 +2,7 @@
  *  Webapplication - Java library that runs on OpenML servers
  *  Copyright (C) 2014 
  *  @author Jan N. van Rijn (j.n.van.rijn@liacs.leidenuniv.nl)
+ *  @author Quan Sun (quan.sun.nz@gmail.com)
  *  
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,38 +18,32 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *  
  */
-package org.openml.webapplication.io;
+package org.openml.webapplication.fantail.dc.statistical;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.Map;
 
-public class Md5Writer extends Writer {
-	MessageDigest md;
-	
-	public Md5Writer() throws NoSuchAlgorithmException {
-		md = MessageDigest.getInstance("MD5");
-	}
-	
-	@Override
-	public void write(char[] cbuf, int off, int len) throws IOException {
-		md.update( String.valueOf( cbuf ).substring( off, off + len ).getBytes() );
-	}
+import org.openml.webapplication.fantail.dc.Characterizer;
+
+import weka.core.Instances;
+
+public class AttributeCount extends Characterizer {
+
+	protected final String[] ids = new String[] { "NumAttributes",
+			"Dimensionality" };
 
 	@Override
-	public void flush() throws IOException {
-		BigInteger hash = new BigInteger(1, md.digest());
-		String result = hash.toString(16);
-		while (result.length() < 32) { // 40 for SHA-1
-			result = "0" + result;
-		}
-		System.out.println( result );
+	public String[] getIDs() {
+		return ids;
 	}
 
 	@Override
-	public void close() throws IOException {
-		flush();
+	public Map<String, Double> characterize(Instances instances) {
+		Map<String, Double> qualities = new HashMap<String, Double>();
+		qualities.put(ids[0], instances.numAttributes() * 1.0);
+		qualities.put(ids[1],
+				1.0 * instances.numAttributes() / instances.numInstances());
+		return qualities;
+
 	}
 }
