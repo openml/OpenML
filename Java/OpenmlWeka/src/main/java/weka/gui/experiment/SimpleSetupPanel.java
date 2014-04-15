@@ -260,7 +260,7 @@ public class SimpleSetupPanel extends JPanel {
 	 */
 	public SimpleSetupPanel() {
 		// TODO: OpenML addition:
-		try { openmlconfig = new Config(); } catch (IOException e) { /* Configfile not present. User has to login by himself. */ }
+		openmlconfig = new Config();
 
 		// everything disabled on startup
 		m_ResultsDestinationCBox.setEnabled(false);

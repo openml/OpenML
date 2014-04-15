@@ -139,7 +139,7 @@ public class TaskResultListener extends InstancesResultListener {
 		try { 
 			UploadRun ur = ApiConnector.openmlRunUpload(tmpDescriptionFile, output_files, ash.getSessionHash());
 			Conversion.log( "INFO", "Upload Run", "Run was uploaded with rid " + ur.getRun_id() + 
-					". Obatainable at " + ApiConnector.API_URL + ApiConnector.API_PART + "?f=openml.run.get&run_id=" + 
+					". Obatainable at " + ApiConnector.getApiUrl() + "?f=openml.run.get&run_id=" + 
 					ur.getRun_id() );
 		} catch( ApiException ae ) {
 			ae.printStackTrace(); 
@@ -161,7 +161,7 @@ public class TaskResultListener extends InstancesResultListener {
 			UploadRun ur = ApiConnector.openmlRunUpload(tmpDescriptionFile, new HashMap<String, File>(), ash.getSessionHash());
 			Conversion.log( "WARNING", "Upload Run", "Run was uploaded with rid " + ur.getRun_id() + 
 					". It includes an error message. Obtainable at " + 
-					ApiConnector.API_URL + ApiConnector.API_PART +  "?f=openml.run.get&run_id=" + ur.getRun_id() );
+					ApiConnector.API_URL + ApiConnector.getApiUrl() +  "?f=openml.run.get&run_id=" + ur.getRun_id() );
 		} catch( ApiException ae ) { 
 			ae.printStackTrace(); 
 			Conversion.log( "ERROR", "Upload Run", "Failed to upload run: " + ae.getMessage() );
