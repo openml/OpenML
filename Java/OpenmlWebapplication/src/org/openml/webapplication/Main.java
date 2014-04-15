@@ -23,6 +23,7 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Options;
+import org.openml.apiconnector.settings.Config;
 import org.openml.webapplication.evaluate.EvaluatePredictions;
 import org.openml.webapplication.evaluate.EvaluateStreamPredictions;
 import org.openml.webapplication.features.ExtractFeatures;
@@ -35,7 +36,10 @@ public class Main {
 	public static void main( String[] args ) {
 		CommandLineParser parser = new GnuParser();
 		Options options = new Options();
-
+		Config c;
+		
+		options.addOption("did", true, "The (d)id of the dataset used");
+		options.addOption("config", true, "The config string describing the settings for API interaction");
 		options.addOption("f", true, "The function to invole");
 		options.addOption("d", true, "The dataset used");
 		options.addOption("c", true, "The target class");
@@ -72,13 +76,22 @@ public class Main {
 						System.out.println( Output.styleToJsonError("Missing arguments for function 'data_features'. Need d (url to dataset). ") );
 					}
 				} else if( function.equals("data_qualities") ) {
-					if( cli.hasOption("-d") == true ) {
+					if( cli.hasOption("-did") == false ) {
+						System.out.println( Output.styleToJsonError("Missing arguments for function 'data_qualities'. Need did (dataset id). ") );
+					} else if( isInteger( cli.getOptionValue("did") ) == false ) {
+						System.out.println( Output.styleToJsonError("Option did must be an integer. ") );					
+					} else {
+						if( cli.hasOption("-config") == false ) {
+							c = new Config();
+						} else {
+							c = new Config( cli.getOptionValue("config") );
+						}
+						
+						
 						String default_class = null;
 						if( cli.hasOption("-c") == true ) { default_class = cli.getOptionValue("c"); }
-						FantailConnector.extractFeatures( cli.getOptionValue("d"), default_class );
-					} else {
-						System.out.println( Output.styleToJsonError("Missing arguments for function 'data_qualities'. Need d (url to dataset). ") );
-					}
+						FantailConnector.extractFeatures( Integer.parseInt( cli.getOptionValue("did") ), default_class, c );
+					} 
 				} else if( function.equals("generate_folds") ) {
 					if( cli.hasOption("-d") && cli.hasOption("e") && cli.hasOption("c") && cli.hasOption("r") ) {
 						GenerateFolds gf = new GenerateFolds(
@@ -107,5 +120,14 @@ public class Main {
 			e.printStackTrace();
 			System.out.println( Output.styleToJsonError(e.getMessage() ));
 		}
+	}
+
+	public static boolean isInteger(String s) {
+		try {
+			Integer.parseInt(s);
+		} catch (NumberFormatException e) {
+			return false;
+		}
+		return true;
 	}
 }

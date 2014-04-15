@@ -148,6 +148,16 @@ public class Output {
 		return "{\"error\":\"" + value + "\"}" + "\n";
 	}
 	
+	public static String statusMessage( String status, String message ) {
+		StringBuilder sb = new StringBuilder();
+		sb.append( "{\n" );
+		sb.append( "\t\"status\":\""+status+"\",\n" );
+		sb.append( "\t\"message\":\""+message+"\"\n" );
+		sb.append( "}" );
+		
+		return sb.toString();
+	}
+	
 	public static String dataFeatureToJson( List<JsonItem> jsonItems ) {
 		StringBuilder sb = new StringBuilder();
 		for( JsonItem item : jsonItems ) {

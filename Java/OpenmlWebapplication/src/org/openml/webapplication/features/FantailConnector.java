@@ -19,9 +19,19 @@
  */
 package org.openml.webapplication.features;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.openml.apiconnector.algorithms.Conversion;
+import org.openml.apiconnector.io.ApiConnector;
+import org.openml.apiconnector.io.ApiSessionHash;
+import org.openml.apiconnector.settings.Config;
+import org.openml.apiconnector.xml.DataQuality;
+import org.openml.apiconnector.xml.DataSetDescription;
+import org.openml.apiconnector.xstream.XstreamXmlMapping;
 import org.openml.webapplication.fantail.dc.Characterizer;
 import org.openml.webapplication.fantail.dc.landmarking.J48BasedLandmarker;
 import org.openml.webapplication.fantail.dc.landmarking.REPTreeBasedLandmarker;
@@ -37,74 +47,90 @@ import org.openml.webapplication.fantail.dc.statistical.InstanceCount;
 import org.openml.webapplication.fantail.dc.statistical.MissingValues;
 import org.openml.webapplication.fantail.dc.statistical.NominalAttDistinctValues;
 import org.openml.webapplication.fantail.dc.statistical.Statistical;
+import org.openml.webapplication.io.Output;
+
+import com.thoughtworks.xstream.XStream;
 
 import weka.core.Instances;
 import weka.core.converters.ArffLoader;
 
 public class FantailConnector {
-	
-	public static void extractFeatures(String datasetUrl, String datasetClass) throws Exception {
-		Map<String, Double> qualities = datasetCharacteristics( datasetUrl, datasetClass );
+
+	private static final XStream xstream = XstreamXmlMapping.getInstance();
+	private static final Characterizer[] allCharacterizers = {
+			new Statistical(), new AttributeCount(), new AttributeType(),
+			new ClassAtt(), new DefaultAccuracy(),
+			new IncompleteInstanceCount(), new InstanceCount(),
+			new MissingValues(), new NominalAttDistinctValues(),
+			new AttributeEntropy(), new SimpleLandmarkers(),
+			new J48BasedLandmarker(), new REPTreeBasedLandmarker(),
+			new RandomTreeBasedLandmarker() 
+	};
+
+	public static void extractFeatures(Integer did, String datasetClass,
+			Config c) throws Exception {
+		List<String> prevCalcQualities;
+		DataSetDescription dsd = ApiConnector.openmlDataDescription(did);
 		
-		System.out.println( qualities );
+		try {
+			DataQuality apiQualities = ApiConnector.openmlDataQuality(did);
+			prevCalcQualities = Arrays.asList( apiQualities.getQualityNames() );
+		} catch( Exception e ) {
+			// no qualities calculated yet. We might want to avoid catching this error
+			prevCalcQualities = new ArrayList<String>();
+		}
+		
+		List<String> uncalculatedQualities = characteristicsAvailable();
+		uncalculatedQualities.removeAll( prevCalcQualities );
+		
+		if( uncalculatedQualities.size() == 0 ) {
+			System.out.println(Output.statusMessage("OK", "No new Fantail Features from data #" + did));
+			return;
+		}
+		Map<String, Double> qualities = datasetCharacteristics(dsd.getUrl(), datasetClass);
+
+		DataQuality dq = new DataQuality(did, qualities);
+		String strQualities = xstream.toXML(dq);
+		ApiSessionHash ash = new ApiSessionHash();
+		ash.set(c.getUsername(), c.getPassword());
+
+		ApiConnector.openmlDataQualityUpload(
+				Conversion.stringToTempFile(strQualities, "qualities_did_"
+						+ did, "xml"), ash.getSessionHash());
+
+		System.out.println(Output.statusMessage("OK",
+				"Successfully extracted Fantail Features from data #" + did));
 	}
-	
-	public static Map<String, Double> datasetCharacteristics(String datasetUrl, String datasetClass) throws Exception {
+
+	public static List<String> characteristicsAvailable() {
+		List<String> allCharacteristics = new ArrayList<String>();
+		
+		for( Characterizer dc : allCharacterizers ) {
+			allCharacteristics.addAll( Arrays.asList( dc.getIDs() ) );
+		}
+		
+		return allCharacteristics;
+	}
+
+	public static Map<String, Double> datasetCharacteristics(String datasetUrl,
+			String datasetClass) throws Exception {
 		ArffLoader arffLoader = new ArffLoader();
 		arffLoader.setURL(datasetUrl);
+
+		Instances data = arffLoader.getDataSet();
+
+		if (datasetClass != null) {
+			data.setClass(data.attribute(datasetClass));
+		} else {
+			data.setClassIndex(data.numAttributes() - 1);
+		}
+
+		Map<String, Double> dcValues = new HashMap<String, Double>();
 		
-        Instances data = arffLoader.getDataSet();
-        
-        if( datasetClass != null ) {
-        	data.setClass( data.attribute( datasetClass ) );
-        } else {
-        	data.setClassIndex( data.numAttributes() - 1 );
-        }
-    	
-    	Map<String, Double> dcValues = new HashMap<String, Double>();
-    	
-        Characterizer dc = new Statistical();
-        dcValues.putAll( dc.characterize(data) );
+		for( Characterizer dc : allCharacterizers ) {
+			dcValues.putAll(dc.characterize(data));
+		}
 
-        dc = new AttributeCount();
-        dcValues.putAll( dc.characterize(data) );
-
-        dc = new AttributeType();
-        dcValues.putAll( dc.characterize(data) );
-
-        dc = new ClassAtt();
-        dcValues.putAll( dc.characterize(data) );
-
-        dc = new DefaultAccuracy();
-        dcValues.putAll( dc.characterize(data) );
-
-        dc = new IncompleteInstanceCount();
-        dcValues.putAll( dc.characterize(data) );
-
-        dc = new InstanceCount();
-        dcValues.putAll( dc.characterize(data) );
-
-        dc = new MissingValues();
-        dcValues.putAll( dc.characterize(data) );
-
-        dc = new NominalAttDistinctValues();
-        dcValues.putAll( dc.characterize(data) );
-
-        dc = new AttributeEntropy();
-        dcValues.putAll( dc.characterize(data) );
-
-        dc = new SimpleLandmarkers();
-        dcValues.putAll( dc.characterize(data) );
-
-        dc = new J48BasedLandmarker();
-        dcValues.putAll( dc.characterize(data) );
-
-        dc = new REPTreeBasedLandmarker();
-        dcValues.putAll( dc.characterize(data) );
-
-        dc = new RandomTreeBasedLandmarker();
-        dcValues.putAll( dc.characterize(data) );
-        
-        return dcValues;
-    }
+		return dcValues;
+	}
 }
