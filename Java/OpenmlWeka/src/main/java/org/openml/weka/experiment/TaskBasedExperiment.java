@@ -44,10 +44,8 @@ public class TaskBasedExperiment extends Experiment {
 
 	/** The task currently being used */
 	protected Task m_CurrentTask;
-
-	public TaskBasedExperiment() {
-
-	}
+	
+	protected final ApiConnector apiconnector;
 
 	public TaskBasedExperiment(Experiment exp) {
 		this.m_ResultListener = exp.getResultListener();
@@ -61,6 +59,13 @@ public class TaskBasedExperiment extends Experiment {
 		// this.m_AdditionalMeasures =
 		// this.m_ClassFirst = exp.classFirst(flag)
 		this.m_AdvanceDataSetFirst = exp.getAdvanceDataSetFirst();
+		
+		Config openmlconfig = new Config();
+		if( openmlconfig.getServer() != null ) {
+			apiconnector = new ApiConnector( openmlconfig.getServer() );
+		} else { 
+			apiconnector = new ApiConnector();
+		}
 	}
 
 	public void setMode(boolean datasetBasedExperiment) {
@@ -157,7 +162,7 @@ public class TaskBasedExperiment extends Experiment {
 
 				Data_set ds = TaskInformation.getSourceData(m_CurrentTask);
 				DataSetDescription dsd = TaskInformation.getSourceData(
-						m_CurrentTask).getDataSetDescription();
+						m_CurrentTask).getDataSetDescription(apiconnector);
 				Instances instDataset = new Instances(new FileReader(
 						dsd.getDataset()));
 
@@ -260,7 +265,7 @@ public class TaskBasedExperiment extends Experiment {
 		String[] classifierOptions = Utils.partitionOptions(options);
 
 		DefaultListModel<Task> tasks = new DefaultListModel<Task>();
-		tasks.add(0, ApiConnector.openmlTasksSearch(task_id));
+		tasks.add(0, apiconnector.openmlTasksSearch(task_id));
 		setTasks(tasks);
 
 		Classifier[] cArray = new Classifier[1];
@@ -271,13 +276,20 @@ public class TaskBasedExperiment extends Experiment {
 
 	public static void main(String[] args) {
 		try {
-			TaskBasedExperiment exp = new TaskBasedExperiment();
-			ResultProducer rp = new TaskResultProducer();
-			TaskResultListener rl = new TaskResultListener(new SciMark());
+			Config openmlconfig = new Config();
+			ApiConnector apiconnector;
+			if( openmlconfig.getServer() != null ) {
+				apiconnector = new ApiConnector( openmlconfig.getServer() );
+			} else { 
+				apiconnector = new ApiConnector();
+			}
+			
+			TaskBasedExperiment exp = new TaskBasedExperiment( new Experiment() );
+			ResultProducer rp = new TaskResultProducer(apiconnector);
+			TaskResultListener rl = new TaskResultListener(apiconnector,new SciMark());
 			SplitEvaluator se = new TaskSplitEvaluator();
 			Classifier sec = null;
 
-			Config openmlconfig = new Config();
 
 			if (rl.acceptCredentials(openmlconfig.getUsername(),openmlconfig.getPassword()) == false) {
 				throw new Exception("Please provide correct credentials in a config file (openml.conf)");

@@ -59,6 +59,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileFilter;
 
 import org.openml.apiconnector.algorithms.SciMark;
+import org.openml.apiconnector.io.ApiConnector;
 import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.settings.Constants;
 import org.openml.weka.experiment.TaskBasedExperiment;
@@ -243,6 +244,8 @@ public class SimpleSetupPanel extends JPanel {
 	 */
 	protected PropertyChangeSupport m_Support = new PropertyChangeSupport(this);
 
+	protected ApiConnector apiconnector;
+	
 	/**
 	 * Creates the setup panel with the supplied initial experiment.
 	 * 
@@ -261,6 +264,11 @@ public class SimpleSetupPanel extends JPanel {
 	public SimpleSetupPanel() {
 		// TODO: OpenML addition:
 		openmlconfig = new Config();
+		if( openmlconfig.getServer() != null ) {
+			apiconnector = new ApiConnector( openmlconfig.getServer() );
+		} else { 
+			apiconnector = new ApiConnector();
+		} 
 
 		// everything disabled on startup
 		m_ResultsDestinationCBox.setEnabled(false);
@@ -1063,7 +1071,7 @@ public class SimpleSetupPanel extends JPanel {
 				}
 				m_Exp.setResultListener(crl);
 			} else if (m_ResultsDestinationCBox.getSelectedItem() == DEST_OPENML_TEXT) {
-				TaskResultListener trl = new TaskResultListener(new SciMark());
+				TaskResultListener trl = new TaskResultListener(apiconnector, new SciMark());
 				try {
 					File f = File.createTempFile("WekaOpenMLResults",
 							Constants.DATASET_FORMAT);
@@ -1232,7 +1240,7 @@ public class SimpleSetupPanel extends JPanel {
 			m_Exp.setResultProducer(cvrp);
 			m_Exp.setPropertyPath(propertyPath);
 		} else if (m_ExperimentTypeCBox.getSelectedItem() == TYPE_OPENML_TASK_TEXT) {
-			TaskResultProducer trp = new TaskResultProducer();
+			TaskResultProducer trp = new TaskResultProducer(apiconnector);
 
 			PropertyNode[] propertyPath = new PropertyNode[2];
 			try {

@@ -7,6 +7,7 @@ import java.util.Map;
 import org.apache.commons.lang3.ArrayUtils;
 import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.algorithms.TaskInformation;
+import org.openml.apiconnector.io.ApiConnector;
 import org.openml.apiconnector.models.Metric;
 import org.openml.apiconnector.models.MetricScore;
 import org.openml.apiconnector.xml.DataSetDescription;
@@ -43,9 +44,12 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 	/** Current task information string **/
 	protected String currentTaskRepresentation = "";
 
-	public TaskResultProducer() {
+	protected ApiConnector apiconnector;
+	
+	public TaskResultProducer(ApiConnector apiconnector) {
 		super();
-		m_SplitEvaluator = new TaskSplitEvaluator();
+		this.m_SplitEvaluator = new TaskSplitEvaluator();
+		this.apiconnector = apiconnector;
 	}
 
 	public void setTask(Task t) throws Exception {
@@ -54,14 +58,14 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 		Data_set ds = TaskInformation.getSourceData(m_Task);
 		Estimation_procedure ep = TaskInformation.getEstimationProcedure(m_Task);
 
-		DataSetDescription dsd = ds.getDataSetDescription();
+		DataSetDescription dsd = ds.getDataSetDescription(apiconnector);
 		m_Instances = new Instances( new FileReader( dsd.getDataset() ) );
 		
 		InstancesHelper.setTargetAttribute(m_Instances, ds.getTarget_feature());
 		
 		m_Splits = new Instances( new FileReader( ep.getDataSplits() ) );
 		
-		currentTaskRepresentation = "Task " + m_Task.getTask_id() + " (" + TaskInformation.getSourceData(m_Task).getDataSetDescription().getName() + ")";
+		currentTaskRepresentation = "Task " + m_Task.getTask_id() + " (" + TaskInformation.getSourceData(m_Task).getDataSetDescription(apiconnector).getName() + ")";
 
 		m_NumFolds = 1;
 		m_NumSamples = 1;

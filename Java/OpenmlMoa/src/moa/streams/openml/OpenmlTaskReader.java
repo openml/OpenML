@@ -9,6 +9,7 @@ import java.io.Reader;
 
 import org.openml.apiconnector.algorithms.TaskInformation;
 import org.openml.apiconnector.io.ApiConnector;
+import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.DataSetDescription;
 import org.openml.apiconnector.xml.Task;
 
@@ -56,11 +57,19 @@ public class OpenmlTaskReader extends AbstractOptionHandler implements InstanceS
     protected InputStreamProgressMonitor fileProgressMonitor;
     
     protected Task openmlTask;
-
-    public OpenmlTaskReader() {
-    }
+    
+    protected Config config;
+    
+    protected ApiConnector apiconnector;
 
     public OpenmlTaskReader( int taskId ) {
+    	config = new Config();
+		if( config.getServer() != null ) {
+			apiconnector = new ApiConnector( config.getServer() );
+		} else { 
+			apiconnector = new ApiConnector();
+		}
+		
         this.openmlTaskIdOption.setValue(taskId);
         restart();
     }
@@ -109,13 +118,13 @@ public class OpenmlTaskReader extends AbstractOptionHandler implements InstanceS
                 this.fileReader.close();
             }
             if(this.openmlTask == null) {
-            	this.openmlTask = ApiConnector.openmlTasksSearch(this.openmlTaskIdOption.getValue());
+            	this.openmlTask = apiconnector.openmlTasksSearch(this.openmlTaskIdOption.getValue());
             }
             if( this.openmlTask.getTask_type().equals("Supervised Data Stream Classification") == false ) {
             	throw new RuntimeException("Can only perform tasks of the type \"Supervised Data Stream Classification\".");
             }
             
-            DataSetDescription dsd = TaskInformation.getSourceData(this.openmlTask).getDataSetDescription();
+            DataSetDescription dsd = TaskInformation.getSourceData(this.openmlTask).getDataSetDescription( apiconnector );
             String classname = TaskInformation.getSourceData(this.openmlTask).getTarget_feature();
             
             InputStream fileStream = new FileInputStream( dsd.getDataset() );

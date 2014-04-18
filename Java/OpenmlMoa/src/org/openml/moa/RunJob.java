@@ -9,15 +9,27 @@ import weka.core.Utils;
 import moa.DoTask;
 
 public class RunJob {
-
+	
+	private static ApiConnector apiconnector;
+	
 	public static void main( String[] args ) throws Exception {
 		
 		int n;
 		int ttid;
 		Config c = new Config();
 		
-		if( ApiSessionHash.checkCredentials(c.getUsername(), c.getPassword() ) == false ) {
-			throw new Exception("Username/password incorrect");}
+		if( c.getServer() != null ) {
+			apiconnector = new ApiConnector( c.getServer() );
+		} else { 
+			apiconnector = new ApiConnector();
+		}
+		
+		ApiSessionHash ash = new ApiSessionHash(apiconnector);
+		
+		
+		if( ash.checkCredentials(c.getUsername(), c.getPassword() ) == false ) {
+			throw new Exception("Username/password incorrect");
+		}
 		
 		String strN = Utils.getOption('N', args);
 		String strTtid = Utils.getOption('T', args);
@@ -32,7 +44,7 @@ public class RunJob {
 	
 	public static void doTask(int ttid) {
 		try {
-			Job j = ApiConnector.openmlRunGetjob( "Moa_2014.03", "" + ttid );
+			Job j = apiconnector.openmlRunGetjob( "Moa_2014.03", "" + ttid );
 			
 			System.err.println( "task: " + j.getTask_id() + "; learner: " + j.getLearner() );
 			

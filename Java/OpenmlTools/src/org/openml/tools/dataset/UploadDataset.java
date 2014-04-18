@@ -19,7 +19,9 @@ public class UploadDataset {
 
 	private static final XStream xstream = XstreamXmlMapping.getInstance();
 	private static final ArffLoader loader = new ArffLoader();
-	private static final String directory = "/Users/jan/Desktop/instancebased/";
+	private static final String directory = "/Users/jan/Desktop/test/";
+	
+	private final ApiConnector apiconnector;
 	
 	public static void main( String[] args ) throws Exception {
 		
@@ -27,10 +29,15 @@ public class UploadDataset {
 	}
 	
 	public UploadDataset( String directory ) throws Exception {
-		Config c = new Config();
+		Config config = new Config();
+		if( config.getServer() != null ) {
+			apiconnector = new ApiConnector( config.getServer() );
+		} else { 
+			apiconnector = new ApiConnector();
+		}
 		
-		ApiSessionHash ash = new ApiSessionHash();
-		ash.set( c.getUsername(), c.getPassword() );
+		ApiSessionHash ash = new ApiSessionHash( apiconnector );
+		ash.set( config.getUsername(), config.getPassword() );
 		
 		File dir = new File( directory );
 		
@@ -43,13 +50,14 @@ public class UploadDataset {
 					
 					upload(	f, ash );
 				} catch( Exception e ) {
+					e.printStackTrace();
 					System.out.println( "Failed. " );
 				}
 			}
 		}
 	}
 	
-	private static void upload( File datasetFile, ApiSessionHash ash ) throws Exception {
+	private void upload( File datasetFile, ApiSessionHash ash ) throws Exception {
 		loader.setFile( datasetFile );
 		Instances dataset = new Instances( loader.getStructure() );
 		
@@ -64,7 +72,7 @@ public class UploadDataset {
 		
 		File desc = Conversion.stringToTempFile( description_xml, "description", "xml");
 		
-		UploadDataSet ud = ApiConnector.openmlDataUpload(desc, datasetFile, ash.getSessionHash() );
+		UploadDataSet ud = apiconnector.openmlDataUpload(desc, datasetFile, ash.getSessionHash() );
 		System.out.println( "Uploaded " + name + " with id " + xstream.toXML( ud.getId() ) );
 	}
 }

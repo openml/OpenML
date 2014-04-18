@@ -11,6 +11,7 @@ import org.openml.moa.ResultListener;
 import org.openml.moa.algorithm.InstancesHelper;
 import org.openml.apiconnector.models.Metric;
 import org.openml.apiconnector.models.MetricScore;
+import org.openml.apiconnector.io.ApiConnector;
 import org.openml.apiconnector.io.ApiSessionHash;
 import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.Task;
@@ -64,6 +65,8 @@ public class OpenmlDataStreamClassification extends MainTask {
 	
 	private InstanceStream stream;
 	private ResultListener resultListener;
+	private Config config;
+	private ApiConnector apiconnector;
 
 	@Override
 	public Class<?> getTaskResultType() {
@@ -72,16 +75,22 @@ public class OpenmlDataStreamClassification extends MainTask {
 
 	@Override
 	protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
-		Config c;
-		
 		try {
-			c = new Config();
+			config = new Config();
 		} catch (Exception e) { 
 			throw new RuntimeException("Error loading config file openml.conf. Please check whether it exists. " + e.getMessage() );
 		}
 		
+		if( config.getServer() != null ) {
+			apiconnector = new ApiConnector( config.getServer() );
+		} else { 
+			apiconnector = new ApiConnector();
+		} 
+		
+		ApiSessionHash ash = new ApiSessionHash( apiconnector );
+		
 		// check credentials...
-		if( ApiSessionHash.checkCredentials(c.getUsername(), c.getPassword()) == false ) {
+		if( ash.checkCredentials(config.getUsername(), config.getPassword()) == false ) {
 			throw new RuntimeException("Credentials could not be verified. ");
 		}
 		
@@ -93,9 +102,8 @@ public class OpenmlDataStreamClassification extends MainTask {
 		Task task = ((OpenmlTaskReader)stream).getTask();
 		
 		try {
-			ApiSessionHash ash = new ApiSessionHash();
-			ash.set( c.getUsername(), c.getPassword() );
-			resultListener = new ResultListener(task, ash );
+			ash.set( config.getUsername(), config.getPassword() );
+			resultListener = new ResultListener(task, apiconnector, ash);
 		} catch ( Exception e )  {
 			throw new RuntimeException("Error initializing ResultListener. Please check server/username/password in openml.conf. " + e.getMessage() );
 		}
@@ -199,19 +207,17 @@ public class OpenmlDataStreamClassification extends MainTask {
 			evaluatorResults.put( m.getName(), m.getValue() );
 		}
 		
-		System.out.println( evaluatorResults );
-		
+		Map<Metric, MetricScore> m = new HashMap<Metric, MetricScore>();
+		m.put( new Metric("ram_hours", "openml.userdefined.ram_hours(1.0)", null), new MetricScore(RAMHours));
+		m.put( new Metric("run_cpu_time", "openml.evaluation.run_cpu_time(1.0)", null), 
+			new MetricScore( TimingUtils.nanoTimeToSeconds(evaluateEndTime - evaluateStartTime) ) );
+		// TODO! Keys "Kappa Statistic (percent)" and "classifications correct (percent)" are dangerous to use in this way. 
+		m.put( new Metric("predictive_accuracy", "openml.evaluation.predictive_accuracy(1.0)", null), 
+			new MetricScore( evaluatorResults.get("classifications correct (percent)") / 100 ) ); // division 100 for percentages to pred_acc
+		m.put( new Metric("kappa", "openml.evaluation.kappa(1.0)", null), 
+			new MetricScore( ( evaluatorResults.get("Kappa Statistic (percent)") / 100 ) ) ); // division 100 for percentages to pred_acc
+
 		try { 
-			Map<Metric, MetricScore> m = new HashMap<Metric, MetricScore>();
-			m.put( new Metric("ram_hours", "openml.userdefined.ram_hours(1.0)", null), new MetricScore(RAMHours));
-			m.put( new Metric("run_cpu_time", "openml.evaluation.run_cpu_time(1.0)", null), 
-					new MetricScore( TimingUtils.nanoTimeToSeconds(evaluateEndTime - evaluateStartTime) ) );
-			// TODO! Keys "Kappa Statistic (percent)" and "classifications correct (percent)" are dangerous to use in this way. 
-			m.put( new Metric("predictive_accuracy", "openml.evaluation.predictive_accuracy(1.0)", null), 
-					new MetricScore( evaluatorResults.get("classifications correct (percent)") / 100 ) ); // division 100 for percentages to pred_acc
-			m.put( new Metric("kappa", "openml.evaluation.kappa(1.0)", null), 
-					new MetricScore( ( evaluatorResults.get("Kappa Statistic (percent)") / 100 ) ) ); // division 100 for percentages to pred_acc
-			
 			resultListener.sendToOpenML( learner, m ); 
 		} catch( Exception e ) {
 			throw new RuntimeException("Error uploading result to OpenML: " + e.getMessage() );
@@ -219,5 +225,4 @@ public class OpenmlDataStreamClassification extends MainTask {
 		
 		return learningCurve;
 	}
-
 }

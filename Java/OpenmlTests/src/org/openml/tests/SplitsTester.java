@@ -22,21 +22,21 @@ public class SplitsTester {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void testLearningCurves() {
-		
+		ApiConnector apiconnector = new ApiConnector();
 		for( int i = 1; i <= 10; ++i ) {
 			try {
-				Task t = ApiConnector.openmlTasksSearch( i );
+				Task t = apiconnector.openmlTasksSearch( i );
 				if( t.getTask_type().equals("Learning Curve") ) {
 					System.out.println( "Task " + t.getTask_id() );
 					
 					Estimation_procedure ep = TaskInformation.getEstimationProcedure(t);
 					Instances splits = new Instances( new FileReader( ep.getDataSplits() ) );
 
-					DataSetDescription dsd = TaskInformation.getSourceData(t).getDataSetDescription();
+					DataSetDescription dsd = TaskInformation.getSourceData(t).getDataSetDescription(apiconnector);
 					Instances data = new Instances( new FileReader( dsd.getDataset() ) );
 					
 					
-					String[] classValues = TaskInformation.getClassNames(t);
+					String[] classValues = TaskInformation.getClassNames(apiconnector, t);
 					data.setClass( data.attribute( TaskInformation.getSourceData(t).getTarget_feature() ) );
 					
 					int repeats = TaskInformation.getNumberOfRepeats(t);

@@ -19,6 +19,14 @@ public class RunJob {
 		int n;
 		int ttid;
 		
+		Config config = new Config();
+		ApiConnector apiconnector;
+		if( config.getServer() != null ) {
+			apiconnector = new ApiConnector( config.getServer() );
+		} else { 
+			apiconnector = new ApiConnector();
+		}
+		
 		String strN = Utils.getOption('N', args);
 		String strTtid = Utils.getOption('T', args);
 		
@@ -26,18 +34,17 @@ public class RunJob {
 		ttid = ( strTtid.equals("") ) ? 1 : Integer.parseInt(strTtid);
 		
 		for( int i = 0; i < n; ++i ) {
-			doTask(ttid);
+			doTask(ttid, config, apiconnector);
 		}
 	}
 	
-	public static void doTask( int ttid ) {
+	public static void doTask( int ttid, Config config, ApiConnector apiconnector ) {
 		try{ 
-			Config c = new Config();
-			if( ApiSessionHash.checkCredentials( c.getUsername(), c.getPassword() ) == false ) {
+			if( new ApiSessionHash( apiconnector ).checkCredentials( config.getUsername(), config.getPassword() ) == false ) {
 				throw new Exception("Authentication failed. ");
 			}
 			
-			Job j = ApiConnector.openmlRunGetjob( "Weka_" + Version.VERSION, "" + ttid );
+			Job j = apiconnector.openmlRunGetjob( "Weka_" + Version.VERSION, "" + ttid );
 			
 			System.err.println( "[" + DateParser.humanReadable.format( new Date() ) + "] Task: " + j.getTask_id() + "; learner: " + j.getLearner() );
 			

@@ -14,6 +14,7 @@ import java.util.Arrays;
 import org.apache.commons.lang3.ArrayUtils;
 import org.openml.apiconnector.algorithms.TaskInformation;
 import org.openml.apiconnector.io.ApiConnector;
+import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.Task;
 
 import weka.classifiers.Classifier;
@@ -44,19 +45,29 @@ public class GeneratePredictions {
 	
 	private final ArrayList<Integer>[][][] sets;
 	
+	private final ApiConnector apiconnector;
+	
 	public static void main( String[] args ) throws Exception {
-		Task t = ApiConnector.openmlTasksSearch( 1 );
-		
-		new GeneratePredictions( 
-			TaskInformation.getSourceData( t ).getDataSetDescription().getUrl(),
-			TaskInformation.getEstimationProcedure( t ).getData_splits_url(),
-			TaskInformation.getSourceData( t ).getTarget_feature(),
-			TaskInformation.getNumberOfRepeats( t ),
-			TaskInformation.getNumberOfFolds( t ) );
+		new GeneratePredictions( 1 );
 	}
 	
 	@SuppressWarnings("unchecked")
-	public GeneratePredictions( String datasetPath, String splitsPath, String classAttribute, int repeats, int folds ) throws Exception {
+	public GeneratePredictions( Integer task_id ) throws Exception {
+		Config config = new Config();
+		if( config.getServer() != null ) {
+			apiconnector = new ApiConnector( config.getServer() );
+		} else { 
+			apiconnector = new ApiConnector();
+		} 
+		
+		Task t = apiconnector.openmlTasksSearch( task_id );
+		
+		String datasetPath = TaskInformation.getSourceData( t ).getDataSetDescription( apiconnector ).getUrl();
+		String splitsPath = TaskInformation.getEstimationProcedure( t ).getData_splits_url();
+		String classAttribute = TaskInformation.getSourceData( t ).getTarget_feature();
+		Integer repeats = TaskInformation.getNumberOfRepeats( t );
+		Integer folds = TaskInformation.getNumberOfFolds( t );
+		
 		int nrOfPredictions = 0;
 		boolean regression;
 		

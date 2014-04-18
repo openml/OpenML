@@ -17,13 +17,18 @@
  */
 package moa.classifiers.lazy;
 
+import java.io.StringReader;
+
 import moa.classifiers.AbstractClassifier;
-import moa.options.*;
-import moa.core.*;
-import weka.core.*;
-import weka.core.neighboursearch.*;
-import java.io.*;
-import java.util.ArrayList;
+import moa.core.InstancesHeader;
+import moa.core.Measurement;
+import moa.options.IntOption;
+import moa.options.MultiChoiceOption;
+import weka.core.Instance;
+import weka.core.Instances;
+import weka.core.neighboursearch.KDTree;
+import weka.core.neighboursearch.LinearNNSearch;
+import weka.core.neighboursearch.NearestNeighbourSearch;
 
 /**
  * k Nearest Neighbor.<p>

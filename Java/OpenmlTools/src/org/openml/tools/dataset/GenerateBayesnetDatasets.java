@@ -34,11 +34,13 @@ import com.thoughtworks.xstream.XStream;
 public class GenerateBayesnetDatasets {
 	
 	private static final XStream xstream = XstreamXmlMapping.getInstance();
-	private static final ApiSessionHash ash = new ApiSessionHash();
 	private static final int MIN_ATTRIBUTES = 10;
 	private static final int MAX_ATTRIBUTES = 100;
 	private static final int TARGET_NUM_INSTANCES = 1000000;
 	private static final boolean SEND_RESULT = true;
+
+	private final ApiConnector apiconnector;
+	private final ApiSessionHash ash;
 	
 	private static final File outputDirectory = new File( "/Users/jan/Desktop/BayesNetTest/" );
 	
@@ -49,12 +51,18 @@ public class GenerateBayesnetDatasets {
 	}
 	
 	public GenerateBayesnetDatasets() throws Exception {
-		Config c = new Config();
-		ash.set(c.getUsername(), c.getPassword());
+		Config config = new Config();
+		if( config.getServer() != null ) {
+			this.apiconnector = new ApiConnector( config.getServer() );
+		} else { 
+			this.apiconnector = new ApiConnector();
+		} 
+		this.ash = new ApiSessionHash( apiconnector );
+		this.ash.set(config.getUsername(), config.getPassword());
 		
 		for( int iDatasets = 16; iDatasets <= 62; ++iDatasets ) {
 			Conversion.log("INFO", "Download Dataset", "Downloading dataset " + iDatasets);
-			DataSetDescription dsd = ApiConnector.openmlDataDescription( iDatasets );
+			DataSetDescription dsd = apiconnector.openmlDataDescription( iDatasets );
 			
 			Instances dataset = new Instances( new FileReader( dsd.getDataset() ) );
 			if( dataset.numAttributes() < MIN_ATTRIBUTES || dataset.numAttributes() > MAX_ATTRIBUTES ) {
@@ -167,9 +175,9 @@ public class GenerateBayesnetDatasets {
 		String outputDatasetString = xstream.toXML( outputDatasetDescription );
 		
 		File outputDataset = Conversion.stringToTempFile( outputDatasetString, datasetname, Constants.DATASET_FORMAT );
-		UploadDataSet ud = ApiConnector.openmlDataUpload( outputDataset, generatedDataset, ash.getSessionHash() );
+		UploadDataSet ud = apiconnector.openmlDataUpload( outputDataset, generatedDataset, ash.getSessionHash() );
 		
-		System.out.println( xstream.toXML( ApiConnector.openmlDataDescription( ud.getId() ) ) );
+		System.out.println( xstream.toXML( apiconnector.openmlDataDescription( ud.getId() ) ) );
 	}
 	
 	private static String doubleArrayToString( double[] array, char delim, DecimalFormat df ) {

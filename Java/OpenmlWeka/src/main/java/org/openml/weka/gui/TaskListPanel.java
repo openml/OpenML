@@ -13,6 +13,7 @@ import javax.swing.event.ListSelectionEvent;
 
 import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.io.ApiConnector;
+import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.Task;
 import org.openml.weka.experiment.TaskBasedExperiment;
 
@@ -34,6 +35,8 @@ public class TaskListPanel extends DatasetListPanel {
 	protected Experiment m_Exp;
 
 	private boolean datasetBased = true;
+	
+	private final ApiConnector apiconnector;
 
 	public TaskListPanel(Experiment exp) {
 		this();
@@ -42,6 +45,13 @@ public class TaskListPanel extends DatasetListPanel {
 
 	public TaskListPanel() {
 		super();
+		
+		Config config = new Config();
+		if( config.getServer() != null ) {
+			apiconnector = new ApiConnector( config.getServer() );
+		} else { 
+			apiconnector = new ApiConnector();
+		}
 	}
 
 	/**
@@ -267,8 +277,7 @@ public class TaskListPanel extends DatasetListPanel {
 			for (int i = 0; i < input_task_ids.length; ++i) {
 				if (getTasksControlled(m_Exp).contains(new Task(input_task_ids[i])) == false) {
 					try {
-						Task t = ApiConnector
-								.openmlTasksSearch(input_task_ids[i]);
+						Task t = apiconnector.openmlTasksSearch(input_task_ids[i]);
 						// download all data necessary for task execution
 
 						if( m_Exp instanceof TaskBasedExperiment ) {

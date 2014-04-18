@@ -39,6 +39,7 @@ public class ResultListener {
 	private final DecimalFormat df; 
 
 	private final ApiSessionHash ash;
+	private final ApiConnector apiconnector;
 	
 	private int att_index_row_id = -1;
 	private int att_index_confidence = -1;
@@ -46,9 +47,10 @@ public class ResultListener {
 	private int att_index_correct = -1;
 	private ArrayList<String> classes = new ArrayList<String>();
 	
-	public ResultListener( Task task, ApiSessionHash ash ) throws Exception {
+	public ResultListener( Task task, ApiConnector apiconnector, ApiSessionHash ash ) throws Exception {
 		this.ash = ash;
 		this.task = task;
+		this.apiconnector = apiconnector;
 		
 		df = new DecimalFormat(".######");
 		header = createInstanceHeader( task );
@@ -61,8 +63,8 @@ public class ResultListener {
 		bw.close();
 		
 		Implementation implementation = MoaAlgorithm.create(classifier);
-		int implementation_id = MoaAlgorithm.getImplementationId(implementation, classifier, ash.getSessionHash());
-		implementation = ApiConnector.openmlImplementationGet( implementation_id ); // updated
+		int implementation_id = MoaAlgorithm.getImplementationId(implementation, classifier, apiconnector, ash.getSessionHash());
+		implementation = apiconnector.openmlImplementationGet( implementation_id ); // updated
 		
 		ArrayList<Parameter_setting> ps = MoaAlgorithm.getOptions( implementation, classifier.getOptions().getOptionArray() );
 		
@@ -78,7 +80,7 @@ public class ResultListener {
 		Map<String, File> output_files = new HashMap<String, File>();
 		output_files.put( "predictions", results );
 		
-		ApiConnector.openmlRunUpload(descriptionXML, output_files, ash.getSessionHash() );
+		apiconnector.openmlRunUpload(descriptionXML, output_files, ash.getSessionHash() );
 		
 		return true;
 	}
@@ -111,12 +113,12 @@ public class ResultListener {
 		ArrayList<Attribute> header = new ArrayList<Attribute>();
 		Feature[] features = TaskInformation.getPredictions(t).getFeatures();
 		// TODO: FIXME?!
-		classes = new ArrayList<String>( Arrays.asList( TaskInformation.getClassNames(t) ) );
+		classes = new ArrayList<String>( Arrays.asList( TaskInformation.getClassNames(apiconnector,t) ) );
 		for( int i = 0; i < features.length; i++ ) {
 			Feature f = features[i];
 			if( f.getName().equals("confidence.classname") ) {
 				att_index_confidence = i;
-				for (String s : TaskInformation.getClassNames(t)) {
+				for (String s : TaskInformation.getClassNames(apiconnector,t)) {
 					header.add(new Attribute("confidence." + s));
 				}
 			} else if (f.getName().equals("prediction")) {

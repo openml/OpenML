@@ -55,7 +55,7 @@ import weka.core.Instances;
 import weka.core.converters.ArffLoader;
 
 public class FantailConnector {
-
+	
 	private static final XStream xstream = XstreamXmlMapping.getInstance();
 	private static final Characterizer[] allCharacterizers = {
 			new Statistical(), new AttributeCount(), new AttributeType(),
@@ -68,12 +68,20 @@ public class FantailConnector {
 	};
 
 	public static void extractFeatures(Integer did, String datasetClass,
-			Config c) throws Exception {
+			Config config) throws Exception {
 		List<String> prevCalcQualities;
-		DataSetDescription dsd = ApiConnector.openmlDataDescription(did);
+		ApiConnector apiconnector;
+		
+		if( config.getServer() != null ) {
+			apiconnector = new ApiConnector( config.getServer() );
+		} else { 
+			apiconnector = new ApiConnector();
+		} 
+		
+		DataSetDescription dsd = apiconnector.openmlDataDescription(did);
 		
 		try {
-			DataQuality apiQualities = ApiConnector.openmlDataQuality(did);
+			DataQuality apiQualities = apiconnector.openmlDataQuality(did);
 			prevCalcQualities = Arrays.asList( apiQualities.getQualityNames() );
 		} catch( Exception e ) {
 			// no qualities calculated yet. We might want to avoid catching this error
@@ -91,10 +99,10 @@ public class FantailConnector {
 
 		DataQuality dq = new DataQuality(did, qualities);
 		String strQualities = xstream.toXML(dq);
-		ApiSessionHash ash = new ApiSessionHash();
-		ash.set(c.getUsername(), c.getPassword());
+		ApiSessionHash ash = new ApiSessionHash( apiconnector );
+		ash.set(config.getUsername(), config.getPassword());
 
-		ApiConnector.openmlDataQualityUpload(
+		apiconnector.openmlDataQualityUpload(
 				Conversion.stringToTempFile(strQualities, "qualities_did_"
 						+ did, "xml"), ash.getSessionHash());
 

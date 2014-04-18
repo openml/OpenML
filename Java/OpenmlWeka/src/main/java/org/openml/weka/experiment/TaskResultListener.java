@@ -55,23 +55,26 @@ public class TaskResultListener extends InstancesResultListener {
 	
 	private final SciMark benchmarker;
 
+	private final ApiConnector apiconnector;
+	
 	/** Credentials for sending results to server */
 	private ApiSessionHash ash;
 
 	/** boolean checking whether correct credentials have been stored */
 	private boolean credentials = false;
 
-	public TaskResultListener( SciMark benchmarker ) {
+	public TaskResultListener( ApiConnector apiconnector, SciMark benchmarker ) {
 		super();
 		
 		this.benchmarker = benchmarker;
+		this.apiconnector = apiconnector;
 		currentlyCollecting = new HashMap<String, OpenmlExecutedTask>();
 		tasksWithErrors = new ArrayList<String>();
 		ash = null;
 	}
 
 	public boolean acceptCredentials(String username, String password) {
-		ash = new ApiSessionHash();
+		ash = new ApiSessionHash( apiconnector );
 		credentials = ash.set(username, password);
 		return credentials;
 	}
@@ -89,7 +92,7 @@ public class TaskResultListener extends InstancesResultListener {
 		String key = t.getTask_id() + "_" + implementationId + "_" + options;
 		if (currentlyCollecting.containsKey(key) == false) {
 			currentlyCollecting.put(key, new OpenmlExecutedTask(t,
-					classifier, null, options));
+					classifier, null, options, apiconnector));
 		}
 		OpenmlExecutedTask oet = currentlyCollecting.get(key);
 		oet.addBatch(fold, repeat, sample, rowids, predictions);
@@ -114,7 +117,7 @@ public class TaskResultListener extends InstancesResultListener {
 		if (tasksWithErrors.contains(key) == false) {
 			tasksWithErrors.add(key);
 			sendTaskWithError(new OpenmlExecutedTask(t, classifier,
-					error_message, options));
+					error_message, options, apiconnector));
 		}
 	}
 
@@ -137,9 +140,9 @@ public class TaskResultListener extends InstancesResultListener {
 		
 		output_files.put("predictions", tmpPredictionsFile);
 		try { 
-			UploadRun ur = ApiConnector.openmlRunUpload(tmpDescriptionFile, output_files, ash.getSessionHash());
+			UploadRun ur = apiconnector.openmlRunUpload(tmpDescriptionFile, output_files, ash.getSessionHash());
 			Conversion.log( "INFO", "Upload Run", "Run was uploaded with rid " + ur.getRun_id() + 
-					". Obatainable at " + ApiConnector.getApiUrl() + "?f=openml.run.get&run_id=" + 
+					". Obatainable at " + apiconnector.getApiUrl() + "?f=openml.run.get&run_id=" + 
 					ur.getRun_id() );
 		} catch( ApiException ae ) {
 			ae.printStackTrace(); 
@@ -158,10 +161,10 @@ public class TaskResultListener extends InstancesResultListener {
 		tmpDescriptionFile = Conversion.stringToTempFile(
 				xstream.toXML(oet.getRun()), "weka_generated_run", Constants.DATASET_FORMAT);
 		try { 
-			UploadRun ur = ApiConnector.openmlRunUpload(tmpDescriptionFile, new HashMap<String, File>(), ash.getSessionHash());
+			UploadRun ur = apiconnector.openmlRunUpload(tmpDescriptionFile, new HashMap<String, File>(), ash.getSessionHash());
 			Conversion.log( "WARNING", "Upload Run", "Run was uploaded with rid " + ur.getRun_id() + 
 					". It includes an error message. Obtainable at " + 
-					ApiConnector.API_URL + ApiConnector.getApiUrl() +  "?f=openml.run.get&run_id=" + ur.getRun_id() );
+					apiconnector.getApiUrl() +  "?f=openml.run.get&run_id=" + ur.getRun_id() );
 		} catch( ApiException ae ) { 
 			ae.printStackTrace(); 
 			Conversion.log( "ERROR", "Upload Run", "Failed to upload run: " + ae.getMessage() );
@@ -188,8 +191,8 @@ public class TaskResultListener extends InstancesResultListener {
 		private int implementation_id;
 
 		public OpenmlExecutedTask(Task t, Classifier classifier,
-				String error_message, String options) throws Exception {
-			classnames = TaskInformation.getClassNames(t);
+				String error_message, String options, ApiConnector apiconnector ) throws Exception {
+			classnames = TaskInformation.getClassNames(apiconnector, t);
 			
 			int repeats = 1;
 			int folds = 1;
@@ -198,7 +201,7 @@ public class TaskResultListener extends InstancesResultListener {
 			try {folds = TaskInformation.getNumberOfFolds(t);} catch( Exception e ){};
 			try {samples = TaskInformation.getNumberOfSamples(t);} catch( Exception e ){};
 			try {
-				DataSetDescription dsd = TaskInformation.getSourceData(t).getDataSetDescription();
+				DataSetDescription dsd = TaskInformation.getSourceData(t).getDataSetDescription( apiconnector );
 				inputData = new Instances( new FileReader( dsd.getDataset() ) );
 				inputData.setClass( inputData.attribute(TaskInformation.getSourceData(t).getTarget_feature()) );
 				inputDataSet = true;
@@ -211,7 +214,7 @@ public class TaskResultListener extends InstancesResultListener {
 			ArrayList<Attribute> attInfo = new ArrayList<Attribute>();
 			for (Feature f : TaskInformation.getPredictions(t).getFeatures()) {
 				if (f.getName().equals("confidence.classname")) {
-					for (String s : TaskInformation.getClassNames(t)) {
+					for (String s : TaskInformation.getClassNames(apiconnector, t)) {
 						attInfo.add(new Attribute("confidence." + s));
 					}
 				} else if (f.getName().equals("prediction")) {
@@ -234,8 +237,8 @@ public class TaskResultListener extends InstancesResultListener {
 			
 			Implementation find = WekaAlgorithm.create( classifier.getClass().getName(), options );
 			
-			implementation_id = WekaAlgorithm.getImplementationId( find, classifier, ash.getSessionHash() );
-			Implementation implementation = ApiConnector.openmlImplementationGet( implementation_id );
+			implementation_id = WekaAlgorithm.getImplementationId( find, classifier, apiconnector, ash.getSessionHash() );
+			Implementation implementation = apiconnector.openmlImplementationGet( implementation_id );
 			
 			String setup_string = classifier.getClass().getName();
 			if(options.equals("") == false) setup_string += (" -- " + options);

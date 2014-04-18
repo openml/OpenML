@@ -25,10 +25,10 @@ import moa.options.WEKAClassOption;
 
 public class MoaAlgorithm {
 	
-	public static int getImplementationId( Implementation implementation, Classifier classifier, String hash ) throws Exception {
+	public static int getImplementationId( Implementation implementation, Classifier classifier, ApiConnector apiconnector, String hash ) throws Exception {
 		try {
 			// First ask OpenML whether this implementation already exists
-			ImplementationExists result = ApiConnector.openmlImplementationExists( implementation.getName(), implementation.getExternal_version() );
+			ImplementationExists result = apiconnector.openmlImplementationExists( implementation.getName(), implementation.getExternal_version() );
 			if(result.exists()) return result.getId();
 		} catch( Exception e ) { /* Suppress Exception since it is totally OK.*/ }
 		// It does not exist. Create it. 
@@ -39,7 +39,7 @@ public class MoaAlgorithm {
 		File binary = null;
 		try { source = getFile( classifier, "src/", "java" ); } catch(IOException e) {}
 		try { binary = getFile( classifier, "bin/", "class" ); } catch(IOException e) {}
-		UploadImplementation ui = ApiConnector.openmlImplementationUpload(implementationFile, binary, source, hash);
+		UploadImplementation ui = apiconnector.openmlImplementationUpload(implementationFile, binary, source, hash);
 		return ui.getId();
 	}
 	
