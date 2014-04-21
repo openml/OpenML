@@ -44,7 +44,7 @@ public class RunJob {
 				throw new Exception("Authentication failed. ");
 			}
 			
-			Job j = apiconnector.openmlRunGetjob( "Weka_" + Version.VERSION, "" + ttid );
+			Job j = apiconnector.openmlJobGet( "Weka_" + Version.VERSION, "" + ttid );
 			
 			System.err.println( "[" + DateParser.humanReadable.format( new Date() ) + "] Task: " + j.getTask_id() + "; learner: " + j.getLearner() );
 			

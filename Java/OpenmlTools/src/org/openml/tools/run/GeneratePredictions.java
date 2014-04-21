@@ -22,7 +22,6 @@ import weka.classifiers.functions.Logistic;
 import weka.classifiers.trees.J48;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
-import weka.core.FastVector;
 import weka.core.Instances;
 
 public class GeneratePredictions {
@@ -60,7 +59,7 @@ public class GeneratePredictions {
 			apiconnector = new ApiConnector();
 		} 
 		
-		Task t = apiconnector.openmlTasksSearch( task_id );
+		Task t = apiconnector.openmlTaskSearch( task_id );
 		
 		String datasetPath = TaskInformation.getSourceData( t ).getDataSetDescription( apiconnector ).getUrl();
 		String splitsPath = TaskInformation.getEstimationProcedure( t ).getData_splits_url();
@@ -157,21 +156,21 @@ public class GeneratePredictions {
 		return new InputStreamReader( urlConnection.getInputStream() );
 	}
 	
-	private static FastVector generateAttributes( String[] classes, boolean regression ) {
-		FastVector targetClasses = new FastVector();
+	private static ArrayList<Attribute> generateAttributes( String[] classes, boolean regression ) {
+		ArrayList<String> targetClasses = new ArrayList<String>();
 		for( int i = 0; i < classes.length; i++ )
-			targetClasses.addElement( classes[i] ); 
+			targetClasses.add( classes[i] ); 
 		
-		FastVector attributes = new FastVector();
-		attributes.addElement(new Attribute("repeat"));
-		attributes.addElement(new Attribute("fold"));
-		attributes.addElement(new Attribute("rowid"));
+		ArrayList<Attribute> attributes = new ArrayList<Attribute>();
+		attributes.add(new Attribute("repeat"));
+		attributes.add(new Attribute("fold"));
+		attributes.add(new Attribute("rowid"));
 		if( regression ) {
-			attributes.addElement(new Attribute("prediction"));
+			attributes.add(new Attribute("prediction"));
 		} else {
-			attributes.addElement(new Attribute("prediction",targetClasses));
+			attributes.add(new Attribute("prediction",targetClasses));
 			for( String c : classes ) {
-				attributes.addElement(new Attribute("confidence."+c));
+				attributes.add(new Attribute("confidence."+c));
 			}
 		}
 		return attributes;

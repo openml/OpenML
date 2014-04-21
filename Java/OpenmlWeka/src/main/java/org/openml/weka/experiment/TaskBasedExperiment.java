@@ -265,7 +265,7 @@ public class TaskBasedExperiment extends Experiment {
 		String[] classifierOptions = Utils.partitionOptions(options);
 
 		DefaultListModel<Task> tasks = new DefaultListModel<Task>();
-		tasks.add(0, apiconnector.openmlTasksSearch(task_id));
+		tasks.add(0, apiconnector.openmlTaskSearch(task_id));
 		setTasks(tasks);
 
 		Classifier[] cArray = new Classifier[1];

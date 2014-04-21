@@ -25,7 +25,7 @@ public class SplitsTester {
 		ApiConnector apiconnector = new ApiConnector();
 		for( int i = 1; i <= 10; ++i ) {
 			try {
-				Task t = apiconnector.openmlTasksSearch( i );
+				Task t = apiconnector.openmlTaskSearch( i );
 				if( t.getTask_type().equals("Learning Curve") ) {
 					System.out.println( "Task " + t.getTask_id() );
 					

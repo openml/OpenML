@@ -277,7 +277,7 @@ public class TaskListPanel extends DatasetListPanel {
 			for (int i = 0; i < input_task_ids.length; ++i) {
 				if (getTasksControlled(m_Exp).contains(new Task(input_task_ids[i])) == false) {
 					try {
-						Task t = apiconnector.openmlTasksSearch(input_task_ids[i]);
+						Task t = apiconnector.openmlTaskSearch(input_task_ids[i]);
 						// download all data necessary for task execution
 
 						if( m_Exp instanceof TaskBasedExperiment ) {
