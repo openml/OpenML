@@ -55,11 +55,9 @@ public class MoaAlgorithm {
 				if( o.getRequiredType().isAssignableFrom( Classifier.class ) ) {
 					try {
 						Classifier subclassifier = (Classifier) ClassOption.cliStringToObject( o.getValueAsCLIString(), o.getRequiredType(), null );
-						String classPath = subclassifier.getClass().getName();
-						String name = "moa." + classPath.substring( classPath.lastIndexOf('.') + 1 );
-						// retrieve sub settings:
-						Implementation subimplementation = i.getComponentByName( name );
-						result.addAll( getOptions( subimplementation, subclassifier.getOptions().getOptionArray() ) );
+						Implementation subimplementation = create( subclassifier );
+						result.addAll( getOptions( i.getComponentByName( subimplementation.getName() ), subclassifier.getOptions().getOptionArray() ) );
+						result.add( new Parameter_setting( i.getId(), option.getCLIChar() + "", subclassifier.getClass().getName() ) );
 					} catch (Exception e) {
 						result.add( new Parameter_setting(i.getId(), option.getCLIChar() + "", option.getValueAsCLIString() ) );
 						e.printStackTrace(); 
