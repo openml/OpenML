@@ -17,6 +17,7 @@ import org.openml.apiconnector.xml.Run.Parameter_setting;
 import org.openml.apiconnector.xml.UploadImplementation;
 import org.openml.apiconnector.xstream.XstreamXmlMapping;
 
+import weka.core.Utils;
 import moa.classifiers.Classifier;
 import moa.options.ClassOption;
 import moa.options.FlagOption;
@@ -66,7 +67,17 @@ public class MoaAlgorithm {
 				} else {
 					result.add( new Parameter_setting(i.getId(), option.getCLIChar() + "", option.getValueAsCLIString() ) );
 				}
-			} else {
+			} else if( option instanceof WEKAClassOption ) {
+				try {
+					String[] params = Utils.splitOptions( option.getValueAsCLIString() );
+					Implementation subimplementation = wekaSubimplementation( (WEKAClassOption) option );
+					result.addAll( WekaAlgorithm.getParameterSetting( params, i.getComponentByName( subimplementation.getName() ) ) );
+					result.add( new Parameter_setting( i.getId(), option.getCLIChar() + "", params[0] ) );
+				} catch( Exception e ) {
+					result.add( new Parameter_setting(i.getId(), option.getCLIChar() + "", option.getValueAsCLIString() ) );
+					e.printStackTrace(); 
+				}
+			}else {
 				result.add( new Parameter_setting(i.getId(), option.getCLIChar() + "", option.getValueAsCLIString() ) );
 			}
 		}
@@ -102,19 +113,9 @@ public class MoaAlgorithm {
 				WEKAClassOption wco = (WEKAClassOption) option;
 				i.addParameter(wco.getCLIChar() + "", "baselearner", wco.getDefaultCLIString(), wco.getName() + ": " + wco.getPurpose() );
 				
-				if( wco.getRequiredType().isAssignableFrom( weka.classifiers.Classifier.class ) ) {
-					String weka_identifier = wco.getValueAsCLIString();
-					String weka_classifier = weka_identifier.substring(0, weka_identifier.indexOf(' '));
-					String weka_parameters = weka_identifier.substring(weka_identifier.indexOf(' ')+1);
-					
-					Implementation subimplementation;
-					try {
-						subimplementation = WekaAlgorithm.create( weka_classifier, weka_parameters );
-						i.addComponent(wco.getCLIChar() + "", subimplementation );
-					} catch (Exception e) { e.printStackTrace(); }
-					
-					
-				}
+				try {
+					i.addComponent(wco.getCLIChar() + "", wekaSubimplementation(wco) );
+				} catch(Exception e) { e.printStackTrace(); }
 			} else {
 				i.addParameter( option.getCLIChar() + "", "option", option.getDefaultCLIString(), option.getName() + ": " + option.getPurpose() );
 			}
@@ -153,5 +154,14 @@ public class MoaAlgorithm {
 			} catch( IOException e ) { e.printStackTrace(); }
 		}
 		return is;
+	}
+	
+	private static Implementation wekaSubimplementation( WEKAClassOption wco ) throws Exception {
+		if( wco.getRequiredType().isAssignableFrom( weka.classifiers.Classifier.class ) ) {
+			String weka_identifier = wco.getValueAsCLIString();
+			String weka_classifier = weka_identifier.substring(0, weka_identifier.indexOf(' '));
+			String weka_parameters = weka_identifier.substring(weka_identifier.indexOf(' ')+1);
+			return WekaAlgorithm.create( weka_classifier, weka_parameters );
+		} else throw new Exception("Option required type not assignable from weka.classifiers.Classifiers.class: " + wco.getRequiredType().getName() );
 	}
 }
