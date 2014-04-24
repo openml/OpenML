@@ -21,6 +21,7 @@ package org.openml.webapplication.predictionCounter;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import org.openml.webapplication.algorithm.InstancesHelper;
 
@@ -39,8 +40,8 @@ public class FoldsPredictionCounter implements PredictionCounter {
 	private final int NR_OF_FOLDS;
 	private final int NR_OF_SAMPLES;
 	
-	private final ArrayList<Integer>[][][] expected;
-	private final ArrayList<Integer>[][][] actual;
+	private final List<Integer>[][][] expected;
+	private final List<Integer>[][][] actual;
 	private int expectedTotal;
 	
 	private final int[][][] shadowTypeSize;
@@ -129,7 +130,7 @@ public class FoldsPredictionCounter implements PredictionCounter {
 		return true;
 	}
 	
-	public ArrayList<Integer> getExpectedRowids(int i, int j, int k) {
+	public List<Integer> getExpectedRowids(int i, int j, int k) {
 		return expected[i][j][k];
 	}
 	

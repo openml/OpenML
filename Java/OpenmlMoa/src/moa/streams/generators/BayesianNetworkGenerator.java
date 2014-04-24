@@ -24,6 +24,7 @@ import moa.core.InstancesHeader;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.options.FileOption;
+import moa.options.FlagOption;
 import moa.options.IntOption;
 import moa.options.WEKAClassOption;
 import moa.streams.InstanceStream;
@@ -34,6 +35,7 @@ public class BayesianNetworkGenerator extends AbstractOptionHandler implements
 
 	private static final long serialVersionUID = 6466101955540024300L;
 	
+	private boolean numericAttributes;
     private InstancesHeader streamHeader;
     private Instances sourceData;
     private Random instanceRandom;
@@ -46,6 +48,11 @@ public class BayesianNetworkGenerator extends AbstractOptionHandler implements
 	
 	public FileOption arffFileOption = new FileOption("arffFile", 'f',
             "ARFF file to load.", null, "arff", false);
+	
+	public FlagOption numericAttributesOption = new FlagOption(
+			"numericAttributes", 'n', 
+			"If set, it will generate a Dataset that maintains the numeric features, " + 
+			"reconstructed from the binning phase");
 	
 	public WEKAClassOption searchAlgorithmOption = new WEKAClassOption(
 			"searchAlgorithm", 'a', 
@@ -132,6 +139,8 @@ public class BayesianNetworkGenerator extends AbstractOptionHandler implements
 	@Override
 	protected void prepareForUseImpl(TaskMonitor arg0, ObjectRepository arg1) {
 		try {
+			numericAttributes = this.numericAttributesOption.isSet();
+			
 	        instanceRandom = new Random(this.instanceRandomSeedOption.getValue());
 			sourceData = new Instances( new FileReader( this.arffFileOption.getFile() ) );
 			String relationNameOriginal = sourceData.relationName();
