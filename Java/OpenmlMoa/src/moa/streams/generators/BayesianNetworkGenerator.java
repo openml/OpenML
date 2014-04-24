@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import weka.classifiers.bayes.BayesNet;
 import weka.classifiers.bayes.net.ParentSet;
 import weka.classifiers.bayes.net.search.SearchAlgorithm;
+import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -36,8 +37,9 @@ public class BayesianNetworkGenerator extends AbstractOptionHandler implements
 	private static final long serialVersionUID = 6466101955540024300L;
 	
 	private boolean numericAttributes;
-    private InstancesHeader streamHeader;
-    private Instances sourceData;
+	private InstancesHeader streamHeader;
+    private Instances sourceDataDiscretized;
+    private Instances sourceDataOriginal;
     private Random instanceRandom;
 	private BayesNet bayesianNetwork;
 	private SearchAlgorithm searchAlgorithm;
@@ -97,15 +99,15 @@ public class BayesianNetworkGenerator extends AbstractOptionHandler implements
 	public Instance nextInstance() {
 		ParentSet[] m_ParentSets = bayesianNetwork.getParentSets();
 		Estimator[][] m_Distributions = bayesianNetwork.getDistributions();
-		boolean[] attributesSet = new boolean[sourceData.numAttributes()];
+		boolean[] attributesSet = new boolean[sourceDataDiscretized.numAttributes()];
 		boolean allAttribuesSet = false;
-		double[] result = new double[sourceData.numAttributes()];
+		double[] result = new double[sourceDataDiscretized.numAttributes()];
 		Instance inst = new DenseInstance(getHeader().numAttributes());
 		inst.setDataset(getHeader());
 		
 		while( allAttribuesSet == false ) {
 			allAttribuesSet = true; // until proven otherwise
-			for (int iAttribute = 0; iAttribute < sourceData.numAttributes(); iAttribute++) {
+			for (int iAttribute = 0; iAttribute < sourceDataDiscretized.numAttributes(); iAttribute++) {
 				allAttribuesSet &= attributesSet[iAttribute]; // bit shift: If attributesSet[att_idx] = false, so will be allAttributesSet
 				
 				boolean allParentsSet = true;
@@ -115,12 +117,20 @@ public class BayesianNetworkGenerator extends AbstractOptionHandler implements
 					int att_idx = m_ParentSets[iAttribute].getParent( iParent );
 					int nParent = bayesianNetwork.getParentSet(iAttribute).getParent(iParent);
 					
-					iCPT = iCPT * sourceData.attribute(nParent).numValues() + (int) result[nParent];
+					iCPT = iCPT * sourceDataDiscretized.attribute(nParent).numValues() + (int) result[nParent];
 					allParentsSet &= attributesSet[att_idx]; // bit shift: If attributesSet[att_idx] = false, so will be allParentsSet
 				}
 				if( allParentsSet && attributesSet[iAttribute] == false ) {
 					attributesSet[iAttribute] = true;
-					result[iAttribute] = getNominalValueByProbDist( m_Distributions[iAttribute][iCPT], sourceData.attribute(iAttribute).numValues() );
+					if( numericAttributes && sourceDataOriginal.attribute( iAttribute ).isNumeric() ) {
+						result[iAttribute] = getNumericValueByProdBist(
+							m_Distributions[iAttribute][iCPT], 
+							sourceDataDiscretized.attribute(iAttribute) );
+					} else {
+						result[iAttribute] = getNominalValueByProbDist( 
+							m_Distributions[iAttribute][iCPT], 
+							sourceDataDiscretized.attribute(iAttribute) );		
+					}
 				}
 			}
 		}
@@ -142,16 +152,17 @@ public class BayesianNetworkGenerator extends AbstractOptionHandler implements
 			numericAttributes = this.numericAttributesOption.isSet();
 			
 	        instanceRandom = new Random(this.instanceRandomSeedOption.getValue());
-			sourceData = new Instances( new FileReader( this.arffFileOption.getFile() ) );
-			String relationNameOriginal = sourceData.relationName();
+	        sourceDataOriginal = new Instances( new FileReader( this.arffFileOption.getFile() ) );
+	        sourceDataDiscretized = new Instances( new FileReader( this.arffFileOption.getFile() ) );
+			String relationNameOriginal = sourceDataDiscretized.relationName();
 			
-			String discretizeOptions = getDiscretizationOptions( sourceData );
-			if( discretizeOptions != null ) { sourceData = applyFilter(sourceData, new Discretize(), discretizeOptions ); }
+			String discretizeOptions = getDiscretizationOptions( sourceDataDiscretized );
+			if( discretizeOptions != null ) { sourceDataDiscretized = applyFilter(sourceDataDiscretized, new Discretize(), discretizeOptions ); }
 			
-			sourceData = applyFilter(sourceData, new ReplaceMissingValues(), "" );
-			sourceData.setClass( sourceData.attribute( sourceData.numAttributes() - 1 ) );
+			sourceDataDiscretized = applyFilter(sourceDataDiscretized, new ReplaceMissingValues(), "" );
+			sourceDataDiscretized.setClass( sourceDataDiscretized.attribute( sourceDataDiscretized.numAttributes() - 1 ) );
 			
-			streamHeader = new InstancesHeader( sourceData );
+			streamHeader = new InstancesHeader( numericAttributes ? sourceDataOriginal : sourceDataDiscretized );
 			streamHeader.setRelationName( relationNameOriginal );
 			
 			String searchAlgorithmString = searchAlgorithmOption.getValueAsCLIString();
@@ -161,7 +172,7 @@ public class BayesianNetworkGenerator extends AbstractOptionHandler implements
 			
 			bayesianNetwork = new BayesNet();
 			bayesianNetwork.setSearchAlgorithm( searchAlgorithm );
-			bayesianNetwork.buildClassifier( sourceData );
+			bayesianNetwork.buildClassifier( sourceDataDiscretized );
 			
 			if( printNetworkOption.getFile() != null ) {
 				BufferedWriter bw = new BufferedWriter( new FileWriter( printNetworkOption.getFile() ) );
@@ -197,14 +208,24 @@ public class BayesianNetworkGenerator extends AbstractOptionHandler implements
 		return Filter.useFilter(dataset, filter);
 	}
 	
-	private int getNominalValueByProbDist( Estimator e, int numValues ) {
+	private int getNominalValueByProbDist( Estimator e, Attribute att ) {
 		Double current = instanceRandom.nextDouble();
 		Double totalFound = 0.0;
-		for( int i = 0; i < numValues; ++i ) {
+		for( int i = 0; i < att.numValues(); ++i ) {
 			totalFound += e.getProbability( i );
 			if( current < totalFound ) return i;
 		}
-		return numValues - 1; // prevent an "off by epsilon" error.
+		return att.numValues() - 1; // prevent an "off by epsilon" error.
+	}
+	
+	private double getNumericValueByProdBist( Estimator e, Attribute att ) {
+		double total_weighted_sum = 0.0;
+		for( int i = 0; i < att.numValues(); ++i ) {
+			// TODO!!! shift towards mean/stdev of this bin
+			double current = instanceRandom.nextDouble(); 
+			total_weighted_sum += e.getProbability( i ) * current;
+		}
+		return total_weighted_sum;
 	}
 
 	private void createWekaSearchAlgorithm(String[] options) throws Exception {
