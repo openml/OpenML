@@ -4,9 +4,13 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import org.apache.commons.lang3.StringUtils;
+import org.openml.apiconnector.algorithms.MathHelper;
 
 import weka.classifiers.bayes.BayesNet;
 import weka.classifiers.bayes.net.ParentSet;
@@ -43,6 +47,7 @@ public class BayesianNetworkGenerator extends AbstractOptionHandler implements
     private Random instanceRandom;
 	private BayesNet bayesianNetwork;
 	private SearchAlgorithm searchAlgorithm;
+	private Map<Integer, BinDetails[]> bindetails;
 	
 	public IntOption instanceRandomSeedOption = new IntOption(
             "instanceRandomSeed", 'i',
@@ -117,7 +122,7 @@ public class BayesianNetworkGenerator extends AbstractOptionHandler implements
 					int att_idx = m_ParentSets[iAttribute].getParent( iParent );
 					int nParent = bayesianNetwork.getParentSet(iAttribute).getParent(iParent);
 					
-					iCPT = iCPT * sourceDataDiscretized.attribute(nParent).numValues() + (int) result[nParent];
+					iCPT = iCPT * sourceDataDiscretized.attribute(nParent).numValues() + (int) result[nParent]; // TODO: (BUG) we still need to keep track of a nominal result and a numerical result !
 					allParentsSet &= attributesSet[att_idx]; // bit shift: If attributesSet[att_idx] = false, so will be allParentsSet
 				}
 				if( allParentsSet && attributesSet[iAttribute] == false ) {
@@ -156,8 +161,11 @@ public class BayesianNetworkGenerator extends AbstractOptionHandler implements
 	        sourceDataDiscretized = new Instances( new FileReader( this.arffFileOption.getFile() ) );
 			String relationNameOriginal = sourceDataDiscretized.relationName();
 			
+			Discretize discretizeFilter = new Discretize();
 			String discretizeOptions = getDiscretizationOptions( sourceDataDiscretized );
-			if( discretizeOptions != null ) { sourceDataDiscretized = applyFilter(sourceDataDiscretized, new Discretize(), discretizeOptions ); }
+			if( discretizeOptions != null ) { sourceDataDiscretized = applyFilter(sourceDataDiscretized, discretizeFilter, discretizeOptions ); }
+			
+			bindetails = createBinDetails( sourceDataOriginal, sourceDataDiscretized, discretizeFilter );
 			
 			sourceDataDiscretized = applyFilter(sourceDataDiscretized, new ReplaceMissingValues(), "" );
 			sourceDataDiscretized.setClass( sourceDataDiscretized.attribute( sourceDataDiscretized.numAttributes() - 1 ) );
@@ -189,7 +197,7 @@ public class BayesianNetworkGenerator extends AbstractOptionHandler implements
 	public static String getDiscretizationOptions( Instances sourceData ) {
 		ArrayList<Integer> variablesToDiscretize = new ArrayList<Integer>();
 		for( int i = 0; i < sourceData.numAttributes(); ++i ) {
-			if( sourceData.attribute( i ).isNominal() == false ) {
+			if( sourceData.attribute( i ).isNumeric() ) {
 				variablesToDiscretize.add( i + 1 ); // 0-based/1-based
 			}
 		}
@@ -221,11 +229,12 @@ public class BayesianNetworkGenerator extends AbstractOptionHandler implements
 	private double getNumericValueByProdBist( Estimator e, Attribute att ) {
 		double total_weighted_sum = 0.0;
 		for( int i = 0; i < att.numValues(); ++i ) {
-			// TODO!!! shift towards mean/stdev of this bin
-			double current = instanceRandom.nextDouble(); 
-			total_weighted_sum += e.getProbability( i ) * current;
+			BinDetails binStatistics = bindetails.get( att.index() )[i];
+			//System.out.println(binStatistics);
+			double current = instanceRandom.nextGaussian() * binStatistics.getStdev() + binStatistics.getMean(); 
+			total_weighted_sum += e.getProbability( i ) * current; 
 		}
-		return total_weighted_sum;
+		return 0.0; // total_weighted_sum // TODO!
 	}
 
 	private void createWekaSearchAlgorithm(String[] options) throws Exception {
@@ -234,4 +243,75 @@ public class BayesianNetworkGenerator extends AbstractOptionHandler implements
         newoptions[0] = "";
         this.searchAlgorithm = (SearchAlgorithm) Utils.forName( SearchAlgorithm.class, searchAlgorithmName, newoptions );
     }
+
+	@SuppressWarnings("unchecked")
+	private Map<Integer, BinDetails[]> createBinDetails( Instances datasetOriginal, Instances datasetDiscretized, Discretize discretizationFilter ) {
+		Map<Integer, BinDetails[]> result = new HashMap<Integer, BinDetails[]>();
+		for( int iNumAttributes = 0; iNumAttributes < datasetOriginal.numAttributes(); ++iNumAttributes ) {
+			if( datasetOriginal.attribute( iNumAttributes ).isNumeric() ) { 
+				double[] cutPoints = discretizationFilter.getCutPoints( iNumAttributes );
+				int numBins = cutPoints.length + 1;
+				BinDetails[] current = new BinDetails[numBins];
+				List<Double>[] values = new ArrayList[numBins];
+				for( int i = 0; i < numBins; ++i ) { values[i] = new ArrayList<Double>(); }
+				
+				for( int iNumInstances = 0; iNumInstances < datasetOriginal.numInstances(); ++iNumInstances ) {
+					double currentValue = datasetOriginal.instance( iNumInstances ).value( iNumAttributes );
+					if( Utils.isMissingValue( currentValue) == false ) {
+						if( currentValue <= cutPoints[0] ) {
+							values[0].add( currentValue );
+						} else if( currentValue > cutPoints[cutPoints.length-1] ) {
+							values[cutPoints.length].add( currentValue );
+						} else {
+							for( int iNumCutPoints = 1; iNumCutPoints < cutPoints.length; ++iNumCutPoints ) {
+								if( currentValue > cutPoints[iNumCutPoints-1] && currentValue <= cutPoints[iNumCutPoints] ) {
+									values[iNumCutPoints].add( currentValue );
+								} 
+							}
+						}
+					}
+				}
+				
+				//System.out.println( "Attribute #" + iNumAttributes + "(" + datasetOriginal.attribute( iNumAttributes ).name() + "):" );
+				//System.out.println( "CutPoints: " + Arrays.toString( cutPoints ) );
+				//int total = 0;
+				for( int i = 0; i < numBins; ++i ) {
+					Double[] population = values[i].toArray(new Double[values[i].size()]);
+					current[i] = new BinDetails( MathHelper.mean( population ), MathHelper.standard_deviation( population, true ) );
+					/*Collections.sort( values[i] );
+					System.out.println( "- Bin " + i + ": " + values[i] );
+					System.out.println( "--- " + current[i] );
+					
+					total += values[i].size();*/
+				}
+				//System.out.println( "Total: " + total + "\n==========" );
+				result.put( iNumAttributes, current );
+			}
+		}
+		
+		return result;
+	}
+	
+	private class BinDetails {
+		private final double mean;
+		private final double stdev;
+		
+		public BinDetails( double mean, double stdev ) {
+			this.mean = mean;
+			this.stdev = stdev;
+		}
+
+		public double getMean() {
+			return mean;
+		}
+
+		public double getStdev() {
+			return stdev;
+		}
+		
+		@Override
+		public String toString() {
+			return "[mean = "+getMean()+"; stdev = "+getStdev()+"]";
+		}
+	}
 }
