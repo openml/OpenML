@@ -38,7 +38,7 @@ public class GenerateBayesnetDatasets {
 	private static final int MAX_ATTRIBUTES = 100;
 	private static final int TARGET_NUM_INSTANCES = 1000000;
 	private static final boolean SEND_RESULT = true;
-
+	
 	private final ApiConnector apiconnector;
 	private final ApiSessionHash ash;
 	
@@ -60,7 +60,7 @@ public class GenerateBayesnetDatasets {
 		this.ash = new ApiSessionHash( apiconnector );
 		this.ash.set(config.getUsername(), config.getPassword());
 		
-		for( int iDatasets = 16; iDatasets <= 62; ++iDatasets ) {
+		for( int iDatasets = 2; iDatasets <= 20; iDatasets++ ) {
 			Conversion.log("INFO", "Download Dataset", "Downloading dataset " + iDatasets);
 			DataSetDescription dsd = apiconnector.openmlDataDescription( iDatasets );
 			
@@ -79,15 +79,18 @@ public class GenerateBayesnetDatasets {
 				}
 			}
 			
-			long startTime = System.currentTimeMillis();
-			File generatedDataset = generateDataset( dsd, maxDifferentOptions.min( new BigInteger( "" + TARGET_NUM_INSTANCES ) ).intValue() );
-			long elapsedTime = (System.currentTimeMillis() - startTime) / 1000;
-			Conversion.log("INFO", "Generating Dataset", "Generated dataset on " + dsd.getName() + " in " + elapsedTime + " seconds ");
 			
-			String summary = summarize( dataset, new Instances( new FileReader( generatedDataset ) ) );
-			
-			if( SEND_RESULT ) {
-				uploadDataset( dsd, generatedDataset, summary );
+			for( int i = 0; i < 2; ++i ) {
+				long startTime = System.currentTimeMillis();
+				File generatedDataset = generateDataset( dsd, maxDifferentOptions.min( new BigInteger( "" + TARGET_NUM_INSTANCES ) ).intValue(), i == 1 );
+				long elapsedTime = (System.currentTimeMillis() - startTime) / 1000;
+				Conversion.log("INFO", "Generating Dataset", "Generated dataset on " + dsd.getName() + " in " + elapsedTime + " seconds ");
+				
+				//String summary = summarize( dataset, new Instances( new FileReader( generatedDataset ) ) );
+				
+				if( SEND_RESULT ) {
+					uploadDataset( dsd, generatedDataset, "" );
+				}
 			}
 		}
 	}
@@ -96,7 +99,7 @@ public class GenerateBayesnetDatasets {
 		// apply same filters on input data
 		StringBuilder sb = new StringBuilder();
 		sb.append( "Attribute Information:\n" );
-		String discretizeOptions = BayesianNetworkGenerator.getDiscretizationOptions( sourceData );
+		String discretizeOptions = BayesianNetworkGenerator.getDiscretizationOptions( sourceData, 5, true );
 		if( discretizeOptions != null ) { sourceData = BayesianNetworkGenerator.applyFilter( sourceData, new Discretize(), discretizeOptions ); }
 		sourceData = BayesianNetworkGenerator.applyFilter(sourceData, new ReplaceMissingValues(), "" );
 		
@@ -131,9 +134,10 @@ public class GenerateBayesnetDatasets {
 		return sb.toString();
 	}
 	
-	private File generateDataset( DataSetDescription dsd, long numInstances ) throws Exception {
-		String datasetname = "BayesianNetworkGenerator_" + dsd.getName();
+	private File generateDataset( DataSetDescription dsd, long numInstances, boolean numeric ) throws Exception {
+		String datasetname = "BNG_" + dsd.getName() + (numeric ? "" : "_nominal");
 		String outputFilename = outputDirectory.getAbsolutePath() + "/" + datasetname + ".arff";
+		String numericString = (numeric) ? "-n" : "";
 		
 		String[] taskArgs = new String[7];
 		taskArgs[0] = "WriteStreamToARFFFile";
@@ -142,7 +146,7 @@ public class GenerateBayesnetDatasets {
 		taskArgs[3] = "-m";
 		taskArgs[4] = "" + numInstances;
 		taskArgs[5] = "-s";
-		taskArgs[6] = "(generators.BayesianNetworkGenerator -f (" + dsd.getDataset().getAbsolutePath() + ") -a (" + searchAlgorithm + ") -p (" + outputFilename + ".xml))";
+		taskArgs[6] = "(generators.BayesianNetworkGenerator -f (" + dsd.getDataset().getAbsolutePath() + ") -a (" + searchAlgorithm + ") -p (" + outputFilename + ".xml) " + numericString + " )";
 		
 		Conversion.log("INFO", "Build dataset", "CMD: " + StringUtils.join( taskArgs, ' ' ) );
 		DoTask.main( taskArgs );
