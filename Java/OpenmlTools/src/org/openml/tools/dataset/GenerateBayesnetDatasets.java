@@ -42,9 +42,12 @@ public class GenerateBayesnetDatasets {
 	private final ApiConnector apiconnector;
 	private final ApiSessionHash ash;
 	
-	private static final File outputDirectory = new File( "/Users/jan/Desktop/BayesNetTest/" );
+	private static final File outputDirectory = new File( "C:/Users/jan/Desktop/BayesNetTest/" );
 	
 	private static final String searchAlgorithm = "weka.classifiers.bayes.net.search.local.K2 -P 15 -S BAYES";
+	
+	private static final boolean CALCULATE_NUMERIC = true;
+	private static final boolean CALCULATE_NOMINAL = false;
 	
 	public static void main( String[] args ) throws Exception {
 		new GenerateBayesnetDatasets();
@@ -60,7 +63,8 @@ public class GenerateBayesnetDatasets {
 		this.ash = new ApiSessionHash( apiconnector );
 		this.ash.set(config.getUsername(), config.getPassword());
 		
-		for( int iDatasets = 2; iDatasets <= 20; iDatasets++ ) {
+		for( int iDatasets = 21; iDatasets <= 62; iDatasets++ ) {
+			boolean hasNumericAtts = false;
 			Conversion.log("INFO", "Download Dataset", "Downloading dataset " + iDatasets);
 			DataSetDescription dsd = apiconnector.openmlDataDescription( iDatasets );
 			
@@ -73,23 +77,27 @@ public class GenerateBayesnetDatasets {
 			BigInteger maxDifferentOptions = new BigInteger("1");
 			for( int iAttributes = 0; iAttributes < dataset.numAttributes(); ++iAttributes ) {
 				if( dataset.attribute( iAttributes ).isNominal() == false ) {
+					if( dataset.attribute( iAttributes ).isNumeric() == true ) hasNumericAtts = true;
+					
 					maxDifferentOptions = maxDifferentOptions.multiply( new BigInteger("3") );
 				} else {
 					maxDifferentOptions = maxDifferentOptions.multiply( new BigInteger( dataset.attribute( iAttributes ).numValues() + "" ) );
 				}
 			}
-			
+
 			
 			for( int i = 0; i < 2; ++i ) {
-				long startTime = System.currentTimeMillis();
-				File generatedDataset = generateDataset( dsd, maxDifferentOptions.min( new BigInteger( "" + TARGET_NUM_INSTANCES ) ).intValue(), i == 1 );
-				long elapsedTime = (System.currentTimeMillis() - startTime) / 1000;
-				Conversion.log("INFO", "Generating Dataset", "Generated dataset on " + dsd.getName() + " in " + elapsedTime + " seconds ");
-				
-				//String summary = summarize( dataset, new Instances( new FileReader( generatedDataset ) ) );
-				
-				if( SEND_RESULT ) {
-					uploadDataset( dsd, generatedDataset, "" );
+				if( (i == 0 && CALCULATE_NOMINAL) || (CALCULATE_NUMERIC && i == 1 && hasNumericAtts) ) {
+					long startTime = System.currentTimeMillis();
+					File generatedDataset = generateDataset( dsd, maxDifferentOptions.min( new BigInteger( "" + TARGET_NUM_INSTANCES ) ).intValue(), i == 1 );
+					long elapsedTime = (System.currentTimeMillis() - startTime) / 1000;
+					Conversion.log("INFO", "Generating Dataset", "Generated dataset on " + dsd.getName() + " in " + elapsedTime + " seconds ");
+					
+					//String summary = summarize( dataset, new Instances( new FileReader( generatedDataset ) ) );
+					
+					if( SEND_RESULT ) {
+						uploadDataset( dsd, generatedDataset, "" );
+					}
 				}
 			}
 		}

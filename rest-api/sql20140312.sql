@@ -36,3 +36,5 @@ ALTER TABLE `data_feature` CHANGE `NumberOfDistinctValues` `NumberOfDistinctValu
 CHANGE `NumberOfUniqueValues` `NumberOfUniqueValues` INT( 11 ) NULL DEFAULT NULL ,
 CHANGE `NumberOfIntegerValues` `NumberOfIntegerValues` INT( 11 ) NULL DEFAULT NULL ,
 CHANGE `NumberOfRealValues` `NumberOfRealValues` INT( 11 ) NULL DEFAULT NULL ;
+
+ALTER TABLE `schedule` ADD `active` ENUM( 'true', 'false' ) NOT NULL DEFAULT 'true';
