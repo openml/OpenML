@@ -20,17 +20,18 @@
 package org.openml.webapplication.evaluate;
 
 import java.io.BufferedReader;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+import org.openml.apiconnector.algorithms.MathHelper;
 import org.openml.apiconnector.models.Metric;
-import org.openml.apiconnector.models.MetricCollector;
 import org.openml.apiconnector.models.MetricScore;
-import org.apache.commons.lang3.StringUtils;
+import org.openml.apiconnector.xml.EvaluationScore;
 import org.openml.webapplication.algorithm.InstancesHelper;
 import org.openml.webapplication.io.Input;
 import org.openml.webapplication.io.Output;
-import org.openml.webapplication.models.JsonItem;
 import org.openml.webapplication.predictionCounter.FoldsPredictionCounter;
 import org.openml.webapplication.predictionCounter.PredictionCounter;
 
@@ -38,7 +39,7 @@ import weka.classifiers.Evaluation;
 import weka.core.Instance;
 import weka.core.Instances;
 
-public class EvaluatePredictions {
+public class EvaluateBatchPredictions implements PredictionEvaluator {
 	
 	private final int nrOfClasses;
 	
@@ -55,10 +56,12 @@ public class EvaluatePredictions {
 	
 	private final PredictionCounter predictionCounter;
 	private final String[] classes;
-	private final Task task;
+	private final TaskType task;
 	private final Evaluation[][][] sampleEvaluation;
 	
-	public EvaluatePredictions( String datasetPath, String splitsPath, String predictionsPath, String classAttribute ) throws Exception {
+	private EvaluationScore[] evaluationScores;
+	
+	public EvaluateBatchPredictions( String datasetPath, String splitsPath, String predictionsPath, String classAttribute ) throws Exception {
 		// set all arff files needed for this operation. 
 		dataset 	= new Instances( new BufferedReader( Input.getURL( datasetPath ) ) );
 		predictions = new Instances( new BufferedReader( Input.getURL( predictionsPath ) ) ); 
@@ -74,12 +77,12 @@ public class EvaluatePredictions {
 		// ... and specify which task we are doing. classification or regression. 
 		if( dataset.classAttribute().isNominal() ) {
 			if( predictions.attribute("sample") == null ) {
-				task = Task.CLASSIFICATION;
+				task = TaskType.CLASSIFICATION;
 			} else {
-				task = Task.LEARNINGCURVE;
+				task = TaskType.LEARNINGCURVE;
 			}
 		} else {
-			task = Task.REGRESSION;
+			task = TaskType.REGRESSION;
 		}
 		
 		// initiate a class that will help us with checking the prediction count. 
@@ -95,7 +98,7 @@ public class EvaluatePredictions {
 		ATT_PREDICTION_REPEAT = InstancesHelper.getRowIndex( new String[] {"repeat", "repeat_nr"}, predictions ) ;
 		ATT_PREDICTION_FOLD =  InstancesHelper.getRowIndex( new String[] {"fold", "fold_nr"}, predictions ) ;
 		ATT_PREDICTION_PREDICTION = InstancesHelper.getRowIndex( new String[] {"prediction"}, predictions ) ;
-		if( task == Task.LEARNINGCURVE ) {
+		if( task == TaskType.LEARNINGCURVE ) {
 			ATT_PREDICTION_SAMPLE =  InstancesHelper.getRowIndex( new String[] {"sample", "sample_nr"}, predictions ) ;
 		} else {
 			ATT_PREDICTION_SAMPLE = -1;
@@ -144,7 +147,7 @@ public class EvaluatePredictions {
 				throw new RuntimeException( "Making a prediction for row_id" + rowid + " (0-based) while dataset has only " + dataset.numInstances() + " instances. " );
 			}
 			
-			if(task == Task.REGRESSION) {
+			if(task == TaskType.REGRESSION) {
 				e.evaluateModelOnce(
 					prediction.value( ATT_PREDICTION_PREDICTION ), 
 					dataset.instance( rowid ) );
@@ -152,77 +155,68 @@ public class EvaluatePredictions {
 					prediction.value( ATT_PREDICTION_PREDICTION ), 
 					dataset.instance( rowid ) );
 			} else {
-				e.evaluateModelOnce(
+				e.evaluateModelOnceAndRecordPrediction(
 					InstancesHelper.predictionToConfidences( dataset, prediction, ATT_PREDICTION_CONFIDENCE ), // TODO: catch error when no prob distribution is provided
 					dataset.instance( rowid ) );
-				sampleEvaluation[repeat][fold][sample].evaluateModelOnce(
-						InstancesHelper.predictionToConfidences( dataset, prediction, ATT_PREDICTION_CONFIDENCE ) , // TODO: catch error when no prob distribution is provided
+				sampleEvaluation[repeat][fold][sample].evaluateModelOnceAndRecordPrediction(
+					InstancesHelper.predictionToConfidences( dataset, prediction, ATT_PREDICTION_CONFIDENCE ) , // TODO: catch error when no prob distribution is provided
 					dataset.instance( rowid ) );
 			}
 		}
 		
-		if( predictionCounter.check() ) {
-			output( e, task );
-		} else {
+		if( predictionCounter.check() == false ) {
 			throw new RuntimeException( "Prediction count does not match: " + predictionCounter.getErrorMessage() );
 		}
-	}
-	
-	protected void output( Evaluation e, Task task ) throws Exception {
-		if( task == Task.CLASSIFICATION || task == Task.REGRESSION || task == Task.LEARNINGCURVE || task == Task.TESTTHENTRAIN ) { // any task ...
-			Map<Metric, MetricScore> metrics = Output.evaluatorToMap(e, nrOfClasses, task);
-			MetricCollector population = new MetricCollector();
-			
-			String globalMetrics = "";
-			String foldMetricsLabel = "fold_metrices";
-			if( task == Task.LEARNINGCURVE ) {
-				foldMetricsLabel = "sample_metrices";
-			}
-			String foldMetrics = "";
-			
-			String[] metricsPerRepeat = new String[predictionCounter.getRepeats()];
-			for(int i = 0; i < metricsPerRepeat.length; ++i ) {
-				String[] metricsPerFold = new String[predictionCounter.getFolds()];
-				for( int j = 0; j < metricsPerFold.length; j++ ) {
-					String[] metricsPerSample = new String[predictionCounter.getSamples()];
-					for( int k = 0; k < metricsPerSample.length; ++k ) {
-						Map<Metric, MetricScore> localMetrics = Output.evaluatorToMap(sampleEvaluation[i][j][k], nrOfClasses, task);
-						population.add(localMetrics);
-						
-						ArrayList<JsonItem> additionalItems = new ArrayList<JsonItem>();
-						additionalItems.add( new JsonItem("sample_size", predictionCounter.getShadowTypeSize(i, j, k) * 1.0 ) );
-						
-						metricsPerSample[k] = Output.printMetrics(localMetrics, task == Task.LEARNINGCURVE ? additionalItems : null );
-					}
-					
-					if( task == Task.LEARNINGCURVE ) {
-						metricsPerFold[j] = "[" + StringUtils.join( metricsPerSample, "],\n[") + "]";
-					} else { 
-						// In any other case, we do not consider samples per fold. 
-						// Hence we will not add an additional dimension to the array.
-						metricsPerFold[j] = metricsPerSample[0];
+		
+		List<EvaluationScore> evaluationMeasuresList = new ArrayList<EvaluationScore>();
+		Map<Metric, MetricScore> globalMeasures = Output.evaluatorToMap( e, nrOfClasses, task);
+		for( Metric m : globalMeasures.keySet() ) {
+			MetricScore score = globalMeasures.get( m );
+			DecimalFormat dm = MathHelper.defaultDecimalFormat;
+			evaluationMeasuresList.add( 
+				new EvaluationScore( 
+					m.implementation, 
+					m.name, 
+					m.label, 
+					score.getScore() == null ? null : dm.format( score.getScore() ), 
+					null, 
+					score.getArrayAsString( dm ) ) );
+		}
+		for( int i = 0; i < sampleEvaluation.length; ++i ) {
+			for( int j = 0; j < sampleEvaluation[i].length; ++j ) {
+				for( int k = 0; k < sampleEvaluation[i][j].length; ++k ) {
+					Map<Metric, MetricScore> currentMeasures = Output.evaluatorToMap( e, nrOfClasses, task);
+					for( Metric m : currentMeasures.keySet() ) {
+						MetricScore score = currentMeasures.get( m );
+						DecimalFormat dm = MathHelper.defaultDecimalFormat;
+						EvaluationScore currentMeasure;
+						if( task == TaskType.LEARNINGCURVE ) {
+							currentMeasure = new EvaluationScore( 
+								m.implementation, 
+								m.name, 
+								m.label, 
+								score.getScore() == null ? null : dm.format( score.getScore() ), 
+								score.getArrayAsString( dm ),
+								i, j, k, predictionCounter.getShadowTypeSize(i, j, k) );
+						} else {
+							currentMeasure = new EvaluationScore( 
+								m.implementation, 
+								m.name, 
+								m.label, 
+								score.getScore() == null ? null : dm.format( score.getScore() ), 
+								score.getArrayAsString( dm ),
+								i, j );
+						}
+						evaluationMeasuresList.add( currentMeasure );
 					}
 				}
-				metricsPerRepeat[i] = "[" + StringUtils.join( metricsPerFold, "],\n[") + "]";
 			}
-			
-			foldMetrics = "[" + StringUtils.join( metricsPerRepeat, "],\n\n[") + "]";
-			globalMetrics = Output.printMetrics(metrics, population, null);
-			
-			System.out.println(
-				"{\n" + 
-					"\"global_metrices\":[\n" +
-						globalMetrics +
-					"],\n" +
-					"\""+foldMetricsLabel+"\":[\n" +
-						foldMetrics + 
-					"]" +
-				"}"
-			);
-		} else {
-			throw new RuntimeException( "Task not defined" );
 		}
+		evaluationScores = evaluationMeasuresList.toArray(new EvaluationScore[evaluationMeasuresList.size()]);
 	}
 	
+	public EvaluationScore[] getEvaluationScores() {
+		return evaluationScores;
+	}
 	
 }

@@ -19,10 +19,15 @@
  */
 package org.openml.webapplication.evaluate;
 
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
+import org.openml.apiconnector.algorithms.MathHelper;
 import org.openml.apiconnector.models.Metric;
 import org.openml.apiconnector.models.MetricScore;
+import org.openml.apiconnector.xml.EvaluationScore;
 import org.openml.webapplication.algorithm.InstancesHelper;
 import org.openml.webapplication.io.Output;
 
@@ -31,7 +36,7 @@ import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ArffLoader;
 
-public class EvaluateStreamPredictions {
+public class EvaluateStreamPredictions implements PredictionEvaluator {
 
 	private final Instances  datasetStructure;
 	private final Instances  predictionsStructure;
@@ -43,7 +48,11 @@ public class EvaluateStreamPredictions {
 	private final int ATT_PREDICTION_ROWID;
 	private final int[] ATT_PREDICTION_CONFIDENCE;
 	
-	public EvaluateStreamPredictions( String datasetUrl, String predictionsUrl, String classAttribute ) throws Exception {
+	private Map<Metric, MetricScore> globalMeasures;
+	private final Map<Integer, Map<Metric, MetricScore>> intervalMeasures;
+	private final int interval_size;
+	
+	public EvaluateStreamPredictions( String datasetUrl, String predictionsUrl, String classAttribute, int interval_size ) throws Exception {
 		datasetLoader = new ArffLoader();
 		datasetLoader.setURL(datasetUrl);
 		datasetStructure = new Instances( datasetLoader.getStructure() );
@@ -51,6 +60,9 @@ public class EvaluateStreamPredictions {
 		predictionsLoader = new ArffLoader();
 		predictionsLoader.setURL(predictionsUrl);
 		predictionsStructure = new Instances( predictionsLoader.getStructure() );
+		
+		intervalMeasures = new HashMap<Integer, Map<Metric,MetricScore>>();
+		this.interval_size = interval_size;
 		
 		// Set class attribute to dataset ...
 		if( datasetStructure.attribute( classAttribute ) != null ) {
@@ -76,14 +88,14 @@ public class EvaluateStreamPredictions {
 				throw new Exception( "Attribute " + attribute + " not found among predictions. " );
 		}
 		
-		doEvaluation();
+		doEvaluation( );
 	}
 	
-	private void doEvaluation() throws Exception {
+	private void doEvaluation( ) throws Exception {
 		// set global evaluation
-		Evaluation e = new Evaluation( datasetStructure );
+		Evaluation globalEvaluator = new Evaluation( datasetStructure );
+		Evaluation localEvaluator = new Evaluation( datasetStructure );
 		
-
 		// we go through all the instances in one loop. 
 		Instance currentInstance;
 		for( int iInstanceNr = 0; ( ( currentInstance = datasetLoader.getNextInstance( datasetStructure ) ) != null ); ++iInstanceNr ) {
@@ -99,15 +111,49 @@ public class EvaluateStreamPredictions {
 					". Found prediction for instance #" + rowid + " instead." );
 			}
 			
-			e.evaluateModelOnce(
-				InstancesHelper.predictionToConfidences( datasetStructure, currentPrediction, ATT_PREDICTION_CONFIDENCE ), // TODO: catch error when no prob distribution is provided
-				currentInstance );
+			double[] confidences = InstancesHelper.predictionToConfidences( datasetStructure, currentPrediction, ATT_PREDICTION_CONFIDENCE ); // TODO: catch error when no prob distribution is provided
+			globalEvaluator.evaluateModelOnce( confidences, currentInstance );
+			localEvaluator.evaluateModelOnce( confidences, currentInstance );
+			
+			if( (iInstanceNr + 1) % interval_size == 0 ) {
+				intervalMeasures.put( iInstanceNr + 1 - interval_size, Output.evaluatorToMap(globalEvaluator, nrOfClasses, TaskType.TESTTHENTRAIN) );
+				localEvaluator = new Evaluation( datasetStructure );
+			}
 		}
 		
-		Map<Metric, MetricScore> metrics = Output.evaluatorToMap(e, nrOfClasses, Task.TESTTHENTRAIN);
-		String globalMetrics = Output.printMetrics(metrics);
+		globalMeasures = Output.evaluatorToMap(globalEvaluator, nrOfClasses, TaskType.TESTTHENTRAIN);
+	}
+	
+	public EvaluationScore[] getEvaluationScores() {
+		ArrayList<EvaluationScore> evaluationMeasures = new ArrayList<EvaluationScore>();
+		for( Metric m : globalMeasures.keySet() ) {
+			MetricScore score = globalMeasures.get( m );
+			DecimalFormat dm = MathHelper.defaultDecimalFormat;
+			evaluationMeasures.add( 
+					new EvaluationScore( 
+							m.implementation, 
+							m.name, 
+							m.label, 
+							score.getScore() == null ? null : dm.format( score.getScore() ), 
+							null, 
+							score.getArrayAsString( dm ) ) );
+		}
+		for( Integer i : intervalMeasures.keySet() ) {
+			for( Metric m : intervalMeasures.get( i ).keySet() ) {
+				MetricScore score = intervalMeasures.get( i ).get( m );
+				DecimalFormat dm = MathHelper.defaultDecimalFormat;
+				evaluationMeasures.add( 
+						new EvaluationScore( 
+								m.implementation, 
+								m.name, 
+								m.label, 
+								score.getScore() == null ? null : dm.format( score.getScore() ), 
+								score.getArrayAsString( dm ),
+								i,
+								i + interval_size, true ) );
+			}
+		}
 		
-		System.out.println("{\n\"global_metrices\":[\n" + globalMetrics + "]\n}" );
-		
+		return evaluationMeasures.toArray( new EvaluationScore[evaluationMeasures.size()] );
 	}
 }

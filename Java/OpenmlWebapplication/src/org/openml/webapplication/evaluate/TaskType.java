@@ -19,6 +19,6 @@
  */
 package org.openml.webapplication.evaluate;
 
-public enum Task {
+public enum TaskType {
 	CLASSIFICATION, REGRESSION, LEARNINGCURVE, TESTTHENTRAIN
 }
