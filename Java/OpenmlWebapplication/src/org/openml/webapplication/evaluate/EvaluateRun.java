@@ -1,11 +1,16 @@
 package org.openml.webapplication.evaluate;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.algorithms.TaskInformation;
 import org.openml.apiconnector.io.ApiConnector;
+import org.openml.apiconnector.io.ApiSessionHash;
 import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.DataSetDescription;
 import org.openml.apiconnector.xml.EvaluationScore;
@@ -21,24 +26,65 @@ import com.thoughtworks.xstream.XStream;
 public class EvaluateRun {
 	
 	private final ApiConnector apiconnector;
-	private final Map<String,Integer> file_ids;
-	private final Task task;
-	private final DataSetDescription dataset;
 	private final XStream xstream;
+	private final ApiSessionHash ash;
+	private static final int INTERVAL_SIZE = 1000;
 	
 	public static void main( String[] args ) {
-		Config c = new Config("username = janvanrijn@gmail.com; password = Feyenoord2002; server = http://localhost/");
+		Config c = new Config("username = janvanrijn@gmail.com; password = Feyenoord2002; server = http://localhost/openexpdb_v2/");
+		
 		try {
-			new EvaluateRun(72, 1000, c);
+			new EvaluateRun( c );
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public EvaluateRun( int run_id, int stream_interval_size, Config config ) throws Exception {
+	public EvaluateRun( Config config ) throws Exception {
+		this( config, null );
+	}
+	
+	public EvaluateRun( Config config, Integer run_id ) throws Exception {
 		apiconnector = new ApiConnector( config.getServer() );
+		ash = new ApiSessionHash( apiconnector );
+		ash.set( config.getUsername(), config.getPassword() );
 		xstream = XstreamXmlMapping.getInstance();
-		file_ids = new HashMap<String, Integer>();
+		
+		if( run_id != null ) {
+			evaluate( run_id, INTERVAL_SIZE );
+		} else {
+			run_id = getRunId();
+			if( run_id != null ) {
+				evaluate( run_id, INTERVAL_SIZE );
+			} else {
+				Conversion.log( "OK", "Process Run", "No Runs to perform. " );
+			}
+		}
+
+		
+	}
+	
+	public Integer getRunId() throws JSONException, IOException {
+		String sql = 
+			"SELECT `rid`,`start_time`,`processed`,`error` " + 
+			"FROM `run` WHERE `processed` IS NULL AND `error` IS NULL " + 
+			"ORDER BY `start_time` ASC"; 
+		
+		JSONArray runJson = (JSONArray) apiconnector.openmlFreeQuery( sql ).get("data");
+		
+		if( runJson.length() > 0 ) {
+			int run_id = ((JSONArray) runJson.get( 0 )).getInt( 0 );
+			Conversion.log( "OK", "Process Run", "Downloading run: " + run_id );
+			return run_id;
+		} else {
+			return null;
+		}
+	}
+	
+	public void evaluate( int run_id, int stream_interval_size ) throws Exception {
+		final Map<String,Integer> file_ids = new HashMap<String, Integer>();
+		final Task task;
+		final DataSetDescription dataset;
 		
 		PredictionEvaluator predictionEvaluator;
 		RunEvaluation runevaluation = new RunEvaluation( run_id );
@@ -58,12 +104,7 @@ public class EvaluateRun {
 			file_ids.put(field, file_index);
 		}
 		
-		// TODO: Download run XML, and check user defined measures, for consistency and additional information. 
-		Run run_description = (Run) xstream.fromXML( apiconnector.getStringFromUrl( apiconnector.getOpenmlFileUrl( file_ids.get( "description" ) ).toString() ) );
-		
-		for( EvaluationScore e : run_description.getOutputEvaluation() ) {
-			System.out.println( e.getFunction() + " - " + e.getImplementation() + " - " + e.getValue() );
-		}
+		Run run_description = (Run) xstream.fromXML( ApiConnector.getStringFromUrl( apiconnector.getOpenmlFileUrl( file_ids.get( "description" ) ).toString() ) );
 		
 		try {
 			// TODO! no string comparisons, do something better
@@ -96,20 +137,27 @@ public class EvaluateRun {
 				if( recorded.isSame( calculated ) ) {
 					foundSame = true;
 					if( recorded.sameValue( calculated ) == false ) {
-						System.err.println("Inconsistent A: " + recorded + recorded.getValue() );
-						System.err.println("Inconsistent B: " + calculated + calculated.getValue() + "\n===" );
-						errorMessage += "Inconsistent Evaluation score: " + recorded;
+						String offByStr = "";
+						try {
+							double diff = Math.abs( Double.parseDouble( recorded.getValue() ) - Double.parseDouble( calculated.getValue() ) );
+							offByStr = " (of by " + diff + ")";
+						} catch( NumberFormatException nfe ) { }
+						
+						errorMessage += "Inconsistent Evaluation score: " + recorded + offByStr;
 						errorFound = true;
 					} 
 				}
 			}
 			if( foundSame == false ) {
-				System.err.println("Added user defined Measure: " + recorded );
 				runevaluation.addEvaluationMeasure( recorded );
 			}
 		}
 		if( errorFound ) runevaluation.setError( errorMessage );
-		 
-		//System.out.println( XstreamXmlMapping.getInstance().toXML(runevaluation) );
+		
+		File evaluationFile = Conversion.stringToTempFile( xstream.toXML( runevaluation ), "run_" + run_id + "evaluations", "xml" );
+		
+		System.out.println(xstream.toXML( runevaluation ));
+		
+		//apiconnector.openmlRunEvaluate( evaluationFile, ash.getSessionHash() );
 	}
 }

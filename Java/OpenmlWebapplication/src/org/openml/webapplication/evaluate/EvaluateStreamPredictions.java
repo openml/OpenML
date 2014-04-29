@@ -112,6 +112,8 @@ public class EvaluateStreamPredictions implements PredictionEvaluator {
 			}
 			
 			double[] confidences = InstancesHelper.predictionToConfidences( datasetStructure, currentPrediction, ATT_PREDICTION_CONFIDENCE ); // TODO: catch error when no prob distribution is provided
+			// TODO: we might want to throw an error if the sum of confidences is not 1.0. Not now though. 
+			
 			globalEvaluator.evaluateModelOnce( confidences, currentInstance );
 			localEvaluator.evaluateModelOnce( confidences, currentInstance );
 			

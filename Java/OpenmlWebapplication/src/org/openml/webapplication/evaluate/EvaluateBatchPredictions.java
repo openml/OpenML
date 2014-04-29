@@ -185,7 +185,7 @@ public class EvaluateBatchPredictions implements PredictionEvaluator {
 		for( int i = 0; i < sampleEvaluation.length; ++i ) {
 			for( int j = 0; j < sampleEvaluation[i].length; ++j ) {
 				for( int k = 0; k < sampleEvaluation[i][j].length; ++k ) {
-					Map<Metric, MetricScore> currentMeasures = Output.evaluatorToMap( e, nrOfClasses, task);
+					Map<Metric, MetricScore> currentMeasures = Output.evaluatorToMap( sampleEvaluation[i][j][k] , nrOfClasses, task);
 					for( Metric m : currentMeasures.keySet() ) {
 						MetricScore score = currentMeasures.get( m );
 						DecimalFormat dm = MathHelper.defaultDecimalFormat;

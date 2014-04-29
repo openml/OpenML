@@ -38,3 +38,20 @@ CHANGE `NumberOfIntegerValues` `NumberOfIntegerValues` INT( 11 ) NULL DEFAULT NU
 CHANGE `NumberOfRealValues` `NumberOfRealValues` INT( 11 ) NULL DEFAULT NULL ;
 
 ALTER TABLE `schedule` ADD `active` ENUM( 'true', 'false' ) NOT NULL DEFAULT 'true';
+
+CREATE TABLE IF NOT EXISTS `evaluation_interval` (
+  `did` int(10) unsigned NOT NULL DEFAULT '0',
+  `source` int(10) unsigned NOT NULL,
+  `parent` int(10) unsigned NOT NULL DEFAULT '0',
+  `implementation_id` int(16) NOT NULL,
+  `function` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `label` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `interval_start` int(10) unsigned NOT NULL DEFAULT '0',
+  `interval_end` int(10) unsigned NOT NULL DEFAULT '0',
+  `value` double DEFAULT NULL,
+  `array_data` text COLLATE utf8_unicode_ci,
+  UNIQUE KEY `did` (`did`,`function`,`label`),
+  KEY `function` (`function`,`source`,`label`(32)),
+  KEY `func` (`function`),
+  KEY `impl` (`implementation_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
