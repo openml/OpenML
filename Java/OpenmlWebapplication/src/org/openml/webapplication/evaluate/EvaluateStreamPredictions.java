@@ -98,7 +98,10 @@ public class EvaluateStreamPredictions implements PredictionEvaluator {
 		
 		// we go through all the instances in one loop. 
 		Instance currentInstance;
+		int previousIntervalStarted = 0;
+		boolean allProcessed = true;
 		for( int iInstanceNr = 0; ( ( currentInstance = datasetLoader.getNextInstance( datasetStructure ) ) != null ); ++iInstanceNr ) {
+			allProcessed = false;
 			Instance currentPrediction = predictionsLoader.getNextInstance( predictionsStructure );
 			if( currentPrediction == null ) throw new Exception( "Could not find prediction for instance #" + iInstanceNr );
 			
@@ -114,15 +117,24 @@ public class EvaluateStreamPredictions implements PredictionEvaluator {
 			double[] confidences = InstancesHelper.predictionToConfidences( datasetStructure, currentPrediction, ATT_PREDICTION_CONFIDENCE ); // TODO: catch error when no prob distribution is provided
 			// TODO: we might want to throw an error if the sum of confidences is not 1.0. Not now though. 
 			
-			globalEvaluator.evaluateModelOnce( confidences, currentInstance );
-			localEvaluator.evaluateModelOnce( confidences, currentInstance );
+			try {
+				globalEvaluator.evaluateModelOnce( confidences, currentInstance );
+				localEvaluator.evaluateModelOnce( confidences, currentInstance );
+			} catch( ArrayIndexOutOfBoundsException aiobe ) {
+				throw new Exception("ArrayIndexutOfBoundsException: This is an error that occurs when the classifier returns negative values. ");
+			}
 			
 			if( (iInstanceNr + 1) % interval_size == 0 ) {
-				intervalMeasures.put( iInstanceNr + 1 - interval_size, Output.evaluatorToMap(globalEvaluator, nrOfClasses, TaskType.TESTTHENTRAIN) );
+				intervalMeasures.put( previousIntervalStarted, Output.evaluatorToMap(globalEvaluator, nrOfClasses, TaskType.TESTTHENTRAIN) );
 				localEvaluator = new Evaluation( datasetStructure );
-			}
+				previousIntervalStarted = iInstanceNr + 1;
+				allProcessed = true;
+			} // TODO: find a nice way to specify interval size; Don't want to have the last interval of the wrong size
 		}
 		
+		if( ! allProcessed ) {
+			intervalMeasures.put( previousIntervalStarted, Output.evaluatorToMap(globalEvaluator, nrOfClasses, TaskType.TESTTHENTRAIN) );
+		}
 		globalMeasures = Output.evaluatorToMap(globalEvaluator, nrOfClasses, TaskType.TESTTHENTRAIN);
 	}
 	

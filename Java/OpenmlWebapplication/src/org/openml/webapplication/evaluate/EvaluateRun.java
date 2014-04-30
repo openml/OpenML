@@ -15,6 +15,7 @@ import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.DataSetDescription;
 import org.openml.apiconnector.xml.EvaluationScore;
 import org.openml.apiconnector.xml.Run;
+import org.openml.apiconnector.xml.RunEvaluate;
 import org.openml.apiconnector.xml.RunEvaluation;
 import org.openml.apiconnector.xml.Task;
 import org.openml.apiconnector.xml.Task.Input.Data_set;
@@ -31,7 +32,7 @@ public class EvaluateRun {
 	private static final int INTERVAL_SIZE = 1000;
 	
 	public static void main( String[] args ) {
-		Config c = new Config("username = janvanrijn@gmail.com; password = Feyenoord2002; server = http://localhost/openexpdb_v2/");
+		Config c = new Config("username = janvanrijn@gmail.com; password = Feyenoord2002; server = http://openml.liacs.nl/");
 		
 		try {
 			new EvaluateRun( c );
@@ -74,7 +75,7 @@ public class EvaluateRun {
 		
 		if( runJson.length() > 0 ) {
 			int run_id = ((JSONArray) runJson.get( 0 )).getInt( 0 );
-			Conversion.log( "OK", "Process Run", "Downloading run: " + run_id );
+			Conversion.log( "OK", "Process Run", "Start processing run: " + run_id );
 			return run_id;
 		} else {
 			return null;
@@ -107,6 +108,7 @@ public class EvaluateRun {
 		Run run_description = (Run) xstream.fromXML( ApiConnector.getStringFromUrl( apiconnector.getOpenmlFileUrl( file_ids.get( "description" ) ).toString() ) );
 		
 		try {
+			Conversion.log( "OK", "Process Run", "Start prediction evaluator. " );
 			// TODO! no string comparisons, do something better
 			if( task.getTask_type().equals("Supervised Data Stream Classification") ) {
 				predictionEvaluator = new EvaluateStreamPredictions(
@@ -122,42 +124,43 @@ public class EvaluateRun {
 					source_data.getTarget_feature() );
 			}
 			runevaluation.addEvaluationMeasures( predictionEvaluator.getEvaluationScores() );
+			Conversion.log( "OK", "Process Run", "Start consistency check with user defined measures. (x " + run_description.getOutputEvaluation().length + ")" );
 			
-		} catch( Exception e ) {
-			e.printStackTrace();
-			runevaluation.setError( e.getMessage() );
-		}
-		
-		// TODO: This can be done so much faster ... 
-		String errorMessage = "";
-		boolean errorFound = false;
-		for( EvaluationScore recorded : run_description.getOutputEvaluation() ) {
-			boolean foundSame = false;
-			for( EvaluationScore calculated : runevaluation.getEvaluation_scores() ) {
-				if( recorded.isSame( calculated ) ) {
-					foundSame = true;
-					if( recorded.sameValue( calculated ) == false ) {
-						String offByStr = "";
-						try {
-							double diff = Math.abs( Double.parseDouble( recorded.getValue() ) - Double.parseDouble( calculated.getValue() ) );
-							offByStr = " (of by " + diff + ")";
-						} catch( NumberFormatException nfe ) { }
-						
-						errorMessage += "Inconsistent Evaluation score: " + recorded + offByStr;
-						errorFound = true;
-					} 
+			// TODO: This can be done so much faster ... 
+			String errorMessage = "";
+			boolean errorFound = false;
+			for( EvaluationScore recorded : run_description.getOutputEvaluation() ) {
+				boolean foundSame = false;
+				for( EvaluationScore calculated : runevaluation.getEvaluation_scores() ) {
+					if( recorded.isSame( calculated ) ) {
+						foundSame = true;
+						if( recorded.sameValue( calculated ) == false ) {
+							String offByStr = "";
+							try {
+								double diff = Math.abs( Double.parseDouble( recorded.getValue() ) - Double.parseDouble( calculated.getValue() ) );
+								offByStr = " (of by " + diff + ")";
+							} catch( NumberFormatException nfe ) { }
+							
+							errorMessage += "Inconsistent Evaluation score: " + recorded + offByStr;
+							errorFound = true;
+						} 
+					}
+				}
+				if( foundSame == false ) {
+					runevaluation.addEvaluationMeasure( recorded );
 				}
 			}
-			if( foundSame == false ) {
-				runevaluation.addEvaluationMeasure( recorded );
-			}
+			if( errorFound ) runevaluation.setError( errorMessage );
+			
+		} catch( Exception e ) {
+			Conversion.log( "Warning", "Process Run", "Unexpected error, will proceed with upload process: " + e.getMessage() );
+			runevaluation.setError( e.getMessage() );
 		}
-		if( errorFound ) runevaluation.setError( errorMessage );
-		
+
+		Conversion.log( "OK", "Process Run", "Start uploading results ... " );
 		File evaluationFile = Conversion.stringToTempFile( xstream.toXML( runevaluation ), "run_" + run_id + "evaluations", "xml" );
 		
-		System.out.println(xstream.toXML( runevaluation ));
-		
-		//apiconnector.openmlRunEvaluate( evaluationFile, ash.getSessionHash() );
+		RunEvaluate re = apiconnector.openmlRunEvaluate( evaluationFile, ash.getSessionHash() );
+		Conversion.log( "OK", "Process Run", "Run processed: " + re.getRun_id() );
 	}
 }
