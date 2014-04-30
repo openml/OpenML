@@ -153,14 +153,19 @@ public class EvaluateRun {
 			if( errorFound ) runevaluation.setError( errorMessage );
 			
 		} catch( Exception e ) {
+			e.printStackTrace();
 			Conversion.log( "Warning", "Process Run", "Unexpected error, will proceed with upload process: " + e.getMessage() );
 			runevaluation.setError( e.getMessage() );
 		}
 
 		Conversion.log( "OK", "Process Run", "Start uploading results ... " );
-		File evaluationFile = Conversion.stringToTempFile( xstream.toXML( runevaluation ), "run_" + run_id + "evaluations", "xml" );
-		
-		RunEvaluate re = apiconnector.openmlRunEvaluate( evaluationFile, ash.getSessionHash() );
-		Conversion.log( "OK", "Process Run", "Run processed: " + re.getRun_id() );
+		try {
+			File evaluationFile = Conversion.stringToTempFile( xstream.toXML( runevaluation ), "run_" + run_id + "evaluations", "xml" );
+			
+			RunEvaluate re = apiconnector.openmlRunEvaluate( evaluationFile, ash.getSessionHash() );
+			Conversion.log( "OK", "Process Run", "Run processed: " + re.getRun_id() );
+		} catch( Exception  e ) {
+			Conversion.log( "ERROR", "Process Run", "An error occured during API call: " + e.getMessage() );
+		}
 	}
 }

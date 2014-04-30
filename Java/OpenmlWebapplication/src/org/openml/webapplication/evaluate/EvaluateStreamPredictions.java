@@ -121,7 +121,7 @@ public class EvaluateStreamPredictions implements PredictionEvaluator {
 				globalEvaluator.evaluateModelOnce( confidences, currentInstance );
 				localEvaluator.evaluateModelOnce( confidences, currentInstance );
 			} catch( ArrayIndexOutOfBoundsException aiobe ) {
-				throw new Exception("ArrayIndexutOfBoundsException: This is an error that occurs when the classifier returns negative values. ");
+				throw new Exception("ArrayIndexOutOfBoundsException: This is an error that occurs when the classifier returns negative values. ");
 			}
 			
 			if( (iInstanceNr + 1) % interval_size == 0 ) {
