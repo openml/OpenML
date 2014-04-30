@@ -92,6 +92,7 @@ public class EvaluateRun {
 		
 		JSONArray runJson = (JSONArray) apiconnector.openmlFreeQuery( "SELECT `task_id` FROM `run` WHERE `rid` = " + run_id ).get("data");
 		JSONArray filesJson =  (JSONArray) apiconnector.openmlFreeQuery( "SELECT `field`,`file_id` FROM `runfile` WHERE `source` = " + run_id ).get("data");
+		
 		int task_id = ((JSONArray) runJson.get( 0 )).getInt( 0 );
 		task = apiconnector.openmlTaskSearch(task_id);
 		Data_set source_data = TaskInformation.getSourceData(task);

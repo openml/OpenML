@@ -9,5 +9,6 @@
 	<classpathentry kind="lib" path="lib/commons-lang3-3.1.jar"/>
 	<classpathentry kind="lib" path="lib/xstream-1.4.4.jar"/>
 	<classpathentry kind="lib" path="lib/org.json-20120521.jar"/>
+	<classpathentry kind="lib" path="lib/moa.jar" sourcepath="lib/moa-2014.04-SNAPSHOT-sources.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

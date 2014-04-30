@@ -90,7 +90,7 @@ public class Main {
 						
 						String default_class = null;
 						if( cli.hasOption("-c") == true ) { default_class = cli.getOptionValue("c"); }
-						FantailConnector.extractFeatures( Integer.parseInt( cli.getOptionValue("did") ), default_class, c );
+						FantailConnector.extractFeatures( Integer.parseInt( cli.getOptionValue("did") ), default_class, null, c );
 					} 
 				} else if( function.equals("generate_folds") ) {
 					if( cli.hasOption("-d") && cli.hasOption("e") && cli.hasOption("c") && cli.hasOption("r") ) {

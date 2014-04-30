@@ -21,7 +21,6 @@ package org.openml.webapplication.features;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +29,7 @@ import org.openml.apiconnector.io.ApiConnector;
 import org.openml.apiconnector.io.ApiSessionHash;
 import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.DataQuality;
+import org.openml.apiconnector.xml.DataQuality.Quality;
 import org.openml.apiconnector.xml.DataSetDescription;
 import org.openml.apiconnector.xstream.XstreamXmlMapping;
 import org.openml.webapplication.fantail.dc.Characterizer;
@@ -57,7 +57,7 @@ import weka.core.converters.ArffLoader;
 public class FantailConnector {
 	
 	private static final XStream xstream = XstreamXmlMapping.getInstance();
-	private static final Characterizer[] allCharacterizers = {
+	private static final Characterizer[] batchCharacterizers = {
 			new Statistical(), new AttributeCount(), new AttributeType(),
 			new ClassAtt(), new DefaultAccuracy(),
 			new IncompleteInstanceCount(), new InstanceCount(),
@@ -66,8 +66,12 @@ public class FantailConnector {
 			new J48BasedLandmarker(), new REPTreeBasedLandmarker(),
 			new RandomTreeBasedLandmarker() 
 	};
-
-	public static void extractFeatures(Integer did, String datasetClass,
+	
+	public static void main( String[] args ) throws Exception {
+		extractFeatures( 1, "class", 100, new Config( "username = janvanrijn@gmail.com; password = Feyenoord2002; server = http://localhost/openexpdb_v2/") );
+	}
+	
+	public static void extractFeatures(Integer did, String datasetClass, Integer interval_size,
 			Config config) throws Exception {
 		List<String> prevCalcQualities;
 		ApiConnector apiconnector;
@@ -81,8 +85,13 @@ public class FantailConnector {
 		DataSetDescription dsd = apiconnector.openmlDataDescription(did);
 		
 		try {
-			DataQuality apiQualities = apiconnector.openmlDataQuality(did);
-			prevCalcQualities = Arrays.asList( apiQualities.getQualityNames() );
+			if( interval_size == null ) {
+				DataQuality apiQualities = apiconnector.openmlDataQuality(did);
+				prevCalcQualities = Arrays.asList( apiQualities.getQualityNames() );
+				// TODO: do this check also for interval sizes
+			} else {
+				prevCalcQualities = new ArrayList<String>();
+			}
 		} catch( Exception e ) {
 			// no qualities calculated yet. We might want to avoid catching this error
 			prevCalcQualities = new ArrayList<String>();
@@ -95,9 +104,22 @@ public class FantailConnector {
 			System.out.println(Output.statusMessage("OK", "No new Fantail Features from data #" + did));
 			return;
 		}
-		Map<String, Double> qualities = datasetCharacteristics(dsd.getUrl(), datasetClass);
+		
+		ArffLoader datasetLoader = new ArffLoader();
+		datasetLoader.setURL(dsd.getUrl());
+		Instances dataset = new Instances( datasetLoader.getDataSet() );
+		dataset.setClass( dataset.attribute( datasetClass ) );
+		
+		List<Quality> qualities = new ArrayList<DataQuality.Quality>();
+		if( interval_size != null ) {
+			for( int i = 0; i < dataset.numInstances(); i += interval_size ) {
+				qualities.addAll( datasetCharacteristics( dataset, i, interval_size ) );
+			}
+		} else {
+			qualities.addAll( datasetCharacteristics( dataset, null, null ) );
+		}
 
-		DataQuality dq = new DataQuality(did, qualities);
+		DataQuality dq = new DataQuality(did, qualities.toArray( new Quality[qualities.size()] ) );
 		String strQualities = xstream.toXML(dq);
 		ApiSessionHash ash = new ApiSessionHash( apiconnector );
 		ash.set(config.getUsername(), config.getPassword());
@@ -113,32 +135,31 @@ public class FantailConnector {
 	public static List<String> characteristicsAvailable() {
 		List<String> allCharacteristics = new ArrayList<String>();
 		
-		for( Characterizer dc : allCharacterizers ) {
+		for( Characterizer dc : batchCharacterizers ) {
 			allCharacteristics.addAll( Arrays.asList( dc.getIDs() ) );
 		}
 		
 		return allCharacteristics;
 	}
 
-	public static Map<String, Double> datasetCharacteristics(String datasetUrl,
-			String datasetClass) throws Exception {
-		ArffLoader arffLoader = new ArffLoader();
-		arffLoader.setURL(datasetUrl);
-
-		Instances data = arffLoader.getDataSet();
-
-		if (datasetClass != null) {
-			data.setClass(data.attribute(datasetClass));
+	public static List<Quality> datasetCharacteristics( Instances fulldata, Integer start, Integer interval_size ) throws Exception {
+		List<Quality> result = new ArrayList<DataQuality.Quality>();
+		Instances intervalData;
+		// carefull: Only the start param needs a off by one correction. 
+		if( interval_size != null ) {
+			intervalData = new Instances( fulldata, start, Math.min( interval_size, fulldata.numInstances() - start ) );
 		} else {
-			data.setClassIndex(data.numAttributes() - 1);
+			intervalData = fulldata;
 		}
-
-		Map<String, Double> dcValues = new HashMap<String, Double>();
 		
-		for( Characterizer dc : allCharacterizers ) {
-			dcValues.putAll(dc.characterize(data));
+		for( Characterizer dc : batchCharacterizers ) {
+			Map<String, Double> dcValues = dc.characterize(intervalData);
+			for( String quality : dcValues.keySet() ) {
+				Integer end = ( start != null ) ? start + intervalData.numInstances() : null;
+				result.add( new Quality( quality, dcValues.get( quality ) + "", start, end ) );
+			}
 		}
-
-		return dcValues;
+		
+		return result;
 	}
 }

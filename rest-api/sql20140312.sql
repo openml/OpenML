@@ -39,6 +39,9 @@ CHANGE `NumberOfRealValues` `NumberOfRealValues` INT( 11 ) NULL DEFAULT NULL ;
 
 ALTER TABLE `schedule` ADD `active` ENUM( 'true', 'false' ) NOT NULL DEFAULT 'true';
 
+ALTER TABLE `quality` ADD `showonline` ENUM( 'true', 'false' ) NOT NULL DEFAULT 'true';
+
+
 CREATE TABLE IF NOT EXISTS `evaluation_interval` (
   `did` int(10) unsigned NOT NULL DEFAULT '0',
   `source` int(10) unsigned NOT NULL,
@@ -54,4 +57,14 @@ CREATE TABLE IF NOT EXISTS `evaluation_interval` (
   KEY `function` (`function`,`source`,`label`(32)),
   KEY `func` (`function`),
   KEY `impl` (`implementation_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `data_quality_interval` (
+  `data` int(10) unsigned NOT NULL DEFAULT '0',
+  `quality` varchar(128) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '',
+  `implementation_id` int(16) NOT NULL,
+  `interval_start` int(16) NOT NULL,
+  `interval_end` int(16) NOT NULL,
+  `value` varchar(128) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
+  PRIMARY KEY (`data`,`quality`,`interval_start`,`interval_end`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
