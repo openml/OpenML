@@ -77,6 +77,37 @@ public class InstancesHelper {
 		return confidences;
 	}
 	
+	public static double[] toProbDist( double[]  d ) {
+		double total = 0;
+		double[] result = new double[d.length];
+		for( int i = 0; i < d.length; ++i ) { // scan for infinity
+			if( Double.isInfinite( d[i] ) ) {
+				result[i] = 1.0;
+				return result;
+			}
+		}
+		
+		for( int i = 0; i < d.length; ++i ) { 
+			if( Double.isNaN( d[i] ) == false ) // only if it is a legal nr. 
+				total += d[i];
+		}
+		
+		if( total == 0.0 ) { // If none of the classes were predicted we go for the first class, by default.
+			result[0] = 1.0;
+			return result;
+		}
+		
+		for( int i = 0; i < d.length; ++i ) {
+			if( Double.isNaN( d[i] ) )
+				result[i] = 0.0D;
+			else if( total > 0.0 )
+				result[i] = d[i] / total;
+			else 
+				result[i] = d[i];
+		}
+		return result;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public static void stratify( Instances dataset ) {
 		int numClasses = dataset.classAttribute().numValues();

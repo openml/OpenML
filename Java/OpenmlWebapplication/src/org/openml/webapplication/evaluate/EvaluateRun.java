@@ -75,7 +75,6 @@ public class EvaluateRun {
 		
 		if( runJson.length() > 0 ) {
 			int run_id = ((JSONArray) runJson.get( 0 )).getInt( 0 );
-			Conversion.log( "OK", "Process Run", "Start processing run: " + run_id );
 			return run_id;
 		} else {
 			return null;
@@ -83,6 +82,7 @@ public class EvaluateRun {
 	}
 	
 	public void evaluate( int run_id, int stream_interval_size ) throws Exception {
+		Conversion.log( "OK", "Process Run", "Start processing run: " + run_id );
 		final Map<String,Integer> file_ids = new HashMap<String, Integer>();
 		final Task task;
 		final DataSetDescription dataset;

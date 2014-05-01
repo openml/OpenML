@@ -33,6 +33,7 @@ import org.openml.apiconnector.xml.DataQuality.Quality;
 import org.openml.apiconnector.xml.DataSetDescription;
 import org.openml.apiconnector.xstream.XstreamXmlMapping;
 import org.openml.webapplication.fantail.dc.Characterizer;
+import org.openml.webapplication.fantail.dc.StreamCharacterizer;
 import org.openml.webapplication.fantail.dc.landmarking.J48BasedLandmarker;
 import org.openml.webapplication.fantail.dc.landmarking.REPTreeBasedLandmarker;
 import org.openml.webapplication.fantail.dc.landmarking.RandomTreeBasedLandmarker;
@@ -47,6 +48,7 @@ import org.openml.webapplication.fantail.dc.statistical.InstanceCount;
 import org.openml.webapplication.fantail.dc.statistical.MissingValues;
 import org.openml.webapplication.fantail.dc.statistical.NominalAttDistinctValues;
 import org.openml.webapplication.fantail.dc.statistical.Statistical;
+import org.openml.webapplication.fantail.dc.stream.ChangeDetectors;
 import org.openml.webapplication.io.Output;
 
 import com.thoughtworks.xstream.XStream;
@@ -68,11 +70,12 @@ public class FantailConnector {
 	};
 	
 	public static void main( String[] args ) throws Exception {
-		extractFeatures( 1, "class", 100, new Config( "username = janvanrijn@gmail.com; password = Feyenoord2002; server = http://localhost/openexpdb_v2/") );
+		extractFeatures( 1, "class", 100, new Config( "username = janvanrijn@gmail.com; password = Feyenoord2002; server = http://localhost/") );
 	}
 	
 	public static void extractFeatures(Integer did, String datasetClass, Integer interval_size,
 			Config config) throws Exception {
+		
 		List<String> prevCalcQualities;
 		ApiConnector apiconnector;
 		
@@ -143,9 +146,13 @@ public class FantailConnector {
 	}
 
 	public static List<Quality> datasetCharacteristics( Instances fulldata, Integer start, Integer interval_size ) throws Exception {
+		// TODO: initialize this properly!!!!!!
+		final StreamCharacterizer[] streamCharacterizers = { new ChangeDetectors( interval_size ) };
+		
 		List<Quality> result = new ArrayList<DataQuality.Quality>();
 		Instances intervalData;
-		// carefull: Only the start param needs a off by one correction. 
+		
+		// Be careful changing this!
 		if( interval_size != null ) {
 			intervalData = new Instances( fulldata, start, Math.min( interval_size, fulldata.numInstances() - start ) );
 		} else {

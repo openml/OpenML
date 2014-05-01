@@ -33,6 +33,7 @@ import org.openml.webapplication.models.JsonItem;
 
 import weka.classifiers.Evaluation;
 import weka.core.Instances;
+import weka.core.Utils;
 
 public class Output {
 	
@@ -88,8 +89,9 @@ public class Output {
 			m.put(new Metric("precision", "openml.evaluation.precision(1.0)",null),new MetricScore( evaluator.weightedPrecision(), precision ));
 			m.put(new Metric("recall", "openml.evaluation.recall(1.0)",null),new MetricScore( evaluator.weightedRecall(), recall ));
 			m.put(new Metric("f_measure", "openml.evaluation.f_measure(1.0)",null),new MetricScore( evaluator.weightedFMeasure(), fMeasure ));
-			m.put(new Metric("area_under_roc_curve", "openml.evaluation.area_under_roc_curve(1.0)",null), new MetricScore( evaluator. weightedAreaUnderROC(), auroc ) );
-			
+			if( Utils.isMissingValue( evaluator.weightedAreaUnderROC() ) == false ) {
+				m.put(new Metric("area_under_roc_curve", "openml.evaluation.area_under_roc_curve(1.0)",null), new MetricScore( evaluator.weightedAreaUnderROC(), auroc ) );
+			}
 			m.put(new Metric("confusion_matrix","openml.evaluation.confusion_matrix(1.0)",null), new MetricScore(confussion_matrix));
 		}
 		return m;
