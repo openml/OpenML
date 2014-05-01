@@ -10,7 +10,7 @@ public class ChangeDetectors extends StreamCharacterizer {
 	
 	private final RunChangeDetectorTask rcdt;
 	
-	public ChangeDetectors( int interval_size ) {
+	public ChangeDetectors( Integer interval_size ) {
 		rcdt = new RunChangeDetectorTask( interval_size );
 	}
 	
@@ -27,6 +27,11 @@ public class ChangeDetectors extends StreamCharacterizer {
 	@Override
 	public Map<String, Double> interval(int interval_start) {
 		return rcdt.interval(interval_start);
+	}
+
+	@Override
+	public Map<String, Double> global() {
+		return rcdt.global();
 	}
 
 }

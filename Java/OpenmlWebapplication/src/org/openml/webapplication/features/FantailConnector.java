@@ -20,7 +20,6 @@
 package org.openml.webapplication.features;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -49,7 +48,6 @@ import org.openml.webapplication.fantail.dc.statistical.MissingValues;
 import org.openml.webapplication.fantail.dc.statistical.NominalAttDistinctValues;
 import org.openml.webapplication.fantail.dc.statistical.Statistical;
 import org.openml.webapplication.fantail.dc.stream.ChangeDetectors;
-import org.openml.webapplication.io.Output;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -69,14 +67,19 @@ public class FantailConnector {
 			new RandomTreeBasedLandmarker() 
 	};
 	
+	private static StreamCharacterizer[] streamCharacterizers;
+	
 	public static void main( String[] args ) throws Exception {
-		extractFeatures( 1, "class", 100, new Config( "username = janvanrijn@gmail.com; password = Feyenoord2002; server = http://localhost/") );
+		extractFeatures( 1, "class", null, new Config( "username = janvanrijn@gmail.com; password = Feyenoord2002; server = http://localhost/") );
 	}
 	
-	public static void extractFeatures(Integer did, String datasetClass, Integer interval_size,
+	public static boolean extractFeatures(Integer did, String datasetClass, Integer interval_size,
 			Config config) throws Exception {
+		// TODO: initialize this properly!!!!!!
+		streamCharacterizers = new StreamCharacterizer[1]; 
+		streamCharacterizers[0] = new ChangeDetectors( interval_size );
 		
-		List<String> prevCalcQualities;
+		//List<String> prevCalcQualities;
 		ApiConnector apiconnector;
 		
 		if( config.getServer() != null ) {
@@ -87,7 +90,7 @@ public class FantailConnector {
 		
 		DataSetDescription dsd = apiconnector.openmlDataDescription(did);
 		
-		try {
+		/*try {
 			if( interval_size == null ) {
 				DataQuality apiQualities = apiconnector.openmlDataQuality(did);
 				prevCalcQualities = Arrays.asList( apiQualities.getQualityNames() );
@@ -106,36 +109,50 @@ public class FantailConnector {
 		if( uncalculatedQualities.size() == 0 ) {
 			System.out.println(Output.statusMessage("OK", "No new Fantail Features from data #" + did));
 			return;
-		}
+		}*/
 		
 		ArffLoader datasetLoader = new ArffLoader();
 		datasetLoader.setURL(dsd.getUrl());
 		Instances dataset = new Instances( datasetLoader.getDataSet() );
 		dataset.setClass( dataset.attribute( datasetClass ) );
 		
+		
+
+		// first run stream characterizers
+		for( StreamCharacterizer sc : streamCharacterizers ) {
+			sc.characterize( dataset );
+		}
+		
 		List<Quality> qualities = new ArrayList<DataQuality.Quality>();
 		if( interval_size != null ) {
 			for( int i = 0; i < dataset.numInstances(); i += interval_size ) {
 				qualities.addAll( datasetCharacteristics( dataset, i, interval_size ) );
+				
+				for( StreamCharacterizer sc : streamCharacterizers ) {
+					qualities.addAll( hashMaptoList( sc.interval( i ), i, interval_size ) );
+				}
 			}
+			
 		} else {
 			qualities.addAll( datasetCharacteristics( dataset, null, null ) );
+			for( StreamCharacterizer sc : streamCharacterizers ) {
+				qualities.addAll( hashMaptoList( sc.global( ), null, null ) );
+			}
 		}
 
 		DataQuality dq = new DataQuality(did, qualities.toArray( new Quality[qualities.size()] ) );
 		String strQualities = xstream.toXML(dq);
 		ApiSessionHash ash = new ApiSessionHash( apiconnector );
 		ash.set(config.getUsername(), config.getPassword());
-
+		
 		apiconnector.openmlDataQualityUpload(
 				Conversion.stringToTempFile(strQualities, "qualities_did_"
 						+ did, "xml"), ash.getSessionHash());
-
-		System.out.println(Output.statusMessage("OK",
-				"Successfully extracted Fantail Features from data #" + did));
+		
+		return true;
 	}
 
-	public static List<String> characteristicsAvailable() {
+	/*private static List<String> characteristicsAvailable() {
 		List<String> allCharacteristics = new ArrayList<String>();
 		
 		for( Characterizer dc : batchCharacterizers ) {
@@ -143,12 +160,9 @@ public class FantailConnector {
 		}
 		
 		return allCharacteristics;
-	}
+	}*/
 
-	public static List<Quality> datasetCharacteristics( Instances fulldata, Integer start, Integer interval_size ) throws Exception {
-		// TODO: initialize this properly!!!!!!
-		final StreamCharacterizer[] streamCharacterizers = { new ChangeDetectors( interval_size ) };
-		
+	private static List<Quality> datasetCharacteristics( Instances fulldata, Integer start, Integer interval_size ) throws Exception {
 		List<Quality> result = new ArrayList<DataQuality.Quality>();
 		Instances intervalData;
 		
@@ -160,13 +174,19 @@ public class FantailConnector {
 		}
 		
 		for( Characterizer dc : batchCharacterizers ) {
-			Map<String, Double> dcValues = dc.characterize(intervalData);
-			for( String quality : dcValues.keySet() ) {
-				Integer end = ( start != null ) ? start + intervalData.numInstances() : null;
-				result.add( new Quality( quality, dcValues.get( quality ) + "", start, end ) );
-			}
+			result.addAll( hashMaptoList( dc.characterize(intervalData), start, interval_size ) );
+			
 		}
 		
+		return result;
+	}
+	
+	public static List<Quality> hashMaptoList( Map<String, Double> map, Integer start, Integer size ) {
+		List<Quality> result = new ArrayList<DataQuality.Quality>();
+		for( String quality : map.keySet() ) {
+			Integer end = start != null ? start + size : null;
+			result.add( new Quality( quality, map.get( quality ) + "", start, end ) );
+		}
 		return result;
 	}
 }

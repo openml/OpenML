@@ -65,8 +65,8 @@ public class RunChangeDetectorTask extends AbstractOptionHandler {
 		return ids;
 	}
 
-	public RunChangeDetectorTask( int interval_size ) {
-		this.interval_size = interval_size;
+	public RunChangeDetectorTask( Integer interval_size ) {
+		this.interval_size = interval_size != null ? interval_size : Integer.MAX_VALUE; // we don't need to "interval"-ize
 		allDriftDetectors = new ClassOption[4];
 		allDriftDetectors[0] = driftDetector1Option;
 		allDriftDetectors[1] = driftDetector2Option;
@@ -89,9 +89,11 @@ public class RunChangeDetectorTask extends AbstractOptionHandler {
 		for( int iClassifiers = 0; iClassifiers < allDriftDetectors.length; ++iClassifiers ) {
 			Classifier learner = (Classifier) getPreparedClassOption( allDriftDetectors[iClassifiers] );
 			learner.setModelContext( streamHeader );
+			boolean allProcessed = true;
 			
 			int previousIntervalStart = 0;
 			for( int iInstances = 0; iInstances < instances.size(); ++iInstances ) {
+				allProcessed = false;
 				Instance trainInst = instances.instance( iInstances );
 				
 				learner.trainOnInstance( trainInst );
@@ -99,7 +101,11 @@ public class RunChangeDetectorTask extends AbstractOptionHandler {
 				if( (iInstances + 1) % interval_size == 0 ) {
 					processIntervalMeasures( learner, iClassifiers, previousIntervalStart );
 					previousIntervalStart = iInstances + 1;
+					allProcessed = true;
 				}
+			}
+			if( !allProcessed ) {
+				processIntervalMeasures( learner, iClassifiers, previousIntervalStart );
 			}
 		}
 		
@@ -115,14 +121,15 @@ public class RunChangeDetectorTask extends AbstractOptionHandler {
 			}
 		}
 		
-		System.out.println( globalCharacteristics );
-		System.out.println( intervalCharacteristics );
-		
 		return globalCharacteristics;
 	}
 	
 	public Map<String, Double> interval(int interval_start) {
 		return intervalCharacteristics.get( interval_start );
+	}
+	
+	public Map<String, Double> global() {
+		return globalCharacteristics;
 	}
 	
 	@Override
