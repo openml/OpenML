@@ -71,7 +71,12 @@ public class Main {
 					if( cli.hasOption("-d") == true ) {
 						String default_class = null;
 						if( cli.hasOption("-c") == true ) { default_class = cli.getOptionValue("c"); }
-						new ExtractFeatures( cli.getOptionValue("d"), default_class );
+						//ExtractFeatures ef = new ExtractFeatures( cli.getOptionValue("d"), default_class );
+						//ArrayList<DataQuality> qualities= ef.getQualities();
+						//ArrayList<DataFeature> features = ef.getFeatures(); 
+						
+						// TODO: rewrite output function
+						//ef.output( features, qualities );
 					} else {
 						System.out.println( Output.styleToJsonError("Missing arguments for function 'data_features'. Need d (url to dataset). ") );
 					}

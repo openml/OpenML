@@ -22,6 +22,8 @@ package org.openml.webapplication.features;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.openml.apiconnector.xml.DataFeature.Feature;
+import org.openml.apiconnector.xml.DataQuality.Quality;
 import org.openml.webapplication.models.AttributeStatistics;
 import org.openml.webapplication.models.DataFeature;
 import org.openml.webapplication.models.DataQuality;
@@ -66,57 +68,73 @@ public class ExtractFeatures {
 		for( int i = 0; i < dataset.numAttributes(); ++i ) {
 			attributeStats[i] = new AttributeStatistics( );
 		}
-		
-		ArrayList<DataQuality> qualities= getQualities();
-		ArrayList<DataFeature> features = getFeatures();
-		
-		output( features, qualities );
 	}
 	
 	// @pre: invoke getQualities, so that the attribute stats classes are ok
-	private ArrayList<DataFeature> getFeatures() {
-		final ArrayList<DataFeature> resultFeatures = new ArrayList<DataFeature>();
+	public ArrayList<Feature> getFeatures() {
+		final ArrayList<Feature> resultFeatures = new ArrayList<Feature>();
 		for( int i = 0; i < dataset.numAttributes(); i++ ) {
 			Attribute att = dataset.attribute( i );
-			DataFeature key_values = new DataFeature(att.index(), att.name());
+			
+			String data_type = null;
+			
+			Integer numberOfDistinctValues = null;
+			Integer numberOfUniqueValues = null;
+			Integer numberOfMissingValues = null;
+			Integer numberOfIntegerValues = null;
+			Integer numberOfRealValues = null;
+			Integer numberOfNominalValues = null;
+			Integer numberOfValues = null;
+			
+			Double maximumValue = null;
+			Double minimumValue = null;
+			Double meanValue = null;
+			Double standardDeviation = null;
 			
 			if( allInstancesInRAM ) {
 				AttributeStats as = dataset.attributeStats( i );
-				key_values.put( "NumberOfDistinctValues", as.distinctCount );
-				key_values.put( "NumberOfUniqueValues", as.uniqueCount );
-				key_values.put( "NumberOfMissingValues", as.missingCount );
-				key_values.put( "NumberOfIntegerValues", as.intCount );
-				key_values.put( "NumberOfRealValues", as.realCount );
+				
+				numberOfDistinctValues = as.distinctCount;
+				numberOfUniqueValues = as.uniqueCount;
+				numberOfMissingValues =  as.missingCount;
+				numberOfIntegerValues = as.intCount;
+				numberOfRealValues = as.realCount;
 			}
 			
 			if( att.isNominal() ) {
-				key_values.put( "NumberOfNominalValues", att.numValues() ); 
+				numberOfNominalValues = att.numValues(); 
 			}
-			key_values.put( "NumberOfValues", attributeStats[i].getTotalObservations() );
+			numberOfValues = attributeStats[i].getTotalObservations();
 			
 			if( att.isNumeric() ) {
-				key_values.put( "MaximumValue", attributeStats[i].getMaximum() );
-				key_values.put( "MinimumValue", attributeStats[i].getMinimum() );
-				key_values.put( "MeanValue", attributeStats[i].getMean() );
-				key_values.put( "StandardDeviation", attributeStats[i].getStandardDeviation() );
+				maximumValue = attributeStats[i].getMaximum();
+				minimumValue = attributeStats[i].getMinimum();
+				meanValue = attributeStats[i].getMean();
+				standardDeviation = attributeStats[i].getStandardDeviation();
 			}
 			
 			if( att.type() == 0 )
-				key_values.put( "data_type", "numeric" );
+				data_type = "numeric";
 			else if( att.type() == 1 )
-				key_values.put( "data_type", "nominal" );
+				data_type = "nominal";
 			else if( att.type() == 2 )
-				key_values.put( "data_type", "string" );
+				data_type = "string";
 			else
-				key_values.put( "data_type", "unknown" );
+				data_type = "unknown";
 			
-			resultFeatures.add(key_values);
+			resultFeatures.add( new Feature( att.index(), att.name(), data_type,
+					att.name().equals( classAttribute.name() ), numberOfDistinctValues,
+					numberOfUniqueValues, numberOfMissingValues,
+					numberOfIntegerValues, numberOfRealValues,
+					numberOfNominalValues, numberOfValues,
+					maximumValue, minimumValue, meanValue,
+					standardDeviation ) );
 		}
 		return resultFeatures;
 	}
 	
-	private ArrayList<DataQuality> getQualities( ) throws IOException {
-		final ArrayList<DataQuality> resultQualities = new ArrayList<DataQuality>();
+	public ArrayList<Quality> getQualities( ) throws IOException {
+		final ArrayList<Quality> resultQualities = new ArrayList<Quality>();
 		boolean nominalTarget = dataset.classAttribute().isNominal();
 		int[] classDistribution = new int[dataset.classAttribute().numValues()];
 		
@@ -172,24 +190,24 @@ public class ExtractFeatures {
 			if(nominalSize < MinorytyClassSize) MinorytyClassSize = nominalSize;
 		}
 		
-		resultQualities.add( new DataQuality("DefaultTargetNominal", nominalTarget ? "true" : "false" ) );
-		resultQualities.add( new DataQuality("DefaultTargetNumerical", nominalTarget ? "false" : "true" ) );
-		resultQualities.add( new DataQuality("NumberOfInstances", ""+NumberOfInstances ) );
-		resultQualities.add( new DataQuality("NumberOfFeatures", ""+dataset.numAttributes() ) );
-		resultQualities.add( new DataQuality("NumberOfInstancesWithMissingValues", ""+NumberOfInstancesWithMissingValues ) );
-		resultQualities.add( new DataQuality("NumberOfMissingValues", ""+NumberOfMissingValues ) );
-		resultQualities.add( new DataQuality("NumberOfNumericFeatures", ""+NumberOfNumericFeatures ) );
+		resultQualities.add( new Quality("DefaultTargetNominal", nominalTarget ? "true" : "false" ) );
+		resultQualities.add( new Quality("DefaultTargetNumerical", nominalTarget ? "false" : "true" ) );
+		resultQualities.add( new Quality("NumberOfInstances", ""+NumberOfInstances ) );
+		resultQualities.add( new Quality("NumberOfFeatures", ""+dataset.numAttributes() ) );
+		resultQualities.add( new Quality("NumberOfInstancesWithMissingValues", ""+NumberOfInstancesWithMissingValues ) );
+		resultQualities.add( new Quality("NumberOfMissingValues", ""+NumberOfMissingValues ) );
+		resultQualities.add( new Quality("NumberOfNumericFeatures", ""+NumberOfNumericFeatures ) );
 		if( nominalTarget ) {
-			resultQualities.add( new DataQuality("NumberOfClasses", ""+NumberOfClasses) );
-			resultQualities.add( new DataQuality("DefaultAccuracy", ""+((MajorityClassSize*1.0) / (NumberOfInstances*1.0))) );
-			resultQualities.add( new DataQuality("MajorityClassSize", ""+MajorityClassSize ) );
-			resultQualities.add( new DataQuality("MinorityClassSize", ""+MinorytyClassSize ) );
+			resultQualities.add( new Quality("NumberOfClasses", ""+NumberOfClasses) );
+			resultQualities.add( new Quality("DefaultAccuracy", ""+((MajorityClassSize*1.0) / (NumberOfInstances*1.0))) );
+			resultQualities.add( new Quality("MajorityClassSize", ""+MajorityClassSize ) );
+			resultQualities.add( new Quality("MinorityClassSize", ""+MinorytyClassSize ) );
 		}
 		
 		return resultQualities;
 	}
 	
-	private void output( ArrayList<DataFeature> featuresArray, ArrayList<DataQuality> qualitiesArray ) {
+	public void output( ArrayList<DataFeature> featuresArray, ArrayList<DataQuality> qualitiesArray ) {
 		StringBuilder features = new StringBuilder();
 		StringBuilder qualities = new StringBuilder();
 		for( DataFeature res : featuresArray ) features.append(",\n\t" + res);
