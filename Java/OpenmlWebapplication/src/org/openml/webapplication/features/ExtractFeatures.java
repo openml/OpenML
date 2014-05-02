@@ -190,8 +190,8 @@ public class ExtractFeatures {
 			if(nominalSize < MinorytyClassSize) MinorytyClassSize = nominalSize;
 		}
 		
-		resultQualities.add( new Quality("DefaultTargetNominal", nominalTarget ? "true" : "false" ) );
-		resultQualities.add( new Quality("DefaultTargetNumerical", nominalTarget ? "false" : "true" ) );
+//		resultQualities.add( new Quality("DefaultTargetNominal", nominalTarget ? "true" : "false" ) );
+//		resultQualities.add( new Quality("DefaultTargetNumerical", nominalTarget ? "false" : "true" ) );
 		resultQualities.add( new Quality("NumberOfInstances", ""+NumberOfInstances ) );
 		resultQualities.add( new Quality("NumberOfFeatures", ""+dataset.numAttributes() ) );
 		resultQualities.add( new Quality("NumberOfInstancesWithMissingValues", ""+NumberOfInstancesWithMissingValues ) );
@@ -207,6 +207,7 @@ public class ExtractFeatures {
 		return resultQualities;
 	}
 	
+	// TODO: make this work with api connector models. 
 	public void output( ArrayList<DataFeature> featuresArray, ArrayList<DataQuality> qualitiesArray ) {
 		StringBuilder features = new StringBuilder();
 		StringBuilder qualities = new StringBuilder();

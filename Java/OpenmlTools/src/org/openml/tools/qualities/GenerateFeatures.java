@@ -11,8 +11,10 @@ import org.openml.apiconnector.io.ApiSessionHash;
 import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.DataFeature;
 import org.openml.apiconnector.xml.DataFeature.Feature;
+import org.openml.apiconnector.xml.DataFeatureUpload;
 import org.openml.apiconnector.xml.DataQuality;
 import org.openml.apiconnector.xml.DataQuality.Quality;
+import org.openml.apiconnector.xml.DataQualityUpload;
 import org.openml.apiconnector.xml.DataSetDescription;
 import org.openml.apiconnector.xstream.XstreamXmlMapping;
 import org.openml.webapplication.features.ExtractFeatures;
@@ -21,14 +23,14 @@ import com.thoughtworks.xstream.XStream;
 
 public class GenerateFeatures {
 
-	private static Config config = new Config("username = janvanrijn@gmail.com; password = Feyenoord2002; server = http://localhost/");
+	private static Config config = new Config("username = janvanrijn@gmail.com; password = Feyenoord2002; server = http://openml.liacs.nl/");
 
 	public static void main( String[] args ) throws JSONException, IOException {
 		ApiConnector api = new ApiConnector( config.getServer() );
 		ApiSessionHash ash = new ApiSessionHash(api);
 		ash.set( config.getUsername(), config.getPassword() );
 		
-		process( api, ash, 1 );
+		process( api, ash, 274 );
 	}
 	
 	public static void process_all( ApiConnector api, ApiSessionHash ash ) throws JSONException, IOException {
@@ -62,11 +64,13 @@ public class GenerateFeatures {
 			DataQuality dq = new DataQuality( dsd.getId(), qualities.toArray( new Quality[qualities.size()] ) );
 			DataFeature df = new DataFeature( dsd.getId(), features.toArray( new Feature[features.size()] ) );
 			
-			System.out.println( xstream.toXML( dq ) );
-			System.out.println( xstream.toXML( df ) );
+			//System.out.println( xstream.toXML( dq ) );
 			
-			api.openmlDataFeatureUpload( Conversion.stringToTempFile( xstream.toXML( df ), "data_"+did+"_features", "xml"), ash.getSessionHash() );
-			api.openmlDataQualityUpload( Conversion.stringToTempFile( xstream.toXML( dq ), "data_"+did+"_qualities", "xml"), ash.getSessionHash() );
+			DataFeatureUpload dfu = api.openmlDataFeatureUpload( Conversion.stringToTempFile( xstream.toXML( df ), "data_"+did+"_features", "xml"), ash.getSessionHash() );
+			DataQualityUpload dqu = api.openmlDataQualityUpload( Conversion.stringToTempFile( xstream.toXML( dq ), "data_"+did+"_qualities", "xml"), ash.getSessionHash() );
+		
+			System.out.println( dfu.getDid() );
+			System.out.println( dqu.getDid() );
 		} catch( Exception e ) { 
 			e.printStackTrace();
 			System.err.println("Error at " + did + ": " + e.getMessage() ); 
