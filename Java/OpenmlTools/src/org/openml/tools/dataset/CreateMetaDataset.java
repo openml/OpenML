@@ -1,11 +1,13 @@
 package org.openml.tools.dataset;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.io.ApiConnector;
 import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.DataQuality;
@@ -25,21 +27,26 @@ public class CreateMetaDataset {
 	private final Map<Setup, Map<Integer, Double>> runs;
 	private final Map<Integer,Integer> taskidToDatasetid;
 	private final List<Setup> setups;
+	private static final int MISSING_RUNS_TRESHOLD = 4;
 	
 	
 	public static void main(String[] args) throws Exception {
 		Integer[] task_ids = { 120, 121, 122, 123, 124, 125, 126, 127, 128,
 				129, 130, 131, 158, 159, 160, 161, 162, 163, 164, 165, 166,
-				167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178,
+				167, 168, 169, 170, 171, 172,  174, 175, 176, 177, 178,
 				179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190,
 				191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 2056, 2126,
 				2127, 2128, 2129, 2130, 2131, 2132, 2133, 2134, 2149, 2150,
 				2151, 2152, 2153, 2154, 2155, 2156, 2157, 2158, 2159, 2160,
-				2161, 2162, 2163, 2164, 2165, 2166, 2167, 2168, 2244 };
-		new CreateMetaDataset(task_ids);
+				 2162, 2163, 2164, 2165, 2166, 2167, 2168, 2244 };
+		Integer[] base_classifiers = { 78, 79, 22, 80, 91, 101, 108, 103, 96, 97, 105, 99, 98, 95 };
+		Integer[] meta_classifiers = { 83, 82, 92, 87, 94, 85, 86, 84, };
+		Integer[]  all_classifiers = { };
+		
+		new CreateMetaDataset(task_ids, meta_classifiers);
 	}
 
-	public CreateMetaDataset(Integer[] task_ids) throws Exception {
+	public CreateMetaDataset(Integer[] task_ids, Integer[] setup_ids ) throws Exception {
 		runs = new HashMap<Setup, Map<Integer,Double>>();
 		tasks = new HashMap<Integer, Map<Setup,Double>>();
 		taskidToDatasetid = new HashMap<Integer, Integer>();
@@ -54,20 +61,29 @@ public class CreateMetaDataset {
 		
 		// Download all task evaluations and store the setups that were involved in all of those
 		for( Integer task_id : task_ids ) {
+			Conversion.log( "Ok", "Create MetaDataset", "Downloading Task: " + task_id );
 			TaskEvaluations te = ac.openmlTaskEvaluations( task_id );
 			tasks.put( task_id, new HashMap<Setup, Double>() );
 			taskidToDatasetid.put( task_id, te.getInput_data() );
 			
 			if( te.getEvaluation() != null ) {
 				for( Evaluation evaluation : te.getEvaluation() ) {
-					Setup current = new Setup( evaluation.getSetup_id(), evaluation.getImplementation() );
-					if( runs.containsKey( current ) == false ) {
-						runs.put( current, new HashMap<Integer, Double>() ); 
+					if( setup_ids.length == 0 || Arrays.asList( setup_ids ).contains( evaluation.getImplementation_id() ) ) {
+						Setup current = new Setup( evaluation.getSetup_id(), evaluation.getImplementation() );
+						if( runs.containsKey( current ) == false ) {
+							runs.put( current, new HashMap<Integer, Double>() ); 
+						}
+						try {
+							String evaluation_score = evaluation.getMeasure("predictive_accuracy");
+							Double score = Double.parseDouble( evaluation_score );
+							runs.get( current ).put( task_id, score );
+							tasks.get( task_id ).put( current, score );
+						} catch( Exception e ) {
+							Conversion.log( "Warning", "Create MetaDataset", e.getMessage() );
+						}
 					}
-					Double score = Double.parseDouble( evaluation.getMeasure("predictive_accuracy") );
-					runs.get( current ).put( task_id, score );
-					tasks.get( task_id ).put( current, score );
 				}
+				Conversion.log( "OK", "Create MetaDataset", "Found scores: " + tasks.get( task_id ).size() );
 			} else {
 				System.err.println( "No evaluation for task " + task_id );
 			}
@@ -82,6 +98,7 @@ public class CreateMetaDataset {
 		for( Setup s : setups ) {
 			classValues.add( s.getImplementation() );
 		}
+		Conversion.log( "OK", "Create MetaDataset", "Found the following implementations: " + classValues );
 		Attribute classAttribute = new Attribute( "class", classValues );
 		
 		ArrayList<Attribute> attributes = new ArrayList<Attribute>();
@@ -90,25 +107,32 @@ public class CreateMetaDataset {
 		}
 		attributes.add( classAttribute ) ;
 		
+		
 		Instances instances = new Instances( "meta_dataset", attributes, task_ids.length );
 		instances.setClassIndex( instances.numAttributes() - 1 );
 		
 		for( Integer task_id : task_ids ) {
-			Instance current = new DenseInstance( instances.numAttributes() );
-			current.setDataset(instances);
-			current.setClassValue( biggest( tasks.get( task_id) ).getImplementation() );
-			
-			DataQuality dataqualities = ac.openmlDataQuality( taskidToDatasetid.get( task_id ) );
-			for( Quality q : dataqualities.getQualities() ) {
-				// TODO: refactor. we might want to work with nominal values??? 
-				Attribute attribute = instances.attribute( q.getName() );
-				if( attribute != null )
-					current.setValue( attribute, Double.parseDouble( q.getValue() ) );
-				else
-					System.err.println("Could not find attribute: " + q.getName() );
+			if( tasks.get( task_id ).size() > 0 ) {
+				Instance current = new DenseInstance( instances.numAttributes() );
+				current.setDataset(instances);
+				current.setClassValue( biggest( tasks.get( task_id) ).getImplementation() );
+				Integer dataset_id = taskidToDatasetid.get( task_id );
+	
+				Conversion.log( "Ok", "Create MetaDataset", "Downloading Qualities for did: " + dataset_id );
+				DataQuality dataqualities = ac.openmlDataQuality( dataset_id, 0, 1000 );
+				for( Quality q : dataqualities.getQualities() ) {
+					// TODO: refactor. we might want to work with nominal values??? 
+					Attribute attribute = instances.attribute( q.getName() );
+					if( attribute != null )
+						current.setValue( attribute, Double.parseDouble( q.getValue() ) );
+					else
+						System.err.println("Could not find attribute: " + q.getName() );
+				}
+				
+				instances.add( current );
+			} else {
+				Conversion.log( "Warning", "Create MetaDataset", "Did not find any evalutations for task: " + task_id );
 			}
-			
-			instances.add( current );
 		}
 		
 		// remove 
@@ -130,16 +154,21 @@ public class CreateMetaDataset {
 		ArrayList<Setup> setups = new ArrayList<Setup>();
 		for( Setup setup : runs.keySet() ) {
 			Map<Integer, Double> runs_participated = runs.get( setup );
-			boolean allDone = true;
+			ArrayList<Integer> missingRuns = new ArrayList<Integer>();
 			for( Integer task_id : task_ids ) {
 				if( runs_participated.containsKey( task_id ) == false ) {
-					System.out.println("Missing task " + task_id + " for setup " + setup );
-					allDone = false;
+					missingRuns.add( task_id );
 				}
 			}
 			
-			if( allDone ) {
+			if( missingRuns.size() > 0 ) {
+				Conversion.log( "Warning", "Create MetaDataset", "Missing task for setup :" + setup + " - " + missingRuns );
+			}
+			
+			if( missingRuns.size() < MISSING_RUNS_TRESHOLD ) {
 				setups.add( setup );
+			} else {
+				Conversion.log( "Warning", "Create MetaDataset", "DROPPING setup :" + setup );
 			}
 		}
 		return setups;
