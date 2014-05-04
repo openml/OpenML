@@ -106,6 +106,15 @@ public class EvaluateRun {
 			file_ids.put(field, file_index);
 		}
 		
+		if( file_ids.get( "description" ) == null ) {
+			runevaluation.setError("Run description file not present. ");
+			File evaluationFile = Conversion.stringToTempFile( xstream.toXML( runevaluation ), "run_" + run_id + "evaluations", "xml" );
+			
+			RunEvaluate re = apiconnector.openmlRunEvaluate( evaluationFile, ash.getSessionHash() );
+			Conversion.log( "Error", "Process Run", "Run processed, but with error: " + re.getRun_id() );
+			return;
+		}
+		
 		Run run_description = (Run) xstream.fromXML( ApiConnector.getStringFromUrl( apiconnector.getOpenmlFileUrl( file_ids.get( "description" ) ).toString() ) );
 		
 		try {
