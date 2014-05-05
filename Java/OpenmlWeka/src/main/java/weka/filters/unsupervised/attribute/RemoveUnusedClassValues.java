@@ -78,39 +78,46 @@ public class RemoveUnusedClassValues extends SimpleBatchFilter implements Option
 			}
 		}
 		
-		System.out.println( Arrays.toString( result.attributeStats( result.classIndex() ).nominalCounts ) );
-		
 		return result;
 	}
 
 	@Override
 	public void setOptions(String[] options) throws Exception {
-		threshold = Integer.parseInt( Utils.getOption('T', options) );
-		
+		threshold = Integer.parseInt(Utils.getOption('T', options));
+
 		if (getInputFormat() != null)
-			 setInputFormat(getInputFormat());
+			setInputFormat(getInputFormat());
 	}
-	
-	// TODO: For some reason, Weka's GUI doesn't pick up these options... 
+
+	// TODO: For some reason, Weka's GUI doesn't pick up these options...
 	@Override
 	public Enumeration<Option> listOptions() {
 		Vector<Option> newVector = new Vector<Option>(1);
 
-	    newVector.addElement(new Option(
-	    		"\tSpecifies threshold of occurences. Every value" + 
-	    		" occuring less than T will be removed from class.\n" + 
-	    		"\t(default none)", "T", 1, "-T <int1>"));
+		newVector.addElement(new Option(
+				"\tSpecifies threshold of occurences. Every value"
+						+ " occuring less than T will be removed from class.\n"
+						+ "\t(default none)", "T", 1, "-T <int1>"));
 		return newVector.elements();
 	}
 
 	@Override
 	public String[] getOptions() {
-		String [] options = new String [2];
+		String[] options = new String[2];
 		int current = 0;
-	    options[current++] = "-T"; 
-	    options[current++] = threshold + "";
-	    return options;
+		options[current++] = "-T";
+		options[current++] = threshold + "";
+		return options;
 	}
-	
-	
+
+	/**
+	 * Main method for testing this class.
+	 * 
+	 * @param argv
+	 *            should contain arguments to the filter: use -h for help
+	 */
+	public static void main(String[] argv) {
+		runFilter(new RemoveUseless(), argv);
+	}
+
 }

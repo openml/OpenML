@@ -25,12 +25,12 @@ import weka.core.Instances;
 import weka.core.OptionHandler;
 import weka.core.Utils;
 import weka.filters.Filter;
+import weka.filters.unsupervised.attribute.RemoveUnusedClassValues;
 import weka.filters.unsupervised.attribute.RemoveUseless;
 
 public class CreateMetaDataset {
 
 	private static final int MISSING_RUNS_TRESHOLD = 4;
-	private static final String FILENAME = "meta_lb_vs_all.arff";
 	private static final String ONE_VS_ALL_VALUE = "Others";
 	
 	private final ApiConnector ac;
@@ -44,21 +44,29 @@ public class CreateMetaDataset {
 	
 	public static void main(String[] args) throws Exception {
 		Integer[] task_ids = { 120, 121, 122, 123, 124, 125, 126, 127, 128,
-				129, 130, 131, 158, /*159, 160, 161, 162, 163, 164, 165, 166,
+				/*129, 130, 131, 158, 159, 160, 161, 162, 163, 164, 165, 166,
 				167, 168, 169, 170, 171, 172,  174, 175, 176, 177, 178,
 				179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190,
 				191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 2056, 2126,
 				2127, 2128, 2129, 2130, 2131, 2132, 2133, 2134, 2149, 2150,
 				2151, 2152, 2153, 2154, 2155, 2156, 2157, 2158, 2159, 2160,
-				 2162, 2163, 2164, 2165, 2166, 2167, 2168, 2244*/ };
+				2162, 2163, 2164, 2165, 2166, 2167, 2168, 2244*/ };
 		
 		Integer[] base_classifiers = { 78, 79, 22, 80, 91, 101, 108, 103, 96, 97, 105, 99, 98, 95 };
 		Integer[] meta_classifiers = { 83, 82, 92, 87, 94, 85, 86, 84, };
-		Integer[] weka_classifiers = { 99, 101, 103, 105, 106, 108 };
+//		Integer[] weka_classifiers = { 99, 101, 103, 105, 106, 108 };
 		Integer[] lb_hoeffding = { 24 };
 		Integer[]  all_classifiers = { };
 		
-		new CreateMetaDataset( task_ids, all_classifiers, false, FILENAME );
+		RunConfiguration[] configs = new RunConfiguration[4];
+		configs[0] = new RunConfiguration( base_classifiers, false, "meta_bc.arff" );
+		configs[1] = new RunConfiguration( meta_classifiers, false, "meta_mc.arff" );
+		configs[2] = new RunConfiguration( lb_hoeffding, true, "meta_lbhoeffding.arff" );
+		configs[3] = new RunConfiguration( all_classifiers, false, "meta_all.arff" );
+		
+		for( RunConfiguration c : configs ) {
+			new CreateMetaDataset( task_ids, c.ids, c.oneVsAll, c.filename );
+		}
 	}
 
 	public CreateMetaDataset(Integer[] task_ids, Integer[] setup_ids, boolean oneVsAll, String filename ) throws Exception {
@@ -175,6 +183,9 @@ public class CreateMetaDataset {
 		
 		// remove attributes that are unused
 		instances = applyFilter( instances, new RemoveUseless(), "-M 100.0 " ); 
+		instances = applyFilter( instances, new RemoveUnusedClassValues(), "-T 1" );
+		
+		instances.setRelationName( filename.substring( 0, filename.indexOf( '.' ) ) );
 		
 		outputfile.write( instances.toString() );
 		outputfile.close();
@@ -251,6 +262,18 @@ public class CreateMetaDataset {
 		@Override
 		public String toString() {
 			return setup_id + " (" + implementation + ")";
+		}
+	}
+	
+	private static class RunConfiguration {
+		private final Integer[] ids;
+		private final boolean oneVsAll;
+		private final String filename;
+		
+		public RunConfiguration( Integer[] ids, boolean oneVsAll, String filename ) {
+			this.ids = ids;
+			this.oneVsAll = oneVsAll;
+			this.filename = filename;
 		}
 	}
 }

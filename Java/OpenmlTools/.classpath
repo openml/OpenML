@@ -10,5 +10,6 @@
 	<classpathentry kind="lib" path="/OpenmlMoa/lib/moa.jar"/>
 	<classpathentry kind="lib" path="lib/org.json-20120521.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/OpenmlWebapplication"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/OpenmlWeka"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
