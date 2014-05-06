@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import org.openml.apiconnector.algorithms.Conversion;
@@ -39,30 +40,30 @@ public class CreateMetaDataset {
 	private final Map<Integer,Integer> taskidToDatasetid;
 	private final List<Setup> setups;
 	private final BufferedWriter outputfile;
+	private final OfflineFeatures offlinefeatures = new OfflineFeatures();
 	
-	private final Integer[] illegal_datasets = { 116, 117, 121, 128, 148, 253, 256, 272 };
+	private final Integer[] illegal_datasets = { /*116, 117, 121, 128, 148, 253, 256, 272*/ };
 	
 	public static void main(String[] args) throws Exception {
 		Integer[] task_ids = { 120, 121, 122, 123, 124, 125, 126, 127, 128,
-				129, 130, 131, 158, 159, 160, 161, 162, 163, 164, 165, 166,
-				167, 168, 169, 170, 171, 172,  174, 175, 176, 177, 178,
-				179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190,
-				191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 2056, 2126,
-				2127, 2128, 2129, 2130, 2131, 2132, 2133, 2134, 2149, 2150,
-				2151, 2152, 2153, 2154, 2155, 2156, 2157, 2158, 2159, 2160,
-				2162, 2163, 2164, 2165, 2166, 2167, 2168, 2244 };
-		
+				129, 158, 159, 160, 163, 164, 165, 166, 167, 169, 170, 171,
+				172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183,
+				184, 185, 186, 188, 189, 190, 191, 192, 193, 194, 195, 196,
+				197, 198, 199, 200, 2056, 2126, 2127, 2128, 2129, 2130, 2131,
+				2132, 2133, 2134, 2150, 2151, 2154, 2155, 2156, 2157, 2159,
+				2160, 2161, 2162, 2163, 2164, 2165, 2166, 2167, 2244,  };
+
 		Integer[] base_classifiers = { 78, 79, 22, 80, 91, 101, 108, 103, 96, 97, 105, 99, 98, 95 };
 		Integer[] meta_classifiers = { 83, 82, 92, 87, 94, 85, 86, 84, };
 //		Integer[] weka_classifiers = { 99, 101, 103, 105, 106, 108 };
 		Integer[] lb_hoeffding = { 83 };
 		Integer[]  all_classifiers = { };
 		
-		RunConfiguration[] configs = new RunConfiguration[4];
-		configs[0] = new RunConfiguration( base_classifiers, false, "meta_bc.arff" );
-		configs[1] = new RunConfiguration( meta_classifiers, false, "meta_mc.arff" );
-		configs[2] = new RunConfiguration( lb_hoeffding, true, "meta_lbhoeffding.arff" );
-		configs[3] = new RunConfiguration( all_classifiers, false, "meta_all.arff" );
+		RunConfiguration[] configs = new RunConfiguration[1];
+		//configs[0] = new RunConfiguration( base_classifiers, false, "meta_bc.arff" );
+		//configs[1] = new RunConfiguration( meta_classifiers, false, "meta_mc.arff" );
+		configs[0] = new RunConfiguration( lb_hoeffding, true, "meta_lbhoeffding.arff" );
+		//configs[3] = new RunConfiguration( all_classifiers, false, "meta_all.arff" );
 		
 		for( RunConfiguration c : configs ) {
 			new CreateMetaDataset( task_ids, c.ids, c.oneVsAll, c.filename );
@@ -71,7 +72,7 @@ public class CreateMetaDataset {
 
 	public CreateMetaDataset(Integer[] task_ids, Integer[] implementation_ids, boolean oneVsAll, String filename ) throws Exception {
 		outputfile = new BufferedWriter( new FileWriter( new File( filename ) ) );
-		runs = new HashMap<Setup, Map<Integer,Double>>();
+		runs = new HashMap<Setup, Map<Integer,Double>>(); // TODO: remove this hashmap
 		tasks = new HashMap<Integer, Map<Setup,Double>>();
 		taskidToDatasetid = new HashMap<Integer, Integer>();
 		
@@ -123,15 +124,14 @@ public class CreateMetaDataset {
 			}
 		}
 		
-		
-		
 		// download all sensible meta data
 		String[] metaFeatures = ac.openmlDataQualityList().getQualities();
 		
 		// now get all implementations that have run on all tasks
 		setups = allRunsDone( runs, legal_task_ids );
-		ArrayList<String> classValues = new ArrayList<String>();
+		List<String> classValues = new ArrayList<String>();
 		
+		// create the nominal values for the class attribute
 		for( Setup s : setups ) {
 			if( implementation_ids.length == 0 || Arrays.asList( implementation_ids ).contains( s.getImplementation_id() ) ) {
 				classValues.add( s.getImplementation() );
@@ -140,14 +140,23 @@ public class CreateMetaDataset {
 			}
 		}
 		if( oneVsAll ) { classValues.add( ONE_VS_ALL_VALUE ); }
-		
 		Conversion.log( "OK", "Create MetaDataset", "Found the following implementations: " + classValues );
-		Attribute classAttribute = new Attribute( "class", classValues );
 		
+		// now remove all implementation scores of those not included in the comparisson from the task map
+		if( oneVsAll == false ) {
+			filterTaskResult(classValues, tasks); // alters the shallow copy
+		}
+		
+		// add all the meta features attribute
+		Attribute classAttribute = new Attribute( "class", classValues );
 		ArrayList<Attribute> attributes = new ArrayList<Attribute>();
 		for( String metaFeature : metaFeatures ) {
 			attributes.add( new Attribute( metaFeature ) );
 		}
+		// add a special type attribute
+		attributes.add( offlinefeatures.datasetType() );
+		
+		// lastly, add the class attribute (so that it is positioned last)
 		attributes.add( classAttribute ) ;
 		
 		Instances instances = new Instances( "meta_dataset", attributes, legal_task_ids.size() );
@@ -156,6 +165,7 @@ public class CreateMetaDataset {
 		for( Integer task_id : legal_task_ids ) {
 			if( tasks.get( task_id ).size() > 0 ) {
 				Instance current = new DenseInstance( instances.numAttributes() );
+				Integer dataset_id = taskidToDatasetid.get( task_id );
 				current.setDataset(instances);
 				String biggest = biggest( tasks.get( task_id) ).getImplementation();
 				if( classValues.contains( biggest ) ) {
@@ -165,7 +175,9 @@ public class CreateMetaDataset {
 				} else {
 					throw new Exception("Trying to set an illegal Classvalue: Task " + task_id + ", value " + biggest );
 				}
-				Integer dataset_id = taskidToDatasetid.get( task_id );
+				
+				// add temp off line feature
+				current.setValue( offlinefeatures.datasetType(), offlinefeatures.getDatasetType( dataset_id ) );
 	
 				Conversion.log( "Ok", "Create MetaDataset", "Downloading Qualities for did: " + dataset_id );
 				DataQuality dataqualities = ac.openmlDataQuality( dataset_id, 0, 1000 );
@@ -223,6 +235,20 @@ public class CreateMetaDataset {
 			}
 		}
 		return setups;
+	}
+	
+	private static Map<Integer, Map<Setup,Double>> filterTaskResult( List<String> classValues, Map<Integer, Map<Setup,Double>> tasks ) {
+		for( Integer task_id : tasks.keySet() ) {
+			Set<Setup> all_setups = tasks.get( task_id ).keySet();
+			List<Setup> toRemove = new ArrayList<Setup>();
+			for( Setup s : all_setups ) {
+				if( classValues.contains( s.implementation ) == false ) { toRemove.add( s ); }
+			}
+			for( Setup s : toRemove ) {
+				tasks.get( task_id ).remove( s );
+			}
+		}
+		return tasks;
 	}
 	
 	// TODO: should go into a real helper class. 
