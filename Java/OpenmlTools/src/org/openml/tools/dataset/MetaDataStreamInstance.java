@@ -9,6 +9,7 @@ import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instance;
 import weka.core.Instances;
+import weka.core.Utils;
 
 public class MetaDataStreamInstance {
 	public static final String ATT_TASK_ID_NAME = "openml_task_id";
@@ -78,8 +79,15 @@ public class MetaDataStreamInstance {
 					instance.setValue( i,  classifier_scores.get( classifier_name ) );
 				}
 			} else if( attribute_name.equals( ATT_CLASS_NAME ) ) { 
+
+				List<String> nomimalValues = nominalValues( instances.attribute( i ) );
+				String bestClassifier = bestClassifier( nomimalValues );
+				if( bestClassifier != null ) {
+					instance.setValue( i, bestClassifier );
+				} else {
+					instance.setValue( i, Utils.missingValue() );
+				}
 				
-				instance.setValue( i, bestClassifier( nominalValues( instances.attribute( i ) ) ) );
 			} else if( attribute_name.startsWith( ATT_META_PREFIX )) { // data quality
 				String quality_name = attribute_name.substring( ATT_META_PREFIX.length() );
 				if( data_qualities.containsKey( quality_name ) ) {
