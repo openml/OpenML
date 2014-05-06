@@ -43,7 +43,7 @@ public class CreateMetaDataStream {
 				184, 185, 186, 188, 189, 190, 191, 192, 193, 194, 195, 196,
 				197, 198, 199, 200, 2056, 2126, 2127, 2128, 2129, 2130, 2131,
 				2132, 2133, 2134, 2150, 2151, 2154, 2155, 2156, 2157, 2159,
-				2160, 2161, 2162, 2163, 2164, 2165, 2166, 2167, 2244  };
+				2160, 2161, 2162, 2163, 2164, 2165, 2166, 2167, 2244 };
 		
 		if( config.getServer() != null ) {
 			apiconnector = new ApiConnector( config.getServer() );
@@ -62,7 +62,7 @@ public class CreateMetaDataStream {
 		for( String key : instances.keySet() ) {
 			Conversion.log("OK", "Create MetaDatastream", "Downloading data qualities for key: " + key + "("+(++counter)+"/"+instances.size()+")" );
 			MetaDataStreamInstance instance = instances.get( key );
-			DataQuality dq = apiconnector.openmlDataQuality(instance.getDid(), instance.getInterval_start(), instance.getInterval_end(), interval_size);
+			DataQuality dq = apiconnector.openmlDataQuality(instance.getDid(), instance.getInterval_start() - interval_size, instance.getInterval_end() - interval_size, interval_size);
 			for( Quality quality : dq.getQualities() ) {
 				if( allQualities.containsKey( quality.getName() ) == true ) {
 					allQualities.put( quality.getName(), allQualities.get( quality.getName() ) + 1 );
