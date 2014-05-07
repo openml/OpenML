@@ -56,6 +56,7 @@ public class CreateMetaDataStream {
 	}
 	
 	public CreateMetaDataStream( Integer[] task_ids, String name, int interval_size ) throws Exception {
+		// download all task evaluations...
 		Map<String, MetaDataStreamInstance> instances = getAllStreamInstances( task_ids, interval_size );
 		
 		// now add the data qualities: (slow process)
