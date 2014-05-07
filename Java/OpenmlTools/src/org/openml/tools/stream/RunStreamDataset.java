@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.tools.algorithms.InstancesHelper;
 
 import weka.classifiers.Classifier;
@@ -61,8 +62,11 @@ public class RunStreamDataset {
 		}
 		
 		System.out.println( tasksAvailable );
+		int counter = 0;
 		for( Integer i : tasksAvailable.keySet() ) {
+			Conversion.log( "[OK]", "[RunStream]", "Running task " + i + " ~ "+ tasksAvailable.get( i ) + " instances ("+(++counter)+"/"+tasksAvailable.keySet().size()+")" );
 			evaluateTask( i );
+			Conversion.log( "[OK]", "[RunStream]", "Current score " + GLOBAL_EVALUATOR.pctCorrect() );
 		}
 		
 		System.out.println( GLOBAL_EVALUATOR.toSummaryString() );
