@@ -1,9 +1,5 @@
 package org.openml.tools.dataset;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,12 +13,10 @@ import org.openml.apiconnector.xml.DataQuality;
 import org.openml.apiconnector.xml.DataQuality.Quality;
 import org.openml.apiconnector.xml.TaskEvaluations;
 import org.openml.apiconnector.xml.TaskEvaluations.Evaluation;
+import org.openml.tools.algorithms.InstancesHelper;
 
 import weka.core.Attribute;
 import weka.core.Instances;
-import weka.core.OptionHandler;
-import weka.core.Utils;
-import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.RemoveUnusedClassValues;
 import weka.filters.unsupervised.attribute.RemoveUseless;
 
@@ -97,20 +91,13 @@ public class CreateMetaDataStream {
 		
 		// remove attributes that are unused
 		Conversion.log("OK", "Create MetaDatastream", "Start applying filters... " );
-		dataset = applyFilter( dataset, new RemoveUseless(), "-M 100.0 " ); 
-		dataset = applyFilter( dataset, new RemoveUnusedClassValues(), "-T 0" );
+		dataset = InstancesHelper.applyFilter( dataset, new RemoveUseless(), "-M 100.0 " ); 
+		dataset = InstancesHelper.applyFilter( dataset, new RemoveUnusedClassValues(), "-T 0" );
 		dataset.setRelationName( name );
 
 		Conversion.log("OK", "Create MetaDatastream", "Start writing to file: " + name );
-		toFile( dataset, name );
+		InstancesHelper.toFile( dataset, name );
 		Conversion.log("OK", "Create MetaDatastream", "Done." );
-	}
-	
-	// TODO: should go into a real helper class. 
-	public static Instances applyFilter( Instances dataset, Filter filter, String options ) throws Exception {
-		((OptionHandler) filter).setOptions( Utils.splitOptions( options ) );
-		filter.setInputFormat(dataset);
-		return Filter.useFilter(dataset, filter);
 	}
 	
 	private Map<String, MetaDataStreamInstance> getAllStreamInstances( Integer[] task_ids, int interval_size ) throws Exception {
@@ -181,22 +168,5 @@ public class CreateMetaDataStream {
 		instances.setClass( classAtt );
 		
 		return instances;
-	}
-	
-	private static void toFile( Instances dataset, String filename ) throws IOException {
-		BufferedWriter bw = new BufferedWriter( new FileWriter( new File( filename + ".arff" ) ) );
-		
-		bw.write( "@relation " + dataset.relationName() + "\n\n" );
-		
-		for( int i = 0; i < dataset.numAttributes(); ++i ) {
-			bw.write( dataset.attribute(i) + "\n" );
-		}
-		
-		bw.write("\n@data");
-		for( int i = 0; i < dataset.numInstances(); ++i ) {
-			bw.write( "\n" + dataset.instance(i) );
-		}
-		
-		bw.close();
 	}
 }
