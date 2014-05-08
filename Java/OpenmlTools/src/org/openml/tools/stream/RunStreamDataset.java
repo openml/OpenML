@@ -41,6 +41,10 @@ public class RunStreamDataset {
 		"moa.SPegasos(1)"
 	};
 	
+	private static final String[] batchIncremental = {
+		"moa.WEKAClassifier_J48(1)", "moa.WEKAClassifier_OneR(1)", 
+	};
+	
 	private final ArrayList<Attribute> scoreAttributes;
 	private final ArrayList<Attribute> trainTestAttributes;
 	private final Evaluation GLOBAL_EVALUATOR;
@@ -70,7 +74,7 @@ public class RunStreamDataset {
 		GLOBAL_EVALUATOR.useNoPriors();
 		GLOBAL_BASELINE = new Evaluation( allMeasurements );
 		GLOBAL_BASELINE.useNoPriors();
-		GLOBAL_STREAM_EVALUATOR = new RunStreamEvaluator();
+		GLOBAL_STREAM_EVALUATOR = new RunStreamEvaluator( baseAlgorithms );
 		
 		LOG_WRITER = new BufferedWriter( new FileWriter( new File( "evaluator.log" ) ) );
 		
@@ -90,15 +94,18 @@ public class RunStreamDataset {
 		
 		System.out.println( tasksAvailable );
 		
-		int counter = 0;
+		/*int counter = 0;
 		for( Integer i : tasksAvailable.keySet() ) {
 			Conversion.log( "[OK]", "[RunStream]", "Running task " + i + " ~ "+ tasksAvailable.get( i ) + " instances ("+(++counter)+"/"+tasksAvailable.keySet().size()+")" );
 			evaluateTask( i );
 			Conversion.log( "[OK]", "[RunStream]", "Current score " + GLOBAL_EVALUATOR.pctCorrect() + ", Zero R: " + GLOBAL_BASELINE.pctCorrect() );
-		}
+		}*/
+		
+		evaluateTask( 2056 );
 		
 		System.out.println( GLOBAL_EVALUATOR.toSummaryString() );
 		System.out.println( GLOBAL_STREAM_EVALUATOR.toString() );
+		System.out.println( GLOBAL_STREAM_EVALUATOR.getCurvesForTask( 2056 ) );
 		
 		LOG_WRITER.write( "Global Evaluation: " );
 		LOG_WRITER.write( GLOBAL_EVALUATOR.toSummaryString() );
@@ -140,6 +147,7 @@ public class RunStreamDataset {
 		metaLearner.buildClassifier( trainSet );
 		baseline.buildClassifier( trainSet );
 		
+		int interval_start_idx = testSet.attribute( "openml_interval_start" ).index();
 		for( int i = 0; i < testSet.numInstances(); ++i ) {
 			GLOBAL_EVALUATOR.evaluateModelOnceAndRecordPrediction( metaLearner, testSet.instance( i ) );
 			GLOBAL_BASELINE.evaluateModelOnceAndRecordPrediction( baseline, testSet.instance( i ) );
@@ -151,10 +159,10 @@ public class RunStreamDataset {
 			String predictionStr = testSet.classAttribute().value( predictionIdx );
 			String baselinePredictionStr = testSet.classAttribute().value( baselinePredictionIdx );
 
-			GLOBAL_STREAM_EVALUATOR.addPrediction(predictionStr, baselinePredictionStr, scoreSet.instance( i ) );
+			GLOBAL_STREAM_EVALUATOR.addPrediction( task_id, (int) testSet.instance(i).value( interval_start_idx ), predictionStr, baselinePredictionStr, scoreSet.instance( i ) );
 		}
 		System.out.println( evaluator.toSummaryString() );
-		//LOG_WRITER.write( evaluator.toSummaryString() );
+		LOG_WRITER.write( evaluator.toSummaryString() );
 	}
 	
 	private ArrayList<Attribute> getTrainTestAttributes() {
