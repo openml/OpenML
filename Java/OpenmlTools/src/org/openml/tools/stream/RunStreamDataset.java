@@ -50,6 +50,7 @@ public class RunStreamDataset {
 	private final Evaluation GLOBAL_EVALUATOR;
 	private final Evaluation GLOBAL_BASELINE;
 	private final BufferedWriter LOG_WRITER;
+	private final BufferedWriter SQL_WRITER;
 	private final RunStreamEvaluator GLOBAL_STREAM_EVALUATOR;
 	
 	private final Map<Integer, Integer> tasksAvailable;
@@ -77,6 +78,7 @@ public class RunStreamDataset {
 		GLOBAL_STREAM_EVALUATOR = new RunStreamEvaluator( baseAlgorithms );
 		
 		LOG_WRITER = new BufferedWriter( new FileWriter( new File( "evaluator.log" ) ) );
+		SQL_WRITER = new BufferedWriter( new FileWriter( new File( "curves.sql" ) ) );
 		
 		taskIdIndex = allMeasurements.attribute( OPENML_TASK_ID_ATT ).index();
 		scoreAttributes = getScoreAttributes();
@@ -93,19 +95,19 @@ public class RunStreamDataset {
 		}
 		
 		System.out.println( tasksAvailable );
+		SQL_WRITER.append( "INSERT INTO `tmp_curve`(`task_id`,`interval_start`,`score`,`baseline`,`max`) VALUES \n" );
 		
-		/*int counter = 0;
+		int counter = 0;
 		for( Integer i : tasksAvailable.keySet() ) {
 			Conversion.log( "[OK]", "[RunStream]", "Running task " + i + " ~ "+ tasksAvailable.get( i ) + " instances ("+(++counter)+"/"+tasksAvailable.keySet().size()+")" );
 			evaluateTask( i );
+			SQL_WRITER.append( GLOBAL_STREAM_EVALUATOR.getSql( i ) );
 			Conversion.log( "[OK]", "[RunStream]", "Current score " + GLOBAL_EVALUATOR.pctCorrect() + ", Zero R: " + GLOBAL_BASELINE.pctCorrect() );
-		}*/
+		}
 		
-		evaluateTask( 2056 );
 		
 		System.out.println( GLOBAL_EVALUATOR.toSummaryString() );
 		System.out.println( GLOBAL_STREAM_EVALUATOR.toString() );
-		System.out.println( GLOBAL_STREAM_EVALUATOR.getCurvesForTask( 2056 ) );
 		
 		LOG_WRITER.write( "Global Evaluation: " );
 		LOG_WRITER.write( GLOBAL_EVALUATOR.toSummaryString() );
@@ -116,6 +118,7 @@ public class RunStreamDataset {
 		LOG_WRITER.write( "\n" + GLOBAL_STREAM_EVALUATOR.toString() );
 		
 		LOG_WRITER.close();
+		SQL_WRITER.close();
 	}
 	
 	private void evaluateTask( int task_id ) throws Exception {

@@ -148,6 +148,17 @@ public class RunStreamEvaluator {
 		return sb.toString();
 	}
 	
+	public String getSql( int task_id ) {
+		StringBuilder sb = new StringBuilder();
+
+		sb.append( "(" );
+		sb.append( task_id + "," );
+		sb.append( getCurvesForTask( task_id ) );
+		sb.append( "),\n" );
+		
+		return sb.toString();
+	}
+	
 	public String getCurvesForTask( int task_id ) {
 		StringBuilder sb = new StringBuilder();
 		ArrayList<Integer> intervals = new ArrayList<Integer>();
@@ -163,7 +174,7 @@ public class RunStreamEvaluator {
 			accuracy += accuracy_curve.get( task_id ).get( interval_start );
 			baseline += baseline_curve.get( task_id ).get( interval_start );
 			maxscore += maxscore_curve.get( task_id ).get( interval_start );
-			
+
 			sb.append( interval_start + "," );
 			sb.append( (accuracy / (i+1)) + "," );
 			sb.append( (baseline / (i+1)) + "," );
