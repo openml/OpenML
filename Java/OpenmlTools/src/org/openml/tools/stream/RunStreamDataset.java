@@ -8,7 +8,6 @@ import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.openml.apiconnector.algorithms.Conversion;
@@ -29,21 +28,24 @@ public class RunStreamDataset {
 	private static final String OPENML_CLASS_ATT = "class";
 	
 	private static final String[] metaAlgrorithms = {
-			"moa.LeveragingBag_HoeffdingTree(1)", "moa.LeveragingBag_kNN(1)", 
-			"moa.OzaBoostAdwin_HoeffdingTree(1)", "moa.OzaBagAdwin_HoeffdingTree(1)"
-		};
-	
-	private static final String[] baseAlgorithms = {
-		"moa.kNN(1)",
-		"moa.HoeffdingTree(1)",
-		"moa.SGD(1)",
-		"moa.NaiveBayes(1)",
-		"moa.SPegasos(1)"
-	};
-	
+			"moa.LeveragingBag_HoeffdingTree(1)", "moa.LeveragingBag_kNN(1)",
+			"moa.OzaBoost_HoeffdingTree(1)", "moa.OzaBag_HoeffdingTree(1)" };
+
+	private static final String[] baseAlgorithms = { "moa.kNN(1)",
+			"moa.HoeffdingTree(1)", "moa.SGD(1)", "moa.NaiveBayes(1)",
+			"moa.SPegasos(1)" };
+
 	private static final String[] batchIncremental = {
-		"moa.WEKAClassifier_J48(1)", "moa.WEKAClassifier_OneR(1)", 
-	};
+			"moa.WEKAClassifier_J48(1)", "moa.WEKAClassifier_OneR(1)",
+			"moa.WEKAClassifier_REPTree(1)", "moa.WEKAClassifier_SMO_PolyKernel(1)" };
+
+	private static final String[] allAlgorithms = {
+			"moa.WEKAClassifier_J48(1)", "moa.WEKAClassifier_OneR(1)",
+			"moa.WEKAClassifier_REPTree(1)",
+			"moa.LeveragingBag_HoeffdingTree(1)", "moa.LeveragingBag_kNN(1)",
+			"moa.OzaBoostAdwin_HoeffdingTree(1)", "moa.kNN(1)",
+			"moa.HoeffdingTree(1)", "moa.SGD(1)", "moa.NaiveBayes(1)",
+			"moa.SPegasos(1)" };
 	
 	private final ArrayList<Attribute> scoreAttributes;
 	private final ArrayList<Attribute> trainTestAttributes;
@@ -59,14 +61,15 @@ public class RunStreamDataset {
 	
 	public static void main( String[] args ) throws Exception {
 		
-		new RunStreamDataset();
+		new RunStreamDataset( allAlgorithms );
 		
 	}
 	
-	public RunStreamDataset() throws Exception {
+	public RunStreamDataset( String[] algorithms_used ) throws Exception {
+		
 		tasksAvailable = new HashMap<Integer, Integer>();
 		allMeasurements = new Instances( new BufferedReader( new FileReader( new File("meta_stream.arff") ) ) );
-		filterClassAttributes( allMeasurements, baseAlgorithms );
+		filterClassAttributes( allMeasurements, algorithms_used );
 		allMeasurements.setClass( allMeasurements.attribute( OPENML_CLASS_ATT ) );
 		
 		InstancesHelper.toFile( allMeasurements, "meta_stream_adjusted" );
@@ -75,7 +78,7 @@ public class RunStreamDataset {
 		GLOBAL_EVALUATOR.useNoPriors();
 		GLOBAL_BASELINE = new Evaluation( allMeasurements );
 		GLOBAL_BASELINE.useNoPriors();
-		GLOBAL_STREAM_EVALUATOR = new RunStreamEvaluator( baseAlgorithms );
+		GLOBAL_STREAM_EVALUATOR = new RunStreamEvaluator( algorithms_used );
 		
 		LOG_WRITER = new BufferedWriter( new FileWriter( new File( "evaluator.log" ) ) );
 		SQL_WRITER = new BufferedWriter( new FileWriter( new File( "curves.sql" ) ) );
@@ -95,7 +98,6 @@ public class RunStreamDataset {
 		}
 		
 		System.out.println( tasksAvailable );
-		SQL_WRITER.append( "INSERT INTO `tmp_curve`(`task_id`,`interval_start`,`score`,`baseline`,`max`) VALUES \n" );
 		
 		int counter = 0;
 		for( Integer i : tasksAvailable.keySet() ) {

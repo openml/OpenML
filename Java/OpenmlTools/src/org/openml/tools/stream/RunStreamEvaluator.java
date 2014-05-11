@@ -15,9 +15,12 @@ public class RunStreamEvaluator {
 	private final Map<Integer, Map<Integer, Double>> accuracy_curve;
 	private final Map<Integer, Map<Integer, Double>> baseline_curve;
 	private final Map<Integer, Map<Integer, Double>> maxscore_curve;
+	private final Map<Integer, Map<Integer, Double>> stateoftheart_curve;
+	private static final String STATE_OF_THE_ART = "moa.LeveragingBag_HoeffdingTree(1)";
 	
 	private double own_score;
 	private double baseline_score;
+	private double state_of_the_art;
 	private double min_score;
 	private double max_score;
 	private double processed;
@@ -32,12 +35,14 @@ public class RunStreamEvaluator {
 		accuracy_curve = new HashMap<Integer, Map<Integer,Double>>();
 		baseline_curve = new HashMap<Integer, Map<Integer,Double>>();
 		maxscore_curve = new HashMap<Integer, Map<Integer,Double>>();
+		stateoftheart_curve = new HashMap<Integer, Map<Integer,Double>>();
 		
 		own_score = 0.0;
 		baseline_score = 0.0;
 		min_score = 0.0;
 		max_score = 0.0;
 		processed = 0.0;
+		state_of_the_art = 0.0;
 	}
 	
 	public double getOwn_score() {
@@ -46,6 +51,10 @@ public class RunStreamEvaluator {
 
 	public double getBaseline_score() {
 		return baseline_score;
+	}
+
+	public double getState_of_the_art() {
+		return state_of_the_art;
 	}
 
 	public double getMin_score() {
@@ -80,10 +89,12 @@ public class RunStreamEvaluator {
 		if( accuracy_curve.containsKey( task ) == false ) {	accuracy_curve.put( task, new HashMap<Integer, Double>() );	}
 		if( baseline_curve.containsKey( task ) == false ) {	baseline_curve.put( task, new HashMap<Integer, Double>() );	}
 		if( maxscore_curve.containsKey( task ) == false ) {	maxscore_curve.put( task, new HashMap<Integer, Double>() );	}
+		if( stateoftheart_curve.containsKey( task ) == false ) { stateoftheart_curve.put( task, new HashMap<Integer, Double>() );	}
 		
 		processed++;
 		int predictionIndex = score_table.dataset().attribute( prediction ).index();
 		int baselineIndex   = score_table.dataset().attribute( baseline_prediction ).index();
+		int stateOfTheArtIdx= score_table.dataset().attribute( STATE_OF_THE_ART ).index();
 		
 		if( Utils.isMissingValue( score_table.value( predictionIndex ) ) == false ) {
 			own_score += score_table.value( predictionIndex );
@@ -96,6 +107,12 @@ public class RunStreamEvaluator {
 			baseline_curve.get( task ).put( interval_start, score_table.value( baselineIndex ) );
 		}else {
 			baseline_curve.get( task ).put( interval_start, 0.0 );
+		}
+		if( Utils.isMissingValue( score_table.value( stateOfTheArtIdx ) ) == false ) {
+			state_of_the_art += score_table.value( stateOfTheArtIdx );
+			stateoftheart_curve.get( task ).put( interval_start, score_table.value( predictionIndex ) );
+		} else {
+			stateoftheart_curve.get( task ).put( interval_start, 0.0 );
 		}
 		
 		double max = Double.MIN_VALUE;
@@ -138,6 +155,7 @@ public class RunStreamEvaluator {
 		sb.append("Instances: "+processed+"\n");
 		sb.append("Score: "+ (own_score / processed) +"\n");
 		sb.append("Base score: "+ (baseline_score / processed) +"\n");
+		sb.append("SOTA score: "+ (state_of_the_art / processed) +"\n");
 		sb.append("Max score: "+ (max_score / processed) +"\n");
 		sb.append("Min score: "+ (min_score / processed) +"\n");
 		sb.append("Beaten baseline: "+ better_than_baseline +" x\n");
@@ -151,15 +169,13 @@ public class RunStreamEvaluator {
 	public String getSql( int task_id ) {
 		StringBuilder sb = new StringBuilder();
 
-		sb.append( "(" );
-		sb.append( task_id + "," );
-		sb.append( getCurvesForTask( task_id ) );
-		sb.append( "),\n" );
-		
+		sb.append( "INSERT INTO `tmp_curve`(`task_id`,`interval_start`,`score`,`baseline`,`max`,`state_of_art`) VALUES \n" );
+		sb.append( getCurvesForTask( task_id, true ) );
+		sb.append( ";\n\n" );
 		return sb.toString();
 	}
 	
-	public String getCurvesForTask( int task_id ) {
+	public String getCurvesForTask( int task_id, boolean sql ) {
 		StringBuilder sb = new StringBuilder();
 		ArrayList<Integer> intervals = new ArrayList<Integer>();
 		intervals.addAll( accuracy_curve.get(task_id ).keySet() );
@@ -168,20 +184,31 @@ public class RunStreamEvaluator {
 		double accuracy = 0.0;
 		double baseline = 0.0;
 		double maxscore = 0.0;
+		double stateart = 0.0;
 		
 		for( int i = 0; i < intervals.size(); ++i ) {
 			int interval_start = intervals.get( i );
+			if( sql == true ) {
+				sb.append( ",\n(" );
+				sb.append( task_id + "," );
+			}
 			accuracy += accuracy_curve.get( task_id ).get( interval_start );
 			baseline += baseline_curve.get( task_id ).get( interval_start );
 			maxscore += maxscore_curve.get( task_id ).get( interval_start );
+			stateart += stateoftheart_curve.get( task_id ).get( interval_start );
 
-			sb.append( interval_start + "," );
-			sb.append( (accuracy / (i+1)) + "," );
-			sb.append( (baseline / (i+1)) + "," );
-			sb.append( (maxscore / (i+1)) + "\n" );
+			sb.append( "  " + interval_start + ", " );
+			sb.append( (accuracy / (i+1)) + ", " );
+			sb.append( (baseline / (i+1)) + ", " );
+			sb.append( (maxscore / (i+1)) + ", " );
+			sb.append( (stateart / (i+1)) );
+			
+			if( sql == true ) {
+				sb.append( ") \n" );
+			}
 		}
 		
-		return sb.toString();
+		return sb.toString().substring( 1 );
 	}
 	
 	@Override 

@@ -1,9 +1,5 @@
 package org.openml.tools.dataset;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,9 +16,6 @@ import org.openml.tools.algorithms.InstancesHelper;
 
 import weka.core.Attribute;
 import weka.core.Instances;
-import weka.core.OptionHandler;
-import weka.core.Utils;
-import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.RemoveUnusedClassValues;
 import weka.filters.unsupervised.attribute.RemoveUseless;
 
@@ -37,19 +30,18 @@ public class CreateMetaDataset {
 	
 	Integer[] all_classifiers = { 78, 79, 80, 81, 98, 82, 83, 84, 86, 99, 101, 103, 108 };
 	Integer[] base_classifiers = { 78, 79, 80, 81, 98,  };
-	Integer[] base2_classifiers = { 78, 79, 22, 80, 91, 101, 108, 103, 96, 97, 99, 98, 95 };
 	Integer[] meta_classifiers = { 82, 83, 84, 86 };
 	Integer[] weka_classifiers = { 99, 101, 103, 108 };
 	
 	public static void main(String[] args) throws Exception {
-		Integer[] task_ids = 
-			  { 120, 121, 122, 123, 124, 125, 126, 127, 128,
+		Integer[] task_ids = { 120, 121, 122, 123, 124, 125, 126, 127, 128,
 				129, 158, 159, 160, 163, 164, 165, 166, 167, 169, 170, 171,
 				172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183,
 				184, 185, 186, 188, 189, 190, 191, 192, 193, 194, 195, 196,
 				197, 198, 199, 200, 2056, 2126, 2127, 2128, 2129, 2130, 2131,
 				2132, 2133, 2134, 2150, 2151, 2154, 2155, 2156, 2157, 2159,
-				2160, 2161, 2162, 2163, 2164, 2165, 2166, 2167 };
+				2160, 2161, 2162, 2163, 2164, 2165, 2166, 2167, 2244, 2268,
+				2269 };
 		
 		if( config.getServer() != null ) {
 			apiconnector = new ApiConnector( config.getServer() );
@@ -94,7 +86,6 @@ public class CreateMetaDataset {
 		
 		createDataset( "meta_all", implementationIdsToImplementationList( all_classifiers ) );
 		createDataset( "meta_base", implementationIdsToImplementationList( base_classifiers ) );
-		createDataset( "meta_base_all", implementationIdsToImplementationList( base2_classifiers ) );
 		createDataset( "meta_meta", implementationIdsToImplementationList( meta_classifiers ) );
 		createDataset( "meta_weka", implementationIdsToImplementationList( weka_classifiers ) );
 	}
