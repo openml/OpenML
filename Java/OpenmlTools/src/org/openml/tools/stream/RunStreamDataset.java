@@ -21,11 +21,15 @@ import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instance;
 import weka.core.Instances;
+import weka.core.Utils;
 
 public class RunStreamDataset {
 	private static final String OPENML_TASK_ID_ATT = "openml_task_id";
 	private static final String OPENML_SCORE_ATT_PREFIX = "openml_classifier_";
 	private static final String OPENML_CLASS_ATT = "class";
+	
+	
+	private static Map<String, String[]> alloptions = new HashMap<String, String[]>();
 	
 	private static final String[] metaAlgrorithms = {
 			"moa.LeveragingBag_HoeffdingTree(1)", "moa.LeveragingBag_kNN(1)",
@@ -69,14 +73,25 @@ public class RunStreamDataset {
 	
 	public static void main( String[] args ) throws Exception {
 		
-		new RunStreamDataset( allAlgorithms );
+		alloptions.put( "base", baseAlgorithms );
+		alloptions.put( "weka", batchIncremental );
+		alloptions.put( "meta", metaAlgrorithms );
+		alloptions.put( "all", allAlgorithms );
+		
+		String optionT = Utils.getOption( 'T', args );
+		
+		if( optionT.equals("") || optionT.equals("all") ) {
+			new RunStreamDataset( allAlgorithms, "all" );
+		} else {
+			new RunStreamDataset( alloptions.get( optionT ), optionT );
+		}
 		
 	}
 	
-	public RunStreamDataset( String[] algorithms_used ) throws Exception {
-		
+	public RunStreamDataset( String[] algorithms_used, String prefix ) throws Exception {
+		Conversion.log( "OK", "RunStream", prefix + " - " + Arrays.toString( algorithms_used ) );
 		tasksAvailable = new HashMap<Integer, Integer>();
-		allMeasurements = new Instances( new BufferedReader( new FileReader( new File("meta_stream.arff") ) ) );
+		allMeasurements = new Instances( new BufferedReader( new FileReader( new File( "meta_stream.arff") ) ) );
 		for( int i = allMeasurements.numInstances() - 1; i >=0; i-- ) {
 			int task_id = (int) allMeasurements.instance( i ).value( 0 );
 			if( Arrays.asList( tasks_included ).contains( task_id ) == false ) {
@@ -88,7 +103,7 @@ public class RunStreamDataset {
 		filterClassAttributes( allMeasurements, algorithms_used );
 		allMeasurements.setClass( allMeasurements.attribute( OPENML_CLASS_ATT ) );
 		
-		InstancesHelper.toFile( allMeasurements, "meta_stream_adjusted" );
+		InstancesHelper.toFile( allMeasurements, prefix + "_meta_stream_adjusted" );
 		
 		GLOBAL_EVALUATOR = new Evaluation( allMeasurements );
 		GLOBAL_EVALUATOR.useNoPriors();
@@ -96,8 +111,8 @@ public class RunStreamDataset {
 		GLOBAL_BASELINE.useNoPriors();
 		GLOBAL_STREAM_EVALUATOR = new RunStreamEvaluator( algorithms_used );
 		
-		LOG_WRITER = new BufferedWriter( new FileWriter( new File( "evaluator.log" ) ) );
-		SQL_WRITER = new BufferedWriter( new FileWriter( new File( "curves.sql" ) ) );
+		LOG_WRITER = new BufferedWriter( new FileWriter( new File( prefix + "_evaluator.log" ) ) );
+		SQL_WRITER = new BufferedWriter( new FileWriter( new File( prefix + "_curves.sql" ) ) );
 		
 		taskIdIndex = allMeasurements.attribute( OPENML_TASK_ID_ATT ).index();
 		scoreAttributes = getScoreAttributes();
@@ -261,6 +276,7 @@ public class RunStreamDataset {
 					bestClassifier = current;
 				}
 			}
+			
 			dataset.instance(i).setValue( dataset.numAttributes() - 1, bestClassifier );
 		}
 	}
