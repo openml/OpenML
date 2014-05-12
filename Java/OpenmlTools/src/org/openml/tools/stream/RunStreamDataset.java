@@ -47,6 +47,14 @@ public class RunStreamDataset {
 			"moa.HoeffdingTree(1)", "moa.SGD(1)", "moa.NaiveBayes(1)",
 			"moa.SPegasos(1)" };
 	
+	private static final Integer[] tasks_included = {  
+		 122, 127, 160, 163, 170, 171, 174, 175, 177, 178, 
+		 182, 183, 185, 188, 189, 190, 191, 192, 193, 194, 
+		 195, 196, 197, 198, 199, 200,2056,2126,2127,2128,
+		2129,2130,2131,2132,2133,2134,2150,2151,2154,5155,
+		2156,2157,2159,2160,2161,2162,2163,2164,2165,2166,
+		2167,2168,2169 };
+	
 	private final ArrayList<Attribute> scoreAttributes;
 	private final ArrayList<Attribute> trainTestAttributes;
 	private final Evaluation GLOBAL_EVALUATOR;
@@ -69,6 +77,14 @@ public class RunStreamDataset {
 		
 		tasksAvailable = new HashMap<Integer, Integer>();
 		allMeasurements = new Instances( new BufferedReader( new FileReader( new File("meta_stream.arff") ) ) );
+		for( int i = allMeasurements.numInstances() - 1; i >=0; i-- ) {
+			int task_id = (int) allMeasurements.instance( i ).value( 0 );
+			if( Arrays.asList( tasks_included ).contains( task_id ) == false ) {
+				allMeasurements.delete( i );
+			}
+		}
+		
+		
 		filterClassAttributes( allMeasurements, algorithms_used );
 		allMeasurements.setClass( allMeasurements.attribute( OPENML_CLASS_ATT ) );
 		
@@ -145,6 +161,9 @@ public class RunStreamDataset {
 		}
 		
 		Classifier metaLearner = new RandomForest();
+		((RandomForest) metaLearner).setNumTrees( 100 );
+		((RandomForest) metaLearner).setNumFeatures( 10 );
+		
 		Classifier baseline = new ZeroR();
 		Evaluation evaluator = new Evaluation( trainSet );
 		

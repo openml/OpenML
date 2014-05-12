@@ -38,6 +38,14 @@ AND `q1`.`quality` = `q2`.`quality` AND `q2`.`quality` = `q3`.`quality`
 AND `q1`.`value` >= 0 AND `q2`.`value` >= 0 AND `q3`.`value` >= 0 
 AND `q1`.`value` <= 1 AND `q2`.`value` <= 1 AND `q3`.`value` <= 1
 
+
+SELECT `q1`.`quality`, (`q2`.`value` / `q1`.`value`) AS 'BNG(anneal,nominal,1000000)' , (`q3`.`value` / `q1`.`value`) AS 'BNG(anneal,numeric,1000000)' 
+FROM `data_quality` `q1`, `data_quality` `q2`, `data_quality` `q3` 
+WHERE `q1`.`data` = 1 AND `q2`.`data` = 70 AND `q3`.`data` = 244 
+AND `q1`.`quality` = `q2`.`quality` AND `q2`.`quality` = `q3`.`quality` 
+AND `q1`.`value` > 0 AND `q2`.`value` > 0 AND `q3`.`value` > 0 
+AND `q1`.`value` <= 1000 AND `q2`.`value` <= 1000 AND `q3`.`value` <= 1000
+
 #compare diff between knn and knn bag
 SELECT LB.name, knn.score - LB.score AS "accuracy(kNN) - accuracy(LB kNN)" FROM
 (SELECT DISTINCT d.name, e1.value AS 'score', t.task_id
