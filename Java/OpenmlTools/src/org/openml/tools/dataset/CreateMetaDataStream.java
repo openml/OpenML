@@ -105,7 +105,7 @@ public class CreateMetaDataStream {
 		for( Integer task_id : task_ids ) {
 			Conversion.log("OK", "Create MetaDatastream", "Downloading Task: " + task_id );
 			
-			String sql = "SELECT `q`.`value` FROM `data_quality` `q`, `task_values` `t` WHERE `t`.`input` = 1 AND `q`.`quality` = 'InstanceCount' AND `t`.`value` = `q`.`data` AND `t`.`task_id` = " + task_id; 
+			String sql = "SELECT `q`.`value` FROM `data_quality` `q`, `task_values` `t` WHERE `t`.`input` = 1 AND `q`.`quality` = 'NumberOfInstances' AND `t`.`value` = `q`.`data` AND `t`.`task_id` = " + task_id; 
 			double task_size = QueryUtils.getIntFromDatabase( apiconnector, sql );
 			
 			for( int i = interval_size; i < task_size; i += INTERVALS_PER_DOWNLOAD * interval_size ) {
@@ -146,7 +146,7 @@ public class CreateMetaDataStream {
 		
 		ArrayList<String> classValues = new ArrayList<String>();
 		for( String classifier : allClassifiers.keySet() ) {
-			if( allClassifiers.get( classifier ) < (numInstances * 0.9) ) {
+			if( allClassifiers.get( classifier ) < (numInstances * 0.8) ) {
 				Conversion.log("WARNING","Generate Meta DataStream","Dropping classifier since to few runs: " + classifier );
 				continue;
 			}
