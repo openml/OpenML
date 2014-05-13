@@ -64,6 +64,91 @@ WHERE LB.name = knn.name AND
 LB.task_id IN ( 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 158, 159, 160, 163, 164, 165, 166, 167, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 2056, 2126, 2127, 2128, 2129, 2130, 2131, 2132, 2133, 2134, 2150, 2151, 2154, 2155, 2156, 2157, 2159, 2160, 2161, 2162, 2163, 2164, 2165, 2166, 2167, 2268, 2269)
 AND knn.task_id  IN ( 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 158, 159, 160, 163, 164, 165, 166, 167, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 2056, 2126, 2127, 2128, 2129, 2130, 2131, 2132, 2133, 2134, 2150, 2151, 2154, 2155, 2156, 2157, 2159, 2160, 2161, 2162, 2163, 2164, 2165, 2166, 2167, 2268, 2269 );
 
+
+# grap all relevant runs
+SELECT r.run_id FROM `run` `r`,`algorithm_setup` `s`,`implementation` `i` WHERE r.setup = s.sid and s.implementation_id = i.id and r.task_id IN (2056, 171, 170, 175, 174, 163, 160, 185, 190,
+191, 188, 189, 178, 177, 182, 183, 2133, 2132, 2134, 2129, 200,
+2128, 2131, 2130, 197, 196, 199, 198, 193, 192, 195, 194, 2126,
+2127, 2167, 2166, 2165, 2164, 2163, 2162, 2160, 2150, 2151,
+127, 2159, 2156, 2157, 2154, 122) AND i.fullName IN ("moa.LeveragingBag_HoeffdingTree(1)", "moa.LeveragingBag_kNN(1)",
+		"moa.OzaBoost_HoeffdingTree(1)", "moa.OzaBag_HoeffdingTree(1)", 
+		"moa.kNN(1)",
+		"moa.HoeffdingTree(1)", "moa.SGD(1)", "moa.NaiveBayes(1)",
+		"moa.SPegasos(1)",
+		"moa.WEKAClassifier_J48(1)", "moa.WEKAClassifier_OneR(1)",
+		"moa.WEKAClassifier_REPTree(1)", "moa.WEKAClassifier_SMO_PolyKernel(1)") 
+
+# evaluations / relevant task
+SELECT r.rid, r.task_id, i.fullName, count(*) as evaluations FROM `run` `r`,`algorithm_setup` `s`,`implementation` `i`, `evaluation_interval` `e` WHERE r.setup = s.sid and s.implementation_id = i.id AND e.function = "predictive_accuracy" AND e.source = r.rid and r.task_id IN (2056, 171, 170, 175, 174, 163, 160, 185, 190,
+191, 188, 189, 178, 177, 182, 183, 2133, 2132, 2134, 2129, 200,
+2128, 2131, 2130, 197, 196, 199, 198, 193, 192, 195, 194, 2126,
+2127, 2167, 2166, 2165, 2164, 2163, 2162, 2160, 2150, 2151,
+127, 2159, 2156, 2157, 2154, 122) AND i.fullName IN ("moa.LeveragingBag_HoeffdingTree(1)", "moa.LeveragingBag_kNN(1)",
+		"moa.OzaBoost_HoeffdingTree(1)", "moa.OzaBag_HoeffdingTree(1)", 
+		"moa.kNN(1)",
+		"moa.HoeffdingTree(1)", "moa.SGD(1)", "moa.NaiveBayes(1)",
+		"moa.SPegasos(1)",
+		"moa.WEKAClassifier_J48(1)", "moa.WEKAClassifier_OneR(1)",
+		"moa.WEKAClassifier_REPTree(1)", "moa.WEKAClassifier_SMO_PolyKernel(1)") 
+GROUP BY `r`.`rid`
+ORDER BY r.task_id, i.fullName;
+
+#evaluations check
+SELECT r.rid, r.task_id, v.value AS did, q.value AS numInstances, i.fullName, count(*) as evaluations, (CEIL(q.value / 1000) / count(*)) as check_should_be1 
+FROM `run` `r`,`algorithm_setup` `s`,`implementation` `i`, `evaluation_interval` `e`, `task_values` `v`, data_quality q 
+WHERE v.value = q.data and q.quality = "NumberOfInstances" AND v.task_id = r.task_id AND v.input = 1 
+AND r.setup = s.sid and s.implementation_id = i.id AND e.function = "predictive_accuracy" 
+AND e.source = r.rid and r.task_id IN (2056, 171, 170, 175, 174, 163, 160, 185, 190,
+191, 188, 189, 178, 177, 182, 183, 2133, 2132, 2134, 2129, 200,
+2128, 2131, 2130, 197, 196, 199, 198, 193, 192, 195, 194, 2126,
+2127, 2167, 2166, 2165, 2164, 2163, 2162, 2160, 2150, 2151,
+127, 2159, 2156, 2157, 2154, 122) AND i.fullName IN ("moa.LeveragingBag_HoeffdingTree(1)", "moa.LeveragingBag_kNN(1)",
+		"moa.OzaBoost_HoeffdingTree(1)", "moa.OzaBag_HoeffdingTree(1)", 
+		"moa.kNN(1)",
+		"moa.HoeffdingTree(1)", "moa.SGD(1)", "moa.NaiveBayes(1)",
+		"moa.SPegasos(1)",
+		"moa.WEKAClassifier_J48(1)", "moa.WEKAClassifier_OneR(1)",
+		"moa.WEKAClassifier_REPTree(1)", "moa.WEKAClassifier_SMO_PolyKernel(1)") 
+GROUP BY `r`.`rid` 
+HAVING (CEIL(q.value / 1000) / count(*)) <> 1
+ORDER BY r.task_id, i.fullName;
+
+#evaluations check extensive
+#SELECT r.rid, r.task_id, v.value AS did, q.value AS numInstances, i.fullName, count(*) as evaluations, (CEIL(q.value / 1000) / count(*)) as check_should_be1 
+FROM `run` `r` LEFT JOIN (select * from evaluation_interval WHERE e.function = "predictive_accuracy") `e` ON r.rid = e.source,`algorithm_setup` `s`,`implementation` `i`, `task_values` `v`, data_quality q WHERE v.value = q.data and q.quality = "NumberOfInstances" AND v.task_id = r.task_id AND v.input = 1 AND r.setup = s.sid and s.implementation_id = i.id and r.task_id IN (2056, 171, 170, 175, 174, 163, 160, 185, 190,
+#191, 188, 189, 178, 177, 182, 183, 2133, 2132, 2134, 2129, 200,
+#2128, 2131, 2130, 197, 196, 199, 198, 193, 192, 195, 194, 2126,
+#2127, 2167, 2166, 2165, 2164, 2163, 2162, 2160, 2150, 2151,
+#127, 2159, 2156, 2157, 2154, 122) AND i.fullName IN ("moa.LeveragingBag_HoeffdingTree(1)", "moa.LeveragingBag_kNN(1)",
+#		"moa.OzaBoost_HoeffdingTree(1)", "moa.OzaBag_HoeffdingTree(1)", 
+#		"moa.kNN(1)",
+#		"moa.HoeffdingTree(1)", "moa.SGD(1)", "moa.NaiveBayes(1)",
+#		"moa.SPegasos(1)",
+#		"moa.WEKAClassifier_J48(1)", "moa.WEKAClassifier_OneR(1)",
+#		"moa.WEKAClassifier_REPTree(1)", "moa.WEKAClassifier_SMO_PolyKernel(1)") 
+#GROUP BY `r`.`rid` 
+#HAVING (CEIL(q.value / 1000) / count(*)) <> 1
+#ORDER BY r.task_id, i.fullName;
+
+SELECT r.rid, r.task_id, v.value AS did, i.fullName
+FROM `run` `r`,`algorithm_setup` `s`,`implementation` `i`, `task_values` `v`
+WHERE v.task_id = r.task_id AND v.input = 1 
+AND r.setup = s.sid and s.implementation_id = i.id and r.task_id IN (2056, 171, 170, 175, 174, 163, 160, 185, 190,
+191, 188, 189, 178, 177, 182, 183, 2133, 2132, 2134, 2129, 200,
+2128, 2131, 2130, 197, 196, 199, 198, 193, 192, 195, 194, 2126,
+2127, 2167, 2166, 2165, 2164, 2163, 2162, 2160, 2150, 2151,
+127, 2159, 2156, 2157, 2154, 122) AND i.fullName IN ("moa.LeveragingBag_HoeffdingTree(1)", "moa.LeveragingBag_kNN(1)",
+		"moa.OzaBoost_HoeffdingTree(1)", "moa.OzaBag_HoeffdingTree(1)", 
+		"moa.kNN(1)",
+		"moa.HoeffdingTree(1)", "moa.SGD(1)", "moa.NaiveBayes(1)",
+		"moa.SPegasos(1)",
+		"moa.WEKAClassifier_J48(1)", "moa.WEKAClassifier_OneR(1)",
+		"moa.WEKAClassifier_REPTree(1)", "moa.WEKAClassifier_SMO_PolyKernel(1)") 
+		AND  r.rid NOT IN (select source from evaluation_interval WHERE function = "predictive_accuracy")
+ORDER BY r.task_id, i.fullName
+
+
+
 select d.name, e2.value as 'moa.LeveragingBag_kNN (meta.LeveragingBag -l lazy.kNN)', e1.value as 'moa.kNN (lazy.kNN )' 
 FROM task t, task_values v, dataset d, data_quality dq, 
 run r1, algorithm_setup a1, implementation i1, evaluation e1, 
