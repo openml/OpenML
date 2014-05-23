@@ -220,6 +220,9 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 						userMeasures.put( 
 							new Metric("build_cpu_time", "openml.evaluation.build_cpu_time(1.0)", null), 
 							new MetricScore( (Double) splitEvaluatorResults.get("Elapsed_Time_training") ) );
+						userMeasures.put( 
+								new Metric("build_memory", "openml.evaluation.build_memory(1.0)", null), 
+								new MetricScore( (double) (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) ) );
 						userMeasures.put(
 							new Metric("predictive_accuracy", "openml.evaluation.predictive_accuracy(1.0)", null), 
 							new MetricScore( ( (Double) splitEvaluatorResults.get("Percent_correct")) / 100 ) ); // division 100 for percentages to pred_acc

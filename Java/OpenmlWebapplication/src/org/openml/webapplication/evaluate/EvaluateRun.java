@@ -55,14 +55,12 @@ public class EvaluateRun {
 			evaluate( run_id, INTERVAL_SIZE );
 		} else {
 			run_id = getRunId();
-			if( run_id != null ) {
+			while( run_id != null ) {
 				evaluate( run_id, INTERVAL_SIZE );
-			} else {
-				Conversion.log( "OK", "Process Run", "No Runs to perform. " );
+				run_id = getRunId();
 			}
+			Conversion.log( "OK", "Process Run", "No more runs to perform. " );
 		}
-
-		
 	}
 	
 	public Integer getRunId() throws JSONException, IOException {
