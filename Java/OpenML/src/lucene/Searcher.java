@@ -93,7 +93,7 @@ public class Searcher {
     
     IndexReader reader = DirectoryReader.open(FSDirectory.open(new File(index)));
     IndexSearcher searcher = new IndexSearcher(reader);
-    Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_41);
+    Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_46);
 
     BufferedReader in = null;
     if (queries != null) {
@@ -101,7 +101,7 @@ public class Searcher {
     } else {
       in = new BufferedReader(new InputStreamReader(System.in, "UTF-8"));
     }
-    QueryParser parser = new QueryParser(Version.LUCENE_41, field, analyzer);
+    QueryParser parser = new QueryParser(Version.LUCENE_46, field, analyzer);
     while (true) {
       if (queries == null && queryString == null) {                        // prompt the user
         System.out.println("Enter query: ");

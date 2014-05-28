@@ -62,7 +62,7 @@ public Connection openConnection() {
 	      
 	      // Result set get the result of the SQL query
 	      preparedStatement = connect
-	          .prepareStatement("select name, url, description from dataset");
+	          .prepareStatement("select name, description, format, creator, contributor, collection from dataset");
 	      resultSet = preparedStatement.executeQuery();
 	      
 	  } catch(SQLException e){
@@ -82,7 +82,7 @@ public Connection openConnection() {
 	      
 	      // Result set get the result of the SQL query
 	      preparedStatement = connect
-	          .prepareStatement("select fullName, name, description, fullDescription, installationNotes, dependencies from implementation");
+	          .prepareStatement("select fullName, name, uploader, creator, contributor, description, fullDescription, installationNotes, dependencies from implementation");
 	      resultSet = preparedStatement.executeQuery();
 	      
 	  } catch(SQLException e){

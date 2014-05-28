@@ -63,10 +63,10 @@ public class Indexer {
     String indexPath = "index";
 
     boolean create = true;
-    String server = "__undefinied__";
-    String database = "__undefinied__";
-    String username = "__undefinied__";
-    String password = "__undefinied__"; 
+    String server = "__undefined__";
+    String database = "__undefined__";
+    String username = "__undefined__";
+    String password = "__undefined__"; 
     
     for(int i=0;i<args.length;i++) {
       if ("-index".equals(args[i])) {
@@ -85,8 +85,8 @@ public class Indexer {
       }
     }
     
-    if(server.equals("__undefinied__") || database.equals("__undefinied__") || 
-       username.equals("__undefinied__") || password.equals("__undefinied__") ) {
+    if(server.equals("__undefined__") || database.equals("__undefined__") || 
+       username.equals("__undefined__") || password.equals("__undefined__") ) {
     	System.out.println("Mandatory server connection arguments {-server,-database,-username,-password} where not provided. ");
     	return;
     }
@@ -96,8 +96,8 @@ public class Indexer {
       System.out.println("Indexing to directory '" + indexPath + "'...");
 
       Directory dir = FSDirectory.open(new File(indexPath));
-      Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_40);
-      IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_40, analyzer);
+      Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_46);
+      IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_46, analyzer);
 
       if (create) {
         // Create a new index in the directory, removing any
@@ -154,13 +154,16 @@ public class Indexer {
 		
 	      String name = datasets.getString("name");
 	      StringBuilder sb = new StringBuilder();
-	      sb.append(name);
-	      sb.append(datasets.getString("url"));
-	      sb.append(datasets.getString("description"));
-
+	      sb.append(" " + name.replaceAll("[^A-Za-z0-9]", " "));
+	      sb.append(" " + datasets.getString("description"));
+	      sb.append(" " + datasets.getString("format"));
+	      sb.append(" " + datasets.getString("creator"));
+	      sb.append(" " + datasets.getString("contributor"));
+	      sb.append(" " + datasets.getString("collection"));
+	      
           // make a new, empty document
           Document doc = new Document();
-          doc.add(new StringField("name", name, Field.Store.YES));
+          doc.add(new TextField("name", name, Field.Store.YES));
           doc.add(new StringField("type", "dataset", Field.Store.YES));
           doc.add(new TextField("contents", sb.toString(), Field.Store.NO));
           
@@ -178,19 +181,21 @@ public class Indexer {
 				
 			      String name = impls.getString("fullName");
 			      StringBuilder sb = new StringBuilder();
-			      sb.append(name);
-			      sb.append(impls.getString("name"));
-			      sb.append(impls.getString("binaryUrl"));
-			      sb.append(impls.getString("description"));
-			      sb.append(impls.getString("fullDescription"));
-			      sb.append(impls.getString("installationNotes"));
-			      sb.append(impls.getString("dependencies"));
-
+			      sb.append(" " + name.replaceAll("[^A-Za-z0-9]", " "));
+			      sb.append(" " + impls.getString("name").replaceAll("[^A-Za-z0-9]", " "));			      
+			      sb.append(" " + impls.getString("uploader"));
+			      sb.append(" " + impls.getString("creator"));
+			      sb.append(" " + impls.getString("contributor"));
+			      sb.append(" " + impls.getString("description"));
+			      sb.append(" " + impls.getString("fullDescription"));
+			      sb.append(" " + impls.getString("installationNotes"));
+			      sb.append(" " + impls.getString("dependencies"));
+			      
 		          Document doc = new Document();
-		          doc.add(new StringField("name", name, Field.Store.YES));
+		          doc.add(new TextField("name", name, Field.Store.YES));
 		          doc.add(new StringField("type", "implementation", Field.Store.YES));
 		          doc.add(new TextField("contents", sb.toString(), Field.Store.NO));
-
+		          
 		          addToIndex(writer, doc, "implementation", name);
 		    }
 		  }
@@ -205,13 +210,13 @@ public class Indexer {
 				
 			      String name = functions.getString("name");
 			      StringBuilder sb = new StringBuilder();
-			      sb.append(name);
-			      sb.append(functions.getString("description"));
+			      sb.append(" " + name.replaceAll("[^A-Za-z0-9]", " "));
+			      sb.append(" " + functions.getString("description"));
 
 
 		          // make a new, empty document
 		          Document doc = new Document();
-		          doc.add(new StringField("name", name, Field.Store.YES));
+		          doc.add(new TextField("name", name, Field.Store.YES));
 		          doc.add(new StringField("type", "function", Field.Store.YES));
 		          doc.add(new TextField("contents", sb.toString(), Field.Store.NO));
 
