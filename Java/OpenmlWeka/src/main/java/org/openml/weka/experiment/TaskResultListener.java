@@ -143,7 +143,7 @@ public class TaskResultListener extends InstancesResultListener {
 		try { 
 			UploadRun ur = apiconnector.openmlRunUpload(tmpDescriptionFile, output_files, ash.getSessionHash());
 			Conversion.log( "INFO", "Upload Run", "Run was uploaded with rid " + ur.getRun_id() + 
-					". Obatainable at " + apiconnector.getApiUrl() + "?f=openml.run.get&run_id=" + 
+					". Obtainable at " + apiconnector.getApiUrl() + "?f=openml.run.get&run_id=" + 
 					ur.getRun_id() );
 		} catch( ApiException ae ) {
 			ae.printStackTrace(); 

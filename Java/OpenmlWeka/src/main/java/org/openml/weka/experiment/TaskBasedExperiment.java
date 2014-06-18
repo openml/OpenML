@@ -269,8 +269,15 @@ public class TaskBasedExperiment extends Experiment {
 		setTasks(tasks);
 
 		Classifier[] cArray = new Classifier[1];
-		cArray[0] = (Classifier) Utils.forName(Classifier.class,
+		try{
+			cArray[0] = (Classifier) Utils.forName(Classifier.class,
 				classifierName, classifierOptions);
+		} catch(Exception e){
+			// Try again, this time loading packages first
+			weka.core.WekaPackageManager.loadPackages(false, false);
+			cArray[0] = (Classifier) Utils.forName(Classifier.class,
+					classifierName, classifierOptions);
+		}
 		setPropertyArray(cArray);
 	}
 
