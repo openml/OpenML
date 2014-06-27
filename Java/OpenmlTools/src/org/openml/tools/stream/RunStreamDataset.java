@@ -44,12 +44,12 @@ public class RunStreamDataset {
 			"moa.WEKAClassifier_REPTree(1)", "moa.WEKAClassifier_SMO_PolyKernel(1)" };
 
 	private static final String[] allAlgorithms = {
-			"moa.WEKAClassifier_J48(1)", "moa.WEKAClassifier_OneR(1)",
-			"moa.WEKAClassifier_REPTree(1)",
-			"moa.LeveragingBag_HoeffdingTree(1)", "moa.LeveragingBag_kNN(1)",
-			"moa.OzaBoostAdwin_HoeffdingTree(1)", "moa.kNN(1)",
-			"moa.HoeffdingTree(1)", "moa.SGD(1)", "moa.NaiveBayes(1)",
-			"moa.SPegasos(1)" };
+		"moa.LeveragingBag_HoeffdingTree(1)", "moa.LeveragingBag_kNN(1)",
+		"moa.OzaBoost_HoeffdingTree(1)", "moa.OzaBag_HoeffdingTree(1)",
+		"moa.kNN(1)",
+		"moa.HoeffdingTree(1)", "moa.SGD(1)", "moa.NaiveBayes(1)",
+		"moa.SPegasos(1)","moa.WEKAClassifier_J48(1)", "moa.WEKAClassifier_OneR(1)",
+		"moa.WEKAClassifier_REPTree(1)", "moa.WEKAClassifier_SMO_PolyKernel(1)" };
 	
 	private static final Integer[] tasks_included = {  
 		 122, 127, 160, 163, 170, 171, 174, 175, 177, 178, 

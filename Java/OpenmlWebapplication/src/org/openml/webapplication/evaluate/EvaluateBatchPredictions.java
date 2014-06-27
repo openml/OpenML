@@ -173,14 +173,14 @@ public class EvaluateBatchPredictions implements PredictionEvaluator {
 		for( Metric m : globalMeasures.keySet() ) {
 			MetricScore score = globalMeasures.get( m );
 			DecimalFormat dm = MathHelper.defaultDecimalFormat;
-			evaluationMeasuresList.add( 
-				new EvaluationScore( 
+			EvaluationScore em = new EvaluationScore( 
 					m.implementation, 
 					m.name, 
 					m.label, 
 					score.getScore() == null ? null : dm.format( score.getScore() ), 
 					null, 
-					score.getArrayAsString( dm ) ) );
+					score.getArrayAsString( dm ) );
+			evaluationMeasuresList.add( em );
 		}
 		for( int i = 0; i < sampleEvaluation.length; ++i ) {
 			for( int j = 0; j < sampleEvaluation[i].length; ++j ) {

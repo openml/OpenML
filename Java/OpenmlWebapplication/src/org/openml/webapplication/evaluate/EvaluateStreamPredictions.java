@@ -125,7 +125,7 @@ public class EvaluateStreamPredictions implements PredictionEvaluator {
 			}
 			
 			if( (iInstanceNr + 1) % interval_size == 0 ) {
-				intervalMeasures.put( previousIntervalStarted, Output.evaluatorToMap(globalEvaluator, nrOfClasses, TaskType.TESTTHENTRAIN) );
+				intervalMeasures.put( previousIntervalStarted, Output.evaluatorToMap(localEvaluator, nrOfClasses, TaskType.TESTTHENTRAIN) );
 				localEvaluator = new Evaluation( datasetStructure );
 				previousIntervalStarted = iInstanceNr + 1;
 				allProcessed = true;
@@ -133,7 +133,7 @@ public class EvaluateStreamPredictions implements PredictionEvaluator {
 		}
 		
 		if( ! allProcessed ) {
-			intervalMeasures.put( previousIntervalStarted, Output.evaluatorToMap(globalEvaluator, nrOfClasses, TaskType.TESTTHENTRAIN) );
+			intervalMeasures.put( previousIntervalStarted, Output.evaluatorToMap(localEvaluator, nrOfClasses, TaskType.TESTTHENTRAIN) );
 		}
 		globalMeasures = Output.evaluatorToMap(globalEvaluator, nrOfClasses, TaskType.TESTTHENTRAIN);
 	}
