@@ -286,6 +286,7 @@ public class TaskListPanel extends DatasetListPanel {
 							System.err.println("Could not add task to Queue... ");
 						}
 					} catch (Exception downloadException) {
+						downloadException.printStackTrace();
 						JOptionPane
 								.showMessageDialog(
 										this,

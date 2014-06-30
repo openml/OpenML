@@ -35,7 +35,9 @@ public class WekaAlgorithm {
 		String version = "undefined";
 		try {
 			RevisionHandler classifier = (RevisionHandler) Class.forName(algorithm).newInstance();
-			version = classifier.getRevision();
+			if( StringUtils.isAlphanumeric( classifier.getRevision() )) {
+				version = classifier.getRevision();
+			}
 		} catch (InstantiationException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
