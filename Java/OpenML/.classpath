@@ -3,9 +3,24 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.17-bin.jar"/>
-	<classpathentry kind="lib" path="lib/lucene-analyzers-common-4.6.0.jar"/>
-	<classpathentry kind="lib" path="lib/lucene-core-4.6.0.jar"/>
-	<classpathentry kind="lib" path="lib/lucene-demo-4.6.0.jar"/>
-	<classpathentry kind="lib" path="lib/lucene-queryparser-4.6.0.jar"/>
+	<classpathentry kind="lib" path="/Users/joa/Code/OpenML/OpenML/Java/OpenML/lib/lucene-suggest-4.8.1.jar"/>
+	<classpathentry kind="lib" path="/Users/joa/Code/OpenML/OpenML/Java/OpenML/lib/lucene-queryparser-4.8.1.jar"/>
+	<classpathentry kind="lib" path="/Users/joa/Code/OpenML/OpenML/Java/OpenML/lib/lucene-demo-4.8.1.jar"/>
+	<classpathentry kind="lib" path="/Users/joa/Code/OpenML/OpenML/Java/OpenML/lib/lucene-analyzers-common-4.8.1.jar"/>
+	<classpathentry kind="lib" path="/Users/joa/Code/OpenML/OpenML/Java/OpenML/lib/lucene-core-4.8.1.jar"/>
+	<classpathentry kind="lib" path="/Users/joa/Code/OpenML/OpenML/Java/OpenML/lib/lucene-join-4.8.1.jar"/>
+	<classpathentry kind="lib" path="/Users/joa/Code/OpenML/OpenML/Java/OpenML/lib/lucene-queries-4.8.1.jar"/>
+	<classpathentry kind="lib" path="/Users/joa/Code/OpenML/OpenML/Java/OpenML/lib/lucene-sandbox-4.8.1.jar"/>
+	<classpathentry kind="lib" path="/Users/joa/Code/OpenML/OpenML/Java/OpenML/lib/lucene-highlighter-4.8.1.jar"/>
+	<classpathentry kind="lib" path="/Users/joa/Code/OpenML/OpenML/Java/OpenML/lib/lucene-spatial-4.8.1.jar"/>
+	<classpathentry kind="lib" path="/Users/joa/Code/OpenML/OpenML/Java/OpenML/lib/lucene-replicator-4.8.1.jar"/>
+	<classpathentry kind="lib" path="/Users/joa/Code/OpenML/OpenML/Java/OpenML/lib/lucene-memory-4.8.1.jar"/>
+	<classpathentry kind="lib" path="/Users/joa/Code/OpenML/OpenML/Java/OpenML/lib/lucene-expressions-4.8.1.jar"/>
+	<classpathentry kind="lib" path="/Users/joa/Code/OpenML/OpenML/Java/OpenML/lib/lucene-facet-4.8.1.jar"/>
+	<classpathentry kind="lib" path="/Users/joa/Code/OpenML/OpenML/Java/OpenML/lib/lucene-grouping-4.8.1.jar"/>
+	<classpathentry kind="lib" path="/Users/joa/Code/OpenML/OpenML/Java/OpenML/lib/lucene-classification-4.8.1.jar"/>
+	<classpathentry kind="lib" path="/Users/joa/Code/OpenML/OpenML/Java/OpenML/lib/lucene-codecs-4.8.1.jar"/>
+	<classpathentry kind="lib" path="/Users/joa/Code/OpenML/OpenML/Java/OpenML/lib/lucene-benchmark-4.8.1.jar"/>
+	<classpathentry kind="lib" path="/Users/joa/Code/OpenML/OpenML/Java/OpenML/lib/elasticsearch-1.2.1.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
