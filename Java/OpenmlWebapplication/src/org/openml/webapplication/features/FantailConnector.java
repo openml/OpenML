@@ -70,10 +70,6 @@ public class FantailConnector {
 	
 	private static StreamCharacterizer[] streamCharacterizers;
 	
-	public static void main( String[] args ) throws Exception {
-		extractFeatures( 1, "class", null, new Config( "username = janvanrijn@gmail.com; password = Feyenoord2002; server = http://localhost/") );
-	}
-	
 	public static boolean extractFeatures(Integer did, String datasetClass, Integer interval_size,
 			Config config) throws Exception {
 		Conversion.log( "OK", "Extract Features", "Start extracting features for dataset: " + did );
@@ -92,26 +88,6 @@ public class FantailConnector {
 		
 		DataSetDescription dsd = apiconnector.openmlDataDescription(did);
 		
-		/*try {
-			if( interval_size == null ) {
-				DataQuality apiQualities = apiconnector.openmlDataQuality(did);
-				prevCalcQualities = Arrays.asList( apiQualities.getQualityNames() );
-				// TODO: do this check also for interval sizes
-			} else {
-				prevCalcQualities = new ArrayList<String>();
-			}
-		} catch( Exception e ) {
-			// no qualities calculated yet. We might want to avoid catching this error
-			prevCalcQualities = new ArrayList<String>();
-		}
-		
-		List<String> uncalculatedQualities = characteristicsAvailable();
-		uncalculatedQualities.removeAll( prevCalcQualities );
-		
-		if( uncalculatedQualities.size() == 0 ) {
-			System.out.println(Output.statusMessage("OK", "No new Fantail Features from data #" + did));
-			return;
-		}*/
 		Conversion.log( "OK", "Extract Features", "Start downloading dataset: " + did );
 		
 		ArffLoader datasetLoader = new ArffLoader();
@@ -163,16 +139,6 @@ public class FantailConnector {
 		
 		return true;
 	}
-
-	/*private static List<String> characteristicsAvailable() {
-		List<String> allCharacteristics = new ArrayList<String>();
-		
-		for( Characterizer dc : batchCharacterizers ) {
-			allCharacteristics.addAll( Arrays.asList( dc.getIDs() ) );
-		}
-		
-		return allCharacteristics;
-	}*/
 
 	private static List<Quality> datasetCharacteristics( Instances fulldata, Integer start, Integer interval_size ) throws Exception {
 		List<Quality> result = new ArrayList<DataQuality.Quality>();

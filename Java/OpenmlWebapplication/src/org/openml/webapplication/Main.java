@@ -55,49 +55,8 @@ public class Main {
 			cli = parser.parse( options, args );
 			if( cli.hasOption("f") ) {
 				String function = cli.getOptionValue("f");
-				if( function.equals("evaluate_predictions") ) {
-					if( cli.hasOption("-d") == true && cli.hasOption("-c") == true && cli.hasOption("-s") && cli.hasOption("-p") == true ) {
-						new EvaluateBatchPredictions( cli.getOptionValue("d"), cli.getOptionValue("s"), cli.getOptionValue("p"), cli.getOptionValue("c") );
-					} else {
-						System.out.println( Output.styleToJsonError("Missing arguments for function 'evaluate_predictions'. Need d (url to dataset), c (string target feature), s (url to splits file), and p (url to predictions file). ") );
-					}
-				} else if( function.equals("evaluate_stream_predictions") ) {
-					if( cli.hasOption("-d") == true && cli.hasOption("-c") == true && cli.hasOption("-p") == true ) {
-						new EvaluateStreamPredictions( cli.getOptionValue("d"), cli.getOptionValue("p"), cli.getOptionValue("c"), 1000 );
-					} else {
-						System.out.println( Output.styleToJsonError("Missing arguments for function 'evaluate_stream_predictions'. Need d (url to dataset), c (string target feature), s (url to splits file), and p (url to predictions file). ") );
-					}
-				} else if( function.equals("data_features") ) {
-					if( cli.hasOption("-d") == true ) {
-						String default_class = null;
-						if( cli.hasOption("-c") == true ) { default_class = cli.getOptionValue("c"); }
-						//ExtractFeatures ef = new ExtractFeatures( cli.getOptionValue("d"), default_class );
-						//ArrayList<DataQuality> qualities= ef.getQualities();
-						//ArrayList<DataFeature> features = ef.getFeatures(); 
-						
-						// TODO: rewrite output function
-						//ef.output( features, qualities );
-					} else {
-						System.out.println( Output.styleToJsonError("Missing arguments for function 'data_features'. Need d (url to dataset). ") );
-					}
-				} else if( function.equals("data_qualities") ) {
-					if( cli.hasOption("-did") == false ) {
-						System.out.println( Output.styleToJsonError("Missing arguments for function 'data_qualities'. Need did (dataset id). ") );
-					} else if( isInteger( cli.getOptionValue("did") ) == false ) {
-						System.out.println( Output.styleToJsonError("Option did must be an integer. ") );					
-					} else {
-						if( cli.hasOption("-config") == false ) {
-							c = new Config();
-						} else {
-							c = new Config( cli.getOptionValue("config") );
-						}
-						
-						
-						String default_class = null;
-						if( cli.hasOption("-c") == true ) { default_class = cli.getOptionValue("c"); }
-						FantailConnector.extractFeatures( Integer.parseInt( cli.getOptionValue("did") ), default_class, null, c );
-					} 
-				} else if( function.equals("generate_folds") ) {
+				// TODO: this function should be moved to a specific class, like EvaluateRun and ProcessDataset
+				if( function.equals("generate_folds") ) {
 					if( cli.hasOption("-d") && cli.hasOption("e") && cli.hasOption("c") && cli.hasOption("r") ) {
 						GenerateFolds gf = new GenerateFolds(
 								cli.getOptionValue("d"), 

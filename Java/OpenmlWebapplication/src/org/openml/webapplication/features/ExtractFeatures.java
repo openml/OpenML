@@ -25,8 +25,6 @@ import java.util.ArrayList;
 import org.openml.apiconnector.xml.DataFeature.Feature;
 import org.openml.apiconnector.xml.DataQuality.Quality;
 import org.openml.webapplication.models.AttributeStatistics;
-import org.openml.webapplication.models.DataFeature;
-import org.openml.webapplication.models.DataQuality;
 
 import weka.core.Attribute;
 import weka.core.AttributeStats;
@@ -205,18 +203,5 @@ public class ExtractFeatures {
 		}
 		
 		return resultQualities;
-	}
-	
-	// TODO: make this work with api connector models. 
-	public void output( ArrayList<DataFeature> featuresArray, ArrayList<DataQuality> qualitiesArray ) {
-		StringBuilder features = new StringBuilder();
-		StringBuilder qualities = new StringBuilder();
-		for( DataFeature res : featuresArray ) features.append(",\n\t" + res);
-		for( DataQuality res : qualitiesArray ) qualities.append(",\n\t" + res);
-		
-		
-		System.out.println("{\n\"data_features\":[" + 
-				(features.length() > 0 ? features.toString().substring(1) : "") + "\n],\n\"data_qualities\":[" + 
-				(qualities.length() > 0 ? qualities.toString().substring(1) : "") + "\n]}");
 	}
 }
