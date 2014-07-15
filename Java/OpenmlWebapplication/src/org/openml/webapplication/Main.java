@@ -56,25 +56,34 @@ public class Main {
 		try {
 			cli = parser.parse( options, args );
 			
-			if( cli.hasOption("-config") == false ) {
-				config = new Config();
-			} else {
-				config = new Config( cli.getOptionValue("config") );
-			}
-			
 			if( cli.hasOption("-id") ) {
 				id = Integer.parseInt( cli.getOptionValue("id") );
 			}
 			
 			
 			if( cli.hasOption("f") ) {
+				
 				String function = cli.getOptionValue("f");
 				if( function.equals("evaluate_run") ) {
+					
+					if( cli.hasOption("-config") == false ) {
+						config = new Config();
+					} else {
+						config = new Config( cli.getOptionValue("config") );
+					}
 					
 					// bootstrap evaluate run
 					new EvaluateRun(config, id);
 					
 				} else if( function.equals("process_dataset") ) {
+					
+
+					
+					if( cli.hasOption("-config") == false ) {
+						config = new Config();
+					} else {
+						config = new Config( cli.getOptionValue("config") );
+					}
 					
 					// bootstrap process dataset
 					new ProcessDataset(config, id);
