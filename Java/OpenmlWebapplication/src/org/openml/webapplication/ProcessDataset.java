@@ -27,16 +27,6 @@ public class ProcessDataset {
 	private final XStream xstream;
 	private final ApiSessionHash ash;
 	
-	public static void main( String[] args ) {
-		Config c = new Config("username = janvanrijn@gmail.com; password = Feyenoord2002; server = http://www.janvanrijn.eu/openexpdb_v2/");
-		
-		try {
-			new ProcessDataset( c );
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
 	public ProcessDataset( Config config ) throws Exception {
 		this( config, null );
 	}

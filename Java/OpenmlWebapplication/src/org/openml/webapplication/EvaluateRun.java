@@ -34,16 +34,6 @@ public class EvaluateRun {
 	private final ApiSessionHash ash;
 	private static final int INTERVAL_SIZE = 1000;
 	
-	public static void main( String[] args ) {
-		Config c = new Config("username = janvanrijn@gmail.com; password = Feyenoord2002; server = http://openml.liacs.nl/");
-		
-		try {
-			new EvaluateRun( c );
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
 	public EvaluateRun( Config config ) throws Exception {
 		this( config, null );
 	}

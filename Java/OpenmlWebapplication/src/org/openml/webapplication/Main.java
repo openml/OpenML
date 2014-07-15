@@ -36,9 +36,10 @@ public class Main {
 	public static void main( String[] args ) {
 		CommandLineParser parser = new GnuParser();
 		Options options = new Options();
-		Config c;
+		Integer id = null;
+		Config config;
 		
-		options.addOption("did", true, "The (d)id of the dataset used");
+		options.addOption("id", true, "The id of the dataset/run used");
 		options.addOption("config", true, "The config string describing the settings for API interaction");
 		options.addOption("f", true, "The function to invole");
 		options.addOption("d", true, "The dataset used");
@@ -51,12 +52,36 @@ public class Main {
 		options.addOption("m", false, "Flag determining whether the output of the splits file should be presented as a md5 hash");
 		
 		CommandLine cli;
+		
 		try {
 			cli = parser.parse( options, args );
+			
+			if( cli.hasOption("-config") == false ) {
+				config = new Config();
+			} else {
+				config = new Config( cli.getOptionValue("config") );
+			}
+			
+			if( cli.hasOption("-id") ) {
+				id = Integer.parseInt( cli.getOptionValue("id") );
+			}
+			
+			
 			if( cli.hasOption("f") ) {
 				String function = cli.getOptionValue("f");
-				// TODO: this function should be moved to a specific class, like EvaluateRun and ProcessDataset
-				if( function.equals("generate_folds") ) {
+				if( function.equals("evaluate_run") ) {
+					
+					// bootstrap evaluate run
+					new EvaluateRun(config, id);
+					
+				} else if( function.equals("process_dataset") ) {
+					
+					// bootstrap process dataset
+					new ProcessDataset(config, id);
+					
+				} else if( function.equals("generate_folds") ) {
+					
+					// prepare ARFF output consisting of datasplits
 					if( cli.hasOption("-d") && cli.hasOption("e") && cli.hasOption("c") && cli.hasOption("r") ) {
 						GenerateFolds gf = new GenerateFolds(
 								cli.getOptionValue("d"), 
