@@ -81,10 +81,12 @@ public class AttributeStatistics {
 	}
 	
 	public double getMean() {
+		if( totalObservations == 0 ) return 0; // TODO: happens when all observations for this att are missing. what to do?
 		return totalSum.divide( new BigDecimal( totalObservations ), PRECISION, ROUNDING_MODE ).doubleValue();
 	}
 	
 	public double getStandardDeviation() {
+		if( totalObservations == 0 ) return 0; // TODO: happens when all observations for this att are missing. what to do?
 		BigDecimal obs = new BigDecimal( totalObservations );
 		return Math.sqrt( totalSumSquared.multiply( obs ).subtract( totalSum.multiply( totalSum ) ).divide( obs.multiply( obs.subtract( new BigDecimal( 1 ) ) ), PRECISION, ROUNDING_MODE ).doubleValue() );
 	}
