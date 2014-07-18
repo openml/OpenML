@@ -83,8 +83,10 @@ public class ProcessDataset {
 	
 	public void process( Integer did ) throws Exception {
 		JSONArray record = getRecord(did);
-		
-		ExtractFeatures extractFeatures = new ExtractFeatures(record.getString( 1 ), record.getString( 2 ));
+		String didStr = record.getString( 1 );
+		// feature string should be reconverted to null, if it was NULL in mysql
+		String featureStr = record.getString( 2 ).equals("") ? null : record.getString( 2 );
+		ExtractFeatures extractFeatures = new ExtractFeatures(didStr, featureStr);
 
 		// IMPORTANT: getQualities should be called BEFORE getFeatures
 		Conversion.log( "OK", "Process Dataset", "Processing dataset " + did + " - obtaining basic qualities. " );
