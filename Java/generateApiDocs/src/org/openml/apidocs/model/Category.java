@@ -34,17 +34,10 @@ public class Category {
 	
 	public String generateMenu() {
 		StringBuilder sb = new StringBuilder();
-		sb.append( "<li class=\"nav-header\">"+name+"</li>" + "\n");
+		//sb.append( "<li class=\"nav-header\">"+name+"</li>" + "\n");
 		
 		for( int i = 0; i < functions.size(); i++ ) {
-			String top = (i == 0) ? "topchild " : "";
-			String bottom = (i == functions.size() - 1) ? " bottomchild" : "";
-			if( functions.size() == 1 ) {
-				top = "";
-				bottom = "onlychild";
-			}
-			
-			sb.append( "<li class=\""+top+bottom+"\"><a href=\"<?php echo $_SERVER['REQUEST_URI'] ?>#"+functions.get(i).getName('_')+"\">"+functions.get(i).getName('.')+"</a></li>" + "\n" );
+			sb.append( "<li><a href=\"#"+functions.get(i).getName('_')+"\">"+functions.get(i).getName('.')+"</a></li>" + "\n" );
 		}
 		
 		return sb.toString();

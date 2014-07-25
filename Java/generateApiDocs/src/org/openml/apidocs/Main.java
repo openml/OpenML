@@ -9,11 +9,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import org.apache.commons.io.FileUtils;
 import org.openml.apidocs.model.Argument;
 import org.openml.apidocs.model.Category;
 import org.openml.apidocs.model.ErrorCode;
 import org.openml.apidocs.model.Function;
+import org.openml.apidocs.model.Schema;
 
 
 public class Main {
@@ -31,13 +31,18 @@ public class Main {
 	 * 		FOREACH function:
 	 * 			one line with the function name (typically openml.category.name) (string)
 	 * 			one line with description of function (string)
-	 * 			one line with URL for example output (string, valid URL)
+	 * 			one line with function response description (string, "-" means no response description)
+	 * 			one line with URL for example output (string, valid URL, "-" means not applicable)
 	 * 			one line with number of parameters (numeric)
 	 * 			FOREACH parameter
 	 * 				one line with parameter name (string)
 	 * 				one line with protocol (GET,POST,PUT) 
 	 * 				one line with required (boolean)
 	 * 				one line with description (string)
+	 * 			one line with number of schemas (integer)
+	 * 			FOREACH schema
+	 * 				one line with schema name (String)
+	 * 				one line with schema url (String)
 	 * 			one line with number of errorCodes (integer)
 	 * 			FOREACH errorCode
 	 * 				one line with number, or code (integer)
@@ -62,17 +67,15 @@ public class Main {
 	
 	private void writeApiDocs( String filename, String templatePath ) throws IOException {
 		BufferedWriter bw = new BufferedWriter( new FileWriter( new File( filename ) ) );
-		String template = FileUtils.readFileToString( new File( templatePath ) );
 		StringBuilder menuString = new StringBuilder();
 		StringBuilder functionsString = new StringBuilder();
 		for( Category c : categories ) {
 			menuString.append( c.generateMenu() + "\n" );
 			functionsString.append( c + "\n" );
 		}
-		template = template.replace( "[[[MENU]]]", menuString.toString() );
-		template = template.replace( "[[[FUNCTIONS]]]", functionsString.toString() );
+		bw.append( menuString.toString() );
+		bw.append( functionsString.toString() );
 
-		bw.append( template );
 		bw.close();
 	}
 	
@@ -103,9 +106,11 @@ public class Main {
 			for( int j = 0; j < categoryNrOfFunctions; j++ ) {
 				Function f;
 				String functionName = br.readLine();
+				System.out.println("Processing function: " + functionName );
 				String functionDescription = br.readLine();
+				String functionResponse = br.readLine();
 				String functionExampleUrl = br.readLine();
-				f = new Function( functionName, functionDescription, functionExampleUrl );
+				f = new Function( functionName, functionDescription, functionResponse, functionExampleUrl );
 				Integer functionNrOfParams = Integer.parseInt( br.readLine() );
 				for( int k = 0; k < functionNrOfParams; k++ ) {
 					Argument a;
@@ -115,6 +120,14 @@ public class Main {
 					String parameterDescription = br.readLine();
 					a = new Argument(parameterName, parameterProtocol, parameterRequired, parameterDescription);
 					f.addArgument(a);
+				}
+				Integer functionNrOfSchemas = Integer.parseInt( br.readLine() );
+				for( int k = 0; k < functionNrOfSchemas; k++ ) {
+					Schema s;
+					String name = br.readLine();
+					String url = br.readLine();
+					s = new Schema( name, url );
+					f.addSchema(s);
 				}
 				Integer functionNrOfErrorCodes = Integer.parseInt( br.readLine() );
 				for( int k = 0; k < functionNrOfErrorCodes; k++ ) {
