@@ -1,4 +1,4 @@
-4
+6
 authenticate
 2
 openml.authenticate
@@ -344,8 +344,180 @@ estimationprocedure_id not valid
 Please provide a valid estimationprocedure_id
 
 implementation
+6
+openml.implementation.get
+Returns the description of an implementation (flow)
+This XSD schema is applicable for both uploading and downloading a implementation. 
+http://openml.liacs.nl/api/?f=openml.implementation.get&implementation_id=100
+1
+implementation_id
+GET
+true
+The id of the implementation
+1
+XSD Schema
+https://github.com/openml/OpenML/blob/master/XML/Schemas/implementation.xsd
+2
+180
+Please provide implementation_id
+Please provide implementation_id
+181
+Unknown implementation
+The implementation with this ID was not found in the database
+
+openml.implementation.exists
+A utility function that checks whether an implementation already exists. Mainly used by workbenches
+-
+http://openml.liacs.nl/api/?f=openml.implementation.get&name=weka.j48&external_version=Weka_3.7.5_9117
+2
+name
+GET
+true
+The name of the implementation
+external_version
+GET
+true
+The (workbench) version of the implementation. This is generally based on conventions per workbench
+0
+1
+330
+Mandatory fields not present.
+Please provide one of the following mandatory field combination: name and external_version.
+
+openml.implementation.upload
+Uploads an implementation to OpenML
+Returns the description of an implementation (flow)
+-
+4
+description
+POST
+true
+An XML file containing the implementation meta data
+source
+POST
+false
+The source code of the implementation. If multiple files, please zip them. Either source or binary is required.
+binary
+POST
+false
+The binary of the implementation. If multiple files, please zip them. Either source or binary is required.
+session_hash
+POST
+true
+The session hash, provided by the server on authentication (1 hour valid)
+1
+XSD Schema
+This XSD schema is applicable for both uploading and downloading a implementation. (Some fields are ignored)
+12
+160
+Error in file uploading
+There was a problem with the file upload
+161
+Please provide description xml
+Please provide description xml
+162
+Please provide source or binary file
+Please provide source or binary file. It is also allowed to upload both
+163
+Problem validating uploaded description file
+The XML description format does not meet the standards
+164
+Implementation already stored in database
+Please change name or version number
+165
+Failed to move the files
+Internal server error, please contact api administrators
+166
+Failed to add implementation to database
+Internal server error, please contact api administrators
+167
+Illegal files uploaded
+An non required file was uploaded.
+168
+The provided md5 hash equals not the server generated md5 hash of the file
+The provided md5 hash equals not the server generated md5 hash of the file
+169
+Please provide session_hash
+In order to share content, please authenticate (openml.authenticate) and provide session_hash
+170
+Authentication failed
+The session_hash was not valid. Please try to login again, or contact api administrators
+171
+Implementation already exists
+This implementation is already in the database
+
+openml.implementation.owned
+Returns a list of all implementations owned by the user
+-
+-
+1
+session_hash
+POST
+true
+The session hash, provided by the server on authentication (1 hour valid)
+0
+3
+310
+Please provide session_hash
+In order to view private content, please authenticate (openml.authenticate) and provide session_hash
+311
+Authentication failed
+The session_hash was not valid. Please try to login again, or contact api administrators
+312
+No implementations owned by this used
+The user has no implementations linked to his account
+
+openml.implementation.delete
+Deletes an implementation (can only be done to owned implementations)
+-
+-
+2
+session_hash
+POST
+true
+The session hash, provided by the server on authentication (1 hour valid)
+implementation_id
+POST
+true
+The id of the implementation to delete
+0
+6
+320
+Please provide session_hash
+In order to remove your content, please authenticate (openml.authenticate) and provide session_hash
+321
+Authentication failed
+The session_hash was not valid. Please try to login again, or contact api administrators
+322
+Implementation does not exists
+The implementation id could not be linked to an existing implementation.
+323
+Implementation is not owned by you
+The implementation was owned by another user. Hence you cannot delete it.
+324
+Implementation is in use by other content. Can not be deleted
+The implementation is used in runs, evaluations or as component of another implementation. Delete this other content before deleting this implementation. 
+325
+Deleting implementation failed.
+Deleting the implementation failed. Please contact support team. 
+
+openml.implementation.licences
+Returns a list of all used licences in the implementations
+-
+http://openml.liacs.nl/api/?f=openml.implementation.licences
+0
+0
+0
 
 evaluation
+1
+openml.evaluation.measures
+Returns a list of all evaluation measures
+-
+http://openml.liacs.nl/api/?f=openml.evaluation.measures
+0
+0
+0
 
 run
 
