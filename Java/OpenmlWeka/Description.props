@@ -41,7 +41,7 @@ URL=http://www.openml.org/
 #Related=packageName1,packageName2,...
 
 # Dependencies (format: packageName (equality/inequality version_number)
-Depends=weka (> 3.7.12)
+Depends=weka (>= 3.7.12)
 
 # Message to display in installation. Can be used to provide
 # special instructions (e.g. manual stuff needed to complete
