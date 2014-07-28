@@ -1,0 +1,7 @@
+Lists all data qualities that are used (i.e., are calculated for at least one dataset)
+-
+http://openml.liacs.nl/api/?f=openml.data.qualities.list&data_id=1
+0
+0
+0
+

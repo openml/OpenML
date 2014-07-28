@@ -1,0 +1,16 @@
+returns the details of an estimation procedure
+-
+http://openml.liacs.nl/api/?f=openml.estimationprocedure.get&estimationprocedure_id=1
+1
+estimationprocedure_id
+GET
+true
+The id of the estimation procedure
+0
+2
+440
+Please provide estimationprocedure_id
+Please provide estimationprocedure_id
+441
+estimationprocedure_id not valid
+Please provide a valid estimationprocedure_id

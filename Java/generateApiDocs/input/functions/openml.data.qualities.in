@@ -1,0 +1,28 @@
+Returns the qualities (meta-features) of a given dataset
+-
+http://openml.liacs.nl/api/?f=openml.data.qualities&data_id=1
+1
+data_id
+GET
+true
+The dataset id
+0
+6
+360
+Please provide data_id
+Please provide data_id
+361
+Unknown dataset
+Data set description with data_id was not found in the database
+362
+No qualities found
+The registered dataset did not contain any calculated qualities
+363
+Dataset not processed yet
+The dataset was not processed yet, no qualities are available. Please wait for a few minutes.
+364
+Dataset processed with error
+The quality calculator has run into an error while processing the dataset. Please check whether it is a valid supported file. 
+365
+Interval start or end illegal
+There was a problem with the interval start or end.

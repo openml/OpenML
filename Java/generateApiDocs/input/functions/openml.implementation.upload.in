@@ -1,0 +1,60 @@
+Uploads an implementation to OpenML
+Returns the description of an implementation (flow)
+-
+4
+description
+POST
+true
+An XML file containing the implementation meta data
+source
+POST
+false
+The source code of the implementation. If multiple files, please zip them. Either source or binary is required.
+binary
+POST
+false
+The binary of the implementation. If multiple files, please zip them. Either source or binary is required.
+session_hash
+POST
+true
+The session hash, provided by the server on authentication (1 hour valid)
+1
+XSD Schema
+This XSD schema is applicable for both uploading and downloading a implementation. (Some fields are ignored)
+12
+160
+Error in file uploading
+There was a problem with the file upload
+161
+Please provide description xml
+Please provide description xml
+162
+Please provide source or binary file
+Please provide source or binary file. It is also allowed to upload both
+163
+Problem validating uploaded description file
+The XML description format does not meet the standards
+164
+Implementation already stored in database
+Please change name or version number
+165
+Failed to move the files
+Internal server error, please contact api administrators
+166
+Failed to add implementation to database
+Internal server error, please contact api administrators
+167
+Illegal files uploaded
+An non required file was uploaded.
+168
+The provided md5 hash equals not the server generated md5 hash of the file
+The provided md5 hash equals not the server generated md5 hash of the file
+169
+Please provide session_hash
+In order to share content, please authenticate (openml.authenticate) and provide session_hash
+170
+Authentication failed
+The session_hash was not valid. Please try to login again, or contact api administrators
+171
+Implementation already exists
+This implementation is already in the database

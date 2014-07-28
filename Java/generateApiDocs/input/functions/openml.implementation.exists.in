@@ -1,0 +1,17 @@
+A utility function that checks whether an implementation already exists. Mainly used by workbenches
+-
+http://openml.liacs.nl/api/?f=openml.implementation.get&name=weka.j48&external_version=Weka_3.7.5_9117
+2
+name
+GET
+true
+The name of the implementation
+external_version
+GET
+true
+The (workbench) version of the implementation. This is generally based on conventions per workbench
+0
+1
+330
+Mandatory fields not present.
+Please provide one of the following mandatory field combination: name and external_version.

@@ -1,0 +1,18 @@
+Returns the description of an implementation (flow)
+This XSD schema is applicable for both uploading and downloading a implementation. 
+http://openml.liacs.nl/api/?f=openml.implementation.get&implementation_id=100
+1
+implementation_id
+GET
+true
+The id of the implementation
+1
+XSD Schema
+https://github.com/openml/OpenML/blob/master/XML/Schemas/implementation.xsd
+2
+180
+Please provide implementation_id
+Please provide implementation_id
+181
+Unknown implementation
+The implementation with this ID was not found in the database

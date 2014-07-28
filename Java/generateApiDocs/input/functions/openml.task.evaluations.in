@@ -1,0 +1,16 @@
+Returns the performance of flows on a given task
+-
+http://openml.liacs.nl/api/?f=openml.task.evaluations&task_id=1
+1
+task_id
+GET
+true
+the task id
+0
+2
+300
+Please provide task_id
+Please provide task_id
+301
+Unknown task
+The task with this id was not found in the database

@@ -1,526 +1,55 @@
-6
+9
 authenticate
 2
 openml.authenticate
-returns a session_hash, which can be used for writing to the API
--
-http://www.janvanrijn.eu/openmlexamples/?f=openml.authenticate
-2
-username
-POST
-true
-The username to be authenticated with
-password
-POST
-true
-An md5 hash of the password, corresponding to the username
-0
-3
-250
-Please provide username
-Please provide the username as a POST variable
-251
-Please provide password
-Please provide the password (hashed as a MD5) as a POST variable
-252
-Authentication failed
-The username and password did not match any record in the database. Please note that the password should be hashed using md5
-
 openml.authenticate.check
-checks the validity of the session hash
--
-http://www.janvanrijn.eu/openmlexamples/?f=openml.authenticate.check
-2
-username
-POST
-true
-The username to be authenticated with
-session_hash
-POST
-true
-The session hash to be checked
-0
-3
-290
-Username not provided
-Please provide username
-291
-Hash not provided
-Please provide hash to be checked
-292
-Hash does not exist
-Hash does not exist, or is not owned by this user
 
 data
 8
 openml.data
-Returns a list with all dataset ids in OpenML that are ready to use
--
-http://www.janvanrijn.eu/openmlexamples/?f=openml.data
-0
-0
-1
-370
-No datasets available
-There are no valid datasets in the system. Please upload!
-
 openml.data.description
-returns dataset descriptions in XML
-This XSD schema is applicable for both uploading and downloading data. 
-http://openml.liacs.nl/api/?f=openml.data.description&data_id=1
-1
-data_id
-GET
-true
-The dataset id
-1
-XSD Schema
-https://github.com/openml/OpenML/blob/master/XML/Schemas/dataset.xsd
-2
-110
-Please provide data_id
-Please provide data_id
-111
-Unknown dataset
-Data set description with data_id was not found in the database
-
 openml.data.upload
-Uploads a dataset
-This XSD schema is applicable for both uploading and downloading data, hence some fields are not used.
--
-3
-description
-POST
-true
-An XML file containing the data set description
-dataset
-POST
-true
-The dataset file to be stored on the server
-session_hash
-POST
-true
-The session hash, provided by the server on authentication (1 hour valid)
-1
-XSD Schema
-https://github.com/openml/OpenML/blob/master/XML/Schemas/dataset.xsd
-14
-130
-Problem with file uploading
-There was a problem with the file upload
-131
-Problem validating uploaded description file
-The XML description format does not meet the standards
-132
-Failed to move the files
-Internal server error, please contact api administrators
-133
-Failed to make checksum of datafile
-Internal server error, please contact api administrators
-134
-Failed to insert record in database
-Internal server error, please contact api administrators
-135
-Please provide description xml
-Please provide description xml
-136
-Error slot open
-Error slot open, will be filled by not yet defined error
-137
-Please provide session_hash
-In order to share content, please authenticate (openml.authenticate) and provide session_hash
-138
-Authentication failed
-The session_hash was not valid. Please try to login again, or contact api administrators
-139
-Combination name / version already exists
-The combination of name and version of this dataset already exists. Leave version out for auto increment
-140
-Both dataset file and dataset url provided. Please provide only one
-The system is confused since both a dataset file (post) and a dataset url (xml) are provided. Please remove one
-141
-Neither dataset file or dataset url are provided
-Please provide either a dataset file as POST variable, xor a dataset url in the description XML
-142
-Error in processing arff file. Can be a syntax error, or the specified target feature does not exists
-For now, we only check on arff files. If a dataset is claimed to be in such a format, and it can not be parsed, this error is returned.
-143
-Suggested target feature not legal
-It is possible to suggest a default target feature (for predictive tasks). However, it should be provided in the data. 
-
 openml.data.delete
-Deletes a dataset. Can only be done if the dataset is not used in tasks
--
--
-2
-session_hash
-POST
-true
-The session hash to authenticate with
-data_id
-POST
-true
-The dataset to be deleted
-0
-6
-350
-Please provide session_hash
-In order to remove your content, please authenticate (openml.authenticate) and provide session_hash
-351
-Authentication failed
-The session_hash was not valid. Please try to login again, or contact api administrators
-352
-Dataset does not exists
-The data id could not be linked to an existing dataset.
-353
-Dataset is not owned by you
-The dataset was owned by another user. Hence you cannot delete it.
-354
-Dataset is in use by other content. Can not be deleted
-The data is used in runs. Delete this other content before deleting this dataset. 
-355
-Deleting dataset failed.
-Deleting the dataset failed. Please contact support team.
-
 openml.data.licences
-Gives a list of all data licences used in OpenML
--
-http://www.janvanrijn.eu/openmlexamples/?f=openml.data.licences
-0
-0
-0
-
 openml.data.features
-Returns the features (attributes) of a given dataset
--
-http://openml.liacs.nl/api/?f=openml.data.features&data_id=1
-1
-data_id
-GET
-true
-The dataset id
-0
-5
-270
-Please provide data_id
-Please provide data_id
-271
-Unknown dataset
-Data set description with data_id was not found in the database
-272
-No features found
-The registered dataset did not contain any features
-273
-Dataset not processed yet
-The dataset was not processed yet, no features are available. Please wait for a few minutes. 
-274
-Dataset processed with error
-The feature extractor has run into an error while processing the dataset. Please check whether it is a valid supported file. 
-
 openml.data.qualities
-Returns the qualities (meta-features) of a given dataset
--
-http://openml.liacs.nl/api/?f=openml.data.qualities&data_id=1
-1
-data_id
-GET
-true
-The dataset id
-0
-6
-360
-Please provide data_id
-Please provide data_id
-361
-Unknown dataset
-Data set description with data_id was not found in the database
-362
-No qualities found
-The registered dataset did not contain any calculated qualities
-363
-Dataset not processed yet
-The dataset was not processed yet, no qualities are available. Please wait for a few minutes.
-364
-Dataset processed with error
-The quality calculator has run into an error while processing the dataset. Please check whether it is a valid supported file. 
-365
-Interval start or end illegal
-There was a problem with the interval start or end.
-
 openml.data.qualities.list
-Lists all data qualities that are used (i.e., are calculated for at least one dataset)
--
-http://openml.liacs.nl/api/?f=openml.data.qualities.list&data_id=1
-0
-0
-0
 
 task
 4
 openml.task.search
-Returns the description of a task
-A task description
-http://openml.liacs.nl/api/?f=openml.task.search&task_id=1
-1
-task_id
-GET
-true
-The task id
-1
-XSD Schema
-https://github.com/openml/OpenML/blob/master/XML/Schemas/task.xsd
-2
-150
-Please provide task_id
-Please provide task_id
-151
-Unknown task
-The task with this id was not found in the database
-
 openml.task.evaluations
-Returns the performance of flows on a given task
--
-http://openml.liacs.nl/api/?f=openml.task.evaluations&task_id=1
-1
-task_id
-GET
-true
-the task id
-0
-2
-300
-Please provide task_id
-Please provide task_id
-301
-Unknown task
-The task with this id was not found in the database
-
 openml.task.types
-Returns a list of all task types
--
-http://openml.liacs.nl/api/?f=openml.task.types
-0
-0
-0
-
 openml.task.types.search
-returns a definition (template) of a certain task type
-A description of a task type
-http://openml.liacs.nl/api/?f=openml.tasks.types.search&task_type_id=1
-1
-task_type_id
-GET
-true
-The task type id
-1
-XSD Schema
-https://github.com/openml/OpenML/blob/master/XML/Schemas/task_type.xsd
-2
-240
-Please provide task_type_id
-Please provide task_type_id
-241
-Unknown task type
-The task type with this id was not found in the database
 
 estimation procedure
 1
 openml.estimationprocedure.get
-returns the details of an estimation procedure
--
-http://openml.liacs.nl/api/?f=openml.estimationprocedure.get&estimationprocedure_id=1
-1
-estimationprocedure_id
-GET
-true
-The id of the estimation procedure
-0
-2
-440
-Please provide estimationprocedure_id
-Please provide estimationprocedure_id
-441
-estimationprocedure_id not valid
-Please provide a valid estimationprocedure_id
 
 implementation
 6
 openml.implementation.get
-Returns the description of an implementation (flow)
-This XSD schema is applicable for both uploading and downloading a implementation. 
-http://openml.liacs.nl/api/?f=openml.implementation.get&implementation_id=100
-1
-implementation_id
-GET
-true
-The id of the implementation
-1
-XSD Schema
-https://github.com/openml/OpenML/blob/master/XML/Schemas/implementation.xsd
-2
-180
-Please provide implementation_id
-Please provide implementation_id
-181
-Unknown implementation
-The implementation with this ID was not found in the database
-
 openml.implementation.exists
-A utility function that checks whether an implementation already exists. Mainly used by workbenches
--
-http://openml.liacs.nl/api/?f=openml.implementation.get&name=weka.j48&external_version=Weka_3.7.5_9117
-2
-name
-GET
-true
-The name of the implementation
-external_version
-GET
-true
-The (workbench) version of the implementation. This is generally based on conventions per workbench
-0
-1
-330
-Mandatory fields not present.
-Please provide one of the following mandatory field combination: name and external_version.
-
 openml.implementation.upload
-Uploads an implementation to OpenML
-Returns the description of an implementation (flow)
--
-4
-description
-POST
-true
-An XML file containing the implementation meta data
-source
-POST
-false
-The source code of the implementation. If multiple files, please zip them. Either source or binary is required.
-binary
-POST
-false
-The binary of the implementation. If multiple files, please zip them. Either source or binary is required.
-session_hash
-POST
-true
-The session hash, provided by the server on authentication (1 hour valid)
-1
-XSD Schema
-This XSD schema is applicable for both uploading and downloading a implementation. (Some fields are ignored)
-12
-160
-Error in file uploading
-There was a problem with the file upload
-161
-Please provide description xml
-Please provide description xml
-162
-Please provide source or binary file
-Please provide source or binary file. It is also allowed to upload both
-163
-Problem validating uploaded description file
-The XML description format does not meet the standards
-164
-Implementation already stored in database
-Please change name or version number
-165
-Failed to move the files
-Internal server error, please contact api administrators
-166
-Failed to add implementation to database
-Internal server error, please contact api administrators
-167
-Illegal files uploaded
-An non required file was uploaded.
-168
-The provided md5 hash equals not the server generated md5 hash of the file
-The provided md5 hash equals not the server generated md5 hash of the file
-169
-Please provide session_hash
-In order to share content, please authenticate (openml.authenticate) and provide session_hash
-170
-Authentication failed
-The session_hash was not valid. Please try to login again, or contact api administrators
-171
-Implementation already exists
-This implementation is already in the database
-
 openml.implementation.owned
-Returns a list of all implementations owned by the user
--
--
-1
-session_hash
-POST
-true
-The session hash, provided by the server on authentication (1 hour valid)
-0
-3
-310
-Please provide session_hash
-In order to view private content, please authenticate (openml.authenticate) and provide session_hash
-311
-Authentication failed
-The session_hash was not valid. Please try to login again, or contact api administrators
-312
-No implementations owned by this used
-The user has no implementations linked to his account
-
 openml.implementation.delete
-Deletes an implementation (can only be done to owned implementations)
--
--
-2
-session_hash
-POST
-true
-The session hash, provided by the server on authentication (1 hour valid)
-implementation_id
-POST
-true
-The id of the implementation to delete
-0
-6
-320
-Please provide session_hash
-In order to remove your content, please authenticate (openml.authenticate) and provide session_hash
-321
-Authentication failed
-The session_hash was not valid. Please try to login again, or contact api administrators
-322
-Implementation does not exists
-The implementation id could not be linked to an existing implementation.
-323
-Implementation is not owned by you
-The implementation was owned by another user. Hence you cannot delete it.
-324
-Implementation is in use by other content. Can not be deleted
-The implementation is used in runs, evaluations or as component of another implementation. Delete this other content before deleting this implementation. 
-325
-Deleting implementation failed.
-Deleting the implementation failed. Please contact support team. 
-
 openml.implementation.licences
-Returns a list of all used licences in the implementations
--
-http://openml.liacs.nl/api/?f=openml.implementation.licences
-0
-0
-0
 
 evaluation
 1
 openml.evaluation.measures
-Returns a list of all evaluation measures
--
-http://openml.liacs.nl/api/?f=openml.evaluation.measures
-0
-0
-0
 
 run
+3
+openml.run.get
+openml.run.upload
+openml.run.delete
 
 job
+1
+openml.job.get
 
 setup
+1
+openml.setup.delete
+

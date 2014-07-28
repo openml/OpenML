@@ -1,0 +1,19 @@
+Returns a list of all implementations owned by the user
+-
+-
+1
+session_hash
+POST
+true
+The session hash, provided by the server on authentication (1 hour valid)
+0
+3
+310
+Please provide session_hash
+In order to view private content, please authenticate (openml.authenticate) and provide session_hash
+311
+Authentication failed
+The session_hash was not valid. Please try to login again, or contact api administrators
+312
+No implementations owned by this used
+The user has no implementations linked to his account

@@ -1,0 +1,25 @@
+returns a session_hash, which can be used for writing to the API
+-
+http://www.janvanrijn.eu/openmlexamples/?f=openml.authenticate
+2
+username
+POST
+true
+The username to be authenticated with
+password
+POST
+true
+An md5 hash of the password, corresponding to the username
+0
+3
+250
+Please provide username
+Please provide the username as a POST variable
+251
+Please provide password
+Please provide the password (hashed as a MD5) as a POST variable
+252
+Authentication failed
+The username and password did not match any record in the database. Please note that the password should be hashed using md5
+
+

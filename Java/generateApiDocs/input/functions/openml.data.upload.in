@@ -1,0 +1,63 @@
+Uploads a dataset
+This XSD schema is applicable for both uploading and downloading data, hence some fields are not used.
+-
+3
+description
+POST
+true
+An XML file containing the data set description
+dataset
+POST
+true
+The dataset file to be stored on the server
+session_hash
+POST
+true
+The session hash, provided by the server on authentication (1 hour valid)
+1
+XSD Schema
+https://github.com/openml/OpenML/blob/master/XML/Schemas/dataset.xsd
+14
+130
+Problem with file uploading
+There was a problem with the file upload
+131
+Problem validating uploaded description file
+The XML description format does not meet the standards
+132
+Failed to move the files
+Internal server error, please contact api administrators
+133
+Failed to make checksum of datafile
+Internal server error, please contact api administrators
+134
+Failed to insert record in database
+Internal server error, please contact api administrators
+135
+Please provide description xml
+Please provide description xml
+136
+Error slot open
+Error slot open, will be filled by not yet defined error
+137
+Please provide session_hash
+In order to share content, please authenticate (openml.authenticate) and provide session_hash
+138
+Authentication failed
+The session_hash was not valid. Please try to login again, or contact api administrators
+139
+Combination name / version already exists
+The combination of name and version of this dataset already exists. Leave version out for auto increment
+140
+Both dataset file and dataset url provided. Please provide only one
+The system is confused since both a dataset file (post) and a dataset url (xml) are provided. Please remove one
+141
+Neither dataset file or dataset url are provided
+Please provide either a dataset file as POST variable, xor a dataset url in the description XML
+142
+Error in processing arff file. Can be a syntax error, or the specified target feature does not exists
+For now, we only check on arff files. If a dataset is claimed to be in such a format, and it can not be parsed, this error is returned.
+143
+Suggested target feature not legal
+It is possible to suggest a default target feature (for predictive tasks). However, it should be provided in the data. 
+

@@ -1,0 +1,18 @@
+Returns the description of a task
+A task description
+http://openml.liacs.nl/api/?f=openml.task.search&task_id=1
+1
+task_id
+GET
+true
+The task id
+1
+XSD Schema
+https://github.com/openml/OpenML/blob/master/XML/Schemas/task.xsd
+2
+150
+Please provide task_id
+Please provide task_id
+151
+Unknown task
+The task with this id was not found in the database

@@ -1,0 +1,18 @@
+Returns the details of a specific run
+This XSD schema is applicable for both uploading and downloading run details. 
+http://openml.liacs.nl/api/?f=openml.run.get&run_id=1
+1
+run_id
+GET
+true
+The id of the run
+1
+XSD Schema
+https://github.com/openml/OpenML/blob/master/XML/Schemas/run.xsd
+2
+220
+Please provide run_id
+In order to view run details, please provide run_id
+221
+Run not found
+The run id was invalid, run not found

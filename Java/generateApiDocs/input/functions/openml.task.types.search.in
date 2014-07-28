@@ -1,0 +1,18 @@
+returns a definition (template) of a certain task type
+A description of a task type
+http://openml.liacs.nl/api/?f=openml.tasks.types.search&task_type_id=1
+1
+task_type_id
+GET
+true
+The task type id
+1
+XSD Schema
+https://github.com/openml/OpenML/blob/master/XML/Schemas/task_type.xsd
+2
+240
+Please provide task_type_id
+Please provide task_type_id
+241
+Unknown task type
+The task type with this id was not found in the database
