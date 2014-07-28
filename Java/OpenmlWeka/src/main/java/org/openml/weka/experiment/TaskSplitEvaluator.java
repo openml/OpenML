@@ -13,9 +13,9 @@ import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
 import weka.classifiers.evaluation.AbstractEvaluationMetric;
+import weka.classifiers.evaluation.Prediction;
 import weka.core.AdditionalMeasureProducer;
 import weka.core.Attribute;
-import weka.core.FastVector;
 import weka.core.Instances;
 import weka.core.RevisionHandler;
 import weka.core.Summarizable;
@@ -34,7 +34,7 @@ public class TaskSplitEvaluator extends ClassifierSplitEvaluator {
 	private static final String SCHEMA_OPTIONS_FIELD_NAME = "Scheme_options";
 	private static final String SCHEMA_VERSION_ID_FIELD_NAME = "Scheme_version_ID";
 
-	private transient FastVector recentPredictions = null;
+	private transient ArrayList<Prediction> recentPredictions = null;
 
 	/** 
 	 * JvR: Direct copies from weka.experiment.ClassifierSplitEvaluator. 
@@ -379,7 +379,7 @@ public class TaskSplitEvaluator extends ClassifierSplitEvaluator {
 		return key;
 	}
 
-	public FastVector recentPredictions() throws Exception {
+	public ArrayList<Prediction> recentPredictions() throws Exception {
 		if (recentPredictions != null)
 			return recentPredictions;
 		throw new Exception("No predictions set by SplitEvaluator. ");

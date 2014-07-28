@@ -274,7 +274,7 @@ public class TaskBasedExperiment extends Experiment {
 				classifierName, classifierOptions);
 		} catch(Exception e){
 			// Try again, this time loading packages first
-			weka.core.WekaPackageManager.loadPackages(false, false);
+			weka.core.WekaPackageManager.loadPackages(false);
 			cArray[0] = (Classifier) Utils.forName(Classifier.class,
 					classifierName, classifierOptions);
 		}

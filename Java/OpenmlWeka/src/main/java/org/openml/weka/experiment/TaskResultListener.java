@@ -35,7 +35,6 @@ import weka.classifiers.evaluation.NominalPrediction;
 import weka.classifiers.evaluation.Prediction;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
-import weka.core.FastVector;
 import weka.core.Instances;
 import weka.core.RevisionHandler;
 import weka.core.Utils;
@@ -86,7 +85,7 @@ public class TaskResultListener extends InstancesResultListener {
 
 	public void acceptResultsForSending(Task t, Integer repeat, Integer fold, Integer sample,
 			Classifier classifier, String options,
-			Integer[] rowids, FastVector predictions, Map<Metric, MetricScore> userMeasures ) throws Exception {
+			Integer[] rowids, ArrayList<Prediction> predictions, Map<Metric, MetricScore> userMeasures ) throws Exception {
 		// TODO: do something better than undefined
 		String revision = (classifier instanceof RevisionHandler) ? ((RevisionHandler)classifier).getRevision() : "undefined"; 
 		String implementationId = classifier.getClass().getName() + "(" + revision + ")";
@@ -250,10 +249,10 @@ public class TaskResultListener extends InstancesResultListener {
 			run = new Run(t.getTask_id(), error_message, implementation.getId(), setup_string, list.toArray(new Parameter_setting[list.size()]) );
 		}
 		
-		public void addBatch(Integer fold, Integer repeat, Integer sample, Integer[] rowids, FastVector batchPredictions) {
+		public void addBatch(Integer fold, Integer repeat, Integer sample, Integer[] rowids, ArrayList<Prediction> batchPredictions) {
 			nrOfResultBatches += 1;
 			for (int i = 0; i < rowids.length; ++i) {
-				Prediction current = (Prediction) batchPredictions.elementAt(i);
+				Prediction current = batchPredictions.get(i);
 				double[] values = new double[predictions.numAttributes()];
 				values[predictions.attribute("row_id").index()] = rowids[i];
 				values[predictions.attribute("fold").index()] = fold;
