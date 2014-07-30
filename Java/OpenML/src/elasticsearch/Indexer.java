@@ -15,13 +15,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
-import org.elasticsearch.action.admin.indices.mapping.delete.DeleteMappingRequest;
-import org.elasticsearch.action.admin.indices.mapping.delete.DeleteMappingResponse;
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
-import org.elasticsearch.action.delete.DeleteResponse;
-import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.node.Node;
@@ -34,6 +30,7 @@ public class Indexer {
 	BulkRequestBuilder bulkRequest;
 	Map<String, String> userNames;
 	Map<String, String> dataNames;
+	Map<String, String> setupNames;
 	Map<String, String> flowNames;
 	Map<String, String> estimationProcedureNames;
 	Map<String, XContentBuilder> taskContent;
@@ -157,6 +154,64 @@ public class Indexer {
 		dataNames.put(datasets.getString("did"),datasets.getString("name")+" ("+datasets.getString("version")+")");
 				
 		bulkRequest.add(client.prepareIndex("openml", "data", datasets.getString("did")).setSource(xb.string()));
+		}
+		executeBulk();
+	}
+	
+	public void indexSetups() throws IOException, SQLException, ParseException {
+		XContentBuilder mapping = jsonBuilder()
+			.startObject()
+				.startObject("_all")
+					.field("enabled", true)
+					.field("store", "yes")
+					.field("type", "string")
+					.field("analyzer", "snowball")
+				.endObject()
+				.startObject("properties")
+					.startObject("description")
+						.field("type", "string")
+						.field("analyzer", "snowball")
+					.endObject()
+					.startObject("name")
+						.field("type", "string")
+						.field("analyzer", "snowball")
+					.endObject()
+					.startObject("suggest")
+						.field("type", "completion")
+						.field("index_analyzer", "standard")
+						.field("search_analyzer", "standard")
+						.field("payloads", true)
+					.endObject()
+				.endObject()
+			.endObject();
+
+		PutMappingResponse response = client.admin().indices()
+				.preparePutMapping("openml")
+				.setType("setup")
+				.setSource(mapping)
+				.setIndices("openml")
+				.execute()
+				.actionGet();
+
+		ResultSet setups = db.getSetups();
+		bulkRequest = client.prepareBulk();
+
+		while (setups.next()) {
+
+			XContentBuilder xb = jsonBuilder()
+					.startObject()
+						.field("sid", setups.getLong("did"))
+						.field("name", setups.getString("name"))
+						.field("isDefault", setups.getString("version"))
+						.field("dependencies", setups.getString("description"))
+						.field("setup_string", setups.getString("format"))
+					.endObject();
+
+			setupNames.put(setups.getString("sid"),
+					setups.getString("setup_string"));
+
+			bulkRequest.add(client.prepareIndex("openml", "setup",
+					setups.getString("sid")).setSource(xb.string()));
 		}
 		executeBulk();
 	}
@@ -720,6 +775,7 @@ public class Indexer {
 				indexer.indexTasks();
 				indexer.indexTaskTypes();
 			    indexer.indexRuns();
+			    indexer.indexSetups();
 			}
 			node.close();
 		} catch (Exception e) {

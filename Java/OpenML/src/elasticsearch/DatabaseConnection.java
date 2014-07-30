@@ -200,6 +200,24 @@ public ResultSet getTaskTypes() {
 	  return resultSet;
   }
   
+  public ResultSet getSetups() {
+	  ResultSet resultSet = null;
+	  try{
+	      // Setup connection
+	      connect = openConnection();
+	      
+	      // Result set get the result of the SQL query
+	      preparedStatement = connect
+	          .prepareStatement("SELECT `s`.`sid`, `i`.`name`, `s`.`isDefault`, `i`.`dependencies`, `s`.`setup_string` FROM `algorithm_setup` `s`, `implementation` `i` WHERE `s`.`implementation_id` = `i`.`id`;");
+	      resultSet = preparedStatement.executeQuery();
+	      returnConnection(connect);
+
+	  } catch(SQLException e){
+		  e.printStackTrace();
+	  }
+	  return resultSet;
+  }
+  
   public ResultSet getTask(String id) {
 	  ResultSet resultSet = null;
 	  try{
