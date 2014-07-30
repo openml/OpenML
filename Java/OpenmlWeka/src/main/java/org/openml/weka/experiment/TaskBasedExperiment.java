@@ -47,7 +47,7 @@ public class TaskBasedExperiment extends Experiment {
 	
 	protected final ApiConnector apiconnector;
 
-	public TaskBasedExperiment(Experiment exp) {
+	public TaskBasedExperiment(Experiment exp, ApiConnector apiconnector) {
 		this.m_ResultListener = exp.getResultListener();
 		this.m_ResultProducer = exp.getResultProducer();
 		this.m_RunLower = exp.getRunLower();
@@ -60,12 +60,7 @@ public class TaskBasedExperiment extends Experiment {
 		// this.m_ClassFirst = exp.classFirst(flag)
 		this.m_AdvanceDataSetFirst = exp.getAdvanceDataSetFirst();
 		
-		Config openmlconfig = new Config();
-		if( openmlconfig.getServer() != null ) {
-			apiconnector = new ApiConnector( openmlconfig.getServer() );
-		} else { 
-			apiconnector = new ApiConnector();
-		}
+		this.apiconnector = apiconnector;
 	}
 
 	public void setMode(boolean datasetBasedExperiment) {
@@ -291,7 +286,7 @@ public class TaskBasedExperiment extends Experiment {
 				apiconnector = new ApiConnector();
 			}
 			
-			TaskBasedExperiment exp = new TaskBasedExperiment( new Experiment() );
+			TaskBasedExperiment exp = new TaskBasedExperiment( new Experiment(), apiconnector );
 			ResultProducer rp = new TaskResultProducer(apiconnector);
 			TaskResultListener rl = new TaskResultListener(apiconnector,new SciMark());
 			SplitEvaluator se = new TaskSplitEvaluator();

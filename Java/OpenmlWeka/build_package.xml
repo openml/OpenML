@@ -171,6 +171,8 @@
     </delete>
     <copy file="Description.props"
           todir="${dist}/${package}"/>
+    <copy file="PluginManager.props"
+          todir="${dist}/${package}"/>
     <mkdir dir="${dist}/${package}/lib"/>
     <copy todir="${dist}/${package}/lib" >
        <fileset dir="${lib}">

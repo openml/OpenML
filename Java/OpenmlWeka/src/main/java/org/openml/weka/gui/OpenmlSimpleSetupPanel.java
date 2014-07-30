@@ -221,7 +221,7 @@ public class OpenmlSimpleSetupPanel extends SimpleSetupPanel {
 	protected static String TYPE_OPENML_TASK_TEXT = "OpenML Task";
 
 	/** The panel for configuring selected OpenML tasks */
-	protected TaskListPanel m_TaskListPanel = new TaskListPanel();
+	protected TaskListPanel m_TaskListPanel;
 
 	/** Config items for OpenML */
 	protected Config openmlconfig;
@@ -262,13 +262,18 @@ public class OpenmlSimpleSetupPanel extends SimpleSetupPanel {
 	 * Creates the setup panel with no initial experiment.
 	 */
 	public OpenmlSimpleSetupPanel() {
-		// TODO: OpenML addition:
-		openmlconfig = new Config();
-		if( openmlconfig.getServer() != null ) {
-			apiconnector = new ApiConnector( openmlconfig.getServer() );
-		} else { 
+		// TODO: Dirty patch. Change infrastructure of config. 
+		try {
+			openmlconfig = new Config();
+			if( openmlconfig.getServer() != null ) {
+				apiconnector = new ApiConnector( openmlconfig.getServer() );
+			} else { 
+				apiconnector = new ApiConnector();
+			} 
+		} catch( RuntimeException e ) {
 			apiconnector = new ApiConnector();
-		} 
+		}
+		m_TaskListPanel = new TaskListPanel( apiconnector );
 
 		// everything disabled on startup
 		m_ResultsDestinationCBox.setEnabled(false);
@@ -705,7 +710,7 @@ public class OpenmlSimpleSetupPanel extends SimpleSetupPanel {
 	 */
 	public boolean setExperiment(Experiment exp_old) {
 
-		TaskBasedExperiment exp = new TaskBasedExperiment( exp_old );
+		TaskBasedExperiment exp = new TaskBasedExperiment( exp_old, apiconnector );
 		m_userHasBeenAskedAboutConversion = false;
 		m_Exp = null; // hold off until we are sure we want conversion
 		m_SaveBut.setEnabled(true);

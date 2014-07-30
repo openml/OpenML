@@ -75,6 +75,10 @@ public class OpenmlExperimenter extends JPanel implements GUIChooserMenuPlugin {
 		setLayout(new BorderLayout());
 		add(m_TabbedPane, BorderLayout.CENTER);
 	}
+	
+	public OpenmlExperimenter() {
+		this(true);
+	}
 
 	@Override
 	public String getApplicationName() {
