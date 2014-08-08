@@ -1,0 +1,19 @@
+<xs:schema targetNamespace="http://openml.org/openml" xmlns:oml="http://openml.org/openml" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="data_qualities" type="oml:data_qualities"/>
+  <xs:complexType name="data_qualities">
+    <xs:sequence>
+      <xs:element name="did" minOccurs="0" type="xs:integer"/> <!-- Pointer to the did. Is mandatory for uploading qualities -->
+      <xs:element name="error" minOccurs="0" type="xs:string"/> <!-- For error messages in case of failure -->
+      <xs:element name="quality" minOccurs="0" maxOccurs="unbounded" type="oml:quality"/> <!-- The qualities that need to be set -->
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="quality">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string"/> <!-- The name of the quality that is set -->
+      <xs:element name="value" type="xs:string"/> <!-- The value of the quality --> 
+      <xs:element name="description" minOccurs="0" type="xs:string"/> <!-- A description that can explain the value. Might be part of a publication. --> 
+    </xs:sequence>
+    <xs:attribute name="interval_start" type="xs:integer" />
+    <xs:attribute name="interval_end" type="xs:integer" />
+  </xs:complexType>
+</xs:schema>

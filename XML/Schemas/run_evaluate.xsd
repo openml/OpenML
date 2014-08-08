@@ -1,0 +1,31 @@
+<!-- Schema is used by evaluation engine to submit results. 
+     This goed through the REST API, but this function should
+     not be used by normal users. -->
+
+<xs:schema targetNamespace="http://openml.org/openml" xmlns:oml="http://openml.org/openml" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="run_evaluation" type="oml:run_evaluation"/>
+  <xs:complexType name="run_evaluation">
+    <xs:sequence>
+      <xs:element name="run_id" minOccurs="1" type="xs:integer"/> <!-- The integer id of the run.  -->
+      <xs:element name="error" minOccurs="0" type="xs:string"/> <!-- If an error occured, the description -->
+      <xs:element name="evaluation" minOccurs="0" maxOccurs="unbounded" type="oml:evaluation"/> <!-- all data that served as input for the run. Determined server side, will be ignored on uploading -->
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="evaluation">
+    <xs:sequence>
+      <xs:element name="did" minOccurs="0" type="xs:integer"/> <!-- A reference to the dataset table, by did. Ignored when uploading -->
+      <xs:element name="name" type="xs:string"/> <!-- A reference to the math_function that was used -->
+      <xs:element name="implementation" type="xs:string"/> <!-- A reference to the implementation table entry (implementing this specific math function) -->
+      <xs:element name="label" minOccurs="0" type="xs:string"/> <!-- A reference to the implementation table entry (implementing this specific math function) -->
+      <xs:element name="value" minOccurs="0" type="xs:double"/> <!-- The result of the math_function. (Sidenote: If you sumbit values of math_functions that are also run on line, it will be used to test whether the outcome is similar.) -->
+      <xs:element name="stdev" minOccurs="0" type="xs:double"/> <!-- In case the global performance is based upon multiple folds, a stdev can be given -->
+      <xs:element name="array_data" minOccurs="0" type="xs:string"/> <!-- In some cases, a function returns array data (i.e., precision, recall).  -->
+      <xs:element name="sample_size" minOccurs="0" type="xs:integer"/> <!-- In the case of a sample, the size of the sample.  -->
+    </xs:sequence>
+    <xs:attribute name="repeat" type="xs:integer" />
+    <xs:attribute name="fold" type="xs:integer" />
+    <xs:attribute name="sample" type="xs:integer" />
+    <xs:attribute name="interval_start" type="xs:integer" />
+    <xs:attribute name="interval_end" type="xs:integer" />
+  </xs:complexType>
+</xs:schema>
