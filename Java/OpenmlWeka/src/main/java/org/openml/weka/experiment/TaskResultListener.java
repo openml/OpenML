@@ -122,7 +122,7 @@ public class TaskResultListener extends InstancesResultListener {
 	}
 
 	private void sendTask(OpenmlExecutedTask oet) throws Exception {
-		Conversion.log( "INFO", "Upload Run", "Starting to upload run... " );
+		Conversion.log( "INFO", "Upload Run", "Starting send run process... " );
 		XStream xstream = XstreamXmlMapping.getInstance();
 		File tmpPredictionsFile;
 		File tmpDescriptionFile;

@@ -25,7 +25,7 @@ public class OpenmlExperimenter extends JPanel implements GUIChooserMenuPlugin {
 	private static final long serialVersionUID = -5751617505738193788L;
 
 	/** The panel for configuring the experiment */
-	protected OpenmlSetupModePanel m_SetupPanel;
+	protected OpenmlSimpleSetupPanel m_SetupPanel;
 
 	/** The panel for running the experiment */
 	protected OpenmlRunPanel m_RunPanel;
@@ -47,7 +47,7 @@ public class OpenmlExperimenter extends JPanel implements GUIChooserMenuPlugin {
 	 */
 	public OpenmlExperimenter(boolean classFirst) {
 
-		m_SetupPanel = new OpenmlSetupModePanel();
+		m_SetupPanel = new OpenmlSimpleSetupPanel();
 		m_ResultsPanel = new ResultsPanel();
 		m_RunPanel = new OpenmlRunPanel();
 		m_RunPanel.setResultsPanel(m_ResultsPanel);
