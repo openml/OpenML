@@ -3,7 +3,6 @@ package org.openml.tools.run;
 import org.openml.apiconnector.algorithms.QueryUtils;
 import org.openml.apiconnector.io.ApiConnector;
 import org.openml.apiconnector.settings.Config;
-import org.openml.webapplication.evaluate.EvaluateRun;
 
 public class ProcessRun {
 
@@ -25,6 +24,6 @@ public class ProcessRun {
 	
 	private static void process(  ) throws Exception {
 		
-			EvaluateRun er = new EvaluateRun(config);
+			//EvaluateRun er = new EvaluateRun(config);
 	}
 }

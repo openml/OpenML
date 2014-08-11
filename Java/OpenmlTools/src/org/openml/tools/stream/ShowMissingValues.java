@@ -11,7 +11,6 @@ import java.util.Map;
 import org.openml.apiconnector.algorithms.QueryUtils;
 import org.openml.apiconnector.io.ApiConnector;
 import org.openml.apiconnector.settings.Config;
-import org.openml.webapplication.evaluate.EvaluateRun;
 
 import weka.core.Attribute;
 import weka.core.Instances;
@@ -80,7 +79,7 @@ public class ShowMissingValues {
 		int counter = 0;
 		for( Integer run_id : allRunIds ) {
 			System.out.println( "Re evaluate run: " + run_id + " ("+(++counter)+"/"+allRunIds.size()+")" );
-			new EvaluateRun( c, run_id);
+			//new EvaluateRun( c, run_id);
 		}
 		
 	}

@@ -95,14 +95,12 @@ public class TaskResultListener extends InstancesResultListener {
 					classifier, null, options, apiconnector));
 		}
 		OpenmlExecutedTask oet = currentlyCollecting.get(key);
-		oet.addBatch(fold, repeat, sample, rowids, predictions);
-		// attach fold/sample specific user measures to run
-		for( Metric m : userMeasures.keySet() ) {
-			oet.getRun().addOutputEvaluation(m.name, repeat, fold, sample, m.implementation, userMeasures.get(m).getScore() );
-		}
+		oet.addBatchOfPredictions(fold, repeat, sample, rowids, predictions);
+		oet.addUserDefinedMeasures(fold, repeat, sample, userMeasures);
 
-		if (currentlyCollecting.get(key).complete()) {
-			sendTask(currentlyCollecting.get(key));
+		if (oet.complete()) {
+			oet.prepareForSending();
+			sendTask(oet);
 			currentlyCollecting.remove(key);
 		}
 	}
@@ -189,6 +187,8 @@ public class TaskResultListener extends InstancesResultListener {
 		private String[] classnames;
 		private Run run;
 		private int implementation_id;
+		
+		private Map<Metric,Double> userDefinedMeasuresTotals;
 
 		public OpenmlExecutedTask(Task t, Classifier classifier,
 				String error_message, String options, ApiConnector apiconnector ) throws Exception {
@@ -244,12 +244,13 @@ public class TaskResultListener extends InstancesResultListener {
 			if(options.equals("") == false) setup_string += (" -- " + options);
 			
 			String[] params = Utils.splitOptions( options );
-			ArrayList<Parameter_setting> list = WekaAlgorithm.getParameterSetting( params, implementation );
+			List<Parameter_setting> list = WekaAlgorithm.getParameterSetting( params, implementation );
 			
 			run = new Run(t.getTask_id(), error_message, implementation.getId(), setup_string, list.toArray(new Parameter_setting[list.size()]) );
+			userDefinedMeasuresTotals = new HashMap<Metric, Double>();
 		}
 		
-		public void addBatch(Integer fold, Integer repeat, Integer sample, Integer[] rowids, ArrayList<Prediction> batchPredictions) {
+		public void addBatchOfPredictions(Integer fold, Integer repeat, Integer sample, Integer[] rowids, ArrayList<Prediction> batchPredictions) {
 			nrOfResultBatches += 1;
 			for (int i = 0; i < rowids.length; ++i) {
 				Prediction current = batchPredictions.get(i);
@@ -275,6 +276,26 @@ public class TaskResultListener extends InstancesResultListener {
 				}
 
 				predictions.add(new DenseInstance(1.0D, values));
+			}
+		}
+		
+		public void addUserDefinedMeasures(Integer fold, Integer repeat, Integer sample, Map<Metric, MetricScore> userMeasures) {
+			// attach fold/sample specific user measures to run
+			for( Metric m : userMeasures.keySet() ) {
+				Double score = userMeasures.get(m).getScore();
+				getRun().addOutputEvaluation(m.name, repeat, fold, sample, m.implementation, score );
+				
+				if(userDefinedMeasuresTotals.containsKey(m) == false) {
+					userDefinedMeasuresTotals.put(m, score);
+				} else {
+					userDefinedMeasuresTotals.put(m, userDefinedMeasuresTotals.get(m) + score);
+				}
+			}
+		}
+		
+		public void prepareForSending() {
+			for( Metric m : userDefinedMeasuresTotals.keySet() ) {
+				run.addOutputEvaluation(m.name, m.implementation, userDefinedMeasuresTotals.get(m) / nrOfResultBatches, null);
 			}
 		}
 
