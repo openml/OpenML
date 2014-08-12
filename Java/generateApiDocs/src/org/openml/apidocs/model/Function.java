@@ -60,7 +60,6 @@ public class Function {
         while ((inputLine = in.readLine()) != null) sb.append( inputLine + "\n" );
         in.close();
         
-        
         exampleResponse = XmlFormatter.format( sb.toString() ).replace( ">", "&gt;" ).replace( "<", "&lt;" );
 	}
 	

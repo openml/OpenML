@@ -137,6 +137,9 @@ public class TaskResultListener extends InstancesResultListener {
 		Map<String, File> output_files = new HashMap<String, File>();
 		
 		output_files.put("predictions", tmpPredictionsFile);
+		if(oet.serializedClassifier != null ) { output_files.put("model_serialized", oet.serializedClassifier); }
+		if(oet.humanReadableClassifier != null ) { output_files.put("model_readable", oet.humanReadableClassifier); }
+		
 		try { 
 			UploadRun ur = apiconnector.openmlRunUpload(tmpDescriptionFile, output_files, ash.getSessionHash());
 			Conversion.log( "INFO", "Upload Run", "Run was uploaded with rid " + ur.getRun_id() + 
@@ -179,6 +182,8 @@ public class TaskResultListener extends InstancesResultListener {
 	}
 
 	private class OpenmlExecutedTask {
+		private int task_id;
+		private Classifier classifier;
 		private Instances predictions;
 		private Instances inputData;
 		private boolean inputDataSet;
@@ -188,11 +193,16 @@ public class TaskResultListener extends InstancesResultListener {
 		private Run run;
 		private int implementation_id;
 		
+		private File serializedClassifier = null;
+		private File humanReadableClassifier = null;
+		
 		private Map<Metric,Double> userDefinedMeasuresTotals;
 
 		public OpenmlExecutedTask(Task t, Classifier classifier,
 				String error_message, String options, ApiConnector apiconnector ) throws Exception {
+			this.classifier = classifier;
 			classnames = TaskInformation.getClassNames(apiconnector, t);
+			task_id = t.getTask_id();
 			
 			int repeats = 1;
 			int folds = 1;
@@ -294,8 +304,22 @@ public class TaskResultListener extends InstancesResultListener {
 		}
 		
 		public void prepareForSending() {
+			// calculate "global" (opposed to fold specific) user defined evaluation measures
 			for( Metric m : userDefinedMeasuresTotals.keySet() ) {
 				run.addOutputEvaluation(m.name, m.implementation, userDefinedMeasuresTotals.get(m) / nrOfResultBatches, null);
+			}
+			if( inputDataSet ) {
+				// build model for entire data set. This can take some time
+				try {
+					Conversion.log( "OK", "Total Model", "Started building a model over the full dataset. " );
+					classifier.buildClassifier(inputData);
+					
+					humanReadableClassifier = Conversion.stringToTempFile(classifier.toString(), "WekaModel_" + classifier.getClass().getName(), "model");
+					serializedClassifier = WekaAlgorithm.classifierSerializedToFile(classifier, task_id);
+				} catch (Exception e) { 
+					e.printStackTrace(); 
+					Conversion.log( "WARNING", "Total Model", "There was an error building a model over the full dataset. " );
+				}
 			}
 		}
 

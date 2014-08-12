@@ -3,9 +3,11 @@ package org.openml.weka.algorithm;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 
@@ -221,5 +223,14 @@ public class WekaAlgorithm {
 			} catch( IOException e ) { e.printStackTrace(); }
 		}
 		return is;
+	}
+	
+	public static File classifierSerializedToFile( Classifier cls, Integer task_id ) throws IOException {
+		File file = File.createTempFile( "WekaSerialized_" + cls.getClass().getName(), ".model" );
+		ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file));
+		oos.writeObject(cls);
+		oos.flush();
+		oos.close();
+		return file;
 	}
 }
