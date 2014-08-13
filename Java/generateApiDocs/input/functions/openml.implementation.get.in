@@ -8,7 +8,7 @@ true
 The id of the implementation
 1
 XSD Schema
-https://github.com/openml/OpenML/blob/master/XML/Schemas/implementation.xsd
+https://github.com/openml/website/blob/master/openml_OS/views/pages/rest_api/xsd/openml.implementation.upload.xsd
 2
 180
 Please provide implementation_id

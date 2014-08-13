@@ -1,5 +1,5 @@
 Uploads an implementation to OpenML
-Returns the description of an implementation (flow)
+This XSD schema is applicable for both uploading and downloading a implementation. (Some fields are ignored)
 -
 4
 description
@@ -20,7 +20,7 @@ true
 The session hash, provided by the server on authentication (1 hour valid)
 1
 XSD Schema
-This XSD schema is applicable for both uploading and downloading a implementation. (Some fields are ignored)
+https://github.com/openml/website/blob/master/openml_OS/views/pages/rest_api/xsd/openml.implementation.upload.xsd
 12
 160
 Error in file uploading

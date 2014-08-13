@@ -49,6 +49,7 @@ public class EvaluateRun {
 		} else {
 			run_id = getRunId();
 			while( run_id != null ) {
+				Conversion.log("INFO","Evaluate Run","Downloading task " + run_id );
 				evaluate( run_id, INTERVAL_SIZE );
 				run_id = getRunId();
 			}
@@ -83,32 +84,32 @@ public class EvaluateRun {
 		
 		JSONArray runJson = (JSONArray) apiconnector.openmlFreeQuery( "SELECT `task_id` FROM `run` WHERE `rid` = " + run_id ).get("data");
 		JSONArray filesJson =  (JSONArray) apiconnector.openmlFreeQuery( "SELECT `field`,`file_id` FROM `runfile` WHERE `source` = " + run_id ).get("data");
-		
-		int task_id = ((JSONArray) runJson.get( 0 )).getInt( 0 );
-		task = apiconnector.openmlTaskSearch(task_id);
-		Data_set source_data = TaskInformation.getSourceData(task);
-		Estimation_procedure estimationprocedure = TaskInformation.getEstimationProcedure( task );
-		dataset = apiconnector.openmlDataDescription( source_data.getData_set_id() );
-		
-		for( int i = 0; i < filesJson.length(); ++i ) {
-			String field = ((JSONArray) filesJson.get( i )).getString( 0 );
-			int file_index = ((JSONArray) filesJson.get( i )).getInt( 1 );
-			
-			file_ids.put(field, file_index);
-		}
-		
-		if( file_ids.get( "description" ) == null ) {
-			runevaluation.setError("Run description file not present. ");
-			File evaluationFile = Conversion.stringToTempFile( xstream.toXML( runevaluation ), "run_" + run_id + "evaluations", "xml" );
-			
-			RunEvaluate re = apiconnector.openmlRunEvaluate( evaluationFile, ash.getSessionHash() );
-			Conversion.log( "Error", "Process Run", "Run processed, but with error: " + re.getRun_id() );
-			return;
-		}
-		
-		Run run_description = (Run) xstream.fromXML( ApiConnector.getStringFromUrl( apiconnector.getOpenmlFileUrl( file_ids.get( "description" ) ).toString() ) );
-		
+
 		try {
+			int task_id = ((JSONArray) runJson.get( 0 )).getInt( 0 );
+			task = apiconnector.openmlTaskSearch(task_id);
+			Data_set source_data = TaskInformation.getSourceData(task);
+			Estimation_procedure estimationprocedure = TaskInformation.getEstimationProcedure( task );
+			dataset = apiconnector.openmlDataDescription( source_data.getData_set_id() );
+			
+			for( int i = 0; i < filesJson.length(); ++i ) {
+				String field = ((JSONArray) filesJson.get( i )).getString( 0 );
+				int file_index = ((JSONArray) filesJson.get( i )).getInt( 1 );
+				
+				file_ids.put(field, file_index);
+			}
+			
+			if( file_ids.get( "description" ) == null ) {
+				runevaluation.setError("Run description file not present. ");
+				File evaluationFile = Conversion.stringToTempFile( xstream.toXML( runevaluation ), "run_" + run_id + "evaluations", "xml" );
+				
+				RunEvaluate re = apiconnector.openmlRunEvaluate( evaluationFile, ash.getSessionHash() );
+				Conversion.log( "Error", "Process Run", "Run processed, but with error: " + re.getRun_id() );
+				return;
+			}
+			
+			Run run_description = (Run) xstream.fromXML( ApiConnector.getStringFromUrl( apiconnector.getOpenmlFileUrl( file_ids.get( "description" ) ).toString() ) );
+			
 			Conversion.log( "OK", "Process Run", "Start prediction evaluator. " );
 			// TODO! no string comparisons, do something better
 			if( task.getTask_type().equals("Supervised Data Stream Classification") ) {
@@ -139,7 +140,7 @@ public class EvaluateRun {
 							String offByStr = "";
 							try {
 								double diff = Math.abs( Double.parseDouble( recorded.getValue() ) - Double.parseDouble( calculated.getValue() ) );
-								offByStr = " (of by " + diff + ")";
+								offByStr = " (off by " + diff + ")";
 							} catch( NumberFormatException nfe ) { }
 							
 							errorMessage += "Inconsistent Evaluation score: " + recorded + offByStr;

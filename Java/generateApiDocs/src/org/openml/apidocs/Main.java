@@ -100,49 +100,51 @@ public class Main {
 			Category c;
 			String categoryName = br.readLine();
 			Integer categoryNrOfFunctions = Integer.parseInt( br.readLine() );
-			//System.out.println( "nrOfFunctions: " + categoryNrOfFunctions);
+			System.out.println( "Category: " + categoryName + "[nrOfFunctions: " + categoryNrOfFunctions + "]");
 			
 			c = new Category( categoryName );
 			for( int j = 0; j < categoryNrOfFunctions; j++ ) {
 				Function f;
 				String functionName = br.readLine();
 				System.out.println("Processing function: " + functionName );
-				String functionDescription = br.readLine();
-				String functionResponse = br.readLine();
-				String functionExampleUrl = br.readLine();
+				BufferedReader fr = new BufferedReader(new FileReader("input/functions/" + functionName + ".in" ));
+				String functionDescription = fr.readLine();
+				String functionResponse = fr.readLine();
+				String functionExampleUrl = fr.readLine();
 				f = new Function( functionName, functionDescription, functionResponse, functionExampleUrl );
-				Integer functionNrOfParams = Integer.parseInt( br.readLine() );
+				Integer functionNrOfParams = Integer.parseInt( fr.readLine() );
 				for( int k = 0; k < functionNrOfParams; k++ ) {
 					Argument a;
-					String parameterName = br.readLine();
-					String parameterProtocol = br.readLine();
-					Boolean parameterRequired = br.readLine().equals( "true" ) ? true : false;
-					String parameterDescription = br.readLine();
+					String parameterName = fr.readLine();
+					String parameterProtocol = fr.readLine();
+					Boolean parameterRequired = fr.readLine().equals( "true" ) ? true : false;
+					String parameterDescription = fr.readLine();
 					a = new Argument(parameterName, parameterProtocol, parameterRequired, parameterDescription);
 					f.addArgument(a);
 				}
-				Integer functionNrOfSchemas = Integer.parseInt( br.readLine() );
+				Integer functionNrOfSchemas = Integer.parseInt( fr.readLine() );
 				for( int k = 0; k < functionNrOfSchemas; k++ ) {
 					Schema s;
-					String name = br.readLine();
-					String url = br.readLine();
+					String name = fr.readLine();
+					String url = fr.readLine();
 					s = new Schema( name, url );
 					f.addSchema(s);
 				}
-				Integer functionNrOfErrorCodes = Integer.parseInt( br.readLine() );
+				Integer functionNrOfErrorCodes = Integer.parseInt( fr.readLine() );
 				for( int k = 0; k < functionNrOfErrorCodes; k++ ) {
 					ErrorCode e;
-					Integer errorCode = Integer.parseInt( br.readLine() );
-					String errorError = br.readLine();
-					String errorDescription = br.readLine();
+					Integer errorCode = Integer.parseInt( fr.readLine() );
+					String errorError = fr.readLine();
+					String errorDescription = fr.readLine();
 					e = new ErrorCode(errorCode, errorError, errorDescription,f);
 					f.addErrorCode(e);
 					errorCodes.add(e);
 				}
 				c.addFunction(f);
-				br.readLine();
+				fr.close();
 			}
 			categories.add( c );
+			br.readLine();
 		}
 		br.close();
 		Collections.sort( errorCodes );

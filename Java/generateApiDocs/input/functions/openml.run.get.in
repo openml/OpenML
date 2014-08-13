@@ -8,7 +8,7 @@ true
 The id of the run
 1
 XSD Schema
-https://github.com/openml/OpenML/blob/master/XML/Schemas/run.xsd
+https://github.com/openml/website/blob/master/openml_OS/views/pages/rest_api/xsd/openml.run.upload.xsd
 2
 220
 Please provide run_id

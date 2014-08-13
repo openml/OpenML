@@ -8,7 +8,7 @@ true
 The task id
 1
 XSD Schema
-https://github.com/openml/OpenML/blob/master/XML/Schemas/task.xsd
+https://github.com/openml/website/blob/master/openml_OS/views/pages/rest_api/xsd/openml.task.search.xsd
 2
 150
 Please provide task_id

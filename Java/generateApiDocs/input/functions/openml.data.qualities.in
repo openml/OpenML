@@ -6,7 +6,9 @@ data_id
 GET
 true
 The dataset id
-0
+1
+XSD Schema
+https://github.com/openml/website/blob/master/openml_OS/views/pages/rest_api/xsd/openml.data.qualities.xsd
 6
 360
 Please provide data_id

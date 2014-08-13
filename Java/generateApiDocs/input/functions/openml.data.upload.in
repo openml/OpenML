@@ -16,7 +16,7 @@ true
 The session hash, provided by the server on authentication (1 hour valid)
 1
 XSD Schema
-https://github.com/openml/OpenML/blob/master/XML/Schemas/dataset.xsd
+https://github.com/openml/website/blob/master/openml_OS/views/pages/rest_api/xsd/openml.data.upload.xsd
 14
 130
 Problem with file uploading
