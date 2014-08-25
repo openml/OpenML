@@ -33,6 +33,8 @@ import org.openml.webapplication.io.Output;
 
 public class Main {
 	
+	public static final int FOLD_GENERATION_SEED = 0;
+	
 	public static void main( String[] args ) {
 		CommandLineParser parser = new GnuParser();
 		Options options = new Options();
@@ -50,6 +52,7 @@ public class Main {
 		options.addOption("o", true, "The output file");
 		options.addOption("r", true, "The rowid");
 		options.addOption("m", false, "Flag determining whether the output of the splits file should be presented as a md5 hash");
+		options.addOption("test", true, "Generate folds, the predefined testset" );
 		
 		CommandLine cli;
 		
@@ -92,12 +95,22 @@ public class Main {
 					
 					// prepare ARFF output consisting of datasplits
 					if( cli.hasOption("-d") && cli.hasOption("e") && cli.hasOption("c") && cli.hasOption("r") ) {
+						int[] testset = null;
+						if( cli.hasOption("-test") ) {
+							String[] rowids = cli.getOptionValue("test").split(",");
+							testset = new int[rowids.length];
+							for( int i = 0; i < rowids.length; ++i ) {
+								testset[i] = Integer.parseInt( rowids[i] );
+							}
+						}
+						
 						GenerateFolds gf = new GenerateFolds(
 								cli.getOptionValue("d"), 
 								cli.getOptionValue("e"), 
 								cli.getOptionValue("c"), 
 								cli.getOptionValue("r"), 
-								0);
+								testset, 
+								FOLD_GENERATION_SEED );
 						if(cli.hasOption("o") == true) {
 							gf.toFile(cli.getOptionValue("o"));
 						} else if(cli.hasOption("m") == true) {

@@ -23,42 +23,49 @@ import java.util.Arrays;
 
 import weka.core.Instances;
 
-public class EvaluationMethod {
+public class EstimationProcedure {
 
-	public static enum EvaluationMethods {CROSSVALIDATION, LEAVEONEOUT, HOLDOUT, LEARNINGCURVE}
-	public final static String[] evaluationMethods = {"crossvalidation","leaveoneout","holdout","learningcurve"};
+	public static enum EstimationProcedureType {CROSSVALIDATION, LEAVEONEOUT, HOLDOUT, LEARNINGCURVE, HOLDOUTPREDEFINED}
+	public final static String[] estimationProceduresTxt = {"crossvalidation", "leaveoneout", "holdout", "learningcurve", "holdoutpredefined"};
 	
-	private final EvaluationMethods em;
+	private final EstimationProcedureType em;
 	private final int arg1;
 	private final int arg2;
 	
-	public EvaluationMethod( String descriptor, Instances dataset ) {
+	public EstimationProcedure( String descriptor, Instances dataset ) {
 		String[] parts = descriptor.split("_");
+		
 		if( parts.length == 0 ) {
-			throw new RuntimeException("Illigal evaluationMethod (NULL)"); }
-		if( Arrays.asList(evaluationMethods).contains(parts[0]) == false ) {
-			throw new RuntimeException("Illigal evaluationMethod"); }
-		if( parts[0].equals(evaluationMethods[1] ) ) {
-			em = EvaluationMethods.LEAVEONEOUT;
+			throw new RuntimeException("Illigal evaluationMethod (EvaluationMethod::construct (1))"); }
+		if( Arrays.asList(estimationProceduresTxt).contains(parts[0]) == false ) {
+			throw new RuntimeException("Illigal evaluationMethod (EvaluationMethod::construct (2))"); }
+		if( parts[0].equals(estimationProceduresTxt[1] ) ) {
+			em = EstimationProcedureType.LEAVEONEOUT;
+			arg1 = 1;
+			arg2 = dataset.numInstances();
+		} else if( parts[0].equals(estimationProceduresTxt[4] ) ) {
+			em = EstimationProcedureType.HOLDOUTPREDEFINED;
 			arg1 = 1;
 			arg2 = dataset.numInstances();
 		} else {
 			if( parts.length != 3 ) {
-				throw new RuntimeException("Illigal evaluationMethod"); }
+				throw new RuntimeException("Illigal evaluationMethod (EvaluationMethod::construct (3))"); }
 			
-			if( parts[0].equals(evaluationMethods[0] ) ) {
-				em = EvaluationMethods.CROSSVALIDATION;
-			} else  if( parts[0].equals(evaluationMethods[2] ) ) {
-				em = EvaluationMethods.HOLDOUT;
-			} else {// if( parts[0].equals(evaluationMethods[3] ) ) { 
-				em = EvaluationMethods.LEARNINGCURVE;
+			if( parts[0].equals(estimationProceduresTxt[0] ) ) {
+				em = EstimationProcedureType.CROSSVALIDATION;
+			} else  if( parts[0].equals(estimationProceduresTxt[2] ) ) {
+				em = EstimationProcedureType.HOLDOUT;
+			} else if( parts[0].equals(estimationProceduresTxt[3] ) ) { 
+				em = EstimationProcedureType.LEARNINGCURVE;
+			} else {
+				throw new RuntimeException("Illigal evaluationMethod (EvaluationMethod::construct (4))");
 			}
 			arg1 = Integer.valueOf(parts[1]);
 			arg2 = Integer.valueOf(parts[2]);
 		}
 	}
 	
-	public EvaluationMethods getEvaluationMethod() {
+	public EstimationProcedureType getEvaluationMethod() {
 		return em;
 	}
 	
@@ -100,22 +107,28 @@ public class EvaluationMethod {
 		case HOLDOUT:
 			return dataset.numInstances() * arg1; // repeats * data set size (each instance is used once)
 		case CROSSVALIDATION:
-		default:
 			return dataset.numInstances() * arg1 * arg2; // repeats * folds * data set size
+		case HOLDOUTPREDEFINED: // by default only one repeat
+			return dataset.numInstances();
+		default:
+			throw new RuntimeException("Illigal evaluationMethod (EvaluationMethod::getSplitSize)");
 		}
 	}
 	
 	public String toString() {
 		switch( em ) {
 			case LEARNINGCURVE:
-				return evaluationMethods[3] + "_" + arg1 + "_" + arg2;
+				return estimationProceduresTxt[3] + "_" + arg1 + "_" + arg2;
 			case HOLDOUT:
-				return evaluationMethods[2] + "_" + arg1 + "_" + arg2;
+				return estimationProceduresTxt[2] + "_" + arg1 + "_" + arg2;
 			case LEAVEONEOUT:
-				return evaluationMethods[1];
+				return estimationProceduresTxt[1];
 			case CROSSVALIDATION:
+				return estimationProceduresTxt[0] + "_" + arg1 + "_" + arg2;
+			case HOLDOUTPREDEFINED:
+				return estimationProceduresTxt[4];
 			default:
-				return evaluationMethods[0] + "_" + arg1 + "_" + arg2;
+				throw new RuntimeException("Illigal evaluationMethod (EvaluationMethod::toString)");
 		}
 	}
 }

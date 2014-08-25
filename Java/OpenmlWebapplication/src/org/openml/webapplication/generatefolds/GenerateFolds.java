@@ -25,10 +25,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.Random;
 
 import org.openml.webapplication.algorithm.InstancesHelper;
-import org.openml.webapplication.generatefolds.EvaluationMethod.EvaluationMethods;
+import org.openml.webapplication.generatefolds.EstimationProcedure.EstimationProcedureType;
 import org.openml.webapplication.io.Input;
 import org.openml.webapplication.io.Md5Writer;
 import org.openml.webapplication.io.Output;
@@ -44,30 +45,30 @@ public class GenerateFolds {
 	private final String splits_name;
 	private final Integer splits_size;
 	
-	private final EvaluationMethod evaluationMethod;
+	private final EstimationProcedure evaluationMethod;
 	
 	private final ArffMapping am;
 	private final Random rand;
 	
-	public GenerateFolds( String datasetPath, String evaluation, String targetFeature, String rowid, int seed ) throws Exception {
-		rand = new Random(seed);
+	public GenerateFolds( String datasetPath, String estimationProcedure, String targetFeature, String rowid_attribute, int[] testset, int random_seed ) throws Exception {
+		rand = new Random(random_seed);
 		
 		dataset = new Instances( new BufferedReader( Input.getURL( datasetPath ) ) );
-		evaluationMethod = new EvaluationMethod(evaluation,dataset);
+		evaluationMethod = new EstimationProcedure(estimationProcedure,dataset);
 		
 		InstancesHelper.setTargetAttribute( dataset, targetFeature );
 		
-		am = new ArffMapping( evaluationMethod.getEvaluationMethod() == EvaluationMethods.LEARNINGCURVE);
+		am = new ArffMapping( evaluationMethod.getEvaluationMethod() == EstimationProcedureType.LEARNINGCURVE);
 		
 		splits_name = Input.filename( datasetPath ) + "_splits";
 		splits_size = evaluationMethod.getSplitsSize(dataset);
 		
-		if(rowid.equals("")) {
-			rowid = "rowid";
-			addRowId(dataset,rowid);
+		if(rowid_attribute.equals("")) {
+			rowid_attribute = "rowid";
+			addRowId(dataset,rowid_attribute);
 		}
 		
-		splits = generateInstances(splits_name);
+		splits = generateInstances(splits_name, testset);
 	}
 	
 	public void toFile( String splitsPath ) throws IOException {
@@ -83,73 +84,113 @@ public class GenerateFolds {
 		Output.instanes2file(splits, new Md5Writer() );
 	}
 	
-	private Instances generateInstances(String name) {
-		Instances splits = new Instances(name,am.getArffHeader(),splits_size);
+	private Instances generateInstances(String name, int[] testset) {
 		switch(evaluationMethod.getEvaluationMethod()) {
-			case HOLDOUT:
-				for( int r = 0; r < evaluationMethod.getRepeats(); ++r) {
-					dataset.randomize(rand);
-					int testSetSize = Math.round(dataset.numInstances()*evaluationMethod.getPercentage()/100);
-					
-					for( int i = 0; i < dataset.numInstances(); ++i ) {
-						int rowid = (int) dataset.instance(i).value(0);
-						splits.add(am.createInstance(i >= testSetSize,rowid,r,0));
-					}
-				}
-				break;
-			case CROSSVALIDATION:
-				for( int r = 0; r < evaluationMethod.getRepeats(); ++r) {
-					dataset.randomize(rand);
-					if (dataset.classAttribute().isNominal())
-						dataset.stratify(evaluationMethod.getFolds());
-					
-					for( int f = 0; f < evaluationMethod.getFolds(); ++f ) {
-						Instances train = dataset.trainCV(evaluationMethod.getFolds(), f);
-						Instances test = dataset.testCV(evaluationMethod.getFolds(), f);
-						
-						for( int i = 0; i < train.numInstances(); ++i ) {
-							int rowid = (int) train.instance(i).value(0);
-							splits.add(am.createInstance(true,rowid,r,f));
-						}
-						for( int i = 0; i < test.numInstances(); ++i ) {
-							int rowid = (int) test.instance(i).value(0);
-							splits.add(am.createInstance(false,rowid,r,f));
-						}
-					}
-				}
-				break;
-			case LEAVEONEOUT:
-				for( int f = 0; f < dataset.numInstances(); ++f ) {
-					for( int i = 0; i < dataset.numInstances(); ++i ) {
-						int rowid = (int) dataset.instance(i).value(0);
-						splits.add(am.createInstance(f!=i,rowid,0,f));
-					}
-				}
-				break;
-			case LEARNINGCURVE:
-				for( int r = 0; r < evaluationMethod.getRepeats(); ++r ) {
-					dataset.randomize(rand);
-					if (dataset.classAttribute().isNominal())
-						InstancesHelper.stratify(dataset); // do our own stratification
-					
-					for( int f = 0; f < evaluationMethod.getFolds(); ++f ) {
-						Instances train = dataset.trainCV(evaluationMethod.getFolds(), f);
-						Instances test = dataset.testCV(evaluationMethod.getFolds(), f);
-						
-						for( int s = 0; s < evaluationMethod.getNumberOfSamples( train.numInstances() ); ++s ) {
-							for( int i = 0; i < evaluationMethod.sampleSize( s, train.numInstances() ); ++i ) {
-								int rowid = (int) train.instance(i).value(0);
-								splits.add(am.createInstance(true,rowid,r,f,s));
-							}
-							for( int i = 0; i < test.numInstances(); ++i ) {
-								int rowid = (int) test.instance(i).value(0);
-								splits.add(am.createInstance(false,rowid,r,f,s));
-							}
-						}
-					}
-				}
-				break;
+			case HOLDOUT:	
+				return sample_splits_holdout( name );
+			case CROSSVALIDATION: 
+				return sample_splits_crossvalidation( name );
+			case LEAVEONEOUT: 
+				return sample_splits_leaveoneout( name );
+			case LEARNINGCURVE: 
+				return sample_splits_learningcurve( name );
+			case HOLDOUTPREDEFINED: 
+				return sample_splits_holdout_userdefined( name, testset );
+			default:
+				throw new RuntimeException("Illigal evaluationMethod (GenerateFolds::generateInstances)");
 		}
+	}
+	
+	private Instances sample_splits_holdout( String name ) {
+		Instances splits = new Instances(name,am.getArffHeader(),splits_size);
+		for( int r = 0; r < evaluationMethod.getRepeats(); ++r) {
+			dataset.randomize(rand);
+			int testSetSize = Math.round(dataset.numInstances()*evaluationMethod.getPercentage()/100);
+			
+			for( int i = 0; i < dataset.numInstances(); ++i ) {
+				int rowid = (int) dataset.instance(i).value(0);
+				splits.add(am.createInstance(i >= testSetSize,rowid,r,0));
+			}
+		}
+		return splits;
+	}
+	
+	private Instances sample_splits_crossvalidation( String name ) {
+		Instances splits = new Instances(name,am.getArffHeader(),splits_size);
+		for( int r = 0; r < evaluationMethod.getRepeats(); ++r) {
+			dataset.randomize(rand);
+			if (dataset.classAttribute().isNominal())
+				dataset.stratify(evaluationMethod.getFolds());
+			
+			for( int f = 0; f < evaluationMethod.getFolds(); ++f ) {
+				Instances train = dataset.trainCV(evaluationMethod.getFolds(), f);
+				Instances test = dataset.testCV(evaluationMethod.getFolds(), f);
+				
+				for( int i = 0; i < train.numInstances(); ++i ) {
+					int rowid = (int) train.instance(i).value(0);
+					splits.add(am.createInstance(true,rowid,r,f));
+				}
+				for( int i = 0; i < test.numInstances(); ++i ) {
+					int rowid = (int) test.instance(i).value(0);
+					splits.add(am.createInstance(false,rowid,r,f));
+				}
+			}
+		}
+		return splits;
+	}
+	
+	private Instances sample_splits_leaveoneout( String name ) {
+		Instances splits = new Instances(name,am.getArffHeader(),splits_size);
+		for( int f = 0; f < dataset.numInstances(); ++f ) {
+			for( int i = 0; i < dataset.numInstances(); ++i ) {
+				int rowid = (int) dataset.instance(i).value(0);
+				splits.add(am.createInstance(f!=i,rowid,0,f));
+			}
+		}
+		return splits;
+	}
+	
+	private Instances sample_splits_learningcurve( String name ) {
+		Instances splits = new Instances(name,am.getArffHeader(),splits_size);
+		for( int r = 0; r < evaluationMethod.getRepeats(); ++r ) {
+			dataset.randomize(rand);
+			if (dataset.classAttribute().isNominal())
+				InstancesHelper.stratify(dataset); // do our own stratification
+			
+			for( int f = 0; f < evaluationMethod.getFolds(); ++f ) {
+				Instances train = dataset.trainCV(evaluationMethod.getFolds(), f);
+				Instances test = dataset.testCV(evaluationMethod.getFolds(), f);
+				
+				for( int s = 0; s < evaluationMethod.getNumberOfSamples( train.numInstances() ); ++s ) {
+					for( int i = 0; i < evaluationMethod.sampleSize( s, train.numInstances() ); ++i ) {
+						int rowid = (int) train.instance(i).value(0);
+						splits.add(am.createInstance(true,rowid,r,f,s));
+					}
+					for( int i = 0; i < test.numInstances(); ++i ) {
+						int rowid = (int) test.instance(i).value(0);
+						splits.add(am.createInstance(false,rowid,r,f,s));
+					}
+				}
+			}
+		}
+		return splits;
+	}
+	
+	private Instances sample_splits_holdout_userdefined( String name, int[] testset ) {
+		Instances splits = new Instances(name,am.getArffHeader(),splits_size);
+		if( testset == null ) {
+			throw new RuntimeException("Option -test not set correctly. ");
+		}
+		Arrays.sort(testset);
+		// do not randomize data set, as this method is based on user defined splits
+		for( int i = 0; i < dataset.size(); ++i ) {
+			if( Arrays.binarySearch(testset, i) >= 0 ) {
+				splits.add(am.createInstance(false,i,0,0));
+			} else {
+				splits.add(am.createInstance(true,i,0,0));
+			}
+		}
+		
 		return splits;
 	}
 	
