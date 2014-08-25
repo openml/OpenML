@@ -15,7 +15,6 @@ import org.openml.apiconnector.xml.DataFeature.Feature;
 import org.openml.apiconnector.xml.DataFeatureUpload;
 import org.openml.apiconnector.xml.DataQuality;
 import org.openml.apiconnector.xml.DataQuality.Quality;
-import org.openml.apiconnector.xml.DataQualityUpload;
 import org.openml.apiconnector.xstream.XstreamXmlMapping;
 import org.openml.webapplication.features.ExtractFeatures;
 

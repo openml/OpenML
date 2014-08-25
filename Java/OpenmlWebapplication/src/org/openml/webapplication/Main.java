@@ -24,10 +24,6 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Options;
 import org.openml.apiconnector.settings.Config;
-import org.openml.webapplication.evaluate.EvaluateBatchPredictions;
-import org.openml.webapplication.evaluate.EvaluateStreamPredictions;
-import org.openml.webapplication.features.ExtractFeatures;
-import org.openml.webapplication.features.FantailConnector;
 import org.openml.webapplication.generatefolds.GenerateFolds;
 import org.openml.webapplication.io.Output;
 
@@ -52,7 +48,7 @@ public class Main {
 		options.addOption("o", true, "The output file");
 		options.addOption("r", true, "The rowid");
 		options.addOption("m", false, "Flag determining whether the output of the splits file should be presented as a md5 hash");
-		options.addOption("test", true, "Generate folds, the predefined testset" );
+		options.addOption("test", true, "A list of rowids for a holdout set (fold generation)" );
 		
 		CommandLine cli;
 		
