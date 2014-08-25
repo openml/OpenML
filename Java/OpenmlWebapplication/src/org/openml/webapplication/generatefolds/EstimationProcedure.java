@@ -25,8 +25,8 @@ import weka.core.Instances;
 
 public class EstimationProcedure {
 
-	public static enum EstimationProcedureType {CROSSVALIDATION, LEAVEONEOUT, HOLDOUT, LEARNINGCURVE, HOLDOUTPREDEFINED}
-	public final static String[] estimationProceduresTxt = {"crossvalidation", "leaveoneout", "holdout", "learningcurve", "holdoutpredefined"};
+	public static enum EstimationProcedureType {CROSSVALIDATION, LEAVEONEOUT, HOLDOUT, LEARNINGCURVE, CUSTOMHOLDOUT}
+	public final static String[] estimationProceduresTxt = {"crossvalidation", "leaveoneout", "holdout", "learningcurve", "customholdout"};
 	
 	private final EstimationProcedureType em;
 	private final int arg1;
@@ -44,7 +44,7 @@ public class EstimationProcedure {
 			arg1 = 1;
 			arg2 = dataset.numInstances();
 		} else if( parts[0].equals(estimationProceduresTxt[4] ) ) {
-			em = EstimationProcedureType.HOLDOUTPREDEFINED;
+			em = EstimationProcedureType.CUSTOMHOLDOUT;
 			arg1 = 1;
 			arg2 = dataset.numInstances();
 		} else {
@@ -108,7 +108,7 @@ public class EstimationProcedure {
 			return dataset.numInstances() * arg1; // repeats * data set size (each instance is used once)
 		case CROSSVALIDATION:
 			return dataset.numInstances() * arg1 * arg2; // repeats * folds * data set size
-		case HOLDOUTPREDEFINED: // by default only one repeat
+		case CUSTOMHOLDOUT: // by default only one repeat
 			return dataset.numInstances();
 		default:
 			throw new RuntimeException("Illigal evaluationMethod (EvaluationMethod::getSplitSize)");
@@ -125,7 +125,7 @@ public class EstimationProcedure {
 				return estimationProceduresTxt[1];
 			case CROSSVALIDATION:
 				return estimationProceduresTxt[0] + "_" + arg1 + "_" + arg2;
-			case HOLDOUTPREDEFINED:
+			case CUSTOMHOLDOUT:
 				return estimationProceduresTxt[4];
 			default:
 				throw new RuntimeException("Illigal evaluationMethod (EvaluationMethod::toString)");

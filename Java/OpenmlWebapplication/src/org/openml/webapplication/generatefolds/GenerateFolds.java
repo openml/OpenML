@@ -94,7 +94,7 @@ public class GenerateFolds {
 				return sample_splits_leaveoneout( name );
 			case LEARNINGCURVE: 
 				return sample_splits_learningcurve( name );
-			case HOLDOUTPREDEFINED: 
+			case CUSTOMHOLDOUT: 
 				return sample_splits_holdout_userdefined( name, testset );
 			default:
 				throw new RuntimeException("Illigal evaluationMethod (GenerateFolds::generateInstances)");
