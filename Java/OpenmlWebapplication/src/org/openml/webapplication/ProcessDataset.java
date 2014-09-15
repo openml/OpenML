@@ -94,12 +94,11 @@ public class ProcessDataset {
 		List<Feature> features = extractFeatures.getFeatures();
 		try {
 			DataFeature datafeature = new DataFeature(did, features.toArray(new Feature[features.size()]) );
-			DataQuality dataquality = new DataQuality(did, qualities.toArray(new Quality[qualities.size()]) );
-
 			File dataFeatureFile = Conversion.stringToTempFile( xstream.toXML( datafeature ), "features-did" + did, "xml");
-			File dataQualityFile = Conversion.stringToTempFile( xstream.toXML( dataquality ), "qualities-did" + did, "xml");
-			
 			apiconnector.openmlDataFeatureUpload( dataFeatureFile, ash.getSessionHash() );
+			
+			DataQuality dataquality = new DataQuality(did, qualities.toArray(new Quality[qualities.size()]) );
+			File dataQualityFile = Conversion.stringToTempFile( xstream.toXML( dataquality ), "qualities-did" + did, "xml");
 			apiconnector.openmlDataQualityUpload( dataQualityFile, ash.getSessionHash() );
 			
 			Conversion.log( "OK", "Process Dataset", "Dataset " + did + " - Processed successfully. " );

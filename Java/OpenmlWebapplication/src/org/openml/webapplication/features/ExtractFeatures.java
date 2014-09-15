@@ -21,6 +21,8 @@ package org.openml.webapplication.features;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
 
 import org.openml.apiconnector.xml.DataFeature.Feature;
 import org.openml.apiconnector.xml.DataQuality.Quality;
@@ -30,6 +32,7 @@ import weka.core.Attribute;
 import weka.core.AttributeStats;
 import weka.core.Instance;
 import weka.core.Instances;
+import weka.core.SparseInstance;
 import weka.core.converters.ArffLoader;
 
 public class ExtractFeatures {
@@ -44,7 +47,7 @@ public class ExtractFeatures {
 	// We create out own attribute stats class, so that we do not need to rely on Weka's class.
 	// This class has a much lower footprint, as it does not need to store the various values
 	// itself, but rather maintains some aggregated variables. In addition, we (currently) also
-	// use Weka's AttributeStats, but only uptil a certain number of instances. 
+	// use Weka's AttributeStats, but only up till a certain number of instances. 
 	private final AttributeStatistics[] attributeStats;
 	
 	public ExtractFeatures( String url, String default_class ) throws IOException {
@@ -71,6 +74,8 @@ public class ExtractFeatures {
 	// @pre: invoke getQualities, so that the attribute stats classes are ok
 	public ArrayList<Feature> getFeatures() {
 		final ArrayList<Feature> resultFeatures = new ArrayList<Feature>();
+		ArrayList<String> fullClassDistribution = getClassDistribution();
+		
 		for( int i = 0; i < dataset.numAttributes(); i++ ) {
 			Attribute att = dataset.attribute( i );
 			
@@ -88,6 +93,10 @@ public class ExtractFeatures {
 			Double minimumValue = null;
 			Double meanValue = null;
 			Double standardDeviation = null;
+			
+			String classDistribution = "";
+			if( classAttribute.isNominal())
+				classDistribution = fullClassDistribution.get(i);
 			
 			if( allInstancesInRAM ) {
 				AttributeStats as = dataset.attributeStats( i );
@@ -126,9 +135,74 @@ public class ExtractFeatures {
 					numberOfIntegerValues, numberOfRealValues,
 					numberOfNominalValues, numberOfValues,
 					maximumValue, minimumValue, meanValue,
-					standardDeviation ) );
+					standardDeviation, classDistribution) );
 		}
 		return resultFeatures;
+	}
+	
+	public ArrayList<String> getClassDistribution() {
+        ArrayList<String> result = new ArrayList<String>();
+		if (dataset.classAttribute().isNominal()){
+			// feature : feature value : class : count
+			HashMap<Integer,int[][]> features = new HashMap<Integer,int[][]>();
+			int class_index = dataset.classAttribute().index();
+
+	        //init
+			for (int l = 0; l < dataset.numAttributes(); l++){
+				if(dataset.attribute(l).isNominal())
+					features.put(l,new int[dataset.attribute(l).numValues()][dataset.classAttribute().numValues()]);
+				result.add("[]");
+			}
+
+			//cycle
+	        for (int k = 0; k < dataset.numInstances(); k++) {
+	            if (!dataset.instance(k).isMissing(class_index)) {
+	              int classValue = (int) dataset.instance(k).value(class_index);
+	  	          for (int l = 0; l < dataset.numAttributes(); l++){
+	  	        	if(dataset.attribute(l).isNominal() && !dataset.instance(k).isMissing(l))
+	  	        		features.get(l)[(int) dataset.instance(k).value(l)][classValue]++;
+	  	          }
+	            }
+	        }
+	  	    
+	        for (int l = 0; l < dataset.numAttributes(); l++){
+		        //Stringyfy
+				if(dataset.attribute(l).isNominal()){
+					String s = "[[\"";
+					boolean newName = true;
+					Enumeration e = dataset.attribute(l).enumerateValues();
+					while(e.hasMoreElements()){
+						if(newName){
+							s += e.nextElement();
+							newName = false;
+						}
+						else
+							s += "\",\""+e.nextElement();
+					}
+					s += "\"],[";
+			        boolean newC = true;
+			        boolean newF = true;
+			        for(int[] c : features.get(l)){
+				          if(newC){
+				        	  s += "[";
+				        	  newC = false;
+				          } else
+				        	  s += "],[";
+			        	  newF = true;
+			        	  for(int f : c){
+			        		  if(newF){
+			        			  s += f;
+					        	  newF = false;
+			        		  } else
+			        			  s += ","+f;
+			        	  }
+			        }
+			        s += "]]]";
+			        result.set(l,s);
+				}
+		}
+		}
+	    return result;
 	}
 	
 	public ArrayList<Quality> getQualities( ) throws IOException {
