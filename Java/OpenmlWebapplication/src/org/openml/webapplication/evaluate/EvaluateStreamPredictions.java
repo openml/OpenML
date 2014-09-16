@@ -147,7 +147,6 @@ public class EvaluateStreamPredictions implements PredictionEvaluator {
 					new EvaluationScore( 
 							m.implementation, 
 							m.name, 
-							m.label, 
 							score.getScore() == null ? null : dm.format( score.getScore() ), 
 							null, 
 							score.getArrayAsString( dm ) ) );
@@ -160,7 +159,6 @@ public class EvaluateStreamPredictions implements PredictionEvaluator {
 						new EvaluationScore( 
 								m.implementation, 
 								m.name, 
-								m.label, 
 								score.getScore() == null ? null : dm.format( score.getScore() ), 
 								score.getArrayAsString( dm ),
 								i,

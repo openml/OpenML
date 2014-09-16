@@ -43,25 +43,25 @@ public class Output {
 		if( task == TaskType.REGRESSION ) {
 			
 			// here all measures for regression tasks
-			m.put(new Metric("mean_absolute_error", "openml.evaluation.mean_absolute_error(1.0)", null), new MetricScore( evaluator.meanAbsoluteError() ) );
-			m.put(new Metric("mean_prior_absolute_error", "openml.evaluation.mean_prior_absolute_error(1.0)", null), new MetricScore( evaluator.meanPriorAbsoluteError() ) );
-			m.put(new Metric("root_mean_squared_error", "openml.evaluation.root_mean_squared_error(1.0)", null), new MetricScore( evaluator.rootMeanSquaredError() ) );
-			m.put(new Metric("root_mean_prior_squared_error", "openml.evaluation.root_mean_prior_squared_error(1.0)", null), new MetricScore( evaluator.rootMeanPriorSquaredError() ) );
-			m.put(new Metric("relative_absolute_error", "openml.evaluation.relative_absolute_error(1.0)", null), new MetricScore( evaluator.relativeAbsoluteError() / 100 ) );
-			m.put(new Metric("root_relative_squared_error", "openml.evaluation.root_relative_squared_error(1.0)", null), new MetricScore( evaluator.rootRelativeSquaredError() / 100 ) );
+			m.put(new Metric("mean_absolute_error", "openml.evaluation.mean_absolute_error(1.0)"), new MetricScore( evaluator.meanAbsoluteError() ) );
+			m.put(new Metric("mean_prior_absolute_error", "openml.evaluation.mean_prior_absolute_error(1.0)"), new MetricScore( evaluator.meanPriorAbsoluteError() ) );
+			m.put(new Metric("root_mean_squared_error", "openml.evaluation.root_mean_squared_error(1.0)"), new MetricScore( evaluator.rootMeanSquaredError() ) );
+			m.put(new Metric("root_mean_prior_squared_error", "openml.evaluation.root_mean_prior_squared_error(1.0)"), new MetricScore( evaluator.rootMeanPriorSquaredError() ) );
+			m.put(new Metric("relative_absolute_error", "openml.evaluation.relative_absolute_error(1.0)"), new MetricScore( evaluator.relativeAbsoluteError() / 100 ) );
+			m.put(new Metric("root_relative_squared_error", "openml.evaluation.root_relative_squared_error(1.0)"), new MetricScore( evaluator.rootRelativeSquaredError() / 100 ) );
 			
 		} else if( task == TaskType.CLASSIFICATION || task == TaskType.LEARNINGCURVE || task == TaskType.TESTTHENTRAIN ) {
 			
 			if( task == TaskType.TESTTHENTRAIN == false ) {
-				m.put(new Metric("mean_absolute_error", "openml.evaluation.mean_absolute_error(1.0)", null), new MetricScore( evaluator.meanAbsoluteError() ) );
-				m.put(new Metric("mean_prior_absolute_error", "openml.evaluation.mean_prior_absolute_error(1.0)", null), new MetricScore( evaluator.meanPriorAbsoluteError() ) );
-				m.put(new Metric("root_mean_squared_error", "openml.evaluation.root_mean_squared_error(1.0)", null), new MetricScore( evaluator.rootMeanSquaredError() ) );
-				m.put(new Metric("root_mean_prior_squared_error", "openml.evaluation.root_mean_prior_squared_error(1.0)", null), new MetricScore( evaluator.rootMeanPriorSquaredError() ) );
-				m.put(new Metric("relative_absolute_error", "openml.evaluation.relative_absolute_error(1.0)", null), new MetricScore( evaluator.relativeAbsoluteError() / 100 ) );
-				m.put(new Metric("root_relative_squared_error", "openml.evaluation.root_relative_squared_error(1.0)", null), new MetricScore( evaluator.rootRelativeSquaredError() / 100 ) );
+				m.put(new Metric("mean_absolute_error", "openml.evaluation.mean_absolute_error(1.0)"), new MetricScore( evaluator.meanAbsoluteError() ) );
+				m.put(new Metric("mean_prior_absolute_error", "openml.evaluation.mean_prior_absolute_error(1.0)"), new MetricScore( evaluator.meanPriorAbsoluteError() ) );
+				m.put(new Metric("root_mean_squared_error", "openml.evaluation.root_mean_squared_error(1.0)"), new MetricScore( evaluator.rootMeanSquaredError() ) );
+				m.put(new Metric("root_mean_prior_squared_error", "openml.evaluation.root_mean_prior_squared_error(1.0)"), new MetricScore( evaluator.rootMeanPriorSquaredError() ) );
+				m.put(new Metric("relative_absolute_error", "openml.evaluation.relative_absolute_error(1.0)"), new MetricScore( evaluator.relativeAbsoluteError() / 100 ) );
+				m.put(new Metric("root_relative_squared_error", "openml.evaluation.root_relative_squared_error(1.0)"), new MetricScore( evaluator.rootRelativeSquaredError() / 100 ) );
 				
-				m.put(new Metric("prior_entropy", "openml.evaluation.prior_entropy(1.0)", null), new MetricScore( evaluator.priorEntropy() ) );
-				m.put(new Metric("kb_relative_information_score", "openml.evaluation.kb_relative_information_score(1.0)", null), new MetricScore( evaluator.KBRelativeInformation() / 100 ) );
+				m.put(new Metric("prior_entropy", "openml.evaluation.prior_entropy(1.0)"), new MetricScore( evaluator.priorEntropy() ) );
+				m.put(new Metric("kb_relative_information_score", "openml.evaluation.kb_relative_information_score(1.0)"), new MetricScore( evaluator.KBRelativeInformation() / 100 ) );
 			}
 			
 			Double[] precision = new Double[classes];
@@ -81,18 +81,18 @@ public class Output {
 				}
 			}
 			
-			m.put(new Metric("predictive_accuracy", "openml.evaluation.predictive_accuracy(1.0)", null), new MetricScore( evaluator.pctCorrect() / 100 ) );
-			m.put(new Metric("kappa", "openml.evaluation.kappa(1.0)", null), new MetricScore( evaluator.kappa() ) );
+			m.put(new Metric("predictive_accuracy", "openml.evaluation.predictive_accuracy(1.0)"), new MetricScore( evaluator.pctCorrect() / 100 ) );
+			m.put(new Metric("kappa", "openml.evaluation.kappa(1.0)"), new MetricScore( evaluator.kappa() ) );
 			
-			m.put(new Metric("number_of_instances", "openml.evaluation.number_of_instances(1.0)", null), new MetricScore( evaluator.numInstances(), instancesPerClass ) );
+			m.put(new Metric("number_of_instances", "openml.evaluation.number_of_instances(1.0)"), new MetricScore( evaluator.numInstances(), instancesPerClass ) );
 			
-			m.put(new Metric("precision", "openml.evaluation.precision(1.0)",null),new MetricScore( evaluator.weightedPrecision(), precision ));
-			m.put(new Metric("recall", "openml.evaluation.recall(1.0)",null),new MetricScore( evaluator.weightedRecall(), recall ));
-			m.put(new Metric("f_measure", "openml.evaluation.f_measure(1.0)",null),new MetricScore( evaluator.weightedFMeasure(), fMeasure ));
+			m.put(new Metric("precision", "openml.evaluation.precision(1.0)"),new MetricScore( evaluator.weightedPrecision(), precision ));
+			m.put(new Metric("recall", "openml.evaluation.recall(1.0)"),new MetricScore( evaluator.weightedRecall(), recall ));
+			m.put(new Metric("f_measure", "openml.evaluation.f_measure(1.0)"),new MetricScore( evaluator.weightedFMeasure(), fMeasure ));
 			if( Utils.isMissingValue( evaluator.weightedAreaUnderROC() ) == false ) {
-				m.put(new Metric("area_under_roc_curve", "openml.evaluation.area_under_roc_curve(1.0)",null), new MetricScore( evaluator.weightedAreaUnderROC(), auroc ) );
+				m.put(new Metric("area_under_roc_curve", "openml.evaluation.area_under_roc_curve(1.0)"), new MetricScore( evaluator.weightedAreaUnderROC(), auroc ) );
 			}
-			m.put(new Metric("confusion_matrix","openml.evaluation.confusion_matrix(1.0)",null), new MetricScore(confussion_matrix));
+			m.put(new Metric("confusion_matrix","openml.evaluation.confusion_matrix(1.0)"), new MetricScore(confussion_matrix));
 		}
 		return m;
 	}

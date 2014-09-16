@@ -176,7 +176,6 @@ public class EvaluateBatchPredictions implements PredictionEvaluator {
 			EvaluationScore em = new EvaluationScore( 
 					m.implementation, 
 					m.name, 
-					m.label, 
 					score.getScore() == null ? null : dm.format( score.getScore() ), 
 					null, 
 					score.getArrayAsString( dm ) );
@@ -194,7 +193,6 @@ public class EvaluateBatchPredictions implements PredictionEvaluator {
 							currentMeasure = new EvaluationScore( 
 								m.implementation, 
 								m.name, 
-								m.label, 
 								score.getScore() == null ? null : dm.format( score.getScore() ), 
 								score.getArrayAsString( dm ),
 								i, j, k, predictionCounter.getShadowTypeSize(i, j, k) );
@@ -202,7 +200,6 @@ public class EvaluateBatchPredictions implements PredictionEvaluator {
 							currentMeasure = new EvaluationScore( 
 								m.implementation, 
 								m.name, 
-								m.label, 
 								score.getScore() == null ? null : dm.format( score.getScore() ), 
 								score.getArrayAsString( dm ),
 								i, j );
