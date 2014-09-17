@@ -94,7 +94,7 @@ public class ExtractFeatures {
 			Double meanValue = null;
 			Double standardDeviation = null;
 			
-			String classDistribution = "";
+			String classDistribution = null;
 			if( classAttribute.isNominal())
 				classDistribution = fullClassDistribution.get(i);
 			
