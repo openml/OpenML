@@ -38,7 +38,7 @@ public class ExtractFeatures {
 	
 	private final Instances dataset;
 	private final ArffLoader arffLoader;
-	private final Attribute classAttribute;
+	private Attribute classAttribute;
 	
 	private static final int RAM_LIMIT = 10000;
 	private boolean allInstancesInRAM = true;
@@ -61,8 +61,10 @@ public class ExtractFeatures {
 		} else {
 			classAttribute = dataset.attribute( dataset.numAttributes() - 1 );
 		}
-		if( classAttribute == null ) throw new RuntimeException("Specified target class not found.");
-		
+		if( classAttribute == null ){
+			classAttribute = dataset.attribute( dataset.numAttributes() - 1 );
+			//throw new RuntimeException("Specified target class not found.");
+		} 
 		dataset.setClass( classAttribute );
 
 		attributeStats = new AttributeStatistics[dataset.numAttributes()];

@@ -53,8 +53,7 @@ public class ProcessDataset {
 	
 	public Integer getDatasetId() throws JSONException, IOException {
 		String sql = 
-			"SELECT `did`,`url`,`default_target_attribute`,`upload_date` " + 
-			"FROM `dataset` WHERE `processed` IS NULL AND `error` = 'false'" + 
+			"SELECT `did` FROM `dataset` WHERE `processed` IS NULL AND `error` = 'false' " + 
 			"ORDER BY `upload_date` ASC"; 
 		
 		JSONArray runJson = (JSONArray) apiconnector.openmlFreeQuery( sql ).get("data");
