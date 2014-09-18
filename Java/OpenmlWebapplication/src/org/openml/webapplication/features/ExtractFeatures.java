@@ -32,7 +32,6 @@ import weka.core.Attribute;
 import weka.core.AttributeStats;
 import weka.core.Instance;
 import weka.core.Instances;
-import weka.core.SparseInstance;
 import weka.core.converters.ArffLoader;
 
 public class ExtractFeatures {
