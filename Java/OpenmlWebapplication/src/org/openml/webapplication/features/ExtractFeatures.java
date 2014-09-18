@@ -57,7 +57,8 @@ public class ExtractFeatures {
 		dataset = new Instances( arffLoader.getStructure() );
 		
 		if( default_class != null ) {
-			classAttribute = dataset.attribute( default_class );
+			//ignoring all but first target feature
+			classAttribute = dataset.attribute( default_class.split(",")[0].trim() );
 		} else {
 			classAttribute = dataset.attribute( dataset.numAttributes() - 1 );
 		}
@@ -94,9 +95,7 @@ public class ExtractFeatures {
 			Double meanValue = null;
 			Double standardDeviation = null;
 			
-			String classDistribution = null;
-			if( classAttribute.isNominal())
-				classDistribution = fullClassDistribution.get(i);
+			String classDistribution = fullClassDistribution.get(i);
 			
 			if( allInstancesInRAM ) {
 				AttributeStats as = dataset.attributeStats( i );
@@ -142,66 +141,73 @@ public class ExtractFeatures {
 	
 	public ArrayList<String> getClassDistribution() {
         ArrayList<String> result = new ArrayList<String>();
-		if (dataset.classAttribute().isNominal()){
-			// feature : feature value : class : count
-			HashMap<Integer,int[][]> features = new HashMap<Integer,int[][]>();
-			int class_index = dataset.classAttribute().index();
+		// feature : feature value : class : count
+		HashMap<Integer,int[][]> features = new HashMap<Integer,int[][]>();
 
-	        //init
-			for (int l = 0; l < dataset.numAttributes(); l++){
-				if(dataset.attribute(l).isNominal())
+	    //init
+		for (int l = 0; l < dataset.numAttributes(); l++){
+			if(dataset.attribute(l).isNominal())
+				if(dataset.classAttribute().isNominal())
 					features.put(l,new int[dataset.attribute(l).numValues()][dataset.classAttribute().numValues()]);
-				result.add("[]");
-			}
-
-			//cycle
-	        for (int k = 0; k < dataset.numInstances(); k++) {
-	            if (!dataset.instance(k).isMissing(class_index)) {
-	              int classValue = (int) dataset.instance(k).value(class_index);
-	  	          for (int l = 0; l < dataset.numAttributes(); l++){
-	  	        	if(dataset.attribute(l).isNominal() && !dataset.instance(k).isMissing(l))
-	  	        		features.get(l)[(int) dataset.instance(k).value(l)][classValue]++;
-	  	          }
-	            }
-	        }
-	  	    
-	        for (int l = 0; l < dataset.numAttributes(); l++){
-		        //Stringyfy
-				if(dataset.attribute(l).isNominal()){
-					String s = "[[\"";
-					boolean newName = true;
-					Enumeration e = dataset.attribute(l).enumerateValues();
-					while(e.hasMoreElements()){
-						if(newName){
-							s += e.nextElement();
-							newName = false;
-						}
-						else
-							s += "\",\""+e.nextElement();
+				else
+					features.put(l,new int[dataset.attribute(l).numValues()][1]);
+			result.add("[]");
+		}
+		
+		//cycle
+		int class_index = dataset.classAttribute().index();
+        for (int k = 0; k < dataset.numInstances(); k++) {
+          if (!dataset.instance(k).isMissing(class_index) && dataset.classAttribute().isNominal()) {
+             int classValue = (int) dataset.instance(k).value(class_index);
+  	         for (int l = 0; l < dataset.numAttributes(); l++){
+  	        	 if(dataset.attribute(l).isNominal() && !dataset.instance(k).isMissing(l))
+  	        		features.get(l)[(int) dataset.instance(k).value(l)][classValue]++;
+  	          }
+          }
+          else{
+        	  for (int l = 0; l < dataset.numAttributes(); l++){
+   	        	 if(dataset.attribute(l).isNominal() && !dataset.instance(k).isMissing(l))
+   	        		features.get(l)[(int) dataset.instance(k).value(l)][0]++;
+   	          }
+          }
+        }
+		 
+        for (int l = 0; l < dataset.numAttributes(); l++){
+	        //Stringyfy
+			if(dataset.attribute(l).isNominal()){
+				String s = "[[\"";
+				boolean newName = true;
+				Enumeration e = dataset.attribute(l).enumerateValues();
+				while(e.hasMoreElements()){
+					if(newName){
+						s += e.nextElement();
+						newName = false;
 					}
-					s += "\"],[";
-			        boolean newC = true;
-			        boolean newF = true;
-			        for(int[] c : features.get(l)){
-				          if(newC){
-				        	  s += "[";
-				        	  newC = false;
-				          } else
-				        	  s += "],[";
-			        	  newF = true;
-			        	  for(int f : c){
-			        		  if(newF){
-			        			  s += f;
-					        	  newF = false;
-			        		  } else
-			        			  s += ","+f;
-			        	  }
-			        }
-			        s += "]]]";
-			        result.set(l,s);
+					else
+						s += "\",\""+e.nextElement();
 				}
-		}
-		}
+				s += "\"],[";
+		        boolean newC = true;
+		        boolean newF = true;
+		        for(int[] c : features.get(l)){
+			          if(newC){
+			        	  s += "[";
+			        	  newC = false;
+			          } else
+			        	  s += "],[";
+		        	  newF = true;
+		        	  for(int f : c){
+		        		  if(newF){
+		        			  s += f;
+				        	  newF = false;
+		        		  } else
+		        			  s += ","+f;
+		        	  }
+		        }
+		        s += "]]]";
+		        result.set(l,s);
+			}
+	    }
 	    return result;
 	}
 	
