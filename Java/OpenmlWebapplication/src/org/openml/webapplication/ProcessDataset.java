@@ -43,9 +43,16 @@ public class ProcessDataset {
 		} else {
 			dataset_id = getDatasetId();
 			while( dataset_id != null ) {
-				Conversion.log( "OK", "Process Dataset", "Processing dataset " + dataset_id + " as obtained from database. " );
-				process( dataset_id );
-				dataset_id = getDatasetId();
+				try{
+				  Conversion.log( "OK", "Process Dataset", "Processing dataset " + dataset_id + " as obtained from database. " );
+				  process( dataset_id );
+				  dataset_id = getDatasetId();
+				} catch (Exception e){
+					Conversion.log( "ERROR", "Process Dataset", "Could not process data. Skipping. " );
+					e.printStackTrace();
+					String sql = "update `dataset` set `error` = 'true' where `did` = "+dataset_id;
+					apiconnector.openmlFreeQuery( sql );
+				}
 			}
 			Conversion.log( "OK", "Process Dataset", "No more datasets to process. " );
 		}
