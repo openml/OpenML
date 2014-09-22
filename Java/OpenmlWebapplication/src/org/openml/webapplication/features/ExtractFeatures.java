@@ -40,8 +40,13 @@ public class ExtractFeatures {
 	private final ArffLoader arffLoader;
 	private Attribute classAttribute;
 	
-	private static final int RAM_LIMIT = 10000;
+	private static final int RAM_LIMIT = 3000000; //nr instances * nr features
 	private boolean allInstancesInRAM = true;
+	
+	private ArrayList<String> classValueDistribution;
+	// feature : feature value : class : count
+	private HashMap<Integer,int[][]> featureClassMap;
+
 	
 	// We create out own attribute stats class, so that we do not need to rely on Weka's class.
 	// This class has a much lower footprint, as it does not need to store the various values
@@ -51,9 +56,13 @@ public class ExtractFeatures {
 	
 	public ExtractFeatures( String url, String default_class ) throws IOException {
 		arffLoader = new ArffLoader();
+		System.out.println(url);
 		arffLoader.setURL(url);
 		
 		dataset = new Instances( arffLoader.getStructure() );
+		
+		classValueDistribution = new ArrayList<String>();
+		featureClassMap = new HashMap<Integer,int[][]>();
 		
 		if( default_class != null ) {
 			//ignoring all but first target feature
@@ -61,7 +70,7 @@ public class ExtractFeatures {
 		} else {
 			classAttribute = dataset.attribute( dataset.numAttributes() - 1 );
 		}
-		if( classAttribute == null ){
+		if( classAttribute == null ){//take any class attribute so that feature distributions are still computed.
 			classAttribute = dataset.attribute( dataset.numAttributes() - 1 );
 			//throw new RuntimeException("Specified target class not found.");
 		} 
@@ -76,7 +85,6 @@ public class ExtractFeatures {
 	// @pre: invoke getQualities, so that the attribute stats classes are ok
 	public ArrayList<Feature> getFeatures() {
 		final ArrayList<Feature> resultFeatures = new ArrayList<Feature>();
-		ArrayList<String> fullClassDistribution = getClassDistribution();
 		
 		for( int i = 0; i < dataset.numAttributes(); i++ ) {
 			Attribute att = dataset.attribute( i );
@@ -96,7 +104,7 @@ public class ExtractFeatures {
 			Double meanValue = null;
 			Double standardDeviation = null;
 			
-			String classDistribution = fullClassDistribution.get(i);
+			String classDistribution = classValueDistribution.get(i);
 			
 			if( allInstancesInRAM ) {
 				AttributeStats as = dataset.attributeStats( i );
@@ -140,41 +148,9 @@ public class ExtractFeatures {
 		return resultFeatures;
 	}
 	
-	public ArrayList<String> getClassDistribution() {
-        ArrayList<String> result = new ArrayList<String>();
-		// feature : feature value : class : count
-		HashMap<Integer,int[][]> features = new HashMap<Integer,int[][]>();
-
-	    //init
-		for (int l = 0; l < dataset.numAttributes(); l++){
-			if(dataset.attribute(l).isNominal())
-				if(dataset.classAttribute().isNominal())
-					features.put(l,new int[dataset.attribute(l).numValues()][dataset.classAttribute().numValues()]);
-				else
-					features.put(l,new int[dataset.attribute(l).numValues()][1]);
-			result.add("[]");
-		}
-		
-		//cycle
-		int class_index = dataset.classAttribute().index();
-        for (int k = 0; k < dataset.numInstances(); k++) {
-          if (!dataset.instance(k).isMissing(class_index) && dataset.classAttribute().isNominal()) {
-             int classValue = (int) dataset.instance(k).value(class_index);
-  	         for (int l = 0; l < dataset.numAttributes(); l++){
-  	        	 if(dataset.attribute(l).isNominal() && !dataset.instance(k).isMissing(l))
-  	        		features.get(l)[(int) dataset.instance(k).value(l)][classValue]++;
-  	          }
-          }
-          else{
-        	  for (int l = 0; l < dataset.numAttributes(); l++){
-   	        	 if(dataset.attribute(l).isNominal() && !dataset.instance(k).isMissing(l))
-   	        		features.get(l)[(int) dataset.instance(k).value(l)][0]++;
-   	          }
-          }
-        }
-		 
+	public void getClassDistribution() {
+        //Stringyfy
         for (int l = 0; l < dataset.numAttributes(); l++){
-	        //Stringyfy
 			if(dataset.attribute(l).isNominal()){
 				String s = "[[\"";
 				boolean newName = true;
@@ -190,7 +166,7 @@ public class ExtractFeatures {
 				s += "\"],[";
 		        boolean newC = true;
 		        boolean newF = true;
-		        for(int[] c : features.get(l)){
+		        for(int[] c : featureClassMap.get(l)){
 			          if(newC){
 			        	  s += "[";
 			        	  newC = false;
@@ -206,17 +182,17 @@ public class ExtractFeatures {
 		        	  }
 		        }
 		        s += "]]]";
-		        result.set(l,s);
+		        classValueDistribution.set(l,s);
 			}
 	    }
-	    return result;
 	}
 	
 	public ArrayList<Quality> getQualities( ) throws IOException {
 		final ArrayList<Quality> resultQualities = new ArrayList<Quality>();
 		boolean nominalTarget = dataset.classAttribute().isNominal();
 		int[] classDistribution = new int[dataset.classAttribute().numValues()];
-		
+		int class_index = dataset.classAttribute().index();
+
 		int NumberOfInstances = 0;
 		int NumberOfMissingValues = 0;
 		int NumberOfInstancesWithMissingValues = 0;
@@ -231,11 +207,24 @@ public class ExtractFeatures {
 			if(att.isNumeric())	NumberOfNumericFeatures++;
 		}
 		
+		// initialize class distribution
+		for (int l = 0; l < dataset.numAttributes(); l++){
+			if(dataset.attribute(l).isNominal())
+				if(dataset.classAttribute().isNominal())
+					featureClassMap.put(l,new int[dataset.attribute(l).numValues()][dataset.classAttribute().numValues()]);
+				else
+					featureClassMap.put(l,new int[dataset.attribute(l).numValues()][1]);
+			classValueDistribution.add("[]");
+		}
+		
 		// we go through all the instances in only one loop. 
 		Instance currentInstance;
+		int counter = -1;
+
 		while( ( currentInstance = arffLoader.getNextInstance( dataset ) ) != null ) {
 			// increment instance counter
 			NumberOfInstances ++;
+			counter ++;
 			
 			// increment total number of missing values counter
 			for( int j = 0; j < dataset.numAttributes(); ++j ) {
@@ -251,12 +240,27 @@ public class ExtractFeatures {
 				classDistribution[(int) currentInstance.classValue()] ++;
 			}
 			
+			// increment class counters
+			if (!currentInstance.isMissing(class_index) && dataset.classAttribute().isNominal()) {
+	             int classValue = (int) currentInstance.value(class_index);
+	  	         for (int l = 0; l < dataset.numAttributes(); l++){
+	  	        	 if(dataset.attribute(l).isNominal() && !dataset.instance(counter).isMissing(l))
+	  	        		featureClassMap.get(l)[(int) currentInstance.value(l)][classValue]++;
+	  	          }
+	          }
+	          else{
+	        	  for (int l = 0; l < dataset.numAttributes(); l++){
+	   	        	 if(dataset.attribute(l).isNominal() && !currentInstance.isMissing(l))
+	   	        		featureClassMap.get(l)[(int) currentInstance.value(l)][0]++;
+	   	          }
+	          }
+			
 			// Important!! In order to make this program scalable, we only keep the first
 			// RAM_LIMIT records in RAM. Datasets with more instances can of course be
 			// evaluated, but we will no longer rely on weka's AttributeStats class. Instead
 			// we'll use our own AttributeStatistics class, that does not require a lot of RAM.
 			// At the costs of information like unique values and distinct values. 
-			if( NumberOfInstances < RAM_LIMIT ) {
+			if( NumberOfInstances * dataset.numAttributes() < RAM_LIMIT ) {
 				dataset.add(currentInstance);
 			} else {
 				allInstancesInRAM = false;
