@@ -85,6 +85,7 @@ public class ExtractFeatures {
 	// @pre: invoke getQualities, so that the attribute stats classes are ok
 	public ArrayList<Feature> getFeatures() {
 		final ArrayList<Feature> resultFeatures = new ArrayList<Feature>();
+		getClassDistribution();
 		
 		for( int i = 0; i < dataset.numAttributes(); i++ ) {
 			Attribute att = dataset.attribute( i );
@@ -219,12 +220,10 @@ public class ExtractFeatures {
 		
 		// we go through all the instances in only one loop. 
 		Instance currentInstance;
-		int counter = -1;
 
 		while( ( currentInstance = arffLoader.getNextInstance( dataset ) ) != null ) {
 			// increment instance counter
 			NumberOfInstances ++;
-			counter ++;
 			
 			// increment total number of missing values counter
 			for( int j = 0; j < dataset.numAttributes(); ++j ) {
