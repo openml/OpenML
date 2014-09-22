@@ -244,7 +244,7 @@ public class ExtractFeatures {
 			if (!currentInstance.isMissing(class_index) && dataset.classAttribute().isNominal()) {
 	             int classValue = (int) currentInstance.value(class_index);
 	  	         for (int l = 0; l < dataset.numAttributes(); l++){
-	  	        	 if(dataset.attribute(l).isNominal() && !dataset.instance(counter).isMissing(l))
+	  	        	 if(dataset.attribute(l).isNominal() && !currentInstance.isMissing(l))
 	  	        		featureClassMap.get(l)[(int) currentInstance.value(l)][classValue]++;
 	  	          }
 	          }
