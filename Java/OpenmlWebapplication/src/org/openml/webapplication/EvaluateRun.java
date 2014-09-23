@@ -108,7 +108,8 @@ public class EvaluateRun {
 				return;
 			}
 			
-			Run run_description = (Run) xstream.fromXML( ApiConnector.getStringFromUrl( apiconnector.getOpenmlFileUrl( file_ids.get( "description" ) ).toString() ) );
+			String description = ApiConnector.getStringFromUrl( apiconnector.getOpenmlFileUrl( file_ids.get( "description" ) ).toString() );
+			Run run_description = (Run) xstream.fromXML( description );
 			
 			Conversion.log( "OK", "Process Run", "Start prediction evaluator. " );
 			// TODO! no string comparisons, do something better
