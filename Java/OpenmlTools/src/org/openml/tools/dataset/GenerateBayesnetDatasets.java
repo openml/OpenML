@@ -182,6 +182,7 @@ public class GenerateBayesnetDatasets {
 				"public domain",
 				null, // row id attribute
 				dsd.getDefault_target_attribute(), 
+				null,
 				null // md5 hash
 		);
 		String outputDatasetString = xstream.toXML( outputDatasetDescription );
