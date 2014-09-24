@@ -43,16 +43,9 @@ public class ProcessDataset {
 		} else {
 			dataset_id = getDatasetId();
 			while( dataset_id != null ) {
-				try{
-				  Conversion.log( "OK", "Process Dataset", "Processing dataset " + dataset_id + " as obtained from database. " );
-				  process( dataset_id );
-				  dataset_id = getDatasetId();
-				} catch (Exception e){
-					Conversion.log( "ERROR", "Process Dataset", "Could not process data. Skipping. " );
-					e.printStackTrace();
-					String sql = "update `dataset` set `error` = 'true' where `did` = "+dataset_id;
-					apiconnector.openmlFreeQuery( sql );
-				}
+				Conversion.log( "OK", "Process Dataset", "Processing dataset " + dataset_id + " as obtained from database. " );
+				process( dataset_id );
+				dataset_id = getDatasetId();
 			}
 			Conversion.log( "OK", "Process Dataset", "No more datasets to process. " );
 		}
@@ -91,14 +84,15 @@ public class ProcessDataset {
 		String didStr = record.getString( 1 );
 		// feature string should be reconverted to null, if it was NULL in mysql
 		String featureStr = record.getString( 2 ).equals("") ? null : record.getString( 2 );
-		ExtractFeatures extractFeatures = new ExtractFeatures(didStr, featureStr);
 
-		// IMPORTANT: getQualities should be called BEFORE getFeatures
-		Conversion.log( "OK", "Process Dataset", "Processing dataset " + did + " - obtaining basic qualities. " );
-		List<Quality> qualities = extractFeatures.getQualities();
-		Conversion.log( "OK", "Process Dataset", "Processing dataset " + did + " - obtaining features. " );
-		List<Feature> features = extractFeatures.getFeatures();
 		try {
+			ExtractFeatures extractFeatures = new ExtractFeatures(didStr, featureStr);
+	
+			// IMPORTANT: getQualities should be called BEFORE getFeatures
+			Conversion.log( "OK", "Process Dataset", "Processing dataset " + did + " - obtaining basic qualities. " );
+			List<Quality> qualities = extractFeatures.getQualities();
+			Conversion.log( "OK", "Process Dataset", "Processing dataset " + did + " - obtaining features. " );
+			List<Feature> features = extractFeatures.getFeatures();
 			DataFeature datafeature = new DataFeature(did, features.toArray(new Feature[features.size()]) );
 			File dataFeatureFile = Conversion.stringToTempFile( xstream.toXML( datafeature ), "features-did" + did, "xml");
 			apiconnector.openmlDataFeatureUpload( dataFeatureFile, ash.getSessionHash() );
