@@ -108,22 +108,23 @@ public class EvaluateRun {
 				return;
 			}
 			
-			String description = ApiConnector.getStringFromUrl( apiconnector.getOpenmlFileUrl( file_ids.get( "description" ) ).toString() );
+			String description = ApiConnector.getStringFromUrl( apiconnector.getOpenmlFileUrl( file_ids.get( "description" ), "Run_" + run_id + "_description.xml", ash.getSessionHash() ).toString() );
 			Run run_description = (Run) xstream.fromXML( description );
 			
 			Conversion.log( "OK", "Process Run", "Start prediction evaluator. " );
 			// TODO! no string comparisons, do something better
+			String filename = "Task_" + task_id + "_predictions.arff";
 			if( task.getTask_type().equals("Supervised Data Stream Classification") ) {
 				predictionEvaluator = new EvaluateStreamPredictions(
-					dataset.getUrl(), 
-					apiconnector.getOpenmlFileUrl( file_ids.get( "predictions" ) ).toString(), 
+					dataset.getUrl() + "?session_hash=" + ash.getSessionHash(), 
+					apiconnector.getOpenmlFileUrl( file_ids.get( "predictions" ), filename, ash.getSessionHash() ).toString(), 
 					source_data.getTarget_feature(),
 					stream_interval_size );
 			} else {
 				predictionEvaluator = new EvaluateBatchPredictions( 
-					dataset.getUrl(), 
+					dataset.getUrl() + "?session_hash=" + ash.getSessionHash(), 
 					estimationprocedure.getData_splits_url(), 
-					apiconnector.getOpenmlFileUrl( file_ids.get( "predictions" ) ).toString(), 
+					apiconnector.getOpenmlFileUrl( file_ids.get( "predictions" ), filename, ash.getSessionHash() ).toString(), 
 					source_data.getTarget_feature() );
 			}
 			runevaluation.addEvaluationMeasures( predictionEvaluator.getEvaluationScores() );

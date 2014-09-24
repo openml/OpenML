@@ -81,10 +81,10 @@ public class ProcessDataset {
 	
 	public void process( Integer did ) throws Exception {
 		JSONArray record = getRecord(did);
-		String didStr = record.getString( 1 );
+		String didStr = record.getString( 1 ) + "?session_hash=" + ash.getSessionHash();
 		// feature string should be reconverted to null, if it was NULL in mysql
 		String featureStr = record.getString( 2 ).equals("") ? null : record.getString( 2 );
-
+		
 		try {
 			ExtractFeatures extractFeatures = new ExtractFeatures(didStr, featureStr);
 	
