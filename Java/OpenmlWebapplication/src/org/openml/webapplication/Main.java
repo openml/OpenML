@@ -23,6 +23,8 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Options;
+import org.openml.apiconnector.io.ApiConnector;
+import org.openml.apiconnector.io.ApiSessionHash;
 import org.openml.apiconnector.settings.Config;
 import org.openml.webapplication.generatefolds.GenerateFolds;
 import org.openml.webapplication.io.Output;
@@ -32,6 +34,8 @@ public class Main {
 	public static final int FOLD_GENERATION_SEED = 0;
 	
 	public static void main( String[] args ) {
+		ApiConnector apiconnector;
+		ApiSessionHash ash;
 		CommandLineParser parser = new GnuParser();
 		Options options = new Options();
 		Integer id = null;
@@ -50,10 +54,18 @@ public class Main {
 		options.addOption("m", false, "Flag determining whether the output of the splits file should be presented as a md5 hash");
 		options.addOption("test", true, "A list of rowids for a holdout set (fold generation)" );
 		
-		CommandLine cli;
 		
 		try {
-			cli = parser.parse( options, args );
+			CommandLine cli  = parser.parse( options, args );
+			if( cli.hasOption("-config") == false ) {
+				config = new Config();
+			} else {
+				config = new Config( cli.getOptionValue("config") );
+			}
+			
+			apiconnector = new ApiConnector( config.getServer() );
+			ash = new ApiSessionHash( apiconnector );
+			ash.set( config.getUsername(), config.getPassword() );
 			
 			if( cli.hasOption("-id") ) {
 				id = Integer.parseInt( cli.getOptionValue("id") );
@@ -65,27 +77,16 @@ public class Main {
 				String function = cli.getOptionValue("f");
 				if( function.equals("evaluate_run") ) {
 					
-					if( cli.hasOption("-config") == false ) {
-						config = new Config();
-					} else {
-						config = new Config( cli.getOptionValue("config") );
-					}
+					
 					
 					// bootstrap evaluate run
-					new EvaluateRun(config, id);
+					new EvaluateRun(apiconnector, ash, id);
 					
 				} else if( function.equals("process_dataset") ) {
 					
-
-					
-					if( cli.hasOption("-config") == false ) {
-						config = new Config();
-					} else {
-						config = new Config( cli.getOptionValue("config") );
-					}
 					
 					// bootstrap process dataset
-					new ProcessDataset(config, id);
+					new ProcessDataset(apiconnector, ash, id);
 					
 				} else if( function.equals("generate_folds") ) {
 					
@@ -101,6 +102,7 @@ public class Main {
 						}
 						
 						GenerateFolds gf = new GenerateFolds(
+								apiconnector, ash, 
 								cli.getOptionValue("d"), 
 								cli.getOptionValue("e"), 
 								cli.getOptionValue("c"), 

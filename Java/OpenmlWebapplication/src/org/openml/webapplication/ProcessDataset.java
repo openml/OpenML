@@ -9,7 +9,6 @@ import org.json.JSONException;
 import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.io.ApiConnector;
 import org.openml.apiconnector.io.ApiSessionHash;
-import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.DataFeature;
 import org.openml.apiconnector.xml.DataFeature.Feature;
 import org.openml.apiconnector.xml.DataFeatureUpload;
@@ -26,15 +25,13 @@ public class ProcessDataset {
 	private final XStream xstream;
 	private final ApiSessionHash ash;
 	
-	public ProcessDataset( Config config ) throws Exception {
-		this( config, null );
+	public ProcessDataset( ApiConnector ac, ApiSessionHash ash ) throws Exception {
+		this( ac, ash, null );
 	}
 	
-	public ProcessDataset( Config config, Integer dataset_id ) throws Exception {
-
-		apiconnector = new ApiConnector( config.getServer() );
-		ash = new ApiSessionHash( apiconnector );
-		ash.set( config.getUsername(), config.getPassword() );
+	public ProcessDataset( ApiConnector ac, ApiSessionHash ash, Integer dataset_id ) throws Exception {
+		apiconnector = ac;
+		this.ash = ash;
 		xstream = XstreamXmlMapping.getInstance();
 		
 		if( dataset_id != null ) {

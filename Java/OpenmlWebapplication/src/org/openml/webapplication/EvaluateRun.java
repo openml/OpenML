@@ -11,7 +11,6 @@ import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.algorithms.TaskInformation;
 import org.openml.apiconnector.io.ApiConnector;
 import org.openml.apiconnector.io.ApiSessionHash;
-import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.DataSetDescription;
 import org.openml.apiconnector.xml.EvaluationScore;
 import org.openml.apiconnector.xml.Run;
@@ -28,20 +27,18 @@ import org.openml.webapplication.evaluate.PredictionEvaluator;
 import com.thoughtworks.xstream.XStream;
 
 public class EvaluateRun {
-	
-	private final ApiConnector apiconnector;
 	private final XStream xstream;
+	private final ApiConnector apiconnector;
 	private final ApiSessionHash ash;
 	private static final int INTERVAL_SIZE = 1000;
 	
-	public EvaluateRun( Config config ) throws Exception {
-		this( config, null );
+	public EvaluateRun( ApiConnector ac, ApiSessionHash ash ) throws Exception {
+		this( ac, ash, null );
 	}
 	
-	public EvaluateRun( Config config, Integer run_id ) throws Exception {
-		apiconnector = new ApiConnector( config.getServer() );
-		ash = new ApiSessionHash( apiconnector );
-		ash.set( config.getUsername(), config.getPassword() );
+	public EvaluateRun( ApiConnector ac, ApiSessionHash ash, Integer run_id ) throws Exception {
+		apiconnector = ac;
+		this.ash = ash;
 		xstream = XstreamXmlMapping.getInstance();
 		
 		if( run_id != null ) {
