@@ -1,6 +1,7 @@
 package org.openml.weka.experiment;
 
 import java.io.FileReader;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,6 +22,8 @@ import weka.core.UnsupportedAttributeTypeException;
 import weka.core.Utils;
 import weka.experiment.CrossValidationResultProducer;
 import weka.experiment.OutputZipper;
+import weka.filters.Filter;
+import weka.filters.unsupervised.attribute.Remove;
 
 public class TaskResultProducer extends CrossValidationResultProducer {
 
@@ -62,6 +65,15 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 		m_Instances = new Instances( new FileReader( dsd.getDataset() ) );
 		
 		InstancesHelper.setTargetAttribute(m_Instances, ds.getTarget_feature());
+		
+		// remove attributes that may not be used.
+		for( String ignoreAttr : dsd.getIgnore_attribute() ) {
+			Remove remove = new Remove();
+			remove.setAttributeIndices(""+(m_Instances.attribute(ignoreAttr).index()+1)); // 0-based / 1-based
+			remove.setInputFormat(m_Instances);
+			m_Instances = Filter.useFilter(m_Instances, remove);
+			
+		}
 		
 		m_Splits = new Instances( new FileReader( ep.getDataSplits() ) );
 		
