@@ -1,7 +1,6 @@
 package org.openml.weka.experiment;
 
 import java.io.FileReader;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,6 +8,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.algorithms.TaskInformation;
 import org.openml.apiconnector.io.ApiConnector;
+import org.openml.apiconnector.io.ApiSessionHash;
 import org.openml.apiconnector.models.Metric;
 import org.openml.apiconnector.models.MetricScore;
 import org.openml.apiconnector.xml.DataSetDescription;
@@ -49,10 +49,13 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 
 	protected ApiConnector apiconnector;
 	
-	public TaskResultProducer(ApiConnector apiconnector) {
+	protected ApiSessionHash ash;
+	
+	public TaskResultProducer(ApiConnector apiconnector, ApiSessionHash ash ) {
 		super();
 		this.m_SplitEvaluator = new TaskSplitEvaluator();
 		this.apiconnector = apiconnector;
+		this.ash = ash;
 	}
 
 	public void setTask(Task t) throws Exception {
@@ -62,17 +65,19 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 		Estimation_procedure ep = TaskInformation.getEstimationProcedure(m_Task);
 
 		DataSetDescription dsd = ds.getDataSetDescription(apiconnector);
-		m_Instances = new Instances( new FileReader( dsd.getDataset() ) );
+		m_Instances = new Instances( new FileReader( dsd.getDataset( ash ) ) );
 		
 		InstancesHelper.setTargetAttribute(m_Instances, ds.getTarget_feature());
 		
 		// remove attributes that may not be used.
-		for( String ignoreAttr : dsd.getIgnore_attribute() ) {
-			Remove remove = new Remove();
-			remove.setAttributeIndices(""+(m_Instances.attribute(ignoreAttr).index()+1)); // 0-based / 1-based
-			remove.setInputFormat(m_Instances);
-			m_Instances = Filter.useFilter(m_Instances, remove);
-			
+		if( dsd.getIgnore_attribute() != null ) {
+			for( String ignoreAttr : dsd.getIgnore_attribute() ) {
+				Remove remove = new Remove();
+				remove.setAttributeIndices(""+(m_Instances.attribute(ignoreAttr).index()+1)); // 0-based / 1-based
+				remove.setInputFormat(m_Instances);
+				m_Instances = Filter.useFilter(m_Instances, remove);
+				
+			}
 		}
 		
 		m_Splits = new Instances( new FileReader( ep.getDataSplits() ) );

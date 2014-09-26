@@ -60,27 +60,20 @@ public class TaskResultListener extends InstancesResultListener {
 	/** Credentials for sending results to server */
 	private ApiSessionHash ash;
 
-	/** boolean checking whether correct credentials have been stored */
-	private boolean credentials = false;
-
-	public TaskResultListener( ApiConnector apiconnector, SciMark benchmarker ) {
+	public TaskResultListener( ApiConnector apiconnector, ApiSessionHash ash, SciMark benchmarker ) {
 		super();
 		
 		this.benchmarker = benchmarker;
 		this.apiconnector = apiconnector;
+		this.ash = ash;
 		currentlyCollecting = new HashMap<String, OpenmlExecutedTask>();
 		tasksWithErrors = new ArrayList<String>();
 		ash = null;
 	}
 
-	public boolean acceptCredentials(String username, String password) {
-		ash = new ApiSessionHash( apiconnector );
-		credentials = ash.set(username, password);
-		return credentials;
-	}
-
-	public boolean gotCredentials() {
-		return credentials;
+	public boolean acceptCredentials( ApiSessionHash ash ) {
+		this.ash = ash;
+		return ash.checkCredentials();
 	}
 
 	public void acceptResultsForSending(Task t, Integer repeat, Integer fold, Integer sample,
@@ -201,7 +194,7 @@ public class TaskResultListener extends InstancesResultListener {
 		public OpenmlExecutedTask(Task t, Classifier classifier,
 				String error_message, String options, ApiConnector apiconnector ) throws Exception {
 			this.classifier = classifier;
-			classnames = TaskInformation.getClassNames(apiconnector, t);
+			classnames = TaskInformation.getClassNames(apiconnector, ash, t);
 			task_id = t.getTask_id();
 			
 			int repeats = 1;
@@ -212,7 +205,7 @@ public class TaskResultListener extends InstancesResultListener {
 			try {samples = TaskInformation.getNumberOfSamples(t);} catch( Exception e ){};
 			try {
 				DataSetDescription dsd = TaskInformation.getSourceData(t).getDataSetDescription( apiconnector );
-				inputData = new Instances( new FileReader( dsd.getDataset() ) );
+				inputData = new Instances( new FileReader( dsd.getDataset( ash ) ) );
 				inputData.setClass( inputData.attribute(TaskInformation.getSourceData(t).getTarget_feature()) );
 				inputDataSet = true;
 			} catch( Exception e ) {
@@ -224,7 +217,7 @@ public class TaskResultListener extends InstancesResultListener {
 			ArrayList<Attribute> attInfo = new ArrayList<Attribute>();
 			for (Feature f : TaskInformation.getPredictions(t).getFeatures()) {
 				if (f.getName().equals("confidence.classname")) {
-					for (String s : TaskInformation.getClassNames(apiconnector, t)) {
+					for (String s : TaskInformation.getClassNames(apiconnector, ash, t)) {
 						attInfo.add(new Attribute("confidence." + s));
 					}
 				} else if (f.getName().equals("prediction")) {

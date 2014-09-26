@@ -89,7 +89,6 @@ public class WekaAlgorithm {
 		
 		Implementation i = new Implementation( name, dependencies + "_" + version, description, language, dependencies );
 		
-		@SuppressWarnings("unchecked")
 		Enumeration<Option> parameters = ((OptionHandler) classifier).listOptions();
 		while( parameters.hasMoreElements() ) {
 			Option parameter = parameters.nextElement();
