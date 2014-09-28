@@ -3,7 +3,7 @@ package org.openml.tools.dataset;
 import java.io.File;
 
 import org.openml.apiconnector.algorithms.Conversion;
-import org.openml.apiconnector.io.ApiConnector;
+import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.io.ApiSessionHash;
 import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.DataSetDescription;
@@ -21,7 +21,7 @@ public class UploadDataset {
 	private static final ArffLoader loader = new ArffLoader();
 	private static final String directory = "/Users/jan/Desktop/test/";
 	
-	private final ApiConnector apiconnector;
+	private final OpenmlConnector apiconnector;
 	
 	public static void main( String[] args ) throws Exception {
 		
@@ -31,9 +31,9 @@ public class UploadDataset {
 	public UploadDataset( String directory ) throws Exception {
 		Config config = new Config();
 		if( config.getServer() != null ) {
-			apiconnector = new ApiConnector( config.getServer() );
+			apiconnector = new OpenmlConnector( config.getServer() );
 		} else { 
-			apiconnector = new ApiConnector();
+			apiconnector = new OpenmlConnector();
 		}
 		
 		ApiSessionHash ash = new ApiSessionHash( apiconnector );

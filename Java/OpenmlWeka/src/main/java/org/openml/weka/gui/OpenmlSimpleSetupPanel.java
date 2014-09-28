@@ -59,7 +59,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileFilter;
 
 import org.openml.apiconnector.algorithms.SciMark;
-import org.openml.apiconnector.io.ApiConnector;
+import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.io.ApiSessionHash;
 import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.settings.Constants;
@@ -242,7 +242,7 @@ public class OpenmlSimpleSetupPanel extends SimpleSetupPanel {
 	 */
 	protected PropertyChangeSupport m_Support = new PropertyChangeSupport(this);
 
-	protected ApiConnector apiconnector;
+	protected OpenmlConnector apiconnector;
 	
 	protected ApiSessionHash ash;
 	
@@ -268,15 +268,15 @@ public class OpenmlSimpleSetupPanel extends SimpleSetupPanel {
 		try {
 			openmlconfig = new Config();
 			if( openmlconfig.getServer() != null ) {
-				apiconnector = new ApiConnector( openmlconfig.getServer() );
+				apiconnector = new OpenmlConnector( openmlconfig.getServer() );
 				ash = new ApiSessionHash(apiconnector);
 				ash.set(openmlconfig.getUsername(), openmlconfig.getPassword());
 			} else { 
-				apiconnector = new ApiConnector();
+				apiconnector = new OpenmlConnector();
 				ash = new ApiSessionHash(apiconnector);
 			} 
 		} catch( RuntimeException e ) {
-			apiconnector = new ApiConnector();
+			apiconnector = new OpenmlConnector();
 			ash = new ApiSessionHash(apiconnector);
 		}
 		m_TaskListPanel = new TaskListPanel( apiconnector );

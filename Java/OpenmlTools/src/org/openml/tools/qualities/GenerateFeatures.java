@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import org.json.JSONException;
 import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.algorithms.QueryUtils;
-import org.openml.apiconnector.io.ApiConnector;
+import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.io.ApiSessionHash;
 import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.DataFeature;
@@ -26,14 +26,14 @@ public class GenerateFeatures {
 	private static Config config = new Config("username = janvanrijn@gmail.com; password = Feyenoord2002; server = http://openml.liacs.nl/");
 
 	public static void main( String[] args ) throws JSONException, IOException {
-		ApiConnector api = new ApiConnector( config.getServer() );
+		OpenmlConnector api = new OpenmlConnector( config.getServer() );
 		ApiSessionHash ash = new ApiSessionHash(api);
 		ash.set( config.getUsername(), config.getPassword() );
 		
 		process( api, ash, 274 );
 	}
 	
-	public static void process_all( ApiConnector api, ApiSessionHash ash ) throws JSONException, IOException {
+	public static void process_all( OpenmlConnector api, ApiSessionHash ash ) throws JSONException, IOException {
 		
 		String sql = "SELECT `did` FROM `dataset` WHERE `did` NOT IN (SELECT DISTINCT `did` FROM `data_feature`) LIMIT 0,10;";
 		
@@ -48,7 +48,7 @@ public class GenerateFeatures {
 		}
 	}
 	
-	public static void process( ApiConnector api, ApiSessionHash ash, Integer did ) {
+	public static void process( OpenmlConnector api, ApiSessionHash ash, Integer did ) {
 		try {
 			Conversion.log("OK", "Generate Features", "Generate Features for: " + did );
 			XStream xstream = XstreamXmlMapping.getInstance();

@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.openml.apiconnector.algorithms.QueryUtils;
-import org.openml.apiconnector.io.ApiConnector;
+import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.settings.Config;
 
 import weka.core.Attribute;
@@ -45,7 +45,7 @@ public class ShowMissingValues {
 	
 	public ShowMissingValues( String arfffile, ArrayList<String> attributenames ) throws Exception {
 		instances = new Instances( new BufferedReader( new FileReader( new File( arfffile ) ) ) );
-		ApiConnector api = new ApiConnector();
+		OpenmlConnector api = new OpenmlConnector();
 		Config c = new Config("username = janvanrijn@gmail.com; password = Feyenoord2002; server = http://openml.liacs.nl/");
 
 		Integer[] speedup = {1443,

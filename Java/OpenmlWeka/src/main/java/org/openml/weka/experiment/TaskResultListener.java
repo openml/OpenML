@@ -11,7 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.algorithms.SciMark;
 import org.openml.apiconnector.algorithms.TaskInformation;
-import org.openml.apiconnector.io.ApiConnector;
+import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.io.ApiException;
 import org.openml.apiconnector.io.ApiSessionHash;
 import org.openml.apiconnector.models.Metric;
@@ -55,12 +55,12 @@ public class TaskResultListener extends InstancesResultListener {
 	
 	private final SciMark benchmarker;
 
-	private final ApiConnector apiconnector;
+	private final OpenmlConnector apiconnector;
 	
 	/** Credentials for sending results to server */
 	private ApiSessionHash ash;
 
-	public TaskResultListener( ApiConnector apiconnector, ApiSessionHash ash, SciMark benchmarker ) {
+	public TaskResultListener( OpenmlConnector apiconnector, ApiSessionHash ash, SciMark benchmarker ) {
 		super();
 		
 		this.benchmarker = benchmarker;
@@ -192,7 +192,7 @@ public class TaskResultListener extends InstancesResultListener {
 		private Map<Metric,Double> userDefinedMeasuresTotals;
 
 		public OpenmlExecutedTask(Task t, Classifier classifier,
-				String error_message, String options, ApiConnector apiconnector ) throws Exception {
+				String error_message, String options, OpenmlConnector apiconnector ) throws Exception {
 			this.classifier = classifier;
 			classnames = TaskInformation.getClassNames(apiconnector, ash, t);
 			task_id = t.getTask_id();

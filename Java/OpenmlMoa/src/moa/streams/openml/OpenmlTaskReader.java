@@ -8,7 +8,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 
 import org.openml.apiconnector.algorithms.TaskInformation;
-import org.openml.apiconnector.io.ApiConnector;
+import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.DataSetDescription;
 import org.openml.apiconnector.xml.Task;
@@ -60,14 +60,14 @@ public class OpenmlTaskReader extends AbstractOptionHandler implements InstanceS
     
     protected Config config;
     
-    protected ApiConnector apiconnector;
+    protected OpenmlConnector apiconnector;
 
     public OpenmlTaskReader( int taskId ) {
     	config = new Config();
 		if( config.getServer() != null ) {
-			apiconnector = new ApiConnector( config.getServer() );
+			apiconnector = new OpenmlConnector( config.getServer() );
 		} else { 
-			apiconnector = new ApiConnector();
+			apiconnector = new OpenmlConnector();
 		}
 		
         this.openmlTaskIdOption.setValue(taskId);

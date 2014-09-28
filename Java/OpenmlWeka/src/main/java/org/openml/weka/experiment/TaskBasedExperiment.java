@@ -10,7 +10,7 @@ import javax.swing.DefaultListModel;
 
 import org.openml.apiconnector.algorithms.SciMark;
 import org.openml.apiconnector.algorithms.TaskInformation;
-import org.openml.apiconnector.io.ApiConnector;
+import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.io.ApiSessionHash;
 import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.DataSetDescription;
@@ -46,11 +46,11 @@ public class TaskBasedExperiment extends Experiment {
 	/** The task currently being used */
 	protected Task m_CurrentTask;
 	
-	protected final ApiConnector apiconnector;
+	protected final OpenmlConnector apiconnector;
 	
 	protected ApiSessionHash ash;
 
-	public TaskBasedExperiment(Experiment exp, ApiConnector apiconnector, ApiSessionHash ash) {
+	public TaskBasedExperiment(Experiment exp, OpenmlConnector apiconnector, ApiSessionHash ash) {
 		this.m_ResultListener = exp.getResultListener();
 		this.m_ResultProducer = exp.getResultProducer();
 		this.m_RunLower = exp.getRunLower();
@@ -293,11 +293,11 @@ public class TaskBasedExperiment extends Experiment {
 	public static void main(String[] args) {
 		try {
 			Config openmlconfig = new Config();
-			ApiConnector apiconnector;
+			OpenmlConnector apiconnector;
 			if( openmlconfig.getServer() != null ) {
-				apiconnector = new ApiConnector( openmlconfig.getServer() );
+				apiconnector = new OpenmlConnector( openmlconfig.getServer() );
 			} else { 
-				apiconnector = new ApiConnector();
+				apiconnector = new OpenmlConnector();
 			}
 			ApiSessionHash ash = new ApiSessionHash(apiconnector);
 			

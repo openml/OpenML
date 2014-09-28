@@ -5,7 +5,7 @@ import java.io.IOException;
 import org.json.JSONException;
 import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.algorithms.QueryUtils;
-import org.openml.apiconnector.io.ApiConnector;
+import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.DataSetDescription;
 import org.openml.webapplication.features.FantailConnector;
@@ -17,7 +17,7 @@ public class GenerateQualitiesInterval {
 		
 		Config config = new Config("username = janvanrijn@gmail.com; password = Feyenoord2002; server = http://localhost/openexpdb_v2/");
 		
-		ApiConnector api = new ApiConnector( config.getServer() );
+		OpenmlConnector api = new OpenmlConnector( config.getServer() );
 		
 		int interval_size = 1000;
 		String sql = "SELECT `did` FROM `dataset` WHERE `did` NOT IN (SELECT DISTINCT `data` FROM `data_quality_interval` WHERE `interval_end` - `interval_start` = "+interval_size+")";

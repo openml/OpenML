@@ -11,7 +11,7 @@ import org.openml.moa.ResultListener;
 import org.openml.moa.algorithm.InstancesHelper;
 import org.openml.apiconnector.models.Metric;
 import org.openml.apiconnector.models.MetricScore;
-import org.openml.apiconnector.io.ApiConnector;
+import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.io.ApiSessionHash;
 import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.Task;
@@ -66,7 +66,7 @@ public class OpenmlDataStreamClassification extends MainTask {
 	private InstanceStream stream;
 	private ResultListener resultListener;
 	private Config config;
-	private ApiConnector apiconnector;
+	private OpenmlConnector apiconnector;
 
 	@Override
 	public Class<?> getTaskResultType() {
@@ -82,9 +82,9 @@ public class OpenmlDataStreamClassification extends MainTask {
 		}
 		
 		if( config.getServer() != null ) {
-			apiconnector = new ApiConnector( config.getServer() );
+			apiconnector = new OpenmlConnector( config.getServer() );
 		} else { 
-			apiconnector = new ApiConnector();
+			apiconnector = new OpenmlConnector();
 		} 
 		
 		ApiSessionHash ash = new ApiSessionHash( apiconnector );

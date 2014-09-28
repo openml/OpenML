@@ -5,7 +5,7 @@ import java.io.File;
 import com.thoughtworks.xstream.XStream;
 
 import org.openml.apiconnector.algorithms.Conversion;
-import org.openml.apiconnector.io.ApiConnector;
+import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.io.ApiSessionHash;
 import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.DataSetDescription;
@@ -15,8 +15,8 @@ public class TransferDatasets {
 
 	private static final String FROM = "http://www.openml.org/";
 	
-	private final ApiConnector apiFrom;
-	private final ApiConnector apiTo;
+	private final OpenmlConnector apiFrom;
+	private final OpenmlConnector apiTo;
 	
 	public static void main( String[] args ) throws Exception {
 		new TransferDatasets();
@@ -26,11 +26,11 @@ public class TransferDatasets {
 		Config config = new Config();
 		
 		if( config.getServer() != null ) {
-			apiTo = new ApiConnector( config.getServer() );
+			apiTo = new OpenmlConnector( config.getServer() );
 		} else { 
-			apiTo = new ApiConnector();
+			apiTo = new OpenmlConnector();
 		}
-		apiFrom = new ApiConnector( FROM );
+		apiFrom = new OpenmlConnector( FROM );
 		
 		XStream xstream = XstreamXmlMapping.getInstance();
 		ApiSessionHash ash = new ApiSessionHash( apiTo );
@@ -41,7 +41,7 @@ public class TransferDatasets {
 		for( int i = 1; i <= 62; ++i ) {
 			try {
 				DataSetDescription dsd = apiFrom.openmlDataDescription( i );
-				File dataset = dsd.getDataset();
+				File dataset = dsd.getDataset( null );
 				dsd.unsetUrl();
 				String descriptionXML = xstream.toXML(dsd);
 				

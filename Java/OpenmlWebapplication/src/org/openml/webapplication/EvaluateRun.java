@@ -9,7 +9,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.algorithms.TaskInformation;
-import org.openml.apiconnector.io.ApiConnector;
+import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.io.ApiSessionHash;
 import org.openml.apiconnector.xml.DataSetDescription;
 import org.openml.apiconnector.xml.EvaluationScore;
@@ -28,15 +28,15 @@ import com.thoughtworks.xstream.XStream;
 
 public class EvaluateRun {
 	private final XStream xstream;
-	private final ApiConnector apiconnector;
+	private final OpenmlConnector apiconnector;
 	private final ApiSessionHash ash;
 	private static final int INTERVAL_SIZE = 1000;
 	
-	public EvaluateRun( ApiConnector ac, ApiSessionHash ash ) throws Exception {
+	public EvaluateRun( OpenmlConnector ac, ApiSessionHash ash ) throws Exception {
 		this( ac, ash, null );
 	}
 	
-	public EvaluateRun( ApiConnector ac, ApiSessionHash ash, Integer run_id ) throws Exception {
+	public EvaluateRun( OpenmlConnector ac, ApiSessionHash ash, Integer run_id ) throws Exception {
 		apiconnector = ac;
 		this.ash = ash;
 		xstream = XstreamXmlMapping.getInstance();
@@ -105,7 +105,7 @@ public class EvaluateRun {
 				return;
 			}
 			
-			String description = ApiConnector.getStringFromUrl( apiconnector.getOpenmlFileUrl( file_ids.get( "description" ), "Run_" + run_id + "_description.xml", ash.getSessionHash() ).toString() );
+			String description = OpenmlConnector.getStringFromUrl( apiconnector.getOpenmlFileUrl( file_ids.get( "description" ), "Run_" + run_id + "_description.xml", ash.getSessionHash() ).toString() );
 			Run run_description = (Run) xstream.fromXML( description );
 			
 			Conversion.log( "OK", "Process Run", "Start prediction evaluator. " );

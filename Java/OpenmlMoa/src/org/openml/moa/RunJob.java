@@ -1,6 +1,6 @@
 package org.openml.moa;
 
-import org.openml.apiconnector.io.ApiConnector;
+import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.io.ApiSessionHash;
 import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.Job;
@@ -10,7 +10,7 @@ import moa.DoTask;
 
 public class RunJob {
 	
-	private static ApiConnector apiconnector;
+	private static OpenmlConnector apiconnector;
 	
 	public static void main( String[] args ) throws Exception {
 		
@@ -19,9 +19,9 @@ public class RunJob {
 		Config c = new Config();
 		
 		if( c.getServer() != null ) {
-			apiconnector = new ApiConnector( c.getServer() );
+			apiconnector = new OpenmlConnector( c.getServer() );
 		} else { 
-			apiconnector = new ApiConnector();
+			apiconnector = new OpenmlConnector();
 		}
 		
 		ApiSessionHash ash = new ApiSessionHash(apiconnector);

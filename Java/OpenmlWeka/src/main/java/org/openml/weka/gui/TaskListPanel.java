@@ -12,7 +12,7 @@ import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
 
 import org.openml.apiconnector.algorithms.Conversion;
-import org.openml.apiconnector.io.ApiConnector;
+import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.xml.Task;
 import org.openml.weka.experiment.TaskBasedExperiment;
 
@@ -35,9 +35,9 @@ public class TaskListPanel extends DatasetListPanel {
 
 	private boolean datasetBased = true;
 	
-	private ApiConnector apiconnector;
+	private OpenmlConnector apiconnector;
 
-	public TaskListPanel( ApiConnector ac) {
+	public TaskListPanel( OpenmlConnector ac) {
 		super();
 		this.apiconnector = ac;
 	}

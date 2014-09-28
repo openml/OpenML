@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import org.openml.apiconnector.algorithms.TaskInformation;
-import org.openml.apiconnector.io.ApiConnector;
+import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.io.ApiException;
 import org.openml.apiconnector.xml.DataSetDescription;
 import org.openml.apiconnector.xml.Task;
@@ -22,7 +22,7 @@ public class SplitsTester {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void testLearningCurves() {
-		ApiConnector apiconnector = new ApiConnector();
+		OpenmlConnector apiconnector = new OpenmlConnector();
 		for( int i = 1; i <= 10; ++i ) {
 			try {
 				Task t = apiconnector.openmlTaskSearch( i );

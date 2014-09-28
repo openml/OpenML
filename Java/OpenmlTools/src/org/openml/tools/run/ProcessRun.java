@@ -1,7 +1,7 @@
 package org.openml.tools.run;
 
 import org.openml.apiconnector.algorithms.QueryUtils;
-import org.openml.apiconnector.io.ApiConnector;
+import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.settings.Config;
 
 public class ProcessRun {
@@ -11,7 +11,7 @@ public class ProcessRun {
 	
 	public static void main( String[] args ) {
 		
-		ApiConnector api = new ApiConnector( config.getServer() );
+		OpenmlConnector api = new OpenmlConnector( config.getServer() );
 		
 		for( int i = 0; i < 2; ++i ) {
 			try {

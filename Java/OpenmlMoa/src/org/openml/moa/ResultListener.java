@@ -13,7 +13,7 @@ import java.util.Map;
 import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.algorithms.MathHelper;
 import org.openml.apiconnector.algorithms.TaskInformation;
-import org.openml.apiconnector.io.ApiConnector;
+import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.io.ApiSessionHash;
 import org.openml.apiconnector.models.Metric;
 import org.openml.apiconnector.models.MetricScore;
@@ -39,7 +39,7 @@ public class ResultListener {
 	private final DecimalFormat df; 
 
 	private final ApiSessionHash ash;
-	private final ApiConnector apiconnector;
+	private final OpenmlConnector apiconnector;
 	
 	private int att_index_row_id = -1;
 	private int att_index_confidence = -1;
@@ -47,7 +47,7 @@ public class ResultListener {
 	private int att_index_correct = -1;
 	private ArrayList<String> classes = new ArrayList<String>();
 	
-	public ResultListener( Task task, ApiConnector apiconnector, ApiSessionHash ash ) throws Exception {
+	public ResultListener( Task task, OpenmlConnector apiconnector, ApiSessionHash ash ) throws Exception {
 		this.ash = ash;
 		this.task = task;
 		this.apiconnector = apiconnector;

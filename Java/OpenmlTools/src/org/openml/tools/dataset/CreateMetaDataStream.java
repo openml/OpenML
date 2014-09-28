@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.algorithms.QueryUtils;
-import org.openml.apiconnector.io.ApiConnector;
+import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.DataQuality;
 import org.openml.apiconnector.xml.DataQuality.Quality;
@@ -22,7 +22,7 @@ import weka.filters.unsupervised.attribute.RemoveUseless;
 
 public class CreateMetaDataStream {
 	private static Config config = new Config();
-	private static ApiConnector apiconnector;
+	private static OpenmlConnector apiconnector;
 	private static Boolean TEST_MODE = false;
 	private static int INTERVALS_PER_DOWNLOAD = 100;
 
@@ -37,9 +37,9 @@ public class CreateMetaDataStream {
 				127, 2159, 2156, 2157, 2154, 122 };
 
 		if (config.getServer() != null) {
-			apiconnector = new ApiConnector(config.getServer());
+			apiconnector = new OpenmlConnector(config.getServer());
 		} else {
-			apiconnector = new ApiConnector();
+			apiconnector = new OpenmlConnector();
 		}
 
 		new CreateMetaDataStream(task_ids, "meta_stream", 1000);

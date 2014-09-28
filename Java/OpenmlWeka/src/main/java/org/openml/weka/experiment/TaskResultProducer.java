@@ -7,7 +7,7 @@ import java.util.Map;
 import org.apache.commons.lang3.ArrayUtils;
 import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.algorithms.TaskInformation;
-import org.openml.apiconnector.io.ApiConnector;
+import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.io.ApiSessionHash;
 import org.openml.apiconnector.models.Metric;
 import org.openml.apiconnector.models.MetricScore;
@@ -47,11 +47,11 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 	/** Current task information string **/
 	protected String currentTaskRepresentation = "";
 
-	protected ApiConnector apiconnector;
+	protected OpenmlConnector apiconnector;
 	
 	protected ApiSessionHash ash;
 	
-	public TaskResultProducer(ApiConnector apiconnector, ApiSessionHash ash ) {
+	public TaskResultProducer(OpenmlConnector apiconnector, ApiSessionHash ash ) {
 		super();
 		this.m_SplitEvaluator = new TaskSplitEvaluator();
 		this.apiconnector = apiconnector;

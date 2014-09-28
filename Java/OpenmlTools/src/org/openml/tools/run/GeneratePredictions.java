@@ -13,7 +13,7 @@ import java.util.Arrays;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.openml.apiconnector.algorithms.TaskInformation;
-import org.openml.apiconnector.io.ApiConnector;
+import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.Task;
 
@@ -44,7 +44,7 @@ public class GeneratePredictions {
 	
 	private final ArrayList<Integer>[][][] sets;
 	
-	private final ApiConnector apiconnector;
+	private final OpenmlConnector apiconnector;
 	
 	public static void main( String[] args ) throws Exception {
 		new GeneratePredictions( 1 );
@@ -54,9 +54,9 @@ public class GeneratePredictions {
 	public GeneratePredictions( Integer task_id ) throws Exception {
 		Config config = new Config();
 		if( config.getServer() != null ) {
-			apiconnector = new ApiConnector( config.getServer() );
+			apiconnector = new OpenmlConnector( config.getServer() );
 		} else { 
-			apiconnector = new ApiConnector();
+			apiconnector = new OpenmlConnector();
 		} 
 		
 		Task t = apiconnector.openmlTaskSearch( task_id );

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.openml.apiconnector.algorithms.Conversion;
-import org.openml.apiconnector.io.ApiConnector;
+import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.DataQuality;
 import org.openml.apiconnector.xml.DataQuality.Quality;
@@ -21,7 +21,7 @@ import weka.filters.unsupervised.attribute.RemoveUseless;
 
 public class CreateMetaDataset {
 	private static Config config = new Config();
-	private static ApiConnector apiconnector;
+	private static OpenmlConnector apiconnector;
 	
 	private Map<String, MetaDataStreamInstance> instances;
 	private Map<String, Integer> allQualities = new HashMap<String, Integer>();
@@ -44,9 +44,9 @@ public class CreateMetaDataset {
 				2269 };
 		
 		if( config.getServer() != null ) {
-			apiconnector = new ApiConnector( config.getServer() );
+			apiconnector = new OpenmlConnector( config.getServer() );
 		} else {
-			apiconnector = new ApiConnector();
+			apiconnector = new OpenmlConnector();
 		}
 		
 		new CreateMetaDataset( task_ids, "meta_all2", 1000 );
