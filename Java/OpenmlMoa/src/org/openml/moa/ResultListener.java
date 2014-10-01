@@ -113,12 +113,12 @@ public class ResultListener {
 		ArrayList<Attribute> header = new ArrayList<Attribute>();
 		Feature[] features = TaskInformation.getPredictions(t).getFeatures();
 		// TODO: FIXME?!
-		classes = new ArrayList<String>( Arrays.asList( TaskInformation.getClassNames(apiconnector,t) ) );
+		classes = new ArrayList<String>( Arrays.asList( TaskInformation.getClassNames(apiconnector,ash,t) ) );
 		for( int i = 0; i < features.length; i++ ) {
 			Feature f = features[i];
 			if( f.getName().equals("confidence.classname") ) {
 				att_index_confidence = i;
-				for (String s : TaskInformation.getClassNames(apiconnector,t)) {
+				for (String s : TaskInformation.getClassNames(apiconnector,ash,t)) {
 					header.add(new Attribute("confidence." + s));
 				}
 			} else if (f.getName().equals("prediction")) {
