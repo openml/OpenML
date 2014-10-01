@@ -176,6 +176,7 @@ public class TaskResultListener extends InstancesResultListener {
 
 	private class OpenmlExecutedTask {
 		private int task_id;
+		private Task task;
 		private Classifier classifier;
 		private Instances predictions;
 		private Instances inputData;
@@ -185,6 +186,9 @@ public class TaskResultListener extends InstancesResultListener {
 		private String[] classnames;
 		private Run run;
 		private int implementation_id;
+		
+		private int repeats;
+		private int samples;
 		
 		private File serializedClassifier = null;
 		private File humanReadableClassifier = null;
@@ -197,9 +201,10 @@ public class TaskResultListener extends InstancesResultListener {
 			classnames = TaskInformation.getClassNames(apiconnector, ash, t);
 			task_id = t.getTask_id();
 			
-			int repeats = 1;
+			this.task = t;
+			repeats = 1;
 			int folds = 1;
-			int samples = 1;
+			samples = 1;
 			try {repeats = TaskInformation.getNumberOfRepeats(t);} catch( Exception e ){};
 			try {folds = TaskInformation.getNumberOfFolds(t);} catch( Exception e ){};
 			try {samples = TaskInformation.getNumberOfSamples(t);} catch( Exception e ){};
@@ -282,24 +287,24 @@ public class TaskResultListener extends InstancesResultListener {
 			}
 		}
 		
-		public void addUserDefinedMeasures(Integer fold, Integer repeat, Integer sample, Map<Metric, MetricScore> userMeasures) {
+		public void addUserDefinedMeasures(Integer fold, Integer repeat, Integer sample, Map<Metric, MetricScore> userMeasures) throws Exception {
 			// attach fold/sample specific user measures to run
 			for( Metric m : userMeasures.keySet() ) {
-				Double score = userMeasures.get(m).getScore();
-				getRun().addOutputEvaluation(m.name, repeat, fold, sample, m.implementation, score );
+				MetricScore score = userMeasures.get(m);
 				
+				getRun().addOutputEvaluation(m.name, repeat, fold, sample, m.implementation, score.getScore() );
+				System.out.println(m.implementation);
 				if(userDefinedMeasuresTotals.containsKey(m) == false) {
-					userDefinedMeasuresTotals.put(m, score);
+					userDefinedMeasuresTotals.put(m, getNormalizedScore( score ) );
 				} else {
-					userDefinedMeasuresTotals.put(m, userDefinedMeasuresTotals.get(m) + score);
+					userDefinedMeasuresTotals.put(m, userDefinedMeasuresTotals.get(m) + getNormalizedScore(score) );
 				}
 			}
 		}
 		
 		public void prepareForSending() {
-			// calculate "global" (opposed to fold specific) user defined evaluation measures
 			for( Metric m : userDefinedMeasuresTotals.keySet() ) {
-				run.addOutputEvaluation(m.name, m.implementation, userDefinedMeasuresTotals.get(m) / nrOfResultBatches, null);
+				run.addOutputEvaluation(m.name, m.implementation, userDefinedMeasuresTotals.get(m), null);
 			}
 			if( inputDataSet ) {
 				// build model for entire data set. This can take some time
@@ -326,6 +331,21 @@ public class TaskResultListener extends InstancesResultListener {
 
 		public boolean complete() {
 			return nrOfResultBatches == nrOfExpectedResultBatches;
+		}
+		
+		private Double getNormalizedScore( MetricScore m ) throws Exception {
+			Double score = m.getScore();
+			String type = TaskInformation.getEstimationProcedure(task).getType();
+			if( type.equals("crossvalidation") ) {
+				// whenever we work with folds, always calculate global measures 
+				// normalized to subsample size
+				score *= ((double) m.getNrOfInstances()) / inputData.size();
+				score /= (repeats * samples);
+				System.out.println(score);
+			} else {
+				score /= nrOfExpectedResultBatches;
+			}
+			return score;
 		}
 	}
 }
