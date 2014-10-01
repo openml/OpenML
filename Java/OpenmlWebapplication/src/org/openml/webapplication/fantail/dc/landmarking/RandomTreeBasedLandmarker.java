@@ -45,8 +45,8 @@ public class RandomTreeBasedLandmarker extends Characterizer implements
 	}
 
 	protected final String[] ids = new String[] {
-			"RandomTreeDepth1AUC_K=" + m_K, "RandomTreeDepth2AUC_K=" + m_K,
-			"RandomTreeDepth3AUC_K=" + m_K };
+			"RandomTreeDepth1AUC_K_" + m_K, "RandomTreeDepth2AUC_K_" + m_K,
+			"RandomTreeDepth3AUC_K_" + m_K };
 
 	public String[] getIDs() {
 		return ids;
