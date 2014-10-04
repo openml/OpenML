@@ -107,7 +107,6 @@ public class ProcessDataset {
 		} catch (OutOfMemoryError oome) {
 		    // move on
 			DataFeature datafeature = new DataFeature(did, oome.getMessage() );
-			System.out.println(xstream.toXML( datafeature ));
 			File dataFeatureFile = Conversion.stringToTempFile( xstream.toXML( datafeature ), "features-error-did" + did, "xml");
 			DataFeatureUpload dfu = apiconnector.openmlDataFeatureUpload( dataFeatureFile, ash.getSessionHash() );
 			Conversion.log( "Error", "Process Dataset", "Dataset " + dfu.getDid() + " - Error: " + oome.getMessage() );
