@@ -23,9 +23,10 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Options;
-import org.openml.apiconnector.io.ApiConnector;
+import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.io.ApiSessionHash;
 import org.openml.apiconnector.settings.Config;
+import org.openml.apiconnector.settings.Settings;
 import org.openml.webapplication.generatefolds.GenerateFolds;
 import org.openml.webapplication.io.Output;
 
@@ -34,7 +35,7 @@ public class Main {
 	public static final int FOLD_GENERATION_SEED = 0;
 	
 	public static void main( String[] args ) {
-		ApiConnector apiconnector;
+		OpenmlConnector apiconnector;
 		ApiSessionHash ash;
 		CommandLineParser parser = new GnuParser();
 		Options options = new Options();
@@ -63,7 +64,7 @@ public class Main {
 				config = new Config( cli.getOptionValue("config") );
 			}
 			
-			apiconnector = new ApiConnector( config.getServer() );
+			apiconnector = new OpenmlConnector( config.getServer() );
 			ash = new ApiSessionHash( apiconnector );
 			ash.set( config.getUsername(), config.getPassword() );
 			
@@ -100,7 +101,9 @@ public class Main {
 								testset[i] = Integer.parseInt( rowids[i] );
 							}
 						}
-						
+						// TODO: separate "real" output from debug. For now, 
+						// just put this thing off manually.
+						Settings.API_VERBOSE_LEVEL = 0;
 						GenerateFolds gf = new GenerateFolds(
 								apiconnector, ash, 
 								cli.getOptionValue("d"), 

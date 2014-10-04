@@ -11,7 +11,7 @@ import org.openml.moa.ResultListener;
 import org.openml.moa.algorithm.InstancesHelper;
 import org.openml.apiconnector.models.Metric;
 import org.openml.apiconnector.models.MetricScore;
-import org.openml.apiconnector.io.ApiConnector;
+import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.io.ApiSessionHash;
 import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.Task;
@@ -66,7 +66,7 @@ public class OpenmlDataStreamClassification extends MainTask {
 	private InstanceStream stream;
 	private ResultListener resultListener;
 	private Config config;
-	private ApiConnector apiconnector;
+	private OpenmlConnector apiconnector;
 
 	@Override
 	public Class<?> getTaskResultType() {
@@ -82,9 +82,9 @@ public class OpenmlDataStreamClassification extends MainTask {
 		}
 		
 		if( config.getServer() != null ) {
-			apiconnector = new ApiConnector( config.getServer() );
+			apiconnector = new OpenmlConnector( config.getServer() );
 		} else { 
-			apiconnector = new ApiConnector();
+			apiconnector = new OpenmlConnector();
 		} 
 		
 		ApiSessionHash ash = new ApiSessionHash( apiconnector );
@@ -98,7 +98,7 @@ public class OpenmlDataStreamClassification extends MainTask {
 		String streamString = "OpenmlTaskReader -t "+openmlTaskIdOption.getValue();
 
 		Classifier learner = (Classifier) getPreparedClassOption(this.learnerOption);
-		stream = new OpenmlTaskReader( openmlTaskIdOption.getValue() );
+		stream = new OpenmlTaskReader( openmlTaskIdOption.getValue(), ash );
 		Task task = ((OpenmlTaskReader)stream).getTask();
 		
 		try {
@@ -208,14 +208,14 @@ public class OpenmlDataStreamClassification extends MainTask {
 		}
 		
 		Map<Metric, MetricScore> m = new HashMap<Metric, MetricScore>();
-		m.put( new Metric("ram_hours", "openml.userdefined.ram_hours(1.0)"), new MetricScore(RAMHours));
+		m.put( new Metric("ram_hours", "openml.userdefined.ram_hours(1.0)"), new MetricScore(RAMHours, instancesProcessed) );
 		m.put( new Metric("run_cpu_time", "openml.evaluation.run_cpu_time(1.0)"), 
-			new MetricScore( TimingUtils.nanoTimeToSeconds(evaluateEndTime - evaluateStartTime) ) );
+			new MetricScore( TimingUtils.nanoTimeToSeconds(evaluateEndTime - evaluateStartTime), instancesProcessed ) );
 		// TODO! Keys "Kappa Statistic (percent)" and "classifications correct (percent)" are dangerous to use in this way. 
 		m.put( new Metric("predictive_accuracy", "openml.evaluation.predictive_accuracy(1.0)"), 
-			new MetricScore( evaluatorResults.get("classifications correct (percent)") / 100 ) ); // division 100 for percentages to pred_acc
+			new MetricScore( evaluatorResults.get("classifications correct (percent)") / 100, instancesProcessed ) ); // division 100 for percentages to pred_acc
 		m.put( new Metric("kappa", "openml.evaluation.kappa(1.0)"), 
-			new MetricScore( ( evaluatorResults.get("Kappa Statistic (percent)") / 100 ) ) ); // division 100 for percentages to pred_acc
+			new MetricScore( ( evaluatorResults.get("Kappa Statistic (percent)") / 100 ), instancesProcessed ) ); // division 100 for percentages to pred_acc
 
 		try { 
 			resultListener.sendToOpenML( learner, m ); 

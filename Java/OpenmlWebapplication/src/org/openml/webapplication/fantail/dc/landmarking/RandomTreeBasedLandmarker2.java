@@ -37,12 +37,12 @@ public class RandomTreeBasedLandmarker2 extends Characterizer implements
 	private int m_K = 1;
 
 	protected final String[] ids = new String[] {
-			"RandomTreeDepth1ErrRate_K=" + m_K,
-			"RandomTreeDepth1Kappa_K=" + m_K,
-			"RandomTreeDepth2ErrRate_K=" + m_K,
-			"RandomTreeDepth2Kappa_K=" + m_K,
-			"RandomTreeDepth3ErrRate_K=" + m_K,
-			"RandomTreeDepth3Kappa_K=" + m_K };
+			"RandomTreeDepth1ErrRate_K_" + m_K,
+			"RandomTreeDepth1Kappa_K_" + m_K,
+			"RandomTreeDepth2ErrRate_K_" + m_K,
+			"RandomTreeDepth2Kappa_K_" + m_K,
+			"RandomTreeDepth3ErrRate_K_" + m_K,
+			"RandomTreeDepth3Kappa_K_" + m_K };
 
 	public String[] getIDs() {
 		return ids;

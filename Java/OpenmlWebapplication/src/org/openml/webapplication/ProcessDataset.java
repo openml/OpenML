@@ -7,7 +7,7 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.openml.apiconnector.algorithms.Conversion;
-import org.openml.apiconnector.io.ApiConnector;
+import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.io.ApiSessionHash;
 import org.openml.apiconnector.xml.DataFeature;
 import org.openml.apiconnector.xml.DataFeature.Feature;
@@ -21,15 +21,15 @@ import com.thoughtworks.xstream.XStream;
 
 public class ProcessDataset {
 
-	private final ApiConnector apiconnector;
+	private final OpenmlConnector apiconnector;
 	private final XStream xstream;
 	private final ApiSessionHash ash;
 	
-	public ProcessDataset( ApiConnector ac, ApiSessionHash ash ) throws Exception {
+	public ProcessDataset( OpenmlConnector ac, ApiSessionHash ash ) throws Exception {
 		this( ac, ash, null );
 	}
 	
-	public ProcessDataset( ApiConnector ac, ApiSessionHash ash, Integer dataset_id ) throws Exception {
+	public ProcessDataset( OpenmlConnector ac, ApiSessionHash ash, Integer dataset_id ) throws Exception {
 		apiconnector = ac;
 		this.ash = ash;
 		xstream = XstreamXmlMapping.getInstance();

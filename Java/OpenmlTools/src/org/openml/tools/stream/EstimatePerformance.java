@@ -6,13 +6,13 @@ import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.openml.apiconnector.io.ApiConnector;
+import org.openml.apiconnector.io.OpenmlConnector;
 
 public class EstimatePerformance {
 
 	
 	public static void main( String args[] ) throws JSONException, IOException {
-		ApiConnector api = new ApiConnector();
+		OpenmlConnector api = new OpenmlConnector();
 		Map<Integer, ScoreObject> scores = new HashMap<Integer, ScoreObject>();
 		
 		String classifier = "moa.HoeffdingTree(1)";

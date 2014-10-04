@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.openml.apiconnector.algorithms.Conversion;
-import org.openml.apiconnector.io.ApiConnector;
+import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.io.ApiSessionHash;
 import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.DataQuality;
@@ -78,12 +78,12 @@ public class FantailConnector {
 		streamCharacterizers[0] = new ChangeDetectors( interval_size );
 		
 		//List<String> prevCalcQualities;
-		ApiConnector apiconnector;
+		OpenmlConnector apiconnector;
 		
 		if( config.getServer() != null ) {
-			apiconnector = new ApiConnector( config.getServer() );
+			apiconnector = new OpenmlConnector( config.getServer() );
 		} else { 
-			apiconnector = new ApiConnector();
+			apiconnector = new OpenmlConnector();
 		} 
 		
 		DataSetDescription dsd = apiconnector.openmlDataDescription(did);

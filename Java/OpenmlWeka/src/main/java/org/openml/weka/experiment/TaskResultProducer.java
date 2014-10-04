@@ -1,14 +1,14 @@
 package org.openml.weka.experiment;
 
 import java.io.FileReader;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.algorithms.TaskInformation;
-import org.openml.apiconnector.io.ApiConnector;
+import org.openml.apiconnector.io.OpenmlConnector;
+import org.openml.apiconnector.io.ApiSessionHash;
 import org.openml.apiconnector.models.Metric;
 import org.openml.apiconnector.models.MetricScore;
 import org.openml.apiconnector.xml.DataSetDescription;
@@ -47,12 +47,15 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 	/** Current task information string **/
 	protected String currentTaskRepresentation = "";
 
-	protected ApiConnector apiconnector;
+	protected OpenmlConnector apiconnector;
 	
-	public TaskResultProducer(ApiConnector apiconnector) {
+	protected ApiSessionHash ash;
+	
+	public TaskResultProducer(OpenmlConnector apiconnector, ApiSessionHash ash ) {
 		super();
 		this.m_SplitEvaluator = new TaskSplitEvaluator();
 		this.apiconnector = apiconnector;
+		this.ash = ash;
 	}
 
 	public void setTask(Task t) throws Exception {
@@ -62,17 +65,19 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 		Estimation_procedure ep = TaskInformation.getEstimationProcedure(m_Task);
 
 		DataSetDescription dsd = ds.getDataSetDescription(apiconnector);
-		m_Instances = new Instances( new FileReader( dsd.getDataset() ) );
+		m_Instances = new Instances( new FileReader( dsd.getDataset( ash ) ) );
 		
 		InstancesHelper.setTargetAttribute(m_Instances, ds.getTarget_feature());
 		
 		// remove attributes that may not be used.
-		for( String ignoreAttr : dsd.getIgnore_attribute() ) {
-			Remove remove = new Remove();
-			remove.setAttributeIndices(""+(m_Instances.attribute(ignoreAttr).index()+1)); // 0-based / 1-based
-			remove.setInputFormat(m_Instances);
-			m_Instances = Filter.useFilter(m_Instances, remove);
-			
+		if( dsd.getIgnore_attribute() != null ) {
+			for( String ignoreAttr : dsd.getIgnore_attribute() ) {
+				Remove remove = new Remove();
+				remove.setAttributeIndices(""+(m_Instances.attribute(ignoreAttr).index()+1)); // 0-based / 1-based
+				remove.setInputFormat(m_Instances);
+				m_Instances = Filter.useFilter(m_Instances, remove);
+				
+			}
 		}
 		
 		m_Splits = new Instances( new FileReader( ep.getDataSplits() ) );
@@ -231,16 +236,16 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 						
 						userMeasures.put( 
 							new Metric("build_cpu_time", "openml.evaluation.build_cpu_time(1.0)"), 
-							new MetricScore( (Double) splitEvaluatorResults.get("Elapsed_Time_training") ) );
+							new MetricScore( (Double) splitEvaluatorResults.get("Elapsed_Time_training"), testSets[fold][sample].size() ) );
 						userMeasures.put( 
 							new Metric("build_memory", "openml.evaluation.build_memory(1.0)"), 
-							new MetricScore( (double) (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) ) );
+							new MetricScore( (double) Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory(), testSets[fold][sample].size() ) );
 						userMeasures.put(
 							new Metric("predictive_accuracy", "openml.evaluation.predictive_accuracy(1.0)"), 
-							new MetricScore( ( (Double) splitEvaluatorResults.get("Percent_correct")) / 100 ) ); // division 100 for percentages to pred_acc
+							new MetricScore( (Double) splitEvaluatorResults.get("Percent_correct") / 100, testSets[fold][sample].size() ) ); // division 100 for percentages to pred_acc
 						userMeasures.put(
 							new Metric("kappa", "openml.evaluation.kappa(1.0)"), 
-							new MetricScore( ( (Double) splitEvaluatorResults.get("Kappa_statistic")) ) );
+							new MetricScore( (Double) splitEvaluatorResults.get("Kappa_statistic"), testSets[fold][sample].size() ) );
 						
 						if (m_ResultListener instanceof TaskResultListener) {
 							// TODO: key[7] can be unstable. Make this more stable. 

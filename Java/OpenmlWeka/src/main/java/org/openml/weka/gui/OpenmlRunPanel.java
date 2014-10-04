@@ -382,7 +382,7 @@ public class OpenmlRunPanel extends JPanel implements ActionListener {
 	protected boolean canStartExperiment() {
 		if(m_Exp.getResultListener() instanceof TaskResultListener) {
 			if(m_Exp.getResultListener() instanceof TaskResultListener) {
-				if(((TaskResultListener)m_Exp.getResultListener()).gotCredentials() == false) {
+				if(((TaskBasedExperiment)m_Exp).checkCredentials() == false) {
 					JOptionPane.showMessageDialog(null,"Please login first (setup tab), in order to send the results to OpenML.org.","Login error",JOptionPane.ERROR_MESSAGE);
 		      		return false;
 				}

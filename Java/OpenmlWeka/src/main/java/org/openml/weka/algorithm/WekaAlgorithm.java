@@ -15,7 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.algorithms.OptionParser;
 import org.openml.apiconnector.algorithms.ParameterType;
-import org.openml.apiconnector.io.ApiConnector;
+import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.xml.Implementation;
 import org.openml.apiconnector.xml.ImplementationExists;
 import org.openml.apiconnector.xml.UploadImplementation;
@@ -52,7 +52,7 @@ public class WekaAlgorithm {
 		return version;
 	}
 	
-	public static int getImplementationId( Implementation implementation, Classifier classifier, ApiConnector apiconnector, String hash ) throws Exception {
+	public static int getImplementationId( Implementation implementation, Classifier classifier, OpenmlConnector apiconnector, String hash ) throws Exception {
 		try {
 			// First ask OpenML whether this implementation already exists
 			ImplementationExists result = apiconnector.openmlImplementationExists( implementation.getName(), implementation.getExternal_version() );
@@ -89,7 +89,6 @@ public class WekaAlgorithm {
 		
 		Implementation i = new Implementation( name, dependencies + "_" + version, description, language, dependencies );
 		
-		@SuppressWarnings("unchecked")
 		Enumeration<Option> parameters = ((OptionHandler) classifier).listOptions();
 		while( parameters.hasMoreElements() ) {
 			Option parameter = parameters.nextElement();

@@ -8,7 +8,8 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 
 import org.openml.apiconnector.algorithms.TaskInformation;
-import org.openml.apiconnector.io.ApiConnector;
+import org.openml.apiconnector.io.ApiSessionHash;
+import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.DataSetDescription;
 import org.openml.apiconnector.xml.Task;
@@ -60,17 +61,21 @@ public class OpenmlTaskReader extends AbstractOptionHandler implements InstanceS
     
     protected Config config;
     
-    protected ApiConnector apiconnector;
+    protected OpenmlConnector apiconnector;
+    protected ApiSessionHash openmlSessionHash;
 
-    public OpenmlTaskReader( int taskId ) {
+    public OpenmlTaskReader( int taskId, ApiSessionHash openmlSessionHash ) {
     	config = new Config();
 		if( config.getServer() != null ) {
-			apiconnector = new ApiConnector( config.getServer() );
+			apiconnector = new OpenmlConnector( config.getServer() );
 		} else { 
-			apiconnector = new ApiConnector();
+			apiconnector = new OpenmlConnector();
 		}
 		
         this.openmlTaskIdOption.setValue(taskId);
+        this.openmlSessionHash = openmlSessionHash;
+        openmlSessionHash.set(config.getUsername(), config.getPassword());
+        
         restart();
     }
 
@@ -127,7 +132,7 @@ public class OpenmlTaskReader extends AbstractOptionHandler implements InstanceS
             DataSetDescription dsd = TaskInformation.getSourceData(this.openmlTask).getDataSetDescription( apiconnector );
             String classname = TaskInformation.getSourceData(this.openmlTask).getTarget_feature();
             
-            InputStream fileStream = new FileInputStream( dsd.getDataset() );
+            InputStream fileStream = new FileInputStream( dsd.getDataset( openmlSessionHash ) );
             this.fileProgressMonitor = new InputStreamProgressMonitor(
                     fileStream);
             this.fileReader = new BufferedReader(new InputStreamReader(

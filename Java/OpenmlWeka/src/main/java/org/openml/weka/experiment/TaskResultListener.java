@@ -11,7 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.algorithms.SciMark;
 import org.openml.apiconnector.algorithms.TaskInformation;
-import org.openml.apiconnector.io.ApiConnector;
+import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.io.ApiException;
 import org.openml.apiconnector.io.ApiSessionHash;
 import org.openml.apiconnector.models.Metric;
@@ -55,32 +55,25 @@ public class TaskResultListener extends InstancesResultListener {
 	
 	private final SciMark benchmarker;
 
-	private final ApiConnector apiconnector;
+	private final OpenmlConnector apiconnector;
 	
 	/** Credentials for sending results to server */
 	private ApiSessionHash ash;
 
-	/** boolean checking whether correct credentials have been stored */
-	private boolean credentials = false;
-
-	public TaskResultListener( ApiConnector apiconnector, SciMark benchmarker ) {
+	public TaskResultListener( OpenmlConnector apiconnector, ApiSessionHash ash, SciMark benchmarker ) {
 		super();
 		
 		this.benchmarker = benchmarker;
 		this.apiconnector = apiconnector;
+		this.ash = ash;
 		currentlyCollecting = new HashMap<String, OpenmlExecutedTask>();
 		tasksWithErrors = new ArrayList<String>();
 		ash = null;
 	}
 
-	public boolean acceptCredentials(String username, String password) {
-		ash = new ApiSessionHash( apiconnector );
-		credentials = ash.set(username, password);
-		return credentials;
-	}
-
-	public boolean gotCredentials() {
-		return credentials;
+	public boolean acceptCredentials( ApiSessionHash ash ) {
+		this.ash = ash;
+		return ash.checkCredentials();
 	}
 
 	public void acceptResultsForSending(Task t, Integer repeat, Integer fold, Integer sample,
@@ -183,6 +176,7 @@ public class TaskResultListener extends InstancesResultListener {
 
 	private class OpenmlExecutedTask {
 		private int task_id;
+		private Task task;
 		private Classifier classifier;
 		private Instances predictions;
 		private Instances inputData;
@@ -193,26 +187,30 @@ public class TaskResultListener extends InstancesResultListener {
 		private Run run;
 		private int implementation_id;
 		
+		private int repeats;
+		private int samples;
+		
 		private File serializedClassifier = null;
 		private File humanReadableClassifier = null;
 		
 		private Map<Metric,Double> userDefinedMeasuresTotals;
 
 		public OpenmlExecutedTask(Task t, Classifier classifier,
-				String error_message, String options, ApiConnector apiconnector ) throws Exception {
+				String error_message, String options, OpenmlConnector apiconnector ) throws Exception {
 			this.classifier = classifier;
-			classnames = TaskInformation.getClassNames(apiconnector, t);
+			classnames = TaskInformation.getClassNames(apiconnector, ash, t);
 			task_id = t.getTask_id();
 			
-			int repeats = 1;
+			this.task = t;
+			repeats = 1;
 			int folds = 1;
-			int samples = 1;
+			samples = 1;
 			try {repeats = TaskInformation.getNumberOfRepeats(t);} catch( Exception e ){};
 			try {folds = TaskInformation.getNumberOfFolds(t);} catch( Exception e ){};
 			try {samples = TaskInformation.getNumberOfSamples(t);} catch( Exception e ){};
 			try {
 				DataSetDescription dsd = TaskInformation.getSourceData(t).getDataSetDescription( apiconnector );
-				inputData = new Instances( new FileReader( dsd.getDataset() ) );
+				inputData = new Instances( new FileReader( dsd.getDataset( ash ) ) );
 				inputData.setClass( inputData.attribute(TaskInformation.getSourceData(t).getTarget_feature()) );
 				inputDataSet = true;
 			} catch( Exception e ) {
@@ -224,7 +222,7 @@ public class TaskResultListener extends InstancesResultListener {
 			ArrayList<Attribute> attInfo = new ArrayList<Attribute>();
 			for (Feature f : TaskInformation.getPredictions(t).getFeatures()) {
 				if (f.getName().equals("confidence.classname")) {
-					for (String s : TaskInformation.getClassNames(apiconnector, t)) {
+					for (String s : TaskInformation.getClassNames(apiconnector, ash, t)) {
 						attInfo.add(new Attribute("confidence." + s));
 					}
 				} else if (f.getName().equals("prediction")) {
@@ -289,24 +287,24 @@ public class TaskResultListener extends InstancesResultListener {
 			}
 		}
 		
-		public void addUserDefinedMeasures(Integer fold, Integer repeat, Integer sample, Map<Metric, MetricScore> userMeasures) {
+		public void addUserDefinedMeasures(Integer fold, Integer repeat, Integer sample, Map<Metric, MetricScore> userMeasures) throws Exception {
 			// attach fold/sample specific user measures to run
 			for( Metric m : userMeasures.keySet() ) {
-				Double score = userMeasures.get(m).getScore();
-				getRun().addOutputEvaluation(m.name, repeat, fold, sample, m.implementation, score );
+				MetricScore score = userMeasures.get(m);
 				
+				getRun().addOutputEvaluation(m.name, repeat, fold, sample, m.implementation, score.getScore() );
+				System.out.println(m.implementation);
 				if(userDefinedMeasuresTotals.containsKey(m) == false) {
-					userDefinedMeasuresTotals.put(m, score);
+					userDefinedMeasuresTotals.put(m, getNormalizedScore( score ) );
 				} else {
-					userDefinedMeasuresTotals.put(m, userDefinedMeasuresTotals.get(m) + score);
+					userDefinedMeasuresTotals.put(m, userDefinedMeasuresTotals.get(m) + getNormalizedScore(score) );
 				}
 			}
 		}
 		
 		public void prepareForSending() {
-			// calculate "global" (opposed to fold specific) user defined evaluation measures
 			for( Metric m : userDefinedMeasuresTotals.keySet() ) {
-				run.addOutputEvaluation(m.name, m.implementation, userDefinedMeasuresTotals.get(m) / nrOfResultBatches, null);
+				run.addOutputEvaluation(m.name, m.implementation, userDefinedMeasuresTotals.get(m), null);
 			}
 			if( inputDataSet ) {
 				// build model for entire data set. This can take some time
@@ -333,6 +331,21 @@ public class TaskResultListener extends InstancesResultListener {
 
 		public boolean complete() {
 			return nrOfResultBatches == nrOfExpectedResultBatches;
+		}
+		
+		private Double getNormalizedScore( MetricScore m ) throws Exception {
+			Double score = m.getScore();
+			String type = TaskInformation.getEstimationProcedure(task).getType();
+			if( type.equals("crossvalidation") ) {
+				// whenever we work with folds, always calculate global measures 
+				// normalized to subsample size
+				score *= ((double) m.getNrOfInstances()) / inputData.size();
+				score /= (repeats * samples);
+				System.out.println(score);
+			} else {
+				score /= nrOfExpectedResultBatches;
+			}
+			return score;
 		}
 	}
 }

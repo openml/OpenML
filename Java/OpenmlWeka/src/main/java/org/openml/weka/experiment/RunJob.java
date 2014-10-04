@@ -4,7 +4,7 @@ import java.util.Date;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.openml.apiconnector.algorithms.DateParser;
-import org.openml.apiconnector.io.ApiConnector;
+import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.io.ApiSessionHash;
 import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.Job;
@@ -20,11 +20,11 @@ public class RunJob {
 		int ttid;
 		
 		Config config = new Config();
-		ApiConnector apiconnector;
+		OpenmlConnector apiconnector;
 		if( config.getServer() != null ) {
-			apiconnector = new ApiConnector( config.getServer() );
+			apiconnector = new OpenmlConnector( config.getServer() );
 		} else { 
-			apiconnector = new ApiConnector();
+			apiconnector = new OpenmlConnector();
 		}
 		
 		String strN = Utils.getOption('N', args);
@@ -38,7 +38,7 @@ public class RunJob {
 		}
 	}
 	
-	public static void doTask( int ttid, Config config, ApiConnector apiconnector ) {
+	public static void doTask( int ttid, Config config, OpenmlConnector apiconnector ) {
 		try{ 
 			if( new ApiSessionHash( apiconnector ).checkCredentials( config.getUsername(), config.getPassword() ) == false ) {
 				throw new Exception("Authentication failed. ");

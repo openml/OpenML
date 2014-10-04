@@ -10,7 +10,8 @@ import javax.swing.DefaultListModel;
 
 import org.openml.apiconnector.algorithms.SciMark;
 import org.openml.apiconnector.algorithms.TaskInformation;
-import org.openml.apiconnector.io.ApiConnector;
+import org.openml.apiconnector.io.OpenmlConnector;
+import org.openml.apiconnector.io.ApiSessionHash;
 import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.DataSetDescription;
 import org.openml.apiconnector.xml.Task;
@@ -45,9 +46,11 @@ public class TaskBasedExperiment extends Experiment {
 	/** The task currently being used */
 	protected Task m_CurrentTask;
 	
-	protected final ApiConnector apiconnector;
+	protected final OpenmlConnector apiconnector;
+	
+	protected ApiSessionHash ash;
 
-	public TaskBasedExperiment(Experiment exp, ApiConnector apiconnector) {
+	public TaskBasedExperiment(Experiment exp, OpenmlConnector apiconnector, ApiSessionHash ash) {
 		this.m_ResultListener = exp.getResultListener();
 		this.m_ResultProducer = exp.getResultProducer();
 		this.m_RunLower = exp.getRunLower();
@@ -61,6 +64,13 @@ public class TaskBasedExperiment extends Experiment {
 		this.m_AdvanceDataSetFirst = exp.getAdvanceDataSetFirst();
 		
 		this.apiconnector = apiconnector;
+		this.ash = ash;
+	}
+	
+	public boolean acceptCredentials(ApiSessionHash ash) {
+		this.ash = ash;
+		
+		return ((TaskResultListener) getResultListener()).acceptCredentials( ash );
 	}
 
 	public void setMode(boolean datasetBasedExperiment) {
@@ -159,7 +169,7 @@ public class TaskBasedExperiment extends Experiment {
 				DataSetDescription dsd = TaskInformation.getSourceData(
 						m_CurrentTask).getDataSetDescription(apiconnector);
 				Instances instDataset = new Instances(new FileReader(
-						dsd.getDataset()));
+						dsd.getDataset( ash )));
 
 				InstancesHelper.setTargetAttribute(instDataset,
 						ds.getTarget_feature());
@@ -275,25 +285,33 @@ public class TaskBasedExperiment extends Experiment {
 		}
 		setPropertyArray(cArray);
 	}
+	
+	public boolean checkCredentials() {
+		return ash.checkCredentials();
+	}
 
 	public static void main(String[] args) {
 		try {
 			Config openmlconfig = new Config();
-			ApiConnector apiconnector;
+			OpenmlConnector apiconnector;
 			if( openmlconfig.getServer() != null ) {
-				apiconnector = new ApiConnector( openmlconfig.getServer() );
+				apiconnector = new OpenmlConnector( openmlconfig.getServer() );
 			} else { 
-				apiconnector = new ApiConnector();
+				apiconnector = new OpenmlConnector();
+			}
+			ApiSessionHash ash = new ApiSessionHash(apiconnector);
+			
+			if( openmlconfig.getUsername() != null) {
+				ash.set( openmlconfig.getUsername(), openmlconfig.getPassword() );
 			}
 			
-			TaskBasedExperiment exp = new TaskBasedExperiment( new Experiment(), apiconnector );
-			ResultProducer rp = new TaskResultProducer(apiconnector);
-			TaskResultListener rl = new TaskResultListener(apiconnector,new SciMark());
+			TaskBasedExperiment exp = new TaskBasedExperiment( new Experiment(), apiconnector, ash );
+			ResultProducer rp = new TaskResultProducer(apiconnector, ash);
+			TaskResultListener rl = new TaskResultListener(apiconnector, ash, new SciMark());
 			SplitEvaluator se = new TaskSplitEvaluator();
 			Classifier sec = null;
-
-
-			if (rl.acceptCredentials(openmlconfig.getUsername(),openmlconfig.getPassword()) == false) {
+			// TODO: do we need this check?
+			if ( ash.checkCredentials() == false ) {
 				throw new Exception("Please provide correct credentials in a config file (openml.conf)");
 			}
 
