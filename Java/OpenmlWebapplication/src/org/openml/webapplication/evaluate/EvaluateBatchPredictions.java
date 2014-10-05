@@ -215,5 +215,10 @@ public class EvaluateBatchPredictions implements PredictionEvaluator {
 	public EvaluationScore[] getEvaluationScores() {
 		return evaluationScores;
 	}
+
+	@Override
+	public PredictionCounter getPredictionCounter() {
+		return predictionCounter;
+	}
 	
 }

@@ -148,6 +148,11 @@ public class EvaluateRun {
 					}
 				}
 				if( foundSame == false ) {
+					// give the record the correct sample size
+					if( recorded.getSample() != null && recorded.getSample_size() == null ) {
+						recorded.setSample_size( predictionEvaluator.getPredictionCounter().getShadowTypeSize(
+								recorded.getRepeat(), recorded.getFold(), recorded.getSample()));
+					}
 					runevaluation.addEvaluationMeasure( recorded );
 				}
 			}
@@ -162,7 +167,7 @@ public class EvaluateRun {
 		Conversion.log( "OK", "Process Run", "Start uploading results ... " );
 		try {
 			File evaluationFile = Conversion.stringToTempFile( xstream.toXML( runevaluation ), "run_" + run_id + "evaluations", "xml" );
-			
+			System.out.println(xstream.toXML( runevaluation ));
 			RunEvaluate re = apiconnector.openmlRunEvaluate( evaluationFile, ash.getSessionHash() );
 			Conversion.log( "OK", "Process Run", "Run processed: " + re.getRun_id() );
 		} catch( Exception  e ) {
