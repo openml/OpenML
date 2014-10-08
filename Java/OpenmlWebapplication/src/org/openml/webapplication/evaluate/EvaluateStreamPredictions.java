@@ -30,6 +30,7 @@ import org.openml.apiconnector.models.MetricScore;
 import org.openml.apiconnector.xml.EvaluationScore;
 import org.openml.webapplication.algorithm.InstancesHelper;
 import org.openml.webapplication.io.Output;
+import org.openml.webapplication.predictionCounter.PredictionCounter;
 
 import weka.classifiers.Evaluation;
 import weka.core.Instance;
@@ -167,5 +168,10 @@ public class EvaluateStreamPredictions implements PredictionEvaluator {
 		}
 		
 		return evaluationMeasures.toArray( new EvaluationScore[evaluationMeasures.size()] );
+	}
+
+	@Override
+	public PredictionCounter getPredictionCounter() {
+		return null; // TODO: might give an error, when used uncarefully.
 	}
 }
