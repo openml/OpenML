@@ -121,7 +121,7 @@ public class TaskResultListener extends InstancesResultListener {
 		ashUpdate();
 		// also add information about CPU performance and OS to run:
 		oet.getRun().addOutputEvaluation("os_information", "openml.userdefined.os_information(1.0)", null, "[" + StringUtils.join( benchmarker.getOsInfo(), ", " ) + "]"  );
-		oet.getRun().addOutputEvaluation("scimark_benchmark", "openml.userdefined.scimark_benchmark(1.0)", benchmarker.getResult(), "[" + StringUtils.join( benchmarker.getStringArray() ) + "]" );
+		oet.getRun().addOutputEvaluation("scimark_benchmark", "openml.userdefined.scimark_benchmark(1.0)", benchmarker.getResult(), "[" + StringUtils.join( benchmarker.getStringArray(), ", " ) + "]" );
 		
 		tmpPredictionsFile = InstancesHelper.instancesToTempFile(
 				oet.getPredictions(), "weka_generated_predictions", Constants.DATASET_FORMAT);
