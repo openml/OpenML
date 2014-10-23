@@ -11,8 +11,10 @@ import org.openml.moa.ResultListener;
 import org.openml.moa.algorithm.InstancesHelper;
 import org.openml.apiconnector.models.Metric;
 import org.openml.apiconnector.models.MetricScore;
+import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.settings.Config;
+import org.openml.apiconnector.settings.Settings;
 import org.openml.apiconnector.xml.Task;
 
 import moa.classifiers.Classifier;
@@ -74,6 +76,7 @@ public class OpenmlDataStreamClassification extends MainTask {
 
 	@Override
 	protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
+		Settings.API_VERBOSE_LEVEL = 1;
 		try {
 			config = new Config();
 		} catch (Exception e) { 
@@ -87,8 +90,10 @@ public class OpenmlDataStreamClassification extends MainTask {
 		} 
 		
 		// check credentials...
-		if( apiconnector.checkCredentials(config.getUsername(), config.getPassword()) == false ) {
+		if( apiconnector.setCredentials(config.getUsername(), config.getPassword()) == false ) {
 			throw new RuntimeException("Credentials could not be verified. ");
+		} else {
+			Conversion.log( "OK", "Authenticate", "Authentication successfull. " );
 		}
 		
 		String learnerString = this.learnerOption.getValueAsCLIString();
@@ -99,7 +104,6 @@ public class OpenmlDataStreamClassification extends MainTask {
 		Task task = ((OpenmlTaskReader)stream).getTask();
 		
 		try {
-			apiconnector.setCredentials( config.getUsername(), config.getPassword() );
 			resultListener = new ResultListener(task, apiconnector);
 		} catch ( Exception e )  {
 			throw new RuntimeException("Error initializing ResultListener. Please check server/username/password in openml.conf. " + e.getMessage() );
@@ -108,6 +112,7 @@ public class OpenmlDataStreamClassification extends MainTask {
 		ClassificationPerformanceEvaluator evaluator = (ClassificationPerformanceEvaluator) getPreparedClassOption(this.evaluatorOption);
 		learner.setModelContext(stream.getHeader());
 		long instancesProcessed = 0;
+		Conversion.log( "OK", "Download", "Obtained Stream Header. " );
 
 		monitor.setCurrentActivity("Evaluating learner...", -1.0);
 		LearningCurve learningCurve = new LearningCurve(

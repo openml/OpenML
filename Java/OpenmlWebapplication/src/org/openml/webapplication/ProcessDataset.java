@@ -1,11 +1,9 @@
 package org.openml.webapplication;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.xml.DataFeature;
@@ -45,7 +43,7 @@ public class ProcessDataset {
 		}
 	}
 	
-	public Integer getDatasetId() throws JSONException, IOException {
+	public Integer getDatasetId() throws Exception {
 		String sql = 
 			"SELECT `did` FROM `dataset` WHERE `processed` IS NULL AND `error` = 'false' " + 
 			"ORDER BY `upload_date` ASC"; 
@@ -60,7 +58,7 @@ public class ProcessDataset {
 		}
 	}
 	
-	public JSONArray getRecord( int did ) throws JSONException, IOException {
+	public JSONArray getRecord( int did ) throws Exception {
 		String sql = 
 			"SELECT `did`,`url`,`default_target_attribute`,`upload_date` " + 
 			"FROM `dataset` WHERE `did` = " + did;

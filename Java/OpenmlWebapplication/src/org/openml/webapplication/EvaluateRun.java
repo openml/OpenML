@@ -1,15 +1,14 @@
 package org.openml.webapplication;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.algorithms.TaskInformation;
 import org.openml.apiconnector.io.OpenmlConnector;
+import org.openml.apiconnector.settings.Settings;
 import org.openml.apiconnector.xml.DataSetDescription;
 import org.openml.apiconnector.xml.EvaluationScore;
 import org.openml.apiconnector.xml.Run;
@@ -35,6 +34,7 @@ public class EvaluateRun {
 	}
 	
 	public EvaluateRun( OpenmlConnector ac, Integer run_id ) throws Exception {
+		Settings.API_VERBOSE_LEVEL = 1;
 		apiconnector = ac;
 		xstream = XstreamXmlMapping.getInstance();
 		
@@ -51,12 +51,13 @@ public class EvaluateRun {
 		}
 	}
 	
-	public Integer getRunId() throws JSONException, IOException {
+	public Integer getRunId() throws Exception {
 		String sql = 
 			"SELECT `rid`,`start_time`,`processed`,`error` " + 
 			"FROM `run` WHERE `processed` IS NULL AND `error` IS NULL " + 
 			"ORDER BY `start_time` ASC"; 
-		
+
+		Settings.API_VERBOSE_LEVEL = 1;
 		JSONArray runJson = (JSONArray) apiconnector.openmlFreeQuery( sql ).get("data");
 		
 		if( runJson.length() > 0 ) {
