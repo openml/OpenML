@@ -52,7 +52,7 @@ public class WekaAlgorithm {
 		return version;
 	}
 	
-	public static int getImplementationId( Implementation implementation, Classifier classifier, OpenmlConnector apiconnector, String hash ) throws Exception {
+	public static int getImplementationId( Implementation implementation, Classifier classifier, OpenmlConnector apiconnector ) throws Exception {
 		try {
 			// First ask OpenML whether this implementation already exists
 			ImplementationExists result = apiconnector.openmlImplementationExists( implementation.getName(), implementation.getExternal_version() );
@@ -66,7 +66,7 @@ public class WekaAlgorithm {
 		File binary = null;
 		try { source = getFile( classifier, "src/", "java" ); } catch(IOException e) {}
 		try { binary = getFile( classifier, "bin/", "class" ); } catch(IOException e) {}
-		UploadImplementation ui = apiconnector.openmlImplementationUpload(implementationFile, binary, source, hash);
+		UploadImplementation ui = apiconnector.openmlImplementationUpload(implementationFile, binary, source);
 		return ui.getId();
 	}
 	

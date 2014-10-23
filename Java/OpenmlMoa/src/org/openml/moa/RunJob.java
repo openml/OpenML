@@ -1,7 +1,6 @@
 package org.openml.moa;
 
 import org.openml.apiconnector.io.OpenmlConnector;
-import org.openml.apiconnector.io.ApiSessionHash;
 import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.Job;
 
@@ -24,10 +23,7 @@ public class RunJob {
 			apiconnector = new OpenmlConnector();
 		}
 		
-		ApiSessionHash ash = new ApiSessionHash(apiconnector);
-		
-		
-		if( ash.checkCredentials(c.getUsername(), c.getPassword() ) == false ) {
+		if( apiconnector.setCredentials(c.getUsername(), c.getPassword() ) == false ) {
 			throw new Exception("Username/password incorrect");
 		}
 		

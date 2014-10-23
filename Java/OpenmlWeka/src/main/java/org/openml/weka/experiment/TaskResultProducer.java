@@ -8,7 +8,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.algorithms.TaskInformation;
 import org.openml.apiconnector.io.OpenmlConnector;
-import org.openml.apiconnector.io.ApiSessionHash;
 import org.openml.apiconnector.models.Metric;
 import org.openml.apiconnector.models.MetricScore;
 import org.openml.apiconnector.xml.DataSetDescription;
@@ -49,13 +48,10 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 
 	protected OpenmlConnector apiconnector;
 	
-	protected ApiSessionHash ash;
-	
-	public TaskResultProducer(OpenmlConnector apiconnector, ApiSessionHash ash ) {
+	public TaskResultProducer(OpenmlConnector apiconnector ) {
 		super();
 		this.m_SplitEvaluator = new TaskSplitEvaluator();
 		this.apiconnector = apiconnector;
-		this.ash = ash;
 	}
 
 	public void setTask(Task t) throws Exception {
@@ -65,7 +61,7 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 		Estimation_procedure ep = TaskInformation.getEstimationProcedure(m_Task);
 
 		DataSetDescription dsd = ds.getDataSetDescription(apiconnector);
-		m_Instances = new Instances( new FileReader( dsd.getDataset( ash ) ) );
+		m_Instances = new Instances( new FileReader( dsd.getDataset( apiconnector.getSessionHash() ) ) );
 		
 		InstancesHelper.setTargetAttribute(m_Instances, ds.getTarget_feature());
 		

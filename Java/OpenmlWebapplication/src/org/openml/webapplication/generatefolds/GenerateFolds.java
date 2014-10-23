@@ -29,7 +29,6 @@ import java.util.Arrays;
 import java.util.Random;
 
 import org.openml.apiconnector.io.OpenmlConnector;
-import org.openml.apiconnector.io.ApiSessionHash;
 import org.openml.webapplication.algorithm.InstancesHelper;
 import org.openml.webapplication.generatefolds.EstimationProcedure.EstimationProcedureType;
 import org.openml.webapplication.io.Input;
@@ -52,10 +51,10 @@ public class GenerateFolds {
 	private final ArffMapping am;
 	private final Random rand;
 	
-	public GenerateFolds( OpenmlConnector ac, ApiSessionHash ash, String datasetPath, String estimationProcedure, String targetFeature, String rowid_attribute, int[] testset, int random_seed ) throws Exception {
+	public GenerateFolds( OpenmlConnector ac, String datasetPath, String estimationProcedure, String targetFeature, String rowid_attribute, int[] testset, int random_seed ) throws Exception {
 		
 		rand = new Random(random_seed);
-		dataset = new Instances( new BufferedReader( Input.getURL( datasetPath + "?session_hash=" + ash.getSessionHash() ) ) );
+		dataset = new Instances( new BufferedReader( Input.getURL( datasetPath + "?session_hash=" + ac.getSessionHash() ) ) );
 		evaluationMethod = new EstimationProcedure(estimationProcedure,dataset);
 		
 		InstancesHelper.setTargetAttribute( dataset, targetFeature );

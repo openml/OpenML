@@ -25,7 +25,6 @@ import java.util.Map;
 
 import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.io.OpenmlConnector;
-import org.openml.apiconnector.io.ApiSessionHash;
 import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.DataQuality;
 import org.openml.apiconnector.xml.DataQuality.Quality;
@@ -81,9 +80,9 @@ public class FantailConnector {
 		OpenmlConnector apiconnector;
 		
 		if( config.getServer() != null ) {
-			apiconnector = new OpenmlConnector( config.getServer() );
+			apiconnector = new OpenmlConnector( config.getServer(), config.getUsername(), config.getPassword() );
 		} else { 
-			apiconnector = new OpenmlConnector();
+			apiconnector = new OpenmlConnector( config.getUsername(), config.getPassword() );
 		} 
 		
 		DataSetDescription dsd = apiconnector.openmlDataDescription(did);
@@ -129,12 +128,10 @@ public class FantailConnector {
 		
 		DataQuality dq = new DataQuality(did, qualities.toArray( new Quality[qualities.size()] ) );
 		String strQualities = xstream.toXML(dq);
-		ApiSessionHash ash = new ApiSessionHash( apiconnector );
-		ash.set(config.getUsername(), config.getPassword());
 		
 		DataQualityUpload dqu = apiconnector.openmlDataQualityUpload(
 				Conversion.stringToTempFile(strQualities, "qualities_did_"
-						+ did, "xml"), ash.getSessionHash());
+						+ did, "xml"));
 		Conversion.log( "OK", "Extract Features", "DONE: " + dqu.getDid() );
 		
 		return true;

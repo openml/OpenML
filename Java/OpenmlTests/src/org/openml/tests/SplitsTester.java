@@ -33,7 +33,7 @@ public class SplitsTester {
 					Instances splits = new Instances( new FileReader( ep.getDataSplits() ) );
 
 					DataSetDescription dsd = TaskInformation.getSourceData(t).getDataSetDescription(apiconnector);
-					Instances data = new Instances( new FileReader( dsd.getDataset() ) );
+					Instances data = new Instances( new FileReader( dsd.getDataset(apiconnector.getSessionHash()) ) );
 					
 					
 					String[] classValues = TaskInformation.getClassNames(apiconnector, t);

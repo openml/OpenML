@@ -24,7 +24,6 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Options;
 import org.openml.apiconnector.io.OpenmlConnector;
-import org.openml.apiconnector.io.ApiSessionHash;
 import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.settings.Settings;
 import org.openml.webapplication.generatefolds.GenerateFolds;
@@ -36,7 +35,6 @@ public class Main {
 	
 	public static void main( String[] args ) {
 		OpenmlConnector apiconnector;
-		ApiSessionHash ash;
 		CommandLineParser parser = new GnuParser();
 		Options options = new Options();
 		Integer id = null;
@@ -64,9 +62,7 @@ public class Main {
 				config = new Config( cli.getOptionValue("config") );
 			}
 			
-			apiconnector = new OpenmlConnector( config.getServer() );
-			ash = new ApiSessionHash( apiconnector );
-			ash.set( config.getUsername(), config.getPassword() );
+			apiconnector = new OpenmlConnector( config.getServer(), config.getUsername(), config.getPassword() );
 			
 			if( cli.hasOption("-id") ) {
 				id = Integer.parseInt( cli.getOptionValue("id") );
@@ -81,13 +77,13 @@ public class Main {
 					
 					
 					// bootstrap evaluate run
-					new EvaluateRun(apiconnector, ash, id);
+					new EvaluateRun(apiconnector, id);
 					
 				} else if( function.equals("process_dataset") ) {
 					
 					
 					// bootstrap process dataset
-					new ProcessDataset(apiconnector, ash, id);
+					new ProcessDataset(apiconnector, id);
 					
 				} else if( function.equals("generate_folds") ) {
 					
@@ -105,7 +101,7 @@ public class Main {
 						// just put this thing off manually.
 						Settings.API_VERBOSE_LEVEL = 0;
 						GenerateFolds gf = new GenerateFolds(
-								apiconnector, ash, 
+								apiconnector, 
 								cli.getOptionValue("d"), 
 								cli.getOptionValue("e"), 
 								cli.getOptionValue("c"), 

@@ -15,7 +15,6 @@ import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.algorithms.DateParser;
 import org.openml.apiconnector.algorithms.MathHelper;
 import org.openml.apiconnector.io.OpenmlConnector;
-import org.openml.apiconnector.io.ApiSessionHash;
 import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.settings.Constants;
 import org.openml.apiconnector.xml.DataSetDescription;
@@ -40,7 +39,6 @@ public class GenerateBayesnetDatasets {
 	private static final boolean SEND_RESULT = true;
 	
 	private final OpenmlConnector apiconnector;
-	private final ApiSessionHash ash;
 	
 	private static final File outputDirectory = new File( "C:/Users/jan/Desktop/BayesNetTest/" );
 	
@@ -60,15 +58,14 @@ public class GenerateBayesnetDatasets {
 		} else { 
 			this.apiconnector = new OpenmlConnector();
 		} 
-		this.ash = new ApiSessionHash( apiconnector );
-		this.ash.set(config.getUsername(), config.getPassword());
+		this.apiconnector.setCredentials(config.getUsername(), config.getPassword());
 		
 		for( int iDatasets = 21; iDatasets <= 62; iDatasets++ ) {
 			boolean hasNumericAtts = false;
 			Conversion.log("INFO", "Download Dataset", "Downloading dataset " + iDatasets);
 			DataSetDescription dsd = apiconnector.openmlDataDescription( iDatasets );
 			
-			Instances dataset = new Instances( new FileReader( dsd.getDataset( ash ) ) );
+			Instances dataset = new Instances( new FileReader( dsd.getDataset( apiconnector.getSessionHash() ) ) );
 			if( dataset.numAttributes() < MIN_ATTRIBUTES || dataset.numAttributes() > MAX_ATTRIBUTES ) {
 				Conversion.log("INFO", "Dataset evaluation", "Dataset " + iDatasets + " " + dsd.getName() + " not used. Got " + dataset.numAttributes() + " attributes. (Interested in Range ["+MIN_ATTRIBUTES+","+MAX_ATTRIBUTES+"])" );
 				continue;
@@ -154,7 +151,7 @@ public class GenerateBayesnetDatasets {
 		taskArgs[3] = "-m";
 		taskArgs[4] = "" + numInstances;
 		taskArgs[5] = "-s";
-		taskArgs[6] = "(generators.BayesianNetworkGenerator -f (" + dsd.getDataset( ash ).getAbsolutePath() + ") -a (" + searchAlgorithm + ") -p (" + outputFilename + ".xml) " + numericString + " )";
+		taskArgs[6] = "(generators.BayesianNetworkGenerator -f (" + dsd.getDataset( apiconnector.getSessionHash() ).getAbsolutePath() + ") -a (" + searchAlgorithm + ") -p (" + outputFilename + ".xml) " + numericString + " )";
 		
 		Conversion.log("INFO", "Build dataset", "CMD: " + StringUtils.join( taskArgs, ' ' ) );
 		DoTask.main( taskArgs );
@@ -188,7 +185,7 @@ public class GenerateBayesnetDatasets {
 		String outputDatasetString = xstream.toXML( outputDatasetDescription );
 		
 		File outputDataset = Conversion.stringToTempFile( outputDatasetString, datasetname, Constants.DATASET_FORMAT );
-		UploadDataSet ud = apiconnector.openmlDataUpload( outputDataset, generatedDataset, ash.getSessionHash() );
+		UploadDataSet ud = apiconnector.openmlDataUpload( outputDataset, generatedDataset );
 		
 		System.out.println( xstream.toXML( apiconnector.openmlDataDescription( ud.getId() ) ) );
 	}

@@ -5,7 +5,6 @@ import java.util.Date;
 import org.apache.commons.lang3.ArrayUtils;
 import org.openml.apiconnector.algorithms.DateParser;
 import org.openml.apiconnector.io.OpenmlConnector;
-import org.openml.apiconnector.io.ApiSessionHash;
 import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.Job;
 
@@ -40,7 +39,7 @@ public class RunJob {
 	
 	public static void doTask( int ttid, Config config, OpenmlConnector apiconnector ) {
 		try{ 
-			if( new ApiSessionHash( apiconnector ).checkCredentials( config.getUsername(), config.getPassword() ) == false ) {
+			if( apiconnector.checkCredentials( config.getUsername(), config.getPassword() ) == false ) {
 				throw new Exception("Authentication failed. ");
 			}
 			

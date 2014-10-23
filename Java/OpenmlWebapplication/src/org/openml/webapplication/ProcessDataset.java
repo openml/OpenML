@@ -8,7 +8,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.io.OpenmlConnector;
-import org.openml.apiconnector.io.ApiSessionHash;
 import org.openml.apiconnector.xml.DataFeature;
 import org.openml.apiconnector.xml.DataFeature.Feature;
 import org.openml.apiconnector.xml.DataFeatureUpload;
@@ -23,15 +22,13 @@ public class ProcessDataset {
 
 	private final OpenmlConnector apiconnector;
 	private final XStream xstream;
-	private final ApiSessionHash ash;
 	
-	public ProcessDataset( OpenmlConnector ac, ApiSessionHash ash ) throws Exception {
-		this( ac, ash, null );
+	public ProcessDataset( OpenmlConnector ac ) throws Exception {
+		this( ac, null );
 	}
 	
-	public ProcessDataset( OpenmlConnector ac, ApiSessionHash ash, Integer dataset_id ) throws Exception {
+	public ProcessDataset( OpenmlConnector ac, Integer dataset_id ) throws Exception {
 		apiconnector = ac;
-		this.ash = ash;
 		xstream = XstreamXmlMapping.getInstance();
 		
 		if( dataset_id != null ) {
@@ -78,7 +75,7 @@ public class ProcessDataset {
 	
 	public void process( Integer did ) throws Exception {
 		JSONArray record = getRecord(did);
-		String didStr = record.getString( 1 ) + "?session_hash=" + ash.getSessionHash();
+		String didStr = record.getString( 1 ) + "?session_hash=" + apiconnector.getSessionHash();
 		// feature string should be reconverted to null, if it was NULL in mysql
 		String featureStr = record.getString( 2 ).equals("") ? null : record.getString( 2 );
 		
@@ -92,23 +89,23 @@ public class ProcessDataset {
 			List<Feature> features = extractFeatures.getFeatures();
 			DataFeature datafeature = new DataFeature(did, features.toArray(new Feature[features.size()]) );
 			File dataFeatureFile = Conversion.stringToTempFile( xstream.toXML( datafeature ), "features-did" + did, "xml");
-			apiconnector.openmlDataFeatureUpload( dataFeatureFile, ash.getSessionHash() );
+			apiconnector.openmlDataFeatureUpload( dataFeatureFile );
 			
 			DataQuality dataquality = new DataQuality(did, qualities.toArray(new Quality[qualities.size()]) );
 			File dataQualityFile = Conversion.stringToTempFile( xstream.toXML( dataquality ), "qualities-did" + did, "xml");
-			apiconnector.openmlDataQualityUpload( dataQualityFile, ash.getSessionHash() );
+			apiconnector.openmlDataQualityUpload( dataQualityFile );
 			
 			Conversion.log( "OK", "Process Dataset", "Dataset " + did + " - Processed successfully. " );
 		} catch(Exception e ) {
 			DataFeature datafeature = new DataFeature(did, e.getMessage() );
 			File dataFeatureFile = Conversion.stringToTempFile( xstream.toXML( datafeature ), "features-error-did" + did, "xml");
-			DataFeatureUpload dfu = apiconnector.openmlDataFeatureUpload( dataFeatureFile, ash.getSessionHash() );
+			DataFeatureUpload dfu = apiconnector.openmlDataFeatureUpload( dataFeatureFile );
 			Conversion.log( "Error", "Process Dataset", "Dataset " + dfu.getDid() + " - Error: " + e.getMessage() );
 		} catch (OutOfMemoryError oome) {
 		    // move on
 			DataFeature datafeature = new DataFeature(did, oome.getMessage() );
 			File dataFeatureFile = Conversion.stringToTempFile( xstream.toXML( datafeature ), "features-error-did" + did, "xml");
-			DataFeatureUpload dfu = apiconnector.openmlDataFeatureUpload( dataFeatureFile, ash.getSessionHash() );
+			DataFeatureUpload dfu = apiconnector.openmlDataFeatureUpload( dataFeatureFile );
 			Conversion.log( "Error", "Process Dataset", "Dataset " + dfu.getDid() + " - Error: " + oome.getMessage() );
 		}
 	}

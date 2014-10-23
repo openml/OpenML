@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.openml.webapplication.fantail.dc.Characterizer;
 
+import weka.core.AttributeStats;
 import weka.core.Instances;
 
 public class AttributeType extends Characterizer {
@@ -46,7 +47,9 @@ public class AttributeType extends Characterizer {
 		for (int i = 0; i < attrib_count; i++) {
 			if (instances.attribute(i).isNominal()) {
 				nominal_count++;
-				if (instances.numDistinctValues(i) == 2) {
+				AttributeStats as = instances.attributeStats( i );
+				
+				if (as.distinctCount == 2) {
 					bin_count++;
 				}
 			} else {

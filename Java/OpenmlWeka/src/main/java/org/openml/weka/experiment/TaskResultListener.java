@@ -13,7 +13,6 @@ import org.openml.apiconnector.algorithms.SciMark;
 import org.openml.apiconnector.algorithms.TaskInformation;
 import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.io.ApiException;
-import org.openml.apiconnector.io.ApiSessionHash;
 import org.openml.apiconnector.models.Metric;
 import org.openml.apiconnector.models.MetricScore;
 import org.openml.apiconnector.settings.Constants;
@@ -57,23 +56,13 @@ public class TaskResultListener extends InstancesResultListener {
 
 	private final OpenmlConnector apiconnector;
 	
-	/** Credentials for sending results to server */
-	private ApiSessionHash ash;
-
-	public TaskResultListener( OpenmlConnector apiconnector, ApiSessionHash ash, SciMark benchmarker ) {
+	public TaskResultListener( OpenmlConnector apiconnector, SciMark benchmarker ) {
 		super();
 		
 		this.benchmarker = benchmarker;
 		this.apiconnector = apiconnector;
-		this.ash = ash;
 		currentlyCollecting = new HashMap<String, OpenmlExecutedTask>();
 		tasksWithErrors = new ArrayList<String>();
-		ash = null;
-	}
-
-	public boolean acceptCredentials( ApiSessionHash ash ) {
-		this.ash = ash;
-		return ash.checkCredentials();
 	}
 
 	public void acceptResultsForSending(Task t, Integer repeat, Integer fold, Integer sample,
@@ -118,7 +107,6 @@ public class TaskResultListener extends InstancesResultListener {
 		File tmpPredictionsFile;
 		File tmpDescriptionFile;
 		
-		ashUpdate();
 		// also add information about CPU performance and OS to run:
 		oet.getRun().addOutputEvaluation("os_information", "openml.userdefined.os_information(1.0)", null, "[" + StringUtils.join( benchmarker.getOsInfo(), ", " ) + "]"  );
 		oet.getRun().addOutputEvaluation("scimark_benchmark", "openml.userdefined.scimark_benchmark(1.0)", benchmarker.getResult(), "[" + StringUtils.join( benchmarker.getStringArray(), ", " ) + "]" );
@@ -134,7 +122,7 @@ public class TaskResultListener extends InstancesResultListener {
 		if(oet.humanReadableClassifier != null ) { output_files.put("model_readable", oet.humanReadableClassifier); }
 		
 		try { 
-			UploadRun ur = apiconnector.openmlRunUpload(tmpDescriptionFile, output_files, ash.getSessionHash());
+			UploadRun ur = apiconnector.openmlRunUpload(tmpDescriptionFile, output_files );
 			Conversion.log( "INFO", "Upload Run", "Run was uploaded with rid " + ur.getRun_id() + 
 					". Obtainable at " + apiconnector.getApiUrl() + "?f=openml.run.get&run_id=" + 
 					ur.getRun_id() );
@@ -150,12 +138,10 @@ public class TaskResultListener extends InstancesResultListener {
 		XStream xstream = XstreamXmlMapping.getInstance();
 		File tmpDescriptionFile;
 		
-		ashUpdate();
-		
 		tmpDescriptionFile = Conversion.stringToTempFile(
 				xstream.toXML(oet.getRun()), "weka_generated_run", Constants.DATASET_FORMAT);
 		try { 
-			UploadRun ur = apiconnector.openmlRunUpload(tmpDescriptionFile, new HashMap<String, File>(), ash.getSessionHash());
+			UploadRun ur = apiconnector.openmlRunUpload(tmpDescriptionFile, new HashMap<String, File>() );
 			Conversion.log( "WARNING", "Upload Run", "Run was uploaded with rid " + ur.getRun_id() + 
 					". It includes an error message. Obtainable at " + 
 					apiconnector.getApiUrl() +  "?f=openml.run.get&run_id=" + ur.getRun_id() );
@@ -163,15 +149,6 @@ public class TaskResultListener extends InstancesResultListener {
 			ae.printStackTrace(); 
 			Conversion.log( "ERROR", "Upload Run", "Failed to upload run: " + ae.getMessage() );
 		}
-	}
-
-	private void ashUpdate() throws Exception {
-		if (ash == null)
-			throw new Exception("No credentials provided yet. ");
-		if (ash.isValid() == false)
-			ash.update();
-		if (ash.isValid() == false)
-			throw new Exception("Credentials not valid. ");
 	}
 
 	private class OpenmlExecutedTask {
@@ -198,7 +175,7 @@ public class TaskResultListener extends InstancesResultListener {
 		public OpenmlExecutedTask(Task t, Classifier classifier,
 				String error_message, String options, OpenmlConnector apiconnector ) throws Exception {
 			this.classifier = classifier;
-			classnames = TaskInformation.getClassNames(apiconnector, ash, t);
+			classnames = TaskInformation.getClassNames(apiconnector, t);
 			task_id = t.getTask_id();
 			
 			this.task = t;
@@ -210,7 +187,7 @@ public class TaskResultListener extends InstancesResultListener {
 			try {samples = TaskInformation.getNumberOfSamples(t);} catch( Exception e ){};
 			try {
 				DataSetDescription dsd = TaskInformation.getSourceData(t).getDataSetDescription( apiconnector );
-				inputData = new Instances( new FileReader( dsd.getDataset( ash ) ) );
+				inputData = new Instances( new FileReader( dsd.getDataset( apiconnector.getSessionHash() ) ) );
 				inputData.setClass( inputData.attribute(TaskInformation.getSourceData(t).getTarget_feature()) );
 				inputDataSet = true;
 			} catch( Exception e ) {
@@ -222,7 +199,7 @@ public class TaskResultListener extends InstancesResultListener {
 			ArrayList<Attribute> attInfo = new ArrayList<Attribute>();
 			for (Feature f : TaskInformation.getPredictions(t).getFeatures()) {
 				if (f.getName().equals("confidence.classname")) {
-					for (String s : TaskInformation.getClassNames(apiconnector, ash, t)) {
+					for (String s : TaskInformation.getClassNames(apiconnector, t)) {
 						attInfo.add(new Attribute("confidence." + s));
 					}
 				} else if (f.getName().equals("prediction")) {
@@ -245,7 +222,7 @@ public class TaskResultListener extends InstancesResultListener {
 			
 			Implementation find = WekaAlgorithm.create( classifier.getClass().getName(), options );
 			
-			implementation_id = WekaAlgorithm.getImplementationId( find, classifier, apiconnector, ash.getSessionHash() );
+			implementation_id = WekaAlgorithm.getImplementationId( find, classifier, apiconnector );
 			Implementation implementation = apiconnector.openmlImplementationGet( implementation_id );
 			
 			String setup_string = classifier.getClass().getName();
@@ -293,7 +270,7 @@ public class TaskResultListener extends InstancesResultListener {
 				MetricScore score = userMeasures.get(m);
 				
 				getRun().addOutputEvaluation(m.name, repeat, fold, sample, m.implementation, score.getScore() );
-				System.out.println(m.implementation);
+				
 				if(userDefinedMeasuresTotals.containsKey(m) == false) {
 					userDefinedMeasuresTotals.put(m, getNormalizedScore( score ) );
 				} else {
@@ -341,7 +318,6 @@ public class TaskResultListener extends InstancesResultListener {
 				// normalized to subsample size
 				score *= ((double) m.getNrOfInstances()) / inputData.size();
 				score /= (repeats * samples);
-				System.out.println(score);
 			} else {
 				score /= nrOfExpectedResultBatches;
 			}

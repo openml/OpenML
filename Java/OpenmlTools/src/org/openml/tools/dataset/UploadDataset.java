@@ -4,7 +4,6 @@ import java.io.File;
 
 import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.io.OpenmlConnector;
-import org.openml.apiconnector.io.ApiSessionHash;
 import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.DataSetDescription;
 import org.openml.apiconnector.xml.UploadDataSet;
@@ -36,19 +35,18 @@ public class UploadDataset {
 			apiconnector = new OpenmlConnector();
 		}
 		
-		ApiSessionHash ash = new ApiSessionHash( apiconnector );
-		ash.set( config.getUsername(), config.getPassword() );
+		apiconnector.setCredentials( config.getUsername(), config.getPassword() );
 		
 		File dir = new File( directory );
 		
 		if( dir.isDirectory() == false ) {
-			upload( dir, ash ); // dir is actually not a dir, in this case
+			upload( dir ); // dir is actually not a dir, in this case
 		} else {
 			for( File f : dir.listFiles() ) {
 				try {
 					System.out.println( "Dataset: " + f.getAbsolutePath() );
 					
-					upload(	f, ash );
+					upload(	f );
 				} catch( Exception e ) {
 					e.printStackTrace();
 					System.out.println( "Failed. " );
@@ -57,7 +55,7 @@ public class UploadDataset {
 		}
 	}
 	
-	private void upload( File datasetFile, ApiSessionHash ash ) throws Exception {
+	private void upload( File datasetFile ) throws Exception {
 		loader.setFile( datasetFile );
 		Instances dataset = new Instances( loader.getStructure() );
 		
@@ -72,7 +70,7 @@ public class UploadDataset {
 		
 		File desc = Conversion.stringToTempFile( description_xml, "description", "xml");
 		
-		UploadDataSet ud = apiconnector.openmlDataUpload(desc, datasetFile, ash.getSessionHash() );
+		UploadDataSet ud = apiconnector.openmlDataUpload(desc, datasetFile );
 		System.out.println( "Uploaded " + name + " with id " + xstream.toXML( ud.getId() ) );
 	}
 }

@@ -60,7 +60,6 @@ import javax.swing.filechooser.FileFilter;
 
 import org.openml.apiconnector.algorithms.SciMark;
 import org.openml.apiconnector.io.OpenmlConnector;
-import org.openml.apiconnector.io.ApiSessionHash;
 import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.settings.Constants;
 import org.openml.weka.experiment.TaskBasedExperiment;
@@ -244,8 +243,6 @@ public class OpenmlSimpleSetupPanel extends SimpleSetupPanel {
 
 	protected OpenmlConnector apiconnector;
 	
-	protected ApiSessionHash ash;
-	
 	protected Config openmlconfig;
 	
 	/**
@@ -268,16 +265,13 @@ public class OpenmlSimpleSetupPanel extends SimpleSetupPanel {
 		try {
 			openmlconfig = new Config();
 			if( openmlconfig.getServer() != null ) {
-				apiconnector = new OpenmlConnector( openmlconfig.getServer() );
-				ash = new ApiSessionHash(apiconnector);
-				ash.set(openmlconfig.getUsername(), openmlconfig.getPassword());
+				apiconnector = new OpenmlConnector( openmlconfig.getServer(), openmlconfig.getUsername(), openmlconfig.getPassword() );
+				
 			} else { 
-				apiconnector = new OpenmlConnector();
-				ash = new ApiSessionHash(apiconnector);
+				apiconnector = new OpenmlConnector(  openmlconfig.getUsername(), openmlconfig.getPassword() );
 			} 
 		} catch( RuntimeException e ) {
 			apiconnector = new OpenmlConnector();
-			ash = new ApiSessionHash(apiconnector);
 		}
 		m_TaskListPanel = new TaskListPanel( apiconnector );
 
@@ -716,7 +710,7 @@ public class OpenmlSimpleSetupPanel extends SimpleSetupPanel {
 	 */
 	public boolean setExperiment(Experiment exp_old) {
 
-		TaskBasedExperiment exp = new TaskBasedExperiment( exp_old, apiconnector, ash );
+		TaskBasedExperiment exp = new TaskBasedExperiment( exp_old, apiconnector );
 		m_userHasBeenAskedAboutConversion = false;
 		m_Exp = null; // hold off until we are sure we want conversion
 		m_SaveBut.setEnabled(true);
@@ -1082,7 +1076,7 @@ public class OpenmlSimpleSetupPanel extends SimpleSetupPanel {
 				}
 				m_Exp.setResultListener(crl);
 			} else if (m_ResultsDestinationCBox.getSelectedItem() == DEST_OPENML_TEXT) {
-				TaskResultListener trl = new TaskResultListener(apiconnector, ash, new SciMark());
+				TaskResultListener trl = new TaskResultListener(apiconnector, new SciMark());
 				try {
 					File f = File.createTempFile("WekaOpenMLResults",
 							Constants.DATASET_FORMAT);
@@ -1095,7 +1089,7 @@ public class OpenmlSimpleSetupPanel extends SimpleSetupPanel {
 
 				// try to load default config
 				if (openmlconfig.getUsername() != null) {
-					if ( ash.set(openmlconfig.getUsername(), openmlconfig.getPassword() ) ) {
+					if ( apiconnector.setCredentials(openmlconfig.getUsername(), openmlconfig.getPassword() ) ) {
 						str = openmlconfig.getUsername();
 					} else {
 						str = null;
@@ -1251,7 +1245,7 @@ public class OpenmlSimpleSetupPanel extends SimpleSetupPanel {
 			m_Exp.setResultProducer(cvrp);
 			m_Exp.setPropertyPath(propertyPath);
 		} else if (m_ExperimentTypeCBox.getSelectedItem() == TYPE_OPENML_TASK_TEXT) {
-			TaskResultProducer trp = new TaskResultProducer(apiconnector, ash);
+			TaskResultProducer trp = new TaskResultProducer(apiconnector);
 
 			PropertyNode[] propertyPath = new PropertyNode[2];
 			try {
@@ -1399,7 +1393,7 @@ public class OpenmlSimpleSetupPanel extends SimpleSetupPanel {
 		if (ad.getReturnValue() == JOptionPane.CLOSED_OPTION) {
 			return;
 		}
-		if (ash.set( ad.getUsername(), ad.getPassword())) {
+		if (apiconnector.setCredentials( ad.getUsername(), ad.getPassword())) {
 			m_ResultsDestinationPathTField.setText(ad.getUsername());
 		} else {
 			JOptionPane.showMessageDialog(null, "Username/Password incorrect",

@@ -12,7 +12,6 @@ import org.openml.moa.algorithm.InstancesHelper;
 import org.openml.apiconnector.models.Metric;
 import org.openml.apiconnector.models.MetricScore;
 import org.openml.apiconnector.io.OpenmlConnector;
-import org.openml.apiconnector.io.ApiSessionHash;
 import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.Task;
 
@@ -87,10 +86,8 @@ public class OpenmlDataStreamClassification extends MainTask {
 			apiconnector = new OpenmlConnector();
 		} 
 		
-		ApiSessionHash ash = new ApiSessionHash( apiconnector );
-		
 		// check credentials...
-		if( ash.checkCredentials(config.getUsername(), config.getPassword()) == false ) {
+		if( apiconnector.checkCredentials(config.getUsername(), config.getPassword()) == false ) {
 			throw new RuntimeException("Credentials could not be verified. ");
 		}
 		
@@ -98,12 +95,12 @@ public class OpenmlDataStreamClassification extends MainTask {
 		String streamString = "OpenmlTaskReader -t "+openmlTaskIdOption.getValue();
 
 		Classifier learner = (Classifier) getPreparedClassOption(this.learnerOption);
-		stream = new OpenmlTaskReader( openmlTaskIdOption.getValue(), ash );
+		stream = new OpenmlTaskReader( openmlTaskIdOption.getValue() );
 		Task task = ((OpenmlTaskReader)stream).getTask();
 		
 		try {
-			ash.set( config.getUsername(), config.getPassword() );
-			resultListener = new ResultListener(task, apiconnector, ash);
+			apiconnector.setCredentials( config.getUsername(), config.getPassword() );
+			resultListener = new ResultListener(task, apiconnector);
 		} catch ( Exception e )  {
 			throw new RuntimeException("Error initializing ResultListener. Please check server/username/password in openml.conf. " + e.getMessage() );
 		}

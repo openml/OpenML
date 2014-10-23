@@ -6,9 +6,7 @@ import com.thoughtworks.xstream.XStream;
 
 import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.io.OpenmlConnector;
-import org.openml.apiconnector.io.ApiSessionHash;
 import org.openml.apiconnector.settings.Config;
-import org.openml.apiconnector.settings.Settings;
 import org.openml.apiconnector.xml.DataSetDescription;
 import org.openml.apiconnector.xml.UploadDataSet;
 import org.openml.apiconnector.xstream.XstreamXmlMapping;
@@ -33,8 +31,7 @@ public class TransferDatasets {
 		}
 		apiFrom = new OpenmlConnector( FROM );
 		XStream xstream = XstreamXmlMapping.getInstance();
-		ApiSessionHash ash = new ApiSessionHash( apiTo );
-		if( ash.set(config.getUsername(), config.getPassword() ) == false ) {
+		if( apiTo.setCredentials(config.getUsername(), config.getPassword() ) == false ) {
 			throw new Exception("Username/password incorrect");
 		}
 		
@@ -48,7 +45,7 @@ public class TransferDatasets {
 				
 				File description = Conversion.stringToTempFile( descriptionXML, dsd.getName() + "_description", "xml" );
 				//System.out.println( xstream.toXML(dsd)  );
-				UploadDataSet uds = apiTo.openmlDataUpload( description, dataset, ash.getSessionHash() );
+				UploadDataSet uds = apiTo.openmlDataUpload( description, dataset );
 				System.out.println("Succes at #" + i + " id: " + uds.getId() );
 			} catch( Exception e ) {
 				e.printStackTrace();

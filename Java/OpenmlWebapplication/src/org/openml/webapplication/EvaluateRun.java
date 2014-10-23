@@ -10,7 +10,6 @@ import org.json.JSONException;
 import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.algorithms.TaskInformation;
 import org.openml.apiconnector.io.OpenmlConnector;
-import org.openml.apiconnector.io.ApiSessionHash;
 import org.openml.apiconnector.xml.DataSetDescription;
 import org.openml.apiconnector.xml.EvaluationScore;
 import org.openml.apiconnector.xml.Run;
@@ -29,16 +28,14 @@ import com.thoughtworks.xstream.XStream;
 public class EvaluateRun {
 	private final XStream xstream;
 	private final OpenmlConnector apiconnector;
-	private final ApiSessionHash ash;
 	private static final int INTERVAL_SIZE = 1000;
 	
-	public EvaluateRun( OpenmlConnector ac, ApiSessionHash ash ) throws Exception {
-		this( ac, ash, null );
+	public EvaluateRun( OpenmlConnector ac ) throws Exception {
+		this( ac, null );
 	}
 	
-	public EvaluateRun( OpenmlConnector ac, ApiSessionHash ash, Integer run_id ) throws Exception {
+	public EvaluateRun( OpenmlConnector ac, Integer run_id ) throws Exception {
 		apiconnector = ac;
-		this.ash = ash;
 		xstream = XstreamXmlMapping.getInstance();
 		
 		if( run_id != null ) {
@@ -100,12 +97,12 @@ public class EvaluateRun {
 				runevaluation.setError("Run description file not present. ");
 				File evaluationFile = Conversion.stringToTempFile( xstream.toXML( runevaluation ), "run_" + run_id + "evaluations", "xml" );
 				
-				RunEvaluate re = apiconnector.openmlRunEvaluate( evaluationFile, ash.getSessionHash() );
+				RunEvaluate re = apiconnector.openmlRunEvaluate( evaluationFile );
 				Conversion.log( "Error", "Process Run", "Run processed, but with error: " + re.getRun_id() );
 				return;
 			}
 			
-			String description = OpenmlConnector.getStringFromUrl( apiconnector.getOpenmlFileUrl( file_ids.get( "description" ), "Run_" + run_id + "_description.xml", ash.getSessionHash() ).toString() );
+			String description = OpenmlConnector.getStringFromUrl( apiconnector.getOpenmlFileUrl( file_ids.get( "description" ), "Run_" + run_id + "_description.xml" ).toString() );
 			Run run_description = (Run) xstream.fromXML( description );
 			
 			Conversion.log( "OK", "Process Run", "Start prediction evaluator. " );
@@ -113,15 +110,15 @@ public class EvaluateRun {
 			String filename = "Task_" + task_id + "_predictions.arff";
 			if( task.getTask_type().equals("Supervised Data Stream Classification") ) {
 				predictionEvaluator = new EvaluateStreamPredictions(
-					dataset.getUrl() + "?session_hash=" + ash.getSessionHash(), 
-					apiconnector.getOpenmlFileUrl( file_ids.get( "predictions" ), filename, ash.getSessionHash() ).toString(), 
+					dataset.getUrl() + "?session_hash=" + apiconnector.getSessionHash(), 
+					apiconnector.getOpenmlFileUrl( file_ids.get( "predictions" ), filename ).toString(), 
 					source_data.getTarget_feature(),
 					stream_interval_size );
 			} else {
 				predictionEvaluator = new EvaluateBatchPredictions( 
-					dataset.getUrl() + "?session_hash=" + ash.getSessionHash(), 
+					dataset.getUrl() + "?session_hash=" + apiconnector.getSessionHash(), 
 					estimationprocedure.getData_splits_url(), 
-					apiconnector.getOpenmlFileUrl( file_ids.get( "predictions" ), filename, ash.getSessionHash() ).toString(), 
+					apiconnector.getOpenmlFileUrl( file_ids.get( "predictions" ), filename ).toString(), 
 					source_data.getTarget_feature() );
 			}
 			runevaluation.addEvaluationMeasures( predictionEvaluator.getEvaluationScores() );
@@ -168,7 +165,7 @@ public class EvaluateRun {
 		try {
 			File evaluationFile = Conversion.stringToTempFile( xstream.toXML( runevaluation ), "run_" + run_id + "evaluations", "xml" );
 			System.out.println(xstream.toXML( runevaluation ));
-			RunEvaluate re = apiconnector.openmlRunEvaluate( evaluationFile, ash.getSessionHash() );
+			RunEvaluate re = apiconnector.openmlRunEvaluate( evaluationFile );
 			Conversion.log( "OK", "Process Run", "Run processed: " + re.getRun_id() );
 		} catch( Exception  e ) {
 			Conversion.log( "ERROR", "Process Run", "An error occured during API call: " + e.getMessage() );

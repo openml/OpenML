@@ -14,7 +14,6 @@ import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.algorithms.MathHelper;
 import org.openml.apiconnector.algorithms.TaskInformation;
 import org.openml.apiconnector.io.OpenmlConnector;
-import org.openml.apiconnector.io.ApiSessionHash;
 import org.openml.apiconnector.models.Metric;
 import org.openml.apiconnector.models.MetricScore;
 import org.openml.apiconnector.xml.Implementation;
@@ -38,7 +37,6 @@ public class ResultListener {
 	private final BufferedWriter bw;
 	private final DecimalFormat df; 
 
-	private final ApiSessionHash ash;
 	private final OpenmlConnector apiconnector;
 	
 	private int att_index_row_id = -1;
@@ -47,8 +45,7 @@ public class ResultListener {
 	private int att_index_correct = -1;
 	private ArrayList<String> classes = new ArrayList<String>();
 	
-	public ResultListener( Task task, OpenmlConnector apiconnector, ApiSessionHash ash ) throws Exception {
-		this.ash = ash;
+	public ResultListener( Task task, OpenmlConnector apiconnector ) throws Exception {
 		this.task = task;
 		this.apiconnector = apiconnector;
 		
@@ -63,7 +60,7 @@ public class ResultListener {
 		bw.close();
 		
 		Implementation implementation = MoaAlgorithm.create(classifier);
-		int implementation_id = MoaAlgorithm.getImplementationId(implementation, classifier, apiconnector, ash.getSessionHash());
+		int implementation_id = MoaAlgorithm.getImplementationId(implementation, classifier, apiconnector );
 		implementation = apiconnector.openmlImplementationGet( implementation_id ); // updated
 		
 		ArrayList<Parameter_setting> ps = MoaAlgorithm.getOptions( implementation, classifier.getOptions().getOptionArray() );
@@ -80,7 +77,7 @@ public class ResultListener {
 		Map<String, File> output_files = new HashMap<String, File>();
 		output_files.put( "predictions", results );
 		
-		apiconnector.openmlRunUpload(descriptionXML, output_files, ash.getSessionHash() );
+		apiconnector.openmlRunUpload(descriptionXML, output_files );
 		
 		return true;
 	}
@@ -113,12 +110,12 @@ public class ResultListener {
 		ArrayList<Attribute> header = new ArrayList<Attribute>();
 		Feature[] features = TaskInformation.getPredictions(t).getFeatures();
 		// TODO: FIXME?!
-		classes = new ArrayList<String>( Arrays.asList( TaskInformation.getClassNames(apiconnector,ash,t) ) );
+		classes = new ArrayList<String>( Arrays.asList( TaskInformation.getClassNames(apiconnector,t) ) );
 		for( int i = 0; i < features.length; i++ ) {
 			Feature f = features[i];
 			if( f.getName().equals("confidence.classname") ) {
 				att_index_confidence = i;
-				for (String s : TaskInformation.getClassNames(apiconnector,ash,t)) {
+				for (String s : TaskInformation.getClassNames(apiconnector,t)) {
 					header.add(new Attribute("confidence." + s));
 				}
 			} else if (f.getName().equals("prediction")) {
