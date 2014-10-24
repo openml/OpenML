@@ -1,5 +1,7 @@
 OpenML: Open Machine Learning
 =============================
+Developers: to keep track of issues, we use Waffle: https://waffle.io/openml/OpenML
+
 ## Aim
 OpenML aims to create a novel ecosystem for machine learning experimentation. The current generation of machine learning 
 and data mining platforms offers a wide variety of algorithms to process and model all kinds of data. They also offer 
