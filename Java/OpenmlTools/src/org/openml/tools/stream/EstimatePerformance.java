@@ -1,17 +1,15 @@
 package org.openml.tools.stream;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.openml.apiconnector.io.OpenmlConnector;
 
 public class EstimatePerformance {
 
 	
-	public static void main( String args[] ) throws JSONException, IOException {
+	public static void main( String args[] ) throws Exception {
 		OpenmlConnector api = new OpenmlConnector();
 		Map<Integer, ScoreObject> scores = new HashMap<Integer, ScoreObject>();
 		

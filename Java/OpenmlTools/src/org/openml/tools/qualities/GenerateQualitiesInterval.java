@@ -1,8 +1,5 @@
 package org.openml.tools.qualities;
 
-import java.io.IOException;
-
-import org.json.JSONException;
 import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.algorithms.QueryUtils;
 import org.openml.apiconnector.io.OpenmlConnector;
@@ -13,7 +10,7 @@ import org.openml.webapplication.features.FantailConnector;
 public class GenerateQualitiesInterval {
 
 	// program for auto filling of data qualities of interval 1000
-	public static void main( String[] args ) throws JSONException, IOException {
+	public static void main( String[] args ) throws Exception {
 		
 		Config config = new Config("username = janvanrijn@gmail.com; password = Feyenoord2002; server = http://localhost/openexpdb_v2/");
 		

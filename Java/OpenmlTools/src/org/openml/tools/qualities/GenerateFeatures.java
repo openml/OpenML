@@ -31,7 +31,7 @@ public class GenerateFeatures {
 		process( api, 274 );
 	}
 	
-	public static void process_all( OpenmlConnector api ) throws JSONException, IOException {
+	public static void process_all( OpenmlConnector api ) throws Exception {
 		
 		String sql = "SELECT `did` FROM `dataset` WHERE `did` NOT IN (SELECT DISTINCT `did` FROM `data_feature`) LIMIT 0,10;";
 		
