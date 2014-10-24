@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/openml/OpenML.png?label=ready&title=Ready)](https://waffle.io/openml/OpenML)
 OpenML: Open Machine Learning
 =============================
 Developers: to keep track of issues, we use Waffle: https://waffle.io/openml/OpenML
