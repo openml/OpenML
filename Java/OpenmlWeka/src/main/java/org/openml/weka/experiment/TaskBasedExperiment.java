@@ -8,7 +8,6 @@ import java.lang.reflect.Array;
 
 import javax.swing.DefaultListModel;
 
-import org.openml.apiconnector.algorithms.SciMark;
 import org.openml.apiconnector.algorithms.TaskInformation;
 import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.settings.Config;
@@ -34,7 +33,7 @@ public class TaskBasedExperiment extends Experiment {
 	private static final long serialVersionUID = 1L;
 
 	/** An array of the Tasks to be executed */
-	protected DefaultListModel<Task> m_Tasks = new DefaultListModel<Task>();
+	protected DefaultListModel m_Tasks = new DefaultListModel();
 
 	/**
 	 * boolean to specify whether this is a plain dataset based experiment, or
@@ -71,11 +70,11 @@ public class TaskBasedExperiment extends Experiment {
 		return datasetBasedExperiment;
 	}
 
-	public DefaultListModel<Task> getTasks() {
+	public DefaultListModel getTasks() {
 		return m_Tasks;
 	}
 
-	public void setTasks(DefaultListModel<Task> tasks) {
+	public void setTasks(DefaultListModel tasks) {
 		m_Tasks = tasks;
 	}
 
@@ -153,7 +152,7 @@ public class TaskBasedExperiment extends Experiment {
 			}
 		} else {
 			if (m_CurrentTask == null) {
-				m_CurrentTask = getTasks().elementAt(m_DatasetNumber);
+				m_CurrentTask = (Task) getTasks().elementAt(m_DatasetNumber);
 
 				Data_set ds = TaskInformation.getSourceData(m_CurrentTask);
 				DataSetDescription dsd = TaskInformation.getSourceData(
@@ -259,7 +258,7 @@ public class TaskBasedExperiment extends Experiment {
 		String classifierName = Utils.getOption('C', options);
 		String[] classifierOptions = Utils.partitionOptions(options);
 
-		DefaultListModel<Task> tasks = new DefaultListModel<Task>();
+		DefaultListModel tasks = new DefaultListModel();
 		tasks.add(0, apiconnector.openmlTaskSearch(task_id));
 		setTasks(tasks);
 
