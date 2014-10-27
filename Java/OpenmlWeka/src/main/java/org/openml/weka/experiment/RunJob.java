@@ -20,10 +20,15 @@ public class RunJob {
 		
 		Config config = new Config();
 		OpenmlConnector apiconnector;
-		if( config.getServer() != null ) {
-			apiconnector = new OpenmlConnector( config.getServer() );
+		
+		String username = config.getUsername();
+		String password = config.getPassword();
+		String server = config.getServer();
+		
+		if( server != null ) {
+			apiconnector = new OpenmlConnector( server, username, password );
 		} else { 
-			apiconnector = new OpenmlConnector();
+			apiconnector = new OpenmlConnector( username, password );
 		}
 		
 		String strN = Utils.getOption('N', args);
