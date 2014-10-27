@@ -61,6 +61,8 @@ public class RunJob {
 			TaskBasedExperiment.main( ArrayUtils.addAll(taskArgs, classArgs) );
 		} catch( Exception e) {
 			e.printStackTrace();
+		} catch( Error e) {
+			e.printStackTrace();
 		}
 	}
 }
