@@ -1076,7 +1076,7 @@ public class OpenmlSimpleSetupPanel extends SimpleSetupPanel {
 				}
 				m_Exp.setResultListener(crl);
 			} else if (m_ResultsDestinationCBox.getSelectedItem() == DEST_OPENML_TEXT) {
-				TaskResultListener trl = new TaskResultListener(apiconnector, new SciMark());
+				TaskResultListener trl = new TaskResultListener(apiconnector);
 				try {
 					File f = File.createTempFile("WekaOpenMLResults",
 							Constants.DATASET_FORMAT);

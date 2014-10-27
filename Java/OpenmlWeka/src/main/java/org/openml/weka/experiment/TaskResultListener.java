@@ -51,15 +51,12 @@ public class TaskResultListener extends InstancesResultListener {
 	 * server with error message
 	 */
 	private final ArrayList<String> tasksWithErrors;
-	
-	private final SciMark benchmarker;
 
 	private final OpenmlConnector apiconnector;
 	
-	public TaskResultListener( OpenmlConnector apiconnector, SciMark benchmarker ) {
+	public TaskResultListener( OpenmlConnector apiconnector ) {
 		super();
 		
-		this.benchmarker = benchmarker;
 		this.apiconnector = apiconnector;
 		currentlyCollecting = new HashMap<String, OpenmlExecutedTask>();
 		tasksWithErrors = new ArrayList<String>();
@@ -108,6 +105,7 @@ public class TaskResultListener extends InstancesResultListener {
 		File tmpDescriptionFile;
 		
 		// also add information about CPU performance and OS to run:
+		SciMark benchmarker = SciMark.getInstance();
 		oet.getRun().addOutputEvaluation("os_information", "openml.userdefined.os_information(1.0)", null, "[" + StringUtils.join( benchmarker.getOsInfo(), ", " ) + "]"  );
 		oet.getRun().addOutputEvaluation("scimark_benchmark", "openml.userdefined.scimark_benchmark(1.0)", benchmarker.getResult(), "[" + StringUtils.join( benchmarker.getStringArray(), ", " ) + "]" );
 		

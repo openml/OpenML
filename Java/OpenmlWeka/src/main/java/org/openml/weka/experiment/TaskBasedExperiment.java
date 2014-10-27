@@ -283,6 +283,7 @@ public class TaskBasedExperiment extends Experiment {
 	public static void main(String[] args) {
 		try {
 			Config openmlconfig = new Config();
+			
 			OpenmlConnector apiconnector;
 			if( openmlconfig.getServer() != null ) {
 				apiconnector = new OpenmlConnector( openmlconfig.getServer(), openmlconfig.getUsername(), openmlconfig.getPassword() );
@@ -292,7 +293,7 @@ public class TaskBasedExperiment extends Experiment {
 			
 			TaskBasedExperiment exp = new TaskBasedExperiment( new Experiment(), apiconnector );
 			ResultProducer rp = new TaskResultProducer(apiconnector);
-			TaskResultListener rl = new TaskResultListener(apiconnector, new SciMark());
+			TaskResultListener rl = new TaskResultListener(apiconnector);
 			SplitEvaluator se = new TaskSplitEvaluator();
 			Classifier sec = null;
 			// TODO: do we need this check?
