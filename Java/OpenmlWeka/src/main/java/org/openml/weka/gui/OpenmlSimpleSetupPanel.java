@@ -58,7 +58,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileFilter;
 
-import org.openml.apiconnector.algorithms.SciMark;
 import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.settings.Constants;
@@ -1076,7 +1075,7 @@ public class OpenmlSimpleSetupPanel extends SimpleSetupPanel {
 				}
 				m_Exp.setResultListener(crl);
 			} else if (m_ResultsDestinationCBox.getSelectedItem() == DEST_OPENML_TEXT) {
-				TaskResultListener trl = new TaskResultListener(apiconnector);
+				TaskResultListener trl = new TaskResultListener(apiconnector, openmlconfig);
 				try {
 					File f = File.createTempFile("WekaOpenMLResults",
 							Constants.DATASET_FORMAT);

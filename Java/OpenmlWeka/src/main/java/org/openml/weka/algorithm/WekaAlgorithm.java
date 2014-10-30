@@ -32,7 +32,7 @@ import weka.core.Utils;
 import weka.core.Version;
 
 public class WekaAlgorithm {
-
+	
 	public static String getVersion(String algorithm) {
 		String version = "undefined";
 		try {
@@ -70,7 +70,7 @@ public class WekaAlgorithm {
 		return ui.getId();
 	}
 	
-	public static Implementation create( String classifier_name, String option_str ) throws Exception {
+	public static Implementation create( String classifier_name, String option_str, String[] tags ) throws Exception {
 		Object classifier = Class.forName(classifier_name).newInstance();
 		String[] currentOptions = Utils.splitOptions( option_str );
 		String[] defaultOptions = ((OptionHandler) classifier).getClass().newInstance().getOptions();
@@ -88,6 +88,9 @@ public class WekaAlgorithm {
 		}
 		
 		Implementation i = new Implementation( name, dependencies + "_" + version, description, language, dependencies );
+		for( String tag : tags ) {
+			i.addTag( tag );
+		}
 		
 		Enumeration<Option> parameters = ((OptionHandler) classifier).listOptions();
 		while( parameters.hasMoreElements() ) {
@@ -112,7 +115,7 @@ public class WekaAlgorithm {
 					// Kernels etc. All parameters of the kernel are on the same currentOptions entry
 					subimplementation = create( 
 						currentValueSplitted[0], 
-						StringUtils.join( OptionParser.removeFirstElement(currentValueSplitted), " " ) );
+						StringUtils.join( OptionParser.removeFirstElement(currentValueSplitted), " " ), tags );
 					type = ParameterType.KERNEL;
 					
 					i.addComponent( parameter.name(), subimplementation );
@@ -121,7 +124,7 @@ public class WekaAlgorithm {
 					// Meta algorithms and stuff. All parameters follow from the hyphen in currentOptions
 					subimplementation = create( 
 						currentValueSplitted[0], 
-						StringUtils.join( Utils.partitionOptions(currentOptions), " ") );
+						StringUtils.join( Utils.partitionOptions(currentOptions), " "), tags );
 					type = ParameterType.BASELEARNER;
 					
 					i.addComponent( parameter.name(), subimplementation );

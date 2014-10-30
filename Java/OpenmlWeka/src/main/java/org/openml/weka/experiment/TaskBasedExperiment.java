@@ -292,7 +292,7 @@ public class TaskBasedExperiment extends Experiment {
 			
 			TaskBasedExperiment exp = new TaskBasedExperiment( new Experiment(), apiconnector );
 			ResultProducer rp = new TaskResultProducer(apiconnector);
-			TaskResultListener rl = new TaskResultListener(apiconnector);
+			TaskResultListener rl = new TaskResultListener(apiconnector, openmlconfig);
 			SplitEvaluator se = new TaskSplitEvaluator();
 			Classifier sec = null;
 			// TODO: do we need this check?

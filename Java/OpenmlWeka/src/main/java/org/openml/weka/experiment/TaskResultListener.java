@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.algorithms.SciMark;
@@ -15,6 +16,7 @@ import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.io.ApiException;
 import org.openml.apiconnector.models.Metric;
 import org.openml.apiconnector.models.MetricScore;
+import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.settings.Constants;
 import org.openml.apiconnector.xml.DataSetDescription;
 import org.openml.apiconnector.xml.Implementation;
@@ -37,12 +39,15 @@ import weka.core.DenseInstance;
 import weka.core.Instances;
 import weka.core.RevisionHandler;
 import weka.core.Utils;
+import weka.core.Version;
 import weka.experiment.InstancesResultListener;
 
 public class TaskResultListener extends InstancesResultListener {
 
 	private static final long serialVersionUID = 7230120341L;
-
+	
+	private static final String[] DEFAULT_TAGS = {"weka", "weka_" + Version.VERSION };
+	
 	/** List of OpenML tasks currently being solved. Folds/repeats are gathered */
 	private final Map<String, OpenmlExecutedTask> currentlyCollecting;
 
@@ -54,12 +59,16 @@ public class TaskResultListener extends InstancesResultListener {
 
 	private final OpenmlConnector apiconnector;
 	
-	public TaskResultListener( OpenmlConnector apiconnector ) {
+	private final String[] all_tags;
+	
+	
+	public TaskResultListener( OpenmlConnector apiconnector, Config config ) {
 		super();
 		
 		this.apiconnector = apiconnector;
 		currentlyCollecting = new HashMap<String, OpenmlExecutedTask>();
 		tasksWithErrors = new ArrayList<String>();
+		all_tags = ArrayUtils.addAll(DEFAULT_TAGS, config.getTags());
 	}
 
 	public void acceptResultsForSending(Task t, Integer repeat, Integer fold, Integer sample,
@@ -71,7 +80,7 @@ public class TaskResultListener extends InstancesResultListener {
 		String key = t.getTask_id() + "_" + implementationId + "_" + options;
 		if (currentlyCollecting.containsKey(key) == false) {
 			currentlyCollecting.put(key, new OpenmlExecutedTask(t,
-					classifier, null, options, apiconnector));
+					classifier, null, options, apiconnector, all_tags ));
 		}
 		OpenmlExecutedTask oet = currentlyCollecting.get(key);
 		oet.addBatchOfPredictions(fold, repeat, sample, rowids, predictions);
@@ -94,7 +103,7 @@ public class TaskResultListener extends InstancesResultListener {
 		if (tasksWithErrors.contains(key) == false) {
 			tasksWithErrors.add(key);
 			sendTaskWithError(new OpenmlExecutedTask(t, classifier,
-					error_message, options, apiconnector));
+				error_message, options, apiconnector, all_tags ));
 		}
 	}
 
@@ -171,7 +180,8 @@ public class TaskResultListener extends InstancesResultListener {
 		private Map<Metric,Double> userDefinedMeasuresTotals;
 
 		public OpenmlExecutedTask(Task t, Classifier classifier,
-				String error_message, String options, OpenmlConnector apiconnector ) throws Exception {
+				String error_message, String options, OpenmlConnector apiconnector,
+				String[] tags ) throws Exception {
 			this.classifier = classifier;
 			classnames = TaskInformation.getClassNames(apiconnector, t);
 			task_id = t.getTask_id();
@@ -218,7 +228,7 @@ public class TaskResultListener extends InstancesResultListener {
 			predictions = new Instances("openml_task_" + t.getTask_id() + "_predictions", attInfo, 0);
 			
 			
-			Implementation find = WekaAlgorithm.create( classifier.getClass().getName(), options );
+			Implementation find = WekaAlgorithm.create( classifier.getClass().getName(), options, tags );
 			
 			implementation_id = WekaAlgorithm.getImplementationId( find, classifier, apiconnector );
 			Implementation implementation = apiconnector.openmlImplementationGet( implementation_id );
@@ -229,7 +239,7 @@ public class TaskResultListener extends InstancesResultListener {
 			String[] params = Utils.splitOptions( options );
 			List<Parameter_setting> list = WekaAlgorithm.getParameterSetting( params, implementation );
 			
-			run = new Run(t.getTask_id(), error_message, implementation.getId(), setup_string, list.toArray(new Parameter_setting[list.size()]) );
+			run = new Run(t.getTask_id(), error_message, implementation.getId(), setup_string, list.toArray(new Parameter_setting[list.size()]), tags );
 			userDefinedMeasuresTotals = new HashMap<Metric, Double>();
 		}
 		
