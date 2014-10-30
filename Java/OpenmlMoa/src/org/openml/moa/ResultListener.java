@@ -31,6 +31,8 @@ import moa.core.InstancesHeader;
 
 public class ResultListener {
 	
+	private static final String[] MOA_TAGS = { "Moa" };
+	
 	private final File results;
 	private final Task task;
 	private final InstancesHeader header;
@@ -65,7 +67,7 @@ public class ResultListener {
 		
 		ArrayList<Parameter_setting> ps = MoaAlgorithm.getOptions( implementation, classifier.getOptions().getOptionArray() );
 		
-		Run run = new Run( task.getTask_id(), null, implementation_id, classifier.getCLICreationString(Classifier.class), ps.toArray(new Parameter_setting[ps.size()]) );
+		Run run = new Run( task.getTask_id(), null, implementation_id, classifier.getCLICreationString(Classifier.class), ps.toArray(new Parameter_setting[ps.size()]), MOA_TAGS );
 		for( Metric m : userdefinedMeasures.keySet() ) {
 			MetricScore score = userdefinedMeasures.get(m);
 			run.addOutputEvaluation( m.name, m.implementation, score.getScore(), score.getArrayAsString( df ) );

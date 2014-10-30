@@ -180,6 +180,7 @@ public class GenerateBayesnetDatasets {
 				null, // row id attribute
 				dsd.getDefault_target_attribute(), 
 				null,
+				null,
 				null // md5 hash
 		);
 		String outputDatasetString = xstream.toXML( outputDatasetDescription );
