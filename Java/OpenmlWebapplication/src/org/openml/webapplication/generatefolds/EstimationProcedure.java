@@ -25,8 +25,8 @@ import weka.core.Instances;
 
 public class EstimationProcedure {
 
-	public static enum EstimationProcedureType {CROSSVALIDATION, LEAVEONEOUT, HOLDOUT, LEARNINGCURVE, CUSTOMHOLDOUT}
-	public final static String[] estimationProceduresTxt = {"crossvalidation", "leaveoneout", "holdout", "learningcurve", "customholdout"};
+	public static enum EstimationProcedureType {CROSSVALIDATION, LEAVEONEOUT, HOLDOUT, LEARNINGCURVE, CUSTOMHOLDOUT, BOOTSTRAP}
+	public final static String[] estimationProceduresTxt = {"crossvalidation", "leaveoneout", "holdout", "learningcurve", "customholdout", "bootstrap"};
 	
 	private final EstimationProcedureType em;
 	private final int arg1;
@@ -47,6 +47,10 @@ public class EstimationProcedure {
 			em = EstimationProcedureType.CUSTOMHOLDOUT;
 			arg1 = 1;
 			arg2 = dataset.numInstances();
+		} else if( parts[0].equals(estimationProceduresTxt[5] ) ) {
+			em = EstimationProcedureType.BOOTSTRAP;
+			arg1 = Integer.valueOf(parts[1]);
+			arg2 = 1;
 		} else {
 			if( parts.length != 3 ) {
 				throw new RuntimeException("Illigal evaluationMethod (EvaluationMethod::construct (3))"); }
@@ -110,6 +114,8 @@ public class EstimationProcedure {
 			return dataset.numInstances() * arg1 * arg2; // repeats * folds * data set size
 		case CUSTOMHOLDOUT: // by default only one repeat
 			return dataset.numInstances();
+		case BOOTSTRAP:
+			return dataset.numInstances() * 2 * arg1; // 2 * dataset size * repeats (resampled dataset = training set, all instances in test set)
 		default:
 			throw new RuntimeException("Illigal evaluationMethod (EvaluationMethod::getSplitSize)");
 		}
@@ -127,6 +133,8 @@ public class EstimationProcedure {
 				return estimationProceduresTxt[0] + "_" + arg1 + "_" + arg2;
 			case CUSTOMHOLDOUT:
 				return estimationProceduresTxt[4];
+			case BOOTSTRAP:
+				return estimationProceduresTxt[5] + "_" + arg1;
 			default:
 				throw new RuntimeException("Illigal evaluationMethod (EvaluationMethod::toString)");
 		}

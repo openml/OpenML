@@ -25,12 +25,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.openml.apiconnector.algorithms.Input;
 import org.openml.apiconnector.algorithms.MathHelper;
 import org.openml.apiconnector.models.Metric;
 import org.openml.apiconnector.models.MetricScore;
 import org.openml.apiconnector.xml.EvaluationScore;
 import org.openml.webapplication.algorithm.InstancesHelper;
-import org.openml.webapplication.io.Input;
 import org.openml.webapplication.io.Output;
 import org.openml.webapplication.predictionCounter.FoldsPredictionCounter;
 import org.openml.webapplication.predictionCounter.PredictionCounter;
@@ -57,15 +57,17 @@ public class EvaluateBatchPredictions implements PredictionEvaluator {
 	private final PredictionCounter predictionCounter;
 	private final String[] classes;
 	private final TaskType task;
-	private final Evaluation[][][] sampleEvaluation;
+	private final Evaluation[][][][] sampleEvaluation;
+	private final boolean bootstrap;
 	
 	private EvaluationScore[] evaluationScores;
 	
-	public EvaluateBatchPredictions( String datasetPath, String splitsPath, String predictionsPath, String classAttribute ) throws Exception {
+	public EvaluateBatchPredictions( String datasetPath, String splitsPath, String predictionsPath, String classAttribute, boolean bootstrap ) throws Exception {
 		// set all arff files needed for this operation. 
 		dataset 	= new Instances( new BufferedReader( Input.getURL( datasetPath ) ) );
 		predictions = new Instances( new BufferedReader( Input.getURL( predictionsPath ) ) ); 
 		splits 		= new Instances( new BufferedReader( Input.getURL( splitsPath ) ) );
+		this.bootstrap = bootstrap;
 		
 		// Set class attribute to dataset ...
 		if( dataset.attribute( classAttribute ) != null ) {
@@ -87,7 +89,7 @@ public class EvaluateBatchPredictions implements PredictionEvaluator {
 		
 		// initiate a class that will help us with checking the prediction count. 
 		predictionCounter = new FoldsPredictionCounter(splits);
-		sampleEvaluation  = new Evaluation[predictionCounter.getRepeats()][predictionCounter.getFolds()][predictionCounter.getSamples()];
+		sampleEvaluation  = new Evaluation[predictionCounter.getRepeats()][predictionCounter.getFolds()][predictionCounter.getSamples()][bootstrap ? 2 : 1];
 		
 		// *** A sample is considered to be a subset of a fold. In a normal n-times n-fold crossvalidation
 		//     setting, each fold consists of 1 sample. In a leaning curve example, each fold could consist
@@ -111,10 +113,11 @@ public class EvaluateBatchPredictions implements PredictionEvaluator {
 		for( int i = 0; i < classes.length; i++ ) {
 			classes[i] = dataset.classAttribute().value( i );
 			String attribute = "confidence." + classes[i];
-			if( predictions.attribute(attribute) != null )
+			if( predictions.attribute(attribute) != null ) {
 				ATT_PREDICTION_CONFIDENCE[i] = predictions.attribute( attribute ).index();
-			else
+			} else {
 				throw new Exception( "Attribute " + attribute + " not found among predictions. " );
+			}
 		}
 		
 		// and do the actual evaluation. 
@@ -123,14 +126,18 @@ public class EvaluateBatchPredictions implements PredictionEvaluator {
 	
 	private void doEvaluation() throws Exception {
 		// set global evaluation
-		Evaluation e = new Evaluation( dataset );
-		
+		Evaluation[] e = new Evaluation[bootstrap ? 2 : 1];
+		for( int i = 0; i < e.length; ++i ) {
+			e[i] = new Evaluation( dataset );
+		}
 		
 		// set local evaluations
 		for( int i = 0; i < sampleEvaluation.length; ++i ) {
 			for( int j = 0; j < sampleEvaluation[i].length; ++j ) {
 				for( int k = 0; k < sampleEvaluation[i][j].length; ++k ) {
-					sampleEvaluation[i][j][k] = new Evaluation(dataset);
+					for( int m = 0; m < (bootstrap ? 2 : 1); ++m ) {
+						sampleEvaluation[i][j][k][m] = new Evaluation(dataset);
+					}
 				}
 			}
 		}
@@ -147,18 +154,19 @@ public class EvaluateBatchPredictions implements PredictionEvaluator {
 				throw new RuntimeException( "Making a prediction for row_id" + rowid + " (0-based) while dataset has only " + dataset.numInstances() + " instances. " );
 			}
 			
+			int bootstrap = 0;
 			if(task == TaskType.REGRESSION) {
-				e.evaluateModelOnce(
+				e[bootstrap].evaluateModelOnce(
 					prediction.value( ATT_PREDICTION_PREDICTION ), 
 					dataset.instance( rowid ) );
-				sampleEvaluation[repeat][fold][sample].evaluateModelOnce(
+				sampleEvaluation[repeat][fold][sample][bootstrap].evaluateModelOnce(
 					prediction.value( ATT_PREDICTION_PREDICTION ), 
 					dataset.instance( rowid ) );
 			} else {
-				e.evaluateModelOnceAndRecordPrediction(
+				e[bootstrap].evaluateModelOnceAndRecordPrediction(
 					InstancesHelper.predictionToConfidences( dataset, prediction, ATT_PREDICTION_CONFIDENCE ), // TODO: catch error when no prob distribution is provided
 					dataset.instance( rowid ) );
-				sampleEvaluation[repeat][fold][sample].evaluateModelOnceAndRecordPrediction(
+				sampleEvaluation[repeat][fold][sample][bootstrap].evaluateModelOnceAndRecordPrediction(
 					InstancesHelper.predictionToConfidences( dataset, prediction, ATT_PREDICTION_CONFIDENCE ) , // TODO: catch error when no prob distribution is provided
 					dataset.instance( rowid ) );
 			}
@@ -169,7 +177,7 @@ public class EvaluateBatchPredictions implements PredictionEvaluator {
 		}
 		
 		List<EvaluationScore> evaluationMeasuresList = new ArrayList<EvaluationScore>();
-		Map<Metric, MetricScore> globalMeasures = Output.evaluatorToMap( e, nrOfClasses, task);
+		Map<Metric, MetricScore> globalMeasures = Output.evaluatorToMap( e, nrOfClasses, task, bootstrap );
 		for( Metric m : globalMeasures.keySet() ) {
 			MetricScore score = globalMeasures.get( m );
 			DecimalFormat dm = MathHelper.defaultDecimalFormat;
@@ -184,7 +192,7 @@ public class EvaluateBatchPredictions implements PredictionEvaluator {
 		for( int i = 0; i < sampleEvaluation.length; ++i ) {
 			for( int j = 0; j < sampleEvaluation[i].length; ++j ) {
 				for( int k = 0; k < sampleEvaluation[i][j].length; ++k ) {
-					Map<Metric, MetricScore> currentMeasures = Output.evaluatorToMap( sampleEvaluation[i][j][k] , nrOfClasses, task);
+					Map<Metric, MetricScore> currentMeasures = Output.evaluatorToMap( sampleEvaluation[i][j][k] , nrOfClasses, task, bootstrap);
 					for( Metric m : currentMeasures.keySet() ) {
 						MetricScore score = currentMeasures.get( m );
 						DecimalFormat dm = MathHelper.defaultDecimalFormat;

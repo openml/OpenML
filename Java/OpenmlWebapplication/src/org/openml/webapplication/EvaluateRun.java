@@ -22,6 +22,7 @@ import org.openml.apiconnector.xstream.XstreamXmlMapping;
 import org.openml.webapplication.evaluate.EvaluateBatchPredictions;
 import org.openml.webapplication.evaluate.EvaluateStreamPredictions;
 import org.openml.webapplication.evaluate.PredictionEvaluator;
+import org.openml.webapplication.generatefolds.EstimationProcedure;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -120,7 +121,7 @@ public class EvaluateRun {
 					dataset.getUrl() + "?session_hash=" + apiconnector.getSessionHash(), 
 					estimationprocedure.getData_splits_url(), 
 					apiconnector.getOpenmlFileUrl( file_ids.get( "predictions" ), filename ).toString(), 
-					source_data.getTarget_feature() );
+					source_data.getTarget_feature(), estimationprocedure.getType().equals(EstimationProcedure.estimationProceduresTxt[5] ) );
 			}
 			runevaluation.addEvaluationMeasures( predictionEvaluator.getEvaluationScores() );
 			Conversion.log( "OK", "Process Run", "Start consistency check with user defined measures. (x " + run_description.getOutputEvaluation().length + ")" );

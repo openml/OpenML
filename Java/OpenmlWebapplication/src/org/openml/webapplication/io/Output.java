@@ -37,6 +37,9 @@ import weka.core.Utils;
 
 public class Output {
 	
+	/*
+	 *  Transforms a Weka Evaluation object into a HashMap with scores.
+	 */
 	public static Map<Metric, MetricScore> evaluatorToMap( Evaluation evaluator, int classes, TaskType task ) throws Exception {
 		Map<Metric, MetricScore> m = new HashMap<Metric, MetricScore>();
 		
@@ -95,6 +98,38 @@ public class Output {
 			m.put(new Metric("confusion_matrix","openml.evaluation.confusion_matrix(1.0)"), new MetricScore(confussion_matrix));
 		}
 		return m;
+	}
+	
+	/*
+	 *  Transforms a Weka Evaluation object into a HashMap with scores. 
+	 *  In this function, we assume that the evaluator consists of either 2 (bootstrap)
+	 *  or 1 (otherwise) elements. evaluator[0] contains all unseen instances, evaluator[1]
+	 *  contains all instances that occured in the trainings set. 
+	 */
+	public static Map<Metric, MetricScore> evaluatorToMap( Evaluation[] evaluator, int classes, TaskType task, boolean bootstrap ) throws Exception {
+		if( bootstrap && evaluator.length != 2 ) {
+			throw new Exception("Output->evaluatorToMap problem: Can not perform bootstrap scores, evaluation array is of wrong length. ");
+		} else if( bootstrap == false && evaluator.length != 1 ) {
+			throw new Exception("Output->evaluatorToMap exception: Choosen for normal evaluation, but two evaluators provided in array. ");
+		}
+		
+		if( bootstrap == false ) {
+			return evaluatorToMap(evaluator[0], classes, task);
+		} else {
+			Map<Metric, MetricScore> e0 = evaluatorToMap(evaluator[0], classes, task); // pessimistic test score
+			Map<Metric, MetricScore> el = evaluatorToMap(evaluator[0], classes, task); // training score
+			
+			Map<Metric, MetricScore> total = new HashMap<Metric, MetricScore>();
+
+			// TODO: define the multiply and sum operator for MetricScore
+			/*for( Metric m : e0.keySet() ) {
+				MetricScore s_total = new MetricSce0.get( m ) + el.get( m );
+				total.put(m, value);
+			}*/
+			
+			return total;
+		}
+		
 	}
 	
 	

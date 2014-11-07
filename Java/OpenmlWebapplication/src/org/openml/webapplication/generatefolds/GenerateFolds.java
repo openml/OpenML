@@ -28,15 +28,17 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Random;
 
+import org.openml.apiconnector.algorithms.Input;
 import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.webapplication.algorithm.InstancesHelper;
 import org.openml.webapplication.generatefolds.EstimationProcedure.EstimationProcedureType;
-import org.openml.webapplication.io.Input;
 import org.openml.webapplication.io.Md5Writer;
 import org.openml.webapplication.io.Output;
 
 import weka.core.Attribute;
 import weka.core.Instances;
+import weka.filters.Filter;
+import weka.filters.supervised.instance.Resample;
 
 public class GenerateFolds {
 	public static final int MAX_SPLITS_SIZE = 1000000;
@@ -85,7 +87,7 @@ public class GenerateFolds {
 		Output.instanes2file(splits, new Md5Writer() );
 	}
 	
-	private Instances generateInstances(String name, int[] testset) {
+	private Instances generateInstances(String name, int[] testset) throws Exception {
 		switch(evaluationMethod.getEvaluationMethod()) {
 			case HOLDOUT:	
 				return sample_splits_holdout( name );
@@ -97,6 +99,8 @@ public class GenerateFolds {
 				return sample_splits_learningcurve( name );
 			case CUSTOMHOLDOUT: 
 				return sample_splits_holdout_userdefined( name, testset );
+			case BOOTSTRAP:
+				return sample_splits_bootstrap( name );
 			default:
 				throw new RuntimeException("Illigal evaluationMethod (GenerateFolds::generateInstances)");
 		}
@@ -172,6 +176,28 @@ public class GenerateFolds {
 						splits.add(am.createInstance(false,rowid,r,f,s));
 					}
 				}
+			}
+		}
+		return splits;
+	}
+	
+	private Instances sample_splits_bootstrap( String name ) throws Exception {
+		Instances splits = new Instances(name,am.getArffHeader(),splits_size);
+		for( int r = 0; r < evaluationMethod.getRepeats(); ++r) {
+			Resample resample = new Resample();
+			String[] resampleOptions = { "-B", "0.0", "-Z", "100.0", "-S", r + "" };
+			resample.setOptions(resampleOptions);
+			resample.setInputFormat(dataset);
+			Instances trainingsset = Filter.useFilter(dataset, resample);
+			
+			// create training set, consisting of instances from 
+			for( int i = 0; i < trainingsset.numInstances(); ++i ) {
+				int rowid = (int) trainingsset.instance(i).value(0);
+				splits.add(am.createInstance(true,rowid,r,0));
+			}
+			for( int i = 0; i < dataset.numInstances(); ++i ) {
+				int rowid = (int) dataset.instance(i).value(0);
+				splits.add(am.createInstance(false,rowid,r,0));
 			}
 		}
 		return splits;
