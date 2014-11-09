@@ -10,7 +10,7 @@ import org.openml.apiconnector.xml.Tasks;
 import org.openml.apiconnector.xml.Tasks.Task;
 import org.openml.apiconnector.xml.Tasks.Task.Quality;
 
-public class BasicTags {
+public class TagTasksCurves {
 	
 	public static void main( String[] args ) throws Exception {
 		Config config = new Config();
