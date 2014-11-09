@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import weka.core.Utils;
 import weka.core.Instance;
 import weka.core.Instances;
 
@@ -69,9 +70,12 @@ public class InstancesHelper {
 		return result;
 	}
 	
-	public static double[] predictionToConfidences( Instances dataset, Instance prediction, int[] att_prediction_confidence ) {
+	public static double[] predictionToConfidences( Instances dataset, Instance prediction, int[] att_prediction_confidence ) throws Exception {
 		double[] confidences = new double[dataset.numClasses()];
 		for( int i = 0; i < dataset.numClasses(); i++ ) {
+			if( Utils.isMissingValue( prediction.value( att_prediction_confidence[i] ) ) ) {
+				throw new Exception("Prediction file contains missing values for important attribute (" + prediction.attribute( att_prediction_confidence[i] ).name() + "). ");
+			}
 			confidences[i] = prediction.value( att_prediction_confidence[i] );
 		}
 		return confidences;

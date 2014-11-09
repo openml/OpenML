@@ -163,11 +163,14 @@ public class EvaluateBatchPredictions implements PredictionEvaluator {
 					prediction.value( ATT_PREDICTION_PREDICTION ), 
 					dataset.instance( rowid ) );
 			} else {
+				// TODO: catch error when no prob distribution is provided
+				double[] confidences = InstancesHelper.predictionToConfidences( dataset, prediction, ATT_PREDICTION_CONFIDENCE );
+				
 				e[bootstrap].evaluateModelOnceAndRecordPrediction(
-					InstancesHelper.predictionToConfidences( dataset, prediction, ATT_PREDICTION_CONFIDENCE ), // TODO: catch error when no prob distribution is provided
+					confidences, 
 					dataset.instance( rowid ) );
 				sampleEvaluation[repeat][fold][sample][bootstrap].evaluateModelOnceAndRecordPrediction(
-					InstancesHelper.predictionToConfidences( dataset, prediction, ATT_PREDICTION_CONFIDENCE ) , // TODO: catch error when no prob distribution is provided
+					confidences, 
 					dataset.instance( rowid ) );
 			}
 		}
