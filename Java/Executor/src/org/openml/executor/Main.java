@@ -47,7 +47,13 @@ public class Main {
 		
 		
 		if( strTid != "" ) {
-			new Main( Integer.parseInt(strTid), "executables/", "rr" );
+			int taskId = Integer.parseInt(strTid);
+			try {
+				new Main( taskId, "executables/", "rr" );
+			} catch( Exception e ) {
+				Conversion.log( "Error", "ExecuteTask", "Error executing Task " + taskId + ": " + e.getMessage() );
+				e.printStackTrace();
+			}
 		} else {
 			Conversion.log("OK", "Init", "No task_id provided (-T). Will attempt to download a scheduled classification job. ");
 
@@ -57,7 +63,12 @@ public class Main {
 			for( int i = 0; i < N; ++i ) {
 				String workbench = ("Executor_" + FLOW_IDENTIFIER).replace( " ", "%20" );
 				Job job = connector.openmlJobGet( workbench, 1 + "" );
-				new Main( job.getTask_id(), "executables/", "rr" );
+				try {
+					new Main( job.getTask_id(), "executables/", "rr" );
+				} catch( Exception e ) {
+					Conversion.log( "Error", "ExecuteTask", "Error executing Task " + job.getTask_id() + ": " + e.getMessage() );
+					e.printStackTrace();
+				}
 			}
 		}
 	}
