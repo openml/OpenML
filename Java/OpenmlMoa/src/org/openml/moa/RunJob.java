@@ -2,6 +2,7 @@ package org.openml.moa;
 
 import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.settings.Config;
+import org.openml.apiconnector.settings.Settings;
 import org.openml.apiconnector.xml.Job;
 
 import weka.core.Utils;
@@ -12,7 +13,6 @@ public class RunJob {
 	private static OpenmlConnector apiconnector;
 	
 	public static void main( String[] args ) throws Exception {
-		
 		int n;
 		int ttid;
 		Config c = new Config();

@@ -31,7 +31,7 @@ public class Reset {
 		Conversion.log( "OK", "Init", "Total runs to be resetted: " + ids.length );
 		for( int id : ids ) {
 			RunReset r = connector.openmlRunReset( id );
-			Conversion.log( "OK", "Resetted", "Deleted run: " + r.getRun_id() );
+			Conversion.log( "OK", "Reset", "Reset run: " + r.getRun_id() );
 		}
 	}
 }
