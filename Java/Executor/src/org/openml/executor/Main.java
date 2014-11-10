@@ -10,6 +10,8 @@ import java.util.Map;
 import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.algorithms.TaskInformation;
 import org.openml.apiconnector.io.OpenmlConnector;
+import org.openml.apiconnector.settings.Config;
+import org.openml.apiconnector.xml.Job;
 import org.openml.apiconnector.xml.Run;
 import org.openml.apiconnector.xml.UploadRun;
 import org.openml.apiconnector.xstream.XstreamXmlMapping;
@@ -19,22 +21,32 @@ import com.thoughtworks.xstream.XStream;
 
 import weka.core.Attribute;
 import weka.core.Instances;
+import weka.core.Utils;
 
 public class Main {
 
-	private static final OpenmlConnector connector = new OpenmlConnector("janvanrijn@gmail.com", "Feyenoord2008");
 	private static final XStream xstream = XstreamXmlMapping.getInstance();
+	private static OpenmlConnector connector;
 	
 	private final Subsamples subsamples;
 	
-	private final int implementation_id = 707; // TODO: do differently. 
+	private final static String FLOW_IDENTIFIER = "RandomRules4.4 D1";
+	private final static int FLOW_ID = 707; // TODO: do differently. 
 	
 	public static void main(String[] args) throws Exception {
-		final String path = "executables/";
-		final String executable = "rr";
-		final int task_id = 1;
+		final Config config = new Config();
+		connector = new OpenmlConnector(config.getServer(), config.getUsername(), config.getPassword());
 		
-		new Main( task_id, path, executable );
+		String strTid = Utils.getOption('T', args);
+		if( strTid != "" ) {
+			new Main( Integer.parseInt(strTid), "executables/", "rr" );
+		} else {
+			Conversion.log("OK", "Init", "No task_id provided (-T). Will attempt to download a scheduled classification job. ");
+			
+			String workbench = ("Executor_" + FLOW_IDENTIFIER).replace( " ", "%20" );
+			Job job = connector.openmlJobGet( workbench, 1 + "" );
+			new Main( job.getTask_id(), "executables/", "rr" );
+		}
 	}
 	
 	public Main( int task_id, String path, String executable ) throws Exception {
@@ -58,7 +70,7 @@ public class Main {
 		
 		Map<String, File> outputFiles = new HashMap<String, File>();
 		outputFiles.put("predictions", Conversion.stringToTempFile(predictionsAll.toString(), "predictions_executor", "arff") );
-		Run description = new Run(task_id, null, implementation_id, executable, null, null);
+		Run description = new Run(task_id, null, FLOW_ID, executable, null, null);
 		
 		Conversion.log( "OK", "UploadRun", "Will start to upload run" );
 		UploadRun ur = connector.openmlRunUpload( Conversion.stringToTempFile( xstream.toXML(description), "description_executor", "xml"), outputFiles);
@@ -91,7 +103,11 @@ public class Main {
 		String[] classValues = TaskInformation.getClassNames(connector, subsamples.TASK);
 		for( int i = 0; i < classValues.length; ++i ) {
 			if( predictions.attribute("confidence." + classValues[i] ) == null ) {
-				predictions.insertAttributeAt(new Attribute("confidence." + classValues[i]), predictions.numAttributes() );
+				Attribute confidenceAtt = new Attribute("confidence." + classValues[i]);
+				predictions.insertAttributeAt(confidenceAtt, predictions.numAttributes() );
+				for( int j = 0; j < predictions.size(); ++j ) {
+					predictions.get(j).setValue(predictions.numAttributes() - 1, 0);
+				}
 			}
 		}
 		
