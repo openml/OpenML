@@ -18,6 +18,7 @@ import org.openml.apiconnector.models.Metric;
 import org.openml.apiconnector.models.MetricScore;
 import org.openml.apiconnector.xml.Implementation;
 import org.openml.apiconnector.xml.Run;
+import org.openml.apiconnector.xml.UploadRun;
 import org.openml.apiconnector.xml.Run.Parameter_setting;
 import org.openml.apiconnector.xml.Task;
 import org.openml.apiconnector.xml.Task.Output.Predictions.Feature;
@@ -79,8 +80,8 @@ public class ResultListener {
 		Map<String, File> output_files = new HashMap<String, File>();
 		output_files.put( "predictions", results );
 		
-		apiconnector.openmlRunUpload(descriptionXML, output_files );
-		
+		UploadRun ur = apiconnector.openmlRunUpload(descriptionXML, output_files );
+		Conversion.log( "OK", "Upload Result", "Result successfully uploaded, with rid " + ur.getRun_id() );
 		return true;
 	}
 	

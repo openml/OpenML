@@ -44,8 +44,6 @@ public class Main {
 		String strTid = Utils.getOption('T', args);
 		String strN = Utils.getOption('N', args);
 		
-		
-		
 		if( strTid != "" ) {
 			int taskId = Integer.parseInt(strTid);
 			try {

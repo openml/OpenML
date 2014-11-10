@@ -76,7 +76,6 @@ public class OpenmlDataStreamClassification extends MainTask {
 
 	@Override
 	protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
-		Settings.API_VERBOSE_LEVEL = 1;
 		try {
 			config = new Config();
 		} catch (Exception e) { 
