@@ -164,7 +164,7 @@ public class EvaluateBatchPredictions implements PredictionEvaluator {
 					dataset.instance( rowid ) );
 			} else {
 				// TODO: catch error when no prob distribution is provided
-				double[] confidences = InstancesHelper.predictionToConfidences( dataset, prediction, ATT_PREDICTION_CONFIDENCE );
+				double[] confidences = InstancesHelper.predictionToConfidences( dataset, prediction, ATT_PREDICTION_CONFIDENCE, ATT_PREDICTION_PREDICTION );
 				
 				e[bootstrap].evaluateModelOnceAndRecordPrediction(
 					confidences, 

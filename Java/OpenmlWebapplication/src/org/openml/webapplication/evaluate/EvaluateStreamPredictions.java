@@ -47,6 +47,7 @@ public class EvaluateStreamPredictions implements PredictionEvaluator {
 	private final String[] classes;
 	private final int nrOfClasses;
 	private final int ATT_PREDICTION_ROWID;
+	private final int ATT_PREDICTION_PREDICTION;
 	private final int[] ATT_PREDICTION_CONFIDENCE;
 	
 	private Map<Metric, MetricScore> globalMeasures;
@@ -74,6 +75,7 @@ public class EvaluateStreamPredictions implements PredictionEvaluator {
 		
 		// register row indexes. 
 		ATT_PREDICTION_ROWID = InstancesHelper.getRowIndex( "row_id", predictionsStructure );
+		ATT_PREDICTION_PREDICTION = InstancesHelper.getRowIndex( "prediction", predictionsStructure );
 		
 		// do the same for the confidence fields. This number is dependent on the number 
 		// of classes in the data set, hence the for-loop. 
@@ -115,7 +117,7 @@ public class EvaluateStreamPredictions implements PredictionEvaluator {
 					". Found prediction for instance #" + rowid + " instead." );
 			}
 			
-			double[] confidences = InstancesHelper.predictionToConfidences( datasetStructure, currentPrediction, ATT_PREDICTION_CONFIDENCE ); // TODO: catch error when no prob distribution is provided
+			double[] confidences = InstancesHelper.predictionToConfidences( datasetStructure, currentPrediction, ATT_PREDICTION_CONFIDENCE, ATT_PREDICTION_PREDICTION ); 
 			// TODO: we might want to throw an error if the sum of confidences is not 1.0. Not now though. 
 			confidences = InstancesHelper.toProbDist( confidences ); // TODO: security, we might be more picky later on and requiring real prob distributions.
 			try {

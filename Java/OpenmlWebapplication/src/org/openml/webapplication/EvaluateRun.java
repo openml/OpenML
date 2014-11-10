@@ -57,8 +57,7 @@ public class EvaluateRun {
 			"SELECT `rid`,`start_time`,`processed`,`error` " + 
 			"FROM `run` WHERE `processed` IS NULL AND `error` IS NULL " + 
 			"ORDER BY `start_time` ASC"; 
-
-		Settings.API_VERBOSE_LEVEL = 1;
+		
 		JSONArray runJson = (JSONArray) apiconnector.openmlFreeQuery( sql ).get("data");
 		
 		if( runJson.length() > 0 ) {
@@ -124,39 +123,42 @@ public class EvaluateRun {
 					source_data.getTarget_feature(), estimationprocedure.getType().equals(EstimationProcedure.estimationProceduresTxt[5] ) );
 			}
 			runevaluation.addEvaluationMeasures( predictionEvaluator.getEvaluationScores() );
-			Conversion.log( "OK", "Process Run", "Start consistency check with user defined measures. (x " + run_description.getOutputEvaluation().length + ")" );
-			
-			// TODO: This can be done so much faster ... 
-			String errorMessage = "";
-			boolean errorFound = false;
-			for( EvaluationScore recorded : run_description.getOutputEvaluation() ) {
-				boolean foundSame = false;
-				for( EvaluationScore calculated : runevaluation.getEvaluation_scores() ) {
-					if( recorded.isSame( calculated ) ) {
-						foundSame = true;
-						if( recorded.sameValue( calculated ) == false ) {
-							String offByStr = "";
-							try {
-								double diff = Math.abs( Double.parseDouble( recorded.getValue() ) - Double.parseDouble( calculated.getValue() ) );
-								offByStr = " (off by " + diff + ")";
-							} catch( NumberFormatException nfe ) { }
-							
-							errorMessage += "Inconsistent Evaluation score: " + recorded + offByStr;
-							errorFound = true;
-						} 
+			if(run_description.getOutputEvaluation() != null) {
+				Conversion.log( "OK", "Process Run", "Start consistency check with user defined measures. (x " + run_description.getOutputEvaluation().length + ")" );
+				
+				// TODO: This can be done so much faster ... 
+				String errorMessage = "";
+				boolean errorFound = false;
+				for( EvaluationScore recorded : run_description.getOutputEvaluation() ) {
+					boolean foundSame = false;
+					for( EvaluationScore calculated : runevaluation.getEvaluation_scores() ) {
+						if( recorded.isSame( calculated ) ) {
+							foundSame = true;
+							if( recorded.sameValue( calculated ) == false ) {
+								String offByStr = "";
+								try {
+									double diff = Math.abs( Double.parseDouble( recorded.getValue() ) - Double.parseDouble( calculated.getValue() ) );
+									offByStr = " (off by " + diff + ")";
+								} catch( NumberFormatException nfe ) { }
+								
+								errorMessage += "Inconsistent Evaluation score: " + recorded + offByStr;
+								errorFound = true;
+							} 
+						}
+					}
+					if( foundSame == false ) {
+						// give the record the correct sample size
+						if( recorded.getSample() != null && recorded.getSample_size() == null ) {
+							recorded.setSample_size( predictionEvaluator.getPredictionCounter().getShadowTypeSize(
+									recorded.getRepeat(), recorded.getFold(), recorded.getSample()));
+						}
+						runevaluation.addEvaluationMeasure( recorded );
 					}
 				}
-				if( foundSame == false ) {
-					// give the record the correct sample size
-					if( recorded.getSample() != null && recorded.getSample_size() == null ) {
-						recorded.setSample_size( predictionEvaluator.getPredictionCounter().getShadowTypeSize(
-								recorded.getRepeat(), recorded.getFold(), recorded.getSample()));
-					}
-					runevaluation.addEvaluationMeasure( recorded );
-				}
+				if( errorFound ) runevaluation.setError( errorMessage );
+			} else {
+				Conversion.log( "OK", "Process Run", "No local evaluation measures to compare to. " );
 			}
-			if( errorFound ) runevaluation.setError( errorMessage );
-			
 		} catch( Exception e ) {
 			e.printStackTrace();
 			Conversion.log( "Warning", "Process Run", "Unexpected error, will proceed with upload process: " + e.getMessage() );

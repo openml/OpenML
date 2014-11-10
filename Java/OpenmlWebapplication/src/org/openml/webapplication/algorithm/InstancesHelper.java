@@ -70,14 +70,24 @@ public class InstancesHelper {
 		return result;
 	}
 	
-	public static double[] predictionToConfidences( Instances dataset, Instance prediction, int[] att_prediction_confidence ) throws Exception {
+	// can only be used for classification
+	public static double[] predictionToConfidences( Instances dataset, Instance prediction, int[] att_prediction_confidence, int att_prediction ) throws Exception {
 		double[] confidences = new double[dataset.numClasses()];
+		boolean nonNullValue = false;
 		for( int i = 0; i < dataset.numClasses(); i++ ) {
 			if( Utils.isMissingValue( prediction.value( att_prediction_confidence[i] ) ) ) {
 				throw new Exception("Prediction file contains missing values for important attribute (" + prediction.attribute( att_prediction_confidence[i] ).name() + "). ");
 			}
 			confidences[i] = prediction.value( att_prediction_confidence[i] );
+			if( confidences[i] > 0 ) {
+				nonNullValue = true;
+			}
 		}
+		
+		if( nonNullValue == false ) {
+			confidences[(int) prediction.value(att_prediction)] = 1;
+		}
+		
 		return confidences;
 	}
 	
