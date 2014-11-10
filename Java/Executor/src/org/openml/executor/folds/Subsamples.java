@@ -43,6 +43,8 @@ public class Subsamples {
 		DataSetDescription dsd = connector.openmlDataDescription( DATASET_ID );
 		String splitsUrl = TaskInformation.getEstimationProcedure( TASK ).getData_splits_url();
 		Instances dataset = new Instances( new BufferedReader( Input.getURL( dsd.getUrl() + "?session_hash=" + connector.getSessionHash() ) ) );
+		renameAttributeToClass( dataset, TaskInformation.getSourceData(TASK).getTarget_feature() );
+		
 		Instances datasplits = new Instances( new BufferedReader( Input.getURL( splitsUrl ) ) );
 		
 		subsamples = new Instances[REPEATS][FOLDS][SAMPLES][2];
@@ -77,6 +79,22 @@ public class Subsamples {
 				rowids[repeat][fold][sample].add( rowid );
 			}
 		}
+	}
+	
+	private void renameAttributeToClass( Instances dataset, String attributeName ) {
+		if( attributeName.equals("class") ) {
+			// name already ok
+			return;
+		} 
+		// TODO: this mechanism should be tested
+		if( dataset.attribute("class") != null) {
+			for( int i = 0; true; ++i ) {
+				if( dataset.attribute("class_" + i ) == null ) {
+					dataset.renameAttribute( dataset.attribute("class"), "class_" + i );
+				}
+			}
+		}
+		dataset.renameAttribute( dataset.attribute(attributeName), "class" );
 	}
 	
 	public Instances getTrainingSet( int repeat, int fold ) {

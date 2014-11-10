@@ -1,12 +1,14 @@
 package org.openml.executor;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.algorithms.TaskInformation;
 import org.openml.apiconnector.io.OpenmlConnector;
@@ -30,22 +32,33 @@ public class Main {
 	
 	private final Subsamples subsamples;
 	
+	// TODO: make this dependent on the algorithm. 
 	private final static String FLOW_IDENTIFIER = "RandomRules4.4 D1";
-	private final static int FLOW_ID = 707; // TODO: do differently. 
+	private final static int FLOW_ID = 707; 
 	
 	public static void main(String[] args) throws Exception {
 		final Config config = new Config();
 		connector = new OpenmlConnector(config.getServer(), config.getUsername(), config.getPassword());
+		int N = 1;
 		
 		String strTid = Utils.getOption('T', args);
+		String strN = Utils.getOption('N', args);
+		
+		
+		
 		if( strTid != "" ) {
 			new Main( Integer.parseInt(strTid), "executables/", "rr" );
 		} else {
 			Conversion.log("OK", "Init", "No task_id provided (-T). Will attempt to download a scheduled classification job. ");
-			
-			String workbench = ("Executor_" + FLOW_IDENTIFIER).replace( " ", "%20" );
-			Job job = connector.openmlJobGet( workbench, 1 + "" );
-			new Main( job.getTask_id(), "executables/", "rr" );
+
+			if( strN != "" ) {
+				N = Integer.parseInt(strN);
+			}
+			for( int i = 0; i < N; ++i ) {
+				String workbench = ("Executor_" + FLOW_IDENTIFIER).replace( " ", "%20" );
+				Job job = connector.openmlJobGet( workbench, 1 + "" );
+				new Main( job.getTask_id(), "executables/", "rr" );
+			}
 		}
 	}
 	
@@ -80,7 +93,18 @@ public class Main {
 	public Instances runAlgorithm( String executable, String pathTrainingSet, String pathTestSet ) throws IOException, InterruptedException {
 		Process p = Runtime.getRuntime().exec( executable + " " + pathTrainingSet + " " + pathTestSet );
 	    p.waitFor();
-	    Instances predictions = new Instances(new InputStreamReader(p.getInputStream()));
+	    
+	    // first read the input stream to a string. debugging purposes
+	    StringWriter writer = new StringWriter();
+	    IOUtils.copy(p.getInputStream(), writer, "UTF-8");
+	    String output = writer.toString();
+	    
+	    // now write string to tmp file. 
+	    File algorithmOutput = Conversion.stringToTempFile( output, "algorithm-output", "arff");
+	    
+	    // now load the instances object
+	    Instances predictions = new Instances( new FileReader( algorithmOutput ) );
+	    		
 	    return predictions;
 	}
 	
