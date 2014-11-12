@@ -10,15 +10,24 @@ public class Reset {
 
 	public static void main( String[] args ) throws Exception {
 		
+		reset_tasktype_3();
+	}
+	
+	private static void reset_tasktype_3() throws Exception {
+		String sql = "SELECT r.rid FROM run r, task t WHERE r.task_id = t.task_id AND ttid = 3; ";
+		reset(sql);
+	}
+	
+	private static void error_results() throws Exception {
 		String sql = 
-			"SELECT r.rid " +
-			"FROM `run` `r`, `algorithm_setup` `s`, `setup_tag` `st`, task_tag `tt`, `implementation` `i` " +
-			"WHERE `i`.`id` = `s`.`implementation_id` AND `r`.`task_id` = `tt`.`id` " +
-			"AND `r`.`setup` = `s`.`sid` AND `s`.`sid` = `st`.`id` " +
-			"AND `r`.`error`  IS NOT NULL " +
-			"AND st.tag = 'curves' AND tt.tag = 'curves' " +
-			"AND r.error NOT LIKE 'Inconsistent Eva%'";
-		
+				"SELECT r.rid " +
+				"FROM `run` `r`, `algorithm_setup` `s`, `setup_tag` `st`, task_tag `tt`, `implementation` `i` " +
+				"WHERE `i`.`id` = `s`.`implementation_id` AND `r`.`task_id` = `tt`.`id` " +
+				"AND `r`.`setup` = `s`.`sid` AND `s`.`sid` = `st`.`id` " +
+				"AND `r`.`error`  IS NOT NULL " +
+				"AND st.tag = 'curves' AND tt.tag = 'curves' " +
+				"AND r.error NOT LIKE 'Inconsistent Eva%'";
+			
 		reset(sql);
 	}
 	

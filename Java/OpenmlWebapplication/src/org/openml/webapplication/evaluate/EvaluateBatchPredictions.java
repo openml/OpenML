@@ -155,10 +155,18 @@ public class EvaluateBatchPredictions implements PredictionEvaluator {
 			}
 			
 			int bootstrap = 0;
+			boolean measureGlobalScore = true;
+			if( task == TaskType.LEARNINGCURVE && sample != predictionCounter.getSamples() - 1) {
+				// for learning curves, we want the score of the last sample at global score
+				measureGlobalScore = false; 
+			}
+			
 			if(task == TaskType.REGRESSION) {
-				e[bootstrap].evaluateModelOnce(
-					prediction.value( ATT_PREDICTION_PREDICTION ), 
-					dataset.instance( rowid ) );
+				if(measureGlobalScore) {
+					e[bootstrap].evaluateModelOnce(
+						prediction.value( ATT_PREDICTION_PREDICTION ), 
+						dataset.instance( rowid ) );
+				}
 				sampleEvaluation[repeat][fold][sample][bootstrap].evaluateModelOnce(
 					prediction.value( ATT_PREDICTION_PREDICTION ), 
 					dataset.instance( rowid ) );
@@ -166,9 +174,11 @@ public class EvaluateBatchPredictions implements PredictionEvaluator {
 				// TODO: catch error when no prob distribution is provided
 				double[] confidences = InstancesHelper.predictionToConfidences( dataset, prediction, ATT_PREDICTION_CONFIDENCE, ATT_PREDICTION_PREDICTION );
 				
-				e[bootstrap].evaluateModelOnceAndRecordPrediction(
-					confidences, 
-					dataset.instance( rowid ) );
+				if(measureGlobalScore) {
+					e[bootstrap].evaluateModelOnceAndRecordPrediction(
+						confidences, 
+						dataset.instance( rowid ) );
+				}
 				sampleEvaluation[repeat][fold][sample][bootstrap].evaluateModelOnceAndRecordPrediction(
 					confidences, 
 					dataset.instance( rowid ) );
