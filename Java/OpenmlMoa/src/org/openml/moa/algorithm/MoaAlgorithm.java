@@ -20,6 +20,7 @@ import org.openml.apiconnector.xstream.XstreamXmlMapping;
 import weka.core.Utils;
 import moa.classifiers.Classifier;
 import moa.options.ClassOption;
+import moa.options.FileOption;
 import moa.options.FlagOption;
 import moa.options.Option;
 import moa.options.WEKAClassOption;
@@ -50,6 +51,9 @@ public class MoaAlgorithm {
 			if( option instanceof FlagOption ) {
 				FlagOption o = (FlagOption) option;
 				result.add( new Parameter_setting(i.getId(), o.getCLIChar() + "", o.isSet() ? "true" : "false") );
+			} else if( option instanceof FileOption ) {
+				// ignore file options
+				continue;
 			} else if( option instanceof ClassOption ) {
 				ClassOption o = (ClassOption) option;
 				if( o.getRequiredType().isAssignableFrom( Classifier.class ) ) {
