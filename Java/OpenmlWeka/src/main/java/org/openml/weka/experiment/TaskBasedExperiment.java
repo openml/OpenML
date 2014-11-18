@@ -293,7 +293,7 @@ public class TaskBasedExperiment extends Experiment {
 			TaskBasedExperiment exp = new TaskBasedExperiment( new Experiment(), apiconnector );
 			ResultProducer rp = new TaskResultProducer(apiconnector);
 			TaskResultListener rl = new TaskResultListener(apiconnector, openmlconfig);
-			SplitEvaluator se = new TaskSplitEvaluator();
+			SplitEvaluator se = new OpenmlClassificationSplitEvaluator();
 			Classifier sec = null;
 			// TODO: do we need this check?
 			if ( apiconnector.checkCredentials() == false ) {

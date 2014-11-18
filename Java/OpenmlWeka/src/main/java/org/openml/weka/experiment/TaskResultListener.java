@@ -159,6 +159,7 @@ public class TaskResultListener extends InstancesResultListener {
 	}
 
 	private class OpenmlExecutedTask {
+		private final boolean isRegression;
 		private int task_id;
 		private Task task;
 		private Classifier classifier;
@@ -183,7 +184,13 @@ public class TaskResultListener extends InstancesResultListener {
 				String error_message, String options, OpenmlConnector apiconnector,
 				String[] tags ) throws Exception {
 			this.classifier = classifier;
-			classnames = TaskInformation.getClassNames(apiconnector, t);
+			
+			// TODO: instable. Do better
+			isRegression = t.getTask_type().equals("Supervised Regression");
+			
+			if( !isRegression ) {
+				classnames = TaskInformation.getClassNames(apiconnector, t);
+			}
 			task_id = t.getTask_id();
 			
 			this.task = t;
@@ -211,10 +218,14 @@ public class TaskResultListener extends InstancesResultListener {
 						attInfo.add(new Attribute("confidence." + s));
 					}
 				} else if (f.getName().equals("prediction")) {
-					List<String> values = new ArrayList<String>(classnames.length);
-					for (String classname : classnames)
-						values.add(classname);
-					attInfo.add(new Attribute(f.getName(), values));
+					if(isRegression) {
+						attInfo.add(new Attribute("prediction"));
+					} else {
+						List<String> values = new ArrayList<String>(classnames.length);
+						for (String classname : classnames)
+							values.add(classname);
+						attInfo.add(new Attribute(f.getName(), values));
+					}
 				} else {
 					attInfo.add(new Attribute(f.getName()));
 				}
@@ -260,11 +271,9 @@ public class TaskResultListener extends InstancesResultListener {
 				}
 				
 				if (current instanceof NominalPrediction) {
-					double[] confidences = ((NominalPrediction) current)
-							.distribution();
+					double[] confidences = ((NominalPrediction) current).distribution();
 					for (int j = 0; j < confidences.length; ++j) {
-						values[predictions.attribute(
-								"confidence." + classnames[j]).index()] = confidences[j];
+						values[predictions.attribute("confidence." + classnames[j]).index()] = confidences[j];
 					}
 				}
 
