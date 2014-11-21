@@ -40,33 +40,32 @@ public class Main {
 		final Config config = new Config();
 		connector = new OpenmlConnector(config.getServer(), config.getUsername(), config.getPassword());
 		int N = 1;
+		int taskId = 1;
 		
 		String strTid = Utils.getOption('T', args);
 		String strN = Utils.getOption('N', args);
 		
+		if( strN != "" ) {
+			N = Integer.parseInt(strN);
+			Conversion.log( "OK", "Init", "Will attempt to execute " + N + " tasks. " );
+		} else {
+			Conversion.log( "OK", "Init", "No number of tasks (-N) given. Will attempt to execute " + N + " tasks. " );
+		}
+		
 		if( strTid != "" ) {
-			int taskId = Integer.parseInt(strTid);
-			try {
-				new Main( taskId, "executables/", "rr" );
-			} catch( Exception e ) {
-				Conversion.log( "Error", "ExecuteTask", "Error executing Task " + taskId + ": " + e.getMessage() );
-				e.printStackTrace();
-			}
+			taskId = Integer.parseInt(strTid);
 		} else {
 			Conversion.log("OK", "Init", "No task_id provided (-T). Will attempt to download a scheduled classification job. ");
-
-			if( strN != "" ) {
-				N = Integer.parseInt(strN);
-			}
-			for( int i = 0; i < N; ++i ) {
-				String workbench = ("Executor_" + FLOW_IDENTIFIER).replace( " ", "%20" );
-				Job job = connector.openmlJobGet( workbench, 1 + "" );
-				try {
-					new Main( job.getTask_id(), "executables/", "rr" );
-				} catch( Exception e ) {
-					Conversion.log( "Error", "ExecuteTask", "Error executing Task " + job.getTask_id() + ": " + e.getMessage() );
-					e.printStackTrace();
-				}
+		}
+		
+		for( int i = 0; i < N; ++i ) {
+			String workbench = ("Executor_" + FLOW_IDENTIFIER).replace( " ", "%20" );
+			Job job = connector.openmlJobGet( workbench, taskId + "" );
+			try {
+				new Main( job.getTask_id(), "executables/", "rr" );
+			} catch( Exception e ) {
+				Conversion.log( "Error", "ExecuteTask", "Error executing Task " + job.getTask_id() + ": " + e.getMessage() );
+				e.printStackTrace();
 			}
 		}
 	}

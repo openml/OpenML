@@ -177,8 +177,6 @@ public class TaskResultListener extends InstancesResultListener {
 		
 		private File serializedClassifier = null;
 		private File humanReadableClassifier = null;
-		
-		private Map<Metric,Double> userDefinedMeasuresTotals;
 
 		public OpenmlExecutedTask(Task t, Classifier classifier,
 				String error_message, String options, OpenmlConnector apiconnector,
@@ -251,7 +249,6 @@ public class TaskResultListener extends InstancesResultListener {
 			List<Parameter_setting> list = WekaAlgorithm.getParameterSetting( params, implementation );
 			
 			run = new Run(t.getTask_id(), error_message, implementation.getId(), setup_string, list.toArray(new Parameter_setting[list.size()]), tags );
-			userDefinedMeasuresTotals = new HashMap<Metric, Double>();
 		}
 		
 		public void addBatchOfPredictions(Integer fold, Integer repeat, Integer sample, Integer[] rowids, ArrayList<Prediction> batchPredictions) {
@@ -287,23 +284,16 @@ public class TaskResultListener extends InstancesResultListener {
 				MetricScore score = userMeasures.get(m);
 				
 				getRun().addOutputEvaluation(m.name, repeat, fold, sample, m.implementation, score.getScore() );
-				
-				if(userDefinedMeasuresTotals.containsKey(m) == false) {
-					userDefinedMeasuresTotals.put(m, getNormalizedScore( score ) );
-				} else {
-					userDefinedMeasuresTotals.put(m, userDefinedMeasuresTotals.get(m) + getNormalizedScore(score) );
-				}
 			}
 		}
 		
 		public void prepareForSending() {
-			for( Metric m : userDefinedMeasuresTotals.keySet() ) {
-				run.addOutputEvaluation(m.name, m.implementation, userDefinedMeasuresTotals.get(m), null);
-			}
 			if( inputDataSet ) {
 				// build model for entire data set. This can take some time
 				try {
 					Conversion.log( "OK", "Total Model", "Started building a model over the full dataset. " );
+					
+					// TODO measure time for building model and testing on all data
 					classifier.buildClassifier(inputData);
 					
 					humanReadableClassifier = Conversion.stringToTempFile(classifier.toString(), "WekaModel_" + classifier.getClass().getName(), "model");
