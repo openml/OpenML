@@ -117,10 +117,10 @@ public class EvaluateRun {
 					stream_interval_size );
 			} else {
 				predictionEvaluator = new EvaluateBatchPredictions( 
-					dataset.getUrl() + "?session_hash=" + apiconnector.getSessionHash(), 
+					task, dataset.getUrl() + "?session_hash=" + apiconnector.getSessionHash(), 
 					estimationprocedure.getData_splits_url(), 
 					apiconnector.getOpenmlFileUrl( file_ids.get( "predictions" ), filename ).toString(), 
-					source_data.getTarget_feature(), estimationprocedure.getType().equals(EstimationProcedure.estimationProceduresTxt[5] ) );
+					estimationprocedure.getType().equals(EstimationProcedure.estimationProceduresTxt[5] ) );
 			}
 			runevaluation.addEvaluationMeasures( predictionEvaluator.getEvaluationScores() );
 			if(run_description.getOutputEvaluation() != null) {

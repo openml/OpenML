@@ -27,9 +27,11 @@ import java.util.Map;
 
 import org.openml.apiconnector.algorithms.Input;
 import org.openml.apiconnector.algorithms.MathHelper;
+import org.openml.apiconnector.algorithms.TaskInformation;
 import org.openml.apiconnector.models.Metric;
 import org.openml.apiconnector.models.MetricScore;
 import org.openml.apiconnector.xml.EvaluationScore;
+import org.openml.apiconnector.xml.Task;
 import org.openml.webapplication.algorithm.InstancesHelper;
 import org.openml.webapplication.io.Output;
 import org.openml.webapplication.predictionCounter.FoldsPredictionCounter;
@@ -56,18 +58,21 @@ public class EvaluateBatchPredictions implements PredictionEvaluator {
 	
 	private final PredictionCounter predictionCounter;
 	private final String[] classes;
-	private final TaskType task;
+	private final TaskType taskType;
+	private final double[][] cost_matrix;
 	private final Evaluation[][][][] sampleEvaluation;
 	private final boolean bootstrap;
 	
 	private EvaluationScore[] evaluationScores;
 	
-	public EvaluateBatchPredictions( String datasetPath, String splitsPath, String predictionsPath, String classAttribute, boolean bootstrap ) throws Exception {
+	public EvaluateBatchPredictions( Task task, String datasetPath, String splitsPath, String predictionsPath, boolean bootstrap ) throws Exception {
 		// set all arff files needed for this operation. 
 		dataset 	= new Instances( new BufferedReader( Input.getURL( datasetPath ) ) );
 		predictions = new Instances( new BufferedReader( Input.getURL( predictionsPath ) ) ); 
 		splits 		= new Instances( new BufferedReader( Input.getURL( splitsPath ) ) );
 		this.bootstrap = bootstrap;
+		String classAttribute = TaskInformation.getSourceData(task).getTarget_feature();
+		cost_matrix = TaskInformation.getCostMatrix(task);
 		
 		// Set class attribute to dataset ...
 		if( dataset.attribute( classAttribute ) != null ) {
@@ -79,12 +84,12 @@ public class EvaluateBatchPredictions implements PredictionEvaluator {
 		// ... and specify which task we are doing. classification or regression. 
 		if( dataset.classAttribute().isNominal() ) {
 			if( predictions.attribute("sample") == null ) {
-				task = TaskType.CLASSIFICATION;
+				taskType = TaskType.CLASSIFICATION;
 			} else {
-				task = TaskType.LEARNINGCURVE;
+				taskType = TaskType.LEARNINGCURVE;
 			}
 		} else {
-			task = TaskType.REGRESSION;
+			taskType = TaskType.REGRESSION;
 		}
 		
 		// initiate a class that will help us with checking the prediction count. 
@@ -100,7 +105,7 @@ public class EvaluateBatchPredictions implements PredictionEvaluator {
 		ATT_PREDICTION_REPEAT = InstancesHelper.getRowIndex( new String[] {"repeat", "repeat_nr"}, predictions ) ;
 		ATT_PREDICTION_FOLD =  InstancesHelper.getRowIndex( new String[] {"fold", "fold_nr"}, predictions ) ;
 		ATT_PREDICTION_PREDICTION = InstancesHelper.getRowIndex( new String[] {"prediction"}, predictions ) ;
-		if( task == TaskType.LEARNINGCURVE ) {
+		if( taskType == TaskType.LEARNINGCURVE ) {
 			ATT_PREDICTION_SAMPLE =  InstancesHelper.getRowIndex( new String[] {"sample", "sample_nr"}, predictions ) ;
 		} else {
 			ATT_PREDICTION_SAMPLE = -1;
@@ -127,8 +132,15 @@ public class EvaluateBatchPredictions implements PredictionEvaluator {
 	private void doEvaluation() throws Exception {
 		// set global evaluation
 		Evaluation[] e = new Evaluation[bootstrap ? 2 : 1];
+		
 		for( int i = 0; i < e.length; ++i ) {
 			e[i] = new Evaluation( dataset );
+			if( cost_matrix != null ) {
+				// TODO test
+				e[i] = new Evaluation(dataset, InstancesHelper.doubleToCostMatrix(cost_matrix) );
+			} else {
+				e[i] = new Evaluation(dataset);
+			}
 		}
 		
 		// set local evaluations
@@ -136,7 +148,12 @@ public class EvaluateBatchPredictions implements PredictionEvaluator {
 			for( int j = 0; j < sampleEvaluation[i].length; ++j ) {
 				for( int k = 0; k < sampleEvaluation[i][j].length; ++k ) {
 					for( int m = 0; m < (bootstrap ? 2 : 1); ++m ) {
-						sampleEvaluation[i][j][k][m] = new Evaluation(dataset);
+						if( cost_matrix != null ) {
+							// TODO test
+							sampleEvaluation[i][j][k][m] = new Evaluation(dataset, InstancesHelper.doubleToCostMatrix(cost_matrix) );
+						} else {
+							sampleEvaluation[i][j][k][m] = new Evaluation(dataset);
+						}
 					}
 				}
 			}
@@ -156,12 +173,12 @@ public class EvaluateBatchPredictions implements PredictionEvaluator {
 			
 			int bootstrap = 0;
 			boolean measureGlobalScore = true;
-			if( task == TaskType.LEARNINGCURVE && sample != predictionCounter.getSamples() - 1) {
+			if( taskType == TaskType.LEARNINGCURVE && sample != predictionCounter.getSamples() - 1) {
 				// for learning curves, we want the score of the last sample at global score
 				measureGlobalScore = false; 
 			}
 			
-			if(task == TaskType.REGRESSION) {
+			if(taskType == TaskType.REGRESSION) {
 				if(measureGlobalScore) {
 					e[bootstrap].evaluateModelOnce(
 						prediction.value( ATT_PREDICTION_PREDICTION ), 
@@ -190,7 +207,7 @@ public class EvaluateBatchPredictions implements PredictionEvaluator {
 		}
 		
 		List<EvaluationScore> evaluationMeasuresList = new ArrayList<EvaluationScore>();
-		Map<Metric, MetricScore> globalMeasures = Output.evaluatorToMap( e, nrOfClasses, task, bootstrap );
+		Map<Metric, MetricScore> globalMeasures = Output.evaluatorToMap( e, nrOfClasses, taskType, bootstrap );
 		for( Metric m : globalMeasures.keySet() ) {
 			MetricScore score = globalMeasures.get( m );
 			DecimalFormat dm = MathHelper.defaultDecimalFormat;
@@ -205,12 +222,12 @@ public class EvaluateBatchPredictions implements PredictionEvaluator {
 		for( int i = 0; i < sampleEvaluation.length; ++i ) {
 			for( int j = 0; j < sampleEvaluation[i].length; ++j ) {
 				for( int k = 0; k < sampleEvaluation[i][j].length; ++k ) {
-					Map<Metric, MetricScore> currentMeasures = Output.evaluatorToMap( sampleEvaluation[i][j][k] , nrOfClasses, task, bootstrap);
+					Map<Metric, MetricScore> currentMeasures = Output.evaluatorToMap( sampleEvaluation[i][j][k] , nrOfClasses, taskType, bootstrap);
 					for( Metric m : currentMeasures.keySet() ) {
 						MetricScore score = currentMeasures.get( m );
 						DecimalFormat dm = MathHelper.defaultDecimalFormat;
 						EvaluationScore currentMeasure;
-						if( task == TaskType.LEARNINGCURVE ) {
+						if( taskType == TaskType.LEARNINGCURVE ) {
 							currentMeasure = new EvaluationScore( 
 								m.implementation, 
 								m.name, 

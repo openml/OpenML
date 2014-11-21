@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import weka.classifiers.CostMatrix;
 import weka.core.Utils;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -120,6 +121,16 @@ public class InstancesHelper {
 				result[i] = d[i];
 		}
 		return result;
+	}
+	
+	public static CostMatrix doubleToCostMatrix( double[][] cm ) {
+		CostMatrix costmatrix = new CostMatrix(cm.length);
+		for( int i = 0; i < cm.length; ++i ) {
+			for( int j = 0; j < cm[i].length; ++i ) {
+				costmatrix.setElement( i, j, cm[i][j]);
+			}
+		}
+		return costmatrix;
 	}
 	
 	@SuppressWarnings("unchecked")
