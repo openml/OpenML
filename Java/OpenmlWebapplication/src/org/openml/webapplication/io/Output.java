@@ -56,8 +56,8 @@ public class Output {
 		} else if( task == TaskType.CLASSIFICATION || task == TaskType.LEARNINGCURVE || task == TaskType.TESTTHENTRAIN ) {
 			
 			if( task == TaskType.TESTTHENTRAIN == false ) {
-				m.put(new Metric("average_cost", " openml.evaluation.average_cost(1.0)"), new MetricScore( evaluator.avgCost(), (int) evaluator.numInstances() ) );
-				m.put(new Metric("total_cost", " openml.evaluation.total_cost(1.0)"), new MetricScore( evaluator.totalCost(), (int) evaluator.numInstances() ) );
+				m.put(new Metric("average_cost", "openml.evaluation.average_cost(1.0)"), new MetricScore( evaluator.avgCost(), (int) evaluator.numInstances() ) );
+				m.put(new Metric("total_cost", "openml.evaluation.total_cost(1.0)"), new MetricScore( evaluator.totalCost(), (int) evaluator.numInstances() ) );
 				
 				m.put(new Metric("mean_absolute_error", "openml.evaluation.mean_absolute_error(1.0)"), new MetricScore( evaluator.meanAbsoluteError(), (int) evaluator.numInstances() ) );
 				m.put(new Metric("mean_prior_absolute_error", "openml.evaluation.mean_prior_absolute_error(1.0)"), new MetricScore( evaluator.meanPriorAbsoluteError(), (int) evaluator.numInstances() ) );
