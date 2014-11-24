@@ -126,7 +126,7 @@ public class InstancesHelper {
 	public static CostMatrix doubleToCostMatrix( double[][] cm ) {
 		CostMatrix costmatrix = new CostMatrix(cm.length);
 		for( int i = 0; i < cm.length; ++i ) {
-			for( int j = 0; j < cm[i].length; ++i ) {
+			for( int j = 0; j < cm[i].length; ++j ) {
 				costmatrix.setElement( i, j, cm[i][j]);
 			}
 		}
