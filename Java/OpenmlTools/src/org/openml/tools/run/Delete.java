@@ -9,8 +9,14 @@ import org.openml.apiconnector.xml.RunDelete;
 public class Delete {
 
 	public static void main( String[] args ) throws Exception {
-		deleteWithoutDescriptionFile();
+		deleteWithRid(51002);
 	}
+	
+	private static void deleteWithRid(Integer rid) throws Exception {
+		String sql = "SELECT rid FROM run WHERE rid = " + rid;
+		delete(sql);
+	}
+	
 	
 	private static void deleteWithDoubleFields() throws Exception {
 
