@@ -10,7 +10,12 @@ public class Reset {
 
 	public static void main( String[] args ) throws Exception {
 		
-		reset_tasktype_3();
+		reset_run_id(61378);
+	}
+	
+	private static void reset_run_id(Integer rid) throws Exception {
+		String sql = "SELECT rid FROM run WHERE rid = " + rid;
+		reset(sql);
 	}
 	
 	private static void reset_tasktype_3() throws Exception {
