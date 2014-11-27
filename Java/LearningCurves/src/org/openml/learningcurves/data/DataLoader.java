@@ -2,24 +2,34 @@ package org.openml.learningcurves.data;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.openml.apiconnector.algorithms.Conversion;
 
+import weka.core.Attribute;
+import weka.core.DenseInstance;
 import weka.core.Instance;
 import weka.core.Instances;
+import weka.core.Utils;
 import weka.core.converters.CSVLoader;
 
 public class DataLoader {
 	
 	// raw data hierarchy: task_id, setup_id, repeat, fold, sample
-	Map<Integer, Map<Integer, Map<Integer, Map<Integer, Map<Integer, Map<String, Double>>>>>> memory = new HashMap<>();
+	private final Map<Integer, Map<Integer, Map<Integer, Map<Integer, Map<Integer, Map<String, Double>>>>>> memory = new HashMap<>();
 	
 	// task oriented data: task_id, setup_id, sample, Evaluation
-	Map<Integer, Map<Integer, Map<Integer, Evaluation>>> task_oriented = null;
+	private Map<Integer, Map<Integer, Map<Integer, Evaluation>>> task_oriented = null;
 	// setup oriented data: setup_id, task_id, sample, Evaluation
-	Map<Integer, Map<Integer, Map<Integer, Evaluation>>> setup_oriented = null;
+	private Map<Integer, Map<Integer, Map<Integer, Evaluation>>> setup_oriented = null;
+	
+	// task size
+	private final Map<Integer, Integer> taskSamples;
 	
 	private final int ATTIDX_TASKID;
 	private final int ATTIDX_SETUPID;
@@ -43,7 +53,8 @@ public class DataLoader {
 		ATTIDX_FUNCTION = data.attribute("function").index();
 		ATTIDX_VALUE = data.attribute("value").index();
 		Conversion.log("OK", "DataLoader", "Loaded dataset");
-
+		
+		taskSamples = new HashMap<>();
 		for (int i = 0; i < data.numInstances(); ++i) {
 			Instance current = data.get(i);
 			int task_id = (int) current.value(ATTIDX_TASKID);
@@ -88,6 +99,10 @@ public class DataLoader {
 						function, 
 						value);
 			}
+			
+			for( Integer tmp_task_id : memory.keySet() ) {
+				taskSamples.put( tmp_task_id, memory.get(tmp_task_id).get(memory.get(tmp_task_id).keySet().iterator().next()).size() );
+			}
 		}
 	}
 	
@@ -103,6 +118,10 @@ public class DataLoader {
 			setup_oriented = createSetupOriented( memory );
 		}
 		return setup_oriented;
+	}
+	
+	public int taskSamples( int task_id ) {
+		return taskSamples.get(task_id);
 	}
 	
 	private static Map<Integer, Map<Integer, Map<Integer, Evaluation>>> createTaskOriented( Map<Integer, Map<Integer, Map<Integer, Map<Integer, Map<Integer, Map<String, Double>>>>>> memory ) {
@@ -147,8 +166,61 @@ public class DataLoader {
 		return tmpTaskOriented;
 	}
 	
-	private Instances getWinnerPerSample() {
-		Map<Integer, Map<Integer, Map<Integer, Evaluation>>> task_oriented = getTas
+	public Instances getWinnerPerSample() {
+		Map<Integer, Map<Integer, Map<Integer, Evaluation>>> task_oriented = getTaskOriented();
+		Map<Integer, Map<Integer, Map<Integer, Evaluation>>> setup_oriented = getSetupOriented();
+
+		Set<Integer> setup_idxs = setup_oriented.keySet();
+		Set<Integer> samples = new HashSet<>();
+		for( Integer task_id : task_oriented.keySet() ) {
+			samples.addAll( task_oriented.get(task_id).get( setup_oriented.keySet().iterator().next() ).keySet() );
+		}
+		
+		List<String> setups = new ArrayList<>();
+		for( Integer setup_idx : setup_idxs ) { setups.add( setup_idx + "" ); }
+		ArrayList<Attribute> attributes = new ArrayList<>();
+		attributes.add( new Attribute("task_id") );
+		for( Integer sample : samples ) {
+			attributes.add( new Attribute("sample_" + sample, setups ) );
+		}
+		
+		Instances dataset = new Instances("sample-info", attributes, task_oriented.size() );
+		for( Integer task_id : task_oriented.keySet() ) {
+			Integer[] bestSampleIdx = null;
+			Double[] bestSampleScore = null;
+			
+			for( Integer setup_id : task_oriented.get(task_id).keySet() ) {
+				if( bestSampleIdx == null ) { 
+					bestSampleIdx = new Integer[task_oriented.get(task_id).get(setup_id).size()];
+					bestSampleScore = new Double[task_oriented.get(task_id).get(setup_id).size()];
+					
+					for( Integer sample : task_oriented.get(task_id).get(setup_id).keySet() ) {
+						bestSampleIdx[sample] = setup_id;
+						bestSampleScore[sample] = task_oriented.get(task_id).get(setup_id).get(sample).getAccuracy();
+					}
+				} else {
+					for( Integer sample : task_oriented.get(task_id).get(setup_id).keySet() ) {
+						Double value = task_oriented.get(task_id).get(setup_id).get(sample).getAccuracy();
+						if( value > bestSampleScore[sample] ) {
+							bestSampleIdx[sample] = setup_id;
+							bestSampleScore[sample] = value;
+						}
+					}
+				}
+			}
+			
+			Instance task = new DenseInstance(dataset.numAttributes());
+			task.setValue( 0, task_id );
+			for( int i = 1; i < dataset.numAttributes(); ++i ) {
+				if( i <= bestSampleScore.length ) {
+					task.setValue( i, dataset.attribute( i ).indexOfValue( bestSampleIdx[i-1] + "" ) );
+				} else {
+					task.setValue( i, Utils.missingValue() );
+				}
+			}
+			dataset.add(task);
+		}
+		return dataset;
 	}
 	
 	private static Map<Integer, Map<Integer, Map<Integer, Evaluation>>> createSetupOriented( Map<Integer, Map<Integer, Map<Integer, Map<Integer, Map<Integer, Map<String, Double>>>>>> memory ) {

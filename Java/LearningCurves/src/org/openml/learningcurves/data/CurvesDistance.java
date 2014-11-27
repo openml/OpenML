@@ -1,17 +1,24 @@
 package org.openml.learningcurves.data;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.openml.apiconnector.algorithms.Conversion;
 
-public class Distance {
-	// for each setup, the distance between two data sets
+public class CurvesDistance {
+	// for each setup, the distance between two data set
+	// setup_id, task_id, task_id, distance array (per sample) 
 	private final Map<Integer, Map<Integer, Map<Integer, double[]>>> distances;
 	
-	public Distance( Map<Integer, Map<Integer, Map<Integer, Evaluation>>> setup_oriented ) {
+	private final Set<Integer> task_ids;
+	
+	public CurvesDistance( Map<Integer, Map<Integer, Map<Integer, Evaluation>>> setup_oriented ) {
 		Conversion.log("OK","Distance","Starting to create Task Distance Matrix");
 		distances = new HashMap<Integer, Map<Integer,Map<Integer,double[]>>>();
+		task_ids = setup_oriented.get( setup_oriented.keySet().iterator().next() ).keySet();
 		for( Integer setup_id : setup_oriented.keySet() ) {
 			distances.put(setup_id, new HashMap<Integer, Map<Integer, double[]>>() );
 			
@@ -54,5 +61,32 @@ public class Distance {
 		distance += distances.get(setupP).get(taskA).get(taskB)[samplesP];
 		distance += distances.get(setupQ).get(taskA).get(taskB)[samplesQ];
 		return distance;
+	}
+	
+	public List<Integer> nearest( int task, int setupP, int setupQ, int sampleSize, int k ) {
+		Map<Integer, Double> tasks = new HashMap<>();
+		List<Integer> result = new ArrayList<>();
+		
+		for( Integer task_id : task_ids ) {
+			if( task_id == task ) { continue; }
+			
+			double distance = distances.get(setupP).get(task).get(task_id)[sampleSize] + distances.get(setupP).get(task).get(task_id)[sampleSize];
+			tasks.put(task_id, distance);
+		}
+		
+		for( int i = 0; i < k; ++i ) {
+			double min = Double.MAX_VALUE;
+			int index = -1;
+			for( Integer task_id : tasks.keySet() ) {
+				if( tasks.get( task_id ) < min ) {
+					min = tasks.get( task_id );
+					index = task_id;
+				}
+			}
+			result.add(index);
+			tasks.remove(index);
+		}
+		
+		return result;
 	}
 }
