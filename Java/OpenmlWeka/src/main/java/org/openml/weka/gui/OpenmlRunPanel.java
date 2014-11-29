@@ -26,7 +26,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.BufferedInputStream;
@@ -52,6 +51,7 @@ import weka.experiment.RemoteExperimentEvent;
 import weka.experiment.RemoteExperimentListener;
 import weka.gui.LogPanel;
 import weka.gui.experiment.ResultsPanel;
+import weka.gui.experiment.RunPanel;
 
 /**
  * This panel controls the running of an experiment.
@@ -59,7 +59,7 @@ import weka.gui.experiment.ResultsPanel;
  * @author Len Trigg (trigg@cs.waikato.ac.nz)
  * @version $Revision: 9486 $
  */
-public class OpenmlRunPanel extends JPanel implements ActionListener {
+public class OpenmlRunPanel extends RunPanel {
 
 	/** for serialization */
 	private static final long serialVersionUID = 1691868018596872051L;

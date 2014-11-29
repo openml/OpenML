@@ -182,16 +182,16 @@ public class TaskResultListener extends InstancesResultListener {
 				String error_message, String options, OpenmlConnector apiconnector,
 				String[] tags ) throws Exception {
 			this.classifier = classifier;
+			this.task = t;
 			
 			// TODO: instable. Do better
 			isRegression = t.getTask_type().equals("Supervised Regression");
 			
 			if( !isRegression ) {
-				classnames = TaskInformation.getClassNames(apiconnector, t);
+				classnames = TaskInformation.getClassNames(apiconnector, this.task);
 			}
-			task_id = t.getTask_id();
+			task_id = this.task.getTask_id();
 			
-			this.task = t;
 			repeats = 1;
 			int folds = 1;
 			samples = 1;
@@ -317,7 +317,7 @@ public class TaskResultListener extends InstancesResultListener {
 			return nrOfResultBatches == nrOfExpectedResultBatches;
 		}
 		
-		private Double getNormalizedScore( MetricScore m ) throws Exception {
+/*		private Double getNormalizedScore( MetricScore m ) throws Exception {
 			Double score = m.getScore();
 			String type = TaskInformation.getEstimationProcedure(task).getType();
 			if( type.equals("crossvalidation") ) {
@@ -330,5 +330,6 @@ public class TaskResultListener extends InstancesResultListener {
 			}
 			return score;
 		}
+*/
 	}
 }
