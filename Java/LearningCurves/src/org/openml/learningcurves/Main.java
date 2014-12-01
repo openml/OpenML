@@ -1,5 +1,7 @@
 package org.openml.learningcurves;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,15 +20,41 @@ public class Main {
 		
 		Map<Integer, Map<Integer, Map<Integer, Evaluation>>> taskOriented = dl.getTaskOriented();
 		Map<Integer, Map<Integer, Map<Integer, Evaluation>>> setupOriented = dl.getSetupOriented();
+		Map<Integer, Map<Integer, Integer>> setupBasedCorrect = new HashMap<Integer, Map<Integer,Integer>>();
+		Map<Integer, Map<Integer, Integer>> taskBasedCorrect = new HashMap<Integer, Map<Integer,Integer>>();
 		CurvesDistance cd = new CurvesDistance(setupOriented);
 		
 		int correct = 0;
 		int total = 0;
+		int majority_class = 0;
 		
-		for( Integer task_id : taskOriented.keySet() ) {
-			for( Integer Ap : setupOriented.keySet() ) {
-				for( Integer Aq : setupOriented.keySet() ) {
-					if( Ap == Aq ) continue;
+		for( Integer Ap : setupOriented.keySet() ) {
+			for( Integer Aq : setupOriented.keySet() ) {
+				if( Ap == Aq ) continue;
+				
+				if (setupBasedCorrect.containsKey(Ap) == false) {
+					setupBasedCorrect.put(Ap, new HashMap<Integer, Integer>());
+				}
+				if (setupBasedCorrect.get(Ap).containsKey(Aq) == false) {
+					setupBasedCorrect.get(Ap).put(Aq, 0);
+				}
+				
+				if (setupBasedCorrect.containsKey(Aq) == false) {
+					setupBasedCorrect.put(Aq, new HashMap<Integer, Integer>());
+				}
+				if (setupBasedCorrect.get(Aq).containsKey(Ap) == false) {
+					setupBasedCorrect.get(Aq).put(Ap, 0);
+				}
+				
+				
+
+				int setup_total = 0;
+				int setup_correct = 0;
+				int setup_winP = 0;
+				
+				for( Integer task_id : taskOriented.keySet() ) {
+					setup_total += 1;
+					
 					
 					List<Integer> nearestTasks = cd.nearest(task_id, Ap, Aq, SAMPLE_IDX, 1);
 					int totalSamples = dl.taskSamples(task_id);
@@ -49,11 +77,30 @@ public class Main {
 					total += 1;
 					if( (votesP > votesQ && scoreP > scoreQ) || (votesP < votesQ && scoreP < scoreQ) ) {
 						correct += 1;
+						setup_correct += 1;
+						setupBasedCorrect.get(Ap).put( Aq, setupBasedCorrect.get(Ap).get(Aq) + 1 );
+						setupBasedCorrect.get(Aq).put( Ap, setupBasedCorrect.get(Aq).get(Ap) + 1 );
+					}
+					
+					if( scoreP > scoreQ ) {
+						setup_winP += 1;
 					}
 				}
+				int setup_majority_class = Math.max( setup_winP, setup_total - setup_winP );
+				majority_class += setup_majority_class;
+				//System.out.println( Ap + " Vs. " + Aq + ": " + setup_correct  + ", majority class: " + setup_majority_class );
 			}
 		}
-		System.out.println( "Total: " + total + "; correct: " + correct ); 
+		System.out.println( "Total: " + total + "; correct: " + correct + "; majority class: " + majority_class ); 
+		
+		List<Integer> setup_ids = new ArrayList<>(setupBasedCorrect.keySet());
+		for( Integer p : setup_ids ) {
+			for( Integer q : setup_ids ) {
+				System.out.print( setupBasedCorrect.get(p).get(q) + " - " );
+			}
+			System.out.println("");
+		}
+		
 		
 	}
 	
