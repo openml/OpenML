@@ -97,6 +97,8 @@ public class GenerateFolds {
 				return sample_splits_leaveoneout( name );
 			case LEARNINGCURVE: 
 				return sample_splits_learningcurve( name );
+			case HOLDOUT_UNLABELED:
+				return sample_splits_holdout_unlabeled( name );
 			case CUSTOMHOLDOUT: 
 				return sample_splits_holdout_userdefined( name, testset );
 			case BOOTSTRAP:
@@ -200,6 +202,21 @@ public class GenerateFolds {
 				splits.add(am.createInstance(false,rowid,r,0));
 			}
 		}
+		return splits;
+	}
+	
+	private Instances sample_splits_holdout_unlabeled( String name ) {
+		Instances splits = new Instances(name,am.getArffHeader(),splits_size);
+		
+		// do not randomize data set, as this method is based on user defined splits
+		for( int i = 0; i < dataset.size(); ++i ) {
+			if( dataset.get(i).classIsMissing() ) {
+				splits.add(am.createInstance(false,i,0,0));
+			} else {
+				splits.add(am.createInstance(true,i,0,0));
+			}
+		}
+		
 		return splits;
 	}
 	

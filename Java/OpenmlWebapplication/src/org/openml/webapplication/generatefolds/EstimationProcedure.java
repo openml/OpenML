@@ -25,8 +25,8 @@ import weka.core.Instances;
 
 public class EstimationProcedure {
 
-	public static enum EstimationProcedureType {CROSSVALIDATION, LEAVEONEOUT, HOLDOUT, LEARNINGCURVE, CUSTOMHOLDOUT, BOOTSTRAP}
-	public final static String[] estimationProceduresTxt = {"crossvalidation", "leaveoneout", "holdout", "learningcurve", "customholdout", "bootstrap"};
+	public static enum EstimationProcedureType {CROSSVALIDATION, LEAVEONEOUT, HOLDOUT, LEARNINGCURVE, HOLDOUT_UNLABELED, CUSTOMHOLDOUT, BOOTSTRAP}
+	public final static String[] estimationProceduresTxt = {"crossvalidation", "leaveoneout", "holdout", "learningcurve", "holdoutunlabeled", "customholdout", "bootstrap"};
 	
 	private final EstimationProcedureType em;
 	private final int arg1;
@@ -44,10 +44,14 @@ public class EstimationProcedure {
 			arg1 = 1;
 			arg2 = dataset.numInstances();
 		} else if( parts[0].equals(estimationProceduresTxt[4] ) ) {
-			em = EstimationProcedureType.CUSTOMHOLDOUT;
+			em = EstimationProcedureType.HOLDOUT_UNLABELED;
 			arg1 = 1;
 			arg2 = dataset.numInstances();
 		} else if( parts[0].equals(estimationProceduresTxt[5] ) ) {
+			em = EstimationProcedureType.CUSTOMHOLDOUT;
+			arg1 = 1;
+			arg2 = dataset.numInstances();
+		} else if( parts[0].equals(estimationProceduresTxt[6] ) ) {
 			em = EstimationProcedureType.BOOTSTRAP;
 			arg1 = Integer.valueOf(parts[1]);
 			arg2 = 1;
@@ -110,6 +114,8 @@ public class EstimationProcedure {
 			return dataset.numInstances() * dataset.numInstances(); // repeats (== data set size) * data set size
 		case HOLDOUT:
 			return dataset.numInstances() * arg1; // repeats * data set size (each instance is used once)
+		case HOLDOUT_UNLABELED:
+			return dataset.numInstances(); // only one repeat valid
 		case CROSSVALIDATION:
 			return dataset.numInstances() * arg1 * arg2; // repeats * folds * data set size
 		case CUSTOMHOLDOUT: // by default only one repeat
@@ -123,18 +129,20 @@ public class EstimationProcedure {
 	
 	public String toString() {
 		switch( em ) {
-			case LEARNINGCURVE:
-				return estimationProceduresTxt[3] + "_" + arg1 + "_" + arg2;
-			case HOLDOUT:
-				return estimationProceduresTxt[2] + "_" + arg1 + "_" + arg2;
-			case LEAVEONEOUT:
-				return estimationProceduresTxt[1];
 			case CROSSVALIDATION:
 				return estimationProceduresTxt[0] + "_" + arg1 + "_" + arg2;
-			case CUSTOMHOLDOUT:
+			case LEAVEONEOUT:
+				return estimationProceduresTxt[1];
+			case HOLDOUT:
+				return estimationProceduresTxt[2] + "_" + arg1 + "_" + arg2;
+			case LEARNINGCURVE:
+				return estimationProceduresTxt[3] + "_" + arg1 + "_" + arg2;
+			case HOLDOUT_UNLABELED:
 				return estimationProceduresTxt[4];
+			case CUSTOMHOLDOUT:
+				return estimationProceduresTxt[5];
 			case BOOTSTRAP:
-				return estimationProceduresTxt[5] + "_" + arg1;
+				return estimationProceduresTxt[6] + "_" + arg1;
 			default:
 				throw new RuntimeException("Illigal evaluationMethod (EvaluationMethod::toString)");
 		}

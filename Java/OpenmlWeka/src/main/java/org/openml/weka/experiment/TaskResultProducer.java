@@ -16,6 +16,7 @@ import org.openml.apiconnector.xml.Task.Input.Data_set;
 import org.openml.apiconnector.xml.Task.Input.Estimation_procedure;
 import org.openml.weka.algorithm.InstancesHelper;
 
+import weka.core.AttributeStats;
 import weka.core.Instances;
 import weka.core.UnsupportedAttributeTypeException;
 import weka.experiment.CrossValidationResultProducer;
@@ -31,6 +32,8 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 		new UserMeasures("kappa", "openml.evaluation.kappa(1.0)", "Kappa_statistic"),
 		new UserMeasures("root_mean_squared_error", "openml.evaluation.root_mean_squared_error(1.0)", "Root_mean_squared_error" ),
 		new UserMeasures("root_relative_squared_error", "openml.evaluation.root_relative_squared_error(1.0)", "Root_relative_squared_error", .01 ),
+		new UserMeasures("usercpu_time_millis_training", "openml.evaluation.usercpu_time_millis_training(1.0)", "UserCPU_Time_millis_training"),
+		new UserMeasures("usercpu_time_millis_testing", "openml.evaluation.usercpu_time_millis_testing(1.0)", "UserCPU_Time_millis_testing"),
 	};
 	
 	private static final long serialVersionUID = 1L;
@@ -44,6 +47,7 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 	/** The task to be run */
 	protected Task m_Task;
 	protected boolean regressionTask;
+	protected boolean missingLabels;
 
 	/** Instances file with splits in it **/
 	protected Instances m_Splits;
@@ -80,6 +84,9 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 		m_Instances = new Instances( new FileReader( dsd.getDataset( apiconnector.getSessionHash() ) ) );
 		
 		InstancesHelper.setTargetAttribute(m_Instances, ds.getTarget_feature());
+		int targetAttributeIndex = InstancesHelper.getAttributeIndex( m_Instances, ds.getTarget_feature() );
+		AttributeStats targetStats = m_Instances.attributeStats( targetAttributeIndex );
+		missingLabels = targetStats.missingCount > 0;
 		
 		// remove attributes that may not be used.
 		if( dsd.getIgnore_attribute() != null ) {
@@ -275,13 +282,15 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 						splitEvaluatorResults.put( seResultNames[i], seResults[i] );
 					}
 					
-					for( UserMeasures um : USER_MEASURES ) {
-						if( splitEvaluatorResults.containsKey(um.wekaFunctionName)) {
-							userMeasures.put( 
-								new Metric(um.openmlFunctionName, um.openmlImplementationName), 
-								new MetricScore( 
-									((Double) splitEvaluatorResults.get(um.wekaFunctionName)) * um.factor, 
-									testSets[fold][sample].size() ) );
+					if( missingLabels == false ) {
+						for( UserMeasures um : USER_MEASURES ) {
+							if( splitEvaluatorResults.containsKey(um.wekaFunctionName)) {
+								userMeasures.put( 
+									new Metric(um.openmlFunctionName, um.openmlImplementationName), 
+									new MetricScore( 
+										((Double) splitEvaluatorResults.get(um.wekaFunctionName)) * um.factor, 
+										testSets[fold][sample].size() ) );
+							}
 						}
 					}
 					

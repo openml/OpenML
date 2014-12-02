@@ -83,9 +83,10 @@ public class EvaluateRun {
 		try {
 			int task_id = ((JSONArray) runJson.get( 0 )).getInt( 0 );
 			task = apiconnector.openmlTaskSearch(task_id);
-			Data_set source_data = TaskInformation.getEvaluationData(task);
+			Data_set source_data = TaskInformation.getSourceData(task);
 			Estimation_procedure estimationprocedure = TaskInformation.getEstimationProcedure( task );
-			dataset = apiconnector.openmlDataDescription( source_data.getData_set_id() );
+			Integer dataset_id = source_data.getLabeled_data_set_id() != null ? source_data.getLabeled_data_set_id() : source_data.getData_set_id();
+			dataset = apiconnector.openmlDataDescription( dataset_id );
 			
 			for( int i = 0; i < filesJson.length(); ++i ) {
 				String field = ((JSONArray) filesJson.get( i )).getString( 0 );
