@@ -32,6 +32,7 @@ import org.openml.weka.algorithm.WekaAlgorithm;
 import com.thoughtworks.xstream.XStream;
 
 import weka.classifiers.Classifier;
+import weka.classifiers.evaluation.Evaluation;
 import weka.classifiers.evaluation.NominalPrediction;
 import weka.classifiers.evaluation.Prediction;
 import weka.core.Attribute;
@@ -291,10 +292,18 @@ public class TaskResultListener extends InstancesResultListener {
 			if( inputDataSet ) {
 				// build model for entire data set. This can take some time
 				try {
+					Evaluation eval = new Evaluation(inputData);
 					Conversion.log( "OK", "Total Model", "Started building a model over the full dataset. " );
-					
-					// TODO measure time for building model and testing on all data
+					long startTimeTraining = System.currentTimeMillis();
 					classifier.buildClassifier(inputData);
+					long totalTimeTraining = System.currentTimeMillis() - startTimeTraining;
+					Conversion.log( "OK", "Total Model", "Started testing the model over the full dataset. " );
+					long startTimeTesting = System.currentTimeMillis();
+					eval.evaluateModel(classifier, inputData);
+					long totalTimeTesting = System.currentTimeMillis() - startTimeTesting;
+					
+					getRun().addOutputEvaluation("usercpu_time_millis_testing", "openml.evaluation.usercpu_time_millis_testing(1.0)", (double) totalTimeTesting, null );
+					getRun().addOutputEvaluation("usercpu_time_millis_training", "openml.evaluation.usercpu_time_millis_training(1.0)", (double) totalTimeTraining, null );
 					
 					humanReadableClassifier = Conversion.stringToTempFile(classifier.toString(), "WekaModel_" + classifier.getClass().getName(), "model");
 					serializedClassifier = WekaAlgorithm.classifierSerializedToFile(classifier, task_id);
