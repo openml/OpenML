@@ -83,7 +83,7 @@ public class EvaluateRun {
 		try {
 			int task_id = ((JSONArray) runJson.get( 0 )).getInt( 0 );
 			task = apiconnector.openmlTaskSearch(task_id);
-			Data_set source_data = TaskInformation.getSourceData(task);
+			Data_set source_data = TaskInformation.getEvaluationData(task);
 			Estimation_procedure estimationprocedure = TaskInformation.getEstimationProcedure( task );
 			dataset = apiconnector.openmlDataDescription( source_data.getData_set_id() );
 			
