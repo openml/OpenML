@@ -304,6 +304,7 @@ public class TaskResultListener extends InstancesResultListener {
 					
 					getRun().addOutputEvaluation("usercpu_time_millis_testing", "openml.evaluation.usercpu_time_millis_testing(1.0)", (double) totalTimeTesting, null );
 					getRun().addOutputEvaluation("usercpu_time_millis_training", "openml.evaluation.usercpu_time_millis_training(1.0)", (double) totalTimeTraining, null );
+					getRun().addOutputEvaluation("usercpu_time_millis", "openml.evaluation.usercpu_time_millis(1.0)", (double) totalTimeTraining + totalTimeTesting, null );
 					
 					humanReadableClassifier = Conversion.stringToTempFile(classifier.toString(), "WekaModel_" + classifier.getClass().getName(), "model");
 					serializedClassifier = WekaAlgorithm.classifierSerializedToFile(classifier, task_id);
