@@ -27,13 +27,13 @@ import weka.filters.unsupervised.attribute.Remove;
 public class TaskResultProducer extends CrossValidationResultProducer {
 	
 	private static UserMeasures[] USER_MEASURES = {
-		new UserMeasures("build_cpu_time", "openml.evaluation.build_cpu_time(1.0)", "Elapsed_Time_training"),
 		new UserMeasures("predictive_accuracy", "openml.evaluation.predictive_accuracy(1.0)", "Percent_correct", .01),
 		new UserMeasures("kappa", "openml.evaluation.kappa(1.0)", "Kappa_statistic"),
 		new UserMeasures("root_mean_squared_error", "openml.evaluation.root_mean_squared_error(1.0)", "Root_mean_squared_error" ),
 		new UserMeasures("root_relative_squared_error", "openml.evaluation.root_relative_squared_error(1.0)", "Root_relative_squared_error", .01 ),
 		new UserMeasures("usercpu_time_millis_training", "openml.evaluation.usercpu_time_millis_training(1.0)", "UserCPU_Time_millis_training"),
 		new UserMeasures("usercpu_time_millis_testing", "openml.evaluation.usercpu_time_millis_testing(1.0)", "UserCPU_Time_millis_testing"),
+		new UserMeasures("usercpu_time_millis", "openml.evaluation.usercpu_time_millis(1.0)", "UserCPU_Time_millis"),
 	};
 	
 	private static final long serialVersionUID = 1L;
@@ -239,10 +239,8 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 			int repeat = (int) m_Splits.instance(i).value(attRepeatIndex);
 			if (repeat == run - 1) { // 1-based/0-based correction
 				int fold = (int) m_Splits.instance(i).value(attFoldIndex);
-				int sample = (attSampleIndex < 0) ? 0 : (int) m_Splits
-						.instance(i).value(attSampleIndex);
-				String type = m_Splits.attribute(attTypeIndex).value(
-						(int) m_Splits.instance(i).value(attTypeIndex));
+				int sample = (attSampleIndex < 0) ? 0 : (int) m_Splits.instance(i).value(attSampleIndex);
+				String type = m_Splits.attribute(attTypeIndex).value((int) m_Splits.instance(i).value(attTypeIndex));
 				int rowid = (int) m_Splits.instance(i).value(attRowidIndex);
 
 				if (type.equals(FOLDS_FILE_TRAIN)) {
@@ -280,6 +278,11 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 					
 					for( int i = 0; i < seResultNames.length; ++i ) {
 						splitEvaluatorResults.put( seResultNames[i], seResults[i] );
+					}
+					if( splitEvaluatorResults.containsKey("UserCPU_Time_millis_training") && splitEvaluatorResults.containsKey("UserCPU_Time_millis_testing") ) {
+						double traintime = (Double) splitEvaluatorResults.get("UserCPU_Time_millis_training");
+						double testtime = (Double) splitEvaluatorResults.get("UserCPU_Time_millis_testing");
+						splitEvaluatorResults.put("UserCPU_Time_millis", traintime + testtime);
 					}
 					
 					if( missingLabels == false ) {

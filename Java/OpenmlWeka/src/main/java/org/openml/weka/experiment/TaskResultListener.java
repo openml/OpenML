@@ -2,6 +2,8 @@ package org.openml.weka.experiment;
 
 import java.io.File;
 import java.io.FileReader;
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadMXBean;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -292,20 +294,32 @@ public class TaskResultListener extends InstancesResultListener {
 			if( inputDataSet ) {
 				// build model for entire data set. This can take some time
 				try {
-					Evaluation eval = new Evaluation(inputData);
-					Conversion.log( "OK", "Total Model", "Started building a model over the full dataset. " );
-					long startTimeTraining = System.currentTimeMillis();
-					classifier.buildClassifier(inputData);
-					long totalTimeTraining = System.currentTimeMillis() - startTimeTraining;
-					Conversion.log( "OK", "Total Model", "Started testing the model over the full dataset. " );
-					long startTimeTesting = System.currentTimeMillis();
-					eval.evaluateModel(classifier, inputData);
-					long totalTimeTesting = System.currentTimeMillis() - startTimeTesting;
+					ThreadMXBean thMonitor = ManagementFactory.getThreadMXBean();
+					boolean canMeasureCPUTime = thMonitor.isThreadCpuTimeSupported();
 					
-					getRun().addOutputEvaluation("usercpu_time_millis_testing", "openml.evaluation.usercpu_time_millis_testing(1.0)", (double) totalTimeTesting, null );
-					getRun().addOutputEvaluation("usercpu_time_millis_training", "openml.evaluation.usercpu_time_millis_training(1.0)", (double) totalTimeTraining, null );
-					getRun().addOutputEvaluation("usercpu_time_millis", "openml.evaluation.usercpu_time_millis(1.0)", (double) totalTimeTraining + totalTimeTesting, null );
-					
+					if(canMeasureCPUTime) {
+					    if (canMeasureCPUTime && !thMonitor.isThreadCpuTimeEnabled()) {
+					      thMonitor.setThreadCpuTimeEnabled(true);
+					    }
+					    long thID = Thread.currentThread().getId();
+					    
+						Evaluation eval = new Evaluation(inputData);
+						Conversion.log( "OK", "Total Model", "Started building a model over the full dataset. " );
+						long startTimeTraining = thMonitor.getThreadUserTime(thID);
+						classifier.buildClassifier(inputData);
+						double totalTimeTraining = (thMonitor.getThreadUserTime(thID) - startTimeTraining) / 1000000.0;
+						Conversion.log( "OK", "Total Model", "Started testing the model over the full dataset. " );
+						long startTimeTesting = thMonitor.getThreadUserTime(thID);
+						eval.evaluateModel(classifier, inputData);
+						double totalTimeTesting = (thMonitor.getThreadUserTime(thID) - startTimeTesting) / 1000000.0;
+						
+						getRun().addOutputEvaluation("usercpu_time_millis_testing", "openml.evaluation.usercpu_time_millis_testing(1.0)", totalTimeTesting, null );
+						getRun().addOutputEvaluation("usercpu_time_millis_training", "openml.evaluation.usercpu_time_millis_training(1.0)", totalTimeTraining, null );
+						getRun().addOutputEvaluation("usercpu_time_millis", "openml.evaluation.usercpu_time_millis(1.0)", totalTimeTraining + totalTimeTesting, null );
+					} else {
+						Conversion.log( "OK", "Total Model", "Started building a model over the full dataset. " );
+						classifier.buildClassifier(inputData);
+					}
 					humanReadableClassifier = Conversion.stringToTempFile(classifier.toString(), "WekaModel_" + classifier.getClass().getName(), "model");
 					serializedClassifier = WekaAlgorithm.classifierSerializedToFile(classifier, task_id);
 				} catch (Exception e) { 
