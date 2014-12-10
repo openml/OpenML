@@ -73,12 +73,12 @@ public class ProcessDataset {
 	
 	public void process( Integer did ) throws Exception {
 		JSONArray record = getRecord(did);
-		String didStr = record.getString( 1 ) + "?session_hash=" + apiconnector.getSessionHash();
+		String urlStr = record.getString( 1 ) + "?session_hash=" + apiconnector.getSessionHash();
 		// feature string should be reconverted to null, if it was NULL in mysql
 		String featureStr = record.getString( 2 ).equals("") ? null : record.getString( 2 );
 		
 		try {
-			ExtractFeatures extractFeatures = new ExtractFeatures(didStr, featureStr);
+			ExtractFeatures extractFeatures = new ExtractFeatures(urlStr, featureStr);
 	
 			// IMPORTANT: getQualities should be called BEFORE getFeatures
 			Conversion.log( "OK", "Process Dataset", "Processing dataset " + did + " - obtaining basic qualities. " );

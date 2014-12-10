@@ -1,14 +1,17 @@
 # query to check the calculated Meta Features. 
 # Column `qualitiesPerInterval` should contain a constant. 
 
-SELECT `i`.`data`, `q`.`value` AS `numInstances`, 
-  `interval_end` - `interval_start` AS `interval_size`, 
-  CEIL(`q`.`value` / 1000) AS `numIntervals`, 
-  (COUNT(*) / CEIL(`q`.`value` / 1000)) AS `qualitiesPerInterval`, 
-  COUNT(*) AS `qualities` 
-FROM `data_quality_interval` `i`, `data_quality` `q` 
-WHERE `i`.`data` = `q`.`data` AND `q`.`quality` = "NumberOfInstances" 
-GROUP BY `data`, `interval_end` - `interval_start`;
+SELECT `d`.`did`, `q`.`value` AS `numInstances`, `interval_end` - `interval_start` AS `interval_size`, 
+CEIL(`q`.`value` / 1000) AS `numIntervals`, 
+(COUNT(*) / CEIL(`q`.`value` / 1000)) AS `qualitiesPerInterval`, 
+COUNT(*) AS `qualities` 
+FROM `data_quality` `q`, `dataset` `d`
+LEFT JOIN `data_quality_interval` `i` ON `d`.`did` = `i`.`data` 
+WHERE `q`.`quality` IS NOT NULL 
+AND `d`.`did` = `q`.`data` 
+AND `q`.`quality` = 'NumberOfInstances'  
+GROUP BY `d`.`did`, `interval_end` - `interval_start` 
+ORDER BY `qualitiesPerInterval` ASC
 
 
 # inspect maximum value of meta feature, grouped by dataset
@@ -64,6 +67,26 @@ WHERE LB.name = knn.name AND
 LB.task_id IN ( 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 158, 159, 160, 163, 164, 165, 166, 167, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 2056, 2126, 2127, 2128, 2129, 2130, 2131, 2132, 2133, 2134, 2150, 2151, 2154, 2155, 2156, 2157, 2159, 2160, 2161, 2162, 2163, 2164, 2165, 2166, 2167, 2268, 2269)
 AND knn.task_id  IN ( 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 158, 159, 160, 163, 164, 165, 166, 167, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 2056, 2126, 2127, 2128, 2129, 2130, 2131, 2132, 2133, 2134, 2150, 2151, 2154, 2155, 2156, 2157, 2159, 2160, 2161, 2162, 2163, 2164, 2165, 2166, 2167, 2268, 2269 );
 
+# compare diff between stream task on original data and on BNG data
+SELECT `dataset_original`.`name` AS `original_dataset`, accuracy_original.value AS `accuracy_original_dataset`, accuracy_bng.value AS `accuracy_bng_dataset`
+FROM task task_original, task task_bng, task_inputs `input_orig_data`, task_inputs `input_bng_data`, dataset `dataset_original`, dataset `dataset_bng`, run run_original, run run_bng, evaluation accuracy_original, evaluation accuracy_bng
+WHERE task_original.task_id = input_orig_data.task_id 
+AND task_bng.task_id = input_bng_data.task_id 
+AND input_orig_data.input = "source_data" 
+AND input_bng_data.input = "source_data" 
+AND input_orig_data.value = dataset_original.did 
+AND input_bng_data.value = dataset_bng.did 
+AND dataset_bng.original_data_id = dataset_original.did 
+AND run_original.task_id = task_original.task_id
+AND run_bng.task_id = task_bng.task_id
+AND accuracy_original.source = run_original.rid
+AND accuracy_bng.source = run_bng.rid
+AND accuracy_original.function = "predictive_accuracy"
+AND accuracy_bng.function = "predictive_accuracy"
+AND task_original.ttid = 4 
+AND task_bng.ttid = 4
+AND run_original.setup = 22
+AND run_bng.setup = 22
 
 # grap all relevant runs
 SELECT r.run_id FROM `run` `r`,`algorithm_setup` `s`,`implementation` `i` WHERE r.setup = s.sid and s.implementation_id = i.id and r.task_id IN (2056, 171, 170, 175, 174, 163, 160, 185, 190,

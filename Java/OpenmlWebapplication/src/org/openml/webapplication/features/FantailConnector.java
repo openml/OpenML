@@ -19,13 +19,16 @@
  */
 package org.openml.webapplication.features;
 
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.io.OpenmlConnector;
-import org.openml.apiconnector.settings.Config;
+import org.openml.apiconnector.settings.Settings;
 import org.openml.apiconnector.xml.DataQuality;
 import org.openml.apiconnector.xml.DataQuality.Quality;
 import org.openml.apiconnector.xml.DataQualityUpload;
@@ -68,34 +71,73 @@ public class FantailConnector {
 	};
 	
 	private static StreamCharacterizer[] streamCharacterizers;
+	private static OpenmlConnector apiconnector;
 	
-	public static boolean extractFeatures(Integer did, String datasetClass, Integer interval_size,
-			Config config) throws Exception {
+	public static void main( String[] args ) throws Exception {
+		OpenmlConnector oc = new OpenmlConnector("http://www.openml.org/","janvanrijn@gmail.com","Feyenoord2008");
+		
+		new FantailConnector(oc, null);
+	}
+	
+	public FantailConnector( OpenmlConnector ac, Integer dataset_id ) throws Exception {
+		int expectedQualities = 64;
+		apiconnector = ac;
+		
+		if( dataset_id != null ) {
+			Conversion.log( "OK", "Process Dataset", "Processing dataset " + dataset_id + " on special request. " );
+			extractFeatures( dataset_id, 1000 );
+		} else {
+			dataset_id = getDatasetId( expectedQualities );
+			while( dataset_id != null ) {
+				Conversion.log( "OK", "Process Dataset", "Processing dataset " + dataset_id + " as obtained from database. " );
+				extractFeatures( dataset_id, 1000 );
+				dataset_id = getDatasetId( expectedQualities );
+			}
+			Conversion.log( "OK", "Process Dataset", "No more datasets to process. " );
+		}
+	}
+	
+	public Integer getDatasetId( int expectedQualities ) throws JSONException, Exception {
+		String sql = 
+			"SELECT `d`.`did`, `q`.`value` AS `numInstances`, `interval_end` - `interval_start` AS `interval_size`, " +
+			"CEIL(`q`.`value` / 1000) AS `numIntervals`, " +
+			"(COUNT(*) / CEIL(`q`.`value` / 1000)) AS `qualitiesPerInterval`, " +
+			"COUNT(*) AS `qualities` " +
+			"FROM `data_quality` `q`, `dataset` `d`" +
+			"LEFT JOIN `data_quality_interval` `i` ON `d`.`did` = `i`.`data` " +
+			"WHERE `q`.`quality` IS NOT NULL " +
+			"AND `d`.`did` = `q`.`data` " +
+			"AND `q`.`quality` = 'NumberOfInstances'  " +
+			"AND `d`.`error` = 'false' AND `d`.`processed` IS NOT NULL " +
+			"AND `d`.`did` IN " + 
+			"(SELECT i.value AS did FROM task_inputs i, task_tag t WHERE t.id = i.task_id AND i.input = 'source_data' AND t.tag = 'streams') " +
+			"GROUP BY `d`.`did`, `interval_end` - `interval_start` " +
+			"HAVING (COUNT(*) / CEIL(`q`.`value` / 1000)) < " + expectedQualities + " " +
+			"ORDER BY `qualitiesPerInterval` ASC; ";
+
+		JSONArray runJson = (JSONArray) apiconnector.openmlFreeQuery( sql ).get("data");
+		
+		if( runJson.length() > 0 ) {
+			int dataset_id = ((JSONArray) runJson.get( 0 )).getInt( 0 );
+			return dataset_id;
+		} else {
+			return null;
+		}
+	}
+	
+	private static boolean extractFeatures(Integer did, Integer interval_size) throws Exception {
 		Conversion.log( "OK", "Extract Features", "Start extracting features for dataset: " + did );
 		// TODO: initialize this properly!!!!!!
 		streamCharacterizers = new StreamCharacterizer[1]; 
 		streamCharacterizers[0] = new ChangeDetectors( interval_size );
 		
-		//List<String> prevCalcQualities;
-		OpenmlConnector apiconnector;
-		
-		if( config.getServer() != null ) {
-			apiconnector = new OpenmlConnector( config.getServer(), config.getUsername(), config.getPassword() );
-		} else { 
-			apiconnector = new OpenmlConnector( config.getUsername(), config.getPassword() );
-		} 
-		
 		DataSetDescription dsd = apiconnector.openmlDataDescription(did);
 		
 		Conversion.log( "OK", "Extract Features", "Start downloading dataset: " + did );
 		
-		ArffLoader datasetLoader = new ArffLoader();
-		datasetLoader.setURL(dsd.getUrl());
-		Instances dataset = new Instances( datasetLoader.getDataSet() );
-		if( datasetClass == null ) {
-			datasetClass = dataset.attribute( dataset.numAttributes() - 1 ).name();
-		}
-		dataset.setClass( dataset.attribute( datasetClass ) );
+		Instances dataset = new Instances( new FileReader(dsd.getDataset(apiconnector.getSessionHash())) );
+		
+		dataset.setClass( dataset.attribute( dsd.getDefault_target_attribute() ) );
 		
 
 		// first run stream characterizers
