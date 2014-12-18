@@ -1,4 +1,4 @@
-package org.openml.weka.experiment.clustering;
+package weka.experiment;
 
 import java.io.File;
 import java.io.FileReader;
@@ -61,6 +61,13 @@ ResultListener {
 	
 	private final String[] all_tags;
 	
+	public ClusteringResultListener() {
+		Config config = new Config();
+		apiconnector = new OpenmlConnector( config.getServer(), config.getUsername(), config.getPassword() );
+		currentlyCollecting = new HashMap<String, OpenmlExecutedTask>();
+		tasksWithErrors = new ArrayList<String>();
+		all_tags = ArrayUtils.addAll(DEFAULT_TAGS, config.getTags());
+	}
 	
 	public ClusteringResultListener( OpenmlConnector apiconnector, Config config ) {
 		super();

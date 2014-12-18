@@ -1,4 +1,4 @@
-package org.openml.weka.experiment.clustering;
+package weka.experiment;
 
 import java.io.FileReader;
 import java.util.HashMap;
@@ -44,6 +44,10 @@ public class ClusteringResultProducer extends CrossValidationResultProducer {
 	protected String currentTaskRepresentation;
 	
 	protected OpenmlConnector apiconnector;
+	
+	public ClusteringResultProducer() {
+		
+	}
 	
 	public ClusteringResultProducer(OpenmlConnector apiconnector ) {
 		super();

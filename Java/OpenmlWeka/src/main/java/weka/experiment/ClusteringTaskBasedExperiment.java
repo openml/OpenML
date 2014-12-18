@@ -1,4 +1,4 @@
-package org.openml.weka.experiment.clustering;
+package weka.experiment;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
