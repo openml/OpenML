@@ -17,10 +17,10 @@ import org.openml.apiconnector.algorithms.OptionParser;
 import org.openml.apiconnector.algorithms.ParameterType;
 import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.xml.Implementation;
-import org.openml.apiconnector.xml.Implementation.Parameter;
 import org.openml.apiconnector.xml.ImplementationExists;
-import org.openml.apiconnector.xml.Run.Parameter_setting;
 import org.openml.apiconnector.xml.UploadImplementation;
+import org.openml.apiconnector.xml.Implementation.Parameter;
+import org.openml.apiconnector.xml.Run.Parameter_setting;
 import org.openml.apiconnector.xstream.XstreamXmlMapping;
 
 import weka.classifiers.Classifier;
@@ -32,7 +32,7 @@ import weka.core.TechnicalInformationHandler;
 import weka.core.Utils;
 import weka.core.Version;
 
-public class WekaAlgorithm {
+public class WekaClusteringAlgorithm {
 	
 	public static String getVersion(String algorithm) {
 		String version = "undefined";
@@ -53,23 +53,6 @@ public class WekaAlgorithm {
 		return version;
 	}
 	
-	public static int getImplementationId( Implementation implementation, Classifier classifier, OpenmlConnector apiconnector ) throws Exception {
-		try {
-			// First ask OpenML whether this implementation already exists
-			ImplementationExists result = apiconnector.openmlImplementationExists( implementation.getName(), implementation.getExternal_version() );
-			if(result.exists()) return result.getId();
-		} catch( Exception e ) { /* Suppress Exception since it is totally OK. */ }
-		// It does not exist. Create it. 
-		String xml = XstreamXmlMapping.getInstance().toXML( implementation );
-		//System.err.println(xml);
-		File implementationFile = Conversion.stringToTempFile( xml, implementation.getName(), "xml");
-		File source = null;
-		File binary = null;
-		try { source = getFile( classifier, "src/", "java" ); } catch(IOException e) {}
-		try { binary = getFile( classifier, "bin/", "class" ); } catch(IOException e) {}
-		UploadImplementation ui = apiconnector.openmlImplementationUpload(implementationFile, binary, source);
-		return ui.getId();
-	}
 	public static int getImplementationId( Implementation implementation,  Clusterer clusterer, OpenmlConnector apiconnector ) throws Exception {
 		try {
 			// First ask OpenML whether this implementation already exists
@@ -87,7 +70,7 @@ public class WekaAlgorithm {
 		UploadImplementation ui = apiconnector.openmlImplementationUpload(implementationFile, binary, source);
 		return ui.getId();
 	}
-
+	
 	public static Implementation create( String classifier_name, String option_str, String[] tags ) throws Exception {
 		Object classifier = Class.forName(classifier_name).newInstance();
 		String[] currentOptions = Utils.splitOptions( option_str );
@@ -173,7 +156,7 @@ public class WekaAlgorithm {
 				case KERNEL:
 					String kernelvalue = Utils.getOption(p.getName(), parameters);
 					String[] kernelvalueSplitted = kernelvalue.split(" ");
-					if( WekaAlgorithm.existingClass( kernelvalueSplitted[0] ) ) {
+					if( WekaClusteringAlgorithm.existingClass( kernelvalueSplitted[0] ) ) {
 						String kernelname = kernelvalue.substring( 0, kernelvalue.indexOf(' ') );
 						String[] kernelsettings = Utils.splitOptions(kernelvalue.substring(kernelvalue.indexOf(' ')+1));
 						ArrayList<Parameter_setting> kernelresult = getParameterSetting( kernelsettings, implementation.getSubImplementation( p.getName() ) );
@@ -183,7 +166,7 @@ public class WekaAlgorithm {
 					break;
 				case BASELEARNER:
 					String baselearnervalue = Utils.getOption(p.getName(), parameters);
-					if( WekaAlgorithm.existingClass( baselearnervalue ) ) {
+					if( WekaClusteringAlgorithm.existingClass( baselearnervalue ) ) {
 						String[] baselearnersettings = Utils.partitionOptions( parameters );
 						settings.addAll( getParameterSetting( baselearnersettings, implementation.getSubImplementation( p.getName() ) ) );
 						settings.add( new Parameter_setting( implementation.getId(), p.getName(), baselearnervalue ) );
@@ -213,20 +196,6 @@ public class WekaAlgorithm {
 		return getFis( classname + ".class", "bin/" ) != null;
 	}
 	
-	public static File getFile( Classifier classifier, String prefix, String extension ) throws IOException {
-		Class<? extends Classifier> c = classifier.getClass();
-		String sourcefile = c.getName().replace( '.', '/' );
-		InputStream is = getFis( sourcefile + "." + extension, prefix );
-		if( is == null ) throw new IOException( "Could not find resource " + sourcefile + "." + extension );
-		BufferedReader br = new BufferedReader( new InputStreamReader( is ) );
-		StringBuilder totalSource = new StringBuilder();
-		String line = br.readLine();
-		while( line != null ) {
-			totalSource.append( line + "\n" );
-			line = br.readLine();
-		}
-		return Conversion.stringToTempFile(totalSource.toString(), c.getName(), extension);
-	}
 	public static File getFile( Clusterer clusterer, String prefix, String extension ) throws IOException {
 		Class<? extends Clusterer> c = clusterer.getClass();
 		String sourcefile = c.getName().replace( '.', '/' );
@@ -241,9 +210,9 @@ public class WekaAlgorithm {
 		}
 		return Conversion.stringToTempFile(totalSource.toString(), c.getName(), extension);
 	}
-
+	
 	private static InputStream getFis( String classname, String prefix ) {
-		WekaAlgorithm loader = new WekaAlgorithm();
+		WekaClusteringAlgorithm loader = new WekaClusteringAlgorithm();
 		InputStream is = null;
 		
 		is = loader.getClass().getResourceAsStream('/'+classname);
