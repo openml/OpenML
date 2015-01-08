@@ -28,6 +28,8 @@ public class DataLoader {
 	// setup oriented data: setup_id, task_id, sample, Evaluation
 	private Map<Integer, Map<Integer, Map<Integer, Evaluation>>> setup_oriented = null;
 	
+	private Map<Integer, Map<Integer, List<Double>>> task_setup_fold_results = null;
+	
 	// task size
 	private final Map<Integer, Integer> taskSamples;
 	
@@ -120,6 +122,13 @@ public class DataLoader {
 		return setup_oriented;
 	}
 	
+	public Map<Integer, Map<Integer, List<Double>>> getTaskSetupFoldResults() {
+		if( task_setup_fold_results == null ) {
+			task_setup_fold_results = createTaskSetupFoldResults();
+		}
+		return task_setup_fold_results;
+	}
+	
 	public int taskSamples( int task_id ) {
 		return taskSamples.get(task_id);
 	}
@@ -164,6 +173,31 @@ public class DataLoader {
 		}
 		Conversion.log("OK", "DataLoader", "Done converting into task oriented set");
 		return tmpTaskOriented;
+	}
+	
+	public Map<Integer, Map<Integer, List<Double>>> createTaskSetupFoldResults() {
+		Conversion.log("OK", "DataLoader", "Creating Task Setup Fold Results Map");
+		Map<Integer, Map<Integer, List<Double>>> taskSetupFoldResults = new HashMap<>();
+		for( Integer task_id : memory.keySet() ) {
+			taskSetupFoldResults.put(task_id, new HashMap<Integer, List<Double>>());
+			
+			for( Integer setup_id : memory.get(task_id).keySet() ) {
+				taskSetupFoldResults.get(task_id).put(setup_id, new ArrayList<Double>() );
+				
+				for( Integer repeat : memory.get(task_id).get(setup_id).keySet() ) {
+					
+					for( Integer fold : memory.get(task_id).get(setup_id).get(repeat).keySet() ) {
+						
+						double currentValue = memory.get(task_id).get(setup_id).get(repeat).get(fold).get(taskSamples(task_id)).get("predictive_accuracy");
+						
+						taskSetupFoldResults.get(task_id).get(setup_id).add(currentValue);
+					}
+				}
+			}
+		}
+		Conversion.log("OK", "DataLoader", "Done creating Task Setup Fold Results Map");
+		
+		return taskSetupFoldResults;
 	}
 	
 	public Instances getWinnerPerSample() {
