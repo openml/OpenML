@@ -1,9 +1,8 @@
-package org.openml.learningcurves.experiments;
+package org.openml.learningcurves.tasks;
 
 import java.util.List;
 import java.util.Map;
 
-import org.openml.learningcurves.data.CurvesDistance;
 import org.openml.learningcurves.data.DataLoader;
 import org.openml.learningcurves.data.DataUtils;
 import org.openml.learningcurves.data.Evaluation;
@@ -17,7 +16,6 @@ public class BestAlgorithmOriginal implements CurvesExperiment {
 
 	private final DataLoader dl;
 	private final DataUtils du;
-	private final CurvesDistance cd;
 	
 	private final Map<Integer, Map<Integer, Map<Integer, Evaluation>>> taskOriented;
 	private final Map<Integer, Map<Integer, Map<Integer, Evaluation>>> setupOriented;
@@ -32,7 +30,6 @@ public class BestAlgorithmOriginal implements CurvesExperiment {
 		// book keeping
 		this.taskOriented = dl.getTaskOriented();
 		this.setupOriented = dl.getSetupOriented();
-		this.cd = new CurvesDistance(setupOriented);
 	}
 	
 	public void allTasks() {
@@ -56,7 +53,7 @@ public class BestAlgorithmOriginal implements CurvesExperiment {
 			int votesComp = 0;
 			
 			// identify nearest tasks
-			List<Integer> nearestTasks = cd.nearest(task_id, currentBest, competitor, SAMPLE_IDX, NEAREST_TASKS);
+			List<Integer> nearestTasks = dl.getCd().nearest(task_id, currentBest, competitor, SAMPLE_IDX, NEAREST_TASKS);
 			
 			for( Integer nearestTask : nearestTasks ) {
 				// obtain the scores on the nearest task

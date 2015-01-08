@@ -1,4 +1,4 @@
-package org.openml.learningcurves.experiments;
+package org.openml.learningcurves.tasks;
 
 public interface CurvesExperiment {
 	

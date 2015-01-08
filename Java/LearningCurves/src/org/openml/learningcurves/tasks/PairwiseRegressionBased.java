@@ -1,10 +1,9 @@
-package org.openml.learningcurves.experiments;
+package org.openml.learningcurves.tasks;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.openml.learningcurves.data.CurvesDistance;
 import org.openml.learningcurves.data.DataLoader;
 import org.openml.learningcurves.data.DataUtils;
 import org.openml.learningcurves.data.Evaluation;
@@ -17,7 +16,6 @@ public class PairwiseRegressionBased implements CurvesExperiment {
 
 	private final DataLoader dl;
 	private final DataUtils du;
-	private final CurvesDistance cd;
 	
 	private final Map<Integer, Map<Integer, Map<Integer, Evaluation>>> taskOriented;
 	private final Map<Integer, Map<Integer, Map<Integer, Evaluation>>> setupOriented;
@@ -35,7 +33,6 @@ public class PairwiseRegressionBased implements CurvesExperiment {
 		// book keeping
 		this.taskOriented = dl.getTaskOriented();
 		this.setupOriented = dl.getSetupOriented();
-		this.cd = new CurvesDistance(setupOriented);
 	}
 	
 	public void allTasks() {
@@ -50,7 +47,7 @@ public class PairwiseRegressionBased implements CurvesExperiment {
 		// prepare all the estimated regression scores
 		for( int setupId : setupOriented.keySet() ) {
 			// identify nearest tasks
-			List<Integer> nearestTasks = cd.nearest(task_id, setupId, SAMPLE_IDX, NEAREST_TASKS);
+			List<Integer> nearestTasks = dl.getCd().nearest(task_id, setupId, SAMPLE_IDX, NEAREST_TASKS);
 			
 			for( Integer nearestTask : nearestTasks ) {
 				// accuracy on retrieved task
@@ -83,6 +80,10 @@ public class PairwiseRegressionBased implements CurvesExperiment {
 	}
 	
 	public String result() {
-		return EXPERIMENT_NAME + "\n" + "Total: " + pairwiseTotal + "; correct: " + pairwiseCorrect;
+		StringBuilder sb = new StringBuilder();
+		sb.append( EXPERIMENT_NAME + "\n" );
+		sb.append( SAMPLE_IDX + " samples, " + NEAREST_TASKS + " nearest tasks\n" );
+		sb.append( "Total: " + pairwiseTotal + "; correct: " + pairwiseCorrect );
+		return sb.toString();
 	}
 }

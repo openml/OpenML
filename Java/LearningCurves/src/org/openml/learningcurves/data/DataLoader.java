@@ -33,6 +33,9 @@ public class DataLoader {
 	// task size
 	private final Map<Integer, Integer> taskSamples;
 	
+	private CurvesDistance cd;
+	
+	
 	private final int ATTIDX_TASKID;
 	private final int ATTIDX_SETUPID;
 	private final int ATTIDX_REPEAT;
@@ -127,6 +130,13 @@ public class DataLoader {
 			task_setup_fold_results = createTaskSetupFoldResults();
 		}
 		return task_setup_fold_results;
+	}
+	
+	public CurvesDistance getCd() {
+		if( cd == null) {
+			cd = new CurvesDistance( getSetupOriented() );
+		}
+		return cd;
 	}
 	
 	public int taskSamples( int task_id ) {

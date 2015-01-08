@@ -1,4 +1,4 @@
-package org.openml.learningcurves.experiments;
+package org.openml.learningcurves.tasks;
 
 import java.util.Map;
 
@@ -17,7 +17,7 @@ public class PairwiseMajorityClass implements CurvesExperiment {
 	private int pairwiseCorrect = 0;
 	private int pairwiseTotal = 0;
 	
-	public PairwiseMajorityClass( DataLoader dl, int sampleIdx, int nearestTasks ) {
+	public PairwiseMajorityClass( DataLoader dl ) {
 		this.dl = dl;
 		
 		// book keeping
@@ -64,6 +64,9 @@ public class PairwiseMajorityClass implements CurvesExperiment {
 	}
 	
 	public String result() {
-		return EXPERIMENT_NAME + "\n" + "Total: " + pairwiseTotal + "; correct: " + pairwiseCorrect;
+		StringBuilder sb = new StringBuilder();
+		sb.append( EXPERIMENT_NAME + "\n" );
+		sb.append( "Total: " + pairwiseTotal + "; correct: " + pairwiseCorrect );
+		return sb.toString();
 	}
 }
