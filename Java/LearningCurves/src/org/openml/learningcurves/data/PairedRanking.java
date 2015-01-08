@@ -1,4 +1,4 @@
-package org.openml.learningcurves;
+package org.openml.learningcurves.data;
 
 import java.util.ArrayList;
 import java.util.Comparator;

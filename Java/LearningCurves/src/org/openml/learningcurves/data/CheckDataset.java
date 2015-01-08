@@ -1,4 +1,4 @@
-package org.openml.learningcurves;
+package org.openml.learningcurves.data;
 
 import java.io.File;
 import java.io.IOException;
