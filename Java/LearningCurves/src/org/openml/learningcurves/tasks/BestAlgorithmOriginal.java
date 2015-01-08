@@ -6,6 +6,7 @@ import java.util.Map;
 import org.openml.learningcurves.data.DataLoader;
 import org.openml.learningcurves.data.DataUtils;
 import org.openml.learningcurves.data.Evaluation;
+import org.openml.learningcurves.data.PairedRanking;
 
 public class BestAlgorithmOriginal implements CurvesExperiment {
 	
@@ -19,6 +20,9 @@ public class BestAlgorithmOriginal implements CurvesExperiment {
 	
 	private final Map<Integer, Map<Integer, Map<Integer, Evaluation>>> taskOriented;
 	private final Map<Integer, Map<Integer, Map<Integer, Evaluation>>> setupOriented;
+
+	private int tasksCorrect = 0;
+	private int tasksTotal = 0;
 	
 	public BestAlgorithmOriginal( DataLoader dl, int sampleIdx, int nearestTasks ) {
 		this.dl = dl;
@@ -40,6 +44,9 @@ public class BestAlgorithmOriginal implements CurvesExperiment {
 	
 	public void singleTask( int task_id ) {
 		System.out.print( "Task " + task_id + ": " );
+		PairedRanking pr = new PairedRanking( dl.getTaskSetupFoldResults().get( task_id ) );
+		List<Integer> bestSetups = pr.partialOrdering().get( 0 );
+		
 		int currentBest = -1;
 		
 		for( Integer competitor : setupOriented.keySet() ) {
@@ -79,11 +86,23 @@ public class BestAlgorithmOriginal implements CurvesExperiment {
 				currentBest = competitor;
 			}
 		}
-		System.out.println( "predicted setup " + currentBest );
+		
+		System.out.println( "predicted setup: " + currentBest );
+		System.out.println( "best setups: " + bestSetups );
+		
+		tasksTotal += 1;
+		if( bestSetups.contains( currentBest ) ) {
+			tasksCorrect += 1;
+		}
+		
 	}
 	
 	
 	public String result() {
-		return EXPERIMENT_NAME + "\nunimplemented";
+		StringBuilder sb = new StringBuilder();
+		sb.append( EXPERIMENT_NAME + "\n" );
+		sb.append( SAMPLE_IDX + " samples, " + NEAREST_TASKS + " nearest tasks\n" );
+		sb.append( "Total: " + tasksTotal + "; correct: " + tasksCorrect );
+		return sb.toString();
 	}
 }

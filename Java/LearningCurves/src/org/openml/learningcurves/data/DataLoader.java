@@ -4,18 +4,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.openml.apiconnector.algorithms.Conversion;
 
-import weka.core.Attribute;
-import weka.core.DenseInstance;
 import weka.core.Instance;
 import weka.core.Instances;
-import weka.core.Utils;
 import weka.core.converters.CSVLoader;
 
 public class DataLoader {
@@ -185,7 +180,7 @@ public class DataLoader {
 		return tmpTaskOriented;
 	}
 	
-	public Map<Integer, Map<Integer, List<Double>>> createTaskSetupFoldResults() {
+	private Map<Integer, Map<Integer, List<Double>>> createTaskSetupFoldResults() {
 		Conversion.log("OK", "DataLoader", "Creating Task Setup Fold Results Map");
 		Map<Integer, Map<Integer, List<Double>>> taskSetupFoldResults = new HashMap<>();
 		for( Integer task_id : memory.keySet() ) {
@@ -210,7 +205,7 @@ public class DataLoader {
 		return taskSetupFoldResults;
 	}
 	
-	public Instances getWinnerPerSample() {
+	/*private Instances getWinnerPerSample() {
 		Map<Integer, Map<Integer, Map<Integer, Evaluation>>> task_oriented = getTaskOriented();
 		Map<Integer, Map<Integer, Map<Integer, Evaluation>>> setup_oriented = getSetupOriented();
 
@@ -265,7 +260,7 @@ public class DataLoader {
 			dataset.add(task);
 		}
 		return dataset;
-	}
+	}*/
 	
 	private static Map<Integer, Map<Integer, Map<Integer, Evaluation>>> createSetupOriented( Map<Integer, Map<Integer, Map<Integer, Map<Integer, Map<Integer, Map<String, Double>>>>>> memory ) {
 		Conversion.log("OK", "DataLoader", "Converting into setup oriented set");

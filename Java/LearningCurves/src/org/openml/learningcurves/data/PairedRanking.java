@@ -1,8 +1,6 @@
 package org.openml.learningcurves.data;
 
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -16,10 +14,10 @@ public class PairedRanking {
 	
 	private final List<Integer> setups;
 	private final Map<Integer, Map<Integer, Boolean>> significantlyBetter;
-	private final Map<Integer, List<Double>> fold_results;
+	//private final Map<Integer, List<Double>> fold_results;
 	
 	public PairedRanking( Map<Integer, List<Double>> fold_results ) {
-		this.fold_results = fold_results;
+		//this.fold_results = fold_results;
 		significantlyBetter = new TreeMap<Integer, Map<Integer, Boolean>>();
 		setups = new ArrayList<>( fold_results.keySet() );
 		
@@ -58,7 +56,7 @@ public class PairedRanking {
 		return ordering;
 	}
 	
-	public Map<Integer, Double> accuracyOrdering() {
+	/*public Map<Integer, Double> accuracyOrdering() {
 		Map<Integer,Double> map = new HashMap<Integer,Double>();
         ValueComparator bvc =  new ValueComparator(map);
         TreeMap<Integer,Double> sorted_map = new TreeMap<Integer,Double>(bvc);
@@ -70,7 +68,7 @@ public class PairedRanking {
         sorted_map.putAll(map);
         
         return sorted_map;
-	}
+	}*/
 	
 	public static double[] doubleListToPrimitive( List<Double> doubleArray) {
 		double[] result = new double[doubleArray.size()];
@@ -88,22 +86,5 @@ public class PairedRanking {
 			total += array.get(i);
 		}
 		return total / array.size();
-	}
-	
-	class ValueComparator implements Comparator<Integer> {
-
-	    Map<Integer, Double> base;
-	    public ValueComparator(Map<Integer, Double> base) {
-	        this.base = base;
-	    }
-
-	    // Note: this comparator imposes orderings that are inconsistent with equals.    
-	    public int compare(Integer a, Integer b) {
-	        if (base.get(a) >= base.get(b)) {
-	            return -1;
-	        } else {
-	            return 1;
-	        } // returning 0 would merge keys
-	    }
 	}
 }

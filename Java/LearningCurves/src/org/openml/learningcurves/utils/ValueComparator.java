@@ -3,7 +3,7 @@ package org.openml.learningcurves.utils;
 import java.util.Comparator;
 import java.util.Map;
 
-class ValueComparator implements Comparator {
+public class ValueComparator implements Comparator {
 
 	Map map;
 
