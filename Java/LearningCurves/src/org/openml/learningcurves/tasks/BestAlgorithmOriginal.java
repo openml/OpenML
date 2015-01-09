@@ -1,5 +1,7 @@
 package org.openml.learningcurves.tasks;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -7,6 +9,7 @@ import org.openml.learningcurves.data.DataLoader;
 import org.openml.learningcurves.data.DataUtils;
 import org.openml.learningcurves.data.Evaluation;
 import org.openml.learningcurves.data.PairedRanking;
+import org.openml.learningcurves.utils.OrderedMap;
 
 public class BestAlgorithmOriginal implements CurvesExperiment {
 	
@@ -20,7 +23,8 @@ public class BestAlgorithmOriginal implements CurvesExperiment {
 	
 	private final Map<Integer, Map<Integer, Map<Integer, Evaluation>>> taskOriented;
 	private final Map<Integer, Map<Integer, Map<Integer, Evaluation>>> setupOriented;
-
+	
+	private final Map<Integer, List<Double>> losscurves;
 	private int tasksCorrect = 0;
 	private int tasksTotal = 0;
 	
@@ -34,6 +38,9 @@ public class BestAlgorithmOriginal implements CurvesExperiment {
 		// book keeping
 		this.taskOriented = dl.getTaskOriented();
 		this.setupOriented = dl.getSetupOriented();
+		
+		// scores
+		losscurves = new HashMap<Integer, List<Double>>();
 	}
 	
 	public void allTasks() {
@@ -43,13 +50,72 @@ public class BestAlgorithmOriginal implements CurvesExperiment {
 	}
 	
 	public void singleTask( int task_id ) {
-		System.out.print( "Task " + task_id + ": " );
 		PairedRanking pr = new PairedRanking( dl.getTaskSetupFoldResults().get( task_id ) );
-		List<Integer> bestSetups = pr.partialOrdering().get( 0 );
+		Map<Integer, List<Integer>> partialOrdering = pr.partialOrdering();
+		OrderedMap accuracyOrdering = pr.accuracyOrdering();
 		
+		losscurves.put( task_id, new ArrayList<Double>() );
+		List<Integer> eliminatedAlgorithms = new ArrayList<>();
+		
+		int currentBest = findBestAlgorithm(task_id, eliminatedAlgorithms);
+		eliminatedAlgorithms.add( currentBest );
+		double currentLoss = accuracyOrdering.getValueByRank( accuracyOrdering.size() - 1 ) - accuracyOrdering.getValueByKey( currentBest );
+		losscurves.get( task_id ).add( currentLoss );
+		
+		while( currentLoss > 0 ) {
+			int currentAttempt = findBestAlgorithm(task_id, eliminatedAlgorithms);
+			eliminatedAlgorithms.add( currentAttempt );
+			
+			double updatedLoss = accuracyOrdering.getValueByRank( accuracyOrdering.size() - 1 ) - accuracyOrdering.getValueByKey( currentAttempt );
+			if( updatedLoss < currentLoss ) {
+				currentLoss = updatedLoss;
+			}
+			
+			losscurves.get( task_id ).add( currentLoss );
+		}
+		
+		tasksTotal += 1;
+		if( partialOrdering.get( 0 ).contains( currentBest ) ) {
+			tasksCorrect += 1;
+		}
+		
+	}
+	
+	public String result() {
+		StringBuilder sb = new StringBuilder();
+		sb.append( EXPERIMENT_NAME + "\n" );
+		sb.append( SAMPLE_IDX + " samples, " + NEAREST_TASKS + " nearest tasks\n" );
+		sb.append( "Total: " + tasksTotal + "; correct: " + tasksCorrect );
+		return sb.toString();
+	}
+	
+	public List<Double> lossCurve() {
+		List<Double> averageLossCurve = new ArrayList<Double>();
+		
+		for( Integer task_id : losscurves.keySet() ) {
+			for( int i = 0; i < losscurves.get(task_id).size(); ++i  ) {
+				if( averageLossCurve.size() <= i ) {
+					averageLossCurve.add( losscurves.get(task_id).get(i) );
+				} else {
+					averageLossCurve.set( i, averageLossCurve.get(i) + losscurves.get(task_id).get(i) );
+				}
+			}
+		}
+		
+		for( int i = 0; i < averageLossCurve.size(); ++i ) {
+			averageLossCurve.set( i, averageLossCurve.get(i) / losscurves.keySet().size() );
+		}
+		
+		return averageLossCurve;
+	}
+	
+	private int findBestAlgorithm( int task_id, List<Integer> eliminatedAlgorithms ) {
 		int currentBest = -1;
-		
 		for( Integer competitor : setupOriented.keySet() ) {
+			// ignore eliminated algorithms
+			if( eliminatedAlgorithms.contains( competitor ) ) { continue; }
+			
+			// if needed, choose a first "current best"
 			if( currentBest == -1 ) {
 				currentBest = competitor;
 				continue;
@@ -86,23 +152,6 @@ public class BestAlgorithmOriginal implements CurvesExperiment {
 				currentBest = competitor;
 			}
 		}
-		
-		System.out.println( "predicted setup: " + currentBest );
-		System.out.println( "best setups: " + bestSetups );
-		
-		tasksTotal += 1;
-		if( bestSetups.contains( currentBest ) ) {
-			tasksCorrect += 1;
-		}
-		
-	}
-	
-	
-	public String result() {
-		StringBuilder sb = new StringBuilder();
-		sb.append( EXPERIMENT_NAME + "\n" );
-		sb.append( SAMPLE_IDX + " samples, " + NEAREST_TASKS + " nearest tasks\n" );
-		sb.append( "Total: " + tasksTotal + "; correct: " + tasksCorrect );
-		return sb.toString();
+		return currentBest;
 	}
 }

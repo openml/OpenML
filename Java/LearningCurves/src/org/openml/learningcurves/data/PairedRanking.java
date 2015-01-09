@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.commons.math3.stat.inference.TTest;
+import org.openml.learningcurves.utils.OrderedMap;
 
 public class PairedRanking {
 	
@@ -14,10 +15,10 @@ public class PairedRanking {
 	
 	private final List<Integer> setups;
 	private final Map<Integer, Map<Integer, Boolean>> significantlyBetter;
-	//private final Map<Integer, List<Double>> fold_results;
+	private final Map<Integer, List<Double>> fold_results;
 	
 	public PairedRanking( Map<Integer, List<Double>> fold_results ) {
-		//this.fold_results = fold_results;
+		this.fold_results = fold_results;
 		significantlyBetter = new TreeMap<Integer, Map<Integer, Boolean>>();
 		setups = new ArrayList<>( fold_results.keySet() );
 		
@@ -56,19 +57,15 @@ public class PairedRanking {
 		return ordering;
 	}
 	
-	/*public Map<Integer, Double> accuracyOrdering() {
-		Map<Integer,Double> map = new HashMap<Integer,Double>();
-        ValueComparator bvc =  new ValueComparator(map);
-        TreeMap<Integer,Double> sorted_map = new TreeMap<Integer,Double>(bvc);
+	public OrderedMap accuracyOrdering() {
+		OrderedMap om = new OrderedMap();
         
         for( int setup : fold_results.keySet() ) {
-        	map.put(setup, mean(fold_results.get( setup ) ) );
+        	om.put(setup, mean(fold_results.get( setup ) ) );
         }
         
-        sorted_map.putAll(map);
-        
-        return sorted_map;
-	}*/
+        return om;
+	}
 	
 	public static double[] doubleListToPrimitive( List<Double> doubleArray) {
 		double[] result = new double[doubleArray.size()];
