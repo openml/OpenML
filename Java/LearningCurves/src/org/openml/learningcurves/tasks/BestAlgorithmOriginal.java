@@ -11,7 +11,7 @@ import org.openml.learningcurves.data.Evaluation;
 import org.openml.learningcurves.data.PairedRanking;
 import org.openml.learningcurves.utils.OrderedMap;
 
-public class BestAlgorithmOriginal implements CurvesExperiment {
+public class BestAlgorithmOriginal implements CurvesExperimentFull {
 	
 	private static final String EXPERIMENT_NAME = "Best algorithm (Original)";
 	
@@ -130,8 +130,9 @@ public class BestAlgorithmOriginal implements CurvesExperiment {
 			
 			for( Integer nearestTask : nearestTasks ) {
 				// obtain the scores on the nearest task
-				double accuracyBest = taskOriented.get( nearestTask ).get( currentBest ).get( dl.taskSamples(nearestTask) ).getAccuracy();
-				double accuracyComp = taskOriented.get( nearestTask ).get( competitor  ).get( dl.taskSamples(nearestTask) ).getAccuracy();
+				int taskSample = dl.taskSamples(nearestTask) - 1;
+				double accuracyBest = taskOriented.get( nearestTask ).get( currentBest ).get( taskSample ).getAccuracy();
+				double accuracyComp = taskOriented.get( nearestTask ).get( competitor  ).get( taskSample ).getAccuracy();
 				
 				// adapt learning curves to the original curve
 				double coefficientBest = du.coefficient(task_id, nearestTask, currentBest, SAMPLE_IDX );

@@ -84,6 +84,10 @@ public class OrderedMap {
 		for( int i = 0; i < keys.size(); ++i ) {
 			sb.append( ", " + keys.get(i) + "=" + values.get(i) );
 		}
-		return "[" + sb.toString().substring( 2 ) + "]";
+		if( keys.size() > 0 ) {
+			return "[" + sb.toString().substring( 2 ) + "]";
+		} else {
+			return "[EMPTY]";
+		}
 	}
 }

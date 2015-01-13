@@ -101,9 +101,10 @@ public class DataLoader {
 			}
 			
 			for( Integer tmp_task_id : memory.keySet() ) {
-				taskSamples.put( tmp_task_id, memory.get(tmp_task_id).get(memory.get(tmp_task_id).keySet().iterator().next()).size() );
+				taskSamples.put( tmp_task_id, memory.get(tmp_task_id).get(memory.get(tmp_task_id).keySet().iterator().next()).get(0).get(0).size() );
 			}
 		}
+		//System.out.println(taskSamples);
 	}
 	
 	public Map<Integer, Map<Integer, Map<Integer, Evaluation>>> getTaskOriented() {
@@ -192,8 +193,8 @@ public class DataLoader {
 				for( Integer repeat : memory.get(task_id).get(setup_id).keySet() ) {
 					
 					for( Integer fold : memory.get(task_id).get(setup_id).get(repeat).keySet() ) {
-						
-						double currentValue = memory.get(task_id).get(setup_id).get(repeat).get(fold).get(taskSamples(task_id)).get("predictive_accuracy");
+						int taskSampleIndex = taskSamples(task_id) - 1;
+						double currentValue = memory.get(task_id).get(setup_id).get(repeat).get(fold).get( taskSampleIndex ).get("predictive_accuracy");
 						
 						taskSetupFoldResults.get(task_id).get(setup_id).add(currentValue);
 					}

@@ -46,8 +46,9 @@ public class PairwiseOriginal implements CurvesExperiment {
 			for( Integer Aq : setupOriented.keySet() ) {
 				if( Ap == Aq ) { continue; }
 				
-				double scoreP = taskOriented.get( task_id ).get( Ap ).get( dl.taskSamples(task_id) ).getAccuracy();
-				double scoreQ = taskOriented.get( task_id ).get( Aq ).get( dl.taskSamples(task_id) ).getAccuracy();
+				int taskSample = dl.taskSamples(task_id) - 1;
+				double scoreP = taskOriented.get( task_id ).get( Ap ).get( taskSample ).getAccuracy();
+				double scoreQ = taskOriented.get( task_id ).get( Aq ).get( taskSample ).getAccuracy();
 				
 				// score book keeping
 				int votesP = 0;
@@ -58,8 +59,9 @@ public class PairwiseOriginal implements CurvesExperiment {
 				
 				for( Integer nearestTask : nearestTasks ) {
 					// obtain the scores on the nearest task
-					double accuracyP = taskOriented.get( nearestTask ).get( Ap ).get( dl.taskSamples(nearestTask) ).getAccuracy();
-					double accuracyQ = taskOriented.get( nearestTask ).get( Aq ).get( dl.taskSamples(nearestTask) ).getAccuracy();
+					int nearestTaskSample = dl.taskSamples(nearestTask) - 1;
+					double accuracyP = taskOriented.get( nearestTask ).get( Ap ).get( nearestTaskSample ).getAccuracy();
+					double accuracyQ = taskOriented.get( nearestTask ).get( Aq ).get( nearestTaskSample ).getAccuracy();
 					
 					// adapt learning curves to the original curve
 					double coefficientP = du.coefficient(task_id, nearestTask, Ap, SAMPLE_IDX );

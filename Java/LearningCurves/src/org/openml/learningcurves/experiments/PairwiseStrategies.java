@@ -13,7 +13,7 @@ public class PairwiseStrategies {
 	private final DataLoader dl;
 	
 	private final int MAX_SAMPLES = 6;
-	private final int MAX_NEIGHBOURS = 21;
+	private final int MAX_NEIGHBOURS = 11;
 	
 	public PairwiseStrategies() throws IOException {
 		// load data

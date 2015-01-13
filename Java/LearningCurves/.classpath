@@ -5,5 +5,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/apiconnector"/>
 	<classpathentry kind="lib" path="lib/commons-math3-3.4.jar"/>
 	<classpathentry kind="lib" path="lib/weka.jar"/>
+	<classpathentry kind="lib" path="lib/commons-io-2.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

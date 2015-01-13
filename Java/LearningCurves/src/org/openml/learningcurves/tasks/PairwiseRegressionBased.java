@@ -51,7 +51,8 @@ public class PairwiseRegressionBased implements CurvesExperiment {
 			
 			for( Integer nearestTask : nearestTasks ) {
 				// accuracy on retrieved task
-				double accuracy = taskOriented.get( nearestTask ).get( setupId ).get( dl.taskSamples(nearestTask) ).getAccuracy();
+				int nearestTaskSample = dl.taskSamples(nearestTask) - 1;
+				double accuracy = taskOriented.get( nearestTask ).get( setupId ).get( nearestTaskSample ).getAccuracy();
 				
 				// adapt learning curve to the original curve
 				double coefficient = du.coefficient(task_id, nearestTask, setupId, SAMPLE_IDX );
@@ -68,8 +69,9 @@ public class PairwiseRegressionBased implements CurvesExperiment {
 			for( int setupQ : setupOriented.keySet() ) {
 				if( setupP == setupQ ) { continue; }
 				
-				double scoreP = taskOriented.get( task_id ).get( setupP ).get( dl.taskSamples(task_id) ).getAccuracy();
-				double scoreQ = taskOriented.get( task_id ).get( setupQ ).get( dl.taskSamples(task_id) ).getAccuracy();
+				int taskSample = dl.taskSamples(task_id) - 1;
+				double scoreP = taskOriented.get( task_id ).get( setupP ).get( taskSample ).getAccuracy();
+				double scoreQ = taskOriented.get( task_id ).get( setupQ ).get( taskSample ).getAccuracy();
 				
 				pairwiseTotal += 1;
 				if( (scoreP > scoreQ) == (predictedScores.get(setupP) > predictedScores.get(setupQ) ) ) {

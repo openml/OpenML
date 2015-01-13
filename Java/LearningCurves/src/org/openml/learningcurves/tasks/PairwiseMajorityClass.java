@@ -36,16 +36,18 @@ public class PairwiseMajorityClass implements CurvesExperiment {
 			for( Integer Aq : setupOriented.keySet() ) {
 				if( Ap == Aq ) { continue; }
 				
-				double scoreP = taskOriented.get( task_id ).get( Ap ).get( dl.taskSamples(task_id) ).getAccuracy();
-				double scoreQ = taskOriented.get( task_id ).get( Aq ).get( dl.taskSamples(task_id) ).getAccuracy();
+				int taskSample = dl.taskSamples(task_id) - 1;
+				double scoreP = taskOriented.get( task_id ).get( Ap ).get( taskSample ).getAccuracy();
+				double scoreQ = taskOriented.get( task_id ).get( Aq ).get( taskSample ).getAccuracy();
 				
 				int votesP = 0;
 				int votesQ = 0;
 				
 				for( Integer evaluate_task_id : taskOriented.keySet() ) {
 					if( evaluate_task_id == task_id ) continue;
-					double currentScoreP = taskOriented.get( evaluate_task_id ).get( Ap ).get( dl.taskSamples(evaluate_task_id) ).getAccuracy();
-					double currentScoreQ = taskOriented.get( evaluate_task_id ).get( Aq ).get( dl.taskSamples(evaluate_task_id) ).getAccuracy();
+					int evaluateTaskSample = dl.taskSamples(evaluate_task_id) - 1;
+					double currentScoreP = taskOriented.get( evaluate_task_id ).get( Ap ).get( evaluateTaskSample ).getAccuracy();
+					double currentScoreQ = taskOriented.get( evaluate_task_id ).get( Aq ).get( evaluateTaskSample ).getAccuracy();
 					
 					if( currentScoreP >= currentScoreQ ) {
 						votesP += 1;
