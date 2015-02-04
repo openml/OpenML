@@ -10,6 +10,8 @@ import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openml.apiconnector.algorithms.Conversion;
@@ -31,6 +33,7 @@ import weka.core.RevisionHandler;
 import weka.core.TechnicalInformationHandler;
 import weka.core.Utils;
 import weka.core.Version;
+import weka.experiment.SplitEvaluator;
 
 public class WekaAlgorithm {
 	
@@ -266,5 +269,16 @@ public class WekaAlgorithm {
 		oos.flush();
 		oos.close();
 		return file;
+	}
+	
+	public static Map<String, Object> splitEvaluatorToMap( SplitEvaluator se, Object[] results ) {
+		Map<String, Object> splitEvaluatorResults = new HashMap<String, Object>();
+		String[] seResultNames = se.getResultNames();
+		
+		for( int i = 0; i < seResultNames.length; ++i ) {
+			splitEvaluatorResults.put( seResultNames[i], results[i] );
+		}
+		
+		return splitEvaluatorResults;
 	}
 }

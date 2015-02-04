@@ -15,6 +15,7 @@ import org.openml.apiconnector.xml.Task;
 import org.openml.apiconnector.xml.Task.Input.Data_set;
 import org.openml.apiconnector.xml.Task.Input.Estimation_procedure;
 import org.openml.weka.algorithm.InstancesHelper;
+import org.openml.weka.algorithm.WekaAlgorithm;
 
 import weka.core.AttributeStats;
 import weka.core.Instances;
@@ -99,7 +100,7 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 			}
 		}
 		
-		m_Splits = new Instances( new FileReader( ep.getDataSplits() ) );
+		m_Splits = new Instances( new FileReader( ep.getDataSplits( m_Task.getTask_id() ) ) );
 		
 		currentTaskRepresentation = "Task " + m_Task.getTask_id() + " (" + TaskInformation.getSourceData(m_Task).getDataSetDescription(apiconnector).getName() + ")";
 
@@ -267,18 +268,16 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 				Conversion.log( "INFO", "Perform Run", "Started on performing " + currentRunRepresentation + ", " + currentFoldRepresentation );
 				
 				try {
-					Map<String, Object> splitEvaluatorResults = new HashMap<String, Object>();
 					Map<Metric, MetricScore> userMeasures = new HashMap<Metric, MetricScore>();
-					String[] seResultNames = m_SplitEvaluator.getResultNames();
 					
 					Object[] seResults = m_SplitEvaluator.getResult(trainingSets[fold][sample], testSets[fold][sample]);
 					Object[] results = new Object[seResults.length + 1];
 					results[0] = getTimestamp();
 					System.arraycopy(seResults, 0, results, 1, seResults.length);
 					
-					for( int i = 0; i < seResultNames.length; ++i ) {
-						splitEvaluatorResults.put( seResultNames[i], seResults[i] );
-					}
+					Map<String, Object> splitEvaluatorResults = WekaAlgorithm.splitEvaluatorToMap(m_SplitEvaluator, seResults);
+					
+					// just adding an additional measure: UserCPU_Time_millis (total training time + test time)
 					if( splitEvaluatorResults.containsKey("UserCPU_Time_millis_training") && splitEvaluatorResults.containsKey("UserCPU_Time_millis_testing") ) {
 						double traintime = (Double) splitEvaluatorResults.get("UserCPU_Time_millis_training");
 						double testtime = (Double) splitEvaluatorResults.get("UserCPU_Time_millis_testing");
@@ -288,9 +287,9 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 					if( missingLabels == false ) {
 						for( UserMeasures um : USER_MEASURES ) {
 							if( splitEvaluatorResults.containsKey(um.wekaFunctionName)) {
-								userMeasures.put( 
-									new Metric(um.openmlFunctionName, um.openmlImplementationName), 
-									new MetricScore( 
+								userMeasures.put(
+									new Metric(um.openmlFunctionName, um.openmlImplementationName),
+									new MetricScore(
 										((Double) splitEvaluatorResults.get(um.wekaFunctionName)) * um.factor, 
 										testSets[fold][sample].size() ) );
 							}

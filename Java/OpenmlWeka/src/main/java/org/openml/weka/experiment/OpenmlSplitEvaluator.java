@@ -14,4 +14,6 @@ public interface OpenmlSplitEvaluator extends SplitEvaluator, OptionHandler, Add
 	public ArrayList<Prediction> recentPredictions() throws Exception;
 	
 	public Classifier getClassifier();
+	
+	public void setClassifier( Classifier classifier );
 }

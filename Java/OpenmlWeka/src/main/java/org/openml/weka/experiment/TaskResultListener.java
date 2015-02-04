@@ -2,8 +2,6 @@ package org.openml.weka.experiment;
 
 import java.io.File;
 import java.io.FileReader;
-import java.lang.management.ManagementFactory;
-import java.lang.management.ThreadMXBean;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +32,6 @@ import org.openml.weka.algorithm.WekaAlgorithm;
 import com.thoughtworks.xstream.XStream;
 
 import weka.classifiers.Classifier;
-import weka.classifiers.evaluation.Evaluation;
 import weka.classifiers.evaluation.NominalPrediction;
 import weka.classifiers.evaluation.Prediction;
 import weka.core.Attribute;
@@ -294,34 +291,27 @@ public class TaskResultListener extends InstancesResultListener {
 			if( inputDataSet ) {
 				// build model for entire data set. This can take some time
 				try {
-					ThreadMXBean thMonitor = ManagementFactory.getThreadMXBean();
-					boolean canMeasureCPUTime = thMonitor.isThreadCpuTimeSupported();
+					Conversion.log( "OK", "Total Model", "Started building a model over the full dataset. " );
 					
-					if(canMeasureCPUTime) {
-					    if (canMeasureCPUTime && !thMonitor.isThreadCpuTimeEnabled()) {
-					      thMonitor.setThreadCpuTimeEnabled(true);
-					    }
-					    long thID = Thread.currentThread().getId();
-					    
-						Evaluation eval = new Evaluation(inputData);
-						Conversion.log( "OK", "Total Model", "Started building a model over the full dataset. " );
-						long startTimeTraining = thMonitor.getThreadUserTime(thID);
-						classifier.buildClassifier(inputData);
-						double totalTimeTraining = (thMonitor.getThreadUserTime(thID) - startTimeTraining) / 1000000.0;
-						Conversion.log( "OK", "Total Model", "Started testing the model over the full dataset. " );
-						long startTimeTesting = thMonitor.getThreadUserTime(thID);
-						eval.evaluateModel(classifier, inputData);
-						double totalTimeTesting = (thMonitor.getThreadUserTime(thID) - startTimeTesting) / 1000000.0;
+					OpenmlSplitEvaluator ose = new OpenmlClassificationSplitEvaluator(); // TODO: regression
+					ose.setClassifier(classifier);
+					
+					Map<String, Object> splitEvaluatorResults = WekaAlgorithm.splitEvaluatorToMap(ose, ose.getResult(inputData, inputData) );
+					Classifier classifierModel = ose.getClassifier();
+					String keyTraining = "UserCPU_Time_millis_training";
+					String keyTesting  = "UserCPU_Time_millis_testing";
+					
+					if( splitEvaluatorResults.containsKey( keyTraining ) && splitEvaluatorResults.containsKey( keyTesting ) ) {
+						Double totalTimeTraining = (Double) splitEvaluatorResults.get( keyTraining );
+						Double totalTimeTesting  = (Double) splitEvaluatorResults.get( keyTesting);
 						
-						getRun().addOutputEvaluation("usercpu_time_millis_testing", "openml.evaluation.usercpu_time_millis_testing(1.0)", totalTimeTesting, null );
-						getRun().addOutputEvaluation("usercpu_time_millis_training", "openml.evaluation.usercpu_time_millis_training(1.0)", totalTimeTraining, null );
-						getRun().addOutputEvaluation("usercpu_time_millis", "openml.evaluation.usercpu_time_millis(1.0)", totalTimeTraining + totalTimeTesting, null );
-					} else {
-						Conversion.log( "OK", "Total Model", "Started building a model over the full dataset. " );
-						classifier.buildClassifier(inputData);
+						getRun().addOutputEvaluation( keyTesting.toLowerCase(),  "openml.evaluation."+keyTesting.toLowerCase()+"(1.0)", totalTimeTesting, null );
+						getRun().addOutputEvaluation( keyTraining.toLowerCase(), "openml.evaluation."+keyTraining.toLowerCase()+"(1.0)", totalTimeTraining, null );
+						getRun().addOutputEvaluation( "usercpu_time_millis", "openml.evaluation.usercpu_time_millis(1.0)", totalTimeTraining + totalTimeTesting, null );
 					}
-					humanReadableClassifier = Conversion.stringToTempFile(classifier.toString(), "WekaModel_" + classifier.getClass().getName(), "model");
-					serializedClassifier = WekaAlgorithm.classifierSerializedToFile(classifier, task_id);
+					humanReadableClassifier = Conversion.stringToTempFile(classifierModel.toString(), "WekaModel_" + classifierModel.getClass().getName(), "model");
+					serializedClassifier = WekaAlgorithm.classifierSerializedToFile(classifierModel, task_id);
+					Conversion.log( "OK", "Total Model", "Done building full dataset model. " );
 				} catch (Exception e) { 
 					e.printStackTrace(); 
 					Conversion.log( "WARNING", "Total Model", "There was an error building a model over the full dataset. " );
