@@ -1,0 +1,3 @@
+Ant installation:
+
+ant -buildfile build_package.xml make_package -Dpackage=OpenmlWeka
