@@ -5,10 +5,10 @@
 PackageName=OpenmlWeka
 
 # Version (required)
-Version=0.9.0
+Version=0.9.1
 
 #Date (year-month-day)
-Date=2014-07-29
+Date=2015-02-09
 
 # Title (required)
 Title=Openml Weka
@@ -29,10 +29,10 @@ License=GPL 3.0
 Description=This package allows for the sharing of Weka runs on OpenML
 
 # Package URL for obtaining the package archive (required)
-PackageURL=http://www.openml.org/plugins/
+PackageURL=http://www.openml.org/downloads/OpenmlWeka.zip
 
 # URL for further information
-URL=http://www.openml.org/
+URL=http://www.openml.org/plugins
 
 # Enhances various other packages ?
 #Enhances=packageName1,packageName2,...
