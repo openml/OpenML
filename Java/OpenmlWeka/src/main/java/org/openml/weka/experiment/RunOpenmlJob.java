@@ -8,38 +8,15 @@ import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.Job;
 
+import weka.core.CommandlineRunnable;
 import weka.core.Utils;
 import weka.core.Version;
 
-public class RunJob {
+public class RunOpenmlJob implements CommandlineRunnable {
 	
 	public static void main( String[] args ) throws Exception {
-		
-		int n;
-		int ttid;
-		
-		Config config = new Config();
-		OpenmlConnector apiconnector;
-		
-		String username = config.getUsername();
-		String password = config.getPassword();
-		String server = config.getServer();
-		
-		if( server != null ) {
-			apiconnector = new OpenmlConnector( server, username, password );
-		} else { 
-			apiconnector = new OpenmlConnector( username, password );
-		}
-		
-		String strN = Utils.getOption('N', args);
-		String strTtid = Utils.getOption('T', args);
-		
-		n = ( strN.equals("") ) ? 1 : Integer.parseInt(strN);
-		ttid = ( strTtid.equals("") ) ? 1 : Integer.parseInt(strTtid);
-		
-		for( int i = 0; i < n; ++i ) {
-			doTask(ttid, config, apiconnector);
-		}
+		RunOpenmlJob rj = new RunOpenmlJob();
+		rj.run( rj, args );
 	}
 	
 	public static void doTask( int ttid, Config config, OpenmlConnector apiconnector ) {
@@ -63,6 +40,40 @@ public class RunJob {
 			e.printStackTrace();
 		} catch( Error e) {
 			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void run(Object arg0, String[] args) throws IllegalArgumentException {
+		int n;
+		int ttid;
+		String strN;
+		String strTtid;
+		
+		Config config = new Config();
+		OpenmlConnector apiconnector;
+		
+		String username = config.getUsername();
+		String password = config.getPassword();
+		String server = config.getServer();
+		
+		if( server != null ) {
+			apiconnector = new OpenmlConnector( server, username, password );
+		} else { 
+			apiconnector = new OpenmlConnector( username, password );
+		}
+		
+		try {
+			strN = Utils.getOption('N', args);
+			strTtid = Utils.getOption('T', args);
+		} catch( Exception e ) {
+			throw new IllegalArgumentException( e.getMessage() );
+		}
+		n = ( strN.equals("") ) ? 1 : Integer.parseInt(strN);
+		ttid = ( strTtid.equals("") ) ? 1 : Integer.parseInt(strTtid);
+		
+		for( int i = 0; i < n; ++i ) {
+			doTask(ttid, config, apiconnector);
 		}
 	}
 }
