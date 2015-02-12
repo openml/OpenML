@@ -27,6 +27,10 @@ public class RunJob {
 			throw new Exception("Username/password incorrect");
 		}
 		
+		if( c.get("cache_allowed").equals("false") ) {
+			Settings.CACHE_ALLOWED = false;
+		}
+		
 		String strN = Utils.getOption('N', args);
 		String strTtid = Utils.getOption('T', args);
 		

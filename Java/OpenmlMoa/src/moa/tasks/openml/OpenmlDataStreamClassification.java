@@ -14,7 +14,6 @@ import org.openml.apiconnector.models.MetricScore;
 import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.settings.Config;
-import org.openml.apiconnector.settings.Settings;
 import org.openml.apiconnector.xml.Task;
 
 import moa.classifiers.Classifier;
