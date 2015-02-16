@@ -1,11 +1,11 @@
 [![Stories in Ready](https://badge.waffle.io/openml/OpenML.png?label=ready&title=Ready)](https://waffle.io/openml/OpenML)
 [![Stories in In Progress](https://badge.waffle.io/openml/OpenML.png?label=in%20progress&title=In%20Progress)](https://waffle.io/openml/OpenML)
-[Google Grouo / Email List](https://groups.google.com/forum/?hl=de#!forum/openml)
 
 OpenML: Open Machine Learning
 =============================
 Developers: to keep track of issues, we use Waffle: https://waffle.io/openml/OpenML  
-Citation and Honor Code: http://openml.org/guide/#!terms
+Citation and Honor Code: http://openml.org/guide/#!terms  
+Google Group / Email List: https://groups.google.com/forum/?hl=de#!forum/openml
 
 ## Aim
 OpenML aims to create a novel ecosystem for machine learning experimentation. The current generation of machine learning 
