@@ -48,10 +48,18 @@ public class BayesianNetworkGenerator extends AbstractOptionHandler implements
     private Instances sourceDataDiscretized;
     private Instances sourceDataOriginal;
     private Random instanceRandom;
+    private Random driftRandom;
 	private BayesNet bayesianNetwork;
 	private SearchAlgorithm searchAlgorithm;
 	private Map<Integer, BinDetails[]> bindetails;
 	private Discretize discretizationFilter;
+	private int instancesDone;
+	
+	private int conceptDriftFrequency;
+	private int conceptDriftImpact;
+	// first index is attribute. second index maps to ICPs, 
+	// which has the same number of values as the cardinality of parents. 
+	private Integer[][] distributionsDriftMapping;
 	
 	public IntOption instanceRandomSeedOption = new IntOption(
             "instanceRandomSeed", 'i',
@@ -73,6 +81,18 @@ public class BayesianNetworkGenerator extends AbstractOptionHandler implements
 	public FileOption printNetworkOption = new FileOption(
 			"printNetwork", 'p', "If set, the generated Network will also be printed to a file.", 
 			null, "arff", true );
+
+	public IntOption driftRandomSeedOption = new IntOption(
+            "friftRandomSeed", 'd',
+            "Seed for random generation of concept drift.", 1);
+	
+	public IntOption conceptDriftFrequencyOption = new IntOption(
+            "conceptDriftFrequency", 'c',
+            "Determines at how after how many instances a concept drift generating operation will be performed.", 0);
+	
+	public IntOption conceptDriftImpactOption = new IntOption(
+            "conceptDriftImpact", 'I',
+            "Determines the number of swaps for every concept drift operation", 0);
 	
 	@Override
 	public void getDescription(StringBuilder arg0, int arg1) {
@@ -134,21 +154,17 @@ public class BayesianNetworkGenerator extends AbstractOptionHandler implements
 					attributesSet[iAttribute] = true;
 					if( numericAttributes && sourceDataOriginal.attribute( iAttribute ).isNumeric() ) {
 						double current = getNumericValueByProdBist(
-							m_Distributions[iAttribute][iCPT], 
+							m_Distributions[iAttribute][distributionsDriftMapping[iAttribute][iCPT]], 
 							sourceDataDiscretized.attribute(iAttribute) );
 						usedValue[iAttribute] = current;
 						try {
 							nominalValue[iAttribute] = getBin(current, discretizationFilter.getCutPoints( iAttribute ));
 						} catch( Exception e ) {
-							// FAIL SAFE, may never happen. 
-							e.printStackTrace();
-							nominalValue[iAttribute] = getNominalValueByProbDist( 
-								m_Distributions[iAttribute][iCPT], 
-								sourceDataDiscretized.attribute(iAttribute) );
+							throw new RuntimeException("Could not locate correct bin for numeric value. ");
 						}
 					} else {
 						double current = getNominalValueByProbDist( 
-							m_Distributions[iAttribute][iCPT], 
+							m_Distributions[iAttribute][distributionsDriftMapping[iAttribute][iCPT]], 
 							sourceDataDiscretized.attribute(iAttribute) );
 						nominalValue[iAttribute] = current;
 						usedValue[iAttribute] = current;
@@ -159,21 +175,53 @@ public class BayesianNetworkGenerator extends AbstractOptionHandler implements
 		for( int i = 0; i < getHeader().numAttributes(); ++i ) {
 			inst.setValue( i, usedValue[i] );
 		}
-		
+		instancesDone += 1;
+		if( conceptDriftFrequency > 0 && conceptDriftImpact > 0 ) {
+			if( instancesDone % conceptDriftFrequency == 0 ) {
+				
+				for( int iNumberOfSwaps = 0; iNumberOfSwaps < conceptDriftImpact; ++iNumberOfSwaps ) {
+					// pick attribute to perform swap on
+					int attribute = Math.abs( driftRandom.nextInt() ) % sourceDataDiscretized.numAttributes();
+					int cardinality = m_ParentSets[attribute].getCardinalityOfParents();
+					// pick line in distribution table
+					int swap1 = Math.abs( driftRandom.nextInt() ) % cardinality;
+					
+					if( cardinality > 1) { // we can only swap if there are two or more
+						// pick second line
+						int swap2 = Math.abs( driftRandom.nextInt() ) % (cardinality - 1);
+						// correction for same line
+						if( swap1 == swap2 ) { swap2 += 1; }
+	
+						int tmp = distributionsDriftMapping[attribute][swap1];
+						distributionsDriftMapping[attribute][swap1] = distributionsDriftMapping[attribute][swap2];
+						distributionsDriftMapping[attribute][swap2] = tmp;
+					}
+				}
+			}
+			
+		}
 		return inst;
 	}
 
 	@Override
 	public void restart() {
         instanceRandom = new Random(this.instanceRandomSeedOption.getValue());
+        driftRandom = new Random(this.driftRandomSeedOption.getValue());
+        instancesDone = 0;
 	}
 
 	@Override
 	protected void prepareForUseImpl(TaskMonitor arg0, ObjectRepository arg1) {
+		instancesDone = 0;
+		numericAttributes = this.numericAttributesOption.isSet();
+		
+        instanceRandom = new Random(this.instanceRandomSeedOption.getValue());
+        driftRandom = new Random(this.driftRandomSeedOption.getValue());
+        
+        conceptDriftFrequency = this.conceptDriftFrequencyOption.getValue();
+        conceptDriftImpact = this.conceptDriftImpactOption.getValue();
+        
 		try {
-			numericAttributes = this.numericAttributesOption.isSet();
-			
-	        instanceRandom = new Random(this.instanceRandomSeedOption.getValue());
 	        sourceDataOriginal = new Instances( new FileReader( this.arffFileOption.getFile() ) );
 	        sourceDataDiscretized = new Instances( new FileReader( this.arffFileOption.getFile() ) );
 			String relationNameOriginal = sourceDataDiscretized.relationName();
@@ -201,6 +249,15 @@ public class BayesianNetworkGenerator extends AbstractOptionHandler implements
 			bayesianNetwork = new BayesNet();
 			bayesianNetwork.setSearchAlgorithm( searchAlgorithm );
 			bayesianNetwork.buildClassifier( sourceDataDiscretized );
+			
+			// init distribution mapping to its normal behavour
+			Estimator[][] m_Distributions = bayesianNetwork.getDistributions();
+			distributionsDriftMapping = new Integer[m_Distributions.length][m_Distributions[0].length];
+			for( int i = 0; i < m_Distributions.length; ++i ) {
+				for( int j = 0; j < m_Distributions[i].length; ++j ) {
+					distributionsDriftMapping[i][j] = j;
+				}
+			}
 			
 			if( printNetworkOption.getFile() != null ) {
 				BufferedWriter bw = new BufferedWriter( new FileWriter( printNetworkOption.getFile() ) );
@@ -231,7 +288,7 @@ public class BayesianNetworkGenerator extends AbstractOptionHandler implements
 		}
 	}
 	
-	public static Instances applyFilter( Instances dataset, Filter filter, String options ) throws Exception {
+	private static Instances applyFilter( Instances dataset, Filter filter, String options ) throws Exception {
 		((OptionHandler) filter).setOptions( Utils.splitOptions( options ) );
 		filter.setInputFormat(dataset);
 		return Filter.useFilter(dataset, filter);
