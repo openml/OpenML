@@ -8,8 +8,6 @@ import org.json.JSONArray;
 import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.algorithms.TaskInformation;
 import org.openml.apiconnector.io.OpenmlConnector;
-import org.openml.apiconnector.settings.Constants;
-import org.openml.apiconnector.settings.Settings;
 import org.openml.apiconnector.xml.DataSetDescription;
 import org.openml.apiconnector.xml.EvaluationScore;
 import org.openml.apiconnector.xml.Run;
@@ -170,9 +168,6 @@ public class EvaluateRun {
 		try {
 			File evaluationFile = Conversion.stringToTempFile( xstream.toXML( runevaluation ), "run_" + run_id + "evaluations", "xml" );
 			
-			if( Settings.API_VERBOSE_LEVEL >= Constants.VERBOSE_LEVEL_XML ) {
-				System.out.println(xstream.toXML( runevaluation ));
-			}
 			RunEvaluate re = apiconnector.openmlRunEvaluate( evaluationFile );
 			Conversion.log( "OK", "Process Run", "Run processed: " + re.getRun_id() );
 		} catch( Exception  e ) {

@@ -25,7 +25,6 @@ import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Options;
 import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.settings.Config;
-import org.openml.apiconnector.settings.Settings;
 import org.openml.webapplication.generatefolds.GenerateFolds;
 import org.openml.webapplication.io.Output;
 
@@ -97,9 +96,8 @@ public class Main {
 								testset[i] = Integer.parseInt( rowids[i] );
 							}
 						}
-						// TODO: separate "real" output from debug. For now, 
-						// just put this thing off manually.
-						Settings.API_VERBOSE_LEVEL = 0;
+						
+						apiconnector.setVerboseLevel(0);
 						GenerateFolds gf = new GenerateFolds(
 								apiconnector, 
 								cli.getOptionValue("d"), 

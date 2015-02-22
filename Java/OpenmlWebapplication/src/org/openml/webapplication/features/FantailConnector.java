@@ -28,7 +28,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.io.OpenmlConnector;
-import org.openml.apiconnector.settings.Settings;
+import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.DataQuality;
 import org.openml.apiconnector.xml.DataQuality.Quality;
 import org.openml.apiconnector.xml.DataQualityUpload;
@@ -55,7 +55,6 @@ import org.openml.webapplication.fantail.dc.stream.ChangeDetectors;
 import com.thoughtworks.xstream.XStream;
 
 import weka.core.Instances;
-import weka.core.converters.ArffLoader;
 
 public class FantailConnector {
 	
@@ -74,7 +73,9 @@ public class FantailConnector {
 	private static OpenmlConnector apiconnector;
 	
 	public static void main( String[] args ) throws Exception {
-		OpenmlConnector oc = new OpenmlConnector("http://www.openml.org/","janvanrijn@gmail.com","Feyenoord2008");
+		Config c = new Config();
+		
+		OpenmlConnector oc = new OpenmlConnector( c.getUsername(), c.getPassword() );
 		
 		new FantailConnector(oc, null);
 	}

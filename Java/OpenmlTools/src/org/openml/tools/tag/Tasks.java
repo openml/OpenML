@@ -1,5 +1,7 @@
 package org.openml.tools.tag;
 
+import java.util.Arrays;
+
 import org.openml.apiconnector.algorithms.QueryUtils;
 import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.settings.Config;
@@ -18,11 +20,11 @@ public class Tasks {
 	
 	private static void bng_tasks() throws Exception {
 		String sql = 
-			"SELECT t.task_id, d.did, d.name, f.name AS target, f.data_type FROM task t, task_inputs i, dataset d, data_feature f, dataset_tag tag " +
-			"WHERE t.task_id = i.task_id AND i.input = 'source_data' AND i.value = d.did AND t.ttid =4 AND d.did = f.did AND f.name = d.default_target_attribute AND tag.id = d.did AND tag.tag = 'BNG'";
+			"SELECT t.task_id FROM dataset d, task tt, task_inputs t,data_quality q WHERE d.did = t.value AND t.input = \"source_data\" AND q.quality = \"NumberOfInstances\" AND q.data = d.did AND tt.task_id = t.task_id AND tt.ttid = 1 AND ABS(q.value) <= 100000";
 		
 		int[] ids = QueryUtils.getIdsFromDatabase(openmlConnector, sql);
-		tag( ids, "streams" );
+		System.out.println( "Tagging " + ids.length + ": " + Arrays.toString( ids ) );
+		tag( ids, "under100k" );
 	}
 	
 	
