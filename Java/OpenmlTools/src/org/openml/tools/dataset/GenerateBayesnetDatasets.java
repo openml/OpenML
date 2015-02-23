@@ -34,7 +34,7 @@ public class GenerateBayesnetDatasets {
 	private static final boolean SEND_RESULT = true;
 	
 	private static final Integer[] driftFrequencies = { 1000, 5000, 10000 };
-	private static final Integer[] driftImpacts = { 1, 5, 10, 25, 50 };
+	private static final Integer[] driftImpacts = { 1, 5, 10 };
 	
 	private final OpenmlConnector apiconnector;
 	
@@ -53,7 +53,7 @@ public class GenerateBayesnetDatasets {
 		int eligableDatasets = 0;
 		List<Integer> errors = new ArrayList<Integer>();
 		
-		for( int iDatasets = 1; iDatasets <= 10; iDatasets++ ) {
+		for( int iDatasets = 10; iDatasets <= 10; iDatasets++ ) {
 			try {
 				Conversion.log("INFO", "Download Dataset", "Downloading dataset " + iDatasets);
 				DataSetDescription dsd = apiconnector.openmlDataDescription( iDatasets );
@@ -74,13 +74,13 @@ public class GenerateBayesnetDatasets {
 				}
 	
 				
-				long startTime = System.currentTimeMillis();
 				int numInstancesBNG = maxDifferentOptions.min( new BigInteger( "" + TARGET_NUM_INSTANCES ) ).intValue();
 				int numInstancesOrig = dataset.numInstances();
 				
 				if( numInstancesOrig < TARGET_NUM_INSTANCES / 10 && numInstancesOrig > MIN_NUM_ORIG_INSTANCES ) {
 					for( int driftFrequency : driftFrequencies ) {
 						for( int driftImpact : driftImpacts ) {
+							long startTime = System.currentTimeMillis();
 							// only create when num instances is low. Otherwise use real dataset
 							File generatedDataset = generateDataset( dsd, numInstancesBNG, driftFrequency, driftImpact );
 							long elapsedTime = (System.currentTimeMillis() - startTime) / 1000;
@@ -90,7 +90,9 @@ public class GenerateBayesnetDatasets {
 		
 							eligableDatasets++;
 							if( SEND_RESULT ) {
-								uploadDataset( dsd, generatedDataset, numInstancesBNG, "" );
+								Conversion.log( "Generate Dataset", "OK", "Start upploading..." );
+								uploadDataset( dsd, generatedDataset, driftFrequency, driftImpact, "" );
+								Conversion.log( "Generate Dataset", "OK", "Done! " );
 							}
 						}
 					}
@@ -105,7 +107,7 @@ public class GenerateBayesnetDatasets {
 	
 	private File generateDataset( DataSetDescription dsd, long numInstances, int driftFrequency, int driftImpact ) throws Exception {
 		String datasetname = "BNG(" + dsd.getName() + ","+driftFrequency+","+driftImpact+")";
-		String outputFilename = outputDirectory.getAbsolutePath() + "/" + datasetname + ".arff";
+		String outputFilename = outputDirectory.getAbsolutePath() + "/" + datasetname.replace(",","_").replace("(","_").replace(")","") + ".arff";
 		String numericString = "-n";
 		
 		String[] taskArgs = new String[7];
@@ -124,8 +126,8 @@ public class GenerateBayesnetDatasets {
 		return new File( outputFilename );
 	}
 	
-	private void uploadDataset( DataSetDescription dsd, File generatedDataset, int instances, String summary ) throws Exception {
-		String datasetname = "BNG("+dsd.getName()+",numeric,"+instances+")";
+	private void uploadDataset( DataSetDescription dsd, File generatedDataset, int driftFrequency, int driftImpact, String summary ) throws Exception {
+		String datasetname = "BNG("+dsd.getName()+","+driftFrequency+","+driftImpact+")";
 		String description = "The Bayesian Network Generator, with the " + datasetname + 
 				" dataset ("+dsd.getUrl()+") as input. A Bayesian Network is created using Weka's BayesNet Package (" + 
 				searchAlgorithm + "), which is then used to generate pseudo random instances. \n\n" + summary;
