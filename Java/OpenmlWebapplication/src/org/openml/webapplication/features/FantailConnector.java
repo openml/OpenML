@@ -32,6 +32,7 @@ import org.json.JSONException;
 import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.settings.Config;
+import org.openml.apiconnector.settings.Constants;
 import org.openml.apiconnector.xml.DataQuality;
 import org.openml.apiconnector.xml.DataQuality.Quality;
 import org.openml.apiconnector.xml.DataQualityUpload;
@@ -55,6 +56,10 @@ import org.openml.webapplication.fantail.dc.stream.ChangeDetectors;
 import com.thoughtworks.xstream.XStream;
 
 import weka.core.Instances;
+import weka.core.OptionHandler;
+import weka.core.Utils;
+import weka.filters.Filter;
+import weka.filters.unsupervised.attribute.StringToNominal;
 
 public class FantailConnector {
 	
@@ -80,7 +85,7 @@ public class FantailConnector {
 		Config c = new Config();
 		
 		OpenmlConnector oc = new OpenmlConnector( c.getUsername(), c.getPassword() );
-		
+		oc.setVerboseLevel(2);
 		new FantailConnector(oc, null);
 	}
 	
@@ -194,6 +199,9 @@ public class FantailConnector {
 			Conversion.log( "OK", "Extract Features", "Running Batch Characterizers (partial data)" );
 			
 			for( int i = 0; i < dataset.numInstances(); i += interval_size ) {
+				if( apiconnector.getVerboseLevel() >= Constants.VERBOSE_LEVEL_ARFF ) {
+					Conversion.log( "OK", "FantailConnector", "Starting window [" + i + "," + (i + interval_size) + "> (did = " + did + ",total size = " + dataset.numInstances() + ")" );
+				}
 				qualities.addAll( datasetCharacteristics( dataset, i, interval_size ) );
 				
 				for( StreamCharacterizer sc : streamCharacterizers ) {
@@ -228,9 +236,11 @@ public class FantailConnector {
 		// Be careful changing this!
 		if( interval_size != null ) {
 			intervalData = new Instances( fulldata, start, Math.min( interval_size, fulldata.numInstances() - start ) );
+			intervalData = applyFilter( intervalData, new StringToNominal(), "-R first-last" );
 			intervalData.setClassIndex( fulldata.classIndex() );
 		} else {
 			intervalData = fulldata;
+			// todo: use StringToNominal filter? might be to expensive
 		}
 		
 		for( Characterizer dc : batchCharacterizers ) {
@@ -247,5 +257,11 @@ public class FantailConnector {
 			result.add( new Quality( quality, map.get( quality ) + "", start, end ) );
 		}
 		return result;
+	}
+	
+	private static Instances applyFilter( Instances dataset, Filter filter, String options ) throws Exception {
+		((OptionHandler) filter).setOptions( Utils.splitOptions( options ) );
+		filter.setInputFormat(dataset);
+		return Filter.useFilter(dataset, filter);
 	}
 }
