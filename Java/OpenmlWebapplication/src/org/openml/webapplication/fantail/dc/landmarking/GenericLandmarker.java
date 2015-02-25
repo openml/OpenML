@@ -57,7 +57,7 @@ public class GenericLandmarker extends Characterizer {
 
 				results.put( classifierName + id + "AUC", eval.weightedAreaUnderROC() );
 				results.put( classifierName + id + "ErrRate", eval.errorRate() );
-				results.put( classifierName+ id + "Kappa", eval.kappa() );
+				results.put( classifierName + id + "Kappa", eval.kappa() );
 			} catch( Exception e ) {
 				e.printStackTrace();
 			}

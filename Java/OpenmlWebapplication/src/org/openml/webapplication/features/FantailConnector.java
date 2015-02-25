@@ -70,7 +70,7 @@ public class FantailConnector {
 		new GenericLandmarker( "NBTree", "weka.classifiers.trees.NBTree", 2, null ),
 		new GenericLandmarker( "DecisionStump", "weka.classifiers.trees.DecisionStump", 2, null ),
 		new GenericLandmarker( "SimpleLogistic", "weka.classifiers.functions.SimpleLogistic", 2, null ),
-		new GenericLandmarker( "JRipP", "weka.classifiers.rules.JRip", 2, null )
+		new GenericLandmarker( "JRip", "weka.classifiers.rules.JRip", 2, null )
 	};
 	
 	private static StreamCharacterizer[] streamCharacterizers;
@@ -109,7 +109,7 @@ public class FantailConnector {
 			String[] kNNOption = { "-K", "" + i };
 			kNNOptions.put( "_" + i + "N", kNNOption );
 			
-			String[] smoPolyOption = { "-K \"weka.classifiers.functions.supportVector.PolyKernel -E "+i+".0\"" };
+			String[] smoPolyOption = { "-M", "-K", "weka.classifiers.functions.supportVector.PolyKernel -E "+i+".0" };
 			smoPolyOptions.put( "e" + i, smoPolyOption );
 		}
 		
