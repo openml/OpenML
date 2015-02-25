@@ -23,7 +23,10 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.TreeMap;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.openml.apiconnector.algorithms.Conversion;
@@ -36,10 +39,7 @@ import org.openml.apiconnector.xml.DataSetDescription;
 import org.openml.apiconnector.xstream.XstreamXmlMapping;
 import org.openml.webapplication.fantail.dc.Characterizer;
 import org.openml.webapplication.fantail.dc.StreamCharacterizer;
-import org.openml.webapplication.fantail.dc.landmarking.J48BasedLandmarker;
-import org.openml.webapplication.fantail.dc.landmarking.REPTreeBasedLandmarker;
-import org.openml.webapplication.fantail.dc.landmarking.RandomTreeBasedLandmarker;
-import org.openml.webapplication.fantail.dc.landmarking.SimpleLandmarkers;
+import org.openml.webapplication.fantail.dc.landmarking.GenericLandmarker;
 import org.openml.webapplication.fantail.dc.statistical.AttributeCount;
 import org.openml.webapplication.fantail.dc.statistical.AttributeEntropy;
 import org.openml.webapplication.fantail.dc.statistical.AttributeType;
@@ -59,14 +59,18 @@ import weka.core.Instances;
 public class FantailConnector {
 	
 	private static final XStream xstream = XstreamXmlMapping.getInstance();
-	private static final Characterizer[] batchCharacterizers = {
-			new Statistical(), new AttributeCount(), new AttributeType(),
-			new ClassAtt(), new DefaultAccuracy(),
-			new IncompleteInstanceCount(), new InstanceCount(),
-			new MissingValues(), new NominalAttDistinctValues(),
-			new AttributeEntropy(), new SimpleLandmarkers(),
-			new J48BasedLandmarker(), new REPTreeBasedLandmarker(),
-			new RandomTreeBasedLandmarker() 
+	private Characterizer[] batchCharacterizers = {
+		new Statistical(), new AttributeCount(), new AttributeType(),
+		new ClassAtt(), new DefaultAccuracy(),
+		new IncompleteInstanceCount(), new InstanceCount(),
+		new MissingValues(), new NominalAttDistinctValues(),
+		new AttributeEntropy(), 
+
+		new GenericLandmarker( "NaiveBayes", "weka.classifiers.bayes.NaiveBayes", 2, null ),
+		new GenericLandmarker( "NBTree", "weka.classifiers.trees.NBTree", 2, null ),
+		new GenericLandmarker( "DecisionStump", "weka.classifiers.trees.DecisionStump", 2, null ),
+		new GenericLandmarker( "SimpleLogistic", "weka.classifiers.functions.SimpleLogistic", 2, null ),
+		new GenericLandmarker( "JRipP", "weka.classifiers.rules.JRip", 2, null )
 	};
 	
 	private static StreamCharacterizer[] streamCharacterizers;
@@ -81,8 +85,43 @@ public class FantailConnector {
 	}
 	
 	public FantailConnector( OpenmlConnector ac, Integer dataset_id ) throws Exception {
-		int expectedQualities = 64;
+		int expectedQualities = 0;
 		apiconnector = ac;
+		
+		// additional batch landmarkers
+		TreeMap<String, String[]> REPOptions = new TreeMap<String, String[]>();
+		TreeMap<String, String[]> J48Options = new TreeMap<String, String[]>();
+		TreeMap<String, String[]> RandomTreeOptions = new TreeMap<String, String[]>();
+		TreeMap<String, String[]> kNNOptions = new TreeMap<String, String[]>();
+		TreeMap<String, String[]> smoPolyOptions = new TreeMap<String, String[]>();
+		String zeros = "0";
+		for( int i = 1; i <= 3; ++i ) {
+			zeros += "0";
+			String[] repOption = { "-L", "" + i };
+			REPOptions.put( "Depth" + i, repOption );
+
+			String[] j48Option = { "-C", "." + zeros + "1" };
+			J48Options.put( "." + zeros + "1.", j48Option );
+			
+			String[] randomtreeOption = { "-depth", "" + i };
+			RandomTreeOptions.put( "Depth" + i, randomtreeOption );
+					
+			String[] kNNOption = { "-K", "" + i };
+			kNNOptions.put( "_" + i + "N", kNNOption );
+			
+			String[] smoPolyOption = { "-K \"weka.classifiers.functions.supportVector.PolyKernel -E "+i+".0\"" };
+			smoPolyOptions.put( "e" + i, smoPolyOption );
+		}
+		
+		batchCharacterizers = ArrayUtils.add( batchCharacterizers, new GenericLandmarker( "REPTree", "weka.classifiers.trees.REPTree", 2, REPOptions ) );
+		batchCharacterizers = ArrayUtils.add( batchCharacterizers, new GenericLandmarker( "J48", "weka.classifiers.trees.J48", 2, J48Options ) );
+		batchCharacterizers = ArrayUtils.add( batchCharacterizers, new GenericLandmarker( "RandomTree", "weka.classifiers.trees.RandomTree", 2, RandomTreeOptions ) );
+		batchCharacterizers = ArrayUtils.add( batchCharacterizers, new GenericLandmarker( "kNN", "weka.classifiers.lazy.IBk", 2, kNNOptions ) );
+		batchCharacterizers = ArrayUtils.add( batchCharacterizers, new GenericLandmarker( "SVM", "weka.classifiers.functions.SMO", 2, smoPolyOptions ) );
+		
+		for( Characterizer characterizer : batchCharacterizers ) {
+			expectedQualities += characterizer.getNumMetaFeatures();
+		}
 		
 		if( dataset_id != null ) {
 			Conversion.log( "OK", "Process Dataset", "Processing dataset " + dataset_id + " on special request. " );
@@ -118,15 +157,17 @@ public class FantailConnector {
 
 		JSONArray runJson = (JSONArray) apiconnector.openmlFreeQuery( sql ).get("data");
 		
+		Random random = new Random( System.currentTimeMillis() );
+		
 		if( runJson.length() > 0 ) {
-			int dataset_id = ((JSONArray) runJson.get( 0 )).getInt( 0 );
+			int dataset_id = ((JSONArray) runJson.get( Math.abs( random.nextInt() ) % runJson.length() ) ).getInt( 0 );
 			return dataset_id;
 		} else {
 			return null;
 		}
 	}
 	
-	private static boolean extractFeatures(Integer did, Integer interval_size) throws Exception {
+	private boolean extractFeatures(Integer did, Integer interval_size) throws Exception {
 		Conversion.log( "OK", "Extract Features", "Start extracting features for dataset: " + did );
 		// TODO: initialize this properly!!!!!!
 		streamCharacterizers = new StreamCharacterizer[1]; 
@@ -180,7 +221,7 @@ public class FantailConnector {
 		return true;
 	}
 
-	private static List<Quality> datasetCharacteristics( Instances fulldata, Integer start, Integer interval_size ) throws Exception {
+	private List<Quality> datasetCharacteristics( Instances fulldata, Integer start, Integer interval_size ) throws Exception {
 		List<Quality> result = new ArrayList<DataQuality.Quality>();
 		Instances intervalData;
 		
@@ -194,7 +235,6 @@ public class FantailConnector {
 		
 		for( Characterizer dc : batchCharacterizers ) {
 			result.addAll( hashMaptoList( dc.characterize(intervalData), start, interval_size ) );
-			
 		}
 		
 		return result;
