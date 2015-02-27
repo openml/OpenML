@@ -62,6 +62,7 @@ import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.StringToNominal;
 
 public class FantailConnector {
+	private final Integer window_size;
 	
 	private static final XStream xstream = XstreamXmlMapping.getInstance();
 	private Characterizer[] batchCharacterizers = {
@@ -90,8 +91,9 @@ public class FantailConnector {
 	}
 	
 	public FantailConnector( OpenmlConnector ac, Integer dataset_id ) throws Exception {
-		int expectedQualities = 0;
+		int expectedQualities = 8; // start of with 8 basic qualities, apparently
 		apiconnector = ac;
+		window_size = 250;
 		
 		// additional batch landmarkers
 		TreeMap<String, String[]> REPOptions = new TreeMap<String, String[]>();
@@ -130,36 +132,36 @@ public class FantailConnector {
 		
 		if( dataset_id != null ) {
 			Conversion.log( "OK", "Process Dataset", "Processing dataset " + dataset_id + " on special request. " );
-			extractFeatures( dataset_id, 1000 );
+			extractFeatures( dataset_id, window_size );
 		} else {
-			dataset_id = getDatasetId( expectedQualities );
+			dataset_id = getDatasetId( expectedQualities, window_size );
 			while( dataset_id != null ) {
 				Conversion.log( "OK", "Process Dataset", "Processing dataset " + dataset_id + " as obtained from database. " );
-				extractFeatures( dataset_id, 1000 );
-				dataset_id = getDatasetId( expectedQualities );
+				extractFeatures( dataset_id, window_size );
+				dataset_id = getDatasetId( expectedQualities, window_size );
 			}
 			Conversion.log( "OK", "Process Dataset", "No more datasets to process. " );
 		}
 	}
 	
-	public Integer getDatasetId( int expectedQualities ) throws JSONException, Exception {
+	public Integer getDatasetId( int expectedQualities, int window_size ) throws JSONException, Exception {
 		String sql = 
 			"SELECT `d`.`did`, `q`.`value` AS `numInstances`, `interval_end` - `interval_start` AS `interval_size`, " +
-			"CEIL(`q`.`value` / 1000) AS `numIntervals`, " +
-			"(COUNT(*) / CEIL(`q`.`value` / 1000)) AS `qualitiesPerInterval`, " +
+			"CEIL(`q`.`value` / " + window_size + ") AS `numIntervals`, " +
+			"(COUNT(*) / CEIL(`q`.`value` / " + window_size + ")) AS `qualitiesPerInterval`, " +
 			"COUNT(*) AS `qualities` " +
 			"FROM `data_quality` `q`, `dataset` `d`" +
-			"LEFT JOIN `data_quality_interval` `i` ON `d`.`did` = `i`.`data` " +
+			"LEFT JOIN `data_quality_interval` `i` ON `d`.`did` = `i`.`data` AND `i`.`interval_end` - `i`.`interval_start` =  " + window_size + " " +
 			"WHERE `q`.`quality` IS NOT NULL " +
 			"AND `d`.`did` = `q`.`data` " +
 			"AND `q`.`quality` = 'NumberOfInstances'  " +
 			"AND `d`.`error` = 'false' AND `d`.`processed` IS NOT NULL " +
 			"AND `d`.`did` IN " + 
 			"(SELECT i.value AS did FROM task_inputs i, task_tag t WHERE t.id = i.task_id AND i.input = 'source_data' AND t.tag = 'streams') " +
-			"GROUP BY `d`.`did`, `interval_end` - `interval_start` " +
-			"HAVING (COUNT(*) / CEIL(`q`.`value` / 1000)) < " + expectedQualities + " " +
+			"GROUP BY `d`.`did` " +
+			"HAVING (COUNT(*) / CEIL(`q`.`value` / " + window_size + ")) < " + expectedQualities + " " +
 			"ORDER BY `qualitiesPerInterval` ASC; ";
-
+		Conversion.log( "OK", "FantailQuery", sql );
 		JSONArray runJson = (JSONArray) apiconnector.openmlFreeQuery( sql ).get("data");
 		
 		Random random = new Random( System.currentTimeMillis() );
