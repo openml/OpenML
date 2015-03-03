@@ -19,6 +19,7 @@ import org.openml.apiconnector.xml.Task.Input.Estimation_procedure;
 import org.openml.apiconnector.xstream.XstreamXmlMapping;
 import org.openml.webapplication.evaluate.EvaluateBatchPredictions;
 import org.openml.webapplication.evaluate.EvaluateStreamPredictions;
+import org.openml.webapplication.evaluate.EvaluateSurvivalAnalysisPredictions;
 import org.openml.webapplication.evaluate.PredictionEvaluator;
 import org.openml.webapplication.generatefolds.EstimationProcedure;
 
@@ -114,6 +115,11 @@ public class EvaluateRun {
 					apiconnector.getOpenmlFileUrl( file_ids.get( "predictions" ), filename ).toString(), 
 					source_data.getTarget_feature(),
 					stream_interval_size );
+			} else if( task.getTask_type().equals("Survival Analysis") ) {
+				predictionEvaluator = new EvaluateSurvivalAnalysisPredictions( 
+						task, dataset.getUrl() + "?session_hash=" + apiconnector.getSessionHash(), 
+						estimationprocedure.getData_splits_url(), 
+						apiconnector.getOpenmlFileUrl( file_ids.get( "predictions" ), filename ).toString() );
 			} else {
 				predictionEvaluator = new EvaluateBatchPredictions( 
 					task, dataset.getUrl() + "?session_hash=" + apiconnector.getSessionHash(), 
@@ -122,6 +128,7 @@ public class EvaluateRun {
 					estimationprocedure.getType().equals(EstimationProcedure.estimationProceduresTxt[5] ) );
 			}
 			runevaluation.addEvaluationMeasures( predictionEvaluator.getEvaluationScores() );
+			
 			if(run_description.getOutputEvaluation() != null) {
 				Conversion.log( "OK", "Process Run", "Start consistency check with user defined measures. (x " + run_description.getOutputEvaluation().length + ")" );
 				

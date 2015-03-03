@@ -11,12 +11,12 @@ public class TagTasksBasic {
 		Config config = new Config();
 		OpenmlConnector oc = new OpenmlConnector( config.getServer(), config.getUsername(), config.getPassword() );
 		
-		Tasks tasks = oc.openmlTasks( 1 );
+		Tasks tasks = oc.tasks( 1 );
 		
 		for( Task task : tasks.getTask() ) {
 			
 			if( task.getTask_id() > 62 ) continue;
-			oc.openmlTaskTag( task.getTask_id(), "basic" );
+			oc.taskTag( task.getTask_id(), "basic" );
 		}
 	}
 	

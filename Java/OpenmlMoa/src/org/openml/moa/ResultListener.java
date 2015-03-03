@@ -64,7 +64,7 @@ public class ResultListener {
 		
 		Implementation implementation = MoaAlgorithm.create(classifier);
 		int implementation_id = MoaAlgorithm.getImplementationId(implementation, classifier, apiconnector );
-		implementation = apiconnector.openmlImplementationGet( implementation_id ); // updated
+		implementation = apiconnector.implementationGet( implementation_id ); // updated
 		
 		ArrayList<Parameter_setting> ps = MoaAlgorithm.getOptions( implementation, classifier.getOptions().getOptionArray() );
 		
@@ -80,7 +80,7 @@ public class ResultListener {
 		Map<String, File> output_files = new HashMap<String, File>();
 		output_files.put( "predictions", results );
 		
-		UploadRun ur = apiconnector.openmlRunUpload(descriptionXML, output_files );
+		UploadRun ur = apiconnector.runUpload(descriptionXML, output_files );
 		Conversion.log( "OK", "Upload Result", "Result successfully uploaded, with rid " + ur.getRun_id() );
 		return true;
 	}

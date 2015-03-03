@@ -10,7 +10,7 @@ public class Reset {
 
 	public static void main( String[] args ) throws Exception {
 		
-		reset_run_id(61378);
+		reset_run_id(176751);
 	}
 	
 	private static void reset_run_id(Integer rid) throws Exception {
@@ -44,7 +44,7 @@ public class Reset {
 		
 		Conversion.log( "OK", "Init", "Total runs to be resetted: " + ids.length );
 		for( int id : ids ) {
-			RunReset r = connector.openmlRunReset( id );
+			RunReset r = connector.runReset( id );
 			Conversion.log( "OK", "Reset", "Reset run: " + r.getRun_id() );
 		}
 	}

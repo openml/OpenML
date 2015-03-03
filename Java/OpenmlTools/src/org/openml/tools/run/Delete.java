@@ -44,7 +44,7 @@ public class Delete {
 		
 		Conversion.log( "OK", "Init", "Total runs to be deleted: " + ids.length );
 		for( int id : ids ) {
-			RunDelete r = connector.openmlRunDelete( id );
+			RunDelete r = connector.runDelete( id );
 			Conversion.log( "OK", "Deleted", "Deleted run: " + r.getId() );
 		}
 	}

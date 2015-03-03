@@ -37,7 +37,7 @@ public class TransferDatasets {
 		
 		for( int i = 1; i <= 62; ++i ) {
 			try {
-				DataSetDescription dsd = apiFrom.openmlDataDescription( i );
+				DataSetDescription dsd = apiFrom.dataDescription( i );
 				File dataset = dsd.getDataset( null );
 				dsd.unsetUrl();
 				dsd.unsetId();
@@ -45,7 +45,7 @@ public class TransferDatasets {
 				
 				File description = Conversion.stringToTempFile( descriptionXML, dsd.getName() + "_description", "xml" );
 				//System.out.println( xstream.toXML(dsd)  );
-				UploadDataSet uds = apiTo.openmlDataUpload( description, dataset );
+				UploadDataSet uds = apiTo.dataUpload( description, dataset );
 				System.out.println("Succes at #" + i + " id: " + uds.getId() );
 			} catch( Exception e ) {
 				e.printStackTrace();

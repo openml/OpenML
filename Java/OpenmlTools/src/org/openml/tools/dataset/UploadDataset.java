@@ -70,7 +70,7 @@ public class UploadDataset {
 		
 		File desc = Conversion.stringToTempFile( description_xml, "description", "xml");
 		
-		UploadDataSet ud = apiconnector.openmlDataUpload(desc, datasetFile );
+		UploadDataSet ud = apiconnector.dataUpload(desc, datasetFile );
 		System.out.println( "Uploaded " + name + " with id " + xstream.toXML( ud.getId() ) );
 	}
 }

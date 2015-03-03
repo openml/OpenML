@@ -120,7 +120,7 @@ public class OpenmlTaskReader extends AbstractOptionHandler implements InstanceS
                 this.fileReader.close();
             }
             if(this.openmlTask == null) {
-            	this.openmlTask = apiconnector.openmlTaskSearch(this.openmlTaskIdOption.getValue());
+            	this.openmlTask = apiconnector.taskGet(this.openmlTaskIdOption.getValue());
             }
             if( this.openmlTask.getTask_type().equals("Supervised Data Stream Classification") == false ) {
             	throw new RuntimeException("Can only perform tasks of the type \"Supervised Data Stream Classification\".");

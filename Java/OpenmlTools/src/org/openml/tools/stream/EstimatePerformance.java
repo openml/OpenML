@@ -25,7 +25,7 @@ public class EstimatePerformance {
 				+ "2127, 2167, 2166, 2165, 2164, 2163, 2162, 2160, 2150, 2151, "
 				+ "127, 2159, 2156, 2157, 2154, 122) AND i.fullName IN ('"+classifier+"' ) ";
 		
-		JSONArray ja = (JSONArray) api.openmlFreeQuery(sql).get("data");
+		JSONArray ja = (JSONArray) api.freeQuery(sql).get("data");
 		
 		for( int i = 0; i < ja.length(); ++i ) {
 			JSONArray row = (JSONArray) ja.get( i );

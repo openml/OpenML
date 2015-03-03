@@ -56,7 +56,7 @@ public class GenerateBayesnetDatasets {
 		for( int iDatasets = 10; iDatasets <= 10; iDatasets++ ) {
 			try {
 				Conversion.log("INFO", "Download Dataset", "Downloading dataset " + iDatasets);
-				DataSetDescription dsd = apiconnector.openmlDataDescription( iDatasets );
+				DataSetDescription dsd = apiconnector.dataDescription( iDatasets );
 				
 				Instances dataset = new Instances( new FileReader( dsd.getDataset( apiconnector.getSessionHash() ) ) );
 				if( dataset.numAttributes() < MIN_ATTRIBUTES || dataset.numAttributes() > MAX_ATTRIBUTES ) {
@@ -154,8 +154,8 @@ public class GenerateBayesnetDatasets {
 		System.out.println( outputDatasetString );
 		
 		File outputDataset = Conversion.stringToTempFile( outputDatasetString, datasetname, Constants.DATASET_FORMAT );
-		UploadDataSet ud = apiconnector.openmlDataUpload( outputDataset, generatedDataset );
+		UploadDataSet ud = apiconnector.dataUpload( outputDataset, generatedDataset );
 		
-		System.out.println( xstream.toXML( apiconnector.openmlDataDescription( ud.getId() ) ) );
+		System.out.println( xstream.toXML( apiconnector.dataDescription( ud.getId() ) ) );
 	}
 }

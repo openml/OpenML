@@ -59,7 +59,7 @@ public class GeneratePredictions {
 			apiconnector = new OpenmlConnector();
 		} 
 		
-		Task t = apiconnector.openmlTaskSearch( task_id );
+		Task t = apiconnector.taskGet( task_id );
 		
 		String datasetPath = TaskInformation.getSourceData( t ).getDataSetDescription( apiconnector ).getUrl();
 		String splitsPath = TaskInformation.getEstimationProcedure( t ).getData_splits_url();

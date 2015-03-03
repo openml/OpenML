@@ -60,7 +60,7 @@ public class CreateMetaDataStream {
 							+ (++counter) + "/" + instances.size() + ")");
 			MetaDataStreamInstance instance = instances.get(key);
 			try {
-				DataQuality dq = apiconnector.openmlDataQuality(
+				DataQuality dq = apiconnector.dataQualities(
 						instance.getDid(), instance.getInterval_start()
 								- interval_size, instance.getInterval_end()
 								- interval_size, interval_size);
@@ -134,7 +134,7 @@ public class CreateMetaDataStream {
 								+ (i + INTERVALS_PER_DOWNLOAD * interval_size)
 								+ " OF " + task_size);
 
-				TaskEvaluations te = apiconnector.openmlTaskEvaluations(
+				TaskEvaluations te = apiconnector.taskEvaluations(
 						task_id, i, i + INTERVALS_PER_DOWNLOAD * interval_size,
 						interval_size);
 				if (te.getEvaluation() != null) {

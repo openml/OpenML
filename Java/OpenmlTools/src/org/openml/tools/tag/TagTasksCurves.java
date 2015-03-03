@@ -16,15 +16,15 @@ public class TagTasksCurves {
 		Config config = new Config();
 		OpenmlConnector oc = new OpenmlConnector( config.getUsername(), config.getPassword() );
 		
-		Tasks tasks = oc.openmlTasks( 3 );
+		Tasks tasks = oc.tasks( 3 );
 		int count = 0;
 		
 		for( Task task : tasks.getTask() ) {
 			
 			if( task.getTask_id() < 1700 ) continue;
 			
-			org.openml.apiconnector.xml.Task current = oc.openmlTaskGet( task.getTask_id() );
-			DataSetDescription dsd = oc.openmlDataDescription( task.getDid() );
+			org.openml.apiconnector.xml.Task current = oc.taskGet( task.getTask_id() );
+			DataSetDescription dsd = oc.dataDescription( task.getDid() );
 			
 			int repeats = TaskInformation.getNumberOfRepeats( current );
 			String[] tags = dsd.getTag();
@@ -46,7 +46,7 @@ public class TagTasksCurves {
 				}
 				count++;
 				try {
-					oc.openmlTaskTag( current.getTask_id(), "curves");
+					oc.taskTag( current.getTask_id(), "curves");
 				} catch(Exception e ) {
 					System.out.println(e.getMessage());
 				}

@@ -25,7 +25,7 @@ public class Setups {
 		System.out.println( Arrays.toString( res ) );
 		for( Integer setup_id : res ) {
 			try {
-				openmlConnector.openmlSetupTag(setup_id, TAG_NAME );
+				openmlConnector.setupTag(setup_id, TAG_NAME );
 				
 			} catch( Exception e ) {
 				System.err.println( "error at: " + setup_id + ". " + e.getMessage() );

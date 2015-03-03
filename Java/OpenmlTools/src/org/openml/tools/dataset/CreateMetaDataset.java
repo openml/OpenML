@@ -63,7 +63,7 @@ public class CreateMetaDataset {
 			Conversion.log("OK", "Create MetaDatastream", "Downloading data qualities for key: " + key + "("+(++counter)+"/"+instances.size()+")" );
 			MetaDataStreamInstance instance = instances.get( key );
 			try {
-				DataQuality dq = apiconnector.openmlDataQuality(instance.getDid(), 0, interval_size, interval_size );
+				DataQuality dq = apiconnector.dataQualities(instance.getDid(), 0, interval_size, interval_size );
 				for( Quality quality : dq.getQualities() ) {
 					if( allQualities.containsKey( quality.getName() ) == true ) {
 						allQualities.put( quality.getName(), allQualities.get( quality.getName() ) + 1 );
@@ -116,7 +116,7 @@ public class CreateMetaDataset {
 			
 			Conversion.log("OK", "Create MetaDatastream", "Downloading Task Evaluations: " + task_id );
 			
-			TaskEvaluations te = apiconnector.openmlTaskEvaluations( task_id );
+			TaskEvaluations te = apiconnector.taskEvaluations( task_id );
 			if( te.getEvaluation() != null ) {
 				for( Evaluation evaluation : te.getEvaluation() ) {
 					

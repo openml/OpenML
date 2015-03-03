@@ -44,7 +44,7 @@ public class RunJob {
 	
 	public static void doTask(int ttid) {
 		try {
-			Job j = apiconnector.openmlJobGet( "Moa_2014.03", "" + ttid );
+			Job j = apiconnector.jobGet( "Moa_2014.03", "" + ttid );
 			
 			System.err.println( "task: " + j.getTask_id() + "; learner: " + j.getLearner() );
 			

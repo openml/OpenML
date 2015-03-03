@@ -31,7 +31,7 @@ public class Tasks {
 	private static void tag( int[] ids, String tag ) {
 		for( int id : ids ) {
 			try {
-				openmlConnector.openmlTaskTag(id, tag );
+				openmlConnector.taskTag(id, tag );
 				
 			} catch( Exception e ) {
 				System.err.println( "error at: " + id + ". " + e.getMessage() );

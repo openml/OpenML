@@ -10,7 +10,7 @@ public class DeleteDataset {
 		
 		for( int i = 1246; i <= 1350; ++i ) {
 			try  {
-				oc.openmlDataDelete( i );
+				oc.dataDelete( i );
 				System.out.println( "Deleted " + i );
 			} catch( Exception e ) {
 				System.err.println( e.getMessage() + "(" + i + ")" );
