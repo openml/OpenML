@@ -48,7 +48,7 @@ public class ProcessDataset {
 			"SELECT `did` FROM `dataset` WHERE `processed` IS NULL AND `error` = 'false' " + 
 			"ORDER BY `upload_date` ASC"; 
 		
-		JSONArray runJson = (JSONArray) apiconnector.openmlFreeQuery( sql ).get("data");
+		JSONArray runJson = (JSONArray) apiconnector.freeQuery( sql ).get("data");
 		
 		if( runJson.length() > 0 ) {
 			int dataset_id = ((JSONArray) runJson.get( 0 )).getInt( 0 );
@@ -62,7 +62,7 @@ public class ProcessDataset {
 		String sql = 
 			"SELECT `did`,`url`,`default_target_attribute`,`upload_date` " + 
 			"FROM `dataset` WHERE `did` = " + did;
-		JSONArray runJson = (JSONArray) apiconnector.openmlFreeQuery( sql ).get("data");
+		JSONArray runJson = (JSONArray) apiconnector.freeQuery( sql ).get("data");
 		
 		if( runJson.length() > 0 ) {
 			return (JSONArray) runJson.get( 0 );
@@ -87,23 +87,23 @@ public class ProcessDataset {
 			List<Feature> features = extractFeatures.getFeatures();
 			DataFeature datafeature = new DataFeature(did, features.toArray(new Feature[features.size()]) );
 			File dataFeatureFile = Conversion.stringToTempFile( xstream.toXML( datafeature ), "features-did" + did, "xml");
-			apiconnector.openmlDataFeatureUpload( dataFeatureFile );
+			apiconnector.dataFeaturesUpload( dataFeatureFile );
 			
 			DataQuality dataquality = new DataQuality(did, qualities.toArray(new Quality[qualities.size()]) );
 			File dataQualityFile = Conversion.stringToTempFile( xstream.toXML( dataquality ), "qualities-did" + did, "xml");
-			apiconnector.openmlDataQualityUpload( dataQualityFile );
+			apiconnector.dataQualitiesUpload( dataQualityFile );
 			
 			Conversion.log( "OK", "Process Dataset", "Dataset " + did + " - Processed successfully. " );
 		} catch(Exception e ) {
 			DataFeature datafeature = new DataFeature(did, e.getMessage() );
 			File dataFeatureFile = Conversion.stringToTempFile( xstream.toXML( datafeature ), "features-error-did" + did, "xml");
-			DataFeatureUpload dfu = apiconnector.openmlDataFeatureUpload( dataFeatureFile );
+			DataFeatureUpload dfu = apiconnector.dataFeaturesUpload( dataFeatureFile );
 			Conversion.log( "Error", "Process Dataset", "Dataset " + dfu.getDid() + " - Error: " + e.getMessage() );
 		} catch (OutOfMemoryError oome) {
 		    // move on
 			DataFeature datafeature = new DataFeature(did, oome.getMessage() );
 			File dataFeatureFile = Conversion.stringToTempFile( xstream.toXML( datafeature ), "features-error-did" + did, "xml");
-			DataFeatureUpload dfu = apiconnector.openmlDataFeatureUpload( dataFeatureFile );
+			DataFeatureUpload dfu = apiconnector.dataFeaturesUpload( dataFeatureFile );
 			Conversion.log( "Error", "Process Dataset", "Dataset " + dfu.getDid() + " - Error: " + oome.getMessage() );
 		}
 	}

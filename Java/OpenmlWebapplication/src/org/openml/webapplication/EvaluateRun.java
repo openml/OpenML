@@ -56,7 +56,7 @@ public class EvaluateRun {
 			"FROM `run` WHERE `processed` IS NULL AND `error` IS NULL " + 
 			"ORDER BY `start_time` ASC"; 
 		
-		JSONArray runJson = (JSONArray) apiconnector.openmlFreeQuery( sql ).get("data");
+		JSONArray runJson = (JSONArray) apiconnector.freeQuery( sql ).get("data");
 		
 		if( runJson.length() > 0 ) {
 			int run_id = ((JSONArray) runJson.get( 0 )).getInt( 0 );
@@ -75,16 +75,16 @@ public class EvaluateRun {
 		PredictionEvaluator predictionEvaluator;
 		RunEvaluation runevaluation = new RunEvaluation( run_id );
 		
-		JSONArray runJson = (JSONArray) apiconnector.openmlFreeQuery( "SELECT `task_id` FROM `run` WHERE `rid` = " + run_id ).get("data");
-		JSONArray filesJson =  (JSONArray) apiconnector.openmlFreeQuery( "SELECT `field`,`file_id` FROM `runfile` WHERE `source` = " + run_id ).get("data");
+		JSONArray runJson = (JSONArray) apiconnector.freeQuery( "SELECT `task_id` FROM `run` WHERE `rid` = " + run_id ).get("data");
+		JSONArray filesJson =  (JSONArray) apiconnector.freeQuery( "SELECT `field`,`file_id` FROM `runfile` WHERE `source` = " + run_id ).get("data");
 
 		try {
 			int task_id = ((JSONArray) runJson.get( 0 )).getInt( 0 );
-			task = apiconnector.openmlTaskSearch(task_id);
+			task = apiconnector.taskGet(task_id);
 			Data_set source_data = TaskInformation.getSourceData(task);
 			Estimation_procedure estimationprocedure = TaskInformation.getEstimationProcedure( task );
 			Integer dataset_id = source_data.getLabeled_data_set_id() != null ? source_data.getLabeled_data_set_id() : source_data.getData_set_id();
-			dataset = apiconnector.openmlDataDescription( dataset_id );
+			dataset = apiconnector.dataDescription( dataset_id );
 			
 			for( int i = 0; i < filesJson.length(); ++i ) {
 				String field = ((JSONArray) filesJson.get( i )).getString( 0 );
@@ -97,7 +97,7 @@ public class EvaluateRun {
 				runevaluation.setError("Run description file not present. ");
 				File evaluationFile = Conversion.stringToTempFile( xstream.toXML( runevaluation ), "run_" + run_id + "evaluations", "xml" );
 				
-				RunEvaluate re = apiconnector.openmlRunEvaluate( evaluationFile );
+				RunEvaluate re = apiconnector.runEvaluate( evaluationFile );
 				Conversion.log( "Error", "Process Run", "Run processed, but with error: " + re.getRun_id() );
 				return;
 			}
@@ -168,7 +168,7 @@ public class EvaluateRun {
 		try {
 			File evaluationFile = Conversion.stringToTempFile( xstream.toXML( runevaluation ), "run_" + run_id + "evaluations", "xml" );
 			
-			RunEvaluate re = apiconnector.openmlRunEvaluate( evaluationFile );
+			RunEvaluate re = apiconnector.runEvaluate( evaluationFile );
 			Conversion.log( "OK", "Process Run", "Run processed: " + re.getRun_id() );
 		} catch( Exception  e ) {
 			Conversion.log( "ERROR", "Process Run", "An error occured during API call: " + e.getMessage() );

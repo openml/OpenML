@@ -162,7 +162,7 @@ public class FantailConnector {
 			"HAVING (COUNT(*) / CEIL(`q`.`value` / " + window_size + ")) < " + expectedQualities + " " +
 			"ORDER BY `qualitiesPerInterval` ASC; ";
 		Conversion.log( "OK", "FantailQuery", sql );
-		JSONArray runJson = (JSONArray) apiconnector.openmlFreeQuery( sql ).get("data");
+		JSONArray runJson = (JSONArray) apiconnector.freeQuery( sql ).get("data");
 		
 		Random random = new Random( System.currentTimeMillis() );
 		
@@ -180,7 +180,7 @@ public class FantailConnector {
 		streamCharacterizers = new StreamCharacterizer[1]; 
 		streamCharacterizers[0] = new ChangeDetectors( interval_size );
 		
-		DataSetDescription dsd = apiconnector.openmlDataDescription(did);
+		DataSetDescription dsd = apiconnector.dataDescription(did);
 		
 		Conversion.log( "OK", "Extract Features", "Start downloading dataset: " + did );
 		
@@ -201,7 +201,7 @@ public class FantailConnector {
 			Conversion.log( "OK", "Extract Features", "Running Batch Characterizers (partial data)" );
 			
 			for( int i = 0; i < dataset.numInstances(); i += interval_size ) {
-				if( apiconnector.getVerboseLevel() >= Constants.VERBOSE_LEVEL_ARFF ) {
+				if( apiconnector.getVerboselevel() >= Constants.VERBOSE_LEVEL_ARFF ) {
 					Conversion.log( "OK", "FantailConnector", "Starting window [" + i + "," + (i + interval_size) + "> (did = " + did + ",total size = " + dataset.numInstances() + ")" );
 				}
 				qualities.addAll( datasetCharacteristics( dataset, i, interval_size ) );
@@ -223,7 +223,7 @@ public class FantailConnector {
 		DataQuality dq = new DataQuality(did, qualities.toArray( new Quality[qualities.size()] ) );
 		String strQualities = xstream.toXML(dq);
 		
-		DataQualityUpload dqu = apiconnector.openmlDataQualityUpload(
+		DataQualityUpload dqu = apiconnector.dataQualitiesUpload(
 				Conversion.stringToTempFile(strQualities, "qualities_did_"
 						+ did, "xml"));
 		Conversion.log( "OK", "Extract Features", "DONE: " + dqu.getDid() );
