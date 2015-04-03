@@ -13,6 +13,27 @@ AND `q`.`quality` = 'NumberOfInstances'
 GROUP BY `d`.`did`, `interval_end` - `interval_start` 
 ORDER BY `qualitiesPerInterval` ASC
 
+# best classifier out of set
+SELECT res.setup, i.fullName, AVG(value) AS avg FROM (SELECT r.task_id,r.setup,e.value FROM run r, evaluation e WHERE r.rid = e.source AND e.function = "predictive_accuracy" AND r.task_id IN (122, 160, 163, 170, 174, 175, 178, 182, 185,188, 189, 190, 191, 192, 193, 194, 195, 196, 197,198, 199, 200,2056,2127,2129,2130,2132,2133,2149,2151,2152,2154,2155,2156,2157,2159,2160,2162,2163,2164,2165,2166,2167,2168,2229,2244,2268,2269,6704, 6706,6707,7275,7280,7283,7285,7309,7310,7311,7312,7315,7316,7317) AND r.setup IN (
+35, 21, 1471, 19, 22, 1893, 39, 20, 32, 36, 2071
+) GROUP BY r.task_id, r.setup) res, algorithm_setup ss, implementation i WHERE res.setup = ss.sid AND ss.implementation_id = i.id  GROUP BY setup ORDER BY avg DESC
+
+SELECT t.task_id, d.name, e_orig.value AS `orig` , e_bag.value AS `bagging` , e_bag.value - e_orig.value AS diff
+FROM task_inputs t, task_tag tag, dataset d, run r_orig, evaluation e_orig, run r_bag, evaluation e_bag
+WHERE t.input = "source_data"
+AND e_orig.function = "predictive_accuracy"
+AND e_bag.function = "predictive_accuracy"
+AND tag.tag = "StreamEnsembles"
+AND t.task_id = r_orig.task_id
+AND t.task_id = r_bag.task_id
+AND t.value = d.did
+AND r_orig.rid = e_orig.source
+AND r_bag.rid = e_bag.source
+AND r_orig.setup =22
+AND r_bag.setup =23
+AND t.task_id = tag.id
+GROUP BY t.task_id
+ORDER BY e_bag.value - e_orig.value ASC
 
 # inspect maximum value of meta feature, grouped by dataset
 SELECT `q`.`data`, `d`.`name`, `q`.`interval_start`, `q`.`interval_end`, CONVERT( SUBSTRING_INDEX( `value`, '-', -1 ), UNSIGNED INTEGER ) AS "MaxNominalAttDistinctValues"
