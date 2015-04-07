@@ -35,6 +35,40 @@ AND t.task_id = tag.id
 GROUP BY t.task_id
 ORDER BY e_bag.value - e_orig.value ASC
 
+SELECT d.name, e_orig.value AS `kNN` , e_bag.value AS `BagKNN`, e_levbag.value AS `LBKNN`, e_orignb.value AS `NB` , e_bagnb.value AS `BagNB`, e_levbagnb.value AS `LBNB`
+FROM task_inputs t, task_tag tag, dataset d, run r_orig, evaluation e_orig, run r_bag, evaluation e_bag, run r_levbag, evaluation e_levbag, 
+run r_orignb, evaluation e_orignb, run r_bagnb, evaluation e_bagnb, run r_levbagnb, evaluation e_levbagnb
+WHERE t.input = "source_data"
+AND tag.tag = "StreamEnsembles"
+AND t.value = d.did
+AND t.task_id = tag.id
+AND e_orig.function = "predictive_accuracy"
+AND e_bag.function = "predictive_accuracy"
+AND e_levbag.function = "predictive_accuracy"
+AND e_orignb.function = "predictive_accuracy"
+AND e_bagnb.function = "predictive_accuracy"
+AND e_levbagnb.function = "predictive_accuracy"
+AND t.task_id = r_orig.task_id
+AND t.task_id = r_bag.task_id
+AND t.task_id = r_levbag.task_id
+AND t.task_id = r_orignb.task_id
+AND t.task_id = r_bagnb.task_id
+AND t.task_id = r_levbagnb.task_id
+AND r_orig.rid = e_orig.source
+AND r_bag.rid = e_bag.source
+AND r_levbag.rid = e_levbag.source
+AND r_orignb.rid = e_orignb.source
+AND r_bagnb.rid = e_bagnb.source
+AND r_levbagnb.rid = e_levbagnb.source
+AND r_orig.setup = 22
+AND r_bag.setup = 2229
+AND r_levbag.setup = 23
+AND r_orignb.setup = 19
+AND r_bagnb.setup = 2228
+AND r_levbagnb.setup = 1907
+GROUP BY t.task_id
+ORDER BY d.name ASC
+
 # inspect maximum value of meta feature, grouped by dataset
 SELECT `q`.`data`, `d`.`name`, `q`.`interval_start`, `q`.`interval_end`, CONVERT( SUBSTRING_INDEX( `value`, '-', -1 ), UNSIGNED INTEGER ) AS "MaxNominalAttDistinctValues"
 FROM `data_quality_interval` `q`, `dataset` `d`
