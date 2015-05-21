@@ -31,7 +31,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.io.OpenmlConnector;
-import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.settings.Constants;
 import org.openml.apiconnector.xml.DataQuality;
 import org.openml.apiconnector.xml.DataQuality.Quality;
@@ -82,18 +81,10 @@ public class FantailConnector {
 	private static StreamCharacterizer[] streamCharacterizers;
 	private static OpenmlConnector apiconnector;
 	
-	public static void main( String[] args ) throws Exception {
-		Config c = new Config();
-		
-		OpenmlConnector oc = new OpenmlConnector( c.getUsername(), c.getPassword() );
-		oc.setVerboseLevel(2);
-		new FantailConnector(oc, null);
-	}
-	
 	public FantailConnector( OpenmlConnector ac, Integer dataset_id ) throws Exception {
 		int expectedQualities = 8; // start of with 8 basic qualities, apparently
 		apiconnector = ac;
-		window_size = 250;
+		window_size = null;
 		
 		// additional batch landmarkers
 		TreeMap<String, String[]> REPOptions = new TreeMap<String, String[]>();
@@ -144,7 +135,7 @@ public class FantailConnector {
 		}
 	}
 	
-	public Integer getDatasetId( int expectedQualities, int window_size ) throws JSONException, Exception {
+	public Integer getDatasetId( int expectedQualities, Integer window_size ) throws JSONException, Exception {
 		String sql = 
 			"SELECT `d`.`did`, `q`.`value` AS `numInstances`, `interval_end` - `interval_start` AS `interval_size`, " +
 			"CEIL(`q`.`value` / " + window_size + ") AS `numIntervals`, " +
@@ -161,6 +152,11 @@ public class FantailConnector {
 			"GROUP BY `d`.`did` " +
 			"HAVING (COUNT(*) / CEIL(`q`.`value` / " + window_size + ")) < " + expectedQualities + " " +
 			"ORDER BY `qualitiesPerInterval` ASC; ";
+		
+		if( window_size == null ) {
+			sql = "SELECT data, COUNT(*) AS `numQualities` FROM data_quality GROUP BY data HAVING numQualities < " + expectedQualities;
+		}
+		
 		Conversion.log( "OK", "FantailQuery", sql );
 		JSONArray runJson = (JSONArray) apiconnector.freeQuery( sql ).get("data");
 		

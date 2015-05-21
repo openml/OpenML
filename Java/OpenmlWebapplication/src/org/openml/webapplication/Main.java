@@ -25,6 +25,7 @@ import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Options;
 import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.settings.Config;
+import org.openml.webapplication.features.FantailConnector;
 import org.openml.webapplication.generatefolds.GenerateFolds;
 import org.openml.webapplication.io.Output;
 
@@ -83,6 +84,10 @@ public class Main {
 					
 					// bootstrap process dataset
 					new ProcessDataset(apiconnector, id);
+				} else if( function.equals("extract_features_all") ) {
+					
+					FantailConnector fc = new FantailConnector( apiconnector, null );
+					fc.toString();
 					
 				} else if( function.equals("generate_folds") ) {
 					
