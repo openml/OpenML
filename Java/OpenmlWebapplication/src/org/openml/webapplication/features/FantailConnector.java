@@ -211,7 +211,8 @@ public class FantailConnector {
 			Conversion.log( "OK", "Extract Features", "Running Batch Characterizers (full data, might take a while)" );
 			qualities.addAll( datasetCharacteristics( dataset, null, null ) );
 			for( StreamCharacterizer sc : streamCharacterizers ) {
-				qualities.addAll( hashMaptoList( sc.global( ), null, null ) );
+				Map<String, Double> streamqualities = sc.global();
+				qualities.addAll( hashMaptoList( streamqualities, null, null ) );
 			}
 		}
 		Conversion.log( "OK", "Extract Features", "Done generating features, start wrapping up" );
@@ -242,7 +243,8 @@ public class FantailConnector {
 		}
 		
 		for( Characterizer dc : batchCharacterizers ) {
-			result.addAll( hashMaptoList( dc.characterize(intervalData), start, interval_size ) );
+			Map<String,Double> qualities = dc.characterize(intervalData);
+			result.addAll( hashMaptoList( qualities, start, interval_size ) );
 		}
 		
 		return result;
