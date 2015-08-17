@@ -50,6 +50,7 @@ public class Main {
 		options.addOption("e", true, "The evaluation method");
 		options.addOption("o", true, "The output file");
 		options.addOption("r", true, "The rowid");
+		options.addOption("x", false, "Flag determining whether we should pick a random id");
 		options.addOption("m", false, "Flag determining whether the output of the splits file should be presented as a md5 hash");
 		options.addOption("test", true, "A list of rowids for a holdout set (fold generation)" );
 		
@@ -75,9 +76,8 @@ public class Main {
 				if( function.equals("evaluate_run") ) {
 					
 					
-					
 					// bootstrap evaluate run
-					new EvaluateRun(apiconnector, id);
+					new EvaluateRun(apiconnector, id, cli.hasOption("x"));
 					
 				} else if( function.equals("process_dataset") ) {
 					
@@ -86,7 +86,7 @@ public class Main {
 					new ProcessDataset(apiconnector, id);
 				} else if( function.equals("extract_features_all") ) {
 					
-					FantailConnector fc = new FantailConnector( apiconnector, null );
+					FantailConnector fc = new FantailConnector( apiconnector, id );
 					fc.toString();
 					
 				} else if( function.equals("generate_folds") ) {

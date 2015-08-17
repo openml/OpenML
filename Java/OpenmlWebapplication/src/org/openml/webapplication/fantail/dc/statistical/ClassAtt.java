@@ -40,23 +40,27 @@ public class ClassAtt extends Characterizer {
 
 	@Override
 	public Map<String, Double> characterize(Instances instances) {
-
-		int pCount = 0;
-		int nCount = 0;
-
-		int[] counts = new int[instances.numClasses()];
-		for (int i = 0; i < instances.numInstances(); i++) {
-			Instance instance = instances.instance(i);
-			counts[(int) instance.classValue()]++;
-		}
-
-		pCount = counts[weka.core.Utils.minIndex(counts)];
-		nCount = counts[weka.core.Utils.maxIndex(counts)];
-
 		Map<String, Double> qualities = new HashMap<String, Double>();
-		qualities.put(ids[0], instances.numClasses() * 1.0);
-		qualities.put(ids[1], 1.0 * pCount / instances.numInstances());
-		qualities.put(ids[2], 1.0 * nCount / instances.numInstances());
+		
+		if (instances.classAttribute().isNominal()) {
+			int pCount = 0;
+			int nCount = 0;
+	
+			int[] counts = new int[instances.numClasses()];
+			
+			
+			for (int i = 0; i < instances.numInstances(); i++) {
+				Instance instance = instances.instance(i);
+				counts[(int) instance.classValue()]++;
+			}
+	
+			pCount = counts[weka.core.Utils.minIndex(counts)];
+			nCount = counts[weka.core.Utils.maxIndex(counts)];
+	
+			qualities.put(ids[0], instances.numClasses() * 1.0);
+			qualities.put(ids[1], 1.0 * pCount / instances.numInstances());
+			qualities.put(ids[2], 1.0 * nCount / instances.numInstances());
+		}
 		return qualities;
 	}
 }

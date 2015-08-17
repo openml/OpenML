@@ -42,41 +42,43 @@ public class AttributeEntropy extends Characterizer {
 	@Override
 	public Map<String, Double> characterize(Instances data) {
 
-		double classEntropy = DCUntils.computeClassEntropy(data);
-		double meanAttEntropy = DCUntils.computeMeanAttributeEntropy(data);
-		double meanMI = DCUntils.computeMutualInformation(data);
-		double noiseSignalRatio = (meanAttEntropy - meanMI) / meanMI;
-		double ena = 0;
-
-		if (meanMI <= 0 || Double.isNaN(meanMI)) {
-			ena = -1;
-			noiseSignalRatio = -1;
-		} else {
-			ena = classEntropy / meanMI;
-		}
-
-		if (Double.isNaN(classEntropy)) {
-			classEntropy = -1;
-		}
-		if (Double.isNaN(meanAttEntropy)) {
-			meanAttEntropy = -1;
-		}
-		if (Double.isNaN(meanMI)) {
-			meanMI = -1;
-		}
-		if (Double.isNaN(ena)) {
-			ena = -1;
-		}
-		if (Double.isNaN(noiseSignalRatio)) {
-			noiseSignalRatio = -1;
-		}
-
 		Map<String, Double> qualities = new HashMap<String, Double>();
-		qualities.put(ids[0], classEntropy);
-		qualities.put(ids[1], meanAttEntropy);
-		qualities.put(ids[2], meanMI);
-		qualities.put(ids[3], ena);
-		qualities.put(ids[4], noiseSignalRatio);
+		if (data.classAttribute().isNominal()) {
+			double classEntropy = DCUntils.computeClassEntropy(data);
+			double meanAttEntropy = DCUntils.computeMeanAttributeEntropy(data);
+			double meanMI = DCUntils.computeMutualInformation(data);
+			double noiseSignalRatio = (meanAttEntropy - meanMI) / meanMI;
+			double ena = 0;
+	
+			if (meanMI <= 0 || Double.isNaN(meanMI)) {
+				ena = -1;
+				noiseSignalRatio = -1;
+			} else {
+				ena = classEntropy / meanMI;
+			}
+	
+			if (Double.isNaN(classEntropy)) {
+				classEntropy = -1;
+			}
+			if (Double.isNaN(meanAttEntropy)) {
+				meanAttEntropy = -1;
+			}
+			if (Double.isNaN(meanMI)) {
+				meanMI = -1;
+			}
+			if (Double.isNaN(ena)) {
+				ena = -1;
+			}
+			if (Double.isNaN(noiseSignalRatio)) {
+				noiseSignalRatio = -1;
+			}
+	
+			qualities.put(ids[0], classEntropy);
+			qualities.put(ids[1], meanAttEntropy);
+			qualities.put(ids[2], meanMI);
+			qualities.put(ids[3], ena);
+			qualities.put(ids[4], noiseSignalRatio);
+		}
 		return qualities;
 	}
 }

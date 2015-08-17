@@ -3,6 +3,7 @@ package org.openml.webapplication;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import org.json.JSONArray;
 import org.openml.apiconnector.algorithms.Conversion;
@@ -31,27 +32,27 @@ public class EvaluateRun {
 	private static final int INTERVAL_SIZE = 1000;
 	
 	public EvaluateRun( OpenmlConnector ac ) throws Exception {
-		this( ac, null );
+		this( ac, null, false );
 	}
 	
-	public EvaluateRun( OpenmlConnector ac, Integer run_id ) throws Exception {
+	public EvaluateRun( OpenmlConnector ac, Integer run_id, boolean random ) throws Exception {
 		apiconnector = ac;
 		xstream = XstreamXmlMapping.getInstance();
 		
 		if( run_id != null ) {
 			evaluate( run_id, INTERVAL_SIZE );
 		} else {
-			run_id = getRunId();
+			run_id = getRunId(random);
 			while( run_id != null ) {
 				Conversion.log("INFO","Evaluate Run","Downloading task " + run_id );
 				evaluate( run_id, INTERVAL_SIZE );
-				run_id = getRunId();
+				run_id = getRunId(random);
 			}
 			Conversion.log( "OK", "Process Run", "No more runs to perform. " );
 		}
 	}
 	
-	public Integer getRunId() throws Exception {
+	public Integer getRunId(boolean random) throws Exception {
 		String sql = 
 			"SELECT `rid`,`start_time`,`processed`,`error` " + 
 			"FROM `run` WHERE `processed` IS NULL AND `error` IS NULL " + 
@@ -59,8 +60,14 @@ public class EvaluateRun {
 		
 		JSONArray runJson = (JSONArray) apiconnector.freeQuery( sql ).get("data");
 		
+		int randomint = 0;
+		
+		if (random) {
+			Random r = new Random();
+			randomint = Math.abs(r.nextInt());
+		}
 		if( runJson.length() > 0 ) {
-			int run_id = ((JSONArray) runJson.get( 0 )).getInt( 0 );
+			int run_id = ((JSONArray) runJson.get( randomint % runJson.length() )).getInt( 0 );
 			return run_id;
 		} else {
 			return null;
