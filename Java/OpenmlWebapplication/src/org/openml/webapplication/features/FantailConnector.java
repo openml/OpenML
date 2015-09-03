@@ -31,6 +31,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.io.OpenmlConnector;
+import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.settings.Constants;
 import org.openml.apiconnector.xml.DataQuality;
 import org.openml.apiconnector.xml.DataQuality.Quality;
@@ -176,7 +177,7 @@ public class FantailConnector {
 		streamCharacterizers = new StreamCharacterizer[1]; 
 		streamCharacterizers[0] = new ChangeDetectors( interval_size );
 		
-		DataSetDescription dsd = apiconnector.dataDescription(did);
+		DataSetDescription dsd = apiconnector.dataGet(did);
 		
 		Conversion.log( "OK", "Extract Features", "Start downloading dataset: " + did );
 		

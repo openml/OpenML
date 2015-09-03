@@ -63,7 +63,7 @@ public class Main {
 				config = new Config( cli.getOptionValue("config") );
 			}
 			
-			apiconnector = new OpenmlConnector( config.getServer(), config.getUsername(), config.getPassword() );
+			apiconnector = new OpenmlConnector( config.getServer(), config.getSessionHash() );
 			
 			if( cli.hasOption("-id") ) {
 				id = Integer.parseInt( cli.getOptionValue("id") );

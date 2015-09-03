@@ -92,7 +92,7 @@ public class EvaluateRun {
 			Data_set source_data = TaskInformation.getSourceData(task);
 			Estimation_procedure estimationprocedure = TaskInformation.getEstimationProcedure( task );
 			Integer dataset_id = source_data.getLabeled_data_set_id() != null ? source_data.getLabeled_data_set_id() : source_data.getData_set_id();
-			dataset = apiconnector.dataDescription( dataset_id );
+			dataset = apiconnector.dataGet( dataset_id );
 			
 			for( int i = 0; i < filesJson.length(); ++i ) {
 				String field = ((JSONArray) filesJson.get( i )).getString( 0 );
@@ -110,7 +110,7 @@ public class EvaluateRun {
 				return;
 			}
 			
-			String description = OpenmlConnector.getStringFromUrl( apiconnector.getOpenmlFileUrl( file_ids.get( "description" ), "Run_" + run_id + "_description.xml" ).toString() );
+			String description = OpenmlConnector.getStringFromUrl( apiconnector.getOpenmlFileUrl( file_ids.get( "description" ), "Run_" + run_id + "_description.xml", apiconnector.getSessionHash() ).toString() );
 			Run run_description = (Run) xstream.fromXML( description );
 			
 			Conversion.log( "OK", "Process Run", "Start prediction evaluator. " );
@@ -119,19 +119,19 @@ public class EvaluateRun {
 			if( task.getTask_type().equals("Supervised Data Stream Classification") ) {
 				predictionEvaluator = new EvaluateStreamPredictions(
 					dataset.getUrl() + "?session_hash=" + apiconnector.getSessionHash(), 
-					apiconnector.getOpenmlFileUrl( file_ids.get( "predictions" ), filename ).toString(), 
+					apiconnector.getOpenmlFileUrl( file_ids.get( "predictions" ), filename, apiconnector.getSessionHash() ).toString(), 
 					source_data.getTarget_feature(),
 					stream_interval_size );
 			} else if( task.getTask_type().equals("Survival Analysis") ) {
 				predictionEvaluator = new EvaluateSurvivalAnalysisPredictions( 
 						task, dataset.getUrl() + "?session_hash=" + apiconnector.getSessionHash(), 
 						estimationprocedure.getData_splits_url(), 
-						apiconnector.getOpenmlFileUrl( file_ids.get( "predictions" ), filename ).toString() );
+						apiconnector.getOpenmlFileUrl( file_ids.get( "predictions" ), filename, apiconnector.getSessionHash() ).toString() );
 			} else {
 				predictionEvaluator = new EvaluateBatchPredictions( 
 					task, dataset.getUrl() + "?session_hash=" + apiconnector.getSessionHash(), 
 					estimationprocedure.getData_splits_url(), 
-					apiconnector.getOpenmlFileUrl( file_ids.get( "predictions" ), filename ).toString(), 
+					apiconnector.getOpenmlFileUrl( file_ids.get( "predictions" ), filename, apiconnector.getSessionHash() ).toString(), 
 					estimationprocedure.getType().equals(EstimationProcedure.estimationProceduresTxt[5] ) );
 			}
 			runevaluation.addEvaluationMeasures( predictionEvaluator.getEvaluationScores() );
