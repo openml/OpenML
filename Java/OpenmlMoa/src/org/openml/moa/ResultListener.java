@@ -16,7 +16,7 @@ import org.openml.apiconnector.algorithms.TaskInformation;
 import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.models.Metric;
 import org.openml.apiconnector.models.MetricScore;
-import org.openml.apiconnector.xml.Implementation;
+import org.openml.apiconnector.xml.Flow;
 import org.openml.apiconnector.xml.Run;
 import org.openml.apiconnector.xml.UploadRun;
 import org.openml.apiconnector.xml.Run.Parameter_setting;
@@ -62,9 +62,9 @@ public class ResultListener {
 	public boolean sendToOpenML( Classifier classifier, Map<Metric, MetricScore> userdefinedMeasures ) throws Exception {
 		bw.close();
 		
-		Implementation implementation = MoaAlgorithm.create(classifier);
-		int implementation_id = MoaAlgorithm.getImplementationId(implementation, classifier, apiconnector );
-		implementation = apiconnector.implementationGet( implementation_id ); // updated
+		Flow implementation = MoaAlgorithm.create(classifier);
+		int implementation_id = MoaAlgorithm.getFlowId(implementation, classifier, apiconnector );
+		implementation = apiconnector.flowGet( implementation_id ); // updated
 		
 		ArrayList<Parameter_setting> ps = MoaAlgorithm.getOptions( implementation, classifier.getOptions().getOptionArray() );
 		
@@ -73,9 +73,8 @@ public class ResultListener {
 			MetricScore score = userdefinedMeasures.get(m);
 			run.addOutputEvaluation( m.name, m.implementation, score.getScore(), score.getArrayAsString( df ) );
 		}
-		File descriptionXML = Conversion.stringToTempFile( XstreamXmlMapping.getInstance().toXML( run ), "moa_task_" + task.getTask_id(), "xml");
-		
-		
+		String runxml = XstreamXmlMapping.getInstance().toXML( run );
+		File descriptionXML = Conversion.stringToTempFile( runxml, "moa_task_" + task.getTask_id(), "xml");
 		
 		Map<String, File> output_files = new HashMap<String, File>();
 		output_files.put( "predictions", results );

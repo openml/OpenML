@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 
 import org.openml.apiconnector.algorithms.TaskInformation;
+import org.openml.apiconnector.io.ApiException;
 import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.DataSetDescription;
@@ -60,18 +61,11 @@ public class OpenmlTaskReader extends AbstractOptionHandler implements InstanceS
     
     protected Config config;
     
-    protected OpenmlConnector apiconnector;
+    protected final OpenmlConnector apiconnector;
 
-    public OpenmlTaskReader( int taskId ) {
-    	config = new Config();
-		if( config.getServer() != null ) {
-			apiconnector = new OpenmlConnector( config.getServer() );
-		} else { 
-			apiconnector = new OpenmlConnector();
-		}
-		
+    public OpenmlTaskReader( OpenmlConnector apiconnector, int taskId ) {
+    	this.apiconnector = apiconnector;
         this.openmlTaskIdOption.setValue(taskId);
-        apiconnector.setCredentials(config.getUsername(), config.getPassword());
         
         restart();
     }
@@ -120,7 +114,11 @@ public class OpenmlTaskReader extends AbstractOptionHandler implements InstanceS
                 this.fileReader.close();
             }
             if(this.openmlTask == null) {
-            	this.openmlTask = apiconnector.taskGet(this.openmlTaskIdOption.getValue());
+            	try {
+            		this.openmlTask = apiconnector.taskGet(this.openmlTaskIdOption.getValue());
+            	} catch(ApiException e) {
+            		throw new RuntimeException(e.getMessage());
+            	}
             }
             if( this.openmlTask.getTask_type().equals("Supervised Data Stream Classification") == false ) {
             	throw new RuntimeException("Can only perform tasks of the type \"Supervised Data Stream Classification\".");

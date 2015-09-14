@@ -82,29 +82,22 @@ public class OpenmlDataStreamClassification extends MainTask {
 		}
 		
 		if( config.getServer() != null ) {
-			apiconnector = new OpenmlConnector( config.getServer() );
+			apiconnector = new OpenmlConnector( config.getServer(), config.getApiKey() );
 		} else { 
-			apiconnector = new OpenmlConnector();
+			apiconnector = new OpenmlConnector( config.getApiKey() );
 		} 
-		
-		// check credentials...
-		if( apiconnector.setCredentials(config.getUsername(), config.getPassword()) == false ) {
-			throw new RuntimeException("Credentials could not be verified. ");
-		} else {
-			Conversion.log( "OK", "Authenticate", "Authentication successfull. " );
-		}
 		
 		String learnerString = this.learnerOption.getValueAsCLIString();
 		String streamString = "OpenmlTaskReader -t "+openmlTaskIdOption.getValue();
 
 		Classifier learner = (Classifier) getPreparedClassOption(this.learnerOption);
-		stream = new OpenmlTaskReader( openmlTaskIdOption.getValue() );
+		stream = new OpenmlTaskReader(apiconnector, openmlTaskIdOption.getValue());
 		Task task = ((OpenmlTaskReader)stream).getTask();
 		
 		try {
 			resultListener = new ResultListener(task, apiconnector);
 		} catch ( Exception e )  {
-			throw new RuntimeException("Error initializing ResultListener. Please check server/username/password in openml.conf. " + e.getMessage() );
+			throw new RuntimeException("Error initializing ResultListener. " + e.getMessage() );
 		}
 		
 		ClassificationPerformanceEvaluator evaluator = (ClassificationPerformanceEvaluator) getPreparedClassOption(this.evaluatorOption);

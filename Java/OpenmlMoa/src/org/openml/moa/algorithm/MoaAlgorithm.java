@@ -10,11 +10,11 @@ import java.util.ArrayList;
 
 import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.io.OpenmlConnector;
-import org.openml.apiconnector.xml.Implementation;
-import org.openml.apiconnector.xml.ImplementationExists;
+import org.openml.apiconnector.xml.Flow;
+import org.openml.apiconnector.xml.FlowExists;
 import org.openml.apiconnector.xml.Run;
 import org.openml.apiconnector.xml.Run.Parameter_setting;
-import org.openml.apiconnector.xml.UploadImplementation;
+import org.openml.apiconnector.xml.UploadFlow;
 import org.openml.apiconnector.xstream.XstreamXmlMapping;
 
 import weka.core.Utils;
@@ -27,12 +27,14 @@ import moa.options.WEKAClassOption;
 
 public class MoaAlgorithm {
 	
-	public static int getImplementationId( Implementation implementation, Classifier classifier, OpenmlConnector apiconnector ) throws Exception {
+	public static int getFlowId( Flow implementation, Classifier classifier, OpenmlConnector apiconnector ) throws Exception {
 		try {
 			// First ask OpenML whether this implementation already exists
-			ImplementationExists result = apiconnector.implementationExists( implementation.getName(), implementation.getExternal_version() );
+			FlowExists result = apiconnector.flowExists( implementation.getName(), implementation.getExternal_version() );
+			
 			if(result.exists()) return result.getId();
 		} catch( Exception e ) { /* Suppress Exception since it is totally OK.*/ }
+		
 		// It does not exist. Create it. 
 		String xml = XstreamXmlMapping.getInstance().toXML( implementation );
 		//System.err.println(xml);
@@ -41,11 +43,11 @@ public class MoaAlgorithm {
 		File binary = null;
 		try { source = getFile( classifier, "src/", "java" ); } catch(IOException e) {}
 		try { binary = getFile( classifier, "bin/", "class" ); } catch(IOException e) {}
-		UploadImplementation ui = apiconnector.implementationUpload(implementationFile, binary, source);
+		UploadFlow ui = apiconnector.flowUpload(implementationFile, binary, source);
 		return ui.getId();
 	}
 	
-	public static ArrayList<Run.Parameter_setting> getOptions( Implementation i, Option[] options ) {
+	public static ArrayList<Run.Parameter_setting> getOptions( Flow i, Option[] options ) {
 		ArrayList<Run.Parameter_setting> result = new ArrayList<Run.Parameter_setting>();
 		for( Option option : options ) {
 			if( option instanceof FlagOption ) {
@@ -59,7 +61,7 @@ public class MoaAlgorithm {
 				if( o.getRequiredType().isAssignableFrom( Classifier.class ) ) {
 					try {
 						Classifier subclassifier = (Classifier) ClassOption.cliStringToObject( o.getValueAsCLIString(), o.getRequiredType(), null );
-						Implementation subimplementation = create( subclassifier );
+						Flow subimplementation = create( subclassifier );
 						result.addAll( getOptions( i.getComponentByName( subimplementation.getName() ), subclassifier.getOptions().getOptionArray() ) );
 						result.add( new Parameter_setting( i.getId(), option.getCLIChar() + "", subclassifier.getClass().getName() ) );
 					} catch (Exception e) {
@@ -72,7 +74,7 @@ public class MoaAlgorithm {
 			} else if( option instanceof WEKAClassOption ) {
 				try {
 					String[] params = Utils.splitOptions( option.getValueAsCLIString() );
-					Implementation subimplementation = wekaSubimplementation( (WEKAClassOption) option );
+					Flow subimplementation = wekaSubimplementation( (WEKAClassOption) option );
 					result.addAll( WekaAlgorithm.getParameterSetting( params, i.getComponentByName( subimplementation.getName() ) ) );
 					result.add( new Parameter_setting( i.getId(), option.getCLIChar() + "", params[0] ) );
 				} catch( Exception e ) {
@@ -87,7 +89,7 @@ public class MoaAlgorithm {
 		return result;
 	}
 	
-	public static Implementation create( Classifier classifier ) {
+	public static Flow create( Classifier classifier ) {
 		String classPath = classifier.getClass().getName();
 		String classifierName = classPath.substring( classPath.lastIndexOf('.') + 1 );
 		String name = "moa." + classifierName;
@@ -96,7 +98,7 @@ public class MoaAlgorithm {
 		String language = "English";
 		String dependencies = "Moa_2014.03"; // TODO: No version information?
 		
-		Implementation i = new Implementation( name, dependencies + "_" + version, description, language, dependencies );
+		Flow i = new Flow( name, dependencies + "_" + version, description, language, dependencies );
 		for( Option option : classifier.getOptions().getOptionArray() ) {
 			if( option instanceof FlagOption ) {
 				FlagOption fo = (FlagOption) option;
@@ -107,7 +109,7 @@ public class MoaAlgorithm {
 				
 				if( co.getRequiredType().isAssignableFrom( Classifier.class ) ) {
 					try {
-						Implementation subimplementation = create( (Classifier) ClassOption.cliStringToObject( co.getValueAsCLIString(), co.getRequiredType(), null ) );
+						Flow subimplementation = create( (Classifier) ClassOption.cliStringToObject( co.getValueAsCLIString(), co.getRequiredType(), null ) );
 						i.addComponent(co.getCLIChar() + "", subimplementation );
 					} catch (Exception e) {	e.printStackTrace(); }
 				}
@@ -158,7 +160,7 @@ public class MoaAlgorithm {
 		return is;
 	}
 	
-	private static Implementation wekaSubimplementation( WEKAClassOption wco ) throws Exception {
+	private static Flow wekaSubimplementation( WEKAClassOption wco ) throws Exception {
 		if( wco.getRequiredType().isAssignableFrom( weka.classifiers.Classifier.class ) ) {
 			String weka_identifier = wco.getValueAsCLIString();
 			String weka_classifier = weka_identifier.substring(0, weka_identifier.indexOf(' '));
