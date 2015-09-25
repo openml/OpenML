@@ -50,7 +50,7 @@ public class EstimationProcedure {
 		} else if( parts[0].equals(estimationProceduresTxt[5] ) ) {
 			em = EstimationProcedureType.CUSTOMHOLDOUT;
 			arg1 = 1;
-			arg2 = dataset.numInstances();
+			arg2 = 10; // TODO: encode this information in call! (also in api splits)
 		} else if( parts[0].equals(estimationProceduresTxt[6] ) ) {
 			em = EstimationProcedureType.BOOTSTRAP;
 			arg1 = Integer.valueOf(parts[1]);

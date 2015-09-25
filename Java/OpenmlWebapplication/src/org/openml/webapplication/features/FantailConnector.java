@@ -31,7 +31,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.io.OpenmlConnector;
-import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.settings.Constants;
 import org.openml.apiconnector.xml.DataQuality;
 import org.openml.apiconnector.xml.DataQuality.Quality;
@@ -181,7 +180,7 @@ public class FantailConnector {
 		
 		Conversion.log( "OK", "Extract Features", "Start downloading dataset: " + did );
 		
-		Instances dataset = new Instances( new FileReader(dsd.getDataset(apiconnector.getSessionHash())) );
+		Instances dataset = new Instances( new FileReader(dsd.getDataset(apiconnector.getApiKey())) );
 		
 		dataset.setClass( dataset.attribute( dsd.getDefault_target_attribute() ) );
 		

@@ -1,6 +1,7 @@
 package org.openml.webapplication;
 
 import java.io.File;
+import java.net.URL;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -25,8 +26,8 @@ public class ProcessDataset {
 		this( ac, null );
 	}
 	
-	public ProcessDataset( OpenmlConnector ac, Integer dataset_id ) throws Exception {
-		apiconnector = ac;
+	public ProcessDataset( OpenmlConnector connector, Integer dataset_id ) throws Exception {
+		apiconnector = connector;
 		xstream = XstreamXmlMapping.getInstance();
 		
 		if( dataset_id != null ) {
@@ -59,9 +60,7 @@ public class ProcessDataset {
 	}
 	
 	public JSONArray getRecord( int did ) throws Exception {
-		String sql = 
-			"SELECT `did`,`url`,`default_target_attribute`,`upload_date` " + 
-			"FROM `dataset` WHERE `did` = " + did;
+		String sql = "SELECT `did`,`file_id`,`name`,`default_target_attribute` FROM `dataset` WHERE `did` = " + did;
 		JSONArray runJson = (JSONArray) apiconnector.freeQuery( sql ).get("data");
 		
 		if( runJson.length() > 0 ) {
@@ -73,12 +72,12 @@ public class ProcessDataset {
 	
 	public void process( Integer did ) throws Exception {
 		JSONArray record = getRecord(did);
-		String urlStr = record.getString( 1 ) + "?session_hash=" + apiconnector.getSessionHash();
+		URL featureUrl = apiconnector.getOpenmlFileUrl(record.getInt(1), record.getString(2));
 		// feature string should be reconverted to null, if it was NULL in mysql
-		String featureStr = record.getString( 2 ).equals("") ? null : record.getString( 2 );
+		String defaultTarget = record.getString(3).equals("") ? null : record.getString(3);
 		
 		try {
-			ExtractFeatures extractFeatures = new ExtractFeatures(urlStr, featureStr);
+			ExtractFeatures extractFeatures = new ExtractFeatures(featureUrl, defaultTarget);
 	
 			// IMPORTANT: getQualities should be called BEFORE getFeatures
 			Conversion.log( "OK", "Process Dataset", "Processing dataset " + did + " - obtaining basic qualities. " );

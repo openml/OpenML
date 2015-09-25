@@ -19,10 +19,14 @@
  */
 package org.openml.webapplication;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Options;
+import org.json.JSONArray;
 import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.settings.Config;
 import org.openml.webapplication.features.FantailConnector;
@@ -93,18 +97,35 @@ public class Main {
 					
 					// prepare ARFF output consisting of datasplits
 					if( cli.hasOption("-d") && cli.hasOption("e") && cli.hasOption("c") && cli.hasOption("r") ) {
-						int[] testset = null;
+						
+						List<List<List<Integer>>> testset = new ArrayList<List<List<Integer>>>();
 						if( cli.hasOption("-test") ) {
-							String[] rowids = cli.getOptionValue("test").split(",");
-							testset = new int[rowids.length];
-							for( int i = 0; i < rowids.length; ++i ) {
-								testset[i] = Integer.parseInt( rowids[i] );
+							JSONArray rowidsJson = new JSONArray(cli.getOptionValue("test"));
+							
+							
+							for( int i = 0; i < rowidsJson.length(); ++i ) {
+								while (testset.size() <= i) {
+									testset.add(new ArrayList<List<Integer>>());
+								}
+								
+								for( int j = 0; j < rowidsJson.getJSONArray(i).length(); ++j ) {
+									while (testset.get(i).size() <= j) {
+										testset.get(i).add(new ArrayList<Integer>());
+									}
+									
+									for( int k = 0; k < rowidsJson.getJSONArray(i).getJSONArray(j).length(); ++k ) {
+										
+										testset.get(i).get(j).add(rowidsJson.getJSONArray(i).getJSONArray(j).getInt(k));
+									}
+									
+								}
 							}
 						}
 						
 						apiconnector.setVerboseLevel(0);
 						GenerateFolds gf = new GenerateFolds(
 								apiconnector, 
+								config.getApiKey(),
 								cli.getOptionValue("d"), 
 								cli.getOptionValue("e"), 
 								cli.getOptionValue("c"), 

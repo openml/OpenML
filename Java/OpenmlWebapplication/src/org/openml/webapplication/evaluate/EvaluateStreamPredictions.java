@@ -19,6 +19,7 @@
  */
 package org.openml.webapplication.evaluate;
 
+import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,13 +55,13 @@ public class EvaluateStreamPredictions implements PredictionEvaluator {
 	private final Map<Integer, Map<Metric, MetricScore>> intervalMeasures;
 	private final int interval_size;
 	
-	public EvaluateStreamPredictions( String datasetUrl, String predictionsUrl, String classAttribute, int interval_size ) throws Exception {
+	public EvaluateStreamPredictions( URL datasetUrl, URL predictionsUrl, String classAttribute, int interval_size ) throws Exception {
 		datasetLoader = new ArffLoader();
-		datasetLoader.setURL(datasetUrl);
+		datasetLoader.setURL(datasetUrl.toString());
 		datasetStructure = new Instances( datasetLoader.getStructure() );
 
 		predictionsLoader = new ArffLoader();
-		predictionsLoader.setURL(predictionsUrl);
+		predictionsLoader.setURL(predictionsUrl.toString());
 		predictionsStructure = new Instances( predictionsLoader.getStructure() );
 		
 		intervalMeasures = new HashMap<Integer, Map<Metric,MetricScore>>();

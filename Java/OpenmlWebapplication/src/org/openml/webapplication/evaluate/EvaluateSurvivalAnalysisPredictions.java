@@ -20,6 +20,7 @@
 package org.openml.webapplication.evaluate;
 
 import java.io.BufferedReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,7 +48,7 @@ public class EvaluateSurvivalAnalysisPredictions implements PredictionEvaluator 
 	
 	private EvaluationScore[] evaluationScores;
 	
-	public EvaluateSurvivalAnalysisPredictions( Task task, String datasetPath, String splitsPath, String predictionsPath ) throws Exception {
+	public EvaluateSurvivalAnalysisPredictions( Task task, URL datasetPath, URL splitsPath, URL predictionsPath ) throws Exception {
 		// set all arff files needed for this operation. 
 		dataset 	= new Instances( new BufferedReader( Input.getURL( datasetPath ) ) );
 		predictions = new Instances( new BufferedReader( Input.getURL( predictionsPath ) ) ); 

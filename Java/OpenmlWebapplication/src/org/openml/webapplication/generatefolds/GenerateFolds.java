@@ -24,8 +24,10 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.net.URL;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 
 import org.openml.apiconnector.algorithms.Input;
@@ -53,10 +55,11 @@ public class GenerateFolds {
 	private final ArffMapping am;
 	private final Random rand;
 	
-	public GenerateFolds( OpenmlConnector ac, String datasetPath, String estimationProcedure, String targetFeature, String rowid_attribute, int[] testset, int random_seed ) throws Exception {
+	public GenerateFolds( OpenmlConnector ac, String api_key, String datasetPath, String estimationProcedure, String targetFeature, String rowid_attribute, List<List<List<Integer>>> testset, int random_seed ) throws Exception {
 		
 		rand = new Random(random_seed);
-		dataset = new Instances( new BufferedReader( Input.getURL( datasetPath + "?session_hash=" + ac.getSessionHash() ) ) );
+		String totalPath = datasetPath + "?api_key=" + api_key;
+		dataset = new Instances( new BufferedReader( Input.getURL( new URL(totalPath) ) ) );
 		evaluationMethod = new EstimationProcedure(estimationProcedure,dataset);
 		
 		InstancesHelper.setTargetAttribute( dataset, targetFeature );
@@ -87,7 +90,7 @@ public class GenerateFolds {
 		Output.instanes2file(splits, new Md5Writer() );
 	}
 	
-	private Instances generateInstances(String name, int[] testset) throws Exception {
+	private Instances generateInstances(String name, List<List<List<Integer>>> testset) throws Exception {
 		switch(evaluationMethod.getEvaluationMethod()) {
 			case HOLDOUT:	
 				return sample_splits_holdout( name );
@@ -220,18 +223,23 @@ public class GenerateFolds {
 		return splits;
 	}
 	
-	private Instances sample_splits_holdout_userdefined( String name, int[] testset ) {
+	private Instances sample_splits_holdout_userdefined( String name, List<List<List<Integer>>> testset ) {
 		Instances splits = new Instances(name,am.getArffHeader(),splits_size);
 		if( testset == null ) {
 			throw new RuntimeException("Option -test not set correctly. ");
 		}
-		Arrays.sort(testset);
-		// do not randomize data set, as this method is based on user defined splits
-		for( int i = 0; i < dataset.size(); ++i ) {
-			if( Arrays.binarySearch(testset, i) >= 0 ) {
-				splits.add(am.createInstance(false,i,0,0));
-			} else {
-				splits.add(am.createInstance(true,i,0,0));
+		
+		for( int r = 0; r < evaluationMethod.getRepeats(); ++r ) {
+			for( int f = 0; f < evaluationMethod.getFolds(); ++f ) {
+				Collections.sort(testset.get(r).get(f));
+				// do not randomize data set, as this method is based on user defined splits
+				for( int i = 0; i < dataset.size(); ++i ) {
+					if( Collections.binarySearch(testset.get(r).get(f), i) >= 0 ) {
+						splits.add(am.createInstance(false,i,r,f));
+					} else {
+						splits.add(am.createInstance(true,i,r,f));
+					}
+				}
 			}
 		}
 		

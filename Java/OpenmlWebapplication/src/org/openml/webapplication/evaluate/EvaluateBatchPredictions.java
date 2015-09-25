@@ -20,6 +20,7 @@
 package org.openml.webapplication.evaluate;
 
 import java.io.BufferedReader;
+import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,7 +66,7 @@ public class EvaluateBatchPredictions implements PredictionEvaluator {
 	
 	private EvaluationScore[] evaluationScores;
 	
-	public EvaluateBatchPredictions( Task task, String datasetPath, String splitsPath, String predictionsPath, boolean bootstrap ) throws Exception {
+	public EvaluateBatchPredictions( Task task, URL datasetPath, URL splitsPath, URL predictionsPath, boolean bootstrap ) throws Exception {
 		// set all arff files needed for this operation. 
 		dataset 	= new Instances( new BufferedReader( Input.getURL( datasetPath ) ) );
 		predictions = new Instances( new BufferedReader( Input.getURL( predictionsPath ) ) ); 

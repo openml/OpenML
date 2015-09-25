@@ -20,6 +20,7 @@
 package org.openml.webapplication.features;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -54,10 +55,10 @@ public class ExtractFeatures {
 	// use Weka's AttributeStats, but only up till a certain number of instances. 
 	private final AttributeStatistics[] attributeStats;
 	
-	public ExtractFeatures( String url, String default_class ) throws IOException {
+	public ExtractFeatures( URL url, String default_class ) throws IOException {
 		arffLoader = new ArffLoader();
 		System.out.println(url);
-		arffLoader.setURL(url);
+		arffLoader.setURL(url.toString());
 		
 		dataset = new Instances( arffLoader.getStructure() );
 		
