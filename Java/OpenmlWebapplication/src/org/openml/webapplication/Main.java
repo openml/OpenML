@@ -67,7 +67,7 @@ public class Main {
 			} else {
 				config = new Config( cli.getOptionValue("config") );
 			}
-			
+			config.updateStaticSettings();
 			apiconnector = new OpenmlConnector( config.getServer(), config.getApiKey() );
 			
 			if( cli.hasOption("-id") ) {
