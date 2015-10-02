@@ -54,6 +54,7 @@ public class Main {
 		options.addOption("e", true, "The evaluation method");
 		options.addOption("o", true, "The output file");
 		options.addOption("r", true, "The rowid");
+		options.addOption("t", true, "The task id");
 		options.addOption("x", false, "Flag determining whether we should pick a random id");
 		options.addOption("m", false, "Flag determining whether the output of the splits file should be presented as a md5 hash");
 		options.addOption("test", true, "A list of rowids for a holdout set (fold generation)" );
@@ -142,7 +143,47 @@ public class Main {
 					} else {
 						System.out.println( Output.styleToJsonError("Missing arguments for function 'generate_folds'. Need d (url to dataset), c (target feature), e (evaluation_method, {cv_{repeats}_{folds},holdout_{repeats}_{percentage},leave_one_out}), and r (row_id, textual). ") );
 					}
-				} else {
+				} else if(function.equals("all_wrong")) {
+					
+					if( cli.hasOption("-r") && cli.hasOption("-t") ) {
+						
+						String[] run_ids_splitted = cli.getOptionValue("r").split(",");
+						Integer task_id = Integer.parseInt(cli.getOptionValue("t"));
+						List<Integer> run_ids = new ArrayList<Integer>();
+						
+						for (String s : run_ids_splitted) {
+							run_ids.add(Integer.parseInt(s));
+						}
+						InstanceBased aw = new InstanceBased(apiconnector, run_ids, task_id);
+						
+						aw.calculateAllWrong();
+						
+						aw.toStdout();
+					} else {
+						System.out.println( Output.styleToJsonError("Missing arguments for function 'all_wrong'. Need r (run ids, comma separated) and t (task_id)") );
+					}
+					
+				} else if(function.equals("different_predictions")) {
+					
+					if( cli.hasOption("-r") && cli.hasOption("-t") ) {
+						
+						String[] run_ids_splitted = cli.getOptionValue("r").split(",");
+						Integer task_id = Integer.parseInt(cli.getOptionValue("t"));
+						List<Integer> run_ids = new ArrayList<Integer>();
+						
+						for (String s : run_ids_splitted) {
+							run_ids.add(Integer.parseInt(s));
+						}
+						InstanceBased aw = new InstanceBased(apiconnector, run_ids, task_id);
+						
+						aw.calculateDifference();
+						
+						aw.toStdout();
+					} else {
+						System.out.println( Output.styleToJsonError("Missing arguments for function 'all_wrong'. Need r (run ids, comma separated) and t (task_id)") );
+					}
+					
+				}else {
 					System.out.println( Output.styleToJsonError("call to unknown function: " + function) );
 				}
 			} else {
