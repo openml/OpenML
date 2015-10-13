@@ -151,6 +151,7 @@ public class EvaluateRun {
 					
 					// important check: because of legacy (implementation_id), the flow id might be missing
 					if (recorded.getFlow() != null && recorded.getFunction() != null) { 
+						System.out.println(recorded);
 						for( EvaluationScore calculated : runevaluation.getEvaluation_scores() ) {
 							if( recorded.isSame( calculated ) ) {
 								foundSame = true;
@@ -166,14 +167,14 @@ public class EvaluateRun {
 								} 
 							}
 						}
-					}
-					if( foundSame == false ) {
-						// give the record the correct sample size
-						if( recorded.getSample() != null && recorded.getSample_size() == null ) {
-							recorded.setSample_size( predictionEvaluator.getPredictionCounter().getShadowTypeSize(
-									recorded.getRepeat(), recorded.getFold(), recorded.getSample()));
+						if( foundSame == false ) {
+							// give the record the correct sample size
+							if( recorded.getSample() != null && recorded.getSample_size() == null ) {
+								recorded.setSample_size( predictionEvaluator.getPredictionCounter().getShadowTypeSize(
+										recorded.getRepeat(), recorded.getFold(), recorded.getSample()));
+							}
+							runevaluation.addEvaluationMeasure( recorded );
 						}
-						runevaluation.addEvaluationMeasure( recorded );
 					}
 				}
 				if( errorFound ) runevaluation.setError( errorMessage );
@@ -190,7 +191,7 @@ public class EvaluateRun {
 		try {
 			String runEvaluation = xstream.toXML( runevaluation );
 			File evaluationFile = Conversion.stringToTempFile( runEvaluation, "run_" + run_id + "evaluations", "xml" );
-			System.exit(1);
+			
 			RunEvaluate re = apiconnector.runEvaluate( evaluationFile );
 			Conversion.log( "OK", "Process Run", "Run processed: " + re.getRun_id() );
 		} catch( Exception  e ) {
