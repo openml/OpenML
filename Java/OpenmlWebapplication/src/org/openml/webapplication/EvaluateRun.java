@@ -145,21 +145,26 @@ public class EvaluateRun {
 				// TODO: This can be done so much faster ... 
 				String errorMessage = "";
 				boolean errorFound = false;
+				
 				for( EvaluationScore recorded : run_description.getOutputEvaluation() ) {
 					boolean foundSame = false;
-					for( EvaluationScore calculated : runevaluation.getEvaluation_scores() ) {
-						if( recorded.isSame( calculated ) ) {
-							foundSame = true;
-							if( recorded.sameValue( calculated ) == false ) {
-								String offByStr = "";
-								try {
-									double diff = Math.abs( Double.parseDouble( recorded.getValue() ) - Double.parseDouble( calculated.getValue() ) );
-									offByStr = " (off by " + diff + ")";
-								} catch( NumberFormatException nfe ) { }
-								
-								errorMessage += "Inconsistent Evaluation score: " + recorded + offByStr;
-								errorFound = true;
-							} 
+					
+					// important check: because of legacy (implementation_id), the flow id might be missing
+					if (recorded.getFlow() != null && recorded.getFunction() != null) { 
+						for( EvaluationScore calculated : runevaluation.getEvaluation_scores() ) {
+							if( recorded.isSame( calculated ) ) {
+								foundSame = true;
+								if( recorded.sameValue( calculated ) == false ) {
+									String offByStr = "";
+									try {
+										double diff = Math.abs( Double.parseDouble( recorded.getValue() ) - Double.parseDouble( calculated.getValue() ) );
+										offByStr = " (off by " + diff + ")";
+									} catch( NumberFormatException nfe ) { }
+									
+									errorMessage += "Inconsistent Evaluation score: " + recorded + offByStr;
+									errorFound = true;
+								} 
+							}
 						}
 					}
 					if( foundSame == false ) {
@@ -183,8 +188,9 @@ public class EvaluateRun {
 
 		Conversion.log( "OK", "Process Run", "Start uploading results ... " );
 		try {
-			File evaluationFile = Conversion.stringToTempFile( xstream.toXML( runevaluation ), "run_" + run_id + "evaluations", "xml" );
-			
+			String runEvaluation = xstream.toXML( runevaluation );
+			File evaluationFile = Conversion.stringToTempFile( runEvaluation, "run_" + run_id + "evaluations", "xml" );
+			System.exit(1);
 			RunEvaluate re = apiconnector.runEvaluate( evaluationFile );
 			Conversion.log( "OK", "Process Run", "Run processed: " + re.getRun_id() );
 		} catch( Exception  e ) {
