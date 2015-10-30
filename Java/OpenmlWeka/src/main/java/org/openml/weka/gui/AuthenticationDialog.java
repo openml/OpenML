@@ -15,40 +15,32 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.text.JTextComponent;
 
-public class UsernameDialog extends JDialog {
+public class AuthenticationDialog extends JDialog {
 	private static final long serialVersionUID = 4714724734714L;
 
 	private int m_returnValue;
 
-	private static final JLabel[] label = { new JLabel("Username: "),
-			new JLabel("Password: ") };
+	private static final JLabel[] label = { new JLabel("Api key: ") };
 
-	private static final String[] tooltip = { "Your username on OpenML.org",
-			"Your password on OpenML.org. Will not be stored in Weka." };
+	private static final String[] tooltip = { "Your OpenML Api key" };
 
 	JButton cancel = new JButton("Cancel");
 	JButton submit = new JButton("Submit");
 
-	private static final JTextComponent[] textComponent = { new JTextField(),
-			new JPasswordField(), };
+	private static final JTextComponent[] textComponent = { new JTextField() };
 
 	public int getReturnValue() {
 		return m_returnValue;
 	}
 
-	public String getUsername() {
+	public String getApiKey() {
 		return textComponent[0].getText();
 	}
 
-	public String getPassword() {
-		return textComponent[1].getText();
-	}
-
-	public UsernameDialog(JFrame parent ) {
+	public AuthenticationDialog(JFrame parent ) {
 		super(parent, "Authenticate on OpenML.org", true);
 		
 		add(getContents());
@@ -93,14 +85,14 @@ public class UsernameDialog extends JDialog {
 		cancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) {
 				m_returnValue = JOptionPane.CLOSED_OPTION;
-				UsernameDialog.this.dispose();
+				AuthenticationDialog.this.dispose();
 			}
 		});
 
 		submit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) {
 				m_returnValue = JOptionPane.OK_OPTION;
-				UsernameDialog.this.dispose();
+				AuthenticationDialog.this.dispose();
 			}
 		});
 

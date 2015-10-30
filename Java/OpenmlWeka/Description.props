@@ -5,10 +5,10 @@
 PackageName=OpenmlWeka
 
 # Version (required)
-Version=0.9.1
+Version=0.9.2
 
 #Date (year-month-day)
-Date=2015-02-09
+Date=2015-10-30
 
 # Title (required)
 Title=Openml Weka
@@ -41,7 +41,7 @@ URL=http://www.openml.org/plugins
 #Related=packageName1,packageName2,...
 
 # Dependencies (format: packageName (equality/inequality version_number)
-Depends=weka (>= 3.7.12)
+Depends=weka (>= 3.7.13)
 
 # Message to display in installation. Can be used to provide
 # special instructions (e.g. manual stuff needed to complete

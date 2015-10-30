@@ -72,17 +72,22 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 		// TODO: do better
 		regressionTask = t.getTask_type().equals("Supervised Regression");
 		
+		if (regressionTask) {
+			throw new Exception("OpenML Plugin Exception: Regression tasks currently not supported. Aborting.");
+		}
+		
+		/*
 		if( regressionTask && !( m_SplitEvaluator instanceof OpenmlRegressionSplitEvaluator ) ) {
 			m_SplitEvaluator = new OpenmlRegressionSplitEvaluator();
 		} else if( !( m_SplitEvaluator instanceof OpenmlClassificationSplitEvaluator ) ) {
 			m_SplitEvaluator = new OpenmlClassificationSplitEvaluator();
-		}
-
+		}*/
+		
 		Data_set ds = TaskInformation.getSourceData(m_Task);
 		Estimation_procedure ep = TaskInformation.getEstimationProcedure(m_Task);
 
 		DataSetDescription dsd = ds.getDataSetDescription(apiconnector);
-		m_Instances = new Instances( new FileReader( dsd.getDataset( apiconnector.getSessionHash() ) ) );
+		m_Instances = new Instances( new FileReader( dsd.getDataset( apiconnector.getApiKey() ) ) );
 		
 		InstancesHelper.setTargetAttribute(m_Instances, ds.getTarget_feature());
 		int targetAttributeIndex = InstancesHelper.getAttributeIndex( m_Instances, ds.getTarget_feature() );

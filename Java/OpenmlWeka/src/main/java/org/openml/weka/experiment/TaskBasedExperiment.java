@@ -19,8 +19,6 @@ import org.openml.weka.algorithm.InstancesHelper;
 import weka.classifiers.Classifier;
 import weka.core.Instances;
 import weka.core.Utils;
-import weka.core.converters.AbstractFileLoader;
-import weka.core.converters.ConverterUtils;
 import weka.experiment.ClassifierSplitEvaluator;
 import weka.experiment.CrossValidationResultProducer;
 import weka.experiment.Experiment;
@@ -33,13 +31,7 @@ public class TaskBasedExperiment extends Experiment {
 	private static final long serialVersionUID = 1L;
 
 	/** An array of the Tasks to be executed */
-	protected DefaultListModel m_Tasks = new DefaultListModel();
-
-	/**
-	 * boolean to specify whether this is a plain dataset based experiment, or
-	 * an OpenML specific task based experiment
-	 */
-	protected boolean datasetBasedExperiment = true;
+	protected DefaultListModel<Task> m_Tasks = new DefaultListModel<Task>();
 
 	/** The task currently being used */
 	protected Task m_CurrentTask;
@@ -52,7 +44,7 @@ public class TaskBasedExperiment extends Experiment {
 		this.m_RunLower = exp.getRunLower();
 		this.m_RunUpper = exp.getRunUpper();
 		this.m_Datasets = exp.getDatasets();
-		this.m_UsePropertyIterator = exp.getUsePropertyIterator();
+		this.m_UsePropertyIterator = true;
 		this.m_PropertyArray = exp.getPropertyArray();
 		this.m_Notes = exp.getNotes();
 		// this.m_AdditionalMeasures =
@@ -62,20 +54,21 @@ public class TaskBasedExperiment extends Experiment {
 		this.apiconnector = apiconnector;
 	}
 
-	public void setMode(boolean datasetBasedExperiment) {
-		this.datasetBasedExperiment = datasetBasedExperiment;
-	}
-
-	public boolean getMode() {
-		return datasetBasedExperiment;
-	}
-
-	public DefaultListModel getTasks() {
+	public DefaultListModel<Task> getTasks() {
 		return m_Tasks;
 	}
 
-	public void setTasks(DefaultListModel tasks) {
+	public void setTasks(DefaultListModel<Task> tasks) {
 		m_Tasks = tasks;
+	}
+	
+	// TODO: dummy function for compatibility with Weka's RunPanel
+	public DefaultListModel<File> getDatasets() {
+		DefaultListModel<File> datasets = new DefaultListModel<File>();
+		for (int i = 0; i < m_Tasks.size(); ++i) {
+			datasets.add(i, new File("Task_" + m_Tasks.get(i).getTask_id() + ".arff"));
+		}
+		return datasets;
 	}
 
 	@Override
@@ -87,17 +80,14 @@ public class TaskBasedExperiment extends Experiment {
 		m_CurrentInstances = null;
 		m_CurrentTask = null;
 		m_Finished = false;
+		
 		if (m_UsePropertyIterator && (m_PropertyArray == null)) {
 			throw new Exception("Null array for property iterator");
 		}
 		if (getRunLower() > getRunUpper()) {
-			throw new Exception(
-					"Lower run number is greater than upper run number");
+			throw new Exception("Lower run number is greater than upper run number");
 		}
-		if (getDatasets().size() == 0 && datasetBasedExperiment) {
-			throw new Exception("No datasets have been specified");
-		}
-		if (getTasks().size() == 0 && datasetBasedExperiment == false) {
+		if (getTasks().size() == 0) {
 			throw new Exception("No tasks have been specified");
 		}
 		if (m_ResultProducer == null) {
@@ -113,8 +103,7 @@ public class TaskBasedExperiment extends Experiment {
 
 		// constrain the additional measures to be only those allowable
 		// by the ResultListener
-		String[] columnConstraints = m_ResultListener
-				.determineColumnConstraints(m_ResultProducer);
+		String[] columnConstraints = m_ResultListener.determineColumnConstraints(m_ResultProducer);
 
 		if (columnConstraints != null) {
 			m_ResultProducer.setAdditionalMeasures(columnConstraints);
@@ -123,51 +112,30 @@ public class TaskBasedExperiment extends Experiment {
 
 	@Override
 	public void nextIteration() throws Exception {
-		if (m_UsePropertyIterator) {
-			if (m_CurrentProperty != m_PropertyNumber) {
+		
+		if (m_CurrentTask == null) {
+			m_CurrentTask = (Task) getTasks().elementAt(m_DatasetNumber);
+
+			Data_set ds = TaskInformation.getSourceData(m_CurrentTask);
+			DataSetDescription dsd = TaskInformation.getSourceData(m_CurrentTask).getDataSetDescription(apiconnector);
+			Instances instDataset = new Instances(new FileReader(dsd.getDataset(apiconnector.getApiKey())));
+
+			InstancesHelper.setTargetAttribute(instDataset,ds.getTarget_feature());
+
+			((TaskResultProducer) m_ResultProducer).setTask(m_CurrentTask);
+			this.setRunUpper(TaskInformation.getNumberOfRepeats(m_CurrentTask));
+			m_ResultProducer.setInstances(instDataset);
+			
+			// set classifier. Important, since by alternating between regression and 
+			// classification tasks we possibly have resetted the splitevaluator
+			
+			System.err.println(((TaskResultProducer)m_ResultProducer).getSplitEvaluator().getClass().toString() );
+			
+			if (m_UsePropertyIterator) {
 				setProperty(0, m_ResultProducer);
 				m_CurrentProperty = m_PropertyNumber;
 			}
-		}
 
-		if (datasetBasedExperiment) {
-
-			if (m_CurrentInstances == null) {
-				File currentFile = (File) getDatasets().elementAt(
-						m_DatasetNumber);
-				AbstractFileLoader loader = ConverterUtils
-						.getLoaderForFile(currentFile);
-				loader.setFile(currentFile);
-				Instances data = new Instances(loader.getDataSet());
-				// only set class attribute if not already done by loader
-				if (data.classIndex() == -1) {
-					if (m_ClassFirst) {
-						data.setClassIndex(0);
-					} else {
-						data.setClassIndex(data.numAttributes() - 1);
-					}
-				}
-				m_CurrentInstances = data;
-				m_ResultProducer.setInstances(m_CurrentInstances);
-			}
-		} else {
-			if (m_CurrentTask == null) {
-				m_CurrentTask = (Task) getTasks().elementAt(m_DatasetNumber);
-
-				Data_set ds = TaskInformation.getSourceData(m_CurrentTask);
-				DataSetDescription dsd = TaskInformation.getSourceData(
-						m_CurrentTask).getDataSetDescription(apiconnector);
-				Instances instDataset = new Instances(new FileReader(
-						dsd.getDataset( apiconnector.getSessionHash() )));
-
-				InstancesHelper.setTargetAttribute(instDataset,
-						ds.getTarget_feature());
-
-				((TaskResultProducer) m_ResultProducer).setTask(m_CurrentTask);
-				this.setRunUpper(TaskInformation
-						.getNumberOfRepeats(m_CurrentTask));
-				m_ResultProducer.setInstances(instDataset);
-			}
 		}
 
 		m_ResultProducer.doRun(m_RunNumber);
@@ -177,8 +145,6 @@ public class TaskBasedExperiment extends Experiment {
 
 	@Override
 	public void advanceCounters() {
-		Integer subjectsInExperiment = (datasetBasedExperiment) ? getDatasets()
-				.size() : getTasks().size();
 
 		if (m_AdvanceDataSetFirst) {
 			m_RunNumber++;
@@ -187,12 +153,11 @@ public class TaskBasedExperiment extends Experiment {
 				m_DatasetNumber++;
 				m_CurrentInstances = null;
 				m_CurrentTask = null;
-				if (m_DatasetNumber >= subjectsInExperiment) {
+				if (m_DatasetNumber >= getTasks().size()) {
 					m_DatasetNumber = 0;
 					if (m_UsePropertyIterator) {
 						m_PropertyNumber++;
-						if (m_PropertyNumber >= Array
-								.getLength(m_PropertyArray)) {
+						if (m_PropertyNumber >= Array.getLength(m_PropertyArray)) {
 							m_Finished = true;
 						}
 					} else {
@@ -211,7 +176,7 @@ public class TaskBasedExperiment extends Experiment {
 						m_DatasetNumber++;
 						m_CurrentInstances = null;
 						m_CurrentTask = null;
-						if (m_DatasetNumber >= subjectsInExperiment) {
+						if (m_DatasetNumber >= getTasks().size()) {
 							m_Finished = true;
 						}
 					}
@@ -219,7 +184,7 @@ public class TaskBasedExperiment extends Experiment {
 					m_DatasetNumber++;
 					m_CurrentInstances = null;
 					m_CurrentTask = null;
-					if (m_DatasetNumber >= subjectsInExperiment) {
+					if (m_DatasetNumber >= getTasks().size()) {
 						m_Finished = true;
 					}
 				}
@@ -258,8 +223,8 @@ public class TaskBasedExperiment extends Experiment {
 		String classifierName = Utils.getOption('C', options);
 		String[] classifierOptions = Utils.partitionOptions(options);
 
-		DefaultListModel tasks = new DefaultListModel();
-		tasks.add(0, apiconnector.openmlTaskSearch(task_id));
+		DefaultListModel<Task> tasks = new DefaultListModel<Task>();
+		tasks.add(0, apiconnector.taskGet(task_id));
 		setTasks(tasks);
 
 		Classifier[] cArray = new Classifier[1];
@@ -274,20 +239,20 @@ public class TaskBasedExperiment extends Experiment {
 		}
 		setPropertyArray(cArray);
 	}
-	
-	public boolean checkCredentials() {
-		return apiconnector.checkCredentials();
-	}
 
 	public static void main(String[] args) {
 		try {
 			Config openmlconfig = new Config();
 			
+			if (openmlconfig.getApiKey() == null) {
+				throw new Exception("No Api Key provided in config file. ");
+			}
+			
 			OpenmlConnector apiconnector;
 			if( openmlconfig.getServer() != null ) {
-				apiconnector = new OpenmlConnector( openmlconfig.getServer(), openmlconfig.getUsername(), openmlconfig.getPassword() );
+				apiconnector = new OpenmlConnector( openmlconfig.getServer(), openmlconfig.getApiKey() );
 			} else { 
-				apiconnector = new OpenmlConnector( openmlconfig.getUsername(), openmlconfig.getPassword() );
+				apiconnector = new OpenmlConnector( openmlconfig.getApiKey() );
 			}
 			
 			TaskBasedExperiment exp = new TaskBasedExperiment( new Experiment(), apiconnector );
@@ -295,12 +260,6 @@ public class TaskBasedExperiment extends Experiment {
 			TaskResultListener rl = new TaskResultListener(apiconnector, openmlconfig);
 			SplitEvaluator se = new OpenmlClassificationSplitEvaluator();
 			Classifier sec = null;
-			// TODO: do we need this check?
-			if ( apiconnector.checkCredentials() == false ) {
-				throw new Exception("Please provide correct credentials in a config file (openml.conf)");
-			}
-
-			exp.setMode(false);
 
 			exp.setResultProducer(rp);
 			exp.setResultListener(rl);

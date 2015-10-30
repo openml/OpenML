@@ -19,7 +19,7 @@ import org.openml.apiconnector.models.MetricScore;
 import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.settings.Constants;
 import org.openml.apiconnector.xml.DataSetDescription;
-import org.openml.apiconnector.xml.Implementation;
+import org.openml.apiconnector.xml.Flow;
 import org.openml.apiconnector.xml.Run;
 import org.openml.apiconnector.xml.Run.Parameter_setting;
 import org.openml.apiconnector.xml.Task;
@@ -60,7 +60,6 @@ public class TaskResultListener extends InstancesResultListener {
 	private final OpenmlConnector apiconnector;
 	
 	private final String[] all_tags;
-	
 	
 	public TaskResultListener( OpenmlConnector apiconnector, Config config ) {
 		super();
@@ -129,15 +128,13 @@ public class TaskResultListener extends InstancesResultListener {
 		if(oet.humanReadableClassifier != null ) { output_files.put("model_readable", oet.humanReadableClassifier); }
 		
 		try { 
-			UploadRun ur = apiconnector.openmlRunUpload(tmpDescriptionFile, output_files );
+			UploadRun ur = apiconnector.runUpload(tmpDescriptionFile, output_files );
 			Conversion.log( "INFO", "Upload Run", "Run was uploaded with rid " + ur.getRun_id() + 
-					". Obtainable at " + apiconnector.getApiUrl() + "?f=openml.run.get&run_id=" + 
-					ur.getRun_id() );
+					". Obtainable at " + apiconnector.getApiUrl() + "run/" + ur.getRun_id() );
 		} catch( ApiException ae ) {
 			ae.printStackTrace(); 
 			Conversion.log( "ERROR", "Upload Run", "Failed to upload run: " + ae.getMessage() );
 		}
-
 	}
 
 	private void sendTaskWithError(OpenmlExecutedTask oet) throws Exception {
@@ -148,7 +145,7 @@ public class TaskResultListener extends InstancesResultListener {
 		tmpDescriptionFile = Conversion.stringToTempFile(
 				xstream.toXML(oet.getRun()), "weka_generated_run", Constants.DATASET_FORMAT);
 		try { 
-			UploadRun ur = apiconnector.openmlRunUpload(tmpDescriptionFile, new HashMap<String, File>() );
+			UploadRun ur = apiconnector.runUpload(tmpDescriptionFile, new HashMap<String, File>() );
 			Conversion.log( "WARNING", "Upload Run", "Run was uploaded with rid " + ur.getRun_id() + 
 					". It includes an error message. Obtainable at " + 
 					apiconnector.getApiUrl() +  "?f=openml.run.get&run_id=" + ur.getRun_id() );
@@ -200,7 +197,7 @@ public class TaskResultListener extends InstancesResultListener {
 			try {samples = TaskInformation.getNumberOfSamples(t);} catch( Exception e ){};
 			try {
 				DataSetDescription dsd = TaskInformation.getSourceData(t).getDataSetDescription( apiconnector );
-				inputData = new Instances( new FileReader( dsd.getDataset( apiconnector.getSessionHash() ) ) );
+				inputData = new Instances( new FileReader( dsd.getDataset( apiconnector.getApiKey() ) ) );
 				inputData.setClass( inputData.attribute(TaskInformation.getSourceData(t).getTarget_feature()) );
 				inputDataSet = true;
 			} catch( Exception e ) {
@@ -237,10 +234,10 @@ public class TaskResultListener extends InstancesResultListener {
 			predictions = new Instances("openml_task_" + t.getTask_id() + "_predictions", attInfo, 0);
 			
 			
-			Implementation find = WekaAlgorithm.create( classifier.getClass().getName(), options, tags );
+			Flow find = WekaAlgorithm.create( classifier.getClass().getName(), options, tags );
 			
 			implementation_id = WekaAlgorithm.getImplementationId( find, classifier, apiconnector );
-			Implementation implementation = apiconnector.openmlImplementationGet( implementation_id );
+			Flow implementation = apiconnector.flowGet( implementation_id );
 			
 			String setup_string = classifier.getClass().getName();
 			if(options.equals("") == false) setup_string += (" -- " + options);

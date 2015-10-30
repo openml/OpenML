@@ -162,7 +162,7 @@ public class ClusteringTaskBasedExperiment extends Experiment {
 				DataSetDescription dsd = TaskInformation.getSourceData(
 						m_CurrentTask).getDataSetDescription(apiconnector);
 				Instances instDataset = new Instances(new FileReader(
-						dsd.getDataset( apiconnector.getSessionHash() )));
+						dsd.getDataset( apiconnector.getApiKey() )));
 
 				((ClusteringResultProducer) m_ResultProducer).setTask(m_CurrentTask);
 				this.setRunUpper(TaskInformation
@@ -260,7 +260,7 @@ public class ClusteringTaskBasedExperiment extends Experiment {
 		String[] classifierOptions = Utils.partitionOptions(options);
 
 		DefaultListModel tasks = new DefaultListModel();
-		tasks.add(0, apiconnector.openmlTaskSearch(task_id));
+		tasks.add(0, apiconnector.taskGet(task_id));
 		setTasks(tasks);
 
 		Clusterer[] cArray = new Clusterer[1];
@@ -275,10 +275,6 @@ public class ClusteringTaskBasedExperiment extends Experiment {
 		}
 		setPropertyArray(cArray);
 	}
-	
-	public boolean checkCredentials() {
-		return apiconnector.checkCredentials();
-	}
 
 	public static void main(String[] args) {
 		try {
@@ -286,9 +282,9 @@ public class ClusteringTaskBasedExperiment extends Experiment {
 			
 			OpenmlConnector apiconnector;
 			if( openmlconfig.getServer() != null ) {
-				apiconnector = new OpenmlConnector( openmlconfig.getServer(), openmlconfig.getUsername(), openmlconfig.getPassword() );
+				apiconnector = new OpenmlConnector( openmlconfig.getServer(), openmlconfig.getApiKey() );
 			} else { 
-				apiconnector = new OpenmlConnector( openmlconfig.getUsername(), openmlconfig.getPassword() );
+				apiconnector = new OpenmlConnector( openmlconfig.getApiKey() );
 			}
 			
 			ClusteringTaskBasedExperiment exp = new ClusteringTaskBasedExperiment( new Experiment(), apiconnector );
@@ -296,10 +292,6 @@ public class ClusteringTaskBasedExperiment extends Experiment {
 			ClusteringResultListener rl = new ClusteringResultListener(apiconnector, openmlconfig);
 			SplitEvaluator se = new OpenmlClusteringSplitEvaluator();
 			Clusterer sec = null;
-			// TODO: do we need this check?
-			if ( apiconnector.checkCredentials() == false ) {
-				throw new Exception("Please provide correct credentials in a config file (openml.conf)");
-			}
 
 			exp.setMode(false);
 

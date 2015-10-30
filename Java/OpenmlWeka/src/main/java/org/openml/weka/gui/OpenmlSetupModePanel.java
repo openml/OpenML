@@ -40,10 +40,10 @@ public class OpenmlSetupModePanel extends SetupModePanel {
 	 */
 	public OpenmlSetupModePanel() {
 		super();
-		m_simplePanel = new OpenmlSimpleSetupPanel();
+		m_defaultPanel = new OpenmlSimpleSetupPanel();
 		m_advancedPanel = new OpenmlSetupPanel();
 		
-		m_simplePanel.setModePanel(this);
-		add(m_simplePanel, BorderLayout.CENTER);
+		m_defaultPanel.setModePanel(this);
+		add(m_defaultPanel, BorderLayout.CENTER);
 	}
 }

@@ -21,11 +21,7 @@ public class RunOpenmlJob implements CommandlineRunnable {
 	
 	public static void doTask( int ttid, Config config, OpenmlConnector apiconnector ) {
 		try{ 
-			if( apiconnector.checkCredentials( config.getUsername(), config.getPassword() ) == false ) {
-				throw new Exception("Authentication failed. ");
-			}
-			
-			Job j = apiconnector.openmlJobGet( "Weka_" + Version.VERSION, "" + ttid );
+			Job j = apiconnector.jobRequest( "Weka_" + Version.VERSION, "" + ttid );
 			
 			System.err.println( "[" + DateParser.humanReadable.format( new Date() ) + "] Task: " + j.getTask_id() + "; learner: " + j.getLearner() );
 			
@@ -53,14 +49,13 @@ public class RunOpenmlJob implements CommandlineRunnable {
 		Config config = new Config();
 		OpenmlConnector apiconnector;
 		
-		String username = config.getUsername();
-		String password = config.getPassword();
+		String username = config.getApiKey();
 		String server = config.getServer();
 		
 		if( server != null ) {
-			apiconnector = new OpenmlConnector( server, username, password );
+			apiconnector = new OpenmlConnector( server, username );
 		} else { 
-			apiconnector = new OpenmlConnector( username, password );
+			apiconnector = new OpenmlConnector( username );
 		}
 		
 		try {

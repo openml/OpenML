@@ -18,11 +18,11 @@ import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.algorithms.OptionParser;
 import org.openml.apiconnector.algorithms.ParameterType;
 import org.openml.apiconnector.io.OpenmlConnector;
-import org.openml.apiconnector.xml.Implementation;
-import org.openml.apiconnector.xml.Implementation.Parameter;
-import org.openml.apiconnector.xml.ImplementationExists;
+import org.openml.apiconnector.xml.Flow;
+import org.openml.apiconnector.xml.Flow.Parameter;
+import org.openml.apiconnector.xml.FlowExists;
 import org.openml.apiconnector.xml.Run.Parameter_setting;
-import org.openml.apiconnector.xml.UploadImplementation;
+import org.openml.apiconnector.xml.UploadFlow;
 import org.openml.apiconnector.xstream.XstreamXmlMapping;
 
 import weka.classifiers.Classifier;
@@ -56,10 +56,10 @@ public class WekaAlgorithm {
 		return version;
 	}
 	
-	public static int getImplementationId( Implementation implementation, Classifier classifier, OpenmlConnector apiconnector ) throws Exception {
+	public static int getImplementationId( Flow implementation, Classifier classifier, OpenmlConnector apiconnector ) throws Exception {
 		try {
 			// First ask OpenML whether this implementation already exists
-			ImplementationExists result = apiconnector.openmlImplementationExists( implementation.getName(), implementation.getExternal_version() );
+			FlowExists result = apiconnector.flowExists( implementation.getName(), implementation.getExternal_version() );
 			if(result.exists()) return result.getId();
 		} catch( Exception e ) { /* Suppress Exception since it is totally OK. */ }
 		// It does not exist. Create it. 
@@ -70,13 +70,13 @@ public class WekaAlgorithm {
 		File binary = null;
 		try { source = getFile( classifier, "src/", "java" ); } catch(IOException e) {}
 		try { binary = getFile( classifier, "bin/", "class" ); } catch(IOException e) {}
-		UploadImplementation ui = apiconnector.openmlImplementationUpload(implementationFile, binary, source);
+		UploadFlow ui = apiconnector.flowUpload(implementationFile, binary, source);
 		return ui.getId();
 	}
-	public static int getImplementationId( Implementation implementation,  Clusterer clusterer, OpenmlConnector apiconnector ) throws Exception {
+	public static int getImplementationId( Flow implementation,  Clusterer clusterer, OpenmlConnector apiconnector ) throws Exception {
 		try {
 			// First ask OpenML whether this implementation already exists
-			ImplementationExists result = apiconnector.openmlImplementationExists( implementation.getName(), implementation.getExternal_version() );
+			FlowExists result = apiconnector.flowExists( implementation.getName(), implementation.getExternal_version() );
 			if(result.exists()) return result.getId();
 		} catch( Exception e ) { /* Suppress Exception since it is totally OK. */ }
 		// It does not exist. Create it. 
@@ -87,11 +87,11 @@ public class WekaAlgorithm {
 		File binary = null;
 		try { source = getFile( clusterer, "src/", "java" ); } catch(IOException e) {}
 		try { binary = getFile( clusterer, "bin/", "class" ); } catch(IOException e) {}
-		UploadImplementation ui = apiconnector.openmlImplementationUpload(implementationFile, binary, source);
+		UploadFlow ui = apiconnector.flowUpload(implementationFile, binary, source);
 		return ui.getId();
 	}
 
-	public static Implementation create( String classifier_name, String option_str, String[] tags ) throws Exception {
+	public static Flow create( String classifier_name, String option_str, String[] tags ) throws Exception {
 		Object classifier = Class.forName(classifier_name).newInstance();
 		String[] currentOptions = Utils.splitOptions( option_str );
 		String[] defaultOptions = ((OptionHandler) classifier).getClass().newInstance().getOptions();
@@ -108,7 +108,7 @@ public class WekaAlgorithm {
 			description = ((TechnicalInformationHandler) classifier).getTechnicalInformation().toString();
 		}
 		
-		Implementation i = new Implementation( name, dependencies + "_" + version, description, language, dependencies );
+		Flow i = new Flow( name, dependencies + "_" + version, description, language, dependencies );
 		for( String tag : tags ) {
 			i.addTag( tag );
 		}
@@ -131,7 +131,7 @@ public class WekaAlgorithm {
 			boolean isSubimplementation = existingClass(currentValueSplitted[0]);
 			if(isSubimplementation) {
 				ParameterType type;
-				Implementation subimplementation;
+				Flow subimplementation;
 				if( currentValueSplitted.length > 1 ) {
 					// Kernels etc. All parameters of the kernel are on the same currentOptions entry
 					subimplementation = create( 
@@ -167,7 +167,7 @@ public class WekaAlgorithm {
 		return i;
 	}
 	
-	public static ArrayList<Parameter_setting> getParameterSetting( String[] parameters, Implementation implementation ) {
+	public static ArrayList<Parameter_setting> getParameterSetting( String[] parameters, Flow implementation ) {
 		ArrayList<Parameter_setting> settings = new ArrayList<Parameter_setting>();
 		for( Parameter p : implementation.getParameter() ) {
 			try {

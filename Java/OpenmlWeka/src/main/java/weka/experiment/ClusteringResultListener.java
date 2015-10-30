@@ -19,7 +19,7 @@ import org.openml.apiconnector.models.MetricScore;
 import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.settings.Constants;
 import org.openml.apiconnector.xml.DataSetDescription;
-import org.openml.apiconnector.xml.Implementation;
+import org.openml.apiconnector.xml.Flow;
 import org.openml.apiconnector.xml.Run;
 import org.openml.apiconnector.xml.Run.Parameter_setting;
 import org.openml.apiconnector.xml.Task;
@@ -63,7 +63,7 @@ ResultListener {
 	
 	public ClusteringResultListener() {
 		Config config = new Config();
-		apiconnector = new OpenmlConnector( config.getServer(), config.getUsername(), config.getPassword() );
+		apiconnector = new OpenmlConnector( config.getServer(), config.getApiKey() );
 		currentlyCollecting = new HashMap<String, OpenmlExecutedTask>();
 		tasksWithErrors = new ArrayList<String>();
 		all_tags = ArrayUtils.addAll(DEFAULT_TAGS, config.getTags());
@@ -137,7 +137,7 @@ ResultListener {
 		if(oet.humanReadableClassifier != null ) { output_files.put("model_readable", oet.humanReadableClassifier); }
 		
 		try { 
-			UploadRun ur = apiconnector.openmlRunUpload(tmpDescriptionFile, output_files );
+			UploadRun ur = apiconnector.runUpload(tmpDescriptionFile, output_files );
 			Conversion.log( "INFO", "Upload Run", "Run was uploaded with rid " + ur.getRun_id() + 
 					". Obtainable at " + apiconnector.getApiUrl() + "?f=openml.run.get&run_id=" + 
 					ur.getRun_id() );
@@ -156,7 +156,7 @@ ResultListener {
 		tmpDescriptionFile = Conversion.stringToTempFile(
 				xstream.toXML(oet.getRun()), "weka_generated_run", Constants.DATASET_FORMAT);
 		try { 
-			UploadRun ur = apiconnector.openmlRunUpload(tmpDescriptionFile, new HashMap<String, File>() );
+			UploadRun ur = apiconnector.runUpload(tmpDescriptionFile, new HashMap<String, File>() );
 			Conversion.log( "WARNING", "Upload Run", "Run was uploaded with rid " + ur.getRun_id() + 
 					". It includes an error message. Obtainable at " + 
 					apiconnector.getApiUrl() +  "?f=openml.run.get&run_id=" + ur.getRun_id() );
@@ -196,7 +196,7 @@ ResultListener {
 			try {repeats = TaskInformation.getNumberOfRepeats(t);} catch( Exception e ){};
 			try {
 				DataSetDescription dsd = TaskInformation.getSourceData(t).getDataSetDescription( apiconnector );
-				inputData = new Instances( new FileReader( dsd.getDataset( apiconnector.getSessionHash() ) ) );
+				inputData = new Instances( new FileReader( dsd.getDataset( apiconnector.getApiKey() ) ) );
 				inputDataSet = true;
 			} catch( Exception e ) {
 				inputDataSet = false;
@@ -213,10 +213,10 @@ ResultListener {
 			predictions = new Instances("openml_task_" + t.getTask_id() + "_classassignments", attInfo, 0);
 			
 			// TODO: lookup right algorithm in Weka and upload if neccessary 	
-			Implementation find = WekaAlgorithm.create( classifier.getClass().getName(), options, tags );
+			Flow find = WekaAlgorithm.create( classifier.getClass().getName(), options, tags );
 			
 			implementation_id = WekaAlgorithm.getImplementationId( find, classifier, apiconnector );
-			Implementation implementation = apiconnector.openmlImplementationGet( implementation_id );
+			Flow implementation = apiconnector.flowGet( implementation_id );
 			
 			//
 			//implementation_id = 728;

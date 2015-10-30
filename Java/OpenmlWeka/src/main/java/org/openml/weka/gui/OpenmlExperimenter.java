@@ -11,9 +11,8 @@ import javax.swing.JTabbedPane;
 import weka.core.Memory;
 import weka.experiment.Experiment;
 import weka.gui.GUIChooser.GUIChooserMenuPlugin;
-import weka.gui.experiment.ResultsPanel;
+import weka.gui.experiment.AbstractSetupPanel;
 import weka.gui.experiment.RunPanel;
-import weka.gui.experiment.SetupModePanel;
 
 public class OpenmlExperimenter extends JPanel implements GUIChooserMenuPlugin {
 
@@ -21,47 +20,31 @@ public class OpenmlExperimenter extends JPanel implements GUIChooserMenuPlugin {
 	private static final long serialVersionUID = -5751617505738193788L;
 
 	/** The panel for configuring the experiment */
-	protected SetupModePanel m_SetupModePanel;
+	protected AbstractSetupPanel m_SetupModePanel;
 
 	/** The panel for running the experiment */
 	protected RunPanel m_RunPanel;
 
-	/** The panel for analysing experimental results */
-	protected ResultsPanel m_ResultsPanel;
-
 	/** The tabbed pane that controls which sub-pane we are working with */
 	protected JTabbedPane m_TabbedPane = new JTabbedPane();
-
-	/**
-	 * True if the class attribute is the first attribute for all datasets
-	 * involved in this experiment.
-	 */
-	protected boolean m_ClassFirst = false;
 
 	/**
 	 * Creates the experiment environment gui with no initial experiment
 	 */
 	public OpenmlExperimenter(boolean classFirst) {
 
-		m_SetupModePanel = new OpenmlSetupModePanel();
-		m_ResultsPanel = new ResultsPanel();
-		m_RunPanel = new OpenmlRunPanel();
-		m_RunPanel.setResultsPanel(m_ResultsPanel);
-
-		m_ClassFirst = classFirst;
+		m_SetupModePanel = new OpenmlSimpleSetupPanel();
+		m_RunPanel = new RunPanel(m_SetupModePanel.getExperiment());
 
 		m_TabbedPane.addTab("Setup", null, m_SetupModePanel, "Set up the experiment");
 		m_TabbedPane.addTab("Run", null, m_RunPanel, "Run the experiment");
-		m_TabbedPane.addTab("Analyse", null, m_ResultsPanel,
-				"Analyse experiment results");
+		
 		m_TabbedPane.setSelectedIndex(0);
-		m_TabbedPane.setEnabledAt(1, false);
 		m_SetupModePanel.addPropertyChangeListener(new PropertyChangeListener() {
 			@Override
 			public void propertyChange(PropertyChangeEvent e) {
-				// System.err.println("Updated experiment");
 				Experiment exp = m_SetupModePanel.getExperiment();
-				exp.classFirst(m_ClassFirst);
+				exp.classFirst(true);
 				m_RunPanel.setExperiment(exp);
 				// m_ResultsPanel.setExperiment(exp);
 				m_TabbedPane.setEnabledAt(1, true);

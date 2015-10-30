@@ -62,7 +62,7 @@ public class ClusteringResultProducer extends CrossValidationResultProducer {
 		Estimation_procedure ep = TaskInformation.getEstimationProcedure(m_Task);
 
 		DataSetDescription dsd = ds.getDataSetDescription(apiconnector);
-		m_Instances = new Instances( new FileReader( dsd.getDataset( apiconnector.getSessionHash() ) ) );
+		m_Instances = new Instances( new FileReader( dsd.getDataset( apiconnector.getApiKey() ) ) );
 		
 		// remove attributes that may not be used.
 		if( dsd.getIgnore_attribute() != null ) {
