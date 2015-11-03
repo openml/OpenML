@@ -70,12 +70,8 @@ public class FantailConnector {
 		new IncompleteInstanceCount(), new InstanceCount(),
 		new MissingValues(), new NominalAttDistinctValues(),
 		new AttributeEntropy(), 
-
 		new GenericLandmarker( "NaiveBayes", "weka.classifiers.bayes.NaiveBayes", 2, null ),
-		new GenericLandmarker( "NBTree", "weka.classifiers.trees.NBTree", 2, null ),
-		new GenericLandmarker( "DecisionStump", "weka.classifiers.trees.DecisionStump", 2, null ),
-		new GenericLandmarker( "SimpleLogistic", "weka.classifiers.functions.SimpleLogistic", 2, null ),
-		new GenericLandmarker( "JRip", "weka.classifiers.rules.JRip", 2, null )
+		new GenericLandmarker( "DecisionStump", "weka.classifiers.trees.DecisionStump", 2, null )
 	};
 	
 	private static StreamCharacterizer[] streamCharacterizers;
@@ -90,8 +86,6 @@ public class FantailConnector {
 		TreeMap<String, String[]> REPOptions = new TreeMap<String, String[]>();
 		TreeMap<String, String[]> J48Options = new TreeMap<String, String[]>();
 		TreeMap<String, String[]> RandomTreeOptions = new TreeMap<String, String[]>();
-		TreeMap<String, String[]> kNNOptions = new TreeMap<String, String[]>();
-		TreeMap<String, String[]> smoPolyOptions = new TreeMap<String, String[]>();
 		String zeros = "0";
 		for( int i = 1; i <= 3; ++i ) {
 			zeros += "0";
@@ -103,19 +97,11 @@ public class FantailConnector {
 			
 			String[] randomtreeOption = { "-depth", "" + i };
 			RandomTreeOptions.put( "Depth" + i, randomtreeOption );
-					
-			String[] kNNOption = { "-K", "" + i };
-			kNNOptions.put( "_" + i + "N", kNNOption );
-			
-			String[] smoPolyOption = { "-M", "-K", "weka.classifiers.functions.supportVector.PolyKernel -E "+i+".0" };
-			smoPolyOptions.put( "e" + i, smoPolyOption );
 		}
 		
 		batchCharacterizers = ArrayUtils.add( batchCharacterizers, new GenericLandmarker( "REPTree", "weka.classifiers.trees.REPTree", 2, REPOptions ) );
 		batchCharacterizers = ArrayUtils.add( batchCharacterizers, new GenericLandmarker( "J48", "weka.classifiers.trees.J48", 2, J48Options ) );
 		batchCharacterizers = ArrayUtils.add( batchCharacterizers, new GenericLandmarker( "RandomTree", "weka.classifiers.trees.RandomTree", 2, RandomTreeOptions ) );
-		batchCharacterizers = ArrayUtils.add( batchCharacterizers, new GenericLandmarker( "kNN", "weka.classifiers.lazy.IBk", 2, kNNOptions ) );
-		batchCharacterizers = ArrayUtils.add( batchCharacterizers, new GenericLandmarker( "SVM", "weka.classifiers.functions.SMO", 2, smoPolyOptions ) );
 		
 		for( Characterizer characterizer : batchCharacterizers ) {
 			expectedQualities += characterizer.getNumMetaFeatures();
