@@ -104,7 +104,7 @@ public class OpenmlSimpleSetupPanel extends AbstractSetupPanel {
 	 * Manages sending notifications to people when we change the experiment,
 	 * at this stage, only the resultlistener so the resultpanel can update.
 	 **/
-	protected PropertyChangeSupport m_Support = new PropertyChangeSupport(this);
+	protected final PropertyChangeSupport m_Support;
 	
 	protected OpenmlConnector apiconnector;
 	
@@ -134,16 +134,18 @@ public class OpenmlSimpleSetupPanel extends AbstractSetupPanel {
 	 * Creates the setup panel with no initial experiment.
 	 */
 	public OpenmlSimpleSetupPanel() {
+		m_Support = new PropertyChangeSupport(this);
+		
 		try {
 			openmlconfig = new Config();
 			
 			String apiKey = openmlconfig.getApiKey();
 			
 			if( openmlconfig.getServer() != null ) {
-				apiconnector = new OpenmlConnector( openmlconfig.getServer(), apiKey );
+				apiconnector = new OpenmlConnector(openmlconfig.getServer(), apiKey);
 				m_ResultsDestinationPathTField.setText(apiKey);
 			} else { 
-				apiconnector = new OpenmlConnector( apiKey );
+				apiconnector = new OpenmlConnector(apiKey);
 			}
 		} catch( RuntimeException e ) {
 			apiconnector = new OpenmlConnector();
@@ -278,7 +280,6 @@ public class OpenmlSimpleSetupPanel extends AbstractSetupPanel {
 	    m_Exp = exp;
 	    
 		m_Support.firePropertyChange("", null, null);
-		System.err.println("Fired something! Listeners: " + m_Support.getPropertyChangeListeners().length);
 		
 		return true;
 	}
@@ -291,8 +292,12 @@ public class OpenmlSimpleSetupPanel extends AbstractSetupPanel {
 	 */
 	@Override
 	public void addPropertyChangeListener(PropertyChangeListener l) {
+		if (m_Support == null) {
+			// TODO: SHOULD never happen. Happens nonetheless... 
+			return;
+		}
+		
 		m_Support.addPropertyChangeListener(l);
-		System.err.println("Added something to m_Support");
 	}
 
 	/**
