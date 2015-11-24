@@ -135,6 +135,7 @@ public class OpenmlSimpleSetupPanel extends AbstractSetupPanel {
 	 */
 	public OpenmlSimpleSetupPanel() {
 		m_Support = new PropertyChangeSupport(this);
+		m_ResultsDestinationPathTField.setEnabled(false);
 		
 		try {
 			openmlconfig = new Config();

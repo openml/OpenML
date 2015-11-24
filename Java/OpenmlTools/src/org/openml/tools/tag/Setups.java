@@ -14,7 +14,7 @@ public class Setups {
 	
 	public static void main( String[] args ) throws Exception {
 		Config c = new Config();
-		OpenmlConnector openmlConnector = new OpenmlConnector( c.getServer(), c.getUsername(), c.getPassword() );
+		OpenmlConnector openmlConnector = new OpenmlConnector( c.getServer(), c.getApiKey() );
 		
 		
 		String arraystring = Arrays.toString( setups );

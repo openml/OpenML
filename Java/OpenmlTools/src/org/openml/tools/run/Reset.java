@@ -38,7 +38,7 @@ public class Reset {
 	
 	private static void reset( String sql ) throws Exception {
 		Config c = new Config();
-		OpenmlConnector connector = new OpenmlConnector( c.getServer(), c.getUsername(), c.getPassword() );
+		OpenmlConnector connector = new OpenmlConnector( c.getServer(), c.getApiKey() );
 		
 		int[] ids = QueryUtils.getIdsFromDatabase(connector, sql);
 		

@@ -25,19 +25,17 @@ public class TransferDatasets {
 	public TransferDatasets() throws Exception {
 		Config config = new Config();
 		if( config.getServer() != null ) {
-			apiTo = new OpenmlConnector( config.getServer() );
+			apiTo = new OpenmlConnector( config.getServer(), config.getApiKey() );
 		} else { 
-			apiTo = new OpenmlConnector();
+			apiTo = new OpenmlConnector( config.getApiKey() );
 		}
 		apiFrom = new OpenmlConnector( FROM );
 		XStream xstream = XstreamXmlMapping.getInstance();
-		if( apiTo.setCredentials(config.getUsername(), config.getPassword() ) == false ) {
-			throw new Exception("Username/password incorrect");
-		}
+		
 		
 		for( int i = 1; i <= 62; ++i ) {
 			try {
-				DataSetDescription dsd = apiFrom.dataDescription( i );
+				DataSetDescription dsd = apiFrom.dataGet( i );
 				File dataset = dsd.getDataset( null );
 				dsd.unsetUrl();
 				dsd.unsetId();

@@ -48,7 +48,7 @@ public class GenerateBayesnetDatasets {
 	
 	public GenerateBayesnetDatasets() throws Exception {
 		Config config = new Config();
-		this.apiconnector = new OpenmlConnector( config.getServer(), config.getUsername(), config.getPassword() );
+		this.apiconnector = new OpenmlConnector( config.getApiKey() );
 		
 		int eligableDatasets = 0;
 		List<Integer> errors = new ArrayList<Integer>();
@@ -56,9 +56,9 @@ public class GenerateBayesnetDatasets {
 		for( int iDatasets = 10; iDatasets <= 10; iDatasets++ ) {
 			try {
 				Conversion.log("INFO", "Download Dataset", "Downloading dataset " + iDatasets);
-				DataSetDescription dsd = apiconnector.dataDescription( iDatasets );
+				DataSetDescription dsd = apiconnector.dataGet( iDatasets );
 				
-				Instances dataset = new Instances( new FileReader( dsd.getDataset( apiconnector.getSessionHash() ) ) );
+				Instances dataset = new Instances( new FileReader( dsd.getDataset( apiconnector.getApiKey() ) ) );
 				if( dataset.numAttributes() < MIN_ATTRIBUTES || dataset.numAttributes() > MAX_ATTRIBUTES ) {
 					Conversion.log("INFO", "Dataset evaluation", "Dataset " + iDatasets + " " + dsd.getName() + " not used. Got " + dataset.numAttributes() + " attributes. (Interested in Range ["+MIN_ATTRIBUTES+","+MAX_ATTRIBUTES+"])" );
 					continue;
@@ -117,7 +117,7 @@ public class GenerateBayesnetDatasets {
 		taskArgs[3] = "-m";
 		taskArgs[4] = "" + numInstances;
 		taskArgs[5] = "-s";
-		taskArgs[6] = "(generators.BayesianNetworkGenerator -f (" + dsd.getDataset( apiconnector.getSessionHash() ).getAbsolutePath() + ") -a (" + searchAlgorithm + ") -p (" + outputFilename + ".xml) " + numericString + " -c " + driftFrequency + " -I " + driftImpact + ")";
+		taskArgs[6] = "(generators.BayesianNetworkGenerator -f (" + dsd.getDataset( apiconnector.getApiKey() ).getAbsolutePath() + ") -a (" + searchAlgorithm + ") -p (" + outputFilename + ".xml) " + numericString + " -c " + driftFrequency + " -I " + driftImpact + ")";
 		
 		Conversion.log("INFO", "Build dataset", "CMD: " + StringUtils.join( taskArgs, ' ' ) );
 		DoTask.main( taskArgs );
@@ -156,6 +156,6 @@ public class GenerateBayesnetDatasets {
 		File outputDataset = Conversion.stringToTempFile( outputDatasetString, datasetname, Constants.DATASET_FORMAT );
 		UploadDataSet ud = apiconnector.dataUpload( outputDataset, generatedDataset );
 		
-		System.out.println( xstream.toXML( apiconnector.dataDescription( ud.getId() ) ) );
+		System.out.println( xstream.toXML( apiconnector.dataGet( ud.getId() ) ) );
 	}
 }

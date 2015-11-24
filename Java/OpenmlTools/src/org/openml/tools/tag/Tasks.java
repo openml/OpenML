@@ -13,7 +13,7 @@ public class Tasks {
 	public static void main( String[] args ) throws Exception {
 
 		Config c = new Config();
-		openmlConnector = new OpenmlConnector( c.getServer(), c.getUsername(), c.getPassword() );
+		openmlConnector = new OpenmlConnector( c.getServer(), c.getApiKey() );
 		bng_tasks();
 	}
 	

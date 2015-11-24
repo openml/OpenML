@@ -127,7 +127,7 @@ public class OpenmlTaskReader extends AbstractOptionHandler implements InstanceS
             DataSetDescription dsd = TaskInformation.getSourceData(this.openmlTask).getDataSetDescription( apiconnector );
             String classname = TaskInformation.getSourceData(this.openmlTask).getTarget_feature();
             
-            InputStream fileStream = new FileInputStream( dsd.getDataset( apiconnector.getSessionHash() ) );
+            InputStream fileStream = new FileInputStream( dsd.getDataset( apiconnector.getApiKey() ) );
             this.fileProgressMonitor = new InputStreamProgressMonitor(
                     fileStream);
             this.fileReader = new BufferedReader(new InputStreamReader(

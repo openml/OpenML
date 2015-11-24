@@ -30,12 +30,10 @@ public class UploadDataset {
 	public UploadDataset( String directory ) throws Exception {
 		Config config = new Config();
 		if( config.getServer() != null ) {
-			apiconnector = new OpenmlConnector( config.getServer() );
+			apiconnector = new OpenmlConnector( config.getServer(), config.getApiKey() );
 		} else { 
-			apiconnector = new OpenmlConnector();
+			apiconnector = new OpenmlConnector( config.getApiKey() );
 		}
-		
-		apiconnector.setCredentials( config.getUsername(), config.getPassword() );
 		
 		File dir = new File( directory );
 		
