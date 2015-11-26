@@ -77,11 +77,11 @@ public class EstimationProcedure {
 		return em;
 	}
 	
-	public int sampleSize( int number, int trainingsetSize ) {
+	public static int sampleSize( int number, int trainingsetSize ) {
 		return (int) Math.min(trainingsetSize, Math.round( Math.pow( 2, 6 + ( number * 0.5 ) ) ) );
 	}
 	
-	public int getNumberOfSamples( int trainingsetSize ) {
+	public static int getNumberOfSamples( int trainingsetSize ) {
 		int i = 0;
 		for( ; sampleSize( i, trainingsetSize ) < trainingsetSize; ++i ) { }
 		return i + 1; // + 1 for considering the "full" training set

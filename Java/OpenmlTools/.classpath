@@ -9,7 +9,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/apiconnector"/>
 	<classpathentry kind="lib" path="lib/xstream-1.4.7.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/OpenmlWeka"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/OpenmlMoa"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/OpenmlWebapplication"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

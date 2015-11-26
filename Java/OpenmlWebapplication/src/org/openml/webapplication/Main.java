@@ -182,8 +182,11 @@ public class Main {
 					} else {
 						System.out.println( Output.styleToJsonError("Missing arguments for function 'all_wrong'. Need r (run ids, comma separated) and t (task_id)") );
 					}
+				} else if (function.equals("db_consistency")) {
+					DatabaseConsistency db_consistency = new DatabaseConsistency(apiconnector);
 					
-				}else {
+					System.out.println( db_consistency.all_checks() );
+				} else {
 					System.out.println( Output.styleToJsonError("call to unknown function: " + function) );
 				}
 			} else {
