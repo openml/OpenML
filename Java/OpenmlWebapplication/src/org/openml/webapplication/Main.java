@@ -97,7 +97,7 @@ public class Main {
 				} else if( function.equals("generate_folds") ) {
 					
 					// prepare ARFF output consisting of datasplits
-					if( cli.hasOption("-d") && cli.hasOption("e") && cli.hasOption("c") && cli.hasOption("r") ) {
+					if( cli.hasOption("-d") && cli.hasOption("e") && cli.hasOption("c") ) {
 						
 						List<List<List<Integer>>> testset = new ArrayList<List<List<Integer>>>();
 						if( cli.hasOption("-test") ) {
@@ -130,7 +130,6 @@ public class Main {
 								cli.getOptionValue("d"), 
 								cli.getOptionValue("e"), 
 								cli.getOptionValue("c"), 
-								cli.getOptionValue("r"), 
 								testset, 
 								FOLD_GENERATION_SEED );
 						if(cli.hasOption("o") == true) {

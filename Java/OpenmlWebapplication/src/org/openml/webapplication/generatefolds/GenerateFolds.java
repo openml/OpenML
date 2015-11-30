@@ -55,7 +55,7 @@ public class GenerateFolds {
 	private final ArffMapping am;
 	private final Random rand;
 	
-	public GenerateFolds( OpenmlConnector ac, String api_key, String datasetPath, String estimationProcedure, String targetFeature, String rowid_attribute, List<List<List<Integer>>> testset, int random_seed ) throws Exception {
+	public GenerateFolds( OpenmlConnector ac, String api_key, String datasetPath, String estimationProcedure, String targetFeature, List<List<List<Integer>>> testset, int random_seed ) throws Exception {
 		
 		rand = new Random(random_seed);
 		String totalPath = datasetPath + "?api_key=" + api_key;
@@ -69,10 +69,9 @@ public class GenerateFolds {
 		splits_name = Input.filename( datasetPath ) + "_splits";
 		splits_size = evaluationMethod.getSplitsSize(dataset);
 		
-		if(rowid_attribute.equals("")) {
-			rowid_attribute = "rowid";
-			addRowId(dataset,rowid_attribute);
-		}
+		// we are not allowed to use official row_id, even if it exist,
+		// since there is no guarantee that this runs from 0 -> n - 1
+		addRowId(dataset,"rowid");
 		
 		splits = generateInstances(splits_name, testset);
 	}
@@ -171,8 +170,8 @@ public class GenerateFolds {
 				Instances train = dataset.trainCV(evaluationMethod.getFolds(), f);
 				Instances test = dataset.testCV(evaluationMethod.getFolds(), f);
 				
-				for( int s = 0; s < evaluationMethod.getNumberOfSamples( train.numInstances() ); ++s ) {
-					for( int i = 0; i < evaluationMethod.sampleSize( s, train.numInstances() ); ++i ) {
+				for( int s = 0; s < EstimationProcedure.getNumberOfSamples( train.numInstances() ); ++s ) {
+					for( int i = 0; i < EstimationProcedure.sampleSize( s, train.numInstances() ); ++i ) {
 						int rowid = (int) train.instance(i).value(0);
 						splits.add(am.createInstance(true,rowid,r,f,s));
 					}
