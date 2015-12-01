@@ -9,7 +9,7 @@ import org.openml.apiconnector.xml.RunDelete;
 public class Delete {
 
 	public static void main( String[] args ) throws Exception {
-		deleteWithRid(51002);
+		delete("SELECT r.rid, d.name FROM run r, task_inputs t, dataset d WHERE r.task_id = t.task_id AND t.input = 'source_data' AND t.value = d.did AND d.row_id_attribute IS NOT NULL AND d.row_id_attribute <> '' AND d.name != 'creditcard' ORDER BY r.rid DESC");
 	}
 	
 	private static void deleteWithRid(Integer rid) throws Exception {
@@ -39,7 +39,7 @@ public class Delete {
 	private static void delete( String sql ) throws Exception {
 		Config c = new Config();
 		OpenmlConnector connector = new OpenmlConnector( c.getServer(), c.getApiKey() );
-		
+		connector.setVerboseLevel(1);
 		int[] ids = QueryUtils.getIdsFromDatabase(connector, sql);
 		
 		Conversion.log( "OK", "Init", "Total runs to be deleted: " + ids.length );

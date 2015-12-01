@@ -144,7 +144,7 @@ public class OpenmlSimpleSetupPanel extends AbstractSetupPanel {
 			
 			if( openmlconfig.getServer() != null ) {
 				apiconnector = new OpenmlConnector(openmlconfig.getServer(), apiKey);
-				m_ResultsDestinationPathTField.setText(apiKey);
+				m_ResultsDestinationPathTField.setText(apiKeyToStarred(apiKey));
 			} else { 
 				apiconnector = new OpenmlConnector(apiKey);
 			}
@@ -344,6 +344,10 @@ public class OpenmlSimpleSetupPanel extends AbstractSetupPanel {
 		}
 		
 		apiconnector.setApiKey(ad.getApiKey());
-		m_ResultsDestinationPathTField.setText(ad.getApiKey());
+		m_ResultsDestinationPathTField.setText(apiKeyToStarred(ad.getApiKey()));
+	}
+	
+	private static String apiKeyToStarred(String apiKey) {
+		return "********************" + apiKey.substring(apiKey.length() - 4);
 	}
 }
