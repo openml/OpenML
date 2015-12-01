@@ -68,7 +68,7 @@ public class kNN extends AbstractClassifier {
 	@Override
 	public void setModelContext(InstancesHeader context) {
 		try {
-			this.window = new Instances(new StringReader(context.toString()),0);
+			this.window = new Instances(new StringReader(context.toString()));
 			this.window.setClassIndex(context.classIndex());
 		} catch(Exception e) {
 			System.err.println("Error: no Model Context available.");

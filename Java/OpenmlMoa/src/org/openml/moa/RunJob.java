@@ -23,8 +23,10 @@ public class RunJob {
 			apiconnector = new OpenmlConnector( c.getApiKey() );
 		}
 		
-		if( c.get("cache_allowed").equals("false") ) {
-			Settings.CACHE_ALLOWED = false;
+		if( c.get("cache_allowed") != null) {
+			if (c.get("cache_allowed").equals("false") ) {
+				Settings.CACHE_ALLOWED = false;
+			}
 		}
 		
 		String strN = Utils.getOption('N', args);
@@ -40,7 +42,7 @@ public class RunJob {
 	
 	public static void doTask(int ttid) {
 		try {
-			Job j = apiconnector.jobRequest( "Moa_2014.03", "" + ttid );
+			Job j = apiconnector.jobRequest( "Moa_2014.11", "" + ttid );
 			
 			System.err.println( "task: " + j.getTask_id() + "; learner: " + j.getLearner() );
 			
