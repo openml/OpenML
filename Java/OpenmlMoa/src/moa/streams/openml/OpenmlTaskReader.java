@@ -132,7 +132,7 @@ public class OpenmlTaskReader extends AbstractOptionHandler implements InstanceS
                     fileStream);
             this.fileReader = new BufferedReader(new InputStreamReader(
                     this.fileProgressMonitor));
-            this.instances = new Instances(this.fileReader);
+            this.instances = new Instances(this.fileReader, 1);
             this.instances.setClass( instances.attribute(classname) );
             
             this.numInstancesRead = 0;

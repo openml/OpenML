@@ -25,7 +25,6 @@ import weka.classifiers.Classifier;
 import weka.core.Option;
 import weka.core.OptionHandler;
 import weka.core.RevisionHandler;
-import weka.core.TechnicalInformationHandler;
 import weka.core.Utils;
 import weka.core.Version;
 
@@ -79,9 +78,9 @@ public class WekaAlgorithm {
 		String language = "English";
 		String dependencies = "Weka_" + Version.VERSION;
 		
-		if( classifier instanceof TechnicalInformationHandler ) {
-			description = ((TechnicalInformationHandler) classifier).getTechnicalInformation().toString();
-		}
+//		if( classifier instanceof TechnicalInformationHandler ) {
+//			description = ((TechnicalInformationHandler) classifier).getTechnicalInformation().toString();
+//		}
 		
 		Flow i = new Flow( name, dependencies + "_" + version, description, language, dependencies );
 		

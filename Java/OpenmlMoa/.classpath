@@ -4,8 +4,7 @@
 	<classpathentry kind="lib" path="lib/commons-lang3-3.1.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/xstream-1.4.7.jar"/>
-	<classpathentry kind="lib" path="lib/apiconnector-1.0.8-fat.jar"/>
 	<classpathentry kind="lib" path="lib/moa.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/weka-dev"/>
+	<classpathentry kind="lib" path="lib/apiconnector-1.0.8-fat.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

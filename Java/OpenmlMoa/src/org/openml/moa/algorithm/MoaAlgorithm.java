@@ -16,6 +16,7 @@ import org.openml.apiconnector.xml.Run;
 import org.openml.apiconnector.xml.Run.Parameter_setting;
 import org.openml.apiconnector.xml.UploadFlow;
 import org.openml.apiconnector.xstream.XstreamXmlMapping;
+import org.openml.moa.settings.MoaSettings;
 
 import weka.core.Utils;
 import moa.classifiers.Classifier;
@@ -62,6 +63,7 @@ public class MoaAlgorithm {
 					try {
 						Classifier subclassifier = (Classifier) ClassOption.cliStringToObject( o.getValueAsCLIString(), o.getRequiredType(), null );
 						Flow subimplementation = create( subclassifier );
+						
 						result.addAll( getOptions( i.getComponentByName( subimplementation.getName() ), subclassifier.getOptions().getOptionArray() ) );
 						result.add( new Parameter_setting( i.getId(), option.getCLIChar() + "", subclassifier.getClass().getName() ) );
 					} catch (Exception e) {
@@ -96,7 +98,7 @@ public class MoaAlgorithm {
 		String version = "1.0"; //TODO: MOA does not support retrieval of version?
 		String description = "Moa implementation of " + classifierName;
 		String language = "English";
-		String dependencies = "Moa_2014.03"; // TODO: No version information?
+		String dependencies = MoaSettings.MOA_VERSION; // TODO: No version information?
 		
 		Flow i = new Flow( name, dependencies + "_" + version, description, language, dependencies );
 		for( Option option : classifier.getOptions().getOptionArray() ) {

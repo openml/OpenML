@@ -4,6 +4,7 @@ import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.settings.Settings;
 import org.openml.apiconnector.xml.Job;
+import org.openml.moa.settings.MoaSettings;
 
 import weka.core.Utils;
 import moa.DoTask;
@@ -42,7 +43,7 @@ public class RunJob {
 	
 	public static void doTask(int ttid) {
 		try {
-			Job j = apiconnector.jobRequest( "Moa_2014.11", "" + ttid );
+			Job j = apiconnector.jobRequest( MoaSettings.MOA_VERSION, "" + ttid );
 			
 			System.err.println( "task: " + j.getTask_id() + "; learner: " + j.getLearner() );
 			
