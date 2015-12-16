@@ -30,7 +30,6 @@ import com.thoughtworks.xstream.XStream;
 public class EvaluateRun {
 	private final XStream xstream;
 	private final OpenmlConnector apiconnector;
-	private static final int INTERVAL_SIZE = 1000;
 	
 	public EvaluateRun( OpenmlConnector ac ) throws Exception {
 		this( ac, null, false );
@@ -41,12 +40,12 @@ public class EvaluateRun {
 		xstream = XstreamXmlMapping.getInstance();
 		
 		if( run_id != null ) {
-			evaluate( run_id, INTERVAL_SIZE );
+			evaluate( run_id );
 		} else {
 			run_id = getRunId(random);
 			while( run_id != null ) {
 				Conversion.log("INFO","Evaluate Run","Downloading task " + run_id );
-				evaluate( run_id, INTERVAL_SIZE );
+				evaluate( run_id );
 				run_id = getRunId(random);
 			}
 			Conversion.log( "OK", "Process Run", "No more runs to perform. " );
@@ -75,7 +74,7 @@ public class EvaluateRun {
 		}
 	}
 	
-	public void evaluate( int run_id, int stream_interval_size ) throws Exception {
+	public void evaluate( int run_id) throws Exception {
 		Conversion.log( "OK", "Process Run", "Start processing run: " + run_id );
 		final Map<String,Integer> file_ids = new HashMap<String, Integer>();
 		final Task task;
@@ -121,8 +120,7 @@ public class EvaluateRun {
 				predictionEvaluator = new EvaluateStreamPredictions(
 					apiconnector.getOpenmlFileUrl(dataset.getFile_id(), dataset.getName()), 
 					apiconnector.getOpenmlFileUrl( file_ids.get( "predictions" ), filename), 
-					source_data.getTarget_feature(),
-					stream_interval_size );
+					source_data.getTarget_feature());
 			} else if( task.getTask_type().equals("Survival Analysis") ) {
 				predictionEvaluator = new EvaluateSurvivalAnalysisPredictions( 
 						task, 
@@ -190,6 +188,7 @@ public class EvaluateRun {
 		Conversion.log( "OK", "Process Run", "Start uploading results ... " );
 		try {
 			String runEvaluation = xstream.toXML( runevaluation );
+			
 			File evaluationFile = Conversion.stringToTempFile( runEvaluation, "run_" + run_id + "evaluations", "xml" );
 			
 			RunEvaluate re = apiconnector.runEvaluate( evaluationFile );
