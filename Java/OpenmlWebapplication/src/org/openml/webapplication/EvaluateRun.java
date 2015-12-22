@@ -110,6 +110,15 @@ public class EvaluateRun {
 				return;
 			}
 			
+			if( file_ids.get( "predictions" ) == null ) { // TODO: this is currently true, but later on we might have tasks that do not require evaluations!
+				runevaluation.setError("Run predictions file not present. ");
+				File evaluationFile = Conversion.stringToTempFile( xstream.toXML( runevaluation ), "run_" + run_id + "evaluations", "xml" );
+				
+				RunEvaluate re = apiconnector.runEvaluate( evaluationFile );
+				Conversion.log( "Error", "Process Run", "Run processed, but with error: " + re.getRun_id() );
+				return;
+			}
+			
 			String description = OpenmlConnector.getStringFromUrl( apiconnector.getOpenmlFileUrl( file_ids.get( "description" ), "Run_" + run_id + "_description.xml").toString() );
 			Run run_description = (Run) xstream.fromXML( description );
 			
@@ -141,8 +150,8 @@ public class EvaluateRun {
 				Conversion.log( "OK", "Process Run", "Start consistency check with user defined measures. (x " + run_description.getOutputEvaluation().length + ")" );
 				
 				// TODO: This can be done so much faster ... 
-				String errorMessage = "";
-				boolean errorFound = false;
+				String warningMessage = "";
+				boolean warningFound = false;
 				
 				for( EvaluationScore recorded : run_description.getOutputEvaluation() ) {
 					boolean foundSame = false;
@@ -160,8 +169,8 @@ public class EvaluateRun {
 										offByStr = " (off by " + diff + ")";
 									} catch( NumberFormatException nfe ) { }
 									
-									errorMessage += "Inconsistent Evaluation score: " + recorded + offByStr;
-									errorFound = true;
+									warningMessage += "Inconsistent Evaluation score: " + recorded + offByStr;
+									warningFound = true;
 								} 
 							}
 						}
@@ -175,7 +184,7 @@ public class EvaluateRun {
 						}
 					}
 				}
-				if( errorFound ) runevaluation.setError( errorMessage );
+				if( warningFound ) runevaluation.setWarning( warningMessage );
 			} else {
 				Conversion.log( "OK", "Process Run", "No local evaluation measures to compare to. " );
 			}
