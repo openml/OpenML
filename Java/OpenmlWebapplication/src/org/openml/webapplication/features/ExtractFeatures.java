@@ -107,8 +107,8 @@ public class ExtractFeatures {
 			Double standardDeviation = null;
 			
 			String classDistribution = classValueDistribution.get(i);
-			
-			if( allInstancesInRAM ) {
+
+			if( allInstancesInRAM ) {					
 				AttributeStats as = dataset.attributeStats( i );
 				
 				numberOfDistinctValues = as.distinctCount;
@@ -127,7 +127,13 @@ public class ExtractFeatures {
 				maximumValue = attributeStats[i].getMaximum();
 				minimumValue = attributeStats[i].getMinimum();
 				meanValue = attributeStats[i].getMean();
-				standardDeviation = attributeStats[i].getStandardDeviation();
+				standardDeviation = 0.0;
+				try{
+					standardDeviation = attributeStats[i].getStandardDeviation();
+				}
+				catch(Exception e){
+					System.out.println("WARNING: Could not compute standard deviation of feature "+ att.name() +": "+e.getMessage());
+				}
 			}
 			
 			if( att.type() == 0 )
