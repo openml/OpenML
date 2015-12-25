@@ -280,6 +280,7 @@ public class ExtractFeatures {
 		resultQualities.add( new Quality("NumberOfInstancesWithMissingValues", ""+NumberOfInstancesWithMissingValues ) );
 		resultQualities.add( new Quality("NumberOfMissingValues", ""+NumberOfMissingValues ) );
 		resultQualities.add( new Quality("NumberOfNumericFeatures", ""+NumberOfNumericFeatures ) );
+		resultQualities.add( new Quality("NumberOfSymbolicFeatures", ""+(dataset.numAttributes() - NumberOfNumericFeatures )));
 		if( nominalTarget ) {
 			resultQualities.add( new Quality("NumberOfClasses", ""+NumberOfClasses) );
 			resultQualities.add( new Quality("DefaultAccuracy", ""+((MajorityClassSize*1.0) / (NumberOfInstances*1.0))) );
