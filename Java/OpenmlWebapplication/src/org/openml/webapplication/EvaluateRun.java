@@ -55,8 +55,8 @@ public class EvaluateRun {
 	public Integer getRunId(boolean random) throws Exception {
 		String sql = 
 			"SELECT `rid`,`start_time`,`processed`,`error` " + 
-			"FROM `run` WHERE `processed` IS NULL AND `error` IS NULL " + 
-			"ORDER BY `start_time` ASC"; 
+			"FROM `run` WHERE `processed` IS NULL AND `error` IS NULL AND error_message IS NULL " + 
+			"ORDER BY `start_time` ASC LIMIT 0, 100; "; 
 		
 		JSONArray runJson = (JSONArray) apiconnector.freeQuery( sql ).get("data");
 		

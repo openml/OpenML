@@ -234,6 +234,7 @@ public class WekaClusteringAlgorithm {
 		oos.writeObject(cls);
 		oos.flush();
 		oos.close();
+		file.deleteOnExit();
 		return file;
 	}
 }

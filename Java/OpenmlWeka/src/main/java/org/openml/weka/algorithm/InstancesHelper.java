@@ -28,13 +28,4 @@ public class InstancesHelper {
 		throw new Exception("Attribute " + attribute + " non-existant on dataset. ");
 	}
 	
-	public static File instancesToTempFile( Instances dataset, String filename, String format ) throws IOException {
-		File file = File.createTempFile(filename, '.' + format );
-		BufferedWriter br = new BufferedWriter(new FileWriter(file));
-		br.write(dataset.toString());
-		br.close();
-		file.deleteOnExit();
-		return file;
-	}
-	
 }

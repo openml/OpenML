@@ -268,6 +268,7 @@ public class WekaAlgorithm {
 		oos.writeObject(cls);
 		oos.flush();
 		oos.close();
+		file.deleteOnExit();
 		return file;
 	}
 	
