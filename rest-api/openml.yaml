@@ -162,6 +162,66 @@ paths:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Error'
+  /data/{id}/tag:
+    post:
+      summary: Tag a dataset
+      description: Tags a dataset. 
+      parameters:
+        - name: id
+          in: query
+          description: Id of the dataset.
+          required: true
+          type: number
+          format: integer
+        - name: tag
+          in: query
+          description: Tag name
+          required: true
+          type: string
+        - name: api_key
+          in: query
+          description: Api key to authenticate the user
+          required: true
+          type: string
+      tags:
+        - data
+      responses:
+        '200':
+          description: A the features of the dataset
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /data/{id}/untag:
+    post:
+      summary: Untags a dataset
+      description: Untags a dataset. 
+      parameters:
+        - name: id
+          in: query
+          description: Id of the dataset.
+          required: true
+          type: number
+          format: integer
+        - name: tag
+          in: post
+          description: Tag name
+          required: true
+          type: string
+        - name: api_key
+          in: query
+          description: Api key to authenticate the user
+          required: true
+          type: string
+      tags:
+        - data
+      responses:
+        '200':
+          description: A the features of the dataset
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
 definitions:
   Data:
     type: object
