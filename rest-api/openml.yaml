@@ -1,0 +1,119 @@
+swagger: '2.0'
+info:
+  title: OpenML API
+  description: Collaborave Machine Learning
+  version: 1.0.0
+host: api_new.openml.org
+schemes:
+  - http
+basePath: /v1/json
+produces:
+  - application/json
+paths:
+  /data/list:
+    get:
+      summary: Lists all datasets
+      description: | 
+        Returns an array with all datasets in the system.
+      parameters:
+        - name: api_key
+          in: query
+          description: Api key to authenticate the user
+          required: true
+          type: string
+      tags:
+        - data
+      responses:
+        '200':
+          description: A dataset description
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /data/{id}:
+    get:
+      summary: Dataset description
+      description: |
+        Returns information about a dataset. The information includes the name, information about the creator, URL to download it and more. 
+      parameters:
+        - name: id
+          in: path
+          description: Id of the dataset.
+          required: true
+          type: number
+          format: integer
+        - name: api_key
+          in: query
+          description: Api key to authenticate the user
+          required: true
+          type: string
+      tags:
+        - data
+      responses:
+        '200':
+          description: A dataset description
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      summary: Deletes a dataset
+      description: |
+        Upon success, it returns the ID of the deleted dataset. 
+      parameters:
+        - name: id
+          in: path
+          description: Id of the dataset.
+          required: true
+          type: number
+          format: integer
+        - name: api_key
+          in: query
+          description: Api key to authenticate the user
+          required: true
+          type: string
+      tags:
+        - data
+      responses:
+        '200':
+          description: Id of the deleted dataset
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+definitions:
+  Data:
+    type: object
+    properties:
+      id:
+        type: integer
+        description: TODO
+      name:
+        type: string
+        description: TODO
+      version:
+        type: string
+        description: TODO
+      description:
+        type: string
+        description: TODO
+      format:
+        type: string
+        description: TODO
+      upload_date:
+        type: string
+        description: TODO
+      upload_date:
+        type: string
+        description: TODO
+      
+  Error:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+      additional_message:
+        type: string
