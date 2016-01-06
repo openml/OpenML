@@ -56,10 +56,39 @@ paths:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Error'
+    post:
+      summary: Uploads a dataset
+      description: |
+        Uploads a dataset. Upon success, it returns the data id. 
+      parameters:
+        - name: description
+          in: post
+          description: An XML file describing the dataset
+          required: true
+          type: file
+        - name: dataset
+          in: post
+          description: The actual dataset, being an ARFF file. 
+          required: true
+          type: file
+        - name: api_key
+          in: query
+          description: Api key to authenticate the user
+          required: true
+          type: string
+      tags:
+        - data
+      responses:
+        '200':
+          description: Id of the uploaded dataset
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
     delete:
       summary: Deletes a dataset
       description: |
-        Upon success, it returns the ID of the deleted dataset. 
+        Deletes a dataset. Upon success, it returns the ID of the deleted dataset. 
       parameters:
         - name: id
           in: path
@@ -77,6 +106,58 @@ paths:
       responses:
         '200':
           description: Id of the deleted dataset
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /data/{id}/features:
+    get:
+      summary: Features, data types
+      description: |
+        Returns the features of a dataset. 
+      parameters:
+        - name: id
+          in: path
+          description: Id of the dataset.
+          required: true
+          type: number
+          format: integer
+        - name: api_key
+          in: query
+          description: Api key to authenticate the user
+          required: true
+          type: string
+      tags:
+        - data
+      responses:
+        '200':
+          description: A the features of the dataset
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /data/{id}/qualities:
+    get:
+      summary: Data qualitues, meta-features
+      description: |
+        Returns the qualities of a dataset. 
+      parameters:
+        - name: id
+          in: path
+          description: Id of the dataset.
+          required: true
+          type: number
+          format: integer
+        - name: api_key
+          in: query
+          description: Api key to authenticate the user
+          required: true
+          type: string
+      tags:
+        - data
+      responses:
+        '200':
+          description: A the qualities of the dataset
         default:
           description: Unexpected error
           schema:
