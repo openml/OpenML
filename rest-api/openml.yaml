@@ -1,7 +1,7 @@
 swagger: '2.0'
 info:
   title: OpenML API
-  description: Collaborave Machine Learning
+  description: Collaborative Machine Learning
   version: 1.0.0
 host: api_new.openml.org
 schemes:
@@ -13,7 +13,7 @@ paths:
   /data/list:
     get:
       summary: Lists all datasets
-      description: | 
+      description: |
         Returns an array with all datasets in the system.
       parameters:
         - name: api_key
@@ -34,7 +34,7 @@ paths:
     get:
       summary: Dataset description
       description: |
-        Returns information about a dataset. The information includes the name, information about the creator, URL to download it and more. 
+        Returns information about a dataset. The information includes the name, information about the creator, URL to download it and more.
       parameters:
         - name: id
           in: path
@@ -56,40 +56,10 @@ paths:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Error'
-    post:
-      summary: Uploads a dataset
-      consumes: multipart/form-data
-      description: |
-        Uploads a dataset. Upon success, it returns the data id. 
-      parameters:
-        - name: description
-          in: post
-          description: An XML file describing the dataset
-          required: true
-          type: file
-        - name: dataset
-          in: post
-          description: The actual dataset, being an ARFF file. 
-          required: true
-          type: file
-        - name: api_key
-          in: query
-          description: Api key to authenticate the user
-          required: true
-          type: string
-      tags:
-        - data
-      responses:
-        '200':
-          description: Id of the uploaded dataset
-        default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
     delete:
       summary: Deletes a dataset
       description: |
-        Deletes a dataset. Upon success, it returns the ID of the deleted dataset. 
+        Deletes a dataset. Upon success, it returns the ID of the deleted dataset.
       parameters:
         - name: id
           in: path
@@ -111,11 +81,42 @@ paths:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Error'
+  /data:
+    post:
+      summary: Uploads a dataset
+      consumes: [multipart/form-data]
+      description: |
+        Uploads a dataset. Upon success, it returns the data id.
+      parameters:
+        - name: description
+          in: formData
+          description: An XML file describing the dataset
+          required: true
+          type: file
+        - name: dataset
+          in: formData
+          description: The actual dataset, being an ARFF file.
+          required: true
+          type: file
+        - name: api_key
+          in: query
+          description: Api key to authenticate the user
+          required: true
+          type: string
+      tags:
+        - data
+      responses:
+        '200':
+          description: Id of the uploaded dataset
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
   /data/{id}/features:
     get:
       summary: Features, data types
       description: |
-        Returns the features of a dataset. 
+        Returns the features of a dataset.
       parameters:
         - name: id
           in: path
@@ -141,7 +142,7 @@ paths:
     get:
       summary: Data qualitues, meta-features
       description: |
-        Returns the qualities of a dataset. 
+        Returns the qualities of a dataset.
       parameters:
         - name: id
           in: path
@@ -166,8 +167,8 @@ paths:
   /data/tag:
     post:
       summary: Tag a dataset
-      description: Tags a dataset. 
-      consumes: application/x-www-form-urlencoded
+      description: Tags a dataset.
+      consumes: [application/x-www-form-urlencoded]
       parameters:
         - name: data_id
           in: formData
@@ -197,8 +198,8 @@ paths:
   /data/untag:
     post:
       summary: Untags a dataset
-      description: Untags a dataset. 
-      consumes: application/x-www-form-urlencoded
+      description: Untags a dataset.
+      consumes: [application/x-www-form-urlencoded]
       parameters:
         - name: data_id
           in: formData
@@ -249,7 +250,7 @@ definitions:
       upload_date:
         type: string
         description: TODO
-      
+
   Error:
     type: object
     properties:
