@@ -58,6 +58,7 @@ paths:
             $ref: '#/definitions/Error'
     post:
       summary: Uploads a dataset
+      consumes: multipart/form-data
       description: |
         Uploads a dataset. Upon success, it returns the data id. 
       parameters:
@@ -162,24 +163,25 @@ paths:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Error'
-  /data/{id}/tag:
+  /data/tag:
     post:
       summary: Tag a dataset
       description: Tags a dataset. 
+      consumes: application/x-www-form-urlencoded
       parameters:
-        - name: id
-          in: query
+        - name: data_id
+          in: formData
           description: Id of the dataset.
           required: true
           type: number
           format: integer
         - name: tag
-          in: query
+          in: formData
           description: Tag name
           required: true
           type: string
         - name: api_key
-          in: query
+          in: formData
           description: Api key to authenticate the user
           required: true
           type: string
@@ -187,30 +189,30 @@ paths:
         - data
       responses:
         '200':
-          description: A the features of the dataset
+          description: The id of the tagged dataset
         default:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Error'
-  /data/{id}/untag:
+  /data/untag:
     post:
       summary: Untags a dataset
       description: Untags a dataset. 
+      consumes: application/x-www-form-urlencoded
       parameters:
-        - name: id
-          in: query
+        - name: data_id
+          in: formData
           description: Id of the dataset.
           required: true
           type: number
-          format: integer
         - name: tag
-          in: post
+          in: formData
           description: Tag name
           required: true
           type: string
         - name: api_key
-          in: query
-          description: Api key to authenticate the user
+          in: formData
+          description: The id of the untagged dataset
           required: true
           type: string
       tags:
