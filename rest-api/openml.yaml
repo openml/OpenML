@@ -52,6 +52,8 @@ paths:
       responses:
         '200':
           description: A dataset description
+          schema:
+            $ref: '#/definitions/Data'
         default:
           description: Unexpected error
           schema:
@@ -231,7 +233,7 @@ definitions:
     properties:
       id:
         type: integer
-        description: TODO
+        description: The ID if the dataset
       name:
         type: string
         description: TODO
