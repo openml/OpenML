@@ -71,7 +71,12 @@
                     "200": {
                         "description": "A dataset description",
                         "schema": {
-                            "$ref": "#/definitions/Data"
+                            "type": "object",
+                            "properties": {
+                                "data_set_description": {
+                                    "$ref": "#/definitions/Data"
+                                }
+                            }
                         }
                     },
                     "default": {
