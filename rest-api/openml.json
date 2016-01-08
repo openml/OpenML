@@ -1,0 +1,378 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "OpenML API",
+        "description": "Collaborative Machine Learning",
+        "version": "1.0.0"
+    },
+    "host": "api_new.openml.org",
+    "schemes": [
+        "http"
+    ],
+    "basePath": "/v1/json",
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/data/list": {
+            "get": {
+                "summary": "Lists all datasets",
+                "description": "Returns an array with all datasets in the system.\n",
+                "parameters": [
+                    {
+                        "name": "api_key",
+                        "in": "query",
+                        "description": "Api key to authenticate the user",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "data"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A dataset description"
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/data/{id}": {
+            "get": {
+                "summary": "Dataset description",
+                "description": "Returns information about a dataset. The information includes the name, information about the creator, URL to download it and more. \n",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id of the dataset.",
+                        "required": true,
+                        "type": "number",
+                        "format": "integer"
+                    },
+                    {
+                        "name": "api_key",
+                        "in": "query",
+                        "description": "Api key to authenticate the user",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "data"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A dataset description"
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Deletes a dataset",
+                "description": "Deletes a dataset. Upon success, it returns the ID of the deleted dataset. \n",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id of the dataset.",
+                        "required": true,
+                        "type": "number",
+                        "format": "integer"
+                    },
+                    {
+                        "name": "api_key",
+                        "in": "query",
+                        "description": "Api key to authenticate the user",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "data"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Id of the deleted dataset"
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/data": {
+            "post": {
+                "summary": "Uploads a dataset",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "description": "Uploads a dataset. Upon success, it returns the data id. \n",
+                "parameters": [
+                    {
+                        "name": "description",
+                        "in": "formData",
+                        "description": "An XML file describing the dataset",
+                        "required": true,
+                        "type": "file"
+                    },
+                    {
+                        "name": "dataset",
+                        "in": "formData",
+                        "description": "The actual dataset, being an ARFF file.",
+                        "required": true,
+                        "type": "file"
+                    },
+                    {
+                        "name": "api_key",
+                        "in": "query",
+                        "description": "Api key to authenticate the user",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "data"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Id of the uploaded dataset"
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/data/{id}/features": {
+            "get": {
+                "summary": "Features, data types",
+                "description": "Returns the features of a dataset. \n",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id of the dataset.",
+                        "required": true,
+                        "type": "number",
+                        "format": "integer"
+                    },
+                    {
+                        "name": "api_key",
+                        "in": "query",
+                        "description": "Api key to authenticate the user",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "data"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A the features of the dataset"
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/data/{id}/qualities": {
+            "get": {
+                "summary": "Data qualitues, meta-features",
+                "description": "Returns the qualities of a dataset. \n",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id of the dataset.",
+                        "required": true,
+                        "type": "number",
+                        "format": "integer"
+                    },
+                    {
+                        "name": "api_key",
+                        "in": "query",
+                        "description": "Api key to authenticate the user",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "data"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A the qualities of the dataset"
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/data/tag": {
+            "post": {
+                "summary": "Tag a dataset",
+                "description": "Tags a dataset.",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "parameters": [
+                    {
+                        "name": "data_id",
+                        "in": "formData",
+                        "description": "Id of the dataset.",
+                        "required": true,
+                        "type": "number",
+                        "format": "integer"
+                    },
+                    {
+                        "name": "tag",
+                        "in": "formData",
+                        "description": "Tag name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "api_key",
+                        "in": "formData",
+                        "description": "Api key to authenticate the user",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "data"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The id of the tagged dataset"
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/data/untag": {
+            "post": {
+                "summary": "Untags a dataset",
+                "description": "Untags a dataset.",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "parameters": [
+                    {
+                        "name": "data_id",
+                        "in": "formData",
+                        "description": "Id of the dataset.",
+                        "required": true,
+                        "type": "number"
+                    },
+                    {
+                        "name": "tag",
+                        "in": "formData",
+                        "description": "Tag name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "api_key",
+                        "in": "formData",
+                        "description": "The id of the untagged dataset",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "data"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A the features of the dataset"
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "Data": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "description": "TODO"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "TODO"
+                },
+                "version": {
+                    "type": "string",
+                    "description": "TODO"
+                },
+                "description": {
+                    "type": "string",
+                    "description": "TODO"
+                },
+                "format": {
+                    "type": "string",
+                    "description": "TODO"
+                },
+                "upload_date": {
+                    "type": "string",
+                    "description": "TODO"
+                }
+            }
+        },
+        "Error": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "additional_message": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
