@@ -341,7 +341,7 @@
         "Data": {
             "type": "object",
             "properties": {
-                "id": {
+                "oml\\:id": {
                     "type": "string",
                     "description": "ID of the dataset, a positive integer"
                 },
@@ -389,7 +389,8 @@
                     "type": "array",
                     "items": {
                         "type": "string"
-                    }
+                    },
+                    "description": "Tags added by OpenML users. Includes study tags in the form `study_1`"
                 },
                 "visibility": {
                     "type": "string",
