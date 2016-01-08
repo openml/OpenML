@@ -342,28 +342,70 @@
             "type": "object",
             "properties": {
                 "id": {
-                    "type": "integer",
-                    "description": "TODO"
+                    "type": "string",
+                    "description": "ID of the dataset, a positive integer"
                 },
                 "name": {
                     "type": "string",
-                    "description": "TODO"
+                    "description": "The name of the dataset"
                 },
                 "version": {
                     "type": "string",
-                    "description": "TODO"
+                    "description": "The version of the dataset, set by OpenML. A positive integer"
                 },
                 "description": {
                     "type": "string",
-                    "description": "TODO"
+                    "description": "Wiki description of the dataset, in (Git flavoured) markdown format"
                 },
                 "format": {
                     "type": "string",
-                    "description": "TODO"
+                    "description": "Data format, for instance ARFF"
                 },
                 "upload_date": {
                     "type": "string",
-                    "description": "TODO"
+                    "description": "The datetime that the dataset was uploaded, format yyyy-MM-dd HH:mm:ss"
+                },
+                "licence": {
+                    "type": "string",
+                    "description": "The licence granted for using the dataset, for instance Public or CC-BY"
+                },
+                "url": {
+                    "type": "string",
+                    "description": "The URL where the data can be downloaded"
+                },
+                "file_id": {
+                    "type": "string",
+                    "description": "The ID of the dataset file stored on the OpenML server"
+                },
+                "default_target_attribute": {
+                    "type": "string",
+                    "description": "For tabular data, the name of the column that is typically used as the target attribute for that data set"
+                },
+                "version_label": {
+                    "type": "string",
+                    "description": "The version of the dataset, as defined by the uploader, for reference. Can be any format as long as it is unique."
+                },
+                "tag": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "visibility": {
+                    "type": "string",
+                    "description": "Who can see the dataset. For instance `public`."
+                },
+                "original_data_url": {
+                    "type": "string",
+                    "description": "The URL where the original data is hosted."
+                },
+                "status": {
+                    "type": "string",
+                    "description": "active, in_preparation, or deactivated"
+                },
+                "md5_checksum": {
+                    "type": "string",
+                    "description": "Checksum to verify downloads of the dataset"
                 }
             }
         },
