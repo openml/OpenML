@@ -32,10 +32,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "A dataset description",
-                        "schema": {
-                            "$ref": "#/definitions/Data"
-                        }
+                        "description": "A dataset description"
                     },
                     "default": {
                         "description": "Unexpected error",
@@ -72,7 +69,10 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "A dataset description"
+                        "description": "A dataset description",
+                        "schema": {
+                            "$ref": "#/definitions/Data"
+                        }
                     },
                     "default": {
                         "description": "Unexpected error",
