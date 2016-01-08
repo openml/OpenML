@@ -341,7 +341,7 @@
         "Data": {
             "type": "object",
             "properties": {
-                "oml\\:id": {
+                "oml:id": {
                     "type": "string",
                     "description": "ID of the dataset, a positive integer"
                 },
