@@ -2,7 +2,7 @@
     "swagger": "2.0",
     "info": {
         "title": "OpenML API",
-        "description": "REST API for sharing, organizing and reusing machine learning datasets, code, and experiments. Follows a predictive URL scheme from endpoint `http://www.openml.org/api_new/v1/json` (replace with xml for XML responses). An API key is required for authentication, found in your account settings after you register on [www.openml.org](www.openml.org).",
+        "description": "REST API for sharing, organizing and reusing machine learning datasets, code, and experiments. Follows a predictive URL scheme from endpoint `http://www.openml.org``/api_new/v1/json` (replace with xml for XML responses). An API key is required for authentication, found in your account settings after you register on [www.openml.org](www.openml.org).",
         "version": "1.0.0"
     },
     "host": "www.openml.org",
