@@ -22,7 +22,7 @@
                     {
                         "name": "api_key",
                         "in": "query",
-                        "description": "Api key to authenticate the user",
+                        "description": "API key to authenticate the user",
                         "required": true,
                         "type": "string"
                     }
@@ -115,7 +115,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Id of the deleted dataset"
+                        "description": "ID of the deleted dataset"
                     },
                     "default": {
                         "description": "Unexpected error",
@@ -318,7 +318,7 @@
                     {
                         "name": "api_key",
                         "in": "formData",
-                        "description": "The id of the untagged dataset",
+                        "description": "Api key to authenticate the user",
                         "required": true,
                         "type": "string"
                     }
@@ -338,9 +338,401 @@
                     }
                 }
             }
+        },
+        "/flow/list": {
+            "get": {
+                "summary": "Lists all flows",
+                "description": "Returns an array with all flows in the system.\n",
+                "parameters": [
+                    {
+                        "name": "api_key",
+                        "in": "query",
+                        "description": "API key to authenticate the user",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "flow"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A list of flows"
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/flow/{id}": {
+            "get": {
+                "summary": "Flow description",
+                "description": "Returns information about a flow. The information includes the name, information about the creator, dependencies, parameters, run instructions and more. \n",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the flow.",
+                        "required": true,
+                        "type": "number",
+                        "format": "integer"
+                    },
+                    {
+                        "name": "api_key",
+                        "in": "query",
+                        "description": "API key to authenticate the user",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "flow"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A flow description",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "flow_description": {
+                                    "$ref": "#/definitions/Flow"
+                                }
+                            }
+                        },
+                        "examples": {
+                            "application/json": "{\n  \"flow\": {\n    \"oml:id\":\"100\",\n    \"oml:uploader\":\"1\",\n    \"oml:name\":\"weka.J48\",\n    \"oml:version\":\"2\",\n    \"oml:external_version\":\"Weka_3.7.5_9117\",\n    \"oml:description\":\"...\",\n    \"oml:upload_date\":\"2014-04-23 18:00:36\",\n    \"oml:language\":\"Java\",\n    \"oml:dependencies\":\"Weka_3.7.5\",\n    \"oml:parameter\": [\n      {\n        \"oml:name\":\"A\",\n        \"oml:data_type\":\"flag\",\n        \"oml:default_value\":[],\n        \"oml:description\":\"Laplace smoothing...\"\n      },\n      {\n        \"oml:name\":\"C\",\n        \"oml:data_type\":\"option\",\n        \"oml:default_value\":\"0.25\",\n        \"oml:description\":\"Set confidence threshold...\"\n      }\n    ]\n  }\n}"
+                        }
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Deletes a flow",
+                "description": "Deletes a flow. Upon success, it returns the ID of the deleted flow. \n",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id of the flow.",
+                        "required": true,
+                        "type": "number",
+                        "format": "integer"
+                    },
+                    {
+                        "name": "api_key",
+                        "in": "query",
+                        "description": "API key to authenticate the user",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "flow"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ID of the deleted flow"
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/flow": {
+            "post": {
+                "summary": "Uploads a flow",
+                "consumes": [
+                    "multipart/form-flow"
+                ],
+                "description": "Uploads a flow. Upon success, it returns the flow id. \n",
+                "parameters": [
+                    {
+                        "name": "description",
+                        "in": "formData",
+                        "description": "An XML file describing the flow",
+                        "required": true,
+                        "type": "file"
+                    },
+                    {
+                        "name": "flow",
+                        "in": "formData",
+                        "description": "The actual flow, being a source (or binary) file.",
+                        "required": false,
+                        "type": "file"
+                    },
+                    {
+                        "name": "api_key",
+                        "in": "query",
+                        "description": "Api key to authenticate the user",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "flow"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Id of the uploaded flow"
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/flow/owned": {
+            "get": {
+                "summary": "Lists the flows owned by you",
+                "description": "Returns an array with all flows owned by you.\n",
+                "parameters": [
+                    {
+                        "name": "api_key",
+                        "in": "query",
+                        "description": "API key to authenticate the user",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "flow"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A list of flows"
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/flow/exists/{name}/{version}": {
+            "get": {
+                "summary": "Checks whether a flow with the given name and (external) version exists",
+                "description": "Checks whether a flow with the given name and (external) version exists.\n",
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "path",
+                        "description": "The name of the flow.",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "version",
+                        "in": "path",
+                        "description": "The external version of the flow",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "api_key",
+                        "in": "query",
+                        "description": "API key to authenticate the user",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "flow"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A list of flows"
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/flow/tag": {
+            "post": {
+                "summary": "Tag a flow",
+                "description": "Tags a flow.",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "parameters": [
+                    {
+                        "name": "flow_id",
+                        "in": "formData",
+                        "description": "Id of the flow.",
+                        "required": true,
+                        "type": "number",
+                        "format": "integer"
+                    },
+                    {
+                        "name": "tag",
+                        "in": "formData",
+                        "description": "Tag name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "api_key",
+                        "in": "formData",
+                        "description": "Api key to authenticate the user",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "flow"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The id of the tagged flow"
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/flow/untag": {
+            "post": {
+                "summary": "Untags a flow",
+                "description": "Untags a flow.",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "parameters": [
+                    {
+                        "name": "flow_id",
+                        "in": "formData",
+                        "description": "Id of the flow.",
+                        "required": true,
+                        "type": "number"
+                    },
+                    {
+                        "name": "tag",
+                        "in": "formData",
+                        "description": "Tag name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "api_key",
+                        "in": "formData",
+                        "description": "Api key to authenticate the user",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "flow"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The id of the untagged flow"
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "Flow": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "ID of the flow, a positive integer"
+                },
+                "uploader": {
+                    "type": "string",
+                    "description": "The uploader of the flow"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "The name of the flow"
+                },
+                "version": {
+                    "type": "string",
+                    "description": "The version of the flow, set by OpenML. A positive integer"
+                },
+                "version_label": {
+                    "type": "string",
+                    "description": "The version of the flow, as defined by the uploader, for reference. Can be any format as long as it is unique."
+                },
+                "description": {
+                    "type": "string",
+                    "description": "Wiki description of the flow, in (Git flavoured) markdown format"
+                },
+                "upload_date": {
+                    "type": "string",
+                    "description": "The datetime that the flow was uploaded, format yyyy-MM-dd HH:mm:ss"
+                },
+                "language": {
+                    "type": "string",
+                    "description": "The programming language the flow is written in."
+                },
+                "dependencies": {
+                    "type": "string",
+                    "description": "The libraries that this flow depends on, and their version numbers."
+                },
+                "tag": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Tags added by OpenML users. Includes study tags in the form `study_1`"
+                },
+                "parameter": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "The name of the parameter"
+                        },
+                        "data_type": {
+                            "type": "string",
+                            "description": "The data type of the parameter"
+                        },
+                        "default_value": {
+                            "type": "string",
+                            "description": "The default value of the parameter"
+                        },
+                        "description": {
+                            "type": "string",
+                            "description": "A description of the parameter"
+                        }
+                    }
+                }
+            }
+        },
         "Data": {
             "type": "object",
             "properties": {

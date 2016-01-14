@@ -1,12 +1,12 @@
 swagger: '2.0'
 info:
   title: OpenML API
-  description: Collaborative Machine Learning
+  description: REST API for sharing, organizing and reusing machine learning datasets, code, and experiments. Follows a predictive URL scheme from endpoint `http://www.openml.org/api_new/v1/json` (replace with xml for XML responses). An API key is required for authentication, found in your account settings after you register on [www.openml.org](www.openml.org).
   version: 1.0.0
-host: api_new.openml.org
+host: www.openml.org
 schemes:
   - http
-basePath: /v1/json
+basePath: /api_new/v1/json
 produces:
   - application/json
 paths:
@@ -18,7 +18,7 @@ paths:
       parameters:
         - name: api_key
           in: query
-          description: Api key to authenticate the user
+          description: API key to authenticate the user
           required: true
           type: string
       tags:
@@ -53,7 +53,35 @@ paths:
         '200':
           description: A dataset description
           schema:
-            $ref: '#/definitions/Data'
+            type: object
+            properties:
+              data_set_description:
+                $ref: '#/definitions/Data'
+          examples:
+            application/json: |-
+              {
+                "data_set_description": {
+                  "oml:id": "1",
+                  "oml:name": "anneal",
+                  "oml:version": "2",
+                  "oml:description": "...",
+                  "oml:format": "ARFF",
+                  "oml:upload_date": "2014-04-06 23:19:20",
+                  "oml:licence": "Public",
+                  "oml:url": "http://www.openml.org/data/download/1/dataset_1_anneal.arff",
+                  "oml:file_id": "1",
+                  "oml:default_target_attribute": "class",
+                  "oml:version_label": "2",
+                  "oml:tag": [
+                    "study_1",
+                    "uci"
+                  ],
+                  "oml:visibility": "public",
+                  "oml:original_data_url": "http://www.openml.org/d/2",
+                  "oml:status": "active",
+                  "oml:md5_checksum": "d01f6ccd68c88b749b20bbe897de3713"
+                }
+              }
         default:
           description: Unexpected error
           schema:
@@ -78,7 +106,7 @@ paths:
         - data
       responses:
         '200':
-          description: Id of the deleted dataset
+          description: ID of the deleted dataset
         default:
           description: Unexpected error
           schema:
@@ -215,7 +243,7 @@ paths:
           type: string
         - name: api_key
           in: formData
-          description: The id of the untagged dataset
+          description: Api key to authenticate the user
           required: true
           type: string
       tags:
@@ -227,32 +255,357 @@ paths:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Error'
+  /flow/list:
+    get:
+      summary: Lists all flows
+      description: |
+        Returns an array with all flows in the system.
+      parameters:
+        - name: api_key
+          in: query
+          description: API key to authenticate the user
+          required: true
+          type: string
+      tags:
+        - flow
+      responses:
+        '200':
+          description: A list of flows
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /flow/{id}:
+    get:
+      summary: Flow description
+      description: |
+        Returns information about a flow. The information includes the name, information about the creator, dependencies, parameters, run instructions and more.
+      parameters:
+        - name: id
+          in: path
+          description: ID of the flow.
+          required: true
+          type: number
+          format: integer
+        - name: api_key
+          in: query
+          description: API key to authenticate the user
+          required: true
+          type: string
+      tags:
+        - flow
+      responses:
+        '200':
+          description: A flow description
+          schema:
+            type: object
+            properties:
+              flow_description:
+                $ref: '#/definitions/Flow'
+          examples:
+            application/json: |-
+              {
+                "flow": {
+                  "oml:id":"100",
+                  "oml:uploader":"1",
+                  "oml:name":"weka.J48",
+                  "oml:version":"2",
+                  "oml:external_version":"Weka_3.7.5_9117",
+                  "oml:description":"...",
+                  "oml:upload_date":"2014-04-23 18:00:36",
+                  "oml:language":"Java",
+                  "oml:dependencies":"Weka_3.7.5",
+                  "oml:parameter": [
+                    {
+                      "oml:name":"A",
+                      "oml:data_type":"flag",
+                      "oml:default_value":[],
+                      "oml:description":"Laplace smoothing..."
+                    },
+                    {
+                      "oml:name":"C",
+                      "oml:data_type":"option",
+                      "oml:default_value":"0.25",
+                      "oml:description":"Set confidence threshold..."
+                    }
+                  ]
+                }
+              }
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      summary: Deletes a flow
+      description: |
+        Deletes a flow. Upon success, it returns the ID of the deleted flow.
+      parameters:
+        - name: id
+          in: path
+          description: Id of the flow.
+          required: true
+          type: number
+          format: integer
+        - name: api_key
+          in: query
+          description: API key to authenticate the user
+          required: true
+          type: string
+      tags:
+        - flow
+      responses:
+        '200':
+          description: ID of the deleted flow
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /flow:
+    post:
+      summary: Uploads a flow
+      consumes: [multipart/form-flow]
+      description: |
+        Uploads a flow. Upon success, it returns the flow id.
+      parameters:
+        - name: description
+          in: formData
+          description: An XML file describing the flow
+          required: true
+          type: file
+        - name: flow
+          in: formData
+          description: The actual flow, being a source (or binary) file.
+          required: false
+          type: file
+        - name: api_key
+          in: query
+          description: Api key to authenticate the user
+          required: true
+          type: string
+      tags:
+        - flow
+      responses:
+        '200':
+          description: Id of the uploaded flow
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /flow/owned:
+    get:
+      summary: Lists the flows owned by you
+      description: |
+        Returns an array with all flows owned by you.
+      parameters:
+        - name: api_key
+          in: query
+          description: API key to authenticate the user
+          required: true
+          type: string
+      tags:
+        - flow
+      responses:
+        '200':
+          description: A list of flows
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /flow/exists/{name}/{version}:
+    get:
+      summary: Checks whether a flow with the given name and (external) version exists
+      description: |
+        Checks whether a flow with the given name and (external) version exists.
+      parameters:
+        - name: name
+          in: path
+          description: The name of the flow.
+          required: true
+          type: string
+        - name: version
+          in: path
+          description: The external version of the flow
+          required: true
+          type: string
+        - name: api_key
+          in: query
+          description: API key to authenticate the user
+          required: true
+          type: string
+      tags:
+        - flow
+      responses:
+        '200':
+          description: A list of flows
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /flow/tag:
+    post:
+      summary: Tag a flow
+      description: Tags a flow.
+      consumes: [application/x-www-form-urlencoded]
+      parameters:
+        - name: flow_id
+          in: formData
+          description: Id of the flow.
+          required: true
+          type: number
+          format: integer
+        - name: tag
+          in: formData
+          description: Tag name
+          required: true
+          type: string
+        - name: api_key
+          in: formData
+          description: Api key to authenticate the user
+          required: true
+          type: string
+      tags:
+        - flow
+      responses:
+        '200':
+          description: The id of the tagged flow
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /flow/untag:
+    post:
+      summary: Untags a flow
+      description: Untags a flow.
+      consumes: [application/x-www-form-urlencoded]
+      parameters:
+        - name: flow_id
+          in: formData
+          description: Id of the flow.
+          required: true
+          type: number
+        - name: tag
+          in: formData
+          description: Tag name
+          required: true
+          type: string
+        - name: api_key
+          in: formData
+          description: Api key to authenticate the user
+          required: true
+          type: string
+      tags:
+        - flow
+      responses:
+        '200':
+          description: The id of the untagged flow
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
 definitions:
+  Flow:
+    type: object
+    properties:
+      id:
+        type: string
+        description: ID of the flow, a positive integer
+      uploader:
+        type: string
+        description: The uploader of the flow
+      name:
+        type: string
+        description: The name of the flow
+      version:
+        type: string
+        description: The version of the flow, set by OpenML. A positive integer
+      version_label:
+        type: string
+        description: The version of the flow, as defined by the uploader, for reference. Can be any format as long as it is unique.
+      description:
+        type: string
+        description: Wiki description of the flow, in (Git flavoured) markdown format
+      upload_date:
+        type: string
+        description: The datetime that the flow was uploaded, format yyyy-MM-dd HH:mm:ss
+      language:
+        type: string
+        description: The programming language the flow is written in.
+      dependencies:
+        type: string
+        description: The libraries that this flow depends on, and their version numbers.
+      tag:
+        type: array
+        items:
+          type: string
+        description: Tags added by OpenML users. Includes study tags in the form `study_1`
+      parameter:
+        type: object
+        properties:
+          name:
+            type: string
+            description: The name of the parameter
+          data_type:
+            type: string
+            description: The data type of the parameter
+          default_value:
+            type: string
+            description: The default value of the parameter
+          description:
+            type: string
+            description: A description of the parameter
   Data:
     type: object
     properties:
       id:
-        type: integer
-        description: The ID if the dataset
+        type: string
+        description: ID of the dataset, a positive integer
       name:
         type: string
-        description: TODO
+        description: The name of the dataset
       version:
         type: string
-        description: TODO
+        description: The version of the dataset, set by OpenML. A positive integer
       description:
         type: string
-        description: TODO
+        description: Wiki description of the dataset, in (Git flavoured) markdown format
       format:
         type: string
-        description: TODO
+        description: Data format, for instance ARFF
       upload_date:
         type: string
-        description: TODO
-      upload_date:
+        description: The datetime that the dataset was uploaded, format yyyy-MM-dd HH:mm:ss
+      licence:
         type: string
-        description: TODO
-
+        description: The licence granted for using the dataset, for instance Public or CC-BY
+      url:
+        type: string
+        description: The URL where the data can be downloaded
+      file_id:
+        type: string
+        description: The ID of the dataset file stored on the OpenML server
+      default_target_attribute:
+        type: string
+        description: For tabular data, the name of the column that is typically used as the target attribute for that data set
+      version_label:
+        type: string
+        description: The version of the dataset, as defined by the uploader, for reference. Can be any format as long as it is unique.
+      tag:
+        type: array
+        items:
+          type: string
+        description: Tags added by OpenML users. Includes study tags in the form `study_1`
+      visibility:
+        type: string
+        description: Who can see the dataset. For instance `public`.
+      original_data_url:
+        type: string
+        description: The URL where the original data is hosted.
+      status:
+        type: string
+        description: active, in_preparation, or deactivated
+      md5_checksum:
+        type: string
+        description: Checksum to verify downloads of the dataset
   Error:
     type: object
     properties:
