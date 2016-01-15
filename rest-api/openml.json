@@ -16,7 +16,7 @@
     "paths": {
         "/data/list": {
             "get": {
-                "summary": "Lists all datasets",
+                "summary": "List all datasets",
                 "description": "Returns an array with all datasets in the system.\n",
                 "parameters": [
                     {
@@ -45,7 +45,7 @@
         },
         "/data/{id}": {
             "get": {
-                "summary": "Dataset description",
+                "summary": "Get dataset description",
                 "description": "Returns information about a dataset. The information includes the name, information about the creator, URL to download it and more.\n",
                 "parameters": [
                     {
@@ -91,7 +91,7 @@
                 }
             },
             "delete": {
-                "summary": "Deletes a dataset",
+                "summary": "Delete dataset",
                 "description": "Deletes a dataset. Upon success, it returns the ID of the deleted dataset.\n",
                 "parameters": [
                     {
@@ -128,7 +128,7 @@
         },
         "/data": {
             "post": {
-                "summary": "Uploads a dataset",
+                "summary": "Upload dataset",
                 "consumes": [
                     "multipart/form-data"
                 ],
@@ -174,7 +174,7 @@
         },
         "/data/{id}/features": {
             "get": {
-                "summary": "Features, data types",
+                "summary": "Get data features",
                 "description": "Returns the features of a dataset.\n",
                 "parameters": [
                     {
@@ -211,7 +211,7 @@
         },
         "/data/{id}/qualities": {
             "get": {
-                "summary": "Data qualitues, meta-features",
+                "summary": "Get data qualities",
                 "description": "Returns the qualities of a dataset.\n",
                 "parameters": [
                     {
@@ -295,7 +295,7 @@
         },
         "/data/untag": {
             "post": {
-                "summary": "Untags a dataset",
+                "summary": "Untag a dataset",
                 "description": "Untags a dataset.",
                 "consumes": [
                     "application/x-www-form-urlencoded"
@@ -341,7 +341,7 @@
         },
         "/flow/list": {
             "get": {
-                "summary": "Lists all flows",
+                "summary": "List all flows",
                 "description": "Returns an array with all flows in the system.\n",
                 "parameters": [
                     {
@@ -370,7 +370,7 @@
         },
         "/flow/{id}": {
             "get": {
-                "summary": "Flow description",
+                "summary": "Get flow description",
                 "description": "Returns information about a flow. The information includes the name, information about the creator, dependencies, parameters, run instructions and more.\n",
                 "parameters": [
                     {
@@ -416,7 +416,7 @@
                 }
             },
             "delete": {
-                "summary": "Deletes a flow",
+                "summary": "Delete a flow",
                 "description": "Deletes a flow. Upon success, it returns the ID of the deleted flow.\n",
                 "parameters": [
                     {
@@ -453,7 +453,7 @@
         },
         "/flow": {
             "post": {
-                "summary": "Uploads a flow",
+                "summary": "Upload a flow",
                 "consumes": [
                     "multipart/form-flow"
                 ],
@@ -499,7 +499,7 @@
         },
         "/flow/owned": {
             "get": {
-                "summary": "Lists the flows owned by you",
+                "summary": "List flows owned by you",
                 "description": "Returns an array with all flows owned by you.\n",
                 "parameters": [
                     {
@@ -528,7 +528,7 @@
         },
         "/flow/exists/{name}/{version}": {
             "get": {
-                "summary": "Checks whether a flow with the given name and (external) version exists",
+                "summary": "Check whether a flow with the given name and version exists",
                 "description": "Checks whether a flow with the given name and (external) version exists.\n",
                 "parameters": [
                     {
@@ -618,7 +618,7 @@
         },
         "/flow/untag": {
             "post": {
-                "summary": "Untags a flow",
+                "summary": "Untag a flow",
                 "description": "Untags a flow.",
                 "consumes": [
                     "application/x-www-form-urlencoded"
@@ -808,7 +808,7 @@
         },
         "/run/list/{filters}": {
             "get": {
-                "summary": "Filter runs by id, task, uploader and or flow",
+                "summary": "Get runs by id, task, uploader and/or flow",
                 "description": "Returns an array with all runs matching any or all of the given filters. You can combine any of the four above filters any way you want.\n",
                 "parameters": [
                     {
@@ -844,7 +844,7 @@
         },
         "/run/{id}": {
             "get": {
-                "summary": "run description",
+                "summary": "Get run description",
                 "description": "Returns information about a run. The information includes the name, information about the creator, dependencies, parameters, run instructions and more.\n",
                 "parameters": [
                     {
@@ -890,7 +890,7 @@
                 }
             },
             "delete": {
-                "summary": "Deletes a run",
+                "summary": "Delete run",
                 "description": "Deletes a run. Upon success, it returns the ID of the deleted run.\n",
                 "parameters": [
                     {
@@ -927,7 +927,7 @@
         },
         "/run": {
             "post": {
-                "summary": "Uploads a run",
+                "summary": "Upload run",
                 "consumes": [
                     "multipart/form-run"
                 ],
@@ -1020,7 +1020,7 @@
         },
         "/run/untag": {
             "post": {
-                "summary": "Untags a run",
+                "summary": "Untag a run",
                 "description": "Untags a run.",
                 "consumes": [
                     "application/x-www-form-urlencoded"
@@ -1210,7 +1210,7 @@
         },
         "/evaluation/list/{filters}": {
             "get": {
-                "summary": "Filter evaluations by run, task, uploader and or flow",
+                "summary": "Get evaluations by run, task, uploader and or flow",
                 "description": "Returns an array with all evaluations matching any or all of the given filters. You can combine any of the four above filters any way you want.\n",
                 "parameters": [
                     {

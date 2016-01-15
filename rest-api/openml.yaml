@@ -12,7 +12,7 @@ produces:
 paths:
   /data/list:
     get:
-      summary: Lists all datasets
+      summary: List all datasets
       description: |
         Returns an array with all datasets in the system.
       parameters:
@@ -32,7 +32,7 @@ paths:
             $ref: '#/definitions/Error'
   /data/{id}:
     get:
-      summary: Dataset description
+      summary: Get dataset description
       description: |
         Returns information about a dataset. The information includes the name, information about the creator, URL to download it and more.
       parameters:
@@ -87,7 +87,7 @@ paths:
           schema:
             $ref: '#/definitions/Error'
     delete:
-      summary: Deletes a dataset
+      summary: Delete dataset
       description: |
         Deletes a dataset. Upon success, it returns the ID of the deleted dataset.
       parameters:
@@ -113,7 +113,7 @@ paths:
             $ref: '#/definitions/Error'
   /data:
     post:
-      summary: Uploads a dataset
+      summary: Upload dataset
       consumes: [multipart/form-data]
       description: |
         Uploads a dataset. Upon success, it returns the data id.
@@ -144,7 +144,7 @@ paths:
             $ref: '#/definitions/Error'
   /data/{id}/features:
     get:
-      summary: Features, data types
+      summary: Get data features
       description: |
         Returns the features of a dataset.
       parameters:
@@ -170,7 +170,7 @@ paths:
             $ref: '#/definitions/Error'
   /data/{id}/qualities:
     get:
-      summary: Data qualitues, meta-features
+      summary: Get data qualities
       description: |
         Returns the qualities of a dataset.
       parameters:
@@ -227,7 +227,7 @@ paths:
             $ref: '#/definitions/Error'
   /data/untag:
     post:
-      summary: Untags a dataset
+      summary: Untag a dataset
       description: Untags a dataset.
       consumes: [application/x-www-form-urlencoded]
       parameters:
@@ -257,7 +257,7 @@ paths:
             $ref: '#/definitions/Error'
   /flow/list:
     get:
-      summary: Lists all flows
+      summary: List all flows
       description: |
         Returns an array with all flows in the system.
       parameters:
@@ -277,7 +277,7 @@ paths:
             $ref: '#/definitions/Error'
   /flow/{id}:
     get:
-      summary: Flow description
+      summary: Get flow description
       description: |
         Returns information about a flow. The information includes the name, information about the creator, dependencies, parameters, run instructions and more.
       parameters:
@@ -336,7 +336,7 @@ paths:
           schema:
             $ref: '#/definitions/Error'
     delete:
-      summary: Deletes a flow
+      summary: Delete a flow
       description: |
         Deletes a flow. Upon success, it returns the ID of the deleted flow.
       parameters:
@@ -362,7 +362,7 @@ paths:
             $ref: '#/definitions/Error'
   /flow:
     post:
-      summary: Uploads a flow
+      summary: Upload a flow
       consumes: [multipart/form-flow]
       description: |
         Uploads a flow. Upon success, it returns the flow id.
@@ -393,7 +393,7 @@ paths:
             $ref: '#/definitions/Error'
   /flow/owned:
     get:
-      summary: Lists the flows owned by you
+      summary: List flows owned by you
       description: |
         Returns an array with all flows owned by you.
       parameters:
@@ -413,7 +413,7 @@ paths:
             $ref: '#/definitions/Error'
   /flow/exists/{name}/{version}:
     get:
-      summary: Checks whether a flow with the given name and (external) version exists
+      summary: Check whether a flow with the given name and version exists
       description: |
         Checks whether a flow with the given name and (external) version exists.
       parameters:
@@ -474,7 +474,7 @@ paths:
             $ref: '#/definitions/Error'
   /flow/untag:
     post:
-      summary: Untags a flow
+      summary: Untag a flow
       description: Untags a flow.
       consumes: [application/x-www-form-urlencoded]
       parameters:
@@ -604,7 +604,7 @@ paths:
             $ref: '#/definitions/Error'
   /run/list/{filters}:
     get:
-      summary: Filter runs by id, task, uploader and or flow
+      summary: Get runs by id, task, uploader and/or flow
       description: | 
         Returns an array with all runs matching any or all of the given filters. You can combine any of the four above filters any way you want.
       parameters:
@@ -629,7 +629,7 @@ paths:
             $ref: '#/definitions/Error'
   /run/{id}:
     get:
-      summary: run description
+      summary: Get run description
       description: |
         Returns information about a run. The information includes the name, information about the creator, dependencies, parameters, run instructions and more.
       parameters:
@@ -742,7 +742,7 @@ paths:
           schema:
             $ref: '#/definitions/Error'
     delete:
-      summary: Deletes a run
+      summary: Delete run
       description: |
         Deletes a run. Upon success, it returns the ID of the deleted run.
       parameters:
@@ -768,7 +768,7 @@ paths:
             $ref: '#/definitions/Error'
   /run:
     post:
-      summary: Uploads a run
+      summary: Upload run
       consumes: [multipart/form-run]
       description: |
         Uploads a run. Upon success, it returns the run id.
@@ -830,7 +830,7 @@ paths:
             $ref: '#/definitions/Error'
   /run/untag:
     post:
-      summary: Untags a run
+      summary: Untag a run
       description: Untags a run.
       consumes: [application/x-www-form-urlencoded]
       parameters:
@@ -960,7 +960,7 @@ paths:
             $ref: '#/definitions/Error'
   /evaluation/list/{filters}:
     get:
-      summary: Filter evaluations by run, task, uploader and or flow
+      summary: Get evaluations by run, task, uploader and or flow
       description: | 
         Returns an array with all evaluations matching any or all of the given filters. You can combine any of the four above filters any way you want.
       parameters:
