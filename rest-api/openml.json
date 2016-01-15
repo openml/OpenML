@@ -14,35 +14,6 @@
         "application/json"
     ],
     "paths": {
-        "/data/list": {
-            "get": {
-                "summary": "List all datasets",
-                "description": "Returns an array with all datasets in the system.\n",
-                "parameters": [
-                    {
-                        "name": "api_key",
-                        "in": "query",
-                        "description": "API key to authenticate the user",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "tags": [
-                    "data"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "A dataset description"
-                    },
-                    "default": {
-                        "description": "Unexpected error",
-                        "schema": {
-                            "$ref": "#/definitions/Error"
-                        }
-                    }
-                }
-            }
-        },
         "/data/{id}": {
             "get": {
                 "summary": "Get dataset description",
@@ -162,6 +133,35 @@
                 "responses": {
                     "200": {
                         "description": "Id of the uploaded dataset"
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/data/list": {
+            "get": {
+                "summary": "List all datasets",
+                "description": "Returns an array with all datasets in the system.\n",
+                "parameters": [
+                    {
+                        "name": "api_key",
+                        "in": "query",
+                        "description": "API key to authenticate the user",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "data"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A dataset description"
                     },
                     "default": {
                         "description": "Unexpected error",
@@ -339,35 +339,6 @@
                 }
             }
         },
-        "/flow/list": {
-            "get": {
-                "summary": "List all flows",
-                "description": "Returns an array with all flows in the system.\n",
-                "parameters": [
-                    {
-                        "name": "api_key",
-                        "in": "query",
-                        "description": "API key to authenticate the user",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "tags": [
-                    "flow"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "A list of flows"
-                    },
-                    "default": {
-                        "description": "Unexpected error",
-                        "schema": {
-                            "$ref": "#/definitions/Error"
-                        }
-                    }
-                }
-            }
-        },
         "/flow/{id}": {
             "get": {
                 "summary": "Get flow description",
@@ -487,6 +458,35 @@
                 "responses": {
                     "200": {
                         "description": "Id of the uploaded flow"
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/flow/list": {
+            "get": {
+                "summary": "List all flows",
+                "description": "Returns an array with all flows in the system.\n",
+                "parameters": [
+                    {
+                        "name": "api_key",
+                        "in": "query",
+                        "description": "API key to authenticate the user",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "flow"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A list of flows"
                     },
                     "default": {
                         "description": "Unexpected error",
@@ -652,6 +652,135 @@
                 "responses": {
                     "200": {
                         "description": "The id of the untagged flow"
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/run/{id}": {
+            "get": {
+                "summary": "Get run description",
+                "description": "Returns information about a run. The information includes the name, information about the creator, dependencies, parameters, run instructions and more.\n",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the run.",
+                        "required": true,
+                        "type": "number",
+                        "format": "integer"
+                    },
+                    {
+                        "name": "api_key",
+                        "in": "query",
+                        "description": "API key to authenticate the user",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "run"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A run description",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "run_description": {
+                                    "$ref": "#/definitions/Run"
+                                }
+                            }
+                        },
+                        "examples": {
+                            "application/json": "{\n  \"run\": {\n    \"oml:run_id\":\"100\",\n    \"oml:uploader\":\"1\",\n    \"oml:uploader_name\":\"Jan van Rijn\",\n    \"oml:task_id\":\"28\",\n    \"oml:task_type\":\"Supervised Classification\",\n    \"oml:task_evaluation_measure\":\"predictive_accuracy\",\n    \"oml:flow_id\":\"67\",\n    \"oml:flow_name\":\"weka.BayesNet_K2(1)\",\n    \"oml:setup_string\":\"weka.classifiers.bayes.BayesNet -- -D -Q weka.classifiers.bayes.net.search.local.K2 -- -P 1 -S BAYES -E weka.classifiers.bayes.net.estimate.SimpleEstimator -- -A 0.5\",\n    \"oml:parameter_setting\": [\n      {\n        \"oml:name\":\"D\",\n        \"oml:value\":\"true\"\n      },\n      {\n        \"oml:name\":\"Q\",\n        \"oml:value\":\"weka.classifiers.bayes.net.search.local.K2\"\n      },\n      {\n        \"oml:name\":\"P\",\n        \"oml:value\":\"1\"\n      },\n      {\n        \"oml:name\":\"S\",\n        \"oml:value\":\"BAYES\"\n      }\n    ],\n    \"oml:input_data\": \n      {\n        \"oml:dataset\":\n          {\n            \"oml:did\":\"28\",\n            \"oml:name\":\"optdigits\",\n            \"oml:url\":\"http:\\/\\/www.openml.org\\/data\\/download\\/28\\/dataset_28_optdigits.arff\"\n          }\n      },\n    \"oml:output_data\":\n      {\n        \"oml:file\": [\n          {\n            \"oml:did\":\"48838\",\n            \"oml:file_id\":\"261\",\n            \"oml:name\":\"description\",\n            \"oml:url\":\"http:\\/\\/www.openml.org\\/data\\/download\\/261\\/weka_generated_run935374685998857626.xml\"\n          },\n          { \n            \"oml:did\":\"48839\",\n            \"oml:file_id\":\"262\",\n            \"oml:name\":\"predictions\",\n            \"oml:url\":\"http:\\/\\/www.openml.org\\/data\\/download\\/262\\/weka_generated_predictions576954524972002741.arff\"\n          }\n        ],\n        \"oml:evaluation\": [\n          {\n            \"oml:name\":\"area_under_roc_curve\",\n            \"oml:flow_id\":\"4\",\n            \"oml:value\":\"0.990288\",\n            \"oml:array_data\":\"[0.99724,0.989212,0.992776,0.994279,0.980578,0.98649,0.99422,0.99727,0.994858,0.976143]\"\n          },\n          {\n            \"oml:name\":\"confusion_matrix\",\n            \"oml:flow_id\":\"10\",\n            \"oml:array_data\":\"[[544,1,0,0,7,0,1,0,0,1],[0,511,21,1,0,1,3,1,5,28],[0,7,511,1,0,1,0,3,23,11],[0,2,2,519,0,3,0,12,16,18],[0,3,0,0,528,0,4,21,6,6],[0,1,0,7,5,488,2,0,4,51],[1,7,0,0,2,0,548,0,0,0],[0,2,0,1,9,1,0,545,4,4],[1,25,2,2,3,6,2,1,503,9],[0,7,0,20,16,5,0,19,9,486]]\"\n          },\n          {\n            \"oml:name\":\"f_measure\",\n            \"oml:flow_id\":\"12\",\n            \"oml:value\":\"0.922723\",\n            \"oml:array_data\":\"[0.989091,0.898857,0.935041,0.92431,0.927944,0.918156,0.980322,0.933219,0.895018,0.826531]\"\n          },\n          {\n            \"oml:name\":\"kappa\",\n            \"oml:flow_id\":\"13\",\n            \"oml:value\":\"0.913601\"\n          }\n        ]\n      }\n  }\n}"
+                        }
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete run",
+                "description": "Deletes a run. Upon success, it returns the ID of the deleted run.\n",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id of the run.",
+                        "required": true,
+                        "type": "number",
+                        "format": "integer"
+                    },
+                    {
+                        "name": "api_key",
+                        "in": "query",
+                        "description": "API key to authenticate the user",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "run"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ID of the deleted run"
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/run": {
+            "post": {
+                "summary": "Upload run",
+                "consumes": [
+                    "multipart/form-run"
+                ],
+                "description": "Uploads a run. Upon success, it returns the run id.\n",
+                "parameters": [
+                    {
+                        "name": "description",
+                        "in": "formData",
+                        "description": "An XML file describing the run",
+                        "required": true,
+                        "type": "file"
+                    },
+                    {
+                        "name": "run",
+                        "in": "formData",
+                        "description": "The actual run, being a source (or binary) file.",
+                        "required": false,
+                        "type": "file"
+                    },
+                    {
+                        "name": "api_key",
+                        "in": "query",
+                        "description": "Api key to authenticate the user",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "run"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Id of the uploaded run"
                     },
                     "default": {
                         "description": "Unexpected error",
@@ -832,135 +961,6 @@
                 "responses": {
                     "200": {
                         "description": "A list of runs descriptions"
-                    },
-                    "default": {
-                        "description": "Unexpected error",
-                        "schema": {
-                            "$ref": "#/definitions/Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/run/{id}": {
-            "get": {
-                "summary": "Get run description",
-                "description": "Returns information about a run. The information includes the name, information about the creator, dependencies, parameters, run instructions and more.\n",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "ID of the run.",
-                        "required": true,
-                        "type": "number",
-                        "format": "integer"
-                    },
-                    {
-                        "name": "api_key",
-                        "in": "query",
-                        "description": "API key to authenticate the user",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "tags": [
-                    "run"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "A run description",
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "run_description": {
-                                    "$ref": "#/definitions/Run"
-                                }
-                            }
-                        },
-                        "examples": {
-                            "application/json": "{\n  \"run\": {\n    \"oml:run_id\":\"100\",\n    \"oml:uploader\":\"1\",\n    \"oml:uploader_name\":\"Jan van Rijn\",\n    \"oml:task_id\":\"28\",\n    \"oml:task_type\":\"Supervised Classification\",\n    \"oml:task_evaluation_measure\":\"predictive_accuracy\",\n    \"oml:flow_id\":\"67\",\n    \"oml:flow_name\":\"weka.BayesNet_K2(1)\",\n    \"oml:setup_string\":\"weka.classifiers.bayes.BayesNet -- -D -Q weka.classifiers.bayes.net.search.local.K2 -- -P 1 -S BAYES -E weka.classifiers.bayes.net.estimate.SimpleEstimator -- -A 0.5\",\n    \"oml:parameter_setting\": [\n      {\n        \"oml:name\":\"D\",\n        \"oml:value\":\"true\"\n      },\n      {\n        \"oml:name\":\"Q\",\n        \"oml:value\":\"weka.classifiers.bayes.net.search.local.K2\"\n      },\n      {\n        \"oml:name\":\"P\",\n        \"oml:value\":\"1\"\n      },\n      {\n        \"oml:name\":\"S\",\n        \"oml:value\":\"BAYES\"\n      }\n    ],\n    \"oml:input_data\": \n      {\n        \"oml:dataset\":\n          {\n            \"oml:did\":\"28\",\n            \"oml:name\":\"optdigits\",\n            \"oml:url\":\"http:\\/\\/www.openml.org\\/data\\/download\\/28\\/dataset_28_optdigits.arff\"\n          }\n      },\n    \"oml:output_data\":\n      {\n        \"oml:file\": [\n          {\n            \"oml:did\":\"48838\",\n            \"oml:file_id\":\"261\",\n            \"oml:name\":\"description\",\n            \"oml:url\":\"http:\\/\\/www.openml.org\\/data\\/download\\/261\\/weka_generated_run935374685998857626.xml\"\n          },\n          { \n            \"oml:did\":\"48839\",\n            \"oml:file_id\":\"262\",\n            \"oml:name\":\"predictions\",\n            \"oml:url\":\"http:\\/\\/www.openml.org\\/data\\/download\\/262\\/weka_generated_predictions576954524972002741.arff\"\n          }\n        ],\n        \"oml:evaluation\": [\n          {\n            \"oml:name\":\"area_under_roc_curve\",\n            \"oml:flow_id\":\"4\",\n            \"oml:value\":\"0.990288\",\n            \"oml:array_data\":\"[0.99724,0.989212,0.992776,0.994279,0.980578,0.98649,0.99422,0.99727,0.994858,0.976143]\"\n          },\n          {\n            \"oml:name\":\"confusion_matrix\",\n            \"oml:flow_id\":\"10\",\n            \"oml:array_data\":\"[[544,1,0,0,7,0,1,0,0,1],[0,511,21,1,0,1,3,1,5,28],[0,7,511,1,0,1,0,3,23,11],[0,2,2,519,0,3,0,12,16,18],[0,3,0,0,528,0,4,21,6,6],[0,1,0,7,5,488,2,0,4,51],[1,7,0,0,2,0,548,0,0,0],[0,2,0,1,9,1,0,545,4,4],[1,25,2,2,3,6,2,1,503,9],[0,7,0,20,16,5,0,19,9,486]]\"\n          },\n          {\n            \"oml:name\":\"f_measure\",\n            \"oml:flow_id\":\"12\",\n            \"oml:value\":\"0.922723\",\n            \"oml:array_data\":\"[0.989091,0.898857,0.935041,0.92431,0.927944,0.918156,0.980322,0.933219,0.895018,0.826531]\"\n          },\n          {\n            \"oml:name\":\"kappa\",\n            \"oml:flow_id\":\"13\",\n            \"oml:value\":\"0.913601\"\n          }\n        ]\n      }\n  }\n}"
-                        }
-                    },
-                    "default": {
-                        "description": "Unexpected error",
-                        "schema": {
-                            "$ref": "#/definitions/Error"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "summary": "Delete run",
-                "description": "Deletes a run. Upon success, it returns the ID of the deleted run.\n",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "Id of the run.",
-                        "required": true,
-                        "type": "number",
-                        "format": "integer"
-                    },
-                    {
-                        "name": "api_key",
-                        "in": "query",
-                        "description": "API key to authenticate the user",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "tags": [
-                    "run"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "ID of the deleted run"
-                    },
-                    "default": {
-                        "description": "Unexpected error",
-                        "schema": {
-                            "$ref": "#/definitions/Error"
-                        }
-                    }
-                }
-            }
-        },
-        "/run": {
-            "post": {
-                "summary": "Upload run",
-                "consumes": [
-                    "multipart/form-run"
-                ],
-                "description": "Uploads a run. Upon success, it returns the run id.\n",
-                "parameters": [
-                    {
-                        "name": "description",
-                        "in": "formData",
-                        "description": "An XML file describing the run",
-                        "required": true,
-                        "type": "file"
-                    },
-                    {
-                        "name": "run",
-                        "in": "formData",
-                        "description": "The actual run, being a source (or binary) file.",
-                        "required": false,
-                        "type": "file"
-                    },
-                    {
-                        "name": "api_key",
-                        "in": "query",
-                        "description": "Api key to authenticate the user",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "tags": [
-                    "run"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Id of the uploaded run"
                     },
                     "default": {
                         "description": "Unexpected error",
