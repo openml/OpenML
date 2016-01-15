@@ -122,26 +122,6 @@ paths:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Error'
-  /data/list:
-    get:
-      summary: List all datasets
-      description: |
-        Returns an array with all datasets in the system.
-      parameters:
-        - name: api_key
-          in: query
-          description: API key to authenticate the user
-          required: true
-          type: string
-      tags:
-        - data
-      responses:
-        '200':
-          description: A dataset description
-        default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
   /data/{id}/features:
     get:
       summary: Get data features
@@ -190,6 +170,26 @@ paths:
       responses:
         '200':
           description: A the qualities of the dataset
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /data/list:
+    get:
+      summary: List all datasets
+      description: |
+        Returns an array with all datasets in the system.
+      parameters:
+        - name: api_key
+          in: query
+          description: API key to authenticate the user
+          required: true
+          type: string
+      tags:
+        - data
+      responses:
+        '200':
+          description: A dataset description
         default:
           description: Unexpected error
           schema:
@@ -371,6 +371,36 @@ paths:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Error'
+  /flow/exists/{name}/{version}:
+    get:
+      summary: Check whether flow exists
+      description: |
+        Checks whether a flow with the given name and (external) version exists.
+      parameters:
+        - name: name
+          in: path
+          description: The name of the flow.
+          required: true
+          type: string
+        - name: version
+          in: path
+          description: The external version of the flow
+          required: true
+          type: string
+        - name: api_key
+          in: query
+          description: API key to authenticate the user
+          required: true
+          type: string
+      tags:
+        - flow
+      responses:
+        '200':
+          description: A list of flows
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
   /flow/list:
     get:
       summary: List all flows
@@ -397,36 +427,6 @@ paths:
       description: |
         Returns an array with all flows owned by you.
       parameters:
-        - name: api_key
-          in: query
-          description: API key to authenticate the user
-          required: true
-          type: string
-      tags:
-        - flow
-      responses:
-        '200':
-          description: A list of flows
-        default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
-  /flow/exists/{name}/{version}:
-    get:
-      summary: Check whether a flow with the given name and version exists
-      description: |
-        Checks whether a flow with the given name and (external) version exists.
-      parameters:
-        - name: name
-          in: path
-          description: The name of the flow.
-          required: true
-          type: string
-        - name: version
-          in: path
-          description: The external version of the flow
-          required: true
-          type: string
         - name: api_key
           in: query
           description: API key to authenticate the user
