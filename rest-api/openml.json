@@ -666,9 +666,6 @@
             "get": {
                 "summary": "Get runs by id(s)",
                 "description": "Returns an array with all runs matching the given run id(s).\n",
-                "consumes": [
-                    "application/x-www-form-urlencoded"
-                ],
                 "parameters": [
                     {
                         "name": "ids",
@@ -676,7 +673,7 @@
                         "description": "Comma-separated list of run IDs, e.g. '1,2,3'.",
                         "required": true,
                         "type": "string",
-                        "collectionFormat": "csv"
+                        "collectionFormat": "multi"
                     },
                     {
                         "name": "api_key",
