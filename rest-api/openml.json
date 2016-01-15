@@ -2,7 +2,7 @@
     "swagger": "2.0",
     "info": {
         "title": "OpenML API",
-        "description": "REST API for sharing, organizing and reusing machine learning datasets, code, and experiments. Follows a predictive URL scheme from endpoint `http://www.openml.org``/api_new/v1/json` (replace with xml for XML responses). An API key is required for authentication, found in your account settings after you register on [www.openml.org](www.openml.org).",
+        "description": "REST API for sharing, organizing and reusing machine learning datasets, code, and experiments. Follows a predictive URL scheme from endpoint http://www.openml.org/api_new/v1/json (or /xml). You need to add your `api_key` to every call (see your account settings), or simply log in.",
         "version": "1.0.0"
     },
     "host": "www.openml.org",
@@ -46,7 +46,7 @@
         "/data/{id}": {
             "get": {
                 "summary": "Dataset description",
-                "description": "Returns information about a dataset. The information includes the name, information about the creator, URL to download it and more. \n",
+                "description": "Returns information about a dataset. The information includes the name, information about the creator, URL to download it and more.\n",
                 "parameters": [
                     {
                         "name": "id",
@@ -92,7 +92,7 @@
             },
             "delete": {
                 "summary": "Deletes a dataset",
-                "description": "Deletes a dataset. Upon success, it returns the ID of the deleted dataset. \n",
+                "description": "Deletes a dataset. Upon success, it returns the ID of the deleted dataset.\n",
                 "parameters": [
                     {
                         "name": "id",
@@ -132,7 +132,7 @@
                 "consumes": [
                     "multipart/form-data"
                 ],
-                "description": "Uploads a dataset. Upon success, it returns the data id. \n",
+                "description": "Uploads a dataset. Upon success, it returns the data id.\n",
                 "parameters": [
                     {
                         "name": "description",
@@ -175,7 +175,7 @@
         "/data/{id}/features": {
             "get": {
                 "summary": "Features, data types",
-                "description": "Returns the features of a dataset. \n",
+                "description": "Returns the features of a dataset.\n",
                 "parameters": [
                     {
                         "name": "id",
@@ -212,7 +212,7 @@
         "/data/{id}/qualities": {
             "get": {
                 "summary": "Data qualitues, meta-features",
-                "description": "Returns the qualities of a dataset. \n",
+                "description": "Returns the qualities of a dataset.\n",
                 "parameters": [
                     {
                         "name": "id",
@@ -371,7 +371,7 @@
         "/flow/{id}": {
             "get": {
                 "summary": "Flow description",
-                "description": "Returns information about a flow. The information includes the name, information about the creator, dependencies, parameters, run instructions and more. \n",
+                "description": "Returns information about a flow. The information includes the name, information about the creator, dependencies, parameters, run instructions and more.\n",
                 "parameters": [
                     {
                         "name": "id",
@@ -417,7 +417,7 @@
             },
             "delete": {
                 "summary": "Deletes a flow",
-                "description": "Deletes a flow. Upon success, it returns the ID of the deleted flow. \n",
+                "description": "Deletes a flow. Upon success, it returns the ID of the deleted flow.\n",
                 "parameters": [
                     {
                         "name": "id",
@@ -457,7 +457,7 @@
                 "consumes": [
                     "multipart/form-flow"
                 ],
-                "description": "Uploads a flow. Upon success, it returns the flow id. \n",
+                "description": "Uploads a flow. Upon success, it returns the flow id.\n",
                 "parameters": [
                     {
                         "name": "description",
@@ -652,6 +652,366 @@
                 "responses": {
                     "200": {
                         "description": "The id of the untagged flow"
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/run/list/run/{ids}": {
+            "get": {
+                "summary": "Get runs by id(s)",
+                "description": "Returns an array with all runs matching the given run id(s).\n",
+                "parameters": [
+                    {
+                        "name": "ids",
+                        "in": "path",
+                        "description": "Comma-separated list of run IDs, e.g. '1,2,3'.",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "api_key",
+                        "in": "query",
+                        "description": "API key to authenticate the user",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "run"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A list of runs descriptions"
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/run/list/task/{ids}": {
+            "get": {
+                "summary": "Get runs by task(s)",
+                "description": "Returns an array with all runs belonging to one of the given task(s).\n",
+                "parameters": [
+                    {
+                        "name": "ids",
+                        "in": "path",
+                        "description": "Comma-separated list of task IDs, e.g. '1,2,3'.",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "api_key",
+                        "in": "query",
+                        "description": "API key to authenticate the user",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "run"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A list of runs descriptions"
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/run/list/uploader/{ids}": {
+            "get": {
+                "summary": "Get runs by uploader(s)",
+                "description": "Returns an array with all runs uploaded by one of the given user(s).\n",
+                "parameters": [
+                    {
+                        "name": "ids",
+                        "in": "path",
+                        "description": "Comma-separated list of user IDs, e.g. '1,2,3'.",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "api_key",
+                        "in": "query",
+                        "description": "API key to authenticate the user",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "run"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A list of runs descriptions"
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/run/list/flow/{ids}": {
+            "get": {
+                "summary": "Get runs by flow(s)",
+                "description": "Returns an array with all runs generated by the given flow(s).\n",
+                "parameters": [
+                    {
+                        "name": "ids",
+                        "in": "path",
+                        "description": "Comma-separated list of user IDs, e.g. '1,2,3'.",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "api_key",
+                        "in": "query",
+                        "description": "API key to authenticate the user",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "run"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A list of runs descriptions"
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/run/list/{filters}": {
+            "get": {
+                "summary": "Filter runs by id, task, uploader and or flow",
+                "description": "Returns an array with all runs matching any or all of the given filters. You can combine any of the four above filters any way you want.\n",
+                "parameters": [
+                    {
+                        "name": "filters",
+                        "in": "path",
+                        "description": "Any combination of filters (run,task,uploader and/or flow) and corresponding comma-separated IDs, e.g. 'run/1,2,3/uploader/1' or 'task/1,2,3/flow/1,2'.",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "api_key",
+                        "in": "query",
+                        "description": "API key to authenticate the user",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "run"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A list of runs descriptions"
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/evaluation/list/run/{ids}": {
+            "get": {
+                "summary": "Get evaluations by run id(s)",
+                "description": "Returns an array with all evaluations matching the given run id(s).\n",
+                "parameters": [
+                    {
+                        "name": "ids",
+                        "in": "path",
+                        "description": "Comma-separated list of run IDs, e.g. '1,2,3'.",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "api_key",
+                        "in": "query",
+                        "description": "API key to authenticate the user",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "evaluation"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A list of evaluation descriptions"
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/evaluation/list/task/{ids}": {
+            "get": {
+                "summary": "Get evaluations by task(s)",
+                "description": "Returns an array with all evaluations belonging to one of the given task(s).\n",
+                "parameters": [
+                    {
+                        "name": "ids",
+                        "in": "path",
+                        "description": "Comma-separated list of task IDs, e.g. '1,2,3'.",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "api_key",
+                        "in": "query",
+                        "description": "API key to authenticate the user",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "evaluation"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A list of evaluation descriptions"
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/evaluation/list/uploader/{ids}": {
+            "get": {
+                "summary": "Get evaluations by uploader(s)",
+                "description": "Returns an array with all evaluations uploaded by one of the given user(s).\n",
+                "parameters": [
+                    {
+                        "name": "ids",
+                        "in": "path",
+                        "description": "Comma-separated list of user IDs, e.g. '1,2,3'.",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "api_key",
+                        "in": "query",
+                        "description": "API key to authenticate the user",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "evaluation"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A list of evaluation descriptions"
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/evaluation/list/flow/{ids}": {
+            "get": {
+                "summary": "Get evaluations by flow(s)",
+                "description": "Returns an array with all evaluations generated by the given flow(s).\n",
+                "parameters": [
+                    {
+                        "name": "ids",
+                        "in": "path",
+                        "description": "Comma-separated list of user IDs, e.g. '1,2,3'.",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "api_key",
+                        "in": "query",
+                        "description": "API key to authenticate the user",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "evaluation"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A list of evaluations descriptions"
+                    },
+                    "default": {
+                        "description": "Unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/evaluation/list/{filters}": {
+            "get": {
+                "summary": "Filter evaluations by run, task, uploader and or flow",
+                "description": "Returns an array with all evaluations matching any or all of the given filters. You can combine any of the four above filters any way you want.\n",
+                "parameters": [
+                    {
+                        "name": "filters",
+                        "in": "path",
+                        "description": "Any combination of filters (run,task,uploader and/or flow) and corresponding comma-separated IDs, e.g. 'run/1,2,3/uploader/1' or 'task/1,2,3/flow/1,2'.",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "api_key",
+                        "in": "query",
+                        "description": "API key to authenticate the user",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "evaluation"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A list of evaluations descriptions"
                     },
                     "default": {
                         "description": "Unexpected error",
