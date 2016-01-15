@@ -672,7 +672,8 @@
                         "in": "path",
                         "description": "Comma-separated list of run IDs, e.g. '1,2,3'.",
                         "required": true,
-                        "type": "string"
+                        "type": "string",
+                        "collectionFormat": "csv"
                     },
                     {
                         "name": "api_key",
