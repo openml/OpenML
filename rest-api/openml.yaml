@@ -33,10 +33,7 @@ paths:
         '200':
           description: A dataset description
           schema:
-            type: object
-            properties:
-              data_set_description:
-                $ref: '#/definitions/Data'
+            $ref: '#/definitions/Data'
           examples:
             application/json: |-
               {
@@ -177,10 +174,7 @@ paths:
         '200':
           description: All the features of the dataset
           schema:
-            type: object
-            properties:
-              data_set_description:
-                $ref: '#/definitions/DataFeatures'
+            $ref: '#/definitions/DataFeatures'
           examples:
             application/json: |-
               {
@@ -256,10 +250,7 @@ paths:
         '200':
           description: All the qualities of the dataset
           schema:
-            type: object
-            properties:
-              data_set_description:
-                $ref: '#/definitions/DataQualities'
+            $ref: '#/definitions/DataQualities'
           examples:
             application/json: |-
               {
@@ -325,10 +316,7 @@ paths:
         '200':
           description: A dataset description
           schema:
-            type: object
-            properties:
-              data_set_description:
-                $ref: '#/definitions/DataList'
+            $ref: '#/definitions/DataList'
           examples: 
             application/json: |-
               {
@@ -508,10 +496,7 @@ paths:
         '200':
           description: A flow description
           schema:
-            type: object
-            properties:
-              flow_description:
-                $ref: '#/definitions/Flow'
+            $ref: '#/definitions/Flow'
           examples:
             application/json: |-
               {
@@ -700,10 +685,7 @@ paths:
         '200':
           description: A list of flows
           schema:
-            type: object
-            properties:
-              flow_description:
-                $ref: '#/definitions/FlowList'
+            $ref: '#/definitions/FlowList'
           examples:
             application/json: |-
               {
@@ -902,10 +884,7 @@ paths:
         '200':
           description: A run description
           schema:
-            type: object
-            properties:
-              run_description:
-                $ref: '#/definitions/Run'
+            $ref: '#/definitions/Run'
           examples:
             application/json: |-
               {
@@ -1428,295 +1407,316 @@ definitions:
   Flow:
     type: object
     properties:
-      id:
-        type: string
-        description: ID of the flow, a positive integer
-      uploader:
-        type: string
-        description: The uploader of the flow
-      name:
-        type: string
-        description: The name of the flow
-      version:
-        type: string
-        description: The version of the flow, set by OpenML. A positive integer
-      version_label:
-        type: string
-        description: The version of the flow, as defined by the uploader, for reference. Can be any format as long as it is unique.
-      description:
-        type: string
-        description: Wiki description of the flow, in (Git flavoured) markdown format
-      upload_date:
-        type: string
-        description: The datetime that the flow was uploaded, format yyyy-MM-dd HH:mm:ss
-      language:
-        type: string
-        description: The programming language the flow is written in.
-      dependencies:
-        type: string
-        description: The libraries that this flow depends on, and their version numbers.
-      tag:
-        type: array
-        items:
-          type: string
-        description: Tags added by OpenML users. Includes study tags in the form `study_1`
-      parameter:
+      flow_description:
         type: object
         properties:
+          id:
+            type: string
+            description: ID of the flow, a positive integer
+          uploader:
+            type: string
+            description: The uploader of the flow
           name:
             type: string
-            description: The name of the parameter
-          data_type:
+            description: The name of the flow
+          version:
             type: string
-            description: The data type of the parameter
-          default_value:
+            description: The version of the flow, set by OpenML. A positive integer
+          version_label:
             type: string
-            description: The default value of the parameter
+            description: The version of the flow, as defined by the uploader, for reference. Can be any format as long as it is unique.
           description:
             type: string
-            description: A description of the parameter
+            description: Wiki description of the flow, in (Git flavoured) markdown format
+          upload_date:
+            type: string
+            description: The datetime that the flow was uploaded, format yyyy-MM-dd HH:mm:ss
+          language:
+            type: string
+            description: The programming language the flow is written in.
+          dependencies:
+            type: string
+            description: The libraries that this flow depends on, and their version numbers.
+          tag:
+            type: array
+            items:
+              type: string
+            description: Tags added by OpenML users. Includes study tags in the form `study_1`
+          parameter:
+            type: object
+            properties:
+              name:
+                type: string
+                description: The name of the parameter
+              data_type:
+                type: string
+                description: The data type of the parameter
+              default_value:
+                type: string
+                description: The default value of the parameter
+              description:
+                type: string
+                description: A description of the parameter
   FlowList:
     type: object
     properties:
-      flow:
-        type: array
-        items:
-          type: object
-          properties:
-            id:
-              type: string
-              description: The flow ID
-            full_name:
-              type: string
-              description: The full flow name (name + internal version number)   
-            name:
-              type: string
-              description: The flow name    
-            version:
-              type: string
-              description: The internal flow version
-            external_version:
-              type: string
-              description: The external flow version
-            uploader:
-              type: string
-              description: The ID of the person who uploaded the flow
+      flows:
+        type: object
+        properties:
+          flow:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: The flow ID
+                full_name:
+                  type: string
+                  description: The full flow name (name + internal version number)   
+                name:
+                  type: string
+                  description: The flow name    
+                version:
+                  type: string
+                  description: The internal flow version
+                external_version:
+                  type: string
+                  description: The external flow version
+                uploader:
+                  type: string
+                  description: The ID of the person who uploaded the flow
   DataList:
     type: object
     properties:
-      dataset:
-        type: array
-        items:
-          type: object
-          properties:
-            did:
-              type: string
-              description: The dataset ID
-            name:
-              type: string
-              description: The dataset name    
-            status:
-              type: string
-              description: The dataset status, either in_preparation, active, or deactivated
-            quality:
-              type: array
-              items:
-                type: object
-                properties:
-                  name:
-                    type: string
-                    description: The name of the property
-                  value:
-                    type: string
-                    description: The value of the property
+      data:
+        type: object
+        properties:
+          dataset:
+            type: array
+            items:
+              type: object
+              properties:
+                did:
+                  type: string
+                  description: The dataset ID
+                name:
+                  type: string
+                  description: The dataset name    
+                status:
+                  type: string
+                  description: The dataset status, either in_preparation, active, or deactivated
+                quality:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        description: The name of the property
+                      value:
+                        type: string
+                        description: The value of the property
   DataQualities:
     type: object
     properties:
-      quality:
-        type: array
-        items:
-          type: object
-          properties:
-            name:
-              type: string
-              description: The name of the dataset quality measures
-            value:
-              type: string
-              description: The value for this dataset
+      data_qualities:
+        type: object
+        properties:
+          quality:
+            type: array
+            items:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: The name of the dataset quality measures
+                value:
+                  type: string
+                  description: The value for this dataset
   DataFeatures:
     type: object
     properties:
-      feature:
-        type: array
-        items:
-          type: object
-          properties:
-            index:
-              type: string
-              description: Feature index
-            name:
-              type: string
-              description: Feature name
-            data_type:
-              type: string
-              description: Feature data type
-            is_target:
-              type: string
-              description: Whether this feature is seen as a target feature
-            is_ignore:
-              type: string
-              description: Whether this feature should be ignored in modelling (e.g. every value is unique)
-            is_row_identifier:
-              type: string
-              description: Whether this feature is a row identifier
+      data_features:
+        type: object
+        properties:
+          feature:
+            type: array
+            items:
+              type: object
+              properties:
+                index:
+                  type: string
+                  description: Feature index
+                name:
+                  type: string
+                  description: Feature name
+                data_type:
+                  type: string
+                  description: Feature data type
+                is_target:
+                  type: string
+                  description: Whether this feature is seen as a target feature
+                is_ignore:
+                  type: string
+                  description: Whether this feature should be ignored in modelling (e.g. every value is unique)
+                is_row_identifier:
+                  type: string
+                  description: Whether this feature is a row identifier
   Data:
     type: object
-    required: [ "name", "description", "format" ]
     properties:
-      id:
-        type: string
-        description: ID of the dataset, a positive integer
-      name:
-        type: string
-        description: The name of the dataset
-      version:
-        type: string
-        description: The version of the dataset, set by OpenML. A positive integer
-      description:
-        type: string
-        description: Wiki description of the dataset, in (Git flavoured) markdown format
-      format:
-        type: string
-        description: Data format, for instance ARFF
-      upload_date:
-        type: string
-        description: The datetime that the dataset was uploaded, format yyyy-MM-dd HH:mm:ss
-      licence:
-        type: string
-        description: The licence granted for using the dataset, for instance Public or CC-BY
-      url:
-        type: string
-        description: The URL where the data can be downloaded
-      file_id:
-        type: string
-        description: The ID of the dataset file stored on the OpenML server
-      default_target_attribute:
-        type: string
-        description: For tabular data, the name of the column that is typically used as the target attribute for that data set
-      version_label:
-        type: string
-        description: The version of the dataset, as defined by the uploader, for reference. Can be any format as long as it is unique.
-      tag:
-        type: array
-        items:
-          type: string
-        description: Tags added by OpenML users. Includes study tags in the form `study_1`
-      visibility:
-        type: string
-        description: Who can see the dataset. For instance `public`.
-      original_data_url:
-        type: string
-        description: The URL where the original data is hosted.
-      status:
-        type: string
-        description: active, in_preparation, or deactivated
-      md5_checksum:
-        type: string
-        description: Checksum to verify downloads of the dataset
+      data_set_description:
+        type: object
+        required: [ "name", "description", "format" ]
+        properties:
+          id:
+            type: string
+            description: ID of the dataset, a positive integer
+          name:
+            type: string
+            description: The name of the dataset
+          version:
+            type: string
+            description: The version of the dataset, set by OpenML. A positive integer
+          description:
+            type: string
+            description: Wiki description of the dataset, in (Git flavoured) markdown format
+          format:
+            type: string
+            description: Data format, for instance ARFF
+          upload_date:
+            type: string
+            description: The datetime that the dataset was uploaded, format yyyy-MM-dd HH:mm:ss
+          licence:
+            type: string
+            description: The licence granted for using the dataset, for instance Public or CC-BY
+          url:
+            type: string
+            description: The URL where the data can be downloaded
+          file_id:
+            type: string
+            description: The ID of the dataset file stored on the OpenML server
+          default_target_attribute:
+            type: string
+            description: For tabular data, the name of the column that is typically used as the target attribute for that data set
+          version_label:
+            type: string
+            description: The version of the dataset, as defined by the uploader, for reference. Can be any format as long as it is unique.
+          tag:
+            type: array
+            items:
+              type: string
+            description: Tags added by OpenML users. Includes study tags in the form `study_1`
+          visibility:
+            type: string
+            description: Who can see the dataset. For instance `public`.
+          original_data_url:
+            type: string
+            description: The URL where the original data is hosted.
+          status:
+            type: string
+            description: active, in_preparation, or deactivated
+          md5_checksum:
+            type: string
+            description: Checksum to verify downloads of the dataset
   Run:
     type: object
     properties:
-      id:
-        type: string
-        description: ID of the run, a positive integer
-      uploader:
-        type: string
-        description: The uploader of the run
-      uploader_name:
-        type: string
-        description: The name of the uploader of the run
-      task_id:
-        type: string
-        description: The id of the task solved by this run
-      task_type:
-        type: string
-        description: The type of task solved by this run (e.g., classification)
-      task_evaluation_measure:
-        type: string
-        description: The evaluation measure that is supposed to be optimized in the task, if any
-      flow_id:
-        type: string
-        description: The id of the flow used in this run
-      flow_name:
-        type: string
-        description: The name of the flow used in this run
-      setup_string:
-        type: string
-        description: Configuration of the flow as a string, to be interpreted by the flow, its library, or command line interface. 
-      tag:
-        type: array
-        items:
-          type: string
-        description: Tags added by OpenML users. Includes study tags in the form `study_1`
-      parameter_setting:
+      run_description:
         type: object
-        description: Parameter settings used in this run. Can be multiple. 
         properties:
-          name:
+          id:
             type: string
-            description: The name of the parameter
-          value:
+            description: ID of the run, a positive integer
+          uploader:
             type: string
-            description: The value of the parameter used
-      input_data:
-        type: object
-        description: The input data for this run. 
-        properties:
-          dataset:
-            type: object    
-            properties:
-              did:
-                type: string
-                description: The id of the dataset
-              name:
-                type: string
-                description: The name of the dataset
-              url:
-                type: string
-                description: The download url of the dataset
-      output_data:
-        type: object
-        description: The data generated by this run. 
-        properties: 
-          file:
-            type: object    
-            description: Files uploaded by the user, e.g. run description, predictions. Can be multiple. 
-            properties:
-              did:
-                type: string
-                description: The id of the uploaded file
-              file_id:
-                type: string
-                description: The reference id of the uploaded file, for downloading afterward
-              name:
-                type: string
-                description: The name of the uploaded file (e.g., description, predictions, model,...)
-          evaluation:
-            type: object   
-            description: Evaluations uploaded by the user, e.g. runtimes, or computed by the server (after run upload). Can be multiple. 
+            description: The uploader of the run
+          uploader_name:
+            type: string
+            description: The name of the uploader of the run
+          task_id:
+            type: string
+            description: The id of the task solved by this run
+          task_type:
+            type: string
+            description: The type of task solved by this run (e.g., classification)
+          task_evaluation_measure:
+            type: string
+            description: The evaluation measure that is supposed to be optimized in the task, if any
+          flow_id:
+            type: string
+            description: The id of the flow used in this run
+          flow_name:
+            type: string
+            description: The name of the flow used in this run
+          setup_string:
+            type: string
+            description: Configuration of the flow as a string, to be interpreted by the flow, its library, or command line interface. 
+          tag:
+            type: array
+            items:
+              type: string
+            description: Tags added by OpenML users. Includes study tags in the form `study_1`
+          parameter_setting:
+            type: object
+            description: Parameter settings used in this run. Can be multiple. 
             properties:
               name:
                 type: string
-                description: The name of the evaluation measure
-              flow_id:
-                type: string
-                description: The id of the code used to compute this evaluation method
+                description: The name of the parameter
               value:
                 type: string
-                description: The result of the evaluation
-              array_data:
-                type: string
-                description: For composite evaluation measures (e.g. per-class measures, confusion matrix), a string (JSON) representation of the evaluation.
+                description: The value of the parameter used
+          input_data:
+            type: object
+            description: The input data for this run. 
+            properties:
+              dataset:
+                type: object    
+                properties:
+                  did:
+                    type: string
+                    description: The id of the dataset
+                  name:
+                    type: string
+                    description: The name of the dataset
+                  url:
+                    type: string
+                    description: The download url of the dataset
+          output_data:
+            type: object
+            description: The data generated by this run. 
+            properties: 
+              file:
+                type: object    
+                description: Files uploaded by the user, e.g. run description, predictions. Can be multiple. 
+                properties:
+                  did:
+                    type: string
+                    description: The id of the uploaded file
+                  file_id:
+                    type: string
+                    description: The reference id of the uploaded file, for downloading afterward
+                  name:
+                    type: string
+                    description: The name of the uploaded file (e.g., description, predictions, model,...)
+              evaluation:
+                type: object   
+                description: Evaluations uploaded by the user, e.g. runtimes, or computed by the server (after run upload). Can be multiple. 
+                properties:
+                  name:
+                    type: string
+                    description: The name of the evaluation measure
+                  flow_id:
+                    type: string
+                    description: The id of the code used to compute this evaluation method
+                  value:
+                    type: string
+                    description: The result of the evaluation
+                  array_data:
+                    type: string
+                    description: For composite evaluation measures (e.g. per-class measures, confusion matrix), a string (JSON) representation of the evaluation.
   Error:
     type: object
     properties:
