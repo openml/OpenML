@@ -1655,7 +1655,7 @@ definitions:
       id:
         type: string
         description: ID of the tagged dataset, a positive integer          
-  DataUnTag:
+  DataUntag:
     type: object
     properties:
       id:

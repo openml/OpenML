@@ -1419,7 +1419,7 @@
                 }
             }
         },
-        "DataUnTag": {
+        "DataUntag": {
             "type": "object",
             "properties": {
                 "id": {
