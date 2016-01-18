@@ -87,6 +87,13 @@ paths:
       responses:
         '200':
           description: ID of the deleted dataset
+          examples:
+            application/json: |-
+              {
+                "data_delete": {
+                  "oml:id": "4328"
+                }
+              }
         default:
           description: Unexpected error
           schema:
@@ -100,7 +107,7 @@ paths:
       parameters:
         - name: description
           in: formData
-          description: An XML file describing the dataset
+          description: An XML file describing the dataset. Use http://www.openml.org/api_new/v1/data/{id} for examples, but not that only name, description, and data format are required. The XSD schema can be found at https://github.com/openml/website/blob/master/openml_OS/views/pages/rest_api/xsd/openml.data.upload.xsd
           required: true
           type: file
         - name: dataset
@@ -118,11 +125,23 @@ paths:
       responses:
         '200':
           description: Id of the uploaded dataset
+          schema:
+            type: object
+            properties:
+              data_set_description:
+                $ref: '#/definitions/Data'
+          examples: 
+            application/json: |-
+              {
+                "upload_data_set": {
+                  "oml:id": "4328"
+                }
+              }
         default:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Error'
-  /data/{id}/features:
+  /data/features/{id}:
     get:
       summary: Get data features
       description: |
@@ -143,12 +162,60 @@ paths:
         - data
       responses:
         '200':
-          description: A the features of the dataset
+          description: All the features of the dataset
+          examples:
+            application/json: |-
+              {
+                "data_features": {
+                  "oml:feature": [
+                    {
+                      "oml:index": "0",
+                      "oml:name": "sepallength",
+                      "oml:data_type": "numeric",
+                      "oml:is_target": "false",
+                      "oml:is_ignore": "false",
+                      "oml:is_row_identifier": "false"
+                    },
+                    {
+                      "oml:index": "1",
+                      "oml:name": "sepalwidth",
+                      "oml:data_type": "numeric",
+                      "oml:is_target": "false",
+                      "oml:is_ignore": "false",
+                      "oml:is_row_identifier": "false"
+                    },
+                    {
+                      "oml:index": "2",
+                      "oml:name": "petallength",
+                      "oml:data_type": "numeric",
+                      "oml:is_target": "false",
+                      "oml:is_ignore": "false",
+                      "oml:is_row_identifier": "false"
+                    },
+                    {
+                      "oml:index": "3",
+                      "oml:name": "petalwidth",
+                      "oml:data_type": "numeric",
+                      "oml:is_target": "false",
+                      "oml:is_ignore": "false",
+                      "oml:is_row_identifier": "false"
+                    },
+                    {
+                      "oml:index": "4",
+                      "oml:name": "class",
+                      "oml:data_type": "nominal",
+                      "oml:is_target": "true",
+                      "oml:is_ignore": "false",
+                      "oml:is_row_identifier": "false"
+                    }
+                  ]
+                }
+              }
         default:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Error'
-  /data/{id}/qualities:
+  /data/qualities/{id}:
     get:
       summary: Get data qualities
       description: |
@@ -169,7 +236,439 @@ paths:
         - data
       responses:
         '200':
-          description: A the qualities of the dataset
+          description: All the qualities of the dataset
+          examples:
+            application/json: |-
+              {
+                "data_qualities": {
+                  "oml:quality": [
+                    {
+                      "oml:name": "ClassCount",
+                      "oml:value": "3.0"
+                    },
+                    {
+                      "oml:name": "ClassEntropy",
+                      "oml:value": "1.584962500721156"
+                    },
+                    {
+                      "oml:name": "DecisionStumpAUC",
+                      "oml:value": "0.8333333333333334"
+                    },
+                    {
+                      "oml:name": "DecisionStumpErrRate",
+                      "oml:value": "33.333333333333336"
+                    },
+                    {
+                      "oml:name": "DecisionStumpKappa",
+                      "oml:value": "0.49999999999999994"
+                    },
+                    {
+                      "oml:name": "DefaultAccuracy",
+                      "oml:value": "0.33333333333333"
+                    },
+                    {
+                      "oml:name": "Dimensionality",
+                      "oml:value": "0.03333333333333333"
+                    },
+                    {
+                      "oml:name": "EquivalentNumberOfAtts",
+                      "oml:value": "-1.0"
+                    },
+                    {
+                      "oml:name": "HoeffdingAdwin.changes",
+                      "oml:value": "0.0"
+                    },
+                    {
+                      "oml:name": "HoeffdingAdwin.warnings",
+                      "oml:value": "0.0"
+                    },
+                    {
+                      "oml:name": "HoeffdingDDM.changes",
+                      "oml:value": "2.0"
+                    },
+                    {
+                      "oml:name": "HoeffdingDDM.warnings",
+                      "oml:value": "1.0"
+                    },
+                    {
+                      "oml:name": "IncompleteInstanceCount",
+                      "oml:value": "0.0"
+                    },
+                    {
+                      "oml:name": "InstanceCount",
+                      "oml:value": "150.0"
+                    },
+                    {
+                      "oml:name": "J48.00001.AUC",
+                      "oml:value": "0.9565333333333332"
+                    },
+                    {
+                      "oml:name": "J48.00001.ErrRate",
+                      "oml:value": "6.666666666666667"
+                    },
+                    {
+                      "oml:name": "J48.00001.Kappa",
+                      "oml:value": "0.9"
+                    },
+                    {
+                      "oml:name": "J48.0001.AUC",
+                      "oml:value": "0.9565333333333332"
+                    },
+                    {
+                      "oml:name": "J48.0001.ErrRate",
+                      "oml:value": "6.666666666666667"
+                    },
+                    {
+                      "oml:name": "J48.0001.Kappa",
+                      "oml:value": "0.9"
+                    },
+                    {
+                      "oml:name": "J48.001.AUC",
+                      "oml:value": "0.9565333333333332"
+                    },
+                    {
+                      "oml:name": "J48.001.ErrRate",
+                      "oml:value": "6.666666666666667"
+                    },
+                    {
+                      "oml:name": "J48.001.Kappa",
+                      "oml:value": "0.9"
+                    },
+                    {
+                      "oml:name": "JRipAUC",
+                      "oml:value": "0.9384999999999999"
+                    },
+                    {
+                      "oml:name": "JRipErrRate",
+                      "oml:value": "0.08666666666666667"
+                    },
+                    {
+                      "oml:name": "JRipKappa",
+                      "oml:value": "0.87"
+                    },
+                    {
+                      "oml:name": "MajorityClassSize",
+                      "oml:value": "50"
+                    },
+                    {
+                      "oml:name": "MaxNominalAttDistinctValues",
+                      "oml:value": "-1.0"
+                    },
+                    {
+                      "oml:name": "MeanAttributeEntropy",
+                      "oml:value": "-1.0"
+                    },
+                    {
+                      "oml:name": "MeanKurtosisOfNumericAtts",
+                      "oml:value": "-0.780577849626652"
+                    },
+                    {
+                      "oml:name": "MeanMeansOfNumericAtts",
+                      "oml:value": "3.4636666666666684"
+                    },
+                    {
+                      "oml:name": "MeanMutualInformation",
+                      "oml:value": "-1.0"
+                    },
+                    {
+                      "oml:name": "MeanNominalAttDistinctValues",
+                      "oml:value": "-1.0"
+                    },
+                    {
+                      "oml:name": "MeanSkewnessOfNumericAtts",
+                      "oml:value": "0.06647735836715944"
+                    },
+                    {
+                      "oml:name": "MeanStdDevOfNumericAtts",
+                      "oml:value": "0.9473104002482755"
+                    },
+                    {
+                      "oml:name": "MinNominalAttDistinctValues",
+                      "oml:value": "-1.0"
+                    },
+                    {
+                      "oml:name": "MinorityClassSize",
+                      "oml:value": "50"
+                    },
+                    {
+                      "oml:name": "NBTreeAUC",
+                      "oml:value": "0.9719333333333334"
+                    },
+                    {
+                      "oml:name": "NBTreeErrRate",
+                      "oml:value": "0.07333333333333333"
+                    },
+                    {
+                      "oml:name": "NBTreeKappa",
+                      "oml:value": "0.8899999999999998"
+                    },
+                    {
+                      "oml:name": "NaiveBayesAUC",
+                      "oml:value": "0.9932000000000001"
+                    },
+                    {
+                      "oml:name": "NaiveBayesAdwin.changes",
+                      "oml:value": "0.0"
+                    },
+                    {
+                      "oml:name": "NaiveBayesAdwin.warnings",
+                      "oml:value": "0.0"
+                    },
+                    {
+                      "oml:name": "NaiveBayesDdm.changes",
+                      "oml:value": "2.0"
+                    },
+                    {
+                      "oml:name": "NaiveBayesDdm.warnings",
+                      "oml:value": "1.0"
+                    },
+                    {
+                      "oml:name": "NaiveBayesErrRate",
+                      "oml:value": "0.03333333333333333"
+                    },
+                    {
+                      "oml:name": "NaiveBayesKappa",
+                      "oml:value": "0.9499999999999998"
+                    },
+                    {
+                      "oml:name": "NegativePercentage",
+                      "oml:value": "0.3333333333333333"
+                    },
+                    {
+                      "oml:name": "NoiseToSignalRatio",
+                      "oml:value": "-1.0"
+                    },
+                    {
+                      "oml:name": "NumAttributes",
+                      "oml:value": "5.0"
+                    },
+                    {
+                      "oml:name": "NumBinaryAtts",
+                      "oml:value": "0.0"
+                    },
+                    {
+                      "oml:name": "NumMissingValues",
+                      "oml:value": "0.0"
+                    },
+                    {
+                      "oml:name": "NumNominalAtts",
+                      "oml:value": "0.0"
+                    },
+                    {
+                      "oml:name": "NumNumericAtts",
+                      "oml:value": "4.0"
+                    },
+                    {
+                      "oml:name": "NumberOfClasses",
+                      "oml:value": "3"
+                    },
+                    {
+                      "oml:name": "NumberOfFeatures",
+                      "oml:value": "5"
+                    },
+                    {
+                      "oml:name": "NumberOfInstances",
+                      "oml:value": "150"
+                    },
+                    {
+                      "oml:name": "NumberOfInstancesWithMissingValues",
+                      "oml:value": "0"
+                    },
+                    {
+                      "oml:name": "NumberOfMissingValues",
+                      "oml:value": "0"
+                    },
+                    {
+                      "oml:name": "NumberOfNumericFeatures",
+                      "oml:value": "4"
+                    },
+                    {
+                      "oml:name": "NumberOfSymbolicFeatures",
+                      "oml:value": "0"
+                    },
+                    {
+                      "oml:name": "PercentageOfBinaryAtts",
+                      "oml:value": "0.0"
+                    },
+                    {
+                      "oml:name": "PercentageOfMissingValues",
+                      "oml:value": "0.0"
+                    },
+                    {
+                      "oml:name": "PercentageOfNominalAtts",
+                      "oml:value": "0.0"
+                    },
+                    {
+                      "oml:name": "PercentageOfNumericAtts",
+                      "oml:value": "0.8"
+                    },
+                    {
+                      "oml:name": "PositivePercentage",
+                      "oml:value": "0.3333333333333333"
+                    },
+                    {
+                      "oml:name": "REPTreeDepth1AUC",
+                      "oml:value": "0.8333333333333334"
+                    },
+                    {
+                      "oml:name": "REPTreeDepth1ErrRate",
+                      "oml:value": "33.333333333333336"
+                    },
+                    {
+                      "oml:name": "REPTreeDepth1Kappa",
+                      "oml:value": "0.49999999999999994"
+                    },
+                    {
+                      "oml:name": "REPTreeDepth2AUC",
+                      "oml:value": "0.955"
+                    },
+                    {
+                      "oml:name": "REPTreeDepth2ErrRate",
+                      "oml:value": "7.333333333333333"
+                    },
+                    {
+                      "oml:name": "REPTreeDepth2Kappa",
+                      "oml:value": "0.8899999999999998"
+                    },
+                    {
+                      "oml:name": "REPTreeDepth3AUC",
+                      "oml:value": "0.955"
+                    },
+                    {
+                      "oml:name": "REPTreeDepth3ErrRate",
+                      "oml:value": "7.333333333333333"
+                    },
+                    {
+                      "oml:name": "REPTreeDepth3Kappa",
+                      "oml:value": "0.8899999999999998"
+                    },
+                    {
+                      "oml:name": "RandomTreeDepth1AUC",
+                      "oml:value": "0.8333333333333334"
+                    },
+                    {
+                      "oml:name": "RandomTreeDepth1ErrRate",
+                      "oml:value": "0.3333333333333333"
+                    },
+                    {
+                      "oml:name": "RandomTreeDepth1Kappa",
+                      "oml:value": "0.49999999999999994"
+                    },
+                    {
+                      "oml:name": "RandomTreeDepth2AUC",
+                      "oml:value": "0.9754"
+                    },
+                    {
+                      "oml:name": "RandomTreeDepth2ErrRate",
+                      "oml:value": "0.04"
+                    },
+                    {
+                      "oml:name": "RandomTreeDepth2Kappa",
+                      "oml:value": "0.94"
+                    },
+                    {
+                      "oml:name": "RandomTreeDepth3AUC",
+                      "oml:value": "0.9642"
+                    },
+                    {
+                      "oml:name": "RandomTreeDepth3ErrRate",
+                      "oml:value": "0.06"
+                    },
+                    {
+                      "oml:name": "RandomTreeDepth3Kappa",
+                      "oml:value": "0.9099999999999999"
+                    },
+                    {
+                      "oml:name": "SVMe1AUC",
+                      "oml:value": "0.9914666666666666"
+                    },
+                    {
+                      "oml:name": "SVMe1ErrRate",
+                      "oml:value": "0.05333333333333334"
+                    },
+                    {
+                      "oml:name": "SVMe1Kappa",
+                      "oml:value": "0.9199999999999998"
+                    },
+                    {
+                      "oml:name": "SVMe2AUC",
+                      "oml:value": "0.9766"
+                    },
+                    {
+                      "oml:name": "SVMe2ErrRate",
+                      "oml:value": "0.05333333333333334"
+                    },
+                    {
+                      "oml:name": "SVMe2Kappa",
+                      "oml:value": "0.9199999999999998"
+                    },
+                    {
+                      "oml:name": "SVMe3AUC",
+                      "oml:value": "0.9691333333333334"
+                    },
+                    {
+                      "oml:name": "SVMe3ErrRate",
+                      "oml:value": "0.05333333333333334"
+                    },
+                    {
+                      "oml:name": "SVMe3Kappa",
+                      "oml:value": "0.9199999999999998"
+                    },
+                    {
+                      "oml:name": "SimpleLogisticAUC",
+                      "oml:value": "0.9912000000000001"
+                    },
+                    {
+                      "oml:name": "SimpleLogisticErrRate",
+                      "oml:value": "0.06666666666666667"
+                    },
+                    {
+                      "oml:name": "SimpleLogisticKappa",
+                      "oml:value": "0.9"
+                    },
+                    {
+                      "oml:name": "StdvNominalAttDistinctValues",
+                      "oml:value": "-1.0"
+                    },
+                    {
+                      "oml:name": "kNN_1NAUC",
+                      "oml:value": "0.9558"
+                    },
+                    {
+                      "oml:name": "kNN_1NErrRate",
+                      "oml:value": "0.06"
+                    },
+                    {
+                      "oml:name": "kNN_1NKappa",
+                      "oml:value": "0.9099999999999999"
+                    },
+                    {
+                      "oml:name": "kNN_2NAUC",
+                      "oml:value": "0.9622666666666667"
+                    },
+                    {
+                      "oml:name": "kNN_2NErrRate",
+                      "oml:value": "0.08666666666666667"
+                    },
+                    {
+                      "oml:name": "kNN_2NKappa",
+                      "oml:value": "0.87"
+                    },
+                    {
+                      "oml:name": "kNN_3NAUC",
+                      "oml:value": "0.9672"
+                    },
+                    {
+                      "oml:name": "kNN_3NErrRate",
+                      "oml:value": "0.05333333333333334"
+                    },
+                    {
+                      "oml:name": "kNN_3NKappa",
+                      "oml:value": "0.9199999999999998"
+                    }
+                  ]
+                }
+              }
         default:
           description: Unexpected error
           schema:
@@ -190,6 +689,65 @@ paths:
       responses:
         '200':
           description: A dataset description
+          examples: 
+            application/json: |-
+              {
+                "data": {
+                  "oml:dataset": [
+                    {
+                      "oml:did":"1",
+                      "oml:name":"anneal",
+                      "oml:status":"active",
+                      "oml:quality":[
+                        {
+                          "@name":"MajorityClassSize",
+                          "$":"684"
+                        },
+                        {
+                          "@name":"MaxNominalAttDistinctValues",
+                          "$":"10.0"
+                        },
+                        {
+                          "@name":"MinorityClassSize"
+                          ,"$":"0"
+                        },
+                        {
+                          "@name":"NumBinaryAtts",
+                          "$":"14.0"
+                        },
+                        {
+                          "@name":"NumberOfClasses",
+                          "$":"6"
+                        },
+                        {
+                          "@name":"NumberOfFeatures",
+                          "$":"39"
+                        },
+                        {
+                          "@name":"NumberOfInstances",
+                          "$":"898"
+                        },
+                        {
+                          "@name":"NumberOfInstancesWithMissingValues",
+                          "$":"0"
+                        },
+                        {
+                          "@name":"NumberOfMissingValues",
+                          "$":"0"
+                        },
+                        {
+                          "@name":"NumberOfNumericFeatures",
+                          "$":"6"
+                        },
+                        {
+                          "@name":"NumberOfSymbolicFeatures",
+                          "$":"32"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
         default:
           description: Unexpected error
           schema:
@@ -221,6 +779,13 @@ paths:
       responses:
         '200':
           description: The id of the tagged dataset
+          examples:
+            application/json: |-
+              {
+                "data_tag": {
+                  "oml:id": "2"
+                }
+              }
         default:
           description: Unexpected error
           schema:
@@ -251,6 +816,13 @@ paths:
       responses:
         '200':
           description: A the features of the dataset
+          examples:
+            application/json: |-
+              {
+                "data_untag": {
+                  "oml:id": "2"
+                }
+              }
         default:
           description: Unexpected error
           schema:
@@ -1037,6 +1609,7 @@ definitions:
             description: A description of the parameter
   Data:
     type: object
+    required: [ "name", "description", "format" ]
     properties:
       id:
         type: string

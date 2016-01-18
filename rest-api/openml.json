@@ -86,7 +86,10 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "ID of the deleted dataset"
+                        "description": "ID of the deleted dataset",
+                        "examples": {
+                            "application/json": "{\n  \"data_delete\": {\n    \"oml:id\": \"4328\"\n  }\n}"
+                        }
                     },
                     "default": {
                         "description": "Unexpected error",
@@ -108,7 +111,7 @@
                     {
                         "name": "description",
                         "in": "formData",
-                        "description": "An XML file describing the dataset",
+                        "description": "An XML file describing the dataset. Use http://www.openml.org/api_new/v1/data/{id} for examples, but not that only name, description, and data format are required. The XSD schema can be found at https://github.com/openml/website/blob/master/openml_OS/views/pages/rest_api/xsd/openml.data.upload.xsd",
                         "required": true,
                         "type": "file"
                     },
@@ -132,7 +135,18 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Id of the uploaded dataset"
+                        "description": "Id of the uploaded dataset",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "data_set_description": {
+                                    "$ref": "#/definitions/Data"
+                                }
+                            }
+                        },
+                        "examples": {
+                            "application/json": "{\n  \"upload_data_set\": {\n    \"oml:id\": \"4328\"\n  }\n}"
+                        }
                     },
                     "default": {
                         "description": "Unexpected error",
@@ -169,7 +183,10 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "A the features of the dataset"
+                        "description": "All the features of the dataset",
+                        "examples": {
+                            "application/json": "{\n  \"data_features\": {\n    \"oml:feature\": [\n      {\n        \"oml:index\": \"0\",\n        \"oml:name\": \"sepallength\",\n        \"oml:data_type\": \"numeric\",\n        \"oml:is_target\": \"false\",\n        \"oml:is_ignore\": \"false\",\n        \"oml:is_row_identifier\": \"false\"\n      },\n      {\n        \"oml:index\": \"1\",\n        \"oml:name\": \"sepalwidth\",\n        \"oml:data_type\": \"numeric\",\n        \"oml:is_target\": \"false\",\n        \"oml:is_ignore\": \"false\",\n        \"oml:is_row_identifier\": \"false\"\n      },\n      {\n        \"oml:index\": \"2\",\n        \"oml:name\": \"petallength\",\n        \"oml:data_type\": \"numeric\",\n        \"oml:is_target\": \"false\",\n        \"oml:is_ignore\": \"false\",\n        \"oml:is_row_identifier\": \"false\"\n      },\n      {\n        \"oml:index\": \"3\",\n        \"oml:name\": \"petalwidth\",\n        \"oml:data_type\": \"numeric\",\n        \"oml:is_target\": \"false\",\n        \"oml:is_ignore\": \"false\",\n        \"oml:is_row_identifier\": \"false\"\n      },\n      {\n        \"oml:index\": \"4\",\n        \"oml:name\": \"class\",\n        \"oml:data_type\": \"nominal\",\n        \"oml:is_target\": \"true\",\n        \"oml:is_ignore\": \"false\",\n        \"oml:is_row_identifier\": \"false\"\n      }\n    ]\n  }\n}"
+                        }
                     },
                     "default": {
                         "description": "Unexpected error",
@@ -206,7 +223,10 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "A the qualities of the dataset"
+                        "description": "All the qualities of the dataset",
+                        "examples": {
+                            "application/json": "{\n  \"data_qualities\": {\n    \"oml:quality\": [\n      {\n        \"oml:name\": \"ClassCount\",\n        \"oml:value\": \"3.0\"\n      },\n      {\n        \"oml:name\": \"ClassEntropy\",\n        \"oml:value\": \"1.584962500721156\"\n      },\n      {\n        \"oml:name\": \"DecisionStumpAUC\",\n        \"oml:value\": \"0.8333333333333334\"\n      },\n      {\n        \"oml:name\": \"DecisionStumpErrRate\",\n        \"oml:value\": \"33.333333333333336\"\n      },\n      {\n        \"oml:name\": \"DecisionStumpKappa\",\n        \"oml:value\": \"0.49999999999999994\"\n      },\n      {\n        \"oml:name\": \"DefaultAccuracy\",\n        \"oml:value\": \"0.33333333333333\"\n      },\n      {\n        \"oml:name\": \"Dimensionality\",\n        \"oml:value\": \"0.03333333333333333\"\n      },\n      {\n        \"oml:name\": \"EquivalentNumberOfAtts\",\n        \"oml:value\": \"-1.0\"\n      },\n      {\n        \"oml:name\": \"HoeffdingAdwin.changes\",\n        \"oml:value\": \"0.0\"\n      },\n      {\n        \"oml:name\": \"HoeffdingAdwin.warnings\",\n        \"oml:value\": \"0.0\"\n      },\n      {\n        \"oml:name\": \"HoeffdingDDM.changes\",\n        \"oml:value\": \"2.0\"\n      },\n      {\n        \"oml:name\": \"HoeffdingDDM.warnings\",\n        \"oml:value\": \"1.0\"\n      },\n      {\n        \"oml:name\": \"IncompleteInstanceCount\",\n        \"oml:value\": \"0.0\"\n      },\n      {\n        \"oml:name\": \"InstanceCount\",\n        \"oml:value\": \"150.0\"\n      },\n      {\n        \"oml:name\": \"J48.00001.AUC\",\n        \"oml:value\": \"0.9565333333333332\"\n      },\n      {\n        \"oml:name\": \"J48.00001.ErrRate\",\n        \"oml:value\": \"6.666666666666667\"\n      },\n      {\n        \"oml:name\": \"J48.00001.Kappa\",\n        \"oml:value\": \"0.9\"\n      },\n      {\n        \"oml:name\": \"J48.0001.AUC\",\n        \"oml:value\": \"0.9565333333333332\"\n      },\n      {\n        \"oml:name\": \"J48.0001.ErrRate\",\n        \"oml:value\": \"6.666666666666667\"\n      },\n      {\n        \"oml:name\": \"J48.0001.Kappa\",\n        \"oml:value\": \"0.9\"\n      },\n      {\n        \"oml:name\": \"J48.001.AUC\",\n        \"oml:value\": \"0.9565333333333332\"\n      },\n      {\n        \"oml:name\": \"J48.001.ErrRate\",\n        \"oml:value\": \"6.666666666666667\"\n      },\n      {\n        \"oml:name\": \"J48.001.Kappa\",\n        \"oml:value\": \"0.9\"\n      },\n      {\n        \"oml:name\": \"JRipAUC\",\n        \"oml:value\": \"0.9384999999999999\"\n      },\n      {\n        \"oml:name\": \"JRipErrRate\",\n        \"oml:value\": \"0.08666666666666667\"\n      },\n      {\n        \"oml:name\": \"JRipKappa\",\n        \"oml:value\": \"0.87\"\n      },\n      {\n        \"oml:name\": \"MajorityClassSize\",\n        \"oml:value\": \"50\"\n      },\n      {\n        \"oml:name\": \"MaxNominalAttDistinctValues\",\n        \"oml:value\": \"-1.0\"\n      },\n      {\n        \"oml:name\": \"MeanAttributeEntropy\",\n        \"oml:value\": \"-1.0\"\n      },\n      {\n        \"oml:name\": \"MeanKurtosisOfNumericAtts\",\n        \"oml:value\": \"-0.780577849626652\"\n      },\n      {\n        \"oml:name\": \"MeanMeansOfNumericAtts\",\n        \"oml:value\": \"3.4636666666666684\"\n      },\n      {\n        \"oml:name\": \"MeanMutualInformation\",\n        \"oml:value\": \"-1.0\"\n      },\n      {\n        \"oml:name\": \"MeanNominalAttDistinctValues\",\n        \"oml:value\": \"-1.0\"\n      },\n      {\n        \"oml:name\": \"MeanSkewnessOfNumericAtts\",\n        \"oml:value\": \"0.06647735836715944\"\n      },\n      {\n        \"oml:name\": \"MeanStdDevOfNumericAtts\",\n        \"oml:value\": \"0.9473104002482755\"\n      },\n      {\n        \"oml:name\": \"MinNominalAttDistinctValues\",\n        \"oml:value\": \"-1.0\"\n      },\n      {\n        \"oml:name\": \"MinorityClassSize\",\n        \"oml:value\": \"50\"\n      },\n      {\n        \"oml:name\": \"NBTreeAUC\",\n        \"oml:value\": \"0.9719333333333334\"\n      },\n      {\n        \"oml:name\": \"NBTreeErrRate\",\n        \"oml:value\": \"0.07333333333333333\"\n      },\n      {\n        \"oml:name\": \"NBTreeKappa\",\n        \"oml:value\": \"0.8899999999999998\"\n      },\n      {\n        \"oml:name\": \"NaiveBayesAUC\",\n        \"oml:value\": \"0.9932000000000001\"\n      },\n      {\n        \"oml:name\": \"NaiveBayesAdwin.changes\",\n        \"oml:value\": \"0.0\"\n      },\n      {\n        \"oml:name\": \"NaiveBayesAdwin.warnings\",\n        \"oml:value\": \"0.0\"\n      },\n      {\n        \"oml:name\": \"NaiveBayesDdm.changes\",\n        \"oml:value\": \"2.0\"\n      },\n      {\n        \"oml:name\": \"NaiveBayesDdm.warnings\",\n        \"oml:value\": \"1.0\"\n      },\n      {\n        \"oml:name\": \"NaiveBayesErrRate\",\n        \"oml:value\": \"0.03333333333333333\"\n      },\n      {\n        \"oml:name\": \"NaiveBayesKappa\",\n        \"oml:value\": \"0.9499999999999998\"\n      },\n      {\n        \"oml:name\": \"NegativePercentage\",\n        \"oml:value\": \"0.3333333333333333\"\n      },\n      {\n        \"oml:name\": \"NoiseToSignalRatio\",\n        \"oml:value\": \"-1.0\"\n      },\n      {\n        \"oml:name\": \"NumAttributes\",\n        \"oml:value\": \"5.0\"\n      },\n      {\n        \"oml:name\": \"NumBinaryAtts\",\n        \"oml:value\": \"0.0\"\n      },\n      {\n        \"oml:name\": \"NumMissingValues\",\n        \"oml:value\": \"0.0\"\n      },\n      {\n        \"oml:name\": \"NumNominalAtts\",\n        \"oml:value\": \"0.0\"\n      },\n      {\n        \"oml:name\": \"NumNumericAtts\",\n        \"oml:value\": \"4.0\"\n      },\n      {\n        \"oml:name\": \"NumberOfClasses\",\n        \"oml:value\": \"3\"\n      },\n      {\n        \"oml:name\": \"NumberOfFeatures\",\n        \"oml:value\": \"5\"\n      },\n      {\n        \"oml:name\": \"NumberOfInstances\",\n        \"oml:value\": \"150\"\n      },\n      {\n        \"oml:name\": \"NumberOfInstancesWithMissingValues\",\n        \"oml:value\": \"0\"\n      },\n      {\n        \"oml:name\": \"NumberOfMissingValues\",\n        \"oml:value\": \"0\"\n      },\n      {\n        \"oml:name\": \"NumberOfNumericFeatures\",\n        \"oml:value\": \"4\"\n      },\n      {\n        \"oml:name\": \"NumberOfSymbolicFeatures\",\n        \"oml:value\": \"0\"\n      },\n      {\n        \"oml:name\": \"PercentageOfBinaryAtts\",\n        \"oml:value\": \"0.0\"\n      },\n      {\n        \"oml:name\": \"PercentageOfMissingValues\",\n        \"oml:value\": \"0.0\"\n      },\n      {\n        \"oml:name\": \"PercentageOfNominalAtts\",\n        \"oml:value\": \"0.0\"\n      },\n      {\n        \"oml:name\": \"PercentageOfNumericAtts\",\n        \"oml:value\": \"0.8\"\n      },\n      {\n        \"oml:name\": \"PositivePercentage\",\n        \"oml:value\": \"0.3333333333333333\"\n      },\n      {\n        \"oml:name\": \"REPTreeDepth1AUC\",\n        \"oml:value\": \"0.8333333333333334\"\n      },\n      {\n        \"oml:name\": \"REPTreeDepth1ErrRate\",\n        \"oml:value\": \"33.333333333333336\"\n      },\n      {\n        \"oml:name\": \"REPTreeDepth1Kappa\",\n        \"oml:value\": \"0.49999999999999994\"\n      },\n      {\n        \"oml:name\": \"REPTreeDepth2AUC\",\n        \"oml:value\": \"0.955\"\n      },\n      {\n        \"oml:name\": \"REPTreeDepth2ErrRate\",\n        \"oml:value\": \"7.333333333333333\"\n      },\n      {\n        \"oml:name\": \"REPTreeDepth2Kappa\",\n        \"oml:value\": \"0.8899999999999998\"\n      },\n      {\n        \"oml:name\": \"REPTreeDepth3AUC\",\n        \"oml:value\": \"0.955\"\n      },\n      {\n        \"oml:name\": \"REPTreeDepth3ErrRate\",\n        \"oml:value\": \"7.333333333333333\"\n      },\n      {\n        \"oml:name\": \"REPTreeDepth3Kappa\",\n        \"oml:value\": \"0.8899999999999998\"\n      },\n      {\n        \"oml:name\": \"RandomTreeDepth1AUC\",\n        \"oml:value\": \"0.8333333333333334\"\n      },\n      {\n        \"oml:name\": \"RandomTreeDepth1ErrRate\",\n        \"oml:value\": \"0.3333333333333333\"\n      },\n      {\n        \"oml:name\": \"RandomTreeDepth1Kappa\",\n        \"oml:value\": \"0.49999999999999994\"\n      },\n      {\n        \"oml:name\": \"RandomTreeDepth2AUC\",\n        \"oml:value\": \"0.9754\"\n      },\n      {\n        \"oml:name\": \"RandomTreeDepth2ErrRate\",\n        \"oml:value\": \"0.04\"\n      },\n      {\n        \"oml:name\": \"RandomTreeDepth2Kappa\",\n        \"oml:value\": \"0.94\"\n      },\n      {\n        \"oml:name\": \"RandomTreeDepth3AUC\",\n        \"oml:value\": \"0.9642\"\n      },\n      {\n        \"oml:name\": \"RandomTreeDepth3ErrRate\",\n        \"oml:value\": \"0.06\"\n      },\n      {\n        \"oml:name\": \"RandomTreeDepth3Kappa\",\n        \"oml:value\": \"0.9099999999999999\"\n      },\n      {\n        \"oml:name\": \"SVMe1AUC\",\n        \"oml:value\": \"0.9914666666666666\"\n      },\n      {\n        \"oml:name\": \"SVMe1ErrRate\",\n        \"oml:value\": \"0.05333333333333334\"\n      },\n      {\n        \"oml:name\": \"SVMe1Kappa\",\n        \"oml:value\": \"0.9199999999999998\"\n      },\n      {\n        \"oml:name\": \"SVMe2AUC\",\n        \"oml:value\": \"0.9766\"\n      },\n      {\n        \"oml:name\": \"SVMe2ErrRate\",\n        \"oml:value\": \"0.05333333333333334\"\n      },\n      {\n        \"oml:name\": \"SVMe2Kappa\",\n        \"oml:value\": \"0.9199999999999998\"\n      },\n      {\n        \"oml:name\": \"SVMe3AUC\",\n        \"oml:value\": \"0.9691333333333334\"\n      },\n      {\n        \"oml:name\": \"SVMe3ErrRate\",\n        \"oml:value\": \"0.05333333333333334\"\n      },\n      {\n        \"oml:name\": \"SVMe3Kappa\",\n        \"oml:value\": \"0.9199999999999998\"\n      },\n      {\n        \"oml:name\": \"SimpleLogisticAUC\",\n        \"oml:value\": \"0.9912000000000001\"\n      },\n      {\n        \"oml:name\": \"SimpleLogisticErrRate\",\n        \"oml:value\": \"0.06666666666666667\"\n      },\n      {\n        \"oml:name\": \"SimpleLogisticKappa\",\n        \"oml:value\": \"0.9\"\n      },\n      {\n        \"oml:name\": \"StdvNominalAttDistinctValues\",\n        \"oml:value\": \"-1.0\"\n      },\n      {\n        \"oml:name\": \"kNN_1NAUC\",\n        \"oml:value\": \"0.9558\"\n      },\n      {\n        \"oml:name\": \"kNN_1NErrRate\",\n        \"oml:value\": \"0.06\"\n      },\n      {\n        \"oml:name\": \"kNN_1NKappa\",\n        \"oml:value\": \"0.9099999999999999\"\n      },\n      {\n        \"oml:name\": \"kNN_2NAUC\",\n        \"oml:value\": \"0.9622666666666667\"\n      },\n      {\n        \"oml:name\": \"kNN_2NErrRate\",\n        \"oml:value\": \"0.08666666666666667\"\n      },\n      {\n        \"oml:name\": \"kNN_2NKappa\",\n        \"oml:value\": \"0.87\"\n      },\n      {\n        \"oml:name\": \"kNN_3NAUC\",\n        \"oml:value\": \"0.9672\"\n      },\n      {\n        \"oml:name\": \"kNN_3NErrRate\",\n        \"oml:value\": \"0.05333333333333334\"\n      },\n      {\n        \"oml:name\": \"kNN_3NKappa\",\n        \"oml:value\": \"0.9199999999999998\"\n      }\n    ]\n  }\n}"
+                        }
                     },
                     "default": {
                         "description": "Unexpected error",
@@ -235,7 +255,10 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "A dataset description"
+                        "description": "A dataset description",
+                        "examples": {
+                            "application/json": "{\n  \"data\": {\n    \"oml:dataset\": [\n      {\n        \"oml:did\":\"1\",\n        \"oml:name\":\"anneal\",\n        \"oml:status\":\"active\",\n        \"oml:quality\":[\n          {\n            \"@name\":\"MajorityClassSize\",\n            \"$\":\"684\"\n          },\n          {\n            \"@name\":\"MaxNominalAttDistinctValues\",\n            \"$\":\"10.0\"\n          },\n          {\n            \"@name\":\"MinorityClassSize\"\n            ,\"$\":\"0\"\n          },\n          {\n            \"@name\":\"NumBinaryAtts\",\n            \"$\":\"14.0\"\n          },\n          {\n            \"@name\":\"NumberOfClasses\",\n            \"$\":\"6\"\n          },\n          {\n            \"@name\":\"NumberOfFeatures\",\n            \"$\":\"39\"\n          },\n          {\n            \"@name\":\"NumberOfInstances\",\n            \"$\":\"898\"\n          },\n          {\n            \"@name\":\"NumberOfInstancesWithMissingValues\",\n            \"$\":\"0\"\n          },\n          {\n            \"@name\":\"NumberOfMissingValues\",\n            \"$\":\"0\"\n          },\n          {\n            \"@name\":\"NumberOfNumericFeatures\",\n            \"$\":\"6\"\n          },\n          {\n            \"@name\":\"NumberOfSymbolicFeatures\",\n            \"$\":\"32\"\n          }\n        ]\n      }\n    ]\n  }\n}"
+                        }
                     },
                     "default": {
                         "description": "Unexpected error",
@@ -282,7 +305,10 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "The id of the tagged dataset"
+                        "description": "The id of the tagged dataset",
+                        "examples": {
+                            "application/json": "{\n  \"data_tag\": {\n    \"oml:id\": \"2\"\n  }\n}"
+                        }
                     },
                     "default": {
                         "description": "Unexpected error",
@@ -328,7 +354,10 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "A the features of the dataset"
+                        "description": "A the features of the dataset",
+                        "examples": {
+                            "application/json": "{\n  \"data_untag\": {\n    \"oml:id\": \"2\"\n  }\n}"
+                        }
                     },
                     "default": {
                         "description": "Unexpected error",
@@ -1317,6 +1346,11 @@
         },
         "Data": {
             "type": "object",
+            "required": [
+                "name",
+                "description",
+                "format"
+            ],
             "properties": {
                 "id": {
                     "type": "string",
