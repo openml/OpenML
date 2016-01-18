@@ -87,6 +87,11 @@ paths:
       responses:
         '200':
           description: ID of the deleted dataset
+          schema:
+            type: object
+            properties:
+              data_set_description:
+                $ref: '#/definitions/DataDelete'
           examples:
             application/json: |-
               {
@@ -129,7 +134,7 @@ paths:
             type: object
             properties:
               data_set_description:
-                $ref: '#/definitions/Data'
+                $ref: '#/definitions/DataUpload'
           examples: 
             application/json: |-
               {
@@ -163,6 +168,11 @@ paths:
       responses:
         '200':
           description: All the features of the dataset
+          schema:
+            type: object
+            properties:
+              data_set_description:
+                $ref: '#/definitions/DataFeatures'
           examples:
             application/json: |-
               {
@@ -237,6 +247,11 @@ paths:
       responses:
         '200':
           description: All the qualities of the dataset
+          schema:
+            type: object
+            properties:
+              data_set_description:
+                $ref: '#/definitions/DataQualities'
           examples:
             application/json: |-
               {
@@ -689,6 +704,11 @@ paths:
       responses:
         '200':
           description: A dataset description
+          schema:
+            type: object
+            properties:
+              data_set_description:
+                $ref: '#/definitions/DataList'
           examples: 
             application/json: |-
               {
@@ -779,6 +799,11 @@ paths:
       responses:
         '200':
           description: The id of the tagged dataset
+          schema:
+            type: object
+            properties:
+              data_set_description:
+                $ref: '#/definitions/DataTag'
           examples:
             application/json: |-
               {
@@ -816,6 +841,11 @@ paths:
       responses:
         '200':
           description: A the features of the dataset
+          schema:
+            type: object
+            properties:
+              data_set_description:
+                $ref: '#/definitions/DataUntag'
           examples:
             application/json: |-
               {
@@ -1607,6 +1637,98 @@ definitions:
           description:
             type: string
             description: A description of the parameter
+  DataUpload:
+    type: object
+    properties:
+      id:
+        type: string
+        description: ID of the uploaded dataset, a positive integer   
+  DataDelete:
+    type: object
+    properties:
+      id:
+        type: string
+        description: ID of the deleted dataset, a positive integer    
+  DataTag:
+    type: object
+    properties:
+      id:
+        type: string
+        description: ID of the tagged dataset, a positive integer          
+  DataUnTag:
+    type: object
+    properties:
+      id:
+        type: string
+        description: ID of the untagged dataset, a positive integer            
+  DataList:
+    type: object
+    properties:
+      dataset:
+        type: array
+        items:
+          type: object
+          properties:
+            did:
+              type: string
+              description: The dataset ID
+            name:
+              type: string
+              description: The dataset name    
+            status:
+              type: string
+              description: The dataset status, either in_preparation, active, or deactivated
+            quality:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    description: The name of the property
+                  value:
+                    type: string
+                    description: The value of the property
+  DataQualities:
+    type: object
+    properties:
+      quality:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+              description: The name of the dataset quality measures
+            value:
+              type: string
+              description: The value for this dataset
+  DataFeatures:
+    type: object
+    properties:
+      feature:
+        type: array
+        items:
+          type: object
+          properties:
+            index:
+              type: string
+              description: Feature index
+            name:
+              type: string
+              description: Feature name
+            data_type:
+              type: string
+              description: Feature data type
+            is_target:
+              type: string
+              description: Whether this feature is seen as a target feature
+            is_ignore:
+              type: string
+              description: Whether this feature should be ignored in modelling (e.g. every value is unique)
+            is_row_identifier:
+              type: string
+              description: Whether this feature is a row identifier
   Data:
     type: object
     required: [ "name", "description", "format" ]
