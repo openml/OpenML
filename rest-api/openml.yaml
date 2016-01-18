@@ -550,6 +550,18 @@ paths:
       responses:
         '200':
           description: ID of the deleted flow
+          schema:
+            type: object
+            properties:
+              data_set_description:
+                $ref: '#/definitions/FlowDelete'
+          examples: 
+            application/json: |-
+              {
+                "flow_delete": {
+                  "oml:id": "4328"
+                }
+              }
         default:
           description: Unexpected error
           schema:
@@ -563,7 +575,7 @@ paths:
       parameters:
         - name: description
           in: formData
-          description: An XML file describing the flow
+          description: An XML file describing the flow. Only name and description are required. The full XSD can be found on https://github.com/openml/website/blob/master/openml_OS/views/pages/rest_api/xsd/openml.implementation.upload.xsd
           required: true
           type: file
         - name: flow
@@ -581,6 +593,18 @@ paths:
       responses:
         '200':
           description: Id of the uploaded flow
+          schema:
+            type: object
+            properties:
+              data_set_description:
+                $ref: '#/definitions/FlowUpload'
+          examples: 
+            application/json: |-
+              {
+                "upload_flow": {
+                  "oml:id": "2520"
+                }
+              }
         default:
           description: Unexpected error
           schema:
@@ -611,6 +635,19 @@ paths:
       responses:
         '200':
           description: A list of flows
+          schema:
+            type: object
+            properties:
+              flow_description:
+                $ref: '#/definitions/FlowExists'
+          examples:
+            application/json: |-
+              {
+                "flow_exists": {
+                  "oml:exists": "true",
+                  "oml:id": "65"
+                }
+              }
         default:
           description: Unexpected error
           schema:
@@ -631,6 +668,44 @@ paths:
       responses:
         '200':
           description: A list of flows
+          schema:
+            type: object
+            properties:
+              flow_description:
+                $ref: '#/definitions/FlowList'
+          examples:
+            application/json: |-
+              {
+                "flows":
+                  {
+                    "oml:flow":[
+                      {
+                        "oml:id":"65",
+                        "oml:full_name":"weka.RandomForest(1)",
+                        "oml:name":"weka.RandomForest",
+                        "oml:version":"1",
+                        "oml:external_version":"Weka_3.7.10_9186",
+                        "oml:uploader":"1"
+                      },
+                      {
+                        "oml:id":"66",
+                        "oml:full_name":"weka.IBk(1)",
+                        "oml:name":"weka.IBk",
+                        "oml:version":"1",
+                        "oml:external_version":"Weka_3.7.10_8034",
+                        "oml:uploader":"1"
+                      },
+                      {
+                        "oml:id":"67",
+                        "oml:full_name":"weka.BayesNet_K2(1)",
+                        "oml:name":"weka.BayesNet_K2",
+                        "oml:version":"1",
+                        "oml:external_version":"Weka_3.7.10_8034",
+                        "oml:uploader":"1"
+                      }
+                    ]
+                  }
+                }
         default:
           description: Unexpected error
           schema:
@@ -651,6 +726,26 @@ paths:
       responses:
         '200':
           description: A list of flows
+          schema:
+            type: object
+            properties:
+              flow_description:
+                $ref: '#/definitions/FlowOwned'
+          examples:
+            application/json: |-
+              {
+                "flow_owned": {
+                  "oml:id": [
+                    "111",
+                    "112",
+                    "113",
+                    "114",
+                    "115",
+                    "116",
+                    "117"
+                  ]
+                }
+              }
         default:
           description: Unexpected error
           schema:
@@ -682,6 +777,18 @@ paths:
       responses:
         '200':
           description: The id of the tagged flow
+          schema:
+            type: object
+            properties:
+              data_set_description:
+                $ref: '#/definitions/FlowTag'
+          examples:
+            application/json: |-
+              {
+                "flow_tag": {
+                  "oml:id": "2"
+                }
+              }
         default:
           description: Unexpected error
           schema:
@@ -712,6 +819,18 @@ paths:
       responses:
         '200':
           description: The id of the untagged flow
+          schema:
+            type: object
+            properties:
+              data_set_description:
+                $ref: '#/definitions/FlowUntag'
+          examples:
+            application/json: |-
+              {
+                "flow_untag": {
+                  "oml:id": "2"
+                }
+              }
         default:
           description: Unexpected error
           schema:
@@ -1249,6 +1368,72 @@ definitions:
           description:
             type: string
             description: A description of the parameter
+  FlowExists:
+    type: object
+    properties:
+      exists:
+        type: string
+        description: true or false
+      id:
+        type: string
+        description: The id of the flow with the given name and (external) version
+  FlowList:
+    type: object
+    properties:
+      flow:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+              description: The flow ID
+            full_name:
+              type: string
+              description: The full flow name (name + internal version number)   
+            name:
+              type: string
+              description: The flow name    
+            version:
+              type: string
+              description: The internal flow version
+            external_version:
+              type: string
+              description: The external flow version
+            uploader:
+              type: string
+              description: The ID of the person who uploaded the flow
+  FlowOwned:
+    type: object
+    properties:
+      id:
+        type: array
+        items:
+          type: string
+  FlowTag:
+    type: object
+    properties:
+      id:
+        type: string
+        description: ID of the tagged flow, a positive integer          
+  FlowUntag:
+    type: object
+    properties:
+      id:
+        type: string
+        description: ID of the untagged flow, a positive integer  
+  FlowUpload:
+    type: object
+    properties:
+      id:
+        type: string
+        description: ID of the uploaded flow, a positive integer   
+  FlowDelete:
+    type: object
+    properties:
+      id:
+        type: string
+        description: ID of the deleted flow, a positive integer  
   DataUpload:
     type: object
     properties:

@@ -488,7 +488,18 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "ID of the deleted flow"
+                        "description": "ID of the deleted flow",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "data_set_description": {
+                                    "$ref": "#/definitions/FlowDelete"
+                                }
+                            }
+                        },
+                        "examples": {
+                            "application/json": "{\n  \"flow_delete\": {\n    \"oml:id\": \"4328\"\n  }\n}"
+                        }
                     },
                     "default": {
                         "description": "Unexpected error",
@@ -510,7 +521,7 @@
                     {
                         "name": "description",
                         "in": "formData",
-                        "description": "An XML file describing the flow",
+                        "description": "An XML file describing the flow. Only name and description are required. The full XSD can be found on https://github.com/openml/website/blob/master/openml_OS/views/pages/rest_api/xsd/openml.implementation.upload.xsd",
                         "required": true,
                         "type": "file"
                     },
@@ -534,7 +545,18 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Id of the uploaded flow"
+                        "description": "Id of the uploaded flow",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "data_set_description": {
+                                    "$ref": "#/definitions/FlowUpload"
+                                }
+                            }
+                        },
+                        "examples": {
+                            "application/json": "{\n  \"upload_flow\": {\n    \"oml:id\": \"2520\"\n  }\n}"
+                        }
                     },
                     "default": {
                         "description": "Unexpected error",
@@ -577,7 +599,18 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "A list of flows"
+                        "description": "A list of flows",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "flow_description": {
+                                    "$ref": "#/definitions/FlowExists"
+                                }
+                            }
+                        },
+                        "examples": {
+                            "application/json": "{\n  \"flow_exists\": {\n    \"oml:exists\": \"true\",\n    \"oml:id\": \"65\"\n  }\n}"
+                        }
                     },
                     "default": {
                         "description": "Unexpected error",
@@ -606,7 +639,18 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "A list of flows"
+                        "description": "A list of flows",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "flow_description": {
+                                    "$ref": "#/definitions/FlowList"
+                                }
+                            }
+                        },
+                        "examples": {
+                            "application/json": "{\n  \"flows\":\n    {\n      \"oml:flow\":[\n        {\n          \"oml:id\":\"65\",\n          \"oml:full_name\":\"weka.RandomForest(1)\",\n          \"oml:name\":\"weka.RandomForest\",\n          \"oml:version\":\"1\",\n          \"oml:external_version\":\"Weka_3.7.10_9186\",\n          \"oml:uploader\":\"1\"\n        },\n        {\n          \"oml:id\":\"66\",\n          \"oml:full_name\":\"weka.IBk(1)\",\n          \"oml:name\":\"weka.IBk\",\n          \"oml:version\":\"1\",\n          \"oml:external_version\":\"Weka_3.7.10_8034\",\n          \"oml:uploader\":\"1\"\n        },\n        {\n          \"oml:id\":\"67\",\n          \"oml:full_name\":\"weka.BayesNet_K2(1)\",\n          \"oml:name\":\"weka.BayesNet_K2\",\n          \"oml:version\":\"1\",\n          \"oml:external_version\":\"Weka_3.7.10_8034\",\n          \"oml:uploader\":\"1\"\n        }\n      ]\n    }\n  }"
+                        }
                     },
                     "default": {
                         "description": "Unexpected error",
@@ -635,7 +679,18 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "A list of flows"
+                        "description": "A list of flows",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "flow_description": {
+                                    "$ref": "#/definitions/FlowOwned"
+                                }
+                            }
+                        },
+                        "examples": {
+                            "application/json": "{\n  \"flow_owned\": {\n    \"oml:id\": [\n      \"111\",\n      \"112\",\n      \"113\",\n      \"114\",\n      \"115\",\n      \"116\",\n      \"117\"\n    ]\n  }\n}"
+                        }
                     },
                     "default": {
                         "description": "Unexpected error",
@@ -682,7 +737,18 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "The id of the tagged flow"
+                        "description": "The id of the tagged flow",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "data_set_description": {
+                                    "$ref": "#/definitions/FlowTag"
+                                }
+                            }
+                        },
+                        "examples": {
+                            "application/json": "{\n  \"flow_tag\": {\n    \"oml:id\": \"2\"\n  }\n}"
+                        }
                     },
                     "default": {
                         "description": "Unexpected error",
@@ -728,7 +794,18 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "The id of the untagged flow"
+                        "description": "The id of the untagged flow",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "data_set_description": {
+                                    "$ref": "#/definitions/FlowUntag"
+                                }
+                            }
+                        },
+                        "examples": {
+                            "application/json": "{\n  \"flow_untag\": {\n    \"oml:id\": \"2\"\n  }\n}"
+                        }
                     },
                     "default": {
                         "description": "Unexpected error",
@@ -1389,6 +1466,103 @@
                             "description": "A description of the parameter"
                         }
                     }
+                }
+            }
+        },
+        "FlowExists": {
+            "type": "object",
+            "properties": {
+                "exists": {
+                    "type": "string",
+                    "description": "true or false"
+                },
+                "id": {
+                    "type": "string",
+                    "description": "The id of the flow with the given name and (external) version"
+                }
+            }
+        },
+        "FlowList": {
+            "type": "object",
+            "properties": {
+                "flow": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "description": "The flow ID"
+                            },
+                            "full_name": {
+                                "type": "string",
+                                "description": "The full flow name (name + internal version number)"
+                            },
+                            "name": {
+                                "type": "string",
+                                "description": "The flow name"
+                            },
+                            "version": {
+                                "type": "string",
+                                "description": "The internal flow version"
+                            },
+                            "external_version": {
+                                "type": "string",
+                                "description": "The external flow version"
+                            },
+                            "uploader": {
+                                "type": "string",
+                                "description": "The ID of the person who uploaded the flow"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "FlowOwned": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "FlowTag": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "ID of the tagged flow, a positive integer"
+                }
+            }
+        },
+        "FlowUntag": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "ID of the untagged flow, a positive integer"
+                }
+            }
+        },
+        "FlowUpload": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "ID of the uploaded flow, a positive integer"
+                }
+            }
+        },
+        "FlowDelete": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "ID of the deleted flow, a positive integer"
                 }
             }
         },
