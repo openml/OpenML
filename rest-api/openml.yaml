@@ -90,8 +90,12 @@ paths:
           schema:
             type: object
             properties:
-              data_set_description:
-                $ref: '#/definitions/DataDelete'
+              data_delete:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: ID of the deleted dataset, a positive integer   
           examples:
             application/json: |-
               {
@@ -112,7 +116,7 @@ paths:
       parameters:
         - name: description
           in: formData
-          description: An XML file describing the dataset. Only name, description, and data format are required. The XSD schema can be found at https://github.com/openml/website/blob/master/openml_OS/views/pages/rest_api/xsd/openml.data.upload.xsd
+          description: An XML file describing the dataset. Only name, description, and data format are required. Also see the [XSD schema](https://github.com/openml/website/blob/master/openml_OS/views/pages/rest_api/xsd/openml.data.upload.xsd)
           required: true
           type: file
         - name: dataset
@@ -133,8 +137,12 @@ paths:
           schema:
             type: object
             properties:
-              data_set_description:
-                $ref: '#/definitions/DataUpload'
+              upload_data_set:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: ID of the uploaded dataset, a positive integer          
           examples: 
             application/json: |-
               {
@@ -414,8 +422,12 @@ paths:
           schema:
             type: object
             properties:
-              data_set_description:
-                $ref: '#/definitions/DataTag'
+              data_tag:
+                type: object
+                properties:
+                  id: 
+                    type: string
+                    description: ID of the tagged dataset
           examples:
             application/json: |-
               {
@@ -456,8 +468,12 @@ paths:
           schema:
             type: object
             properties:
-              data_set_description:
-                $ref: '#/definitions/DataUntag'
+              data_untag:
+                type: object
+                properties:
+                  id: 
+                    type: string
+                    description: ID of the untagged dataset
           examples:
             application/json: |-
               {
@@ -553,8 +569,12 @@ paths:
           schema:
             type: object
             properties:
-              data_set_description:
-                $ref: '#/definitions/FlowDelete'
+              data_delete:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: ID of the deleted flow, a positive integer  
           examples: 
             application/json: |-
               {
@@ -575,7 +595,7 @@ paths:
       parameters:
         - name: description
           in: formData
-          description: An XML file describing the flow. Only name and description are required. The full XSD can be found on https://github.com/openml/website/blob/master/openml_OS/views/pages/rest_api/xsd/openml.implementation.upload.xsd
+          description: An XML file describing the flow. Only name and description are required. Also see the [XSD schema](https://github.com/openml/website/blob/master/openml_OS/views/pages/rest_api/xsd/openml.implementation.upload.xsd)
           required: true
           type: file
         - name: flow
@@ -596,9 +616,13 @@ paths:
           schema:
             type: object
             properties:
-              data_set_description:
-                $ref: '#/definitions/FlowUpload'
-          examples: 
+              upload_flow:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: ID of the uploaded flow, a positive integer  
+          examples:
             application/json: |-
               {
                 "upload_flow": {
@@ -638,8 +662,15 @@ paths:
           schema:
             type: object
             properties:
-              flow_description:
-                $ref: '#/definitions/FlowExists'
+              flow_exists:
+                type: object
+                properties:
+                  exists:
+                    type: string
+                    description: true or false
+                  id:
+                    type: string
+                    description: The id of the flow with the given name and (external) version
           examples:
             application/json: |-
               {
@@ -729,8 +760,13 @@ paths:
           schema:
             type: object
             properties:
-              flow_description:
-                $ref: '#/definitions/FlowOwned'
+              flow_owned:
+                type: object
+                properties:
+                  id:
+                    type: array
+                    items:
+                      type: string
           examples:
             application/json: |-
               {
@@ -780,8 +816,12 @@ paths:
           schema:
             type: object
             properties:
-              data_set_description:
-                $ref: '#/definitions/FlowTag'
+              flow_tag:
+                type: object
+                properties:
+                  id: 
+                    type: string
+                    description: ID of the tagged flow
           examples:
             application/json: |-
               {
@@ -822,8 +862,12 @@ paths:
           schema:
             type: object
             properties:
-              data_set_description:
-                $ref: '#/definitions/FlowUntag'
+              flow_untag:
+                type: object
+                properties:
+                  id: 
+                    type: string
+                    description: ID of the untagged flow
           examples:
             application/json: |-
               {
@@ -970,6 +1014,22 @@ paths:
       responses:
         '200':
           description: ID of the deleted run
+          schema:
+            type: object
+            properties:
+              data_delete:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: ID of the deleted run, a positive integer
+          examples:
+            application/json: |-
+              {
+                "run_delete": {
+                  "oml:id": "2520"
+                }
+              }
         default:
           description: Unexpected error
           schema:
@@ -1001,11 +1061,26 @@ paths:
       responses:
         '200':
           description: Id of the uploaded run
+          schema:
+            type: object
+            properties:
+              upload_flow:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: ID of the uploaded run, a positive integer
+          examples:
+            application/json: |-
+              {
+                "upload_run": {
+                  "oml:id": "2520"
+                }
+              }
         default:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Error'
-
   /run/list/run/{ids}:
     get:
       summary: Get runs by id(s)
@@ -1158,6 +1233,22 @@ paths:
       responses:
         '200':
           description: The id of the tagged run
+          schema:
+            type: object
+            properties:
+              run_tag:
+                type: object
+                properties:
+                  id: 
+                    type: string
+                    description: ID of the tagged run
+          examples:
+            application/json: |-
+              {
+                "run_tag": {
+                  "oml:id": "2"
+                }
+              }
         default:
           description: Unexpected error
           schema:
@@ -1188,6 +1279,22 @@ paths:
       responses:
         '200':
           description: The id of the untagged run
+          schema:
+            type: object
+            properties:
+              run_untag:
+                type: object
+                properties:
+                  id: 
+                    type: string
+                    description: ID of the untagged run
+          examples:
+            application/json: |-
+              {
+                "run_untag": {
+                  "oml:id": "2"
+                }
+              }
         default:
           description: Unexpected error
           schema:
@@ -1368,15 +1475,6 @@ definitions:
           description:
             type: string
             description: A description of the parameter
-  FlowExists:
-    type: object
-    properties:
-      exists:
-        type: string
-        description: true or false
-      id:
-        type: string
-        description: The id of the flow with the given name and (external) version
   FlowList:
     type: object
     properties:
@@ -1403,61 +1501,6 @@ definitions:
             uploader:
               type: string
               description: The ID of the person who uploaded the flow
-  FlowOwned:
-    type: object
-    properties:
-      id:
-        type: array
-        items:
-          type: string
-  FlowTag:
-    type: object
-    properties:
-      id:
-        type: string
-        description: ID of the tagged flow, a positive integer          
-  FlowUntag:
-    type: object
-    properties:
-      id:
-        type: string
-        description: ID of the untagged flow, a positive integer  
-  FlowUpload:
-    type: object
-    properties:
-      id:
-        type: string
-        description: ID of the uploaded flow, a positive integer   
-  FlowDelete:
-    type: object
-    properties:
-      id:
-        type: string
-        description: ID of the deleted flow, a positive integer  
-  DataUpload:
-    type: object
-    properties:
-      id:
-        type: string
-        description: ID of the uploaded dataset, a positive integer   
-  DataDelete:
-    type: object
-    properties:
-      id:
-        type: string
-        description: ID of the deleted dataset, a positive integer    
-  DataTag:
-    type: object
-    properties:
-      id:
-        type: string
-        description: ID of the tagged dataset, a positive integer          
-  DataUntag:
-    type: object
-    properties:
-      id:
-        type: string
-        description: ID of the untagged dataset, a positive integer            
   DataList:
     type: object
     properties:
