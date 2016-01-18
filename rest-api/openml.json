@@ -491,7 +491,7 @@
                         "schema": {
                             "type": "object",
                             "properties": {
-                                "data_delete": {
+                                "flow_delete": {
                                     "type": "object",
                                     "properties": {
                                         "id": {
@@ -1035,7 +1035,42 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "A list of runs descriptions"
+                        "description": "A list of runs descriptions",
+                        "schema": {
+                            "$ref": "#/definitions/RunList"
+                        },
+                        "examples": {
+                            "application/json": {
+                                "runs": {
+                                    "oml:run": [
+                                        {
+                                            "oml:run_id": "100",
+                                            "oml:task_id": "28",
+                                            "oml:setup_id": "12",
+                                            "oml:flow_id": "67",
+                                            "oml:uploader": "1",
+                                            "oml:error_message": []
+                                        },
+                                        {
+                                            "oml:run_id": "101",
+                                            "oml:task_id": "48",
+                                            "oml:setup_id": "6",
+                                            "oml:flow_id": "61",
+                                            "oml:uploader": "1",
+                                            "oml:error_message": []
+                                        },
+                                        {
+                                            "oml:run_id": "102",
+                                            "oml:task_id": "41",
+                                            "oml:setup_id": "3",
+                                            "oml:flow_id": "58",
+                                            "oml:uploader": "1",
+                                            "oml:error_message": []
+                                        }
+                                    ]
+                                }
+                            }
+                        }
                     },
                     "default": {
                         "description": "Unexpected error",
@@ -1071,7 +1106,42 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "A list of runs descriptions"
+                        "description": "A list of runs descriptions",
+                        "schema": {
+                            "$ref": "#/definitions/RunList"
+                        },
+                        "examples": {
+                            "application/json": {
+                                "runs": {
+                                    "oml:run": [
+                                        {
+                                            "oml:run_id": "142564",
+                                            "oml:task_id": "1",
+                                            "oml:setup_id": "829",
+                                            "oml:flow_id": "362",
+                                            "oml:uploader": "212",
+                                            "oml:error_message": []
+                                        },
+                                        {
+                                            "oml:run_id": "249273",
+                                            "oml:task_id": "1",
+                                            "oml:setup_id": "829",
+                                            "oml:flow_id": "362",
+                                            "oml:uploader": "348",
+                                            "oml:error_message": []
+                                        },
+                                        {
+                                            "oml:run_id": "249280",
+                                            "oml:task_id": "1",
+                                            "oml:setup_id": "829",
+                                            "oml:flow_id": "362",
+                                            "oml:uploader": "348",
+                                            "oml:error_message": []
+                                        }
+                                    ]
+                                }
+                            }
+                        }
                     },
                     "default": {
                         "description": "Unexpected error",
@@ -1107,7 +1177,42 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "A list of runs descriptions"
+                        "description": "A list of runs descriptions",
+                        "schema": {
+                            "$ref": "#/definitions/RunList"
+                        },
+                        "examples": {
+                            "application/json": {
+                                "runs": {
+                                    "oml:run": [
+                                        {
+                                            "oml:run_id": "45015",
+                                            "oml:task_id": "1",
+                                            "oml:setup_id": "1225",
+                                            "oml:flow_id": "673",
+                                            "oml:uploader": "1",
+                                            "oml:error_message": []
+                                        },
+                                        {
+                                            "oml:run_id": "45016",
+                                            "oml:task_id": "1",
+                                            "oml:setup_id": "1225",
+                                            "oml:flow_id": "673",
+                                            "oml:uploader": "1",
+                                            "oml:error_message": []
+                                        },
+                                        {
+                                            "oml:run_id": "54729",
+                                            "oml:task_id": "1",
+                                            "oml:setup_id": "1468",
+                                            "oml:flow_id": "707",
+                                            "oml:uploader": "1",
+                                            "oml:error_message": []
+                                        }
+                                    ]
+                                }
+                            }
+                        }
                     },
                     "default": {
                         "description": "Unexpected error",
@@ -1143,7 +1248,42 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "A list of runs descriptions"
+                        "description": "A list of runs descriptions",
+                        "schema": {
+                            "$ref": "#/definitions/RunList"
+                        },
+                        "examples": {
+                            "application/json": {
+                                "runs": {
+                                    "oml:run": [
+                                        {
+                                            "oml:run_id": "413",
+                                            "oml:task_id": "1",
+                                            "oml:setup_id": "10",
+                                            "oml:flow_id": "65",
+                                            "oml:uploader": "1",
+                                            "oml:error_message": []
+                                        },
+                                        {
+                                            "oml:run_id": "6253",
+                                            "oml:task_id": "1",
+                                            "oml:setup_id": "10",
+                                            "oml:flow_id": "65",
+                                            "oml:uploader": "17",
+                                            "oml:error_message": []
+                                        },
+                                        {
+                                            "oml:run_id": "10451",
+                                            "oml:task_id": "1",
+                                            "oml:setup_id": "79",
+                                            "oml:flow_id": "65",
+                                            "oml:uploader": "17",
+                                            "oml:error_message": []
+                                        }
+                                    ]
+                                }
+                            }
+                        }
                     },
                     "default": {
                         "description": "Unexpected error",
@@ -1179,7 +1319,42 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "A list of runs descriptions"
+                        "description": "A list of runs descriptions",
+                        "schema": {
+                            "$ref": "#/definitions/RunList"
+                        },
+                        "examples": {
+                            "application/json": {
+                                "runs": {
+                                    "oml:run": [
+                                        {
+                                            "oml:run_id": "100",
+                                            "oml:task_id": "28",
+                                            "oml:setup_id": "12",
+                                            "oml:flow_id": "67",
+                                            "oml:uploader": "1",
+                                            "oml:error_message": []
+                                        },
+                                        {
+                                            "oml:run_id": "101",
+                                            "oml:task_id": "48",
+                                            "oml:setup_id": "6",
+                                            "oml:flow_id": "61",
+                                            "oml:uploader": "1",
+                                            "oml:error_message": []
+                                        },
+                                        {
+                                            "oml:run_id": "102",
+                                            "oml:task_id": "41",
+                                            "oml:setup_id": "3",
+                                            "oml:flow_id": "58",
+                                            "oml:uploader": "1",
+                                            "oml:error_message": []
+                                        }
+                                    ]
+                                }
+                            }
+                        }
                     },
                     "default": {
                         "description": "Unexpected error",
@@ -1342,7 +1517,36 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "A list of evaluation descriptions"
+                        "description": "A list of evaluation descriptions",
+                        "schema": {
+                            "$ref": "#/definitions/EvaluationList"
+                        },
+                        "examples": {
+                            "application/json": {
+                                "evaluations": {
+                                    "oml:evaluation": [
+                                        {
+                                            "oml:run_id": "1",
+                                            "oml:function": "area_under_roc_curve",
+                                            "oml:value": "0.839359",
+                                            "oml:array_data": "[0,0.99113,0.898048,0.874862,0.791282,0.807343,0.820674]"
+                                        },
+                                        {
+                                            "oml:run_id": "1",
+                                            "oml:function": "f_measure",
+                                            "oml:value": "0.600026",
+                                            "oml:array_data": "[0,0,0.711934,0.735714,0.601363,0.435678,0.430913]"
+                                        },
+                                        {
+                                            "oml:run_id": "1",
+                                            "oml:function": "predictive_accuracy",
+                                            "oml:value": "0.614634",
+                                            "oml:array_data": []
+                                        }
+                                    ]
+                                }
+                            }
+                        }
                     },
                     "default": {
                         "description": "Unexpected error",
@@ -1378,7 +1582,36 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "A list of evaluation descriptions"
+                        "description": "A list of evaluation descriptions",
+                        "schema": {
+                            "$ref": "#/definitions/EvaluationList"
+                        },
+                        "examples": {
+                            "application/json": {
+                                "evaluations": {
+                                    "oml:evaluation": [
+                                        {
+                                            "oml:run_id": "1",
+                                            "oml:function": "area_under_roc_curve",
+                                            "oml:value": "0.839359",
+                                            "oml:array_data": "[0,0.99113,0.898048,0.874862,0.791282,0.807343,0.820674]"
+                                        },
+                                        {
+                                            "oml:run_id": "1",
+                                            "oml:function": "f_measure",
+                                            "oml:value": "0.600026",
+                                            "oml:array_data": "[0,0,0.711934,0.735714,0.601363,0.435678,0.430913]"
+                                        },
+                                        {
+                                            "oml:run_id": "1",
+                                            "oml:function": "predictive_accuracy",
+                                            "oml:value": "0.614634",
+                                            "oml:array_data": []
+                                        }
+                                    ]
+                                }
+                            }
+                        }
                     },
                     "default": {
                         "description": "Unexpected error",
@@ -1414,7 +1647,36 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "A list of evaluation descriptions"
+                        "description": "A list of evaluation descriptions",
+                        "schema": {
+                            "$ref": "#/definitions/EvaluationList"
+                        },
+                        "examples": {
+                            "application/json": {
+                                "evaluations": {
+                                    "oml:evaluation": [
+                                        {
+                                            "oml:run_id": "1",
+                                            "oml:function": "area_under_roc_curve",
+                                            "oml:value": "0.839359",
+                                            "oml:array_data": "[0,0.99113,0.898048,0.874862,0.791282,0.807343,0.820674]"
+                                        },
+                                        {
+                                            "oml:run_id": "1",
+                                            "oml:function": "f_measure",
+                                            "oml:value": "0.600026",
+                                            "oml:array_data": "[0,0,0.711934,0.735714,0.601363,0.435678,0.430913]"
+                                        },
+                                        {
+                                            "oml:run_id": "1",
+                                            "oml:function": "predictive_accuracy",
+                                            "oml:value": "0.614634",
+                                            "oml:array_data": []
+                                        }
+                                    ]
+                                }
+                            }
+                        }
                     },
                     "default": {
                         "description": "Unexpected error",
@@ -1450,7 +1712,36 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "A list of evaluations descriptions"
+                        "description": "A list of evaluations descriptions",
+                        "schema": {
+                            "$ref": "#/definitions/EvaluationList"
+                        },
+                        "examples": {
+                            "application/json": {
+                                "evaluations": {
+                                    "oml:evaluation": [
+                                        {
+                                            "oml:run_id": "1",
+                                            "oml:function": "area_under_roc_curve",
+                                            "oml:value": "0.839359",
+                                            "oml:array_data": "[0,0.99113,0.898048,0.874862,0.791282,0.807343,0.820674]"
+                                        },
+                                        {
+                                            "oml:run_id": "1",
+                                            "oml:function": "f_measure",
+                                            "oml:value": "0.600026",
+                                            "oml:array_data": "[0,0,0.711934,0.735714,0.601363,0.435678,0.430913]"
+                                        },
+                                        {
+                                            "oml:run_id": "1",
+                                            "oml:function": "predictive_accuracy",
+                                            "oml:value": "0.614634",
+                                            "oml:array_data": []
+                                        }
+                                    ]
+                                }
+                            }
+                        }
                     },
                     "default": {
                         "description": "Unexpected error",
@@ -1486,7 +1777,36 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "A list of evaluations descriptions"
+                        "description": "A list of evaluations descriptions",
+                        "schema": {
+                            "$ref": "#/definitions/EvaluationList"
+                        },
+                        "examples": {
+                            "application/json": {
+                                "evaluations": {
+                                    "oml:evaluation": [
+                                        {
+                                            "oml:run_id": "1",
+                                            "oml:function": "area_under_roc_curve",
+                                            "oml:value": "0.839359",
+                                            "oml:array_data": "[0,0.99113,0.898048,0.874862,0.791282,0.807343,0.820674]"
+                                        },
+                                        {
+                                            "oml:run_id": "1",
+                                            "oml:function": "f_measure",
+                                            "oml:value": "0.600026",
+                                            "oml:array_data": "[0,0,0.711934,0.735714,0.601363,0.435678,0.430913]"
+                                        },
+                                        {
+                                            "oml:run_id": "1",
+                                            "oml:function": "predictive_accuracy",
+                                            "oml:value": "0.614634",
+                                            "oml:array_data": []
+                                        }
+                                    ]
+                                }
+                            }
+                        }
                     },
                     "default": {
                         "description": "Unexpected error",
@@ -1549,23 +1869,26 @@
                             "description": "Tags added by OpenML users. Includes study tags in the form `study_1`"
                         },
                         "parameter": {
-                            "type": "object",
-                            "properties": {
-                                "name": {
-                                    "type": "string",
-                                    "description": "The name of the parameter"
-                                },
-                                "data_type": {
-                                    "type": "string",
-                                    "description": "The data type of the parameter"
-                                },
-                                "default_value": {
-                                    "type": "string",
-                                    "description": "The default value of the parameter"
-                                },
-                                "description": {
-                                    "type": "string",
-                                    "description": "A description of the parameter"
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "description": "The name of the parameter"
+                                    },
+                                    "data_type": {
+                                        "type": "string",
+                                        "description": "The data type of the parameter"
+                                    },
+                                    "default_value": {
+                                        "type": "string",
+                                        "description": "The default value of the parameter"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "description": "A description of the parameter"
+                                    }
                                 }
                             }
                         }
@@ -1811,6 +2134,85 @@
                 }
             }
         },
+        "RunList": {
+            "type": "object",
+            "properties": {
+                "runs": {
+                    "type": "object",
+                    "properties": {
+                        "run": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "run_id": {
+                                        "type": "string",
+                                        "description": "The run ID"
+                                    },
+                                    "task_id": {
+                                        "type": "string",
+                                        "description": "The ID of the task solved by this run"
+                                    },
+                                    "setup_id": {
+                                        "type": "string",
+                                        "description": "Ignore (internal representation of the parameter setting)"
+                                    },
+                                    "flow_id": {
+                                        "type": "string",
+                                        "description": "The ID of the flow used in this run"
+                                    },
+                                    "uploader": {
+                                        "type": "string",
+                                        "description": "The ID of the person uploading this run"
+                                    },
+                                    "error_message": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "description": "Error messages generated by the run (if any)"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "EvaluationList": {
+            "type": "object",
+            "properties": {
+                "evaluations": {
+                    "type": "object",
+                    "properties": {
+                        "evaluation": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "run_id": {
+                                        "type": "string",
+                                        "description": "The run ID"
+                                    },
+                                    "function": {
+                                        "type": "string",
+                                        "description": "The name of the evaluation function"
+                                    },
+                                    "value": {
+                                        "type": "string",
+                                        "description": "The outcome of the evaluation"
+                                    },
+                                    "array_data": {
+                                        "type": "string",
+                                        "description": "For structured evaluation measures, an array of evaluation values (e.g. per-class predictions, evaluation matrices,...)"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "Run": {
             "type": "object",
             "properties": {
@@ -1861,16 +2263,19 @@
                             "description": "Tags added by OpenML users. Includes study tags in the form `study_1`"
                         },
                         "parameter_setting": {
-                            "type": "object",
-                            "description": "Parameter settings used in this run. Can be multiple.",
-                            "properties": {
-                                "name": {
-                                    "type": "string",
-                                    "description": "The name of the parameter"
-                                },
-                                "value": {
-                                    "type": "string",
-                                    "description": "The value of the parameter used"
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "description": "Parameter settings used in this run. Can be multiple.",
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "description": "The name of the parameter"
+                                    },
+                                    "value": {
+                                        "type": "string",
+                                        "description": "The value of the parameter used"
+                                    }
                                 }
                             }
                         },
@@ -1902,42 +2307,48 @@
                             "description": "The data generated by this run.",
                             "properties": {
                                 "file": {
-                                    "type": "object",
-                                    "description": "Files uploaded by the user, e.g. run description, predictions. Can be multiple.",
-                                    "properties": {
-                                        "did": {
-                                            "type": "string",
-                                            "description": "The id of the uploaded file"
-                                        },
-                                        "file_id": {
-                                            "type": "string",
-                                            "description": "The reference id of the uploaded file, for downloading afterward"
-                                        },
-                                        "name": {
-                                            "type": "string",
-                                            "description": "The name of the uploaded file (e.g., description, predictions, model,...)"
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "description": "Files uploaded by the user, e.g. run description, predictions. Can be multiple.",
+                                        "properties": {
+                                            "did": {
+                                                "type": "string",
+                                                "description": "The id of the uploaded file"
+                                            },
+                                            "file_id": {
+                                                "type": "string",
+                                                "description": "The reference id of the uploaded file, for downloading afterward"
+                                            },
+                                            "name": {
+                                                "type": "string",
+                                                "description": "The name of the uploaded file (e.g., description, predictions, model,...)"
+                                            }
                                         }
                                     }
                                 },
                                 "evaluation": {
-                                    "type": "object",
-                                    "description": "Evaluations uploaded by the user, e.g. runtimes, or computed by the server (after run upload). Can be multiple.",
-                                    "properties": {
-                                        "name": {
-                                            "type": "string",
-                                            "description": "The name of the evaluation measure"
-                                        },
-                                        "flow_id": {
-                                            "type": "string",
-                                            "description": "The id of the code used to compute this evaluation method"
-                                        },
-                                        "value": {
-                                            "type": "string",
-                                            "description": "The result of the evaluation"
-                                        },
-                                        "array_data": {
-                                            "type": "string",
-                                            "description": "For composite evaluation measures (e.g. per-class measures, confusion matrix), a string (JSON) representation of the evaluation."
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "description": "Evaluations uploaded by the user, e.g. runtimes, or computed by the server (after run upload). Can be multiple.",
+                                        "properties": {
+                                            "name": {
+                                                "type": "string",
+                                                "description": "The name of the evaluation measure"
+                                            },
+                                            "flow_id": {
+                                                "type": "string",
+                                                "description": "The id of the code used to compute this evaluation method"
+                                            },
+                                            "value": {
+                                                "type": "string",
+                                                "description": "The result of the evaluation"
+                                            },
+                                            "array_data": {
+                                                "type": "string",
+                                                "description": "For composite evaluation measures (e.g. per-class measures, confusion matrix), a string (JSON) representation of the evaluation."
+                                            }
                                         }
                                     }
                                 }
