@@ -119,7 +119,7 @@
                     {
                         "name": "description",
                         "in": "formData",
-                        "description": "An XML file describing the dataset. Use http://www.openml.org/api_new/v1/data/{id} for examples, but not that only name, description, and data format are required. The XSD schema can be found at https://github.com/openml/website/blob/master/openml_OS/views/pages/rest_api/xsd/openml.data.upload.xsd",
+                        "description": "An XML file describing the dataset. Only name, description, and data format are required. The XSD schema can be found at https://github.com/openml/website/blob/master/openml_OS/views/pages/rest_api/xsd/openml.data.upload.xsd",
                         "required": true,
                         "type": "file"
                     },
