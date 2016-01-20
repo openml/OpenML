@@ -26,7 +26,6 @@ import org.openml.apiconnector.xml.Task;
 import org.openml.apiconnector.xml.Task.Output.Predictions.Feature;
 import org.openml.apiconnector.xml.UploadRun;
 import org.openml.apiconnector.xstream.XstreamXmlMapping;
-import org.openml.weka.algorithm.InstancesHelper;
 import org.openml.weka.algorithm.WekaAlgorithm;
 
 import com.thoughtworks.xstream.XStream;

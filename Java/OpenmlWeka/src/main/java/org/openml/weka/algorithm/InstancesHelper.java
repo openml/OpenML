@@ -1,10 +1,5 @@
 package org.openml.weka.algorithm;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-
 import weka.core.Instances;
 
 public class InstancesHelper {
