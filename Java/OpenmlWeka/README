@@ -15,4 +15,4 @@
 
 (Old) Plain ant installation:
 
-ant -buildfile build_package.xml make_package -Dpackage=OpenmlWeka
+ant make_external -DpackageName=OpenmlWeka

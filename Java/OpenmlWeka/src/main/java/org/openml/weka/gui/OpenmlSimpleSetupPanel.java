@@ -60,9 +60,9 @@ import weka.classifiers.Classifier;
 import weka.experiment.Experiment;
 import weka.experiment.PropertyNode;
 import weka.experiment.SplitEvaluator;
-import weka.gui.experiment.AbstractSetupPanel;
 import weka.gui.experiment.AlgorithmListPanel;
 import weka.gui.experiment.SetupModePanel;
+import weka.gui.experiment.SimpleSetupPanel;
 
 /**
  * This panel controls the configuration of an experiment.
@@ -75,8 +75,9 @@ import weka.gui.experiment.SetupModePanel;
  * @author FracPete (fracpete at waikato dot ac dot nz)
  * @version $Revision: 8034 $
  */
-public class OpenmlSimpleSetupPanel extends AbstractSetupPanel {
-	
+public class OpenmlSimpleSetupPanel extends SimpleSetupPanel { 
+	// inherits from SimpleSetupPanel rather than AbstractSetupPanel 
+	// for compatibility with Weka 3.7.12
 	private static final long serialVersionUID = -4411056918296619225L;
 
 	/** The experiment being configured */

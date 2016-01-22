@@ -11,8 +11,8 @@ import javax.swing.JTabbedPane;
 import weka.core.Memory;
 import weka.experiment.Experiment;
 import weka.gui.GUIChooser.GUIChooserMenuPlugin;
-import weka.gui.experiment.AbstractSetupPanel;
 import weka.gui.experiment.RunPanel;
+import weka.gui.experiment.SimpleSetupPanel;
 
 public class OpenmlExperimenter extends JPanel implements GUIChooserMenuPlugin {
 
@@ -20,7 +20,7 @@ public class OpenmlExperimenter extends JPanel implements GUIChooserMenuPlugin {
 	private static final long serialVersionUID = -5751617505738193788L;
 
 	/** The panel for configuring the experiment */
-	protected AbstractSetupPanel m_SetupModePanel;
+	protected SimpleSetupPanel m_SetupModePanel;
 
 	/** The panel for running the experiment */
 	protected RunPanel m_RunPanel;
