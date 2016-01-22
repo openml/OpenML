@@ -72,7 +72,9 @@ public class ProcessDataset {
 	
 	public void process( Integer did ) throws Exception {
 		JSONArray record = getRecord(did);
-		URL featureUrl = apiconnector.getOpenmlFileUrl(record.getInt(1), record.getString(2));
+		// URL featureUrl = apiconnector.getOpenmlFileUrl(record.getInt(1), record.getString(2));
+		URL featureUrl = apiconnector.getOpenmlFileUrl(record.getInt(1), "");
+		
 		// feature string should be reconverted to null, if it was NULL in mysql
 		String defaultTarget = record.getString(3).equals("") ? null : record.getString(3);
 		
