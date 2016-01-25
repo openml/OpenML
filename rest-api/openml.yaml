@@ -1488,18 +1488,24 @@ paths:
                   "oml:evaluation": [
                     {
                       "oml:run_id":"1",
+                      "oml:task_id":"68",
+                      "oml:flow_id":"61",
                       "oml:function":"area_under_roc_curve",
                       "oml:value":"0.839359",
                       "oml:array_data":"[0,0.99113,0.898048,0.874862,0.791282,0.807343,0.820674]"
                     },
                     {
                       "oml:run_id":"1",
+                      "oml:task_id":"68",
+                      "oml:flow_id":"61",
                       "oml:function":"f_measure",
                       "oml:value":"0.600026",
                       "oml:array_data":"[0,0,0.711934,0.735714,0.601363,0.435678,0.430913]"
                     },
                     {
                       "oml:run_id":"1",
+                      "oml:task_id":"68",
+                      "oml:flow_id":"61",
                       "oml:function":"predictive_accuracy",
                       "oml:value":"0.614634",
                       "oml:array_data":[]
@@ -1541,18 +1547,24 @@ paths:
                   "oml:evaluation": [
                     {
                       "oml:run_id":"1",
+                      "oml:task_id":"68",
+                      "oml:flow_id":"61",
                       "oml:function":"area_under_roc_curve",
                       "oml:value":"0.839359",
                       "oml:array_data":"[0,0.99113,0.898048,0.874862,0.791282,0.807343,0.820674]"
                     },
                     {
                       "oml:run_id":"1",
+                      "oml:task_id":"68",
+                      "oml:flow_id":"61",
                       "oml:function":"f_measure",
                       "oml:value":"0.600026",
                       "oml:array_data":"[0,0,0.711934,0.735714,0.601363,0.435678,0.430913]"
                     },
                     {
                       "oml:run_id":"1",
+                      "oml:task_id":"68",
+                      "oml:flow_id":"61",
                       "oml:function":"predictive_accuracy",
                       "oml:value":"0.614634",
                       "oml:array_data":[]
@@ -1594,18 +1606,24 @@ paths:
                   "oml:evaluation": [
                     {
                       "oml:run_id":"1",
+                      "oml:task_id":"68",
+                      "oml:flow_id":"61",
                       "oml:function":"area_under_roc_curve",
                       "oml:value":"0.839359",
                       "oml:array_data":"[0,0.99113,0.898048,0.874862,0.791282,0.807343,0.820674]"
                     },
                     {
                       "oml:run_id":"1",
+                      "oml:task_id":"68",
+                      "oml:flow_id":"61",
                       "oml:function":"f_measure",
                       "oml:value":"0.600026",
                       "oml:array_data":"[0,0,0.711934,0.735714,0.601363,0.435678,0.430913]"
                     },
                     {
                       "oml:run_id":"1",
+                      "oml:task_id":"68",
+                      "oml:flow_id":"61",
                       "oml:function":"predictive_accuracy",
                       "oml:value":"0.614634",
                       "oml:array_data":[]
@@ -1647,18 +1665,24 @@ paths:
                   "oml:evaluation": [
                     {
                       "oml:run_id":"1",
+                      "oml:task_id":"68",
+                      "oml:flow_id":"61",
                       "oml:function":"area_under_roc_curve",
                       "oml:value":"0.839359",
                       "oml:array_data":"[0,0.99113,0.898048,0.874862,0.791282,0.807343,0.820674]"
                     },
                     {
                       "oml:run_id":"1",
+                      "oml:task_id":"68",
+                      "oml:flow_id":"61",
                       "oml:function":"f_measure",
                       "oml:value":"0.600026",
                       "oml:array_data":"[0,0,0.711934,0.735714,0.601363,0.435678,0.430913]"
                     },
                     {
                       "oml:run_id":"1",
+                      "oml:task_id":"68",
+                      "oml:flow_id":"61",
                       "oml:function":"predictive_accuracy",
                       "oml:value":"0.614634",
                       "oml:array_data":[]
@@ -1700,18 +1724,24 @@ paths:
                   "oml:evaluation": [
                     {
                       "oml:run_id":"1",
+                      "oml:task_id":"68",
+                      "oml:flow_id":"61",
                       "oml:function":"area_under_roc_curve",
                       "oml:value":"0.839359",
                       "oml:array_data":"[0,0.99113,0.898048,0.874862,0.791282,0.807343,0.820674]"
                     },
                     {
                       "oml:run_id":"1",
+                      "oml:task_id":"68",
+                      "oml:flow_id":"61",
                       "oml:function":"f_measure",
                       "oml:value":"0.600026",
                       "oml:array_data":"[0,0,0.711934,0.735714,0.601363,0.435678,0.430913]"
                     },
                     {
                       "oml:run_id":"1",
+                      "oml:task_id":"68",
+                      "oml:flow_id":"61",
                       "oml:function":"predictive_accuracy",
                       "oml:value":"0.614634",
                       "oml:array_data":[]
@@ -1985,6 +2015,12 @@ definitions:
                   run_id:
                     type: string
                     description: The run ID
+                  task_id:
+                    type: string
+                    description: The ID of the tasks solved by this run
+                  flow_id:
+                    type: string
+                    description: The ID of the flow used by this run
                   function:
                     type: string
                     description: The name of the evaluation function    
