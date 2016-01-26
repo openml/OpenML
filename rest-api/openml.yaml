@@ -326,6 +326,7 @@ paths:
                       "oml:did":"1",
                       "oml:name":"anneal",
                       "oml:status":"active",
+                      "oml:format":"ARFF",
                       "oml:quality":[
                         {
                           "@name":"MajorityClassSize",
@@ -1858,6 +1859,9 @@ definitions:
                 status:
                   type: string
                   description: The dataset status, either in_preparation, active, or deactivated
+                format:
+                  type: string
+                  description: The data format of the dataset, e.g. ARFF
                 quality:
                   type: array
                   items:

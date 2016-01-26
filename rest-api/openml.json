@@ -281,7 +281,7 @@
                             "$ref": "#/definitions/DataList"
                         },
                         "examples": {
-                            "application/json": "{\n  \"data\": {\n    \"oml:dataset\": [\n      {\n        \"oml:did\":\"1\",\n        \"oml:name\":\"anneal\",\n        \"oml:status\":\"active\",\n        \"oml:quality\":[\n          {\n            \"@name\":\"MajorityClassSize\",\n            \"$\":\"684\"\n          },\n          {\n            \"@name\":\"MaxNominalAttDistinctValues\",\n            \"$\":\"10.0\"\n          },\n          {\n            \"@name\":\"MinorityClassSize\"\n            ,\"$\":\"0\"\n          },\n          {\n            \"@name\":\"NumBinaryAtts\",\n            \"$\":\"14.0\"\n          },\n          {\n            \"@name\":\"NumberOfClasses\",\n            \"$\":\"6\"\n          },\n          {\n            \"@name\":\"NumberOfFeatures\",\n            \"$\":\"39\"\n          },\n          {\n            \"@name\":\"NumberOfInstances\",\n            \"$\":\"898\"\n          },\n          {\n            \"@name\":\"NumberOfInstancesWithMissingValues\",\n            \"$\":\"0\"\n          },\n          {\n            \"@name\":\"NumberOfMissingValues\",\n            \"$\":\"0\"\n          },\n          {\n            \"@name\":\"NumberOfNumericFeatures\",\n            \"$\":\"6\"\n          },\n          {\n            \"@name\":\"NumberOfSymbolicFeatures\",\n            \"$\":\"32\"\n          }\n        ]\n      }\n    ]\n  }\n}"
+                            "application/json": "{\n  \"data\": {\n    \"oml:dataset\": [\n      {\n        \"oml:did\":\"1\",\n        \"oml:name\":\"anneal\",\n        \"oml:status\":\"active\",\n        \"oml:format\":\"ARFF\",\n        \"oml:quality\":[\n          {\n            \"@name\":\"MajorityClassSize\",\n            \"$\":\"684\"\n          },\n          {\n            \"@name\":\"MaxNominalAttDistinctValues\",\n            \"$\":\"10.0\"\n          },\n          {\n            \"@name\":\"MinorityClassSize\"\n            ,\"$\":\"0\"\n          },\n          {\n            \"@name\":\"NumBinaryAtts\",\n            \"$\":\"14.0\"\n          },\n          {\n            \"@name\":\"NumberOfClasses\",\n            \"$\":\"6\"\n          },\n          {\n            \"@name\":\"NumberOfFeatures\",\n            \"$\":\"39\"\n          },\n          {\n            \"@name\":\"NumberOfInstances\",\n            \"$\":\"898\"\n          },\n          {\n            \"@name\":\"NumberOfInstancesWithMissingValues\",\n            \"$\":\"0\"\n          },\n          {\n            \"@name\":\"NumberOfMissingValues\",\n            \"$\":\"0\"\n          },\n          {\n            \"@name\":\"NumberOfNumericFeatures\",\n            \"$\":\"6\"\n          },\n          {\n            \"@name\":\"NumberOfSymbolicFeatures\",\n            \"$\":\"32\"\n          }\n        ]\n      }\n    ]\n  }\n}"
                         }
                     },
                     "default": {
@@ -2004,6 +2004,10 @@
                                     "status": {
                                         "type": "string",
                                         "description": "The dataset status, either in_preparation, active, or deactivated"
+                                    },
+                                    "format": {
+                                        "type": "string",
+                                        "description": "The data format of the dataset, e.g. ARFF"
                                     },
                                     "quality": {
                                         "type": "array",
