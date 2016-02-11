@@ -38,7 +38,17 @@ public class RunOpenmlJob implements CommandlineRunnable {
 			e.printStackTrace();
 		}
 	}
+	
+	public void preExecution() throws Exception {
+		
+	}
+	
 
+	
+	public void postExecution() throws Exception {
+		
+	}
+	
 	@Override
 	public void run(Object arg0, String[] args) throws IllegalArgumentException {
 		int n;
@@ -71,4 +81,6 @@ public class RunOpenmlJob implements CommandlineRunnable {
 			doTask(ttid, config, apiconnector);
 		}
 	}
+	
+	
 }

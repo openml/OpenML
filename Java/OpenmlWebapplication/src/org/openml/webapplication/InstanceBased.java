@@ -15,10 +15,7 @@ import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.xml.DataSetDescription;
 import org.openml.apiconnector.xml.Run;
 import org.openml.apiconnector.xml.Task;
-import org.openml.apiconnector.xstream.XstreamXmlMapping;
 import org.openml.webapplication.io.Output;
-
-import com.thoughtworks.xstream.XStream;
 
 import weka.core.Attribute;
 import weka.core.DenseInstance;
@@ -43,19 +40,47 @@ public class InstanceBased {
 	public InstanceBased(OpenmlConnector openml, List<Integer> run_ids, Integer task_id) throws Exception {
 		this.run_ids = run_ids;
 		this.openml = openml;
+		
 		this.predictions = new HashMap<Integer, Map<Integer,Map<Integer,Map<Integer,Map<Integer,String>>>>>();
 		this.runs = new HashMap<Integer,Run>();
 		
 		this.task_id = task_id; 
 		Task currentTask = openml.taskGet(task_id);
 		
-		if (currentTask.getTask_type().equals("Supervised Classification") == false) { // TODO: no string based comp.
+		if (currentTask.getTask_type().equals("Supervised Classification") == false
+				&& currentTask.getTask_type().equals("Supervised Data Stream Classification") == false) { // TODO: no string based comp.
 			throw new RuntimeException("Experimental function, only works with 'Supervised Classification' tasks for now (ttid / 1)" );
 		}
 		
-		URL taskUrl = new URL(TaskInformation.getEstimationProcedure(currentTask).getData_splits_url());
-		task_splits = new Instances(new BufferedReader(Input.getURL(taskUrl)));
+
+		DataSetDescription dsd = openml.dataGet(TaskInformation.getSourceData(currentTask).getData_set_id());
+		dataset = new Instances(new BufferedReader(Input.getURL(openml.getOpenmlFileUrl(dsd.getFile_id(), dsd.getName()))));
 		
+		
+		if (currentTask.getTask_type().equals("Supervised Data Stream Classification")) {
+			// simulate task splits file. 
+			
+			int numberOfInstances = dataset.numInstances();
+			
+			ArrayList<Attribute> attributes = new ArrayList<Attribute>();
+			List<String> typeValues = new ArrayList<String>();
+			typeValues.add("TEST");
+			attributes.add(new Attribute("repeat"));
+			attributes.add(new Attribute("fold"));
+			attributes.add(new Attribute("rowid"));
+			attributes.add(new Attribute("type",typeValues)); // don't need train
+			
+			task_splits = new Instances("task" + task_id +"splits-simulated", attributes, numberOfInstances);
+			
+			for (int i = 0; i < numberOfInstances; ++i) {
+				double[] attValues = {0,0,i,0};
+				task_splits.add(new DenseInstance(1.0, attValues));
+			}
+		} else {
+			URL taskUrl = new URL(TaskInformation.getEstimationProcedure(currentTask).getData_splits_url());
+			task_splits = new Instances(new BufferedReader(Input.getURL(taskUrl)));
+		}
+			
 		for (Integer run_id : run_ids) {
 			Run current = this.openml.runGet(run_id);
 			runs.put(run_id,current);
@@ -79,10 +104,6 @@ public class InstanceBased {
 			}
 		}
 		
-		
-		DataSetDescription dsd = openml.dataGet(TaskInformation.getSourceData(currentTask).getData_set_id());
-
-		dataset = new Instances(new BufferedReader(Input.getURL(openml.getOpenmlFileUrl(dsd.getFile_id(), dsd.getName()))));
 		correct = datasetToHashMap(dataset, TaskInformation.getSourceData(currentTask).getTarget_feature());
 	}
 	
@@ -188,12 +209,20 @@ public class InstanceBased {
 		for (int i = 0; i < predictions.numInstances(); ++i) {
 			Instance current = predictions.get(i);
 			
-			Integer repeat = (int) current.value(predictions.attribute("repeat"));
-			Integer fold = (int) current.value(predictions.attribute("fold"));
+			Integer repeat = 0;
+			Integer fold = 0;
 			Integer sample = 0;
+			
+			try { 
+				repeat = (int) current.value(predictions.attribute("repeat"));
+			} catch(NullPointerException e) {}
+			try { 
+				fold = (int) current.value(predictions.attribute("fold"));
+			} catch(NullPointerException e) {}
 			try { 
 				sample = (int) current.value(predictions.attribute("sample"));
 			} catch(NullPointerException e) {}
+			
 			Integer row_id = (int) current.value(predictions.attribute("row_id"));
 			String prediction = current.stringValue(predictions.attribute("prediction"));
 			
