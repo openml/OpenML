@@ -35,6 +35,8 @@ public class InstanceBased {
 	private final Map<Integer,Map<Integer,Map<Integer,Map<Integer,Map<Integer,String>>>>> predictions;
 	
 	private Instances resultSet;
+	private Integer differenceCounter;
+	private Integer predictionCounter;
 	
 	
 	public InstanceBased(OpenmlConnector openml, List<Integer> run_ids, Integer task_id) throws Exception {
@@ -106,6 +108,10 @@ public class InstanceBased {
 		
 		correct = datasetToHashMap(dataset, TaskInformation.getSourceData(currentTask).getTarget_feature());
 	}
+
+	public int getNumTaskSplits() {
+		return task_splits.numInstances();
+	}
 	
 	public void calculateDifference() {
 		if (run_ids.size() != 2) {
@@ -116,18 +122,23 @@ public class InstanceBased {
 		attributes.add(new Attribute("repeat"));
 		attributes.add(new Attribute("fold"));
 		attributes.add(new Attribute("rowid"));
+		attributes.add(new Attribute("whichCorrect"));
 		resultSet = new Instances("difference",attributes,task_splits.numInstances());
-		
+
+		differenceCounter = 0;
+		predictionCounter = 0;	
 		for (int i = 0; i < task_splits.numInstances(); ++i) {
 			Instance current = task_splits.get(i);
 			boolean test = current.stringValue(task_splits.attribute("type")).equals("TEST");
 			if (!test) {
 				continue;
 			}
+			predictionCounter++;
 			
 			Integer row_id = (int) current.value(task_splits.attribute("rowid"));
 			Integer repeat = (int) current.value(task_splits.attribute("repeat"));
 			Integer fold = (int) current.value(task_splits.attribute("fold"));
+			Integer whichCorrect = -1;
 			Integer sample = 0;
 			try {
 				sample = (int) current.value(task_splits.attribute("sample"));
@@ -135,19 +146,27 @@ public class InstanceBased {
 			
 			String label = null;
 			boolean difference = false;
+			String correctLabel = correct.get(row_id);
 			
 			for (Integer run_id : run_ids) {
 				String currentLabel = predictions.get(run_id).get(repeat).get(fold).get(sample).get(row_id);
 				if (label == null) {
 					label = currentLabel;
+					if (currentLabel.equals(correctLabel)) {
+						whichCorrect = run_id;
+					}
 				} else if (label.equals(currentLabel) == false) {
 					difference = true;
+					if (currentLabel.equals(correctLabel)) {
+						whichCorrect = run_id;
+					}
 				}
 			}
 			
 			if (difference) {
-				double[] instance = {repeat,fold,row_id};
+				double[] instance = {repeat,fold,row_id,whichCorrect};
 				resultSet.add(new DenseInstance(1.0,instance));
+				differenceCounter++;
 			}
 		}
 	}
@@ -200,6 +219,9 @@ public class InstanceBased {
 	}
 	
 	public void toStdout() throws IOException {
+		if(differenceCounter != null && predictionCounter != null) {
+			System.out.format("%% Classifier Output Difference: %d/%d \n",differenceCounter,predictionCounter);
+		}
 		Output.instanes2file(resultSet, new OutputStreamWriter(System.out));
 	}
 	
