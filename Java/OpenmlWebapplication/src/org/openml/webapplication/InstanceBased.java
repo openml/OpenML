@@ -28,6 +28,8 @@ public class InstanceBased {
 	private final Instances task_splits;
 	private final Instances dataset;
 	
+	private final int task_splits_size;
+	
 	private final OpenmlConnector openml;
 	private final List<Integer> run_ids;
 	private final Map<Integer,Run> runs;
@@ -35,7 +37,6 @@ public class InstanceBased {
 	private final Map<Integer,Map<Integer,Map<Integer,Map<Integer,Map<Integer,String>>>>> predictions;
 	
 	private Instances resultSet;
-	
 	
 	public InstanceBased(OpenmlConnector openml, List<Integer> run_ids, Integer task_id) throws Exception {
 		this.run_ids = run_ids;
@@ -103,19 +104,31 @@ public class InstanceBased {
 				throw new RuntimeException("Runs are not of the same task type: Should be: " + this.task_id + "; found " + current.getTask_id() + " (and maybe more)" );
 			}
 		}
-		
+		task_splits_size = task_splits.numInstances();
 		correct = datasetToHashMap(dataset, TaskInformation.getSourceData(currentTask).getTarget_feature());
 	}
 	
-	public void calculateDifference() {
+	public int taskSplitSize() {
+		return task_splits_size;
+	}
+	
+	public int calculateDifference() {
 		if (run_ids.size() != 2) {
 			throw new RuntimeException("Too many runs to compare. Should be 2. ");
 		}
+		
+		List<String> values = new ArrayList<String>();
+		for (Integer run : run_ids) {
+			values.add(run + "");
+		}
+		values.add("none");
 		
 		ArrayList<Attribute> attributes = new ArrayList<Attribute>();
 		attributes.add(new Attribute("repeat"));
 		attributes.add(new Attribute("fold"));
 		attributes.add(new Attribute("rowid"));
+		attributes.add(new Attribute("whichCorrect", values));
+		
 		resultSet = new Instances("difference",attributes,task_splits.numInstances());
 		
 		for (int i = 0; i < task_splits.numInstances(); ++i) {
@@ -135,24 +148,33 @@ public class InstanceBased {
 			
 			String label = null;
 			boolean difference = false;
+			String correctLabel = correct.get(row_id);
+			double whichCorrect = resultSet.attribute("whichCorrect").indexOfValue("none");
 			
 			for (Integer run_id : run_ids) {
 				String currentLabel = predictions.get(run_id).get(repeat).get(fold).get(sample).get(row_id);
+				// check for difference
 				if (label == null) {
 					label = currentLabel;
 				} else if (label.equals(currentLabel) == false) {
 					difference = true;
 				}
+				
+				// check for correct label
+				if (currentLabel.equals(correctLabel)) {
+					whichCorrect = resultSet.attribute("whichCorrect").indexOfValue(run_id + "");
+				}
 			}
 			
 			if (difference) {
-				double[] instance = {repeat,fold,row_id};
+				double[] instance = {repeat,fold,row_id, whichCorrect};
 				resultSet.add(new DenseInstance(1.0,instance));
 			}
 		}
+		return resultSet.size();
 	}
 	
-	public void calculateAllWrong() {
+	public int calculateAllWrong() {
 		if (run_ids.size() < 2) {
 			throw new RuntimeException("Too few runs to compare. Should be at least 2. ");
 		}
@@ -196,11 +218,11 @@ public class InstanceBased {
 				resultSet.add(new DenseInstance(1.0,instance));
 			}
 		}
-		
+		return resultSet.size();
 	}
 	
-	public void toStdout() throws IOException {
-		Output.instanes2file(resultSet, new OutputStreamWriter(System.out));
+	public void toStdout(String[] leadingComments) throws IOException {
+		Output.instanes2file(resultSet, new OutputStreamWriter(System.out), leadingComments);
 	}
 	
 	private static Map<Integer,Map<Integer,Map<Integer,Map<Integer,String>>>> predictionsToHashMap(Instances predictions) {

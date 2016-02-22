@@ -157,9 +157,9 @@ public class Main {
 						
 						aw.calculateAllWrong();
 						
-						aw.toStdout();
+						aw.toStdout(null);
 					} else {
-						System.out.println( Output.styleToJsonError("Missing arguments for function 'all_wrong'. Need r (run ids, comma separated) and t (task_id)") );
+						System.out.println( Output.styleToJsonError("Missing arguments for function 'different_predictions'. Need r (run ids, comma separated) and t (task_id)") );
 					}
 					
 				} else if(function.equals("different_predictions")) {
@@ -175,9 +175,10 @@ public class Main {
 						}
 						InstanceBased aw = new InstanceBased(apiconnector, run_ids, task_id);
 						
-						aw.calculateDifference();
+						int diff = aw.calculateDifference();
+						String[] leadingComments = {"Classifier Output Difference: " + diff + "/" + aw.taskSplitSize()};
 						
-						aw.toStdout();
+						aw.toStdout(leadingComments);
 					} else {
 						System.out.println( Output.styleToJsonError("Missing arguments for function 'all_wrong'. Need r (run ids, comma separated) and t (task_id)") );
 					}

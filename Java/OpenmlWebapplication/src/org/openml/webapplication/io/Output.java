@@ -162,8 +162,15 @@ public class Output {
 		return "{" + sb.toString().substring( 2 ) + "}";
 	}
 	
-	public static void instanes2file( Instances instances, Writer out ) throws IOException {
+	public static void instanes2file( Instances instances, Writer out, String[] leadingComments ) throws IOException {
 		BufferedWriter bw = new BufferedWriter( out );
+		
+		if (leadingComments != null) {
+			for (int i = 0; i < leadingComments.length; ++i) {
+				bw.write("% " + leadingComments[i] + "\n");
+			}
+		}
+		
 		// Important: We can not use a std Instances.toString() approach, as instance files can grow
 		bw.write("@relation " + instances.relationName() + "\n\n");
 		for( int i = 0; i < instances.numAttributes(); ++i ) {

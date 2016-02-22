@@ -78,15 +78,15 @@ public class GenerateFolds {
 	
 	public void toFile( String splitsPath ) throws IOException {
 		FileWriter f = new FileWriter( new File( splitsPath ) );
-		Output.instanes2file(splits, f );
+		Output.instanes2file(splits, f, null );
 	}
 	
 	public void toStdout() throws IOException {
-		Output.instanes2file(splits, new OutputStreamWriter( System.out ) );
+		Output.instanes2file(splits, new OutputStreamWriter( System.out ), null );
 	}
 	
 	public void toStdOutMd5() throws NoSuchAlgorithmException, IOException {
-		Output.instanes2file(splits, new Md5Writer() );
+		Output.instanes2file(splits, new Md5Writer(), null );
 	}
 	
 	private Instances generateInstances(String name, List<List<List<Integer>>> testset) throws Exception {
