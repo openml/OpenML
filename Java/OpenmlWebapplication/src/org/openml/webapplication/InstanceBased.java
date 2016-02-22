@@ -32,6 +32,7 @@ public class InstanceBased {
 	
 	private final OpenmlConnector openml;
 	private final List<Integer> run_ids;
+	private final List<Integer> setup_ids;
 	private final Map<Integer,Run> runs;
 	private final Map<Integer,String> correct;
 	private final Map<Integer,Map<Integer,Map<Integer,Map<Integer,Map<Integer,String>>>>> predictions;
@@ -44,6 +45,7 @@ public class InstanceBased {
 		
 		this.predictions = new HashMap<Integer, Map<Integer,Map<Integer,Map<Integer,Map<Integer,String>>>>>();
 		this.runs = new HashMap<Integer,Run>();
+		this.setup_ids = new ArrayList<Integer>();
 		
 		this.task_id = task_id; 
 		Task currentTask = openml.taskGet(task_id);
@@ -86,6 +88,7 @@ public class InstanceBased {
 			Run current = this.openml.runGet(run_id);
 			runs.put(run_id,current);
 			Run.Data.File[] outputFiles = current.getOutputFile();
+			setup_ids.add(current.getSetup_id());
 			
 			boolean found = false;
 			for (Run.Data.File f : outputFiles) {
@@ -171,6 +174,12 @@ public class InstanceBased {
 				resultSet.add(new DenseInstance(1.0,instance));
 			}
 		}
+		
+		
+		try { // put it in try catch, as admin rights are required.  
+			openml.setupDifferences(setup_ids.get(0), setup_ids.get(1), task_id, task_splits_size, resultSet.size()); 
+		} catch (Exception e) {}
+		
 		return resultSet.size();
 	}
 	
