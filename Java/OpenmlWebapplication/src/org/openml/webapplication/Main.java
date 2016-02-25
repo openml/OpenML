@@ -27,8 +27,13 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Options;
 import org.json.JSONArray;
+import org.openml.apiconnector.algorithms.QueryUtils;
+import org.openml.apiconnector.algorithms.TaskInformation;
 import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.settings.Config;
+import org.openml.apiconnector.xml.DataSetDescription;
+import org.openml.apiconnector.xml.Task;
+import org.openml.apiconnector.xml.Task.Input.Estimation_procedure;
 import org.openml.webapplication.features.FantailConnector;
 import org.openml.webapplication.generatefolds.GenerateFolds;
 import org.openml.webapplication.io.Output;
@@ -96,52 +101,94 @@ public class Main {
 					
 				} else if( function.equals("generate_folds") ) {
 					
-					// prepare ARFF output consisting of datasplits
-					if( cli.hasOption("-d") && cli.hasOption("e") && cli.hasOption("c") ) {
+					String datasetUrl;
+					String target_feature;
+					String estimation_procedure;
+					String custum_testset; 
+					
+					
+					// TODO: experimental section. 
+					if( cli.hasOption("-id") ) {
+						id = Integer.parseInt( cli.getOptionValue("id") );
+						Task current = apiconnector.taskGet(id);
+						int dataset_id = TaskInformation.getSourceData(current).getData_set_id();
+						DataSetDescription dsd = apiconnector.dataGet(dataset_id);
+						Estimation_procedure ep = TaskInformation.getEstimationProcedure(current);
+						Integer numberOfRepeats = TaskInformation.getNumberOfRepeats(current);
+						Integer numberOfFolds = TaskInformation.getNumberOfFolds(current);
+						Integer percentage = null; 
+						try {percentage = TaskInformation.getPercentage(current);} catch(Exception e) {}
 						
-						List<List<List<Integer>>> testset = new ArrayList<List<List<Integer>>>();
-						if( cli.hasOption("-test") ) {
-							JSONArray rowidsJson = new JSONArray(cli.getOptionValue("test"));
-							
-							
-							for( int i = 0; i < rowidsJson.length(); ++i ) {
-								while (testset.size() <= i) {
-									testset.add(new ArrayList<List<Integer>>());
-								}
-								
-								for( int j = 0; j < rowidsJson.getJSONArray(i).length(); ++j ) {
-									while (testset.get(i).size() <= j) {
-										testset.get(i).add(new ArrayList<Integer>());
-									}
-									
-									for( int k = 0; k < rowidsJson.getJSONArray(i).getJSONArray(j).length(); ++k ) {
-										
-										testset.get(i).get(j).add(rowidsJson.getJSONArray(i).getJSONArray(j).getInt(k));
-									}
-									
-								}
-							}
+						datasetUrl = dsd.getUrl();
+						target_feature = TaskInformation.getSourceData(current).getTarget_feature();
+						estimation_procedure = ep.getType();
+						if (numberOfRepeats != null) {estimation_procedure += "_" + numberOfRepeats;}
+						if (numberOfFolds != null) {estimation_procedure += "_" + numberOfFolds;}
+						if (percentage != null) {estimation_procedure += "_" + percentage;}
+						
+						
+						String sql = "SELECT value FROM task_inputs WHERE input = 'custom_testset' AND task_id = " + id;
+						custum_testset = QueryUtils.getStringFromDatabase(apiconnector, sql);
+					} // :: the proper way
+					else if( cli.hasOption("-d") && cli.hasOption("e") && cli.hasOption("c") ) {
+						
+						datasetUrl = cli.getOptionValue("-d");
+						target_feature = cli.getOptionValue("-c");
+						estimation_procedure = cli.getOptionValue("-e");
+						
+						if (cli.hasOption("test")) {
+							custum_testset = cli.getOptionValue("test");
+						} else {
+							custum_testset = null;
 						}
 						
-						apiconnector.setVerboseLevel(0);
-						GenerateFolds gf = new GenerateFolds(
-								apiconnector, 
-								config.getApiKey(),
-								cli.getOptionValue("d"), 
-								cli.getOptionValue("e"), 
-								cli.getOptionValue("c"), 
-								testset, 
-								FOLD_GENERATION_SEED );
-						if(cli.hasOption("o") == true) {
-							gf.toFile(cli.getOptionValue("o"));
-						} else if(cli.hasOption("m") == true) {
-							gf.toStdOutMd5();
-						}else {
-							gf.toStdout();
-						}
 					} else {
 						System.out.println( Output.styleToJsonError("Missing arguments for function 'generate_folds'. Need d (url to dataset), c (target feature), e (evaluation_method, {cv_{repeats}_{folds},holdout_{repeats}_{percentage},leave_one_out}), and r (row_id, textual). ") );
+						return;
 					}
+					
+
+					List<List<List<Integer>>> testset = new ArrayList<List<List<Integer>>>();
+					if( custum_testset != null && custum_testset.length() > 0 ) {
+						JSONArray rowidsJson = new JSONArray(custum_testset);
+						
+						
+						for( int i = 0; i < rowidsJson.length(); ++i ) {
+							while (testset.size() <= i) {
+								testset.add(new ArrayList<List<Integer>>());
+							}
+							
+							for( int j = 0; j < rowidsJson.getJSONArray(i).length(); ++j ) {
+								while (testset.get(i).size() <= j) {
+									testset.get(i).add(new ArrayList<Integer>());
+								}
+								
+								for( int k = 0; k < rowidsJson.getJSONArray(i).getJSONArray(j).length(); ++k ) {
+									
+									testset.get(i).get(j).add(rowidsJson.getJSONArray(i).getJSONArray(j).getInt(k));
+								}
+								
+							}
+						}
+					}
+					
+					apiconnector.setVerboseLevel(0);
+					GenerateFolds gf = new GenerateFolds(
+							apiconnector, 
+							config.getApiKey(),
+							datasetUrl, 
+							estimation_procedure, 
+							target_feature, 
+							testset, 
+							FOLD_GENERATION_SEED );
+					if(cli.hasOption("o") == true) {
+						gf.toFile(cli.getOptionValue("o"));
+					} else if(cli.hasOption("m") == true) {
+						gf.toStdOutMd5();
+					}else {
+						gf.toStdout();
+					}
+					
 				} else if(function.equals("all_wrong")) {
 					
 					if( cli.hasOption("-r") && cli.hasOption("-t") ) {

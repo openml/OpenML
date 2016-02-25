@@ -21,6 +21,10 @@ package org.openml.webapplication.generatefolds;
 
 import java.util.Arrays;
 
+import org.json.JSONArray;
+import org.openml.apiconnector.algorithms.QueryUtils;
+import org.openml.apiconnector.io.OpenmlConnector;
+
 import weka.core.Instances;
 
 public class EstimationProcedure {
@@ -72,6 +76,18 @@ public class EstimationProcedure {
 			arg2 = Integer.valueOf(parts[2]);
 		}
 	}
+	/*
+	public static String databaseRecordToDescriptor(OpenmlConnector openml, int id) throws Exception {
+		String sql = "SELECT type,repeats,folds,percentage FROM estimation_procedure WHERE id = " + id;
+		JSONArray data = QueryUtils.getRecordFromDatabase(openml, sql);
+		String res = data.getString(0);
+		
+		if (data.getString(1) != null) { res += "_" + data.getString(1); }
+		if (data.getString(2) != null) { res += "_" + data.getString(2); }
+		if (data.getString(3) != null) { res += "_" + data.getString(3); }
+		
+		return res;
+	}*/
 	
 	public EstimationProcedureType getEvaluationMethod() {
 		return em;
