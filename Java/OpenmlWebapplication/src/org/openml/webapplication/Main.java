@@ -150,8 +150,13 @@ public class Main {
 
 					List<List<List<Integer>>> testset = new ArrayList<List<List<Integer>>>();
 					if( custum_testset != null && custum_testset.length() > 0 ) {
-						JSONArray rowidsJson = new JSONArray(custum_testset);
-						
+						JSONArray rowidsJson;
+						try {
+							rowidsJson = new JSONArray(custum_testset);
+						} catch(Exception e) {
+							System.out.println( Output.styleToJsonError("Problem parsing custom splits.  ") );
+							return;
+						}
 						
 						for( int i = 0; i < rowidsJson.length(); ++i ) {
 							while (testset.size() <= i) {
