@@ -52,13 +52,8 @@ public class Main {
 		options.addOption("id", true, "The id of the dataset/run used");
 		options.addOption("config", true, "The config string describing the settings for API interaction");
 		options.addOption("f", true, "The function to invole");
-		options.addOption("d", true, "The dataset used");
-		options.addOption("c", true, "The target class");
-		options.addOption("s", true, "The splitfile used");
-		options.addOption("p", true, "The prediction file used");
-		options.addOption("e", true, "The evaluation method");
 		options.addOption("o", true, "The output file");
-		options.addOption("r", true, "The rowid");
+		options.addOption("r", true, "The run id");
 		options.addOption("t", true, "The task id");
 		options.addOption("x", false, "Flag determining whether we should pick a random id");
 		options.addOption("m", false, "Flag determining whether the output of the splits file should be presented as a md5 hash");
@@ -104,10 +99,9 @@ public class Main {
 					String datasetUrl;
 					String target_feature;
 					String estimation_procedure;
-					String custum_testset; 
+					String custum_testset = null; 
 					
 					
-					// TODO: experimental section. 
 					if( cli.hasOption("-id") ) {
 						id = Integer.parseInt( cli.getOptionValue("id") );
 						Task current = apiconnector.taskGet(id);
@@ -127,23 +121,13 @@ public class Main {
 						if (percentage != null) {estimation_procedure += "_" + percentage;}
 						
 						
-						String sql = "SELECT value FROM task_inputs WHERE input = 'custom_testset' AND task_id = " + id;
-						custum_testset = QueryUtils.getStringFromDatabase(apiconnector, sql);
-					} // :: the proper way
-					else if( cli.hasOption("-d") && cli.hasOption("e") && cli.hasOption("c") ) {
+						try {
+							String sql = "SELECT value FROM task_inputs WHERE input = 'custom_testset' AND task_id = " + id;
 						
-						datasetUrl = cli.getOptionValue("-d");
-						target_feature = cli.getOptionValue("-c");
-						estimation_procedure = cli.getOptionValue("-e");
-						
-						if (cli.hasOption("test")) {
-							custum_testset = cli.getOptionValue("test");
-						} else {
-							custum_testset = null;
-						}
-						
+							custum_testset = QueryUtils.getStringFromDatabase(apiconnector, sql);
+						} catch(Exception e) {/*No problem, just no custom testset */}
 					} else {
-						System.out.println( Output.styleToJsonError("Missing arguments for function 'generate_folds'. Need d (url to dataset), c (target feature), e (evaluation_method, {cv_{repeats}_{folds},holdout_{repeats}_{percentage},leave_one_out}), and r (row_id, textual). ") );
+						System.out.println( Output.styleToJsonError("Missing arguments for function 'generate_folds'. Need id (task_id). ") );
 						return;
 					}
 					

@@ -37,6 +37,8 @@ import weka.core.converters.ArffLoader;
 
 public class ExtractFeatures {
 	
+	public static final int BASIC_FEATURES = 10;
+	
 	private final Instances dataset;
 	private final ArffLoader arffLoader;
 	private Attribute classAttribute;
