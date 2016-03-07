@@ -142,7 +142,7 @@ public class EvaluateRun {
 					apiconnector.getOpenmlFileUrl(dataset.getFile_id(), dataset.getName()), 
 					new URL(estimationprocedure.getData_splits_url()), 
 					apiconnector.getOpenmlFileUrl( file_ids.get( "predictions" ), filename), 
-					estimationprocedure.getType().equals(EstimationProcedure.estimationProceduresTxt[5] ) );
+					estimationprocedure.getType().equals(EstimationProcedure.estimationProceduresTxt[6] ) );
 			}
 			runevaluation.addEvaluationMeasures( predictionEvaluator.getEvaluationScores() );
 			
@@ -194,10 +194,12 @@ public class EvaluateRun {
 			runevaluation.setError( e.getMessage() );
 		}
 
+		
+		
 		Conversion.log( "OK", "Process Run", "Start uploading results ... " );
 		try {
 			String runEvaluation = xstream.toXML( runevaluation );
-			
+			// System.out.println(runEvaluation);
 			File evaluationFile = Conversion.stringToTempFile( runEvaluation, "run_" + run_id + "evaluations", "xml" );
 			
 			RunEvaluate re = apiconnector.runEvaluate( evaluationFile );
