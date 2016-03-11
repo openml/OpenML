@@ -108,9 +108,11 @@ public class Main {
 						int dataset_id = TaskInformation.getSourceData(current).getData_set_id();
 						DataSetDescription dsd = apiconnector.dataGet(dataset_id);
 						Estimation_procedure ep = TaskInformation.getEstimationProcedure(current);
-						Integer numberOfRepeats = TaskInformation.getNumberOfRepeats(current);
-						Integer numberOfFolds = TaskInformation.getNumberOfFolds(current);
-						Integer percentage = null; 
+						Integer numberOfRepeats = null;
+						Integer numberOfFolds = null;
+						Integer percentage = null;
+						try {numberOfRepeats = TaskInformation.getNumberOfRepeats(current);} catch(Exception e) {}
+						try {numberOfFolds = TaskInformation.getNumberOfFolds(current);} catch(Exception e) {}
 						try {percentage = TaskInformation.getPercentage(current);} catch(Exception e) {}
 						
 						datasetUrl = dsd.getUrl();
