@@ -1,4 +1,4 @@
-First version of Quan Sun's meta-feature generation code. Not integrated in OpenML yet!
+First version of Quan Sun's meta-feature generation code.
 
 Includes a Netbean project.
 
