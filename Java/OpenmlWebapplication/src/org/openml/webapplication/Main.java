@@ -31,6 +31,7 @@ import org.openml.apiconnector.algorithms.QueryUtils;
 import org.openml.apiconnector.algorithms.TaskInformation;
 import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.settings.Config;
+import org.openml.apiconnector.settings.Settings;
 import org.openml.apiconnector.xml.DataSetDescription;
 import org.openml.apiconnector.xml.Task;
 import org.openml.apiconnector.xml.Task.Input.Estimation_procedure;
@@ -68,6 +69,7 @@ public class Main {
 				config = new Config( cli.getOptionValue("config") );
 			}
 			config.updateStaticSettings();
+			Settings.CACHE_ALLOWED = false;
 			apiconnector = new OpenmlConnector( config.getServer(), config.getApiKey() );
 			
 			if( cli.hasOption("-id") ) {

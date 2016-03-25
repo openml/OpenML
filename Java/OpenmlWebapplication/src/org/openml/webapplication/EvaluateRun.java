@@ -158,7 +158,6 @@ public class EvaluateRun {
 					
 					// important check: because of legacy (implementation_id), the flow id might be missing
 					if (recorded.getFlow() != null && recorded.getFunction() != null) { 
-						System.out.println(recorded);
 						for( EvaluationScore calculated : runevaluation.getEvaluation_scores() ) {
 							if( recorded.isSame( calculated ) ) {
 								foundSame = true;
