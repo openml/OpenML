@@ -3,7 +3,6 @@ package org.openml.weka.experiment;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.File;
-import java.io.FileReader;
 import java.lang.reflect.Array;
 
 import javax.swing.DefaultListModel;
@@ -11,13 +10,9 @@ import javax.swing.DefaultListModel;
 import org.openml.apiconnector.algorithms.TaskInformation;
 import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.settings.Config;
-import org.openml.apiconnector.xml.DataSetDescription;
 import org.openml.apiconnector.xml.Task;
-import org.openml.apiconnector.xml.Task.Input.Data_set;
-import org.openml.weka.algorithm.InstancesHelper;
 
 import weka.classifiers.Classifier;
-import weka.core.Instances;
 import weka.core.Utils;
 import weka.experiment.ClassifierSplitEvaluator;
 import weka.experiment.CrossValidationResultProducer;
@@ -116,15 +111,8 @@ public class TaskBasedExperiment extends Experiment {
 		if (m_CurrentTask == null) {
 			m_CurrentTask = (Task) getTasks().elementAt(m_DatasetNumber);
 
-			Data_set ds = TaskInformation.getSourceData(m_CurrentTask);
-			DataSetDescription dsd = TaskInformation.getSourceData(m_CurrentTask).getDataSetDescription(apiconnector);
-			Instances instDataset = new Instances(new FileReader(dsd.getDataset(apiconnector.getApiKey())));
-
-			InstancesHelper.setTargetAttribute(instDataset,ds.getTarget_feature());
-
 			((TaskResultProducer) m_ResultProducer).setTask(m_CurrentTask);
 			this.setRunUpper(TaskInformation.getNumberOfRepeats(m_CurrentTask));
-			m_ResultProducer.setInstances(instDataset);
 			
 			// set classifier. Important, since by alternating between regression and 
 			// classification tasks we possibly have resetted the splitevaluator

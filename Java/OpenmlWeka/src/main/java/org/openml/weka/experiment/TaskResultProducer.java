@@ -22,8 +22,6 @@ import weka.core.Instances;
 import weka.core.UnsupportedAttributeTypeException;
 import weka.experiment.CrossValidationResultProducer;
 import weka.experiment.OutputZipper;
-import weka.filters.Filter;
-import weka.filters.unsupervised.attribute.Remove;
 
 public class TaskResultProducer extends CrossValidationResultProducer {
 	
@@ -87,25 +85,31 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 		Estimation_procedure ep = TaskInformation.getEstimationProcedure(m_Task);
 
 		DataSetDescription dsd = ds.getDataSetDescription(apiconnector);
-		m_Instances = new Instances( new FileReader( dsd.getDataset( apiconnector.getApiKey() ) ) );
+		m_Instances = new Instances(new FileReader(dsd.getDataset(apiconnector.getApiKey())));
 		
 		InstancesHelper.setTargetAttribute(m_Instances, ds.getTarget_feature());
-		int targetAttributeIndex = InstancesHelper.getAttributeIndex( m_Instances, ds.getTarget_feature() );
-		AttributeStats targetStats = m_Instances.attributeStats( targetAttributeIndex );
+		int targetAttributeIndex = InstancesHelper.getAttributeIndex(m_Instances, ds.getTarget_feature());
+		AttributeStats targetStats = m_Instances.attributeStats(targetAttributeIndex);
 		missingLabels = targetStats.missingCount > 0;
 		
 		// remove attributes that may not be used.
-		if( dsd.getIgnore_attribute() != null ) {
-			for( String ignoreAttr : dsd.getIgnore_attribute() ) {
-				Remove remove = new Remove();
-				remove.setAttributeIndices(""+(m_Instances.attribute(ignoreAttr).index()+1)); // 0-based / 1-based
-				remove.setInputFormat(m_Instances);
-				m_Instances = Filter.useFilter(m_Instances, remove);
-				
+		if(dsd.getIgnore_attribute() != null) {
+			for(String ignoreAttr : dsd.getIgnore_attribute()) {
+				String attName = ignoreAttr;
+				Integer attIdx = m_Instances.attribute(ignoreAttr).index(); 
+				Conversion.log("OK","Remove Attribte", "Removing attribute " + attName + " (1-based index: " + attIdx + ")");
+				m_Instances.deleteAttributeAt(attIdx);
 			}
 		}
 		
-		m_Splits = new Instances( new FileReader( ep.getDataSplits( m_Task.getTask_id() ) ) );
+		if(dsd.getRow_id_attribute() != null) {
+			String attName = dsd.getRow_id_attribute();
+			Integer attIdx = m_Instances.attribute(dsd.getRow_id_attribute()).index(); 
+			Conversion.log("OK","Remove Attribte", "Removing attribute " + attName + " (1-based index: " + attIdx + ")" );
+			m_Instances.deleteAttributeAt(attIdx);
+		}
+		
+		m_Splits = new Instances(new FileReader(ep.getDataSplits(m_Task.getTask_id())));
 		
 		currentTaskRepresentation = "Task " + m_Task.getTask_id() + " (" + TaskInformation.getSourceData(m_Task).getDataSetDescription(apiconnector).getName() + ")";
 
@@ -114,7 +118,7 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 		try { m_NumFolds = TaskInformation.getNumberOfFolds(t); } catch (Exception e) { }
 		try { m_NumSamples = TaskInformation.getNumberOfSamples(t); } catch (Exception e) { }
 	}
-
+	
 	/**
 	 * Gets the names of each of the columns produced for a single run. This
 	 * method should really be static.
@@ -206,6 +210,8 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 		int attSampleIndex = -1;
 		OpenmlSplitEvaluator tse = ((OpenmlSplitEvaluator) m_SplitEvaluator);
 		String currentRunRepresentation = currentTaskRepresentation + " with " + (String) tse.getKey()[0] + " - Repeat " + (run-1);
+		Conversion.log("OK", "Attribtes", "Attributes available: " + InstancesHelper.getAttributes(m_Instances));
+		Conversion.log("OK", "Class", "Class attribute: " + m_Instances.classAttribute());
 		
 		if (m_Splits.attribute("sample") != null) {
 			attSampleIndex = m_Splits.attribute("sample").index();
@@ -235,6 +241,7 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 			for (int j = 0; j < m_NumSamples; ++j) {
 				trainingSets[i][j] = new Instances(m_Instances, 0, 0);
 				testSets[i][j] = new Instances(m_Instances, 0, 0);
+				
 			}
 		}
 		

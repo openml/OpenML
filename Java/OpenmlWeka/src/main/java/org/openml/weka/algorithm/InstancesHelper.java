@@ -1,5 +1,8 @@
 package org.openml.weka.algorithm;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import weka.core.Instances;
 
 public class InstancesHelper {
@@ -21,6 +24,15 @@ public class InstancesHelper {
 			}
 		}
 		throw new Exception("Attribute " + attribute + " non-existant on dataset. ");
+	}
+	
+	public static List<String> getAttributes(Instances dataset) {
+		List<String> attributesAvailable = new ArrayList<String>();
+		for (int j = 0; j < dataset.numAttributes(); ++j) {
+			attributesAvailable.add(dataset.attribute(j).name());
+		}
+		
+		return attributesAvailable;
 	}
 	
 }
