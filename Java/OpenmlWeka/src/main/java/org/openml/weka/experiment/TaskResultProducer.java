@@ -119,6 +119,11 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 		try { m_NumSamples = TaskInformation.getNumberOfSamples(t); } catch (Exception e) { }
 	}
 	
+	@Override
+	public void setInstances(Instances m_Instances) {
+		throw new RuntimeException("TaskResultProducer Exception: function setInstances may not be invoked. Use setTask instead. ");
+	}
+	
 	/**
 	 * Gets the names of each of the columns produced for a single run. This
 	 * method should really be static.
@@ -311,7 +316,7 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 					if (m_ResultListener instanceof TaskResultListener) {
 						// run - 1 is for 1-based/0-based correction
 						((TaskResultListener) m_ResultListener).acceptResultsForSending(  
-							m_Task, run - 1, fold, (useSamples ? sample : null), tse.getClassifier(),
+							m_Task, m_Instances, run - 1, fold, (useSamples ? sample : null), tse.getClassifier(),
 							(String) tse.getKey()[1], rowids.get(foldSampleIdx(fold,sample)),tse.recentPredictions(), userMeasures);
 					}
 				} catch (UnsupportedAttributeTypeException ex) {
@@ -321,7 +326,7 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 							ex.getMessage() );
 					if (m_ResultListener instanceof TaskResultListener) {
 						((TaskResultListener) m_ResultListener).acceptErrorResult(
-							m_Task, tse.getClassifier(), ex.getMessage(), (String) tse.getKey()[1]);
+							m_Task, m_Instances, tse.getClassifier(), ex.getMessage(), (String) tse.getKey()[1]);
 					}
 				}
 			}

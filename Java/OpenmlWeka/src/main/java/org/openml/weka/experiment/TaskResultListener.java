@@ -1,7 +1,6 @@
 package org.openml.weka.experiment;
 
 import java.io.File;
-import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +17,6 @@ import org.openml.apiconnector.models.Metric;
 import org.openml.apiconnector.models.MetricScore;
 import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.settings.Constants;
-import org.openml.apiconnector.xml.DataSetDescription;
 import org.openml.apiconnector.xml.Flow;
 import org.openml.apiconnector.xml.Run;
 import org.openml.apiconnector.xml.Run.Parameter_setting;
@@ -69,7 +67,7 @@ public class TaskResultListener extends InstancesResultListener {
 		all_tags = ArrayUtils.addAll(DEFAULT_TAGS, config.getTags());
 	}
 
-	public void acceptResultsForSending(Task t, Integer repeat, Integer fold, Integer sample,
+	public void acceptResultsForSending(Task t, Instances sourceData, Integer repeat, Integer fold, Integer sample,
 			Classifier classifier, String options,
 			Integer[] rowids, ArrayList<Prediction> predictions, Map<Metric, MetricScore> userMeasures ) throws Exception {
 		// TODO: do something better than undefined
@@ -78,7 +76,7 @@ public class TaskResultListener extends InstancesResultListener {
 		String key = t.getTask_id() + "_" + implementationId + "_" + options;
 		if (currentlyCollecting.containsKey(key) == false) {
 			currentlyCollecting.put(key, new OpenmlExecutedTask(t,
-					classifier, null, options, apiconnector, all_tags ));
+					classifier, sourceData, null, options, apiconnector, all_tags ));
 		}
 		OpenmlExecutedTask oet = currentlyCollecting.get(key);
 		oet.addBatchOfPredictions(fold, repeat, sample, rowids, predictions);
@@ -91,7 +89,7 @@ public class TaskResultListener extends InstancesResultListener {
 		}
 	}
 
-	public void acceptErrorResult(Task t, Classifier classifier, String error_message, String options)
+	public void acceptErrorResult(Task t, Instances sourceData, Classifier classifier, String error_message, String options)
 			throws Exception {
 		// TODO: do something better than undefined
 		String revision = (classifier instanceof RevisionHandler) ? ((RevisionHandler)classifier).getRevision() : "undefined"; 		
@@ -100,7 +98,7 @@ public class TaskResultListener extends InstancesResultListener {
 
 		if (tasksWithErrors.contains(key) == false) {
 			tasksWithErrors.add(key);
-			sendTaskWithError(new OpenmlExecutedTask(t, classifier,
+			sendTaskWithError(new OpenmlExecutedTask(t, classifier, sourceData,
 				error_message, options, apiconnector, all_tags ));
 		}
 	}
@@ -161,7 +159,6 @@ public class TaskResultListener extends InstancesResultListener {
 		private Classifier classifier;
 		private Instances predictions;
 		private Instances inputData;
-		private boolean inputDataSet;
 		private int nrOfResultBatches;
 		private final int nrOfExpectedResultBatches;
 		private String[] classnames;
@@ -174,7 +171,7 @@ public class TaskResultListener extends InstancesResultListener {
 		private File serializedClassifier = null;
 		private File humanReadableClassifier = null;
 
-		public OpenmlExecutedTask(Task t, Classifier classifier,
+		public OpenmlExecutedTask(Task t, Classifier classifier, Instances sourceData,
 				String error_message, String options, OpenmlConnector apiconnector,
 				String[] tags ) throws Exception {
 			this.classifier = classifier;
@@ -182,6 +179,7 @@ public class TaskResultListener extends InstancesResultListener {
 			
 			// TODO: instable. Do better
 			isRegression = t.getTask_type().equals("Supervised Regression");
+			inputData = sourceData;
 			
 			if( !isRegression ) {
 				classnames = TaskInformation.getClassNames(apiconnector, this.task);
@@ -194,14 +192,6 @@ public class TaskResultListener extends InstancesResultListener {
 			try {repeats = TaskInformation.getNumberOfRepeats(t);} catch( Exception e ){};
 			try {folds = TaskInformation.getNumberOfFolds(t);} catch( Exception e ){};
 			try {samples = TaskInformation.getNumberOfSamples(t);} catch( Exception e ){};
-			try {
-				DataSetDescription dsd = TaskInformation.getSourceData(t).getDataSetDescription( apiconnector );
-				inputData = new Instances( new FileReader( dsd.getDataset( apiconnector.getApiKey() ) ) );
-				inputData.setClass( inputData.attribute(TaskInformation.getSourceData(t).getTarget_feature()) );
-				inputDataSet = true;
-			} catch( Exception e ) {
-				inputDataSet = false;
-			};
 			
 			nrOfExpectedResultBatches = repeats * folds * samples;
 			nrOfResultBatches = 0;
@@ -225,10 +215,8 @@ public class TaskResultListener extends InstancesResultListener {
 				}
 			}
 			
-			// this is an additional field, which is ignored on the server
-			if( inputDataSet ) {
-				attInfo.add( inputData.classAttribute().copy("correct") );
-			}
+			attInfo.add( inputData.classAttribute().copy("correct") );
+			
 			
 			predictions = new Instances("openml_task_" + t.getTask_id() + "_predictions", attInfo, 0);
 			
@@ -259,9 +247,8 @@ public class TaskResultListener extends InstancesResultListener {
 				if(predictions.attribute("sample") != null) {
 					values[predictions.attribute("sample").index()] = sample;
 				}
-				if( inputDataSet ) {
-					values[predictions.attribute("correct").index()] = inputData.instance(rowids[i]).classValue();
-				}
+				values[predictions.attribute("correct").index()] = inputData.instance(rowids[i]).classValue();
+				
 				
 				if (current instanceof NominalPrediction) {
 					double[] confidences = ((NominalPrediction) current).distribution();
@@ -284,34 +271,32 @@ public class TaskResultListener extends InstancesResultListener {
 		}
 		
 		public void prepareForSending() {
-			if( inputDataSet ) {
-				// build model for entire data set. This can take some time
-				try {
-					Conversion.log( "OK", "Total Model", "Started building a model over the full dataset. " );
+			// build model for entire data set. This can take some time
+			try {
+				Conversion.log( "OK", "Total Model", "Started building a model over the full dataset. " );
+				
+				OpenmlSplitEvaluator ose = new OpenmlClassificationSplitEvaluator(); // TODO: regression
+				ose.setClassifier(classifier);
+				
+				Map<String, Object> splitEvaluatorResults = WekaAlgorithm.splitEvaluatorToMap(ose, ose.getResult(inputData, inputData) );
+				Classifier classifierModel = ose.getClassifier();
+				String keyTraining = "UserCPU_Time_millis_training";
+				String keyTesting  = "UserCPU_Time_millis_testing";
+				
+				if(splitEvaluatorResults.containsKey(keyTraining) && splitEvaluatorResults.containsKey(keyTesting)) {
+					Double totalTimeTraining = (Double) splitEvaluatorResults.get(keyTraining);
+					Double totalTimeTesting  = (Double) splitEvaluatorResults.get(keyTesting);
 					
-					OpenmlSplitEvaluator ose = new OpenmlClassificationSplitEvaluator(); // TODO: regression
-					ose.setClassifier(classifier);
-					
-					Map<String, Object> splitEvaluatorResults = WekaAlgorithm.splitEvaluatorToMap(ose, ose.getResult(inputData, inputData) );
-					Classifier classifierModel = ose.getClassifier();
-					String keyTraining = "UserCPU_Time_millis_training";
-					String keyTesting  = "UserCPU_Time_millis_testing";
-					
-					if( splitEvaluatorResults.containsKey( keyTraining ) && splitEvaluatorResults.containsKey( keyTesting ) ) {
-						Double totalTimeTraining = (Double) splitEvaluatorResults.get( keyTraining );
-						Double totalTimeTesting  = (Double) splitEvaluatorResults.get( keyTesting);
-						
-						getRun().addOutputEvaluation( keyTesting.toLowerCase(),  "openml.evaluation."+keyTesting.toLowerCase()+"(1.0)", totalTimeTesting, null );
-						getRun().addOutputEvaluation( keyTraining.toLowerCase(), "openml.evaluation."+keyTraining.toLowerCase()+"(1.0)", totalTimeTraining, null );
-						getRun().addOutputEvaluation( "usercpu_time_millis", "openml.evaluation.usercpu_time_millis(1.0)", totalTimeTraining + totalTimeTesting, null );
-					}
-					humanReadableClassifier = Conversion.stringToTempFile(classifierModel.toString(), "WekaModel_" + classifierModel.getClass().getName(), "model");
-					serializedClassifier = WekaAlgorithm.classifierSerializedToFile(classifierModel, task_id);
-					Conversion.log( "OK", "Total Model", "Done building full dataset model. " );
-				} catch (Exception e) { 
-					e.printStackTrace(); 
-					Conversion.log( "WARNING", "Total Model", "There was an error building a model over the full dataset. " );
+					getRun().addOutputEvaluation(keyTesting.toLowerCase(),  "openml.evaluation."+keyTesting.toLowerCase()+"(1.0)", totalTimeTesting, null);
+					getRun().addOutputEvaluation(keyTraining.toLowerCase(), "openml.evaluation."+keyTraining.toLowerCase()+"(1.0)", totalTimeTraining, null);
+					getRun().addOutputEvaluation("usercpu_time_millis", "openml.evaluation.usercpu_time_millis(1.0)", totalTimeTraining + totalTimeTesting, null);
 				}
+				humanReadableClassifier = Conversion.stringToTempFile(classifierModel.toString(), "WekaModel_" + classifierModel.getClass().getName(), "model");
+				serializedClassifier = WekaAlgorithm.classifierSerializedToFile(classifierModel, task_id);
+				Conversion.log( "OK", "Total Model", "Done building full dataset model. " );
+			} catch (Exception e) { 
+				e.printStackTrace(); 
+				Conversion.log( "WARNING", "Total Model", "There was an error building a model over the full dataset. " );
 			}
 		}
 
