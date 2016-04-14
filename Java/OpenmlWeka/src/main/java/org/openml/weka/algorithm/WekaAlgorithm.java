@@ -167,7 +167,6 @@ public class WekaAlgorithm {
 				switch(type) {
 				case KERNEL:
 					String kernelvalue = Utils.getOption(p.getName(), parameters);
-					String[] kernelvalueSplitted = kernelvalue.split(" ");
 					try {
 						String kernelname = kernelvalue.substring(0, kernelvalue.indexOf(' '));
 						String[] kernelsettings = Utils.splitOptions(kernelvalue.substring(kernelvalue.indexOf(' ')+1));
@@ -202,7 +201,6 @@ public class WekaAlgorithm {
 					while (!currentvalue.equals("")) {
 						values.add(currentvalue);
 						currentvalue = Utils.getOption(p.getName(), parameters);
-						System.out.println(values);
 					}
 					
 					if(values.size() > 0) {

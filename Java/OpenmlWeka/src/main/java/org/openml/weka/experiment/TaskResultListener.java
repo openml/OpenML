@@ -24,7 +24,9 @@ import org.openml.apiconnector.xml.Task;
 import org.openml.apiconnector.xml.Task.Output.Predictions.Feature;
 import org.openml.apiconnector.xml.UploadRun;
 import org.openml.apiconnector.xstream.XstreamXmlMapping;
+import org.openml.weka.algorithm.OptimizationTrace;
 import org.openml.weka.algorithm.WekaAlgorithm;
+import org.openml.weka.algorithm.OptimizationTrace.Triplet;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -69,7 +71,7 @@ public class TaskResultListener extends InstancesResultListener {
 
 	public void acceptResultsForSending(Task t, Instances sourceData, Integer repeat, Integer fold, Integer sample,
 			Classifier classifier, String options,
-			Integer[] rowids, ArrayList<Prediction> predictions, Map<Metric, MetricScore> userMeasures, Instances trace) throws Exception {
+			Integer[] rowids, ArrayList<Prediction> predictions, Map<Metric, MetricScore> userMeasures, List<Triplet<String,Double,Boolean>> optimizationTrace) throws Exception {
 		// TODO: do something better than undefined
 		String revision = (classifier instanceof RevisionHandler) ? ((RevisionHandler)classifier).getRevision() : "undefined"; 
 		String implementationId = classifier.getClass().getName() + "(" + revision + ")";
@@ -79,7 +81,7 @@ public class TaskResultListener extends InstancesResultListener {
 					classifier, sourceData, null, options, apiconnector, all_tags ));
 		}
 		OpenmlExecutedTask oet = currentlyCollecting.get(key);
-		oet.addBatchOfPredictions(fold, repeat, sample, rowids, predictions, trace);
+		oet.addBatchOfPredictions(fold, repeat, sample, rowids, predictions, optimizationTrace);
 		oet.addUserDefinedMeasures(fold, repeat, sample, userMeasures);
 
 		if (oet.complete()) {
@@ -240,7 +242,7 @@ public class TaskResultListener extends InstancesResultListener {
 			run = new Run(t.getTask_id(), error_message, implementation.getId(), setup_string, list.toArray(new Parameter_setting[list.size()]), tags);
 		}
 		
-		public void addBatchOfPredictions(Integer fold, Integer repeat, Integer sample, Integer[] rowids, ArrayList<Prediction> batchPredictions, Instances optimizationTraceFold) {
+		public void addBatchOfPredictions(Integer fold, Integer repeat, Integer sample, Integer[] rowids, ArrayList<Prediction> batchPredictions, List<Triplet<String,Double,Boolean>> optimizationTraceFold) {
 			nrOfResultBatches += 1;
 			for (int i = 0; i < rowids.length; ++i) {
 				Prediction current = batchPredictions.get(i);
@@ -261,19 +263,13 @@ public class TaskResultListener extends InstancesResultListener {
 						values[predictions.attribute("confidence." + classnames[j]).index()] = confidences[j];
 					}
 				}
-				
-				// add trace
-				if (optimizationTraceFold != null) {
-					if (this.optimizationTrace == null) {
-						this.optimizationTrace = optimizationTraceFold;
-					} else {
-						for (int j = 0; j < optimizationTraceFold.size(); ++j) {
-							this.optimizationTrace.add(optimizationTraceFold.get(j));
-						}
-					}
-				}
 
 				predictions.add(new DenseInstance(1.0D, values));
+			}
+			
+			// add trace
+			if (optimizationTraceFold != null) {
+				this.optimizationTrace = OptimizationTrace.addTraceToDataset(this.optimizationTrace, optimizationTraceFold, task_id, repeat, fold);
 			}
 		}
 		
