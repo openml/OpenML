@@ -15,11 +15,13 @@ import org.openml.apiconnector.xml.Task;
 import org.openml.apiconnector.xml.Task.Input.Data_set;
 import org.openml.apiconnector.xml.Task.Input.Estimation_procedure;
 import org.openml.weka.algorithm.InstancesHelper;
+import org.openml.weka.algorithm.OptimizationTrace;
 import org.openml.weka.algorithm.WekaAlgorithm;
 
 import weka.core.AttributeStats;
 import weka.core.Instances;
 import weka.core.UnsupportedAttributeTypeException;
+import weka.experiment.ClassifierSplitEvaluator;
 import weka.experiment.CrossValidationResultProducer;
 import weka.experiment.OutputZipper;
 
@@ -252,7 +254,7 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 		
 		// This is the part where we sample all train and test sets.
 		// We should not measure time for doing so, since this is OpenML overhead.
-		Conversion.log( "INFO", "Splits", "Obtaining folds for " + currentRunRepresentation );
+		Conversion.log("INFO", "Splits", "Obtaining folds for " + currentRunRepresentation);
 		for (int i = 0; i < m_Splits.numInstances(); ++i) {
 			int repeat = (int) m_Splits.instance(i).value(attRepeatIndex);
 			if (repeat == run - 1) { // 1-based/0-based correction
@@ -276,13 +278,14 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 				}
 			}
 		} // END OF OPENML SAMPLING
-		Conversion.log( "INFO", "Splits", "Folds obtained " );
-
+		Conversion.log("INFO", "Splits", "Folds obtained ");
+		
+		int repeat = run - 1; // 0/1 based
 		for (int fold = 0; fold < m_NumFolds; fold++) {
 			for (int sample = 0; sample < m_NumSamples; ++sample) {
 				// Add in some fields to the key like run and fold number, data set, name
 				String currentFoldRepresentation = "fold " + fold + (useSamples ? ", sample " + sample : "");
-				Conversion.log( "INFO", "Perform Run", "Started on performing " + currentRunRepresentation + ", " + currentFoldRepresentation );
+				Conversion.log("INFO", "Perform Run", "Started on performing " + currentRunRepresentation + ", " + currentFoldRepresentation);
 				
 				try {
 					Map<Metric, MetricScore> userMeasures = new HashMap<Metric, MetricScore>();
@@ -293,6 +296,12 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 					System.arraycopy(seResults, 0, results, 1, seResults.length);
 					
 					Map<String, Object> splitEvaluatorResults = WekaAlgorithm.splitEvaluatorToMap(m_SplitEvaluator, seResults);
+					Instances trace = null;
+					try {
+						trace = OptimizationTrace.extractTrace(((ClassifierSplitEvaluator)m_SplitEvaluator).getClassifier(),m_Task.getTask_id(),repeat,fold);
+					} catch(Exception e) {
+						Conversion.log("OK","Trace",e.getMessage());
+					}
 					
 					// just adding an additional measure: UserCPU_Time_millis (total training time + test time)
 					if( splitEvaluatorResults.containsKey("UserCPU_Time_millis_training") && splitEvaluatorResults.containsKey("UserCPU_Time_millis_testing") ) {
@@ -301,29 +310,28 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 						splitEvaluatorResults.put("UserCPU_Time_millis", traintime + testtime);
 					}
 					
-					if( missingLabels == false ) {
-						for( UserMeasures um : USER_MEASURES ) {
+					if(missingLabels == false) {
+						for(UserMeasures um : USER_MEASURES) {
 							if( splitEvaluatorResults.containsKey(um.wekaFunctionName)) {
 								userMeasures.put(
 									new Metric(um.openmlFunctionName, um.openmlImplementationName),
 									new MetricScore(
 										((Double) splitEvaluatorResults.get(um.wekaFunctionName)) * um.factor, 
-										testSets[fold][sample].size() ) );
+										testSets[fold][sample].size()));
 							}
 						}
 					}
 					
 					if (m_ResultListener instanceof TaskResultListener) {
-						// run - 1 is for 1-based/0-based correction
 						((TaskResultListener) m_ResultListener).acceptResultsForSending(  
-							m_Task, m_Instances, run - 1, fold, (useSamples ? sample : null), tse.getClassifier(),
-							(String) tse.getKey()[1], rowids.get(foldSampleIdx(fold,sample)),tse.recentPredictions(), userMeasures);
+							m_Task, m_Instances, repeat, fold, (useSamples ? sample : null), tse.getClassifier(),
+							(String) tse.getKey()[1], rowids.get(foldSampleIdx(fold,sample)),tse.recentPredictions(), userMeasures, trace);
 					}
 				} catch (UnsupportedAttributeTypeException ex) {
 					// Save the train and test data sets for debugging purposes?
-					Conversion.log( "ERROR", "Perform Run", "Unable to finish " + currentRunRepresentation + ", " + 
+					Conversion.log("ERROR", "Perform Run", "Unable to finish " + currentRunRepresentation + ", " + 
 							currentFoldRepresentation + " with " + tse.getClassifier().getClass().getName() + ": " + 
-							ex.getMessage() );
+							ex.getMessage());
 					if (m_ResultListener instanceof TaskResultListener) {
 						((TaskResultListener) m_ResultListener).acceptErrorResult(
 							m_Task, m_Instances, tse.getClassifier(), ex.getMessage(), (String) tse.getKey()[1]);

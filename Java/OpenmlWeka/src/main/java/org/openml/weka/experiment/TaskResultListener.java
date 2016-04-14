@@ -58,7 +58,7 @@ public class TaskResultListener extends InstancesResultListener {
 	
 	private final String[] all_tags;
 	
-	public TaskResultListener( OpenmlConnector apiconnector, Config config ) {
+	public TaskResultListener(OpenmlConnector apiconnector, Config config) {
 		super();
 		
 		this.apiconnector = apiconnector;
@@ -69,7 +69,7 @@ public class TaskResultListener extends InstancesResultListener {
 
 	public void acceptResultsForSending(Task t, Instances sourceData, Integer repeat, Integer fold, Integer sample,
 			Classifier classifier, String options,
-			Integer[] rowids, ArrayList<Prediction> predictions, Map<Metric, MetricScore> userMeasures ) throws Exception {
+			Integer[] rowids, ArrayList<Prediction> predictions, Map<Metric, MetricScore> userMeasures, Instances trace) throws Exception {
 		// TODO: do something better than undefined
 		String revision = (classifier instanceof RevisionHandler) ? ((RevisionHandler)classifier).getRevision() : "undefined"; 
 		String implementationId = classifier.getClass().getName() + "(" + revision + ")";
@@ -79,7 +79,7 @@ public class TaskResultListener extends InstancesResultListener {
 					classifier, sourceData, null, options, apiconnector, all_tags ));
 		}
 		OpenmlExecutedTask oet = currentlyCollecting.get(key);
-		oet.addBatchOfPredictions(fold, repeat, sample, rowids, predictions);
+		oet.addBatchOfPredictions(fold, repeat, sample, rowids, predictions, trace);
 		oet.addUserDefinedMeasures(fold, repeat, sample, userMeasures);
 
 		if (oet.complete()) {
@@ -123,6 +123,9 @@ public class TaskResultListener extends InstancesResultListener {
 		output_files.put("predictions", tmpPredictionsFile);
 		if(oet.serializedClassifier != null ) { output_files.put("model_serialized", oet.serializedClassifier); }
 		if(oet.humanReadableClassifier != null ) { output_files.put("model_readable", oet.humanReadableClassifier); }
+		if(oet.optimizationTrace != null) { 
+			output_files.put("trace", Conversion.stringToTempFile(oet.optimizationTrace.toString(), "optimization_trace", "arff"));
+		}
 		
 		try { 
 			UploadRun ur = apiconnector.runUpload(tmpDescriptionFile, output_files );
@@ -159,6 +162,7 @@ public class TaskResultListener extends InstancesResultListener {
 		private Classifier classifier;
 		private Instances predictions;
 		private Instances inputData;
+		private Instances optimizationTrace;
 		private int nrOfResultBatches;
 		private final int nrOfExpectedResultBatches;
 		private String[] classnames;
@@ -180,6 +184,7 @@ public class TaskResultListener extends InstancesResultListener {
 			// TODO: instable. Do better
 			isRegression = t.getTask_type().equals("Supervised Regression");
 			inputData = sourceData;
+			optimizationTrace = null;
 			
 			if( !isRegression ) {
 				classnames = TaskInformation.getClassNames(apiconnector, this.task);
@@ -235,7 +240,7 @@ public class TaskResultListener extends InstancesResultListener {
 			run = new Run(t.getTask_id(), error_message, implementation.getId(), setup_string, list.toArray(new Parameter_setting[list.size()]), tags );
 		}
 		
-		public void addBatchOfPredictions(Integer fold, Integer repeat, Integer sample, Integer[] rowids, ArrayList<Prediction> batchPredictions) {
+		public void addBatchOfPredictions(Integer fold, Integer repeat, Integer sample, Integer[] rowids, ArrayList<Prediction> batchPredictions, Instances optimizationTraceFold) {
 			nrOfResultBatches += 1;
 			for (int i = 0; i < rowids.length; ++i) {
 				Prediction current = batchPredictions.get(i);
@@ -254,6 +259,17 @@ public class TaskResultListener extends InstancesResultListener {
 					double[] confidences = ((NominalPrediction) current).distribution();
 					for (int j = 0; j < confidences.length; ++j) {
 						values[predictions.attribute("confidence." + classnames[j]).index()] = confidences[j];
+					}
+				}
+				
+				// add trace
+				if (optimizationTraceFold != null) {
+					if (this.optimizationTrace == null) {
+						this.optimizationTrace = optimizationTraceFold;
+					} else {
+						for (int j = 0; j < optimizationTraceFold.size(); ++j) {
+							this.optimizationTrace.add(optimizationTraceFold.get(j));
+						}
 					}
 				}
 

@@ -56,33 +56,33 @@ public class WekaAlgorithm {
 		return version;
 	}
 	
-	public static int getImplementationId( Flow implementation, Classifier classifier, OpenmlConnector apiconnector ) throws Exception {
+	public static int getImplementationId(Flow implementation, Classifier classifier, OpenmlConnector apiconnector) throws Exception {
 		try {
 			// First ask OpenML whether this implementation already exists
-			FlowExists result = apiconnector.flowExists( implementation.getName(), implementation.getExternal_version() );
+			FlowExists result = apiconnector.flowExists(implementation.getName(), implementation.getExternal_version());
 			if(result.exists()) return result.getId();
 		} catch( Exception e ) { /* Suppress Exception since it is totally OK. */ }
 		// It does not exist. Create it. 
-		String xml = XstreamXmlMapping.getInstance().toXML( implementation );
+		String xml = XstreamXmlMapping.getInstance().toXML(implementation);
 		//System.err.println(xml);
-		File implementationFile = Conversion.stringToTempFile( xml, implementation.getName(), "xml");
+		File implementationFile = Conversion.stringToTempFile(xml, implementation.getName(), "xml");
 		File source = null;
 		File binary = null;
-		try { source = getFile( classifier, "src/", "java" ); } catch(IOException e) {}
-		try { binary = getFile( classifier, "bin/", "class" ); } catch(IOException e) {}
+		try { source = getFile(classifier, "src/", "java"); } catch(IOException e) {}
+		try { binary = getFile(classifier, "bin/", "class"); } catch(IOException e) {}
 		UploadFlow ui = apiconnector.flowUpload(implementationFile, binary, source);
 		return ui.getId();
 	}
-	public static int getImplementationId( Flow implementation,  Clusterer clusterer, OpenmlConnector apiconnector ) throws Exception {
+	public static int getImplementationId(Flow implementation,  Clusterer clusterer, OpenmlConnector apiconnector) throws Exception {
 		try {
 			// First ask OpenML whether this implementation already exists
-			FlowExists result = apiconnector.flowExists( implementation.getName(), implementation.getExternal_version() );
+			FlowExists result = apiconnector.flowExists(implementation.getName(), implementation.getExternal_version());
 			if(result.exists()) return result.getId();
-		} catch( Exception e ) { /* Suppress Exception since it is totally OK. */ }
+		} catch(Exception e) { /* Suppress Exception since it is totally OK. */ }
 		// It does not exist. Create it. 
-		String xml = XstreamXmlMapping.getInstance().toXML( implementation );
+		String xml = XstreamXmlMapping.getInstance().toXML(implementation);
 		//System.err.println(xml);
-		File implementationFile = Conversion.stringToTempFile( xml, implementation.getName(), "xml");
+		File implementationFile = Conversion.stringToTempFile(xml, implementation.getName(), "xml");
 		File source = null;
 		File binary = null;
 		try { source = getFile( clusterer, "src/", "java" ); } catch(IOException e) {}
@@ -91,7 +91,7 @@ public class WekaAlgorithm {
 		return ui.getId();
 	}
 
-	public static Flow create( String classifier_name, String option_str, String[] tags ) throws Exception {
+	public static Flow create(String classifier_name, String option_str, String[] tags) throws Exception {
 		Object classifier = Class.forName(classifier_name).newInstance();
 		String[] currentOptions = Utils.splitOptions( option_str );
 		String[] defaultOptions = ((OptionHandler) classifier).getClass().newInstance().getOptions();
@@ -263,7 +263,7 @@ public class WekaAlgorithm {
 	}
 	
 	public static File classifierSerializedToFile( Classifier cls, Integer task_id ) throws IOException {
-		File file = File.createTempFile( "WekaSerialized_" + cls.getClass().getName(), ".model" );
+		File file = File.createTempFile("WekaSerialized_" + cls.getClass().getName(), ".model");
 		ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file));
 		oos.writeObject(cls);
 		oos.flush();
@@ -272,12 +272,12 @@ public class WekaAlgorithm {
 		return file;
 	}
 	
-	public static Map<String, Object> splitEvaluatorToMap( SplitEvaluator se, Object[] results ) {
+	public static Map<String, Object> splitEvaluatorToMap(SplitEvaluator se, Object[] results) {
 		Map<String, Object> splitEvaluatorResults = new HashMap<String, Object>();
 		String[] seResultNames = se.getResultNames();
 		
 		for( int i = 0; i < seResultNames.length; ++i ) {
-			splitEvaluatorResults.put( seResultNames[i], results[i] );
+			splitEvaluatorResults.put(seResultNames[i], results[i]);
 		}
 		
 		return splitEvaluatorResults;

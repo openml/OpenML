@@ -14,5 +14,6 @@
 	<classpathentry kind="lib" path="lib/commons-codec-1.10.jar"/>
 	<classpathentry kind="lib" path="lib/json.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/apiconnector"/>
+	<classpathentry kind="lib" path="dependencies/multisearch-2016.4.14.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

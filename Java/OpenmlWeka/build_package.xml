@@ -31,6 +31,9 @@
       <include name="*.jar"/>
       <include name="*.zip"/>
     </fileset>
+    <fileset dir="dependencies">
+      <include name="*.jar"/>
+    </fileset>
     <pathelement location="${build}/classes"/>
     <pathelement location="${build}/testcases"/>
     <pathelement path="${java.class.path}" />
