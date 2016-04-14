@@ -226,18 +226,18 @@ public class TaskResultListener extends InstancesResultListener {
 			predictions = new Instances("openml_task_" + t.getTask_id() + "_predictions", attInfo, 0);
 			
 			
-			Flow find = WekaAlgorithm.create( classifier.getClass().getName(), options, tags );
+			Flow find = WekaAlgorithm.create(classifier.getClass().getName(), options, tags);
 			
-			implementation_id = WekaAlgorithm.getImplementationId( find, classifier, apiconnector );
-			Flow implementation = apiconnector.flowGet( implementation_id );
+			implementation_id = WekaAlgorithm.getImplementationId(find, classifier, apiconnector);
+			Flow implementation = apiconnector.flowGet(implementation_id);
 			
 			String setup_string = classifier.getClass().getName();
 			if(options.equals("") == false) setup_string += (" -- " + options);
 			
-			String[] params = Utils.splitOptions( options );
-			List<Parameter_setting> list = WekaAlgorithm.getParameterSetting( params, implementation );
+			String[] params = Utils.splitOptions(options);
+			List<Parameter_setting> list = WekaAlgorithm.getParameterSetting(params, implementation);
 			
-			run = new Run(t.getTask_id(), error_message, implementation.getId(), setup_string, list.toArray(new Parameter_setting[list.size()]), tags );
+			run = new Run(t.getTask_id(), error_message, implementation.getId(), setup_string, list.toArray(new Parameter_setting[list.size()]), tags);
 		}
 		
 		public void addBatchOfPredictions(Integer fold, Integer repeat, Integer sample, Integer[] rowids, ArrayList<Prediction> batchPredictions, Instances optimizationTraceFold) {

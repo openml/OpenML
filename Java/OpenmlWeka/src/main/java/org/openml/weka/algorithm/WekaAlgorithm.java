@@ -11,6 +11,7 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -26,13 +27,14 @@ import org.openml.apiconnector.xml.UploadFlow;
 import org.openml.apiconnector.xstream.XstreamXmlMapping;
 
 import weka.classifiers.Classifier;
-import weka.clusterers.Clusterer;
+import weka.classifiers.functions.supportVector.Kernel;
 import weka.core.Option;
 import weka.core.OptionHandler;
 import weka.core.RevisionHandler;
 import weka.core.TechnicalInformationHandler;
 import weka.core.Utils;
 import weka.core.Version;
+import weka.core.setupgenerator.AbstractParameter;
 import weka.experiment.SplitEvaluator;
 
 public class WekaAlgorithm {
@@ -73,23 +75,6 @@ public class WekaAlgorithm {
 		UploadFlow ui = apiconnector.flowUpload(implementationFile, binary, source);
 		return ui.getId();
 	}
-	public static int getImplementationId(Flow implementation,  Clusterer clusterer, OpenmlConnector apiconnector) throws Exception {
-		try {
-			// First ask OpenML whether this implementation already exists
-			FlowExists result = apiconnector.flowExists(implementation.getName(), implementation.getExternal_version());
-			if(result.exists()) return result.getId();
-		} catch(Exception e) { /* Suppress Exception since it is totally OK. */ }
-		// It does not exist. Create it. 
-		String xml = XstreamXmlMapping.getInstance().toXML(implementation);
-		//System.err.println(xml);
-		File implementationFile = Conversion.stringToTempFile(xml, implementation.getName(), "xml");
-		File source = null;
-		File binary = null;
-		try { source = getFile( clusterer, "src/", "java" ); } catch(IOException e) {}
-		try { binary = getFile( clusterer, "bin/", "class" ); } catch(IOException e) {}
-		UploadFlow ui = apiconnector.flowUpload(implementationFile, binary, source);
-		return ui.getId();
-	}
 
 	public static Flow create(String classifier_name, String option_str, String[] tags) throws Exception {
 		Object classifier = Class.forName(classifier_name).newInstance();
@@ -114,12 +99,12 @@ public class WekaAlgorithm {
 		}
 		
 		Enumeration<Option> parameters = ((OptionHandler) classifier).listOptions();
-		while( parameters.hasMoreElements() ) {
+		while(parameters.hasMoreElements()) {
 			Option parameter = parameters.nextElement();
-			if( parameter.name().trim().equals("") ) continue; // filter trash
+			if(parameter.name().trim().equals("")) continue; // filter trash
 			String defaultValue = "";
 			String currentValue = "";
-			if( parameter.numArguments() == 0 ) {
+			if(parameter.numArguments() == 0) {
 				defaultValue = Utils.getFlag(parameter.name(), defaultOptions) == true ? "true" : "";
 				currentValue = Utils.getFlag(parameter.name(), currentOptions) == true ? "true" : "";
 			} else {
@@ -128,38 +113,45 @@ public class WekaAlgorithm {
 			}
 			
 			String[] currentValueSplitted = currentValue.split(" ");
-			boolean isSubimplementation = existingClass(currentValueSplitted[0]);
-			if(isSubimplementation) {
+			
+			try {
+				Object parameterObject = Class.forName(currentValueSplitted[0]).newInstance();
 				ParameterType type;
 				Flow subimplementation;
-				if( currentValueSplitted.length > 1 ) {
+				
+				if(parameterObject instanceof Kernel) {
 					// Kernels etc. All parameters of the kernel are on the same currentOptions entry
 					subimplementation = create( 
 						currentValueSplitted[0], 
-						StringUtils.join( OptionParser.removeFirstElement(currentValueSplitted), " " ), tags );
+						StringUtils.join(OptionParser.removeFirstElement(currentValueSplitted), " "), tags );
 					type = ParameterType.KERNEL;
 					
-					i.addComponent( parameter.name(), subimplementation );
-					i.addParameter( parameter.name(), type.getName(), currentValueSplitted[0], parameter.description() );
-				} else {
+					i.addComponent(parameter.name(), subimplementation);
+					i.addParameter(parameter.name(), type.getName(), currentValueSplitted[0], parameter.description());
+				} else if (parameterObject instanceof Classifier) {
 					// Meta algorithms and stuff. All parameters follow from the hyphen in currentOptions
 					subimplementation = create( 
 						currentValueSplitted[0], 
-						StringUtils.join( Utils.partitionOptions(currentOptions), " "), tags );
+						StringUtils.join( Utils.partitionOptions(currentOptions), " "), tags);
 					type = ParameterType.BASELEARNER;
 					
-					i.addComponent( parameter.name(), subimplementation );
-					i.addParameter( parameter.name(), type.getName(), currentValue, parameter.description() );
+					i.addComponent(parameter.name(), subimplementation);
+					i.addParameter(parameter.name(), type.getName(), currentValue, parameter.description());
+				} else if (parameterObject instanceof AbstractParameter) { // TODO: error?
+					type = ParameterType.ARRAY;
+					i.addParameter(parameter.name(), type.getName(), null, parameter.description());
+				} else {
+					Exception current = new ClassNotFoundException("Parameter class found, but no known procedure to handle it found. Will be handled as plain: " + currentValueSplitted[0]);
+					Conversion.log("Warning","FlowCreation",current.getMessage());
+					throw current;
 				}
-			}
-			
-			if( !isSubimplementation ) {
+			} catch(ClassNotFoundException e) {
 				// if this parameter did contain a subimplementation, we already
 				// added it. This is the other case, were we will have to decide
 				// whether to add it. TODO: do something smart about it. 
-				if( i.parameter_exists(parameter.name()) == false ) {
-					ParameterType type = (parameter.numArguments() == 0 ) ? ParameterType.FLAG : ParameterType.OPTION;
-					i.addParameter( parameter.name(), type.getName(), defaultValue, parameter.description() );
+				if(i.parameter_exists(parameter.name()) == false) {
+					ParameterType type = (parameter.numArguments() == 0) ? ParameterType.FLAG : ParameterType.OPTION;
+					i.addParameter(parameter.name(), type.getName(), defaultValue, parameter.description());
 				}
 			}
 		}
@@ -167,102 +159,95 @@ public class WekaAlgorithm {
 		return i;
 	}
 	
-	public static ArrayList<Parameter_setting> getParameterSetting( String[] parameters, Flow implementation ) {
+	public static ArrayList<Parameter_setting> getParameterSetting(String[] parameters, Flow implementation) {
 		ArrayList<Parameter_setting> settings = new ArrayList<Parameter_setting>();
-		for( Parameter p : implementation.getParameter() ) {
+		for(Parameter p : implementation.getParameter()) {
 			try {
 				ParameterType type = ParameterType.fromString(p.getData_type());
-				switch( type ) {
+				switch(type) {
 				case KERNEL:
 					String kernelvalue = Utils.getOption(p.getName(), parameters);
 					String[] kernelvalueSplitted = kernelvalue.split(" ");
-					if( WekaAlgorithm.existingClass( kernelvalueSplitted[0] ) ) {
-						String kernelname = kernelvalue.substring( 0, kernelvalue.indexOf(' ') );
+					try {
+						String kernelname = kernelvalue.substring(0, kernelvalue.indexOf(' '));
 						String[] kernelsettings = Utils.splitOptions(kernelvalue.substring(kernelvalue.indexOf(' ')+1));
-						ArrayList<Parameter_setting> kernelresult = getParameterSetting( kernelsettings, implementation.getSubImplementation( p.getName() ) );
-						settings.addAll( kernelresult );
-						settings.add( new Parameter_setting( implementation.getId(), p.getName(), kernelname ) );
-					} 
+						ArrayList<Parameter_setting> kernelresult = getParameterSetting(kernelsettings, implementation.getSubImplementation(p.getName()));
+						settings.addAll(kernelresult);
+						settings.add(new Parameter_setting(implementation.getId(), p.getName(), kernelname));
+					} catch(ClassNotFoundException e) {}
 					break;
 				case BASELEARNER:
 					String baselearnervalue = Utils.getOption(p.getName(), parameters);
-					if( WekaAlgorithm.existingClass( baselearnervalue ) ) {
-						String[] baselearnersettings = Utils.partitionOptions( parameters );
-						settings.addAll( getParameterSetting( baselearnersettings, implementation.getSubImplementation( p.getName() ) ) );
-						settings.add( new Parameter_setting( implementation.getId(), p.getName(), baselearnervalue ) );
-					}
+					try {
+						String[] baselearnersettings = Utils.partitionOptions(parameters);
+						settings.addAll(getParameterSetting(baselearnersettings, implementation.getSubImplementation(p.getName())));
+						settings.add(new Parameter_setting(implementation.getId(), p.getName(), baselearnervalue));
+					} catch(ClassNotFoundException e) {}
 					break;
 				case OPTION:
 					String optionvalue = Utils.getOption(p.getName(), parameters);
-					if( optionvalue != "") {
-						settings.add( new Parameter_setting( implementation.getId(), p.getName(), optionvalue ) );
+					if(optionvalue != "") {
+						settings.add(new Parameter_setting(implementation.getId(), p.getName(), optionvalue));
 					}
 					break;
 				case FLAG:
 					boolean flagvalue = Utils.getFlag(p.getName(), parameters);
-					if( flagvalue ) {
-						settings.add( new Parameter_setting( implementation.getId(), p.getName(), "true" ) );
+					if(flagvalue) {
+						settings.add(new Parameter_setting(implementation.getId(), p.getName(), "true"));
 					}
 					break;
-				}
-			} catch(Exception e) { /*Parameter not found. */ }
+				case ARRAY:
+					List<String> values = new ArrayList<String>();
+					String currentvalue = Utils.getOption(p.getName(), parameters);
+					while (!currentvalue.equals("")) {
+						values.add(currentvalue);
+						currentvalue = Utils.getOption(p.getName(), parameters);
+						System.out.println(values);
+					}
+					
+					if(values.size() > 0) {
+						settings.add(new Parameter_setting(implementation.getId(), p.getName(), values.toString()));
+					}
+					break;
+				}	
+			} catch(Exception e) {/*Parameter not found. */}
 		}
 		return settings;
 	}
 	
-	public static boolean existingClass( String classpath ) {
-		String classname = classpath.replace('.', '/');
-		if(classpath.trim() == "") return false;
-		return getFis( classname + ".class", "bin/" ) != null;
-	}
-	
-	public static File getFile( Classifier classifier, String prefix, String extension ) throws IOException {
+	public static File getFile(Classifier classifier, String prefix, String extension) throws IOException {
 		Class<? extends Classifier> c = classifier.getClass();
-		String sourcefile = c.getName().replace( '.', '/' );
+		String sourcefile = c.getName().replace('.', '/');
 		InputStream is = getFis( sourcefile + "." + extension, prefix );
-		if( is == null ) throw new IOException( "Could not find resource " + sourcefile + "." + extension );
-		BufferedReader br = new BufferedReader( new InputStreamReader( is ) );
+		if(is == null) throw new IOException("Could not find resource " + sourcefile + "." + extension);
+		BufferedReader br = new BufferedReader(new InputStreamReader(is));
 		StringBuilder totalSource = new StringBuilder();
 		String line = br.readLine();
-		while( line != null ) {
-			totalSource.append( line + "\n" );
-			line = br.readLine();
-		}
-		return Conversion.stringToTempFile(totalSource.toString(), c.getName(), extension);
-	}
-	public static File getFile( Clusterer clusterer, String prefix, String extension ) throws IOException {
-		Class<? extends Clusterer> c = clusterer.getClass();
-		String sourcefile = c.getName().replace( '.', '/' );
-		InputStream is = getFis( sourcefile + "." + extension, prefix );
-		if( is == null ) throw new IOException( "Could not find resource " + sourcefile + "." + extension );
-		BufferedReader br = new BufferedReader( new InputStreamReader( is ) );
-		StringBuilder totalSource = new StringBuilder();
-		String line = br.readLine();
-		while( line != null ) {
-			totalSource.append( line + "\n" );
+		while(line != null) {
+			totalSource.append(line + "\n");
 			line = br.readLine();
 		}
 		return Conversion.stringToTempFile(totalSource.toString(), c.getName(), extension);
 	}
 
-	private static InputStream getFis( String classname, String prefix ) {
+	private static InputStream getFis(String classname, String prefix) {
 		WekaAlgorithm loader = new WekaAlgorithm();
 		InputStream is = null;
 		
 		is = loader.getClass().getResourceAsStream('/'+classname);
 		
-		if( is == null ) {
+		if(is == null) {
 			try {
-				File f = new File( prefix + classname );
-				if( f.exists() ) {
-					is = new FileInputStream( f );
+				File f = new File(prefix + classname);
+				if(f.exists()) {
+					is = new FileInputStream(f);
 				}
 			} catch( IOException e ) { e.printStackTrace(); }
 		}
 		return is;
 	}
 	
-	public static File classifierSerializedToFile( Classifier cls, Integer task_id ) throws IOException {
+	public static File classifierSerializedToFile(Classifier cls, Integer task_id) throws IOException {
 		File file = File.createTempFile("WekaSerialized_" + cls.getClass().getName(), ".model");
 		ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file));
 		oos.writeObject(cls);
@@ -276,7 +261,7 @@ public class WekaAlgorithm {
 		Map<String, Object> splitEvaluatorResults = new HashMap<String, Object>();
 		String[] seResultNames = se.getResultNames();
 		
-		for( int i = 0; i < seResultNames.length; ++i ) {
+		for(int i = 0; i < seResultNames.length; ++i) {
 			splitEvaluatorResults.put(seResultNames[i], results[i]);
 		}
 		
