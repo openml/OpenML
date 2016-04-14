@@ -49,21 +49,25 @@ public class OptimizationTrace {
 	}
 	
 	public static List<Triplet<String,Double,Boolean>> extractTrace(Classifier classifier) throws Exception {
-		if (!(classifier instanceof MultiSearch)) {
-			throw new Exception("Classifier not instance of 'weka.classifiers.meta.MultiSearch'");
-		}
-		MultiSearch multiSearch = (MultiSearch) classifier;
-		List<Triplet<String,Double,Boolean>> result = new ArrayList<OptimizationTrace.Triplet<String,Double,Boolean>>();
-		
-		String selectedSetupString = Utils.toCommandLine(multiSearch.getBestClassifier());
-		for (int i = 0; i < multiSearch.getTraceSize(); ++i) {
-			String classifName = multiSearch.getTraceClassifierAsCli(i);
-			double classifEval = multiSearch.getTraceValue(i);
+		try {
+			if (!(classifier instanceof MultiSearch)) {
+				throw new Exception("Classifier not instance of 'weka.classifiers.meta.MultiSearch'");
+			}
+			MultiSearch multiSearch = (MultiSearch) classifier;
+			List<Triplet<String,Double,Boolean>> result = new ArrayList<OptimizationTrace.Triplet<String,Double,Boolean>>();
 			
-			result.add(new Triplet<String, Double, Boolean>(classifName, classifEval, classifName.equals(selectedSetupString)));
+			String selectedSetupString = Utils.toCommandLine(multiSearch.getBestClassifier());
+			for (int i = 0; i < multiSearch.getTraceSize(); ++i) {
+				String classifName = multiSearch.getTraceClassifierAsCli(i);
+				double classifEval = multiSearch.getTraceValue(i);
+				
+				result.add(new Triplet<String, Double, Boolean>(classifName, classifEval, classifName.equals(selectedSetupString)));
+			}
+			
+			return result;
+		} catch(NoClassDefFoundError e) {
+			throw new Exception("Could not find MultiSearch package. Ignoring trace options. ");
 		}
-		
-		return result;
 	}
 	
 	public static class Triplet<T, U, V>
