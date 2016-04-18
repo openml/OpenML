@@ -21,7 +21,9 @@ package org.openml.webapplication.models;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Arrays;
 
+import weka.core.Attribute;
 import weka.core.Utils;
 
 public class AttributeStatistics {
@@ -37,31 +39,45 @@ public class AttributeStatistics {
 	private double minimum;
 	private double maximum;
 	
-	public AttributeStatistics() {
-		totalSum = new BigDecimal( 0 );
-		totalSumSquared = new BigDecimal( 0 );
+	private final boolean trackClassDistribution;
+	private final int[][] classDistribution;
+	private Attribute attribute;
+	
+	// numClasses / numValues can be used for tracking classDistribution
+	public AttributeStatistics(Attribute att, int numClasses) { 
+		attribute = att;
+		totalSum = new BigDecimal(0);
+		totalSumSquared = new BigDecimal(0);
 		totalObservations = 0;
 		missingCount = 0;
 		minimum = Double.MAX_VALUE;
 		maximum = Double.MIN_VALUE;
+		
+		if (numClasses > 0 && att.isNominal()) {
+			trackClassDistribution = true;
+			classDistribution = new int[att.numValues()][numClasses];
+		} else {
+			trackClassDistribution = false;
+			classDistribution = new int[0][0];
+		}
 	}
 	
-	public void addValue( Double value ) {
-		if( value.isNaN() ) {
-			return;
-		}
-		
-		if( Utils.isMissingValue(value) ) { 
+	public void addValue(double value, double classValue) {
+		if (Utils.isMissingValue(value)) { 
 			missingCount += 1;
 			return;
 		}
 		
-		totalObservations += 1;
-		totalSum = totalSum.add( new BigDecimal( value ) );
-		totalSumSquared = totalSumSquared.add( new BigDecimal( value * value ) );
+		if (trackClassDistribution) {
+			classDistribution[(int) value][(int) classValue] += 1;
+		}
 		
-		if( value < minimum ) minimum = value;
-		if( value > maximum ) maximum = value;
+		totalObservations += 1;
+		totalSum = totalSum.add(new BigDecimal(value));
+		totalSumSquared = totalSumSquared.add(new BigDecimal(value * value));
+		
+		if (value < minimum) minimum = value;
+		if (value > maximum) maximum = value;
 	}
 
 	public int getTotalObservations() {
@@ -81,14 +97,32 @@ public class AttributeStatistics {
 	}
 	
 	public double getMean() {
-		if( totalObservations == 0 ) return 0; // TODO: happens when all observations for this att are missing. what to do?
-		return totalSum.divide( new BigDecimal( totalObservations ), PRECISION, ROUNDING_MODE ).doubleValue();
+		if(totalObservations == 0) return 0; 
+		return totalSum.divide(new BigDecimal(totalObservations), PRECISION, ROUNDING_MODE ).doubleValue();
 	}
 	
 	public double getStandardDeviation() {
-		if( totalObservations == 0 ) return 0; // TODO: happens when all observations for this att are missing. what to do?
-		BigDecimal obs = new BigDecimal( totalObservations );
-		return Math.sqrt( totalSumSquared.multiply( obs ).subtract( totalSum.multiply( totalSum ) ).divide( obs.multiply( obs.subtract( new BigDecimal( 1 ) ) ), PRECISION, ROUNDING_MODE ).doubleValue() );
+		if(totalObservations == 0) return 0; 
+		BigDecimal obs = new BigDecimal(totalObservations);
+		return Math.sqrt(totalSumSquared.multiply(obs).subtract(totalSum.multiply(totalSum)).divide(obs.multiply(obs.subtract(new BigDecimal(1))), PRECISION, ROUNDING_MODE).doubleValue());
 	}
 	
+	public String getClassDistribution() {
+		if (trackClassDistribution == false) {
+			return "[]";
+		} else {
+			StringBuilder sb = new StringBuilder();
+			String headline = "";
+			for (int i = 0; i < attribute.numValues(); ++i) {
+				headline += ",\""+attribute.value(i)+"\"";
+			}
+			sb.append("[[" + headline.substring(1) + "],[");
+			for (int i = 0; i < classDistribution.length; ++i) {
+				if (i > 0) sb.append(",");
+				sb.append(Arrays.toString(classDistribution[i]));
+			}
+			sb.append("]]");
+			return sb.toString();
+		}
+	}
 }

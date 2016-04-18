@@ -62,18 +62,23 @@ public class Main {
 		
 		
 		try {
-			CommandLine cli  = parser.parse( options, args );
+			CommandLine cli  = parser.parse(options, args);
 			if( cli.hasOption("-config") == false ) {
 				config = new Config();
 			} else {
-				config = new Config( cli.getOptionValue("config") );
+				config = new Config(cli.getOptionValue("config"));
 			}
 			config.updateStaticSettings();
 			Settings.CACHE_ALLOWED = false;
-			apiconnector = new OpenmlConnector( config.getServer(), config.getApiKey() );
+			
+			if (config.getServer() != null) {
+				apiconnector = new OpenmlConnector(config.getServer(),config.getApiKey());
+			} else {
+				apiconnector = new OpenmlConnector(config.getApiKey());
+			}
 			
 			if( cli.hasOption("-id") ) {
-				id = Integer.parseInt( cli.getOptionValue("id") );
+				id = Integer.parseInt(cli.getOptionValue("id"));
 			}
 			
 			
@@ -90,10 +95,10 @@ public class Main {
 					
 					
 					// bootstrap process dataset
-					new ProcessDataset(apiconnector, id);
+					new ProcessDataset(apiconnector, id, cli.hasOption("x"));
 				} else if( function.equals("extract_features_all") ) {
 					
-					FantailConnector fc = new FantailConnector( apiconnector, id );
+					FantailConnector fc = new FantailConnector( apiconnector, id, cli.hasOption("x"));
 					fc.toString();
 					
 				} else if( function.equals("generate_folds") ) {

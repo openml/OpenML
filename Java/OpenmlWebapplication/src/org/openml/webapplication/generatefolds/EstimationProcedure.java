@@ -21,10 +21,6 @@ package org.openml.webapplication.generatefolds;
 
 import java.util.Arrays;
 
-import org.json.JSONArray;
-import org.openml.apiconnector.algorithms.QueryUtils;
-import org.openml.apiconnector.io.OpenmlConnector;
-
 import weka.core.Instances;
 
 public class EstimationProcedure {

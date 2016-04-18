@@ -20,19 +20,56 @@
  */
 package org.openml.webapplication.fantail.dc.statistical;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.math3.stat.StatUtils;
 import org.openml.webapplication.fantail.dc.Characterizer;
 
 import weka.core.Instance;
 import weka.core.Instances;
 
 public class Statistical extends Characterizer {
-
-	protected final String[] ids = new String[] { "MeanMeansOfNumericAtts",
-			"MeanStdDevOfNumericAtts", "MeanKurtosisOfNumericAtts",
-			"MeanSkewnessOfNumericAtts" };
+	
+	private List<Double> meanList = new ArrayList<Double>();
+	private List<Double> stdDevList = new ArrayList<Double>();
+	private List<Double> kurtosisList = new ArrayList<Double>();
+	private List<Double> skewnessList = new ArrayList<Double>();
+	
+	protected final String[] ids = new String[] { 
+		"MeanMeansOfNumericAtts",
+		"MeanStdDevOfNumericAtts", 
+		"MeanKurtosisOfNumericAtts",
+		"MeanSkewnessOfNumericAtts",
+		
+		"MinMeansOfNumericAtts",
+		"MinStdDevOfNumericAtts", 
+		"MinKurtosisOfNumericAtts",
+		"MinSkewnessOfNumericAtts",
+		
+		"MaxMeansOfNumericAtts",
+		"MaxStdDevOfNumericAtts", 
+		"MaxKurtosisOfNumericAtts",
+		"MaxSkewnessOfNumericAtts",
+		
+		"Quartile1MeansOfNumericAtts",
+		"Quartile1StdDevOfNumericAtts", 
+		"Quartile1KurtosisOfNumericAtts",
+		"Quartile1SkewnessOfNumericAtts",
+		
+		"Quartile2MeansOfNumericAtts",
+		"Quartile2StdDevOfNumericAtts", 
+		"Quartile2KurtosisOfNumericAtts",
+		"Quartile2SkewnessOfNumericAtts",
+		
+		"Quartile3MeansOfNumericAtts",
+		"Quartile3StdDevOfNumericAtts", 
+		"Quartile3KurtosisOfNumericAtts",
+		"Quartile3SkewnessOfNumericAtts" 
+	};
 
 	@Override
 	public String[] getIDs() {
@@ -43,8 +80,6 @@ public class Statistical extends Characterizer {
 	public Map<String, Double> characterize(Instances instances) {
 		int attrib_count = instances.numAttributes() - 1, numeric_count = 0;
 
-		double mean_sum = 0.0, stddev_sum = 0.0, kurtosis_sum = 0.0, skewness_sum = 0.0;
-
 		for (int i = 0; i < attrib_count; i++) {
 			if (instances.attribute(i).isNumeric()) {
 				numeric_count++;
@@ -52,10 +87,11 @@ public class Statistical extends Characterizer {
 				final double stddev = Math.sqrt(instances.variance(i));
 				final double kurtosis = findKurtosis(instances, mean, stddev, i);
 				final double skewness = findSkewness(instances, mean, stddev, i);
-				mean_sum += mean;
-				stddev_sum += stddev;
-				kurtosis_sum += kurtosis;
-				skewness_sum += skewness;
+
+				meanList.add(mean);
+				stdDevList.add(stddev);
+				kurtosisList.add(kurtosis);
+				skewnessList.add(skewness);
 			}
 		}
 
@@ -68,12 +104,41 @@ public class Statistical extends Characterizer {
 			qualities.put(ids[3], 0.0);
 			return qualities;
 		} else {
-
+			double[] meansArray = ArrayUtils.toPrimitive(meanList.toArray(new Double[numeric_count]));
+			double[] stdDevsArray = ArrayUtils.toPrimitive(stdDevList.toArray(new Double[numeric_count]));
+			double[] kurtosisArray = ArrayUtils.toPrimitive(kurtosisList.toArray(new Double[numeric_count]));
+			double[] skewnessArray = ArrayUtils.toPrimitive(skewnessList.toArray(new Double[numeric_count]));
+			
 			Map<String, Double> qualities = new HashMap<String, Double>();
-			qualities.put(ids[0], mean_sum / numeric_count);
-			qualities.put(ids[1], stddev_sum / numeric_count);
-			qualities.put(ids[2], kurtosis_sum / numeric_count);
-			qualities.put(ids[3], skewness_sum / numeric_count);
+			qualities.put(ids[0], StatUtils.mean(meansArray));
+			qualities.put(ids[1], StatUtils.mean(stdDevsArray));
+			qualities.put(ids[2], StatUtils.mean(kurtosisArray));
+			qualities.put(ids[3], StatUtils.mean(skewnessArray));
+			
+			qualities.put(ids[4], StatUtils.min(meansArray));
+			qualities.put(ids[5], StatUtils.min(stdDevsArray));
+			qualities.put(ids[6], StatUtils.min(kurtosisArray));
+			qualities.put(ids[7], StatUtils.min(skewnessArray));
+			
+			qualities.put(ids[8], StatUtils.max(meansArray));
+			qualities.put(ids[9], StatUtils.max(stdDevsArray));
+			qualities.put(ids[10], StatUtils.max(kurtosisArray));
+			qualities.put(ids[11], StatUtils.max(skewnessArray));
+			
+			qualities.put(ids[12], StatUtils.percentile(meansArray,25));
+			qualities.put(ids[13], StatUtils.percentile(stdDevsArray,25));
+			qualities.put(ids[14], StatUtils.percentile(kurtosisArray,25));
+			qualities.put(ids[15], StatUtils.percentile(skewnessArray,25));
+			
+			qualities.put(ids[16], StatUtils.percentile(meansArray,50));
+			qualities.put(ids[17], StatUtils.percentile(stdDevsArray,50));
+			qualities.put(ids[18], StatUtils.percentile(kurtosisArray,50));
+			qualities.put(ids[19], StatUtils.percentile(skewnessArray,50));
+			
+			qualities.put(ids[20], StatUtils.percentile(meansArray,75));
+			qualities.put(ids[21], StatUtils.percentile(stdDevsArray,75));
+			qualities.put(ids[22], StatUtils.percentile(kurtosisArray,75));
+			qualities.put(ids[23], StatUtils.percentile(skewnessArray,75));
 			return qualities;
 		}
 	}

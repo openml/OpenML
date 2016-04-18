@@ -20,7 +20,11 @@
  */
 package org.openml.webapplication.fantail.dc;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
+
+import org.apache.commons.lang3.ArrayUtils;
 
 import weka.core.Attribute;
 import weka.core.Instance;
@@ -38,88 +42,53 @@ public class DCUntils {
 		}
 		double classEntropy = 0;
 		for (int c = 0; c < data.numClasses(); c++) {
-			double prob_c = classValueCounts[c] / data.numInstances();
-			classEntropy += prob_c * (weka.core.Utils.log2(prob_c));
+			if (classValueCounts[c] > 0) {
+				double prob_c = classValueCounts[c] / data.numInstances();
+				classEntropy += prob_c * (Utils.log2(prob_c));
+			}
 		}
 		classEntropy = classEntropy * -1.0;
-
-		if (Double.isNaN(classEntropy)) {
-			classEntropy = -1;
-		}
 
 		return classEntropy;
 	}
 
-	public static double computeMeanAttributeEntropy(Instances data) {
-
-		int numNomAtt = 0;
-		double meanAttributeEntropy = 0;
-
+	public static double[] computeAttributeEntropy(Instances data) {
+		List<Double> attributeEntropy = new ArrayList<Double>();
 		for (int attIndex = 0; attIndex < data.numAttributes(); attIndex++) {
 
-			if (data.attribute(attIndex).isNominal()
-					&& (data.classIndex() != attIndex)) {
-				numNomAtt++;
-
-				double[] attValueCounts = new double[data
-						.numDistinctValues(attIndex)];
+			if (data.attribute(attIndex).isNominal() && (data.classIndex() != attIndex)) {
+				double[] attValueCounts = new double[data.numDistinctValues(attIndex)];
 
 				for (int i = 0; i < data.numInstances(); i++) {
 					Instance inst = data.instance(i);
 					attValueCounts[(int) inst.value(attIndex)]++;
 				}
-
 				double attEntropy = 0;
-				for (int c = 0; c < data.numDistinctValues(attIndex); c++) {
-					double prob_c = attValueCounts[c] / data.numInstances();
-					attEntropy += prob_c * (weka.core.Utils.log2(prob_c));
+				for (int c = 0; c < data.attribute(attIndex).numValues(); c++) {
+					if (attValueCounts[c] > 0) {
+						double prob_c = attValueCounts[c] / data.numInstances();
+						attEntropy += prob_c * (Utils.log2(prob_c));
+					}
 				}
 				attEntropy = attEntropy * -1.0;
-				meanAttributeEntropy += attEntropy;
+				attributeEntropy.add(attEntropy);
 			}
 		}
-
-		if (numNomAtt == 0) {
-			return -1;
-		}
-
-		double value = meanAttributeEntropy / numNomAtt;
-
-		if (Double.isNaN(value)) {
-			value = -1;
-		}
-
-		return value;
+		return ArrayUtils.toPrimitive(attributeEntropy.toArray(new Double[attributeEntropy.size()]));
 	}
 
-	public static double computeMutualInformation(Instances data) {
-
-		double meanMI = 0;
-		double numNomAtt = 0;
+	public static double[] computeMutualInformation(Instances data) {
+		List<Double> mutualInformation = new ArrayList<Double>();
 
 		for (int attIndex = 0; attIndex < data.numAttributes(); attIndex++) {
-			if (data.attribute(attIndex).isNominal()
-					&& (data.classIndex() != attIndex)) {
-				numNomAtt++;
-				try {
-					meanMI += computeInfoGain(data, data.attribute(attIndex));
-				} catch (Exception e) {
-					meanMI += 0;
-				}
+			if (data.attribute(attIndex).isNominal() && (data.classIndex() != attIndex)) {
+		//		System.out.println(data.attribute(attIndex));
+				double infoGain = computeInfoGain(data, data.attribute(attIndex));
+				infoGain = Math.round(infoGain * Math.pow(10, 14)) / Math.pow(10, 14);
+				mutualInformation.add(infoGain);
 			}
 		}
-
-		if (numNomAtt == 0) {
-			return -1;
-		}
-
-		double MI = meanMI / numNomAtt;
-
-		if (Double.isNaN(MI)) {
-			MI = -1;
-		}
-
-		return MI;
+		return ArrayUtils.toPrimitive(mutualInformation.toArray(new Double[mutualInformation.size()]));
 	}
 
 	private static Instances[] splitData(Instances data, Attribute att) {
@@ -139,21 +108,20 @@ public class DCUntils {
 		return splitData;
 	}
 
-	private static double computeInfoGain(Instances data, Attribute att)
-			throws Exception {
-
+	private static double computeInfoGain(Instances data, Attribute att) {
 		double infoGain = computeEntropy(data);
 		Instances[] splitData = splitData(data, att);
 		for (int j = 0; j < att.numValues(); j++) {
 			if (splitData[j].numInstances() > 0) {
-				infoGain -= ((double) splitData[j].numInstances() / (double) data
-						.numInstances()) * computeEntropy(splitData[j]);
+				double entropyAfter = computeEntropy(splitData[j]);
+				double percentage = (double) splitData[j].numInstances() / (double) data.numInstances();
+				infoGain -=  percentage * entropyAfter;
 			}
 		}
 		return infoGain;
 	}
 
-	private static double computeEntropy(Instances data) throws Exception {
+	private static double computeEntropy(Instances data) {
 
 		double[] classCounts = new double[data.numClasses()];
 		Enumeration<?> instEnum = data.enumerateInstances();

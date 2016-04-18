@@ -40,14 +40,7 @@ import org.openml.apiconnector.xstream.XstreamXmlMapping;
 import org.openml.webapplication.fantail.dc.Characterizer;
 import org.openml.webapplication.fantail.dc.StreamCharacterizer;
 import org.openml.webapplication.fantail.dc.landmarking.GenericLandmarker;
-import org.openml.webapplication.fantail.dc.statistical.AttributeCount;
 import org.openml.webapplication.fantail.dc.statistical.AttributeEntropy;
-import org.openml.webapplication.fantail.dc.statistical.AttributeType;
-import org.openml.webapplication.fantail.dc.statistical.ClassAtt;
-import org.openml.webapplication.fantail.dc.statistical.DefaultAccuracy;
-import org.openml.webapplication.fantail.dc.statistical.IncompleteInstanceCount;
-import org.openml.webapplication.fantail.dc.statistical.InstanceCount;
-import org.openml.webapplication.fantail.dc.statistical.MissingValues;
 import org.openml.webapplication.fantail.dc.statistical.NominalAttDistinctValues;
 import org.openml.webapplication.fantail.dc.statistical.Statistical;
 import org.openml.webapplication.fantail.dc.stream.ChangeDetectors;
@@ -65,19 +58,17 @@ public class FantailConnector {
 	
 	private static final XStream xstream = XstreamXmlMapping.getInstance();
 	private Characterizer[] batchCharacterizers = {
-		new Statistical(), new AttributeCount(), new AttributeType(),
-		new ClassAtt(), new DefaultAccuracy(),
-		new IncompleteInstanceCount(), new InstanceCount(),
-		new MissingValues(), new NominalAttDistinctValues(),
+		new Statistical(),
+		new NominalAttDistinctValues(),
 		new AttributeEntropy(), 
-		new GenericLandmarker( "NaiveBayes", "weka.classifiers.bayes.NaiveBayes", 2, null ),
-		new GenericLandmarker( "DecisionStump", "weka.classifiers.trees.DecisionStump", 2, null )
+		new GenericLandmarker("NaiveBayes", "weka.classifiers.bayes.NaiveBayes", 2, null),
+		new GenericLandmarker("DecisionStump", "weka.classifiers.trees.DecisionStump", 2, null)
 	};
 	
 	private static StreamCharacterizer[] streamCharacterizers;
 	private static OpenmlConnector apiconnector;
 	
-	public FantailConnector( OpenmlConnector ac, Integer dataset_id ) throws Exception {
+	public FantailConnector(OpenmlConnector ac, Integer dataset_id, boolean random) throws Exception {
 		int expectedQualities = 8; // start of with 8 basic qualities, apparently
 		apiconnector = ac;
 		window_size = null;
@@ -90,38 +81,38 @@ public class FantailConnector {
 		for( int i = 1; i <= 3; ++i ) {
 			zeros += "0";
 			String[] repOption = { "-L", "" + i };
-			REPOptions.put( "Depth" + i, repOption );
+			REPOptions.put("Depth" + i, repOption);
 
 			String[] j48Option = { "-C", "." + zeros + "1" };
-			J48Options.put( "." + zeros + "1.", j48Option );
+			J48Options.put("." + zeros + "1.", j48Option);
 			
 			String[] randomtreeOption = { "-depth", "" + i };
-			RandomTreeOptions.put( "Depth" + i, randomtreeOption );
+			RandomTreeOptions.put("Depth" + i, randomtreeOption);
 		}
 		
-		batchCharacterizers = ArrayUtils.add( batchCharacterizers, new GenericLandmarker( "REPTree", "weka.classifiers.trees.REPTree", 2, REPOptions ) );
-		batchCharacterizers = ArrayUtils.add( batchCharacterizers, new GenericLandmarker( "J48", "weka.classifiers.trees.J48", 2, J48Options ) );
-		batchCharacterizers = ArrayUtils.add( batchCharacterizers, new GenericLandmarker( "RandomTree", "weka.classifiers.trees.RandomTree", 2, RandomTreeOptions ) );
+		batchCharacterizers = ArrayUtils.add(batchCharacterizers, new GenericLandmarker( "REPTree", "weka.classifiers.trees.REPTree", 2, REPOptions));
+		batchCharacterizers = ArrayUtils.add(batchCharacterizers, new GenericLandmarker( "J48", "weka.classifiers.trees.J48", 2, J48Options));
+		batchCharacterizers = ArrayUtils.add(batchCharacterizers, new GenericLandmarker( "RandomTree", "weka.classifiers.trees.RandomTree", 2, RandomTreeOptions));
 		
-		for( Characterizer characterizer : batchCharacterizers ) {
+		for(Characterizer characterizer : batchCharacterizers) {
 			expectedQualities += characterizer.getNumMetaFeatures();
 		}
 		
-		if( dataset_id != null ) {
-			Conversion.log( "OK", "Process Dataset", "Processing dataset " + dataset_id + " on special request. " );
-			extractFeatures( dataset_id, window_size );
+		if(dataset_id != null) {
+			Conversion.log("OK", "Process Dataset", "Processing dataset " + dataset_id + " on special request. ");
+			extractFeatures(dataset_id, window_size);
 		} else {
-			dataset_id = getDatasetId( expectedQualities, window_size );
+			dataset_id = getDatasetId(expectedQualities, window_size, random);
 			while( dataset_id != null ) {
-				Conversion.log( "OK", "Process Dataset", "Processing dataset " + dataset_id + " as obtained from database. " );
-				extractFeatures( dataset_id, window_size );
-				dataset_id = getDatasetId( expectedQualities, window_size );
+				Conversion.log("OK", "Process Dataset", "Processing dataset " + dataset_id + " as obtained from database. ");
+				extractFeatures(dataset_id, window_size);
+				dataset_id = getDatasetId(expectedQualities, window_size, random);
 			}
-			Conversion.log( "OK", "Process Dataset", "No more datasets to process. " );
+			Conversion.log("OK", "Process Dataset", "No more datasets to process. ");
 		}
 	}
 	
-	public Integer getDatasetId( int expectedQualities, Integer window_size ) throws JSONException, Exception {
+	public Integer getDatasetId(int expectedQualities, Integer window_size, boolean random) throws JSONException, Exception {
 		String sql = 
 			"SELECT `d`.`did`, `q`.`value` AS `numInstances`, `interval_end` - `interval_start` AS `interval_size`, " +
 			"CEIL(`q`.`value` / " + window_size + ") AS `numIntervals`, " +
@@ -137,19 +128,25 @@ public class FantailConnector {
 			"(SELECT i.value AS did FROM task_inputs i, task_tag t WHERE t.id = i.task_id AND i.input = 'source_data' AND t.tag = 'streams') " +
 			"GROUP BY `d`.`did` " +
 			"HAVING (COUNT(*) / CEIL(`q`.`value` / " + window_size + ")) < " + expectedQualities + " " +
-			"ORDER BY `qualitiesPerInterval` ASC; ";
+			"ORDER BY `qualitiesPerInterval` ASC LIMIT 0,100; ";
 		
-		if( window_size == null ) {
-			sql = "SELECT data, COUNT(*) AS `numQualities` FROM data_quality GROUP BY data HAVING numQualities < " + expectedQualities;
+		if(window_size == null) {
+			sql = "SELECT data, COUNT(*) AS `numQualities` FROM data_quality GROUP BY data HAVING numQualities < " + expectedQualities + " LIMIT 0,100";
 		}
 		
-		Conversion.log( "OK", "FantailQuery", sql );
-		JSONArray runJson = (JSONArray) apiconnector.freeQuery( sql ).get("data");
+		Conversion.log("OK", "FantailQuery", sql);
+		JSONArray runJson = (JSONArray) apiconnector.freeQuery(sql).get("data");
 		
-		Random random = new Random( System.currentTimeMillis() );
 		
-		if( runJson.length() > 0 ) {
-			int dataset_id = ((JSONArray) runJson.get( Math.abs( random.nextInt() ) % runJson.length() ) ).getInt( 0 );
+		int randomint = 0;
+		
+		if (random) {
+			Random randomgen = new Random(System.currentTimeMillis());
+			randomint = Math.abs(randomgen.nextInt());
+		}
+		
+		if(runJson.length() > 0) {
+			int dataset_id = ((JSONArray) runJson.get(randomint % runJson.length())).getInt(0);
 			return dataset_id;
 		} else {
 			return null;
@@ -160,16 +157,27 @@ public class FantailConnector {
 		Conversion.log( "OK", "Extract Features", "Start extracting features for dataset: " + did );
 		// TODO: initialize this properly!!!!!!
 		streamCharacterizers = new StreamCharacterizer[1]; 
-		streamCharacterizers[0] = new ChangeDetectors( interval_size );
+		streamCharacterizers[0] = new ChangeDetectors(interval_size);
 		
 		DataSetDescription dsd = apiconnector.dataGet(did);
 		
-		Conversion.log( "OK", "Extract Features", "Start downloading dataset: " + did );
+		Conversion.log("OK", "Extract Features", "Start downloading dataset: " + did);
 		
-		Instances dataset = new Instances( new FileReader(dsd.getDataset(apiconnector.getApiKey())) );
+		Instances dataset = new Instances(new FileReader(dsd.getDataset(apiconnector.getApiKey())));
 		
-		dataset.setClass( dataset.attribute( dsd.getDefault_target_attribute() ) );
-		
+		dataset.setClass(dataset.attribute(dsd.getDefault_target_attribute()));
+		if (dsd.getRow_id_attribute() != null) {
+			if (dataset.attribute(dsd.getRow_id_attribute()) != null) {
+				dataset.deleteAttributeAt(dataset.attribute(dsd.getRow_id_attribute()).index());
+			}
+		}
+		if (dsd.getIgnore_attribute() != null) {
+			for (String att : dsd.getIgnore_attribute()) {
+				if (dataset.attribute(att) != null) {
+					dataset.deleteAttributeAt(dataset.attribute(att).index());
+				}
+			}
+		}
 
 		// first run stream characterizers
 		Conversion.log( "OK", "Extract Features", "Running Stream Characterizers (full data)" );

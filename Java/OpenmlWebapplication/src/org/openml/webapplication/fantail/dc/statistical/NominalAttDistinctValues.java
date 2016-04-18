@@ -27,6 +27,7 @@ import java.util.Map;
 import org.openml.webapplication.fantail.dc.Characterizer;
 
 import weka.core.Instances;
+import weka.core.Utils;
 
 public class NominalAttDistinctValues extends Characterizer {
 
@@ -43,14 +44,11 @@ public class NominalAttDistinctValues extends Characterizer {
 	public Map<String, Double> characterize(Instances data) {
 		int attrib_count = data.numAttributes() - 1;
 		int nominal_count = 0;
-		// int numeric_count = 0;
 
 		for (int i = 0; i < attrib_count; i++) {
 			if (data.attribute(i).isNominal()) {
 				nominal_count++;
-			} // else {
-				// numeric_count++;
-				// }
+			}
 		}
 
 		if (nominal_count == 0) {
@@ -76,10 +74,10 @@ public class NominalAttDistinctValues extends Characterizer {
 			values[i] = distinctValuesCounts.get(i);
 		}
 
-		double min = values[weka.core.Utils.minIndex(values)];
-		double max = values[weka.core.Utils.maxIndex(values)];
-		double mean = weka.core.Utils.mean(values);
-		double variance = weka.core.Utils.variance(values);
+		double min = values[Utils.minIndex(values)];
+		double max = values[Utils.maxIndex(values)];
+		double mean = Utils.mean(values);
+		double variance = Utils.variance(values);
 		double stdv = Math.sqrt(variance);
 
 		Map<String, Double> qualities = new HashMap<String, Double>();
