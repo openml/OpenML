@@ -98,10 +98,10 @@ public class ProcessDataset {
 		
 		// feature string should be reconverted to null, if it was NULL in mysql
 		String defaultTarget = record.getString(3).equals("") ? null : record.getString(3);
-		Instances dataset = new Instances(new BufferedReader(Input.getURL(featureUrl)));
 		
 		
 		try {
+			Instances dataset = new Instances(new BufferedReader(Input.getURL(featureUrl)));
 			Conversion.log( "OK", "Process Dataset", "Processing dataset " + did + " - obtaining basic qualities. " );
 			List<Quality> qualities = ExtractFeatures.getQualities(dataset,defaultTarget);
 			Conversion.log( "OK", "Process Dataset", "Processing dataset " + did + " - obtaining features. " );
