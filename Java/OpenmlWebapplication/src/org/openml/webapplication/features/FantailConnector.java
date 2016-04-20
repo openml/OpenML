@@ -25,7 +25,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.TreeMap;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.json.JSONArray;
@@ -45,6 +44,7 @@ import org.openml.webapplication.fantail.dc.statistical.AttributeEntropy;
 import org.openml.webapplication.fantail.dc.statistical.NominalAttDistinctValues;
 import org.openml.webapplication.fantail.dc.statistical.Statistical;
 import org.openml.webapplication.fantail.dc.stream.ChangeDetectors;
+import org.openml.webapplication.fantail.dc.stream.RunChangeDetectorTask;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -56,14 +56,24 @@ import weka.filters.unsupervised.attribute.StringToNominal;
 
 public class FantailConnector {
 	private final Integer window_size;
+
+	private final String preprocessingPrefix = "-E \"weka.attributeSelection.CfsSubsetEval -P 1 -E 1\" -S \"weka.attributeSelection.BestFirst -D 1 -N 5\" -W ";
+	private final String cp1NN = "weka.classifiers.lazy.IBk";
+	private final String cpNB = "weka.classifiers.bayes.NaiveBayes";
+	private final String cpASC = "weka.classifiers.meta.AttributeSelectedClassifier";
+	private final String cpDS = "weka.classifiers.trees.DecisionStump";
 	
 	private static final XStream xstream = XstreamXmlMapping.getInstance();
 	private Characterizer[] batchCharacterizers = {
 		new Statistical(),
 		new NominalAttDistinctValues(),
 		new AttributeEntropy(), 
-		new GenericLandmarker("NaiveBayes", "weka.classifiers.bayes.NaiveBayes", 2, null),
-		new GenericLandmarker("DecisionStump", "weka.classifiers.trees.DecisionStump", 2, null)
+		new GenericLandmarker("kNN1N", cp1NN, 2, null),
+		new GenericLandmarker("NaiveBayes", cpNB, 2, null),
+		new GenericLandmarker("DecisionStump", cpDS, 2, null),
+		new GenericLandmarker("CfsSubsetEval_kNN1N", cpASC, 2, Utils.splitOptions(preprocessingPrefix + cp1NN)),
+		new GenericLandmarker("CfsSubsetEval_NaiveBayes", cpASC, 2, Utils.splitOptions(preprocessingPrefix + cpNB)),
+		new GenericLandmarker("CfsSubsetEval_DecisionStump", cpASC, 2, Utils.splitOptions(preprocessingPrefix + cpDS))
 	};
 	
 	private static StreamCharacterizer[] streamCharacterizers;
@@ -74,30 +84,26 @@ public class FantailConnector {
 		apiconnector = ac;
 		window_size = null;
 		
-		// additional batch landmarkers
-		TreeMap<String, String[]> REPOptions = new TreeMap<String, String[]>();
-		TreeMap<String, String[]> J48Options = new TreeMap<String, String[]>();
-		TreeMap<String, String[]> RandomTreeOptions = new TreeMap<String, String[]>();
+		// additional parameterized batch landmarkers
 		String zeros = "0";
 		for( int i = 1; i <= 3; ++i ) {
 			zeros += "0";
-			String[] repOption = { "-L", "" + i };
-			REPOptions.put("Depth" + i, repOption);
-
 			String[] j48Option = { "-C", "." + zeros + "1" };
-			J48Options.put("." + zeros + "1.", j48Option);
+			batchCharacterizers = ArrayUtils.add(batchCharacterizers, new GenericLandmarker("J48." + zeros + "1.", "weka.classifiers.trees.J48", 2, j48Option));
+			
+			String[] repOption = { "-L", "" + i };
+			batchCharacterizers = ArrayUtils.add(batchCharacterizers, new GenericLandmarker("REPTreeDepth" + i, "weka.classifiers.trees.REPTree", 2, repOption));
 			
 			String[] randomtreeOption = { "-depth", "" + i };
-			RandomTreeOptions.put("Depth" + i, randomtreeOption);
+			batchCharacterizers = ArrayUtils.add(batchCharacterizers, new GenericLandmarker("RandomTreeDepth" + i, "weka.classifiers.trees.RandomTree", 2, randomtreeOption));
 		}
-		
-		batchCharacterizers = ArrayUtils.add(batchCharacterizers, new GenericLandmarker( "REPTree", "weka.classifiers.trees.REPTree", 2, REPOptions));
-		batchCharacterizers = ArrayUtils.add(batchCharacterizers, new GenericLandmarker( "J48", "weka.classifiers.trees.J48", 2, J48Options));
-		batchCharacterizers = ArrayUtils.add(batchCharacterizers, new GenericLandmarker( "RandomTree", "weka.classifiers.trees.RandomTree", 2, RandomTreeOptions));
 		
 		for(Characterizer characterizer : batchCharacterizers) {
 			expectedQualities += characterizer.getNumMetaFeatures();
 		}
+		// add expected qualities for stream landmarkers (initialized later)
+		expectedQualities += RunChangeDetectorTask.getNumMetaFeatures();
+		
 		
 		if(dataset_id != null) {
 			Conversion.log("OK", "Process Dataset", "Processing dataset " + dataset_id + " on special request. ");
@@ -193,6 +199,7 @@ public class FantailConnector {
 
 		// first run stream characterizers
 		for(StreamCharacterizer sc : streamCharacterizers) {
+
 			if (qualitiesAvailable.containsAll(Arrays.asList(sc.getIDs())) == false) { 
 				Conversion.log( "OK", "Extract Features", "Running Stream Characterizers (full data)" );
 				sc.characterize( dataset );

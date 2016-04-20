@@ -53,14 +53,17 @@ public class RunChangeDetectorTask extends AbstractOptionHandler {
 	
 	private final int interval_size;
 	
+	// TODO: the expected amount of features to obtain. Keep track of this
+	public static int getNumMetaFeatures() {
+		return 8;
+	}
+	
 	public String[] getIDs() {
-		String[] ids = new String[allDriftDetectors.length * 4];
+		String[] ids = new String[allDriftDetectors.length * 2];
 		
 		for( int i = 0; i < allDriftDetectors.length; ++i ) {
-			ids[i*4+0] = allDriftDetectors[i].getName() + ".changes";
-			ids[i*4+1] = allDriftDetectors[i].getName() + ".warnings";
-			ids[i*4+2] = allDriftDetectors[i].getName() + ".changes.total";
-			ids[i*4+3] = allDriftDetectors[i].getName() + ".changes.total";
+			ids[i*2+0] = allDriftDetectors[i].getName() + ".changes";
+			ids[i*2+1] = allDriftDetectors[i].getName() + ".warnings";
 		}
 		return ids;
 	}
