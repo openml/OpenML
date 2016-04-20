@@ -39,12 +39,15 @@ public class ExtractFeatures {
 	public static final int BASIC_FEATURES = SimpleMetaFeatures.ids.length;
 	
 	public static List<Feature> getFeatures(Instances dataset, String defaultClass) {
-		dataset.setClass(dataset.attribute(defaultClass));
-		
+		if (defaultClass != null) { 
+			dataset.setClass(dataset.attribute(defaultClass));
+		} else {
+			dataset.setClassIndex(dataset.numAttributes()-1);
+		}
 		
 		final ArrayList<Feature> resultFeatures = new ArrayList<Feature>();
 		
-		for( int i = 0; i < dataset.numAttributes(); i++ ) {
+		for (int i = 0; i < dataset.numAttributes(); i++) {
 			Attribute att = dataset.attribute(i);
 			int numValues = dataset.classAttribute().isNominal() ? dataset.classAttribute().numValues() : 0;
 			AttributeStatistics attributeStats = new AttributeStatistics(dataset.attribute(i),numValues);
@@ -78,32 +81,32 @@ public class ExtractFeatures {
 			numberOfMissingValues = as.missingCount;
 			
 			
-			if(att.isNominal()) {
+			if (att.isNominal()) {
 				numberOfNominalValues = att.numValues(); 
 			}
 			numberOfValues = attributeStats.getTotalObservations();
 			
-			if(att.isNumeric()) {
+			if (att.isNumeric()) {
 				maximumValue = attributeStats.getMaximum();
 				minimumValue = attributeStats.getMinimum();
 				meanValue = attributeStats.getMean();
 				standardDeviation = 0.0;
-				try{
+				try {
 					standardDeviation = attributeStats.getStandardDeviation();
-				}
-				catch(Exception e){
+				} catch(Exception e) {
 					Conversion.log("WARNING", "StdDev", "Could not compute standard deviation of feature "+ att.name() +": "+e.getMessage());
 				}
 			}
 			
-			if( att.type() == 0 )
+			if(att.type() == 0) {
 				data_type = "numeric";
-			else if( att.type() == 1 )
+			} else if(att.type() == 1) {
 				data_type = "nominal";
-			else if( att.type() == 2 )
+			} else if(att.type() == 2) {
 				data_type = "string";
-			else
+			} else {
 				data_type = "unknown";
+			}
 			
 			resultFeatures.add(new Feature(att.index(), att.name(), data_type,
 					att.index() == dataset.classIndex(), 
@@ -117,8 +120,12 @@ public class ExtractFeatures {
 		return resultFeatures;
 	}
 	
-	public static List<Quality> getQualities(Instances dataset,String defaultClass) {
-		dataset.setClass(dataset.attribute(defaultClass));
+	public static List<Quality> getQualities(Instances dataset, String defaultClass) {
+		if (defaultClass != null) { 
+			dataset.setClass(dataset.attribute(defaultClass));
+		} else {
+			dataset.setClassIndex(dataset.numAttributes()-1);
+		}
 		List<Quality> result = new ArrayList<Quality>();
 		Characterizer simpleQualities = new SimpleMetaFeatures();
 		Map<String,Double> qualities = simpleQualities.characterize(dataset);

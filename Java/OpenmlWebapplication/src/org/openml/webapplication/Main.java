@@ -59,7 +59,7 @@ public class Main {
 		options.addOption("x", false, "Flag determining whether we should pick a random id");
 		options.addOption("m", false, "Flag determining whether the output of the splits file should be presented as a md5 hash");
 		options.addOption("test", true, "A list of rowids for a holdout set (fold generation)" );
-		
+		options.addOption("tag", true, "A tag that will get priority in processing fantail features. " );
 		
 		try {
 			CommandLine cli  = parser.parse(options, args);
@@ -98,7 +98,7 @@ public class Main {
 					new ProcessDataset(apiconnector, id, cli.hasOption("x"));
 				} else if( function.equals("extract_features_all") ) {
 					
-					FantailConnector fc = new FantailConnector( apiconnector, id, cli.hasOption("x"));
+					FantailConnector fc = new FantailConnector( apiconnector, id, cli.hasOption("x"), cli.getOptionValue("tag"));
 					fc.toString();
 					
 				} else if( function.equals("generate_folds") ) {

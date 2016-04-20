@@ -108,6 +108,10 @@ public class AttributeEntropy extends Characterizer {
 			
 			qualities.put(ids[13], StatUtils.percentile(attEntropy,75));
 			qualities.put(ids[14], StatUtils.percentile(mutualInformation,75));
+		} else { // numeric target
+			for (int i = 0; i < ids.length; ++i) {
+				qualities.put(ids[i], -1.0);
+			}
 		}
 		return qualities;
 	}

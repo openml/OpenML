@@ -102,6 +102,31 @@ public class Statistical extends Characterizer {
 			qualities.put(ids[1], 0.0);
 			qualities.put(ids[2], 0.0);
 			qualities.put(ids[3], 0.0);
+			
+			qualities.put(ids[4], 0.0);
+			qualities.put(ids[5], 0.0);
+			qualities.put(ids[6], 0.0);
+			qualities.put(ids[7], 0.0);
+			
+			qualities.put(ids[8], 0.0);
+			qualities.put(ids[9], 0.0);
+			qualities.put(ids[10], 0.0);
+			qualities.put(ids[11], 0.0);
+			
+			qualities.put(ids[12], 0.0);
+			qualities.put(ids[13], 0.0);
+			qualities.put(ids[14], 0.0);
+			qualities.put(ids[15], 0.0);
+			
+			qualities.put(ids[16], 0.0);
+			qualities.put(ids[17], 0.0);
+			qualities.put(ids[18], 0.0);
+			qualities.put(ids[19], 0.0);
+			
+			qualities.put(ids[20], 0.0);
+			qualities.put(ids[21], 0.0);
+			qualities.put(ids[22], 0.0);
+			qualities.put(ids[23], 0.0);
 			return qualities;
 		} else {
 			double[] meansArray = ArrayUtils.toPrimitive(meanList.toArray(new Double[numeric_count]));

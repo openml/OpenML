@@ -18,7 +18,7 @@ public class GenericLandmarker extends Characterizer {
 	// maps id name to option list
 	private final TreeMap<String, String[]> options;
 	
-	public GenericLandmarker( String classifierName, String className, int numFolds, TreeMap<String, String[]> options ) {
+	public GenericLandmarker(String classifierName, String className, int numFolds, TreeMap<String, String[]> options) {
 		this.numFolds = numFolds;
 		this.classifierName = classifierName;
 		this.className = className;
@@ -47,7 +47,7 @@ public class GenericLandmarker extends Characterizer {
 		Map<String, Double> results = new HashMap<String, Double>();
 
 		
-		for( String id : options.keySet() ) {
+		for(String id : options.keySet()) {
 			try {
 				weka.classifiers.Evaluation eval = new weka.classifiers.Evaluation(instances);
 				AbstractClassifier cls = (AbstractClassifier) Class.forName( className ).newInstance();
@@ -60,6 +60,9 @@ public class GenericLandmarker extends Characterizer {
 				results.put( classifierName + id + "Kappa", eval.kappa() );
 			} catch( Exception e ) {
 				e.printStackTrace();
+				results.put( classifierName + id + "AUC", -1.0 );
+				results.put( classifierName + id + "ErrRate", -1.0 );
+				results.put( classifierName + id + "Kappa", -1.0 );
 			}
 		}
 		return results;
