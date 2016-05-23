@@ -4,6 +4,7 @@ import java.io.FileReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.openml.apiconnector.algorithms.Conversion;
@@ -18,7 +19,7 @@ import org.openml.apiconnector.xml.Task.Input.Estimation_procedure;
 import org.openml.weka.algorithm.InstancesHelper;
 import org.openml.weka.algorithm.OptimizationTrace;
 import org.openml.weka.algorithm.WekaAlgorithm;
-import org.openml.weka.algorithm.OptimizationTrace.Triplet;
+import org.openml.weka.algorithm.OptimizationTrace.Quadlet;
 
 import weka.core.AttributeStats;
 import weka.core.Instances;
@@ -298,7 +299,7 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 					System.arraycopy(seResults, 0, results, 1, seResults.length);
 					
 					Map<String, Object> splitEvaluatorResults = WekaAlgorithm.splitEvaluatorToMap(m_SplitEvaluator, seResults);
-					List<Triplet<String,Double,Boolean>> trace = null;
+					List<Quadlet<String,Double,List<Entry<String,String>>,Boolean>> trace = null;
 					try {
 						trace = OptimizationTrace.extractTrace(((ClassifierSplitEvaluator)m_SplitEvaluator).getClassifier());
 					} catch(Exception e) {

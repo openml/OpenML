@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -26,7 +27,7 @@ import org.openml.apiconnector.xml.UploadRun;
 import org.openml.apiconnector.xstream.XstreamXmlMapping;
 import org.openml.weka.algorithm.OptimizationTrace;
 import org.openml.weka.algorithm.WekaAlgorithm;
-import org.openml.weka.algorithm.OptimizationTrace.Triplet;
+import org.openml.weka.algorithm.OptimizationTrace.Quadlet;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -71,7 +72,7 @@ public class TaskResultListener extends InstancesResultListener {
 
 	public void acceptResultsForSending(Task t, Instances sourceData, Integer repeat, Integer fold, Integer sample,
 			Classifier classifier, String options,
-			Integer[] rowids, ArrayList<Prediction> predictions, Map<Metric, MetricScore> userMeasures, List<Triplet<String,Double,Boolean>> optimizationTrace) throws Exception {
+			Integer[] rowids, ArrayList<Prediction> predictions, Map<Metric, MetricScore> userMeasures, List<Quadlet<String,Double,List<Entry<String,String>>,Boolean>> optimizationTrace) throws Exception {
 		// TODO: do something better than undefined
 		String revision = (classifier instanceof RevisionHandler) ? ((RevisionHandler)classifier).getRevision() : "undefined"; 
 		String implementationId = classifier.getClass().getName() + "(" + revision + ")";
@@ -242,7 +243,7 @@ public class TaskResultListener extends InstancesResultListener {
 			run = new Run(t.getTask_id(), error_message, implementation.getId(), setup_string, list.toArray(new Parameter_setting[list.size()]), tags);
 		}
 		
-		public void addBatchOfPredictions(Integer fold, Integer repeat, Integer sample, Integer[] rowids, ArrayList<Prediction> batchPredictions, List<Triplet<String,Double,Boolean>> optimizationTraceFold) {
+		public void addBatchOfPredictions(Integer fold, Integer repeat, Integer sample, Integer[] rowids, ArrayList<Prediction> batchPredictions, List<Quadlet<String,Double,List<Entry<String,String>>,Boolean>> optimizationTraceFold) {
 			nrOfResultBatches += 1;
 			for (int i = 0; i < rowids.length; ++i) {
 				Prediction current = batchPredictions.get(i);
