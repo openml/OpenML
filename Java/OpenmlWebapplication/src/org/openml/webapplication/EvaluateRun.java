@@ -1,13 +1,18 @@
 package org.openml.webapplication;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.openml.apiconnector.algorithms.Conversion;
+import org.openml.apiconnector.algorithms.Input;
 import org.openml.apiconnector.algorithms.TaskInformation;
 import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.xml.DataSetDescription;
@@ -18,12 +23,16 @@ import org.openml.apiconnector.xml.RunEvaluation;
 import org.openml.apiconnector.xml.Task;
 import org.openml.apiconnector.xml.Task.Input.Data_set;
 import org.openml.apiconnector.xml.Task.Input.Estimation_procedure;
+import org.openml.apiconnector.xml.Trace;
 import org.openml.apiconnector.xstream.XstreamXmlMapping;
 import org.openml.webapplication.evaluate.EvaluateBatchPredictions;
 import org.openml.webapplication.evaluate.EvaluateStreamPredictions;
 import org.openml.webapplication.evaluate.EvaluateSurvivalAnalysisPredictions;
 import org.openml.webapplication.evaluate.PredictionEvaluator;
 import org.openml.webapplication.generatefolds.EstimationProcedure;
+
+import weka.core.Instance;
+import weka.core.Instances;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -82,12 +91,13 @@ public class EvaluateRun {
 		
 		PredictionEvaluator predictionEvaluator;
 		RunEvaluation runevaluation = new RunEvaluation( run_id );
+		Trace trace = null;
 		
 		JSONArray runJson = (JSONArray) apiconnector.freeQuery( "SELECT `task_id` FROM `run` WHERE `rid` = " + run_id ).get("data");
 		JSONArray filesJson =  (JSONArray) apiconnector.freeQuery( "SELECT `field`,`file_id` FROM `runfile` WHERE `source` = " + run_id ).get("data");
 
 		try {
-			int task_id = ((JSONArray) runJson.get( 0 )).getInt( 0 );
+			int task_id = ((JSONArray) runJson.get(0)).getInt(0);
 			task = apiconnector.taskGet(task_id);
 			Data_set source_data = TaskInformation.getSourceData(task);
 			Estimation_procedure estimationprocedure = TaskInformation.getEstimationProcedure( task );
@@ -117,6 +127,10 @@ public class EvaluateRun {
 				RunEvaluate re = apiconnector.runEvaluate( evaluationFile );
 				Conversion.log( "Error", "Process Run", "Run processed, but with error: " + re.getRun_id() );
 				return;
+			}
+			
+			if (file_ids.get("trace") != null) {
+				trace = traceToXML(file_ids.get("trace"), task_id, run_id);
 			}
 			
 			String description = OpenmlConnector.getStringFromUrl( apiconnector.getOpenmlFileUrl( file_ids.get( "description" ), "Run_" + run_id + "_description.xml").toString() );
@@ -198,13 +212,69 @@ public class EvaluateRun {
 		Conversion.log( "OK", "Process Run", "Start uploading results ... " );
 		try {
 			String runEvaluation = xstream.toXML( runevaluation );
-			// System.out.println(runEvaluation);
+			//System.out.println(runEvaluation);
 			File evaluationFile = Conversion.stringToTempFile( runEvaluation, "run_" + run_id + "evaluations", "xml" );
-			
 			RunEvaluate re = apiconnector.runEvaluate( evaluationFile );
+			
+			if (trace != null) {
+				String runTrace = xstream.toXML( trace );
+				//System.out.println(runTrace);
+				File traceFile = Conversion.stringToTempFile( runTrace, "run_" + run_id + "trace", "xml" );
+				
+				apiconnector.runTrace(traceFile);
+			}
+			
 			Conversion.log( "OK", "Process Run", "Run processed: " + re.getRun_id() );
 		} catch( Exception  e ) {
 			Conversion.log( "ERROR", "Process Run", "An error occured during API call: " + e.getMessage() );
 		}
 	}
+	
+	private Trace traceToXML(int file_id, int task_id, int run_id) throws Exception {
+		Trace trace = new Trace(run_id);
+		URL traceURL = apiconnector.getOpenmlFileUrl(file_id, "Task_" + task_id + "_trace.arff");
+		Instances traceDataset = new Instances(new BufferedReader(Input.getURL(traceURL)));
+		List<Integer> parameterIndexes = new ArrayList<Integer>();
+		
+		if (traceDataset.attribute("repeat") == null || 
+			traceDataset.attribute("fold") == null || 
+			traceDataset.attribute("iteration") == null || 
+			traceDataset.attribute("evaluation") == null ||
+			traceDataset.attribute("selected") == null) {
+			throw new Exception("trace file missing mandatory attributes. ");
+		}
+		
+		for (int i = 0; i < traceDataset.numAttributes(); ++i) {
+			if (traceDataset.attribute(i).name().startsWith("parameter_")) {
+				parameterIndexes.add(i);
+			}
+		}
+		if (parameterIndexes.size() == 0) {
+			throw new Exception("trace file contains no fields with prefix 'parameter_' (i.e., parameters are not registered). ");
+		}
+		if (traceDataset.numAttributes() > 6 + parameterIndexes.size()) {
+			throw new Exception("trace file contains illegal attributes (only allow for repeat, fold, iteration, evaluation, selected, setup_string and parameter_*). ");
+		}
+		
+		for (int i = 0; i < traceDataset.numInstances(); ++i) {
+			Instance current = traceDataset.get(i);
+			Integer repeat = (int) current.value(traceDataset.attribute("repeat").index());
+			Integer fold = (int) current.value(traceDataset.attribute("fold").index());
+			Integer iteration = (int) current.value(traceDataset.attribute("iteration").index());
+			Double evaluation = current.value(traceDataset.attribute("evaluation").index());
+			Boolean selected = current.stringValue(traceDataset.attribute("selected").index()).equals("true");
+			
+			Map<String,String> parameters = new HashMap<String, String>();
+			for (int j = 0; j < parameterIndexes.size(); ++j) {
+				int attIdx = parameterIndexes.get(j);
+				parameters.put(traceDataset.attribute(attIdx).name(),current.stringValue(attIdx));
+			}
+			String setup_string = new JSONObject(parameters).toString();
+			
+			trace.addIteration(new Trace.Trace_iteration(repeat,fold,iteration,setup_string,evaluation,selected));
+		}
+		
+		return trace;
+	}
+	
 }
