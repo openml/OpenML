@@ -12,6 +12,7 @@ public class Tag {
 	private final static String TAG = "study_16";
 	private final static TagEntities type = TagEntities.run;
 	private final static String sql = tagRunFromTaskSetup();
+	private final static boolean untag = false;
 	private static Integer[] ids = null; //{3542,3551,3593,3567,3550,3608};
 	
 	private static OpenmlConnector openmlConnector;
@@ -29,19 +30,39 @@ public class Tag {
 			try {
 				switch(type) {
 					case data:
-						openmlConnector.dataTag(id, TAG );
+						if (untag) {
+							openmlConnector.dataUntag(id, TAG );
+						} else {
+							openmlConnector.dataTag(id, TAG );
+						}
 						break;
 					case task:
-						openmlConnector.taskTag(id, TAG );
+						if (untag) {
+							openmlConnector.taskUntag(id, TAG );
+						} else {
+							openmlConnector.taskTag(id, TAG );
+						}
 						break;
 					case flow:
-						openmlConnector.flowTag(id, TAG );
+						if (untag) {
+							openmlConnector.flowUntag(id, TAG );
+						} else {
+							openmlConnector.flowTag(id, TAG );
+						}
 						break;
 					case setup:
-						openmlConnector.setupTag(id, TAG );
+						if (untag) {
+							openmlConnector.setupUntag(id, TAG );
+						} else {
+							openmlConnector.setupTag(id, TAG );
+						}
 						break;
 					case run:
-						openmlConnector.runTag(id, TAG );
+						if (untag) {
+							openmlConnector.runUntag(id, TAG );
+						} else {
+							openmlConnector.runTag(id, TAG );
+						}
 						break;
 					default:
 						throw new Exception("Programming error. ");
