@@ -39,6 +39,7 @@ public class ReplaceMissingNumericValuesAndIndicate extends SimpleBatchFilter im
 		Attribute indicator = instances.attribute(ATTNAME_INDICATOR);
 		
 		double[] medians = new double[instances.numAttributes()];
+		int[] imputations = new int[instances.numAttributes()];
 		
 		// look for median
 		for (int j = 0; j < instances.numAttributes(); ++j) {
@@ -49,7 +50,6 @@ public class ReplaceMissingNumericValuesAndIndicate extends SimpleBatchFilter im
 				}
 				Median median = new Median();
 				medians[j] = median.evaluate(values);
-				Conversion.log("OK", "Impute Numeric Value", "Attribute " + instances.attribute(j) + " (median): " + medians[j]);
 			}
 		}
 		
@@ -61,6 +61,12 @@ public class ReplaceMissingNumericValuesAndIndicate extends SimpleBatchFilter im
 				if (Utils.isMissingValue(current.value(j))) {
 					current.setValue(j, medians[j]);
 					current.setValue(indicator, 1.0);
+					imputations[j] += 1;
+				}
+			}
+			for (int j = 0; j < instances.numAttributes(); ++j) {
+				if (imputations[j] > 0) {
+					Conversion.log("OK", "Impute Numeric Value", "Attribute " + instances.attribute(j) + " (median): " + medians[j]);
 				}
 			}
 		}
