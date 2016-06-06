@@ -16,7 +16,7 @@ public class OptimizationTrace {
 	private static final String SETUP_STRING_ATT = "setup_string";
 	private static final String PARAMETER_PREFIX = "parameter_";
 	
-	private static Instances getHeader(int taskId,List<Entry<String,String>> parameters) {
+	private static Instances getHeader(int taskId,List<Entry<String,Object>> parameters) {
 		ArrayList<Attribute> attInfo = new ArrayList<Attribute>();
 		List<String> stringValues = null;
 		List<String> trueFalse = new ArrayList<String>();
@@ -29,7 +29,7 @@ public class OptimizationTrace {
 		attInfo.add(new Attribute(SETUP_STRING_ATT,stringValues));
 		attInfo.add(new Attribute("evaluation"));
 		attInfo.add(new Attribute("selected",trueFalse));
-		for (Entry<String,String> parameter : parameters) {
+		for (Entry<String,Object> parameter : parameters) {
 			attInfo.add(new Attribute(PARAMETER_PREFIX + parameter.getKey(),stringValues));
 		}
 		
@@ -37,7 +37,7 @@ public class OptimizationTrace {
 		return dataset;
 	}
 	
-	public static Instances addTraceToDataset(Instances dataset, List<Quadlet<String,Double,List<Entry<String,String>>,Boolean>> trace, int taskId, int repeat, int fold) {
+	public static Instances addTraceToDataset(Instances dataset, List<Quadlet<String,Double,List<Entry<String,Object>>,Boolean>> trace, int taskId, int repeat, int fold) {
 		if (dataset == null) {
 			dataset = getHeader(taskId, trace.get(0).getParameters());
 		}
@@ -49,12 +49,13 @@ public class OptimizationTrace {
 			values[2] = i;
 			values[4] = trace.get(i).getEvaluation();
 			values[5] = trace.get(i).isSelected() ? 1.0 : 0.0;
-			
 			DenseInstance instance = new DenseInstance(1.0, values);
 			instance.setDataset(dataset);
 			instance.setValue(3, trace.get(i).getClassifier());
-			for (Entry<String,String> parameter : trace.get(i).getParameters()) {
-				instance.setValue(dataset.attribute(PARAMETER_PREFIX + parameter.getKey()), parameter.getValue());
+			for (Entry<String,Object> parameter : trace.get(i).getParameters()) {
+				// TODO: think about casting
+				String value = parameter.getValue().toString(); 
+				instance.setValue(dataset.attribute(PARAMETER_PREFIX + parameter.getKey()), value);
 			}
 			dataset.add(instance);
 		}
@@ -62,20 +63,21 @@ public class OptimizationTrace {
 		return dataset;
 	}
 	
-	public static List<Quadlet<String,Double,List<Entry<String,String>>,Boolean>> extractTrace(Classifier classifier) throws Exception {
+	public static List<Quadlet<String,Double,List<Entry<String,Object>>,Boolean>> extractTrace(Classifier classifier) throws Exception {
 		try {
 			if (!(classifier instanceof MultiSearch)) {
 				throw new Exception("Classifier not instance of 'weka.classifiers.meta.MultiSearch'");
 			}
 			MultiSearch multiSearch = (MultiSearch) classifier;
-			List<Quadlet<String,Double,List<Entry<String,String>>,Boolean>> result = new ArrayList<OptimizationTrace.Quadlet<String,Double,List<Entry<String,String>>,Boolean>>();
+			List<Quadlet<String,Double,List<Entry<String,Object>>,Boolean>> result = new ArrayList<OptimizationTrace.Quadlet<String,Double,List<Entry<String,Object>>,Boolean>>();
 			
 			String selectedSetupString = Utils.toCommandLine(multiSearch.getBestClassifier());
 			for (int i = 0; i < multiSearch.getTraceSize(); ++i) {
 				String classifName = multiSearch.getTraceClassifierAsCli(i);
+				System.out.println( multiSearch.getTraceValue(i));
 				double classifEval = multiSearch.getTraceValue(i);
-				List<Entry<String,String>> parameterSettings = multiSearch.getTraceParamaterSettings(i);
-				result.add(new Quadlet<String, Double,List<Entry<String,String>>, Boolean>(classifName, classifEval, parameterSettings, classifName.equals(selectedSetupString)));
+				List<Entry<String,Object>> parameterSettings = multiSearch.getTraceParamaterSettings(i);
+				result.add(new Quadlet<String, Double,List<Entry<String,Object>>, Boolean>(classifName, classifEval, parameterSettings, classifName.equals(selectedSetupString)));
 			}
 			
 			return result;

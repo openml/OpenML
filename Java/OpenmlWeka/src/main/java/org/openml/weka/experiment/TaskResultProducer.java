@@ -299,7 +299,7 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 					System.arraycopy(seResults, 0, results, 1, seResults.length);
 					
 					Map<String, Object> splitEvaluatorResults = WekaAlgorithm.splitEvaluatorToMap(m_SplitEvaluator, seResults);
-					List<Quadlet<String,Double,List<Entry<String,String>>,Boolean>> trace = null;
+					List<Quadlet<String,Double,List<Entry<String,Object>>,Boolean>> trace = null;
 					try {
 						trace = OptimizationTrace.extractTrace(((ClassifierSplitEvaluator)m_SplitEvaluator).getClassifier());
 					} catch(Exception e) {

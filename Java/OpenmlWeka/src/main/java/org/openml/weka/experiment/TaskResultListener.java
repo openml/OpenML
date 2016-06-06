@@ -72,7 +72,7 @@ public class TaskResultListener extends InstancesResultListener {
 
 	public void acceptResultsForSending(Task t, Instances sourceData, Integer repeat, Integer fold, Integer sample,
 			Classifier classifier, String options,
-			Integer[] rowids, ArrayList<Prediction> predictions, Map<Metric, MetricScore> userMeasures, List<Quadlet<String,Double,List<Entry<String,String>>,Boolean>> optimizationTrace) throws Exception {
+			Integer[] rowids, ArrayList<Prediction> predictions, Map<Metric, MetricScore> userMeasures, List<Quadlet<String,Double,List<Entry<String,Object>>,Boolean>> optimizationTrace) throws Exception {
 		// TODO: do something better than undefined
 		String revision = (classifier instanceof RevisionHandler) ? ((RevisionHandler)classifier).getRevision() : "undefined"; 
 		String implementationId = classifier.getClass().getName() + "(" + revision + ")";
@@ -243,7 +243,7 @@ public class TaskResultListener extends InstancesResultListener {
 			run = new Run(t.getTask_id(), error_message, implementation.getId(), setup_string, list.toArray(new Parameter_setting[list.size()]), tags);
 		}
 		
-		public void addBatchOfPredictions(Integer fold, Integer repeat, Integer sample, Integer[] rowids, ArrayList<Prediction> batchPredictions, List<Quadlet<String,Double,List<Entry<String,String>>,Boolean>> optimizationTraceFold) {
+		public void addBatchOfPredictions(Integer fold, Integer repeat, Integer sample, Integer[] rowids, ArrayList<Prediction> batchPredictions, List<Quadlet<String,Double,List<Entry<String,Object>>,Boolean>> optimizationTraceFold) {
 			nrOfResultBatches += 1;
 			for (int i = 0; i < rowids.length; ++i) {
 				Prediction current = batchPredictions.get(i);
