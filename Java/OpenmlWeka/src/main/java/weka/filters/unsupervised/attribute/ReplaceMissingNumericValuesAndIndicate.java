@@ -1,6 +1,7 @@
 package weka.filters.unsupervised.attribute;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.math3.stat.descriptive.rank.Median;
@@ -19,6 +20,10 @@ public class ReplaceMissingNumericValuesAndIndicate extends SimpleBatchFilter im
 	
 	private static final String ATTNAME_INDICATOR = "replacedMissingNumericValues";
 	
+	private double[] medians;
+	private int[] imputations;
+	
+	
 	@Override
 	public String globalInfo() {
 		return "Replaces missing values and adds an indicator column to" + 
@@ -31,27 +36,39 @@ public class ReplaceMissingNumericValuesAndIndicate extends SimpleBatchFilter im
 		inputFormat.insertAttributeAt(getIndicatorAttribute(), inputFormat.numAttributes() - 1);
 		return inputFormat;
 	}
-
-	@Override
-	protected Instances process(Instances instances) throws Exception {
-		instances.insertAttributeAt(getIndicatorAttribute(), instances.numAttributes() - 1);
+	
+	protected void searchMedian(Instances instances) {
+		medians = new double[instances.numAttributes()];
+		imputations = new int[instances.numAttributes()];
 		
-		Attribute indicator = instances.attribute(ATTNAME_INDICATOR);
-		
-		double[] medians = new double[instances.numAttributes()];
-		int[] imputations = new int[instances.numAttributes()];
-		
-		// look for median
 		for (int j = 0; j < instances.numAttributes(); ++j) {
+			int numPresentValues = 0;
 			if (instances.attribute(j).isNumeric()) {
 				double[] values = new double[instances.numInstances()];
 				for (int i = 0; i < instances.numInstances(); ++i) {
-					values[i] = instances.get(i).value(j);
+					Instance current = instances.get(i);
+					if (Utils.isMissingValue(current.value(j)) == false) {
+						values[numPresentValues] = current.value(j);
+						numPresentValues += 1;
+					}
 				}
-				Median median = new Median();
-				medians[j] = median.evaluate(values);
+				if (numPresentValues > 0) {
+					double[] goodValues = Arrays.copyOf(values, numPresentValues);
+					Median median = new Median();
+					medians[j] = median.evaluate(goodValues);
+				}
 			}
 		}
+		
+		for (int j = 0; j < instances.numAttributes(); ++j) {
+			if (instances.attribute(j).isNumeric()) {
+				Conversion.log("OK", "Impute Numeric", "Attribute " + instances.attribute(j) + " - Median: " + medians[j]);
+			}
+		}
+	}
+	
+	protected void imputeMedian(Instances instances) {
+		Attribute indicator = instances.attribute(ATTNAME_INDICATOR);
 		
 		for (int i = 0; i < instances.numInstances(); ++i) {
 			Instance current = instances.get(i);
@@ -64,12 +81,18 @@ public class ReplaceMissingNumericValuesAndIndicate extends SimpleBatchFilter im
 					imputations[j] += 1;
 				}
 			}
-			for (int j = 0; j < instances.numAttributes(); ++j) {
-				if (imputations[j] > 0) {
-					Conversion.log("OK", "Impute Numeric Value", "Attribute " + instances.attribute(j) + " (median): " + medians[j]);
-				}
-			}
 		}
+	}
+
+	@Override
+	protected Instances process(Instances instances) throws Exception {
+		instances.insertAttributeAt(getIndicatorAttribute(), instances.numAttributes() - 1);
+		
+		if (m_FirstBatchDone == false) {
+			searchMedian(instances);
+		}
+		imputeMedian(instances);
+		
 		return instances;
 	}
 	
