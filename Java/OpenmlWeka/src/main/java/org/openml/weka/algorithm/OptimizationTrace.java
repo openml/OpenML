@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import weka.classifiers.Classifier;
+import weka.classifiers.meta.FilteredClassifier;
 import weka.classifiers.meta.MultiSearch;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
@@ -65,18 +66,23 @@ public class OptimizationTrace {
 	
 	public static List<Quadlet<String,Double,List<Entry<String,Object>>,Boolean>> extractTrace(Classifier classifier) throws Exception {
 		try {
-			if (!(classifier instanceof MultiSearch)) {
+			Classifier classifierReference = classifier;
+			// important to support also filtered classifier instances (with multisearch as classifier)
+			if (classifierReference instanceof FilteredClassifier) {
+				classifierReference = ((FilteredClassifier) classifier).getClassifier();
+			}
+			if (!(classifierReference instanceof MultiSearch)) {
 				throw new Exception("Classifier not instance of 'weka.classifiers.meta.MultiSearch'");
 			}
-			MultiSearch multiSearch = (MultiSearch) classifier;
+			
+			MultiSearch multiSearch = (MultiSearch) classifierReference;
 			List<Quadlet<String,Double,List<Entry<String,Object>>,Boolean>> result = new ArrayList<OptimizationTrace.Quadlet<String,Double,List<Entry<String,Object>>,Boolean>>();
 			
 			String selectedSetupString = Utils.toCommandLine(multiSearch.getBestClassifier());
 			for (int i = 0; i < multiSearch.getTraceSize(); ++i) {
 				String classifName = multiSearch.getTraceClassifierAsCli(i);
-				System.out.println( multiSearch.getTraceValue(i));
 				double classifEval = multiSearch.getTraceValue(i);
-				List<Entry<String,Object>> parameterSettings = multiSearch.getTraceParamaterSettings(i);
+				List<Entry<String,Object>> parameterSettings = multiSearch.getTraceParameterSettings(i);
 				result.add(new Quadlet<String, Double,List<Entry<String,Object>>, Boolean>(classifName, classifEval, parameterSettings, classifName.equals(selectedSetupString)));
 			}
 			
@@ -86,8 +92,7 @@ public class OptimizationTrace {
 		}
 	}
 	
-	public static class Quadlet<T, U, V, W>
-	{
+	public static class Quadlet<T, U, V, W> {
 	   private T a;
 	   private U b;
 	   private V c;
