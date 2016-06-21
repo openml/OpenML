@@ -1,9 +1,11 @@
 package org.openml.cortana;
 
 import java.io.*;
+import java.nio.file.Files;
 
 import nl.liacs.subdisc.gui.*;
 
+import org.apache.commons.io.IOUtils;
 import org.openml.apiconnector.algorithms.*;
 import org.openml.apiconnector.io.*;
 import org.openml.apiconnector.settings.*;
@@ -11,7 +13,8 @@ import org.openml.apiconnector.xml.*;
 import org.openml.apiconnector.xml.DataFeature.Feature;
 import org.openml.apiconnector.xml.Task.Input;
 import org.openml.apiconnector.xml.Task.Input.Data_set;
-import org.openml.cortana.AutoRun.Experiment.Table.*;
+import org.openml.cortana.xml.AutoRun;
+import org.openml.cortana.xml.AutoRun.Experiment.Table.*;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.*;
@@ -23,8 +26,13 @@ public class CLI {
 		OpenmlConnector openml = new OpenmlConnector( c.getApiKey());
 		XStream xstream = new XStream(new DomDriver("UTF-8", new XmlFriendlyNameCoder("_-", "_")));
 		xstream.processAnnotations(AutoRun.class);
+		String current_run_name = "jantest";
 		
 		Task task = openml.taskGet(52949);
+		
+		if (task.getTask_type().equals("Subgroup Discovery") == false) {
+			throw new Exception("Wrong task type. ");
+		}
 		
 		Integer dataset_id = null;
 		String target_feature = null;
@@ -53,6 +61,8 @@ public class CLI {
 		
 		DataSetDescription dsd = openml.dataGet(dataset_id);
 		File dataset = dsd.getDataset(c.getApiKey());
+		File datasetTmp = Conversion.stringToTempFile("", dsd.getName(), dsd.getFormat());
+		IOUtils.copy(new FileInputStream(dataset), new FileOutputStream(datasetTmp));
 		
 		Feature[] features = openml.dataFeatures(dataset_id).getFeatures();
 		Column[] column = new Column[features.length];
@@ -60,18 +70,29 @@ public class CLI {
 			column[i] = new Column(features[i].getDataType(), features[i].getName(), i, "0.0", true);
 		}
 		
-		AutoRun ar = new AutoRun(target_feature, target_value, quality_measure, 1, 2, time_limit, "beam", false, 100, "<html>&#8804;, &#8805;</html>", "best-bins", 8, 8, dsd.getName(), dataset.getName(), column);
+		AutoRun ar = new AutoRun(target_feature, target_value, quality_measure, 1, 2, time_limit, "beam", false, 100, "<html>&#8804;, &#8805;</html>", "best-bins", 8, 8, dsd.getName(), datasetTmp.getName(), column);
 		
 		File runXMLtmp = Conversion.stringToTempFile("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<!DOCTYPE autorun SYSTEM \"autorun.dtd\">\n" + xstream.toXML(ar), "jantest", "xml");
-		File runXML = new File(dataset.getParentFile() + "/" + "jantest.xml");
-		runXMLtmp.renameTo(runXML);
 		
-		System.out.println(xstream.toXML(ar));
-		
-		String[] arguments = {runXML.getAbsolutePath(), "1"};
+		String[] arguments = {runXMLtmp.getAbsolutePath(), "1"};
 		
 		SubDisc.main(arguments);
+			
+			
+		File dir = runXMLtmp.getParentFile();
+		File resultTxt = null;
+		for (File f : dir.listFiles()) {
+			if (f.getName().startsWith(current_run_name) && f.getName().endsWith(".txt")) {
+				System.out.println("candidate" + f.getAbsolutePath());
+				
+				if (resultTxt == null) {
+					resultTxt = f;
+				} else {
+					throw new Exception("Multiple candidates for outputfile. ");
+				}
+			}
+		}
 		
-		
+		System.out.println("Done");
 	}
 }
