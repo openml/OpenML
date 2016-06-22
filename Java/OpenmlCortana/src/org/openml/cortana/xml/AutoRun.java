@@ -12,8 +12,8 @@ public class AutoRun {
 	
 	private Experiment experiment;
 	
-	public AutoRun(String targetName, String targetValue, String quality_measure, Integer search_depth, Integer minimum_coverage, Double maximum_time, String search_strategy, Boolean use_nominal_sets, Integer search_strategy_width, String numeric_operators, String numeric_strategy, int nr_bins, int nr_threads, String table_name, String source, Column[] column) {
-		experiment = new Experiment(targetName, targetValue, quality_measure, search_depth, minimum_coverage, maximum_time, search_strategy, use_nominal_sets, search_strategy_width, numeric_operators, numeric_strategy, nr_bins, nr_threads, table_name, source, column);
+	public AutoRun(String targetName, String targetValue, String quality_measure, Integer search_depth, Integer minimum_coverage, Double maximum_coverage_fraction, Integer maximum_subgroups, Double maximum_time, String search_strategy, Boolean use_nominal_sets, Integer search_strategy_width, String numeric_operators, String numeric_strategy, int nr_bins, int nr_threads, String table_name, String source, Column[] column) {
+		experiment = new Experiment(targetName, targetValue, quality_measure, search_depth, minimum_coverage, maximum_coverage_fraction, maximum_subgroups, maximum_time, search_strategy, use_nominal_sets, search_strategy_width, numeric_operators, numeric_strategy, nr_bins, nr_threads, table_name, source, column);
 	}
 	
 	public Experiment getExperiment() {
@@ -28,9 +28,9 @@ public class AutoRun {
 		private SearchParameters search_parameters;
 		private Table table;
 		
-		public Experiment(String target_name, String target_value, String quality_measure, Integer search_depth, Integer minimum_coverage, Double maximum_time, String search_strategy, Boolean use_nominal_sets, Integer search_strategy_width, String numeric_operators, String numeric_strategy, int nr_bins, int nr_threads, String table_name, String source, Column[] column) {
+		public Experiment(String target_name, String target_value, String quality_measure, Integer search_depth, Integer minimum_coverage, Double maximum_coverage_fraction, Integer maximum_subgroups, Double maximum_time, String search_strategy, Boolean use_nominal_sets, Integer search_strategy_width, String numeric_operators, String numeric_strategy, int nr_bins, int nr_threads, String table_name, String source, Column[] column) {
 			target_concept = new TargetConcept(1, "single nominal", target_name, target_value, "", "");
-			search_parameters = new SearchParameters(quality_measure, 0.0, search_depth, minimum_coverage, 1.0, 0, maximum_time, search_strategy, use_nominal_sets, search_strategy_width, numeric_operators, numeric_strategy, nr_bins, nr_threads);
+			search_parameters = new SearchParameters(quality_measure, -1.0, search_depth, minimum_coverage, maximum_coverage_fraction, maximum_subgroups, maximum_time, search_strategy, use_nominal_sets, search_strategy_width, numeric_operators, numeric_strategy, nr_bins, nr_threads);
 			table = new Table(table_name, source, column);
 		}
 		
