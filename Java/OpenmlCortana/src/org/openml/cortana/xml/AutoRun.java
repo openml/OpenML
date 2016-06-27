@@ -199,7 +199,9 @@ public class AutoRun {
 				Map<String,String> parameters = new HashMap<String, String>();
 				Field[] allFields = this.getClass().getDeclaredFields();
 			    for (Field field : allFields) {
-			    	parameters.put(field.getName(), "" + field.get(this));
+			    	if (field.getName().equals("quality_measure") == false && field.getName().equals("quality_measure_minimum") == false) {
+				    	parameters.put(field.getName(), "" + field.get(this));
+			    	}
 			    }
 				return parameters;
 			}

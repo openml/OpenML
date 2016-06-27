@@ -3,6 +3,7 @@ package org.openml.cortana;
 import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.commons.cli.CommandLine;
@@ -10,6 +11,7 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.io.IOUtils;
+import org.json.JSONObject;
 import org.openml.apiconnector.algorithms.*;
 import org.openml.apiconnector.io.*;
 import org.openml.apiconnector.settings.*;
@@ -42,7 +44,8 @@ public class CLI {
 		options.addOption("c", true, "The cortana jar location");
 		options.addOption("t", true, "The task id");
 		options.addOption("s", true, "The setup id (for setting search parameters)");
-		options.addOption("xml", true, "The run xml (for setting search parameters)");
+	//	options.addOption("xml", true, "The auto run xml (for setting search parameters)");
+		options.addOption("json", true, "The auto run json (for setting search parameters)");
 		
 		CommandLine cli  = parser.parse(options, args);
 		Config config;
@@ -73,7 +76,7 @@ public class CLI {
 			for (Parameter p : sp.getParameters()) {
 				searchParams.put(p.getParameter_name(), p.getValue());
 			}
-		} else if (cli.hasOption("-xml")) {
+		/*} else if (cli.hasOption("-xml")) {
 			File file = new File(cli.getOptionValue("xml"));
 			if (file.exists() == false) {
 				throw new Exception("Could not find search parameters file (specified by -xml)");
@@ -82,9 +85,18 @@ public class CLI {
 			
 			AutoRun ar = (AutoRun) xstream.fromXML(file);
 			searchParams = ar.getExperiment().getSearchParameters().getParameters();
-			
+			*/
+		} else if (cli.hasOption("-json")) {
+			JSONObject jObject = new JSONObject(cli.getOptionValue("json"));
+	        Iterator<?> keys = jObject.keys();
+
+	        while( keys.hasNext() ){
+	            String key = (String)keys.next();
+	            String value = jObject.getString(key); 
+	            searchParams.put(key, value);
+	        }
 		} else {
-			throw new Exception("Search parameters not specified (-s or -xml)");
+			throw new Exception("Search parameters not specified (-s or -json)");
 		}
 		
 		process(openml, task_id, cortanaJar, searchParams);
@@ -176,10 +188,13 @@ public class CLI {
 		if (resultTxt == null) { throw new Exception("Result txt file not found. "); }
 		File subgroups = File.createTempFile("subgroups", ".csv");
 		resultTxt.renameTo(subgroups);
-		
+
+		// update search params with only relevant parameters
+		searchParams = ar.getExperiment().getSearchParameters().getParameters();
 
 		int flow_id = SdFlow.getFlowId(openml);
 		Parameter_setting[] params = new Parameter_setting[searchParams.size()];
+		
 		int i = 0;
 		for (String key : searchParams.keySet()) {
 			params[i++] = new Parameter_setting(flow_id, key, searchParams.get(key));
