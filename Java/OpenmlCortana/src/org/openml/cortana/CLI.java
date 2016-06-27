@@ -5,6 +5,10 @@ import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.Options;
 import org.apache.commons.io.IOUtils;
 import org.openml.apiconnector.algorithms.*;
 import org.openml.apiconnector.io.*;
@@ -12,6 +16,7 @@ import org.openml.apiconnector.settings.*;
 import org.openml.apiconnector.xml.*;
 import org.openml.apiconnector.xml.DataFeature.Feature;
 import org.openml.apiconnector.xml.Run.Parameter_setting;
+import org.openml.apiconnector.xml.SetupParameters.Parameter;
 import org.openml.apiconnector.xml.Task.Input;
 import org.openml.apiconnector.xml.Task.Input.Data_set;
 import org.openml.apiconnector.xstream.XstreamXmlMapping;
@@ -24,18 +29,73 @@ import com.thoughtworks.xstream.io.xml.*;
 
 public class CLI {
 
-	public static final int TASK_ID = 13907;
 	public static final String[] TAGS = {"Cortana"};
-	private static String jarlocation = "lib/cortana.3073.jar";
+	
+	private static final XStream xstream = new XStream(new DomDriver("UTF-8", new XmlFriendlyNameCoder("_-", "_")));
 	
 	public static void main(String[] args) throws Exception {
-		Config c = new Config();
-		OpenmlConnector openml = new OpenmlConnector(c.getServer(),c.getApiKey());
-		XStream xstream = new XStream(new DomDriver("UTF-8", new XmlFriendlyNameCoder("_-", "_")));
 		xstream.processAnnotations(AutoRun.class);
+		
+		CommandLineParser parser = new GnuParser();
+		Options options = new Options();
+		options.addOption("config", true, "The config string describing the settings for API interaction");
+		options.addOption("c", true, "The cortana jar location");
+		options.addOption("t", true, "The task id");
+		options.addOption("s", true, "The setup id (for setting search parameters)");
+		options.addOption("xml", true, "The run xml (for setting search parameters)");
+		
+		CommandLine cli  = parser.parse(options, args);
+		Config config;
+		if(cli.hasOption("-config") == false) {
+			config = new Config();
+		} else {
+			config = new Config(cli.getOptionValue("config"));
+		}
+		OpenmlConnector openml = new OpenmlConnector(config.getServer(),config.getApiKey());
+		
+		Integer task_id;
+		String cortanaJar;
+		if (cli.hasOption("-t") == false) {
+			throw new Exception("Task parameter (-t) not set");
+		} else {
+			task_id = Integer.parseInt(cli.getOptionValue("t"));
+		}
+		if (cli.hasOption("-c") == false) {
+			throw new Exception("Cortana jar location parameter (-c) not set");
+		} else {
+			cortanaJar = cli.getOptionValue("c");
+		}
+		
+		Map<String, String> searchParams = new HashMap<String, String>();
+		if (cli.hasOption("-s")) {
+			SetupParameters sp = openml.setupParameters(Integer.parseInt(cli.getOptionValue("s")));
+			
+			for (Parameter p : sp.getParameters()) {
+				searchParams.put(p.getParameter_name(), p.getValue());
+			}
+		} else if (cli.hasOption("-xml")) {
+			File file = new File(cli.getOptionValue("xml"));
+			if (file.exists() == false) {
+				throw new Exception("Could not find search parameters file (specified by -xml)");
+			}
+			
+			
+			AutoRun ar = (AutoRun) xstream.fromXML(file);
+			searchParams = ar.getExperiment().getSearchParameters().getParameters();
+			
+		} else {
+			throw new Exception("Search parameters not specified (-s or -xml)");
+		}
+		
+		process(openml, task_id, cortanaJar, searchParams);
+		
+	}
+	
+	private static void process(OpenmlConnector openml, Integer task_id, String cortanaJar, Map<String,String> searchParams) throws Exception {
+		
 		String current_run_name = "Cortana-Run-" + ManagementFactory.getRuntimeMXBean().getName();
 		
-		Task task = openml.taskGet(TASK_ID);
+		Task task = openml.taskGet(task_id);
 		
 		if (task.getTask_type().equals("Subgroup Discovery") == false) {
 			throw new Exception("Wrong task type. ");
@@ -65,9 +125,10 @@ public class CLI {
 				quality_measure = i.getQuality_measure();
 			}
 		}
+		searchParams.put("time_limit", "" + time_limit);
 		
 		DataSetDescription dsd = openml.dataGet(dataset_id);
-		File dataset = dsd.getDataset(c.getApiKey());
+		File dataset = dsd.getDataset(openml.getApiKey());
 		File datasetTmp = Conversion.stringToTempFile("", dsd.getName(), dsd.getFormat());
 		IOUtils.copy(new FileInputStream(dataset), new FileOutputStream(datasetTmp));
 		
@@ -76,21 +137,6 @@ public class CLI {
 		for (int i = 0; i < features.length; ++i) {
 			column[i] = new Column(features[i].getDataType(), features[i].getName(), i, "0.0", true);
 		}
-		
-		
-		Map<String,String> searchParams = new HashMap<String, String>();
-		searchParams.put("search_depth", "1");
-		searchParams.put("minimum_coverage", "2");
-		searchParams.put("maximum_coverage_fraction", "2");
-		searchParams.put("maximum_subgroups", "2");
-		searchParams.put("time_limit", "" + time_limit);
-		searchParams.put("search_strategy", "beam");
-		searchParams.put("use_nominal_sets", "false");
-		searchParams.put("search_strategy_width", "100");
-		searchParams.put("numeric_operators", "<html>&#8804;, &#8805;</html>");
-		searchParams.put("numeric_strategy", "best-bins");
-		searchParams.put("nr_bins", "8");
-		searchParams.put("nr_threads", "8");
 		
 		AutoRun ar = new AutoRun(
 			target_feature, target_value, quality_measure, 
@@ -109,7 +155,7 @@ public class CLI {
 			dsd.getName(), datasetTmp.getName(), column);
 		
 		File runXMLtmp = Conversion.stringToTempFile("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<!DOCTYPE autorun SYSTEM \"autorun.dtd\">\n" + xstream.toXML(ar), current_run_name, "xml");
-		String cmd = "java -jar " + jarlocation + " " + runXMLtmp.getAbsolutePath() + " 0 1";
+		String cmd = "java -jar " + cortanaJar + " " + runXMLtmp.getAbsolutePath() + " 0 1";
 	//	String[] cliArguments = {runXMLtmp.getAbsolutePath(), "0", "1"};
 		
 		executeCommand(cmd);
@@ -139,7 +185,7 @@ public class CLI {
 			params[i++] = new Parameter_setting(flow_id, key, searchParams.get(key));
 		}
 		
-		Run r = new Run(TASK_ID, null, flow_id, null, params, TAGS);
+		Run r = new Run(task_id, null, flow_id, null, params, TAGS);
 		File runfile = Conversion.stringToTempFile(XstreamXmlMapping.getInstance().toXML(r), "run", "xml");
 		
 		System.out.println(XstreamXmlMapping.getInstance().toXML(r));

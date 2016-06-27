@@ -1,5 +1,9 @@
 package org.openml.cortana.xml;
 
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.openml.cortana.xml.AutoRun.Experiment.Table.*;
 
 import com.thoughtworks.xstream.annotations.*;
@@ -190,6 +194,14 @@ public class AutoRun {
 			}
 			public Double getOverall_ranking_loss() {
 				return overall_ranking_loss;
+			}
+			public Map<String,String> getParameters() throws IllegalArgumentException, IllegalAccessException {
+				Map<String,String> parameters = new HashMap<String, String>();
+				Field[] allFields = this.getClass().getDeclaredFields();
+			    for (Field field : allFields) {
+			    	parameters.put(field.getName(), "" + field.get(this));
+			    }
+				return parameters;
 			}
 		}
 		
