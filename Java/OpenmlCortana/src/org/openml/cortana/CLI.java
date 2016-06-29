@@ -32,10 +32,17 @@ import com.thoughtworks.xstream.io.xml.*;
 public class CLI {
 
 	public static final String[] TAGS = {"Cortana"};
+	public static final Integer SD_TTID = 8;
+	public static final String CORTANA_DEPENDENCY = "cortana.3073";
 	
 	private static final XStream xstream = new XStream(new DomDriver("UTF-8", new XmlFriendlyNameCoder("_-", "_")));
 	
 	public static void main(String[] args) throws Exception {
+		OpenmlConnector openml = null;
+		Integer task_id = null;
+		String cortanaJar = null;
+		Map<String, String> searchParams = null;
+
 		xstream.processAnnotations(AutoRun.class);
 		
 		CommandLineParser parser = new GnuParser();
@@ -44,6 +51,7 @@ public class CLI {
 		options.addOption("c", true, "The cortana jar location");
 		options.addOption("t", true, "The task id");
 		options.addOption("s", true, "The setup id (for setting search parameters)");
+		options.addOption("x", false, "Obtains a job from Openml servers");
 	//	options.addOption("xml", true, "The auto run xml (for setting search parameters)");
 		options.addOption("json", true, "The auto run json (for setting search parameters)");
 		
@@ -54,53 +62,53 @@ public class CLI {
 		} else {
 			config = new Config(cli.getOptionValue("config"));
 		}
-		OpenmlConnector openml = new OpenmlConnector(config.getServer(),config.getApiKey());
 		
-		Integer task_id;
-		String cortanaJar;
-		if (cli.hasOption("-t") == false) {
-			throw new Exception("Task parameter (-t) not set");
+		if (config.getServer() != null) {
+			openml = new OpenmlConnector(config.getServer(),config.getApiKey());
 		} else {
-			task_id = Integer.parseInt(cli.getOptionValue("t"));
+			openml = new OpenmlConnector(config.getApiKey());
 		}
+		
 		if (cli.hasOption("-c") == false) {
 			throw new Exception("Cortana jar location parameter (-c) not set");
 		} else {
 			cortanaJar = cli.getOptionValue("c");
 		}
 		
-		Map<String, String> searchParams = new HashMap<String, String>();
-		if (cli.hasOption("-s")) {
-			SetupParameters sp = openml.setupParameters(Integer.parseInt(cli.getOptionValue("s")));
+		if (cli.hasOption("-x")) {
+			Job job = openml.jobRequest(CORTANA_DEPENDENCY, SD_TTID + "");
+			task_id = job.getTask_id();
 			
-			for (Parameter p : sp.getParameters()) {
-				searchParams.put(p.getParameter_name(), p.getValue());
+			searchParams = jsonToMap(job.getLearner());
+			
+			Conversion.log("OK", "Job retrieval", "Task: " + task_id + "; setup: " + job.getLearner());
+		}
+		
+		if (task_id == null) {
+			if (cli.hasOption("-t") == false) {
+				throw new Exception("Task parameter (-t) not set");
+			} else {
+				task_id = Integer.parseInt(cli.getOptionValue("t"));
 			}
-		/*} else if (cli.hasOption("-xml")) {
-			File file = new File(cli.getOptionValue("xml"));
-			if (file.exists() == false) {
-				throw new Exception("Could not find search parameters file (specified by -xml)");
+		}
+		
+		if (searchParams == null) {
+			if (cli.hasOption("-s")) {
+				SetupParameters sp = openml.setupParameters(Integer.parseInt(cli.getOptionValue("s")));
+				searchParams = new HashMap<String, String>();
+				
+				for (Parameter p : sp.getParameters()) {
+					searchParams.put(p.getParameter_name(), p.getValue());
+				}
+			} else if (cli.hasOption("-json")) {
+				searchParams = jsonToMap(cli.getOptionValue("json"));
+				
+			} else {
+				throw new Exception("Search parameters not specified (-s or -json)");
 			}
-			
-			
-			AutoRun ar = (AutoRun) xstream.fromXML(file);
-			searchParams = ar.getExperiment().getSearchParameters().getParameters();
-			*/
-		} else if (cli.hasOption("-json")) {
-			JSONObject jObject = new JSONObject(cli.getOptionValue("json"));
-	        Iterator<?> keys = jObject.keys();
-
-	        while( keys.hasNext() ){
-	            String key = (String)keys.next();
-	            String value = jObject.getString(key); 
-	            searchParams.put(key, value);
-	        }
-		} else {
-			throw new Exception("Search parameters not specified (-s or -json)");
 		}
 		
 		process(openml, task_id, cortanaJar, searchParams);
-		
 	}
 	
 	private static void process(OpenmlConnector openml, Integer task_id, String cortanaJar, Map<String,String> searchParams) throws Exception {
@@ -170,7 +178,9 @@ public class CLI {
 		String cmd = "java -jar " + cortanaJar + " " + runXMLtmp.getAbsolutePath() + " 0 1";
 	//	String[] cliArguments = {runXMLtmp.getAbsolutePath(), "0", "1"};
 		
-		executeCommand(cmd);
+	//	System.out.println(xstream.toXML(ar));
+		
+		executeCommand(cmd,true);
 		
 		File dir = runXMLtmp.getParentFile();
 		
@@ -199,23 +209,21 @@ public class CLI {
 		for (String key : searchParams.keySet()) {
 			params[i++] = new Parameter_setting(flow_id, key, searchParams.get(key));
 		}
-		
-		Run r = new Run(task_id, null, flow_id, null, params, TAGS);
+		String setupString = new JSONObject(searchParams).toString();
+		Run r = new Run(task_id, null, flow_id, setupString, params, TAGS);
 		File runfile = Conversion.stringToTempFile(XstreamXmlMapping.getInstance().toXML(r), "run", "xml");
-		
-		System.out.println(XstreamXmlMapping.getInstance().toXML(r));
 		
 		Map<String,File> uploadFiles = new HashMap<String, File>();
 		uploadFiles.put("subgroups", subgroups);
 		
 		UploadRun ur = openml.runUpload(runfile, uploadFiles);
 		
-		System.out.println(ur.getRun_id());
+		Conversion.log("OK", "Upload", "Run uploaded. Rid: " + ur.getRun_id()); 
 	}
 	
-	private static boolean executeCommand(String cmd) {
+	private static boolean executeCommand(String cmd, boolean verbose) {
+		StringBuilder sb = new StringBuilder();
 		try {
-			@SuppressWarnings("unused")
 			String line;
 			Process p = Runtime.getRuntime().exec(cmd);
 			BufferedReader bri = new BufferedReader(new InputStreamReader(
@@ -223,18 +231,36 @@ public class CLI {
 			BufferedReader bre = new BufferedReader(new InputStreamReader(
 					p.getErrorStream()));
 			while ((line = bri.readLine()) != null) {
-				//System.out.println(line);
+				sb.append(line + "\n");
 			}
 			bri.close();
 			while ((line = bre.readLine()) != null) {
-				//System.out.println(line);
+				sb.append(line + "\n");
 			}
 			bre.close();
 			p.waitFor();
+			
+			if (verbose) {
+				Conversion.log("OK", "CMD", "CMD: " + cmd + "\n" + sb.toString());
+			}
 			return true;
 		} catch (Exception err) {
 			err.printStackTrace();
 			return false;
 		}
+	}
+	
+	private static final Map<String, String> jsonToMap(String s) {
+		Map<String, String> searchParams = new HashMap<String, String>();
+		JSONObject jObject = new JSONObject(s);
+        Iterator<?> keys = jObject.keys();
+        searchParams = new HashMap<String, String>();
+        
+        while( keys.hasNext() ){
+            String key = (String)keys.next();
+            String value = jObject.getString(key); 
+            searchParams.put(key, value);
+        }
+        return searchParams;
 	}
 }
