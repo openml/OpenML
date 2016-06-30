@@ -27,6 +27,7 @@ import org.openml.apiconnector.xml.Trace;
 import org.openml.apiconnector.xstream.XstreamXmlMapping;
 import org.openml.webapplication.evaluate.EvaluateBatchPredictions;
 import org.openml.webapplication.evaluate.EvaluateStreamPredictions;
+import org.openml.webapplication.evaluate.EvaluateSubgroups;
 import org.openml.webapplication.evaluate.EvaluateSurvivalAnalysisPredictions;
 import org.openml.webapplication.evaluate.PredictionEvaluator;
 import org.openml.webapplication.generatefolds.EstimationProcedure;
@@ -90,7 +91,7 @@ public class EvaluateRun {
 		final DataSetDescription dataset;
 		
 		PredictionEvaluator predictionEvaluator;
-		RunEvaluation runevaluation = new RunEvaluation( run_id );
+		RunEvaluation runevaluation = new RunEvaluation(run_id);
 		Trace trace = null;
 		
 		JSONArray runJson = (JSONArray) apiconnector.freeQuery( "SELECT `task_id` FROM `run` WHERE `rid` = " + run_id ).get("data");
@@ -100,32 +101,32 @@ public class EvaluateRun {
 			int task_id = ((JSONArray) runJson.get(0)).getInt(0);
 			task = apiconnector.taskGet(task_id);
 			Data_set source_data = TaskInformation.getSourceData(task);
-			Estimation_procedure estimationprocedure = TaskInformation.getEstimationProcedure( task );
+			Estimation_procedure estimationprocedure = null;
+			try { estimationprocedure = TaskInformation.getEstimationProcedure(task); } catch(Exception e) {}
 			Integer dataset_id = source_data.getLabeled_data_set_id() != null ? source_data.getLabeled_data_set_id() : source_data.getData_set_id();
-			dataset = apiconnector.dataGet( dataset_id );
 			
-			for( int i = 0; i < filesJson.length(); ++i ) {
-				String field = ((JSONArray) filesJson.get( i )).getString( 0 );
-				int file_index = ((JSONArray) filesJson.get( i )).getInt( 1 );
+			for(int i = 0; i < filesJson.length(); ++i) {
+				String field = ((JSONArray) filesJson.get(i)).getString(0);
+				int file_index = ((JSONArray) filesJson.get(i)).getInt(1);
 				
 				file_ids.put(field, file_index);
 			}
 			
-			if( file_ids.get( "description" ) == null ) {
+			if(file_ids.get("description") == null) {
 				runevaluation.setError("Run description file not present. ");
-				File evaluationFile = Conversion.stringToTempFile( xstream.toXML( runevaluation ), "run_" + run_id + "evaluations", "xml" );
+				File evaluationFile = Conversion.stringToTempFile(xstream.toXML(runevaluation), "run_" + run_id + "evaluations", "xml");
 				
-				RunEvaluate re = apiconnector.runEvaluate( evaluationFile );
-				Conversion.log( "Error", "Process Run", "Run processed, but with error: " + re.getRun_id() );
+				RunEvaluate re = apiconnector.runEvaluate(evaluationFile);
+				Conversion.log("Error", "Process Run", "Run processed, but with error: " + re.getRun_id());
 				return;
 			}
 			
-			if( file_ids.get( "predictions" ) == null ) { // TODO: this is currently true, but later on we might have tasks that do not require evaluations!
-				runevaluation.setError("Run predictions file not present. ");
-				File evaluationFile = Conversion.stringToTempFile( xstream.toXML( runevaluation ), "run_" + run_id + "evaluations", "xml" );
+			if(file_ids.get("predictions") == null && file_ids.get("subgroups") == null) { // TODO: this is currently true, but later on we might have tasks that do not require evaluations!
+				runevaluation.setError("Required output files not present (e.g., arff predictions). ");
+				File evaluationFile = Conversion.stringToTempFile(xstream.toXML(runevaluation), "run_" + run_id + "evaluations", "xml");
 				
-				RunEvaluate re = apiconnector.runEvaluate( evaluationFile );
-				Conversion.log( "Error", "Process Run", "Run processed, but with error: " + re.getRun_id() );
+				RunEvaluate re = apiconnector.runEvaluate(evaluationFile);
+				Conversion.log("Error", "Process Run", "Run processed, but with error: " + re.getRun_id());
 				return;
 			}
 			
@@ -135,27 +136,31 @@ public class EvaluateRun {
 			
 			String description = OpenmlConnector.getStringFromUrl( apiconnector.getOpenmlFileUrl( file_ids.get( "description" ), "Run_" + run_id + "_description.xml").toString() );
 			Run run_description = (Run) xstream.fromXML( description );
+			dataset = apiconnector.dataGet(dataset_id);
 			
 			Conversion.log( "OK", "Process Run", "Start prediction evaluator. " );
 			// TODO! no string comparisons, do something better
-			String filename = "Task_" + task_id + "_predictions.arff";
+			String filename_prefix = "Run_" + run_id + "_";
 			if( task.getTask_type().equals("Supervised Data Stream Classification") ) {
 				predictionEvaluator = new EvaluateStreamPredictions(
 					apiconnector.getOpenmlFileUrl(dataset.getFile_id(), dataset.getName()), 
-					apiconnector.getOpenmlFileUrl( file_ids.get( "predictions" ), filename), 
+					apiconnector.getOpenmlFileUrl( file_ids.get( "predictions" ), filename_prefix + "predictions.arff"), 
 					source_data.getTarget_feature());
 			} else if( task.getTask_type().equals("Survival Analysis") ) {
 				predictionEvaluator = new EvaluateSurvivalAnalysisPredictions( 
 						task, 
 						apiconnector.getOpenmlFileUrl(dataset.getFile_id(), dataset.getName()), 
 						new URL(estimationprocedure.getData_splits_url()), 
-						apiconnector.getOpenmlFileUrl( file_ids.get( "predictions" ), filename));
+						apiconnector.getOpenmlFileUrl( file_ids.get( "predictions" ), filename_prefix + "predictions.arff"));
+			} else if (task.getTask_type().equals("Subgroup Discovery")) {
+				predictionEvaluator = new EvaluateSubgroups();
+				
 			} else {
 				predictionEvaluator = new EvaluateBatchPredictions( 
 					task,
 					apiconnector.getOpenmlFileUrl(dataset.getFile_id(), dataset.getName()), 
 					new URL(estimationprocedure.getData_splits_url()), 
-					apiconnector.getOpenmlFileUrl( file_ids.get( "predictions" ), filename), 
+					apiconnector.getOpenmlFileUrl( file_ids.get( "predictions" ), filename_prefix + "predictions.arff"), 
 					estimationprocedure.getType().equals(EstimationProcedure.estimationProceduresTxt[6] ) );
 			}
 			runevaluation.addEvaluationMeasures( predictionEvaluator.getEvaluationScores() );
