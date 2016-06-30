@@ -4,6 +4,7 @@ import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.cli.CommandLine;
@@ -22,6 +23,7 @@ import org.openml.apiconnector.xml.SetupParameters.Parameter;
 import org.openml.apiconnector.xml.Task.Input;
 import org.openml.apiconnector.xml.Task.Input.Data_set;
 import org.openml.apiconnector.xstream.XstreamXmlMapping;
+import org.openml.cortana.utils.Evaluations;
 import org.openml.cortana.utils.SdFlow;
 import org.openml.cortana.xml.AutoRun;
 import org.openml.cortana.xml.AutoRun.Experiment.Table.*;
@@ -211,6 +213,9 @@ public class CLI {
 		}
 		String setupString = new JSONObject(searchParams).toString();
 		Run r = new Run(task_id, null, flow_id, setupString, params, TAGS);
+		List<EvaluationScore> scores = Evaluations.extract(subgroups, quality_measure);
+		for (EvaluationScore s : scores) { r.addOutputEvaluation(s); }
+		
 		File runfile = Conversion.stringToTempFile(XstreamXmlMapping.getInstance().toXML(r), "run", "xml");
 		
 		Map<String,File> uploadFiles = new HashMap<String, File>();
