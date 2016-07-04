@@ -44,6 +44,7 @@ public class CLI {
 		Integer task_id = null;
 		String cortanaJar = null;
 		Map<String, String> searchParams = null;
+		boolean verbose = false;
 
 		xstream.processAnnotations(AutoRun.class);
 		
@@ -54,6 +55,7 @@ public class CLI {
 		options.addOption("t", true, "The task id");
 		options.addOption("s", true, "The setup id (for setting search parameters)");
 		options.addOption("x", false, "Obtains a job from Openml servers");
+		options.addOption("v", false, "Verbose - Outputs cortana data");
 	//	options.addOption("xml", true, "The auto run xml (for setting search parameters)");
 		options.addOption("json", true, "The auto run json (for setting search parameters)");
 		
@@ -86,6 +88,10 @@ public class CLI {
 			Conversion.log("OK", "Job retrieval", "Task: " + task_id + "; setup: " + job.getLearner());
 		}
 		
+		if (cli.hasOption("-v")) {
+			verbose = true;
+		}
+		
 		if (task_id == null) {
 			if (cli.hasOption("-t") == false) {
 				throw new Exception("Task parameter (-t) not set");
@@ -110,10 +116,10 @@ public class CLI {
 			}
 		}
 		
-		process(openml, task_id, cortanaJar, searchParams);
+		process(openml, task_id, cortanaJar, searchParams, verbose);
 	}
 	
-	private static void process(OpenmlConnector openml, Integer task_id, String cortanaJar, Map<String,String> searchParams) throws Exception {
+	private static void process(OpenmlConnector openml, Integer task_id, String cortanaJar, Map<String,String> searchParams, boolean verbose) throws Exception {
 		
 		String current_run_name = "Cortana-Run-" + ManagementFactory.getRuntimeMXBean().getName();
 		
@@ -182,7 +188,7 @@ public class CLI {
 		
 	//	System.out.println(xstream.toXML(ar));
 		
-		executeCommand(cmd,true);
+		executeCommand(cmd,verbose);
 		
 		File dir = runXMLtmp.getParentFile();
 		
@@ -227,7 +233,7 @@ public class CLI {
 	}
 	
 	private static boolean executeCommand(String cmd, boolean verbose) {
-		StringBuilder sb = new StringBuilder();
+		Conversion.log("OK", "CMD", "Command: " + cmd);
 		try {
 			String line;
 			Process p = Runtime.getRuntime().exec(cmd);
@@ -236,18 +242,15 @@ public class CLI {
 			BufferedReader bre = new BufferedReader(new InputStreamReader(
 					p.getErrorStream()));
 			while ((line = bri.readLine()) != null) {
-				sb.append(line + "\n");
+				if (verbose) { Conversion.log("OK", "CMD", line); }
 			}
 			bri.close();
 			while ((line = bre.readLine()) != null) {
-				sb.append(line + "\n");
+				if (verbose) { Conversion.log("OK", "CMD", line); }
 			}
 			bre.close();
 			p.waitFor();
 			
-			if (verbose) {
-				Conversion.log("OK", "CMD", "CMD: " + cmd + "\n" + sb.toString());
-			}
 			return true;
 		} catch (Exception err) {
 			err.printStackTrace();
