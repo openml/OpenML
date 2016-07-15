@@ -20,10 +20,11 @@ import org.openml.apiconnector.xml.EvaluationScore;
 import org.openml.apiconnector.xml.Run;
 import org.openml.apiconnector.xml.RunEvaluate;
 import org.openml.apiconnector.xml.RunEvaluation;
+import org.openml.apiconnector.xml.RunReset;
+import org.openml.apiconnector.xml.RunTrace;
 import org.openml.apiconnector.xml.Task;
 import org.openml.apiconnector.xml.Task.Input.Data_set;
 import org.openml.apiconnector.xml.Task.Input.Estimation_procedure;
-import org.openml.apiconnector.xml.Trace;
 import org.openml.apiconnector.xstream.XstreamXmlMapping;
 import org.openml.webapplication.evaluate.EvaluateBatchPredictions;
 import org.openml.webapplication.evaluate.EvaluateStreamPredictions;
@@ -92,7 +93,7 @@ public class EvaluateRun {
 		
 		PredictionEvaluator predictionEvaluator;
 		RunEvaluation runevaluation = new RunEvaluation(run_id);
-		Trace trace = null;
+		RunTrace trace = null;
 		
 		JSONArray runJson = (JSONArray) apiconnector.freeQuery( "SELECT `task_id` FROM `run` WHERE `rid` = " + run_id ).get("data");
 		JSONArray filesJson =  (JSONArray) apiconnector.freeQuery( "SELECT `field`,`file_id` FROM `runfile` WHERE `source` = " + run_id ).get("data");
@@ -226,7 +227,7 @@ public class EvaluateRun {
 				//System.out.println(runTrace);
 				File traceFile = Conversion.stringToTempFile( runTrace, "run_" + run_id + "trace", "xml" );
 				
-				apiconnector.runTrace(traceFile);
+				apiconnector.runTraceUpload(traceFile);
 			}
 			
 			Conversion.log( "OK", "Process Run", "Run processed: " + re.getRun_id() );
@@ -235,8 +236,8 @@ public class EvaluateRun {
 		}
 	}
 	
-	private Trace traceToXML(int file_id, int task_id, int run_id) throws Exception {
-		Trace trace = new Trace(run_id);
+	private RunTrace traceToXML(int file_id, int task_id, int run_id) throws Exception {
+		RunTrace trace = new RunTrace(run_id);
 		URL traceURL = apiconnector.getOpenmlFileUrl(file_id, "Task_" + task_id + "_trace.arff");
 		Instances traceDataset = new Instances(new BufferedReader(Input.getURL(traceURL)));
 		List<Integer> parameterIndexes = new ArrayList<Integer>();
@@ -276,7 +277,7 @@ public class EvaluateRun {
 			}
 			String setup_string = new JSONObject(parameters).toString();
 			
-			trace.addIteration(new Trace.Trace_iteration(repeat,fold,iteration,setup_string,evaluation,selected));
+			trace.addIteration(new RunTrace.Trace_iteration(repeat,fold,iteration,setup_string,evaluation,selected));
 		}
 		
 		return trace;

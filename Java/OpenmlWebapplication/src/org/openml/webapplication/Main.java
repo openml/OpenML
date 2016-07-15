@@ -86,8 +86,6 @@ public class Main {
 				
 				String function = cli.getOptionValue("f");
 				if( function.equals("evaluate_run") ) {
-					
-					
 					// bootstrap evaluate run
 					new EvaluateRun(apiconnector, id, cli.hasOption("x"));
 					
