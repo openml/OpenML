@@ -20,9 +20,11 @@ import org.openml.apiconnector.algorithms.OptionParser;
 import org.openml.apiconnector.algorithms.ParameterType;
 import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.xml.Flow;
+import org.openml.apiconnector.xml.Run;
 import org.openml.apiconnector.xml.Flow.Parameter;
 import org.openml.apiconnector.xml.FlowExists;
 import org.openml.apiconnector.xml.Run.Parameter_setting;
+import org.openml.apiconnector.xml.SetupExists;
 import org.openml.apiconnector.xml.UploadFlow;
 import org.openml.apiconnector.xstream.XstreamXmlMapping;
 
@@ -56,6 +58,38 @@ public class WekaAlgorithm {
 			e.printStackTrace();
 		}
 		return version;
+	}
+	
+	public static Integer getSetupId(String classifierName, String option_str, OpenmlConnector apiconnector) throws Exception {
+		
+		// first find flow. if the flow doesn't exist, neither does the setup.
+		Flow find = WekaAlgorithm.create(classifierName, option_str, null);
+		int flow_id = -1;
+		try {
+			FlowExists result = apiconnector.flowExists(find.getName(), find.getExternal_version());
+			if(result.exists()) { 
+				flow_id = result.getId(); 
+			} else {
+				return null;
+			}
+		} catch( Exception e ) {
+			return null;
+		}
+		Flow implementation = apiconnector.flowGet(flow_id);
+		
+		String[] params = Utils.splitOptions(option_str);
+		List<Parameter_setting> list = WekaAlgorithm.getParameterSetting(params, implementation);
+		
+		// now create the setup object
+		Run run = new Run(null, null, implementation.getId(), null, list.toArray(new Parameter_setting[list.size()]), null);
+		File setup = Conversion.stringToTempFile(XstreamXmlMapping.getInstance().toXML(run), "setup", "xml");
+		SetupExists se = apiconnector.setupExists(setup);
+		
+		if (se.exists()) {
+			return se.getId();
+		} else {
+			return null;
+		}
 	}
 	
 	public static int getImplementationId(Flow implementation, Classifier classifier, OpenmlConnector apiconnector) throws Exception {
@@ -94,8 +128,10 @@ public class WekaAlgorithm {
 		}
 		
 		Flow i = new Flow( name, dependencies + "_" + version, description, language, dependencies );
-		for( String tag : tags ) {
-			i.addTag( tag );
+		if (tags != null) {
+			for(String tag : tags) {
+				i.addTag(tag);
+			}
 		}
 		
 		Enumeration<Option> parameters = ((OptionHandler) classifier).listOptions();

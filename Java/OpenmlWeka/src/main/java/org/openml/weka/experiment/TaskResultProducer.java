@@ -1,6 +1,7 @@
 package org.openml.weka.experiment;
 
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,8 @@ import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.models.Metric;
 import org.openml.apiconnector.models.MetricScore;
 import org.openml.apiconnector.xml.DataSetDescription;
+import org.openml.apiconnector.xml.RunList;
+import org.openml.apiconnector.xml.RunList.Run;
 import org.openml.apiconnector.xml.Task;
 import org.openml.apiconnector.xml.Task.Input.Data_set;
 import org.openml.apiconnector.xml.Task.Input.Estimation_procedure;
@@ -24,7 +27,6 @@ import org.openml.weka.algorithm.OptimizationTrace.Quadlet;
 import weka.core.AttributeStats;
 import weka.core.Instances;
 import weka.core.UnsupportedAttributeTypeException;
-import weka.experiment.ClassifierSplitEvaluator;
 import weka.experiment.CrossValidationResultProducer;
 import weka.experiment.OutputZipper;
 
@@ -47,6 +49,8 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 
 	public static final String TASK_FIELD_NAME = "OpenML_Task_id";
 	public static final String SAMPLE_FIELD_NAME = "Sample";
+	
+	public static final Boolean CHECK_DATABASE = true;
 
 	/** The task to be run */
 	protected Task m_Task;
@@ -72,8 +76,8 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 
 	public void setTask(Task t) throws Exception {
 		m_Task = t;
-		// TODO: do better
-		regressionTask = t.getTask_type().equals("Supervised Regression");
+		
+		regressionTask = t.getTask_type_id() == 2;
 		
 		if (regressionTask) {
 			throw new Exception("OpenML Plugin Exception: Regression tasks currently not supported. Aborting.");
@@ -241,6 +245,32 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 		if (m_Task == null) {
 			throw new Exception("No task set");
 		}
+		
+
+		if (CHECK_DATABASE) {
+			Integer setupId = WekaAlgorithm.getSetupId((String) tse.getKey()[0], (String) tse.getKey()[1], apiconnector);
+			
+			if (setupId != null) {
+				List<Integer> taskIds = new ArrayList<Integer>();
+				taskIds.add(m_Task.getTask_id());
+				List<Integer> setupIds = new ArrayList<Integer>();
+				setupIds.add(setupId);
+				
+				try {
+					RunList rl = apiconnector.runList(taskIds, setupIds);
+					
+					if (rl.getRuns().length > 0) {
+						List<Integer> runIds = new ArrayList<Integer>();
+						for (Run r : rl.getRuns()) { runIds.add(r.getRun_id()); }
+						
+						Conversion.log("INFO", "Skip", "Skipping run, already available. Run ids: " + runIds);
+						return;
+					}
+				} catch(Exception e) {}
+			}
+		}
+		
+		
 
 		// creating all empty copies for each fold
 		Instances[][] trainingSets = new Instances[m_NumFolds][m_NumSamples];
@@ -293,15 +323,15 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 				try {
 					Map<Metric, MetricScore> userMeasures = new HashMap<Metric, MetricScore>();
 					
-					Object[] seResults = m_SplitEvaluator.getResult(trainingSets[fold][sample], testSets[fold][sample]);
+					Object[] seResults = tse.getResult(trainingSets[fold][sample], testSets[fold][sample]);
 					Object[] results = new Object[seResults.length + 1];
 					results[0] = getTimestamp();
 					System.arraycopy(seResults, 0, results, 1, seResults.length);
 					
-					Map<String, Object> splitEvaluatorResults = WekaAlgorithm.splitEvaluatorToMap(m_SplitEvaluator, seResults);
+					Map<String, Object> splitEvaluatorResults = WekaAlgorithm.splitEvaluatorToMap(tse, seResults);
 					List<Quadlet<String,Double,List<Entry<String,Object>>,Boolean>> trace = null;
 					try {
-						trace = OptimizationTrace.extractTrace(((ClassifierSplitEvaluator)m_SplitEvaluator).getClassifier());
+						trace = OptimizationTrace.extractTrace(tse.getClassifier());
 					} catch(Exception e) {
 						Conversion.log("OK","Trace",e.getMessage());
 					}
