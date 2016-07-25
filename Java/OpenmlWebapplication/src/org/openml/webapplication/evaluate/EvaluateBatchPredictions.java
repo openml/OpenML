@@ -211,7 +211,7 @@ public class EvaluateBatchPredictions implements PredictionEvaluator {
 		Map<Metric, MetricScore> globalMeasures = Output.evaluatorToMap( e, nrOfClasses, taskType, bootstrap );
 		for( Metric m : globalMeasures.keySet() ) {
 			MetricScore score = globalMeasures.get( m );
-			if (score.getScore().isNaN() == false && score.getScore().isInfinite() == false) { // preventing divisions by zero and infinite scores (given by Weka)
+			if (score.getScore() != null && score.getScore().isNaN() == false && score.getScore().isInfinite() == false) { // preventing divisions by zero and infinite scores (given by Weka)
 				DecimalFormat dm = MathHelper.defaultDecimalFormat;
 				EvaluationScore em = new EvaluationScore( 
 						m.implementation, 
@@ -229,8 +229,7 @@ public class EvaluateBatchPredictions implements PredictionEvaluator {
 					Map<Metric, MetricScore> currentMeasures = Output.evaluatorToMap( sampleEvaluation[i][j][k] , nrOfClasses, taskType, bootstrap);
 					for( Metric m : currentMeasures.keySet() ) {
 						MetricScore score = currentMeasures.get( m );
-						
-						if (score.getScore().isNaN() == false && score.getScore().isInfinite() == false) { // preventing divisions by zero and infinite scores (given by Weka)
+						if (score.getScore() != null && score.getScore().isNaN() == false && score.getScore().isInfinite() == false) { // preventing divisions by zero and infinite scores (given by Weka)
 							DecimalFormat dm = MathHelper.defaultDecimalFormat;
 							EvaluationScore currentMeasure;
 							

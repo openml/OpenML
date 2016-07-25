@@ -183,6 +183,10 @@ public class FantailConnector {
 		
 		Instances dataset = new Instances(new FileReader(dsd.getDataset(apiconnector.getApiKey())));
 		
+		if (dsd.getDefault_target_attribute() == null) {
+			throw new RuntimeException("Default target attribute is null. ");
+		}
+		
 		dataset.setClass(dataset.attribute(dsd.getDefault_target_attribute()));
 		if (dsd.getRow_id_attribute() != null) {
 			if (dataset.attribute(dsd.getRow_id_attribute()) != null) {
