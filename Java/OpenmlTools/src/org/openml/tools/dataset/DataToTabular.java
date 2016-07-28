@@ -1,9 +1,7 @@
 package org.openml.tools.dataset;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,8 +13,8 @@ import weka.filters.unsupervised.instance.Randomize;
 public class DataToTabular {
 
 	public static void main(String[] args) throws Exception {
-		String fileLocation = "/home/rijnjnvan/Downloads/mushroom.arff";
-		int numInstances = 54;
+		String fileLocation = "/home/rijnjnvan/data/mushroom.arff";
+		int numInstances = 35; // 51 for landscape, 35 for portrait
 		
 		// black=k,brown=n,buff=b,chocolate=h,gray=g,
 		// green=r,orange=o,pink=p,purple=u,red=e,
@@ -45,7 +43,7 @@ public class DataToTabular {
 		
 
 		final Map<String, String> surfaces = new HashMap<String, String>();
-		surfaces.put("f","ibrous");
+		surfaces.put("f","fibrous");
 		surfaces.put("y","scaly");
 		surfaces.put("k","silky");
 		surfaces.put("s","smooth");
@@ -101,12 +99,17 @@ public class DataToTabular {
 		valueMapper.put("class", classValue);
 		
 		final Map<String, String> attributeMapper = new HashMap<String, String>();
-		attributeMapper.put("cap-color","cap");
-		attributeMapper.put("stalk-surface-below-ring","stalk-below");
-		attributeMapper.put("stalk-color-above-ring","stalk-above");
-		attributeMapper.put("spore-print-color","spore-color");
+		attributeMapper.put("cap-color","\\specialcell[t]{cap\\\\color}");
+		attributeMapper.put("gill-spacing","\\specialcell[t]{gill\\\\spacing}");
+		attributeMapper.put("stalk-surface-above-ring","\\specialcell[t]{stalk-surface\\\\above-ring}");
+		attributeMapper.put("stalk-surface-below-ring","\\specialcell[t]{stalk-surface\\\\below-ring}");
+		attributeMapper.put("stalk-color-above-ring","\\specialcell[t]{stalk-color\\\\above-ring}");
+		attributeMapper.put("stalk-color-below-ring","\\specialcell[t]{stalk-color\\\\below-ring}");
+		attributeMapper.put("spore-print-color","\\specialcell[t]{spore-print\\\\color}");
 		
-		Integer[] attributes = {2,4,12,13,19,20,21,22};
+	//	Integer[] attributes = {2,4,12,13,19,20,21,22}; // portrait
+		Integer[] attributes = {2,4,6,7,8,11,12,14,19,20,21,-1,22}; // landscape
+	//	Integer[] attributes = {0,1,2,3,4};
 		
 		String ls = "";
 		for (int i = 0; i < attributes.length; ++i) {
@@ -121,27 +124,47 @@ public class DataToTabular {
 		System.out.println("\\hline");
 		
 		for (Integer idx : attributes) {
-			if (idx > attributes[0]) {
+			if (idx > attributes[0] || idx == -1) {
 				System.out.print(" & ");
 			}
-			String name = dataset.attribute(idx).name();
+			
+			String name;
+			if (idx == -1) {
+				name = "\\ldots";
+			} else {
+				name = dataset.attribute(idx).name();
+			}
+			
 			if (attributeMapper.containsKey(name)) {
 				name = attributeMapper.get(name);
 			}
-			System.out.print(name);
+			System.out.print(name.replace('-', ' '));
 		}
 		System.out.println(" \\\\\n\\hline");
 		for (int i = 0; i < numInstances; ++i) {
 			if (i % 2 == 0) System.out.print("\\rowcolor{columnGray} "); 
 			for (Integer idx : attributes) {
-				String value = dataset.get(i).stringValue(idx);
-				String attribute = dataset.attribute(idx).name();
+				String value; 
+				String attribute; 
+				
+				if (idx == -1) {
+					value = "";
+					attribute = "";
+				} else {
+					if (dataset.attribute(idx).isNumeric()) {  
+						value = dataset.get(i).value(idx) + "";
+					} else {
+						value = dataset.get(i).stringValue(idx);
+					}
+					attribute = dataset.attribute(idx).name();
+				}
+				
 				if (valueMapper.containsKey(attribute)) {
 					if (valueMapper.get(attribute).containsKey(value)) {
 						value = valueMapper.get(attribute).get(value);
 					}
 				}
-				if (idx > attributes[0]) {
+				if (idx > attributes[0] || idx == -1) {
 					System.out.print(" & ");
 				}
 				System.out.print(value);
