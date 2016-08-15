@@ -79,10 +79,10 @@ public class FantailConnector {
 	private static StreamCharacterizer[] streamCharacterizers;
 	private static OpenmlConnector apiconnector;
 	
-	public FantailConnector(OpenmlConnector ac, Integer dataset_id, boolean random, String priorityTag) throws Exception {
+	public FantailConnector(OpenmlConnector ac, Integer dataset_id, boolean random, String priorityTag, Integer interval_size) throws Exception {
 		int expectedQualities = ExtractFeatures.BASIC_FEATURES; // start of with 8 basic qualities, apparently
 		apiconnector = ac;
-		window_size = null;
+		window_size = interval_size;
 		
 		// additional parameterized batch landmarkers
 		String zeros = "0";
@@ -169,7 +169,7 @@ public class FantailConnector {
 	}
 	
 	private boolean extractFeatures(Integer did, Integer interval_size) throws Exception {
-		Conversion.log( "OK", "Extract Features", "Start extracting features for dataset: " + did );
+		Conversion.log("OK", "Extract Features", "Start extracting features for dataset: " + did);
 		
 		List<String> qualitiesAvailable = Arrays.asList(apiconnector.dataQualities(did).getQualityNames());
 		
@@ -204,47 +204,45 @@ public class FantailConnector {
 		// first run stream characterizers
 		for(StreamCharacterizer sc : streamCharacterizers) {
 
-			if (qualitiesAvailable.containsAll(Arrays.asList(sc.getIDs())) == false) { 
-				Conversion.log( "OK", "Extract Features", "Running Stream Characterizers (full data)" );
-				sc.characterize( dataset );
+			if (qualitiesAvailable.containsAll(Arrays.asList(sc.getIDs())) == false || interval_size != null) { // only skip if not for interval data
+				Conversion.log("OK", "Extract Features", "Running Stream Characterizers (full data)");
+				sc.characterize(dataset);
 			} else {
-				Conversion.log( "OK", "Extract Features", "Skipping Stream Characterizers (full data) - already in database" );
+				Conversion.log("OK", "Extract Features", "Skipping Stream Characterizers (full data) - already in database");
 			}
 		}
 		
 		List<Quality> qualities = new ArrayList<DataQuality.Quality>();
-		if( interval_size != null ) {
-			Conversion.log( "OK", "Extract Features", "Running Batch Characterizers (partial data)" );
+		if (interval_size != null) {
+			Conversion.log("OK", "Extract Features", "Running Batch Characterizers (partial data)");
 			
-			for( int i = 0; i < dataset.numInstances(); i += interval_size ) {
-				if( apiconnector.getVerboselevel() >= Constants.VERBOSE_LEVEL_ARFF ) {
-					Conversion.log( "OK", "FantailConnector", "Starting window [" + i + "," + (i + interval_size) + "> (did = " + did + ",total size = " + dataset.numInstances() + ")" );
+			for (int i = 0; i < dataset.numInstances(); i += interval_size) {
+				if (apiconnector.getVerboselevel() >= Constants.VERBOSE_LEVEL_ARFF) {
+					Conversion.log("OK", "FantailConnector", "Starting window [" + i + "," + (i + interval_size) + "> (did = " + did + ",total size = " + dataset.numInstances() + ")");
 				}
-				qualities.addAll( datasetCharacteristics( dataset, i, interval_size, null ) );
+				qualities.addAll(datasetCharacteristics(dataset, i, interval_size, null));
 				
-				for( StreamCharacterizer sc : streamCharacterizers ) {
-					qualities.addAll( hashMaptoList( sc.interval( i ), i, interval_size ) );
+				for(StreamCharacterizer sc : streamCharacterizers) {
+					qualities.addAll(hashMaptoList(sc.interval(i), i, interval_size));
 				}
 			}
 			
 		} else {
-			Conversion.log( "OK", "Extract Features", "Running Batch Characterizers (full data, might take a while)" );
-			qualities.addAll( datasetCharacteristics( dataset, null, null, qualitiesAvailable ) );
-			for( StreamCharacterizer sc : streamCharacterizers ) {
+			Conversion.log("OK", "Extract Features", "Running Batch Characterizers (full data, might take a while)");
+			qualities.addAll(datasetCharacteristics(dataset, null, null, qualitiesAvailable));
+			for (StreamCharacterizer sc : streamCharacterizers) {
 				Map<String, Double> streamqualities = sc.global();
 				if (streamqualities != null) {
-					qualities.addAll( hashMaptoList( streamqualities, null, null ) );
+					qualities.addAll(hashMaptoList(streamqualities, null, null));
 				}
 			}
 		}
-		Conversion.log( "OK", "Extract Features", "Done generating features, start wrapping up" );
-		DataQuality dq = new DataQuality(did, qualities.toArray( new Quality[qualities.size()] ) );
+		Conversion.log("OK", "Extract Features", "Done generating features, start wrapping up");
+		DataQuality dq = new DataQuality(did, qualities.toArray(new Quality[qualities.size()]));
 		String strQualities = xstream.toXML(dq);
 		
-		DataQualityUpload dqu = apiconnector.dataQualitiesUpload(
-				Conversion.stringToTempFile(strQualities, "qualities_did_"
-						+ did, "xml"));
-		Conversion.log( "OK", "Extract Features", "DONE: " + dqu.getDid() );
+		DataQualityUpload dqu = apiconnector.dataQualitiesUpload(Conversion.stringToTempFile(strQualities, "qualities_did_" + did, "xml"));
+		Conversion.log("OK", "Extract Features", "DONE: " + dqu.getDid());
 		
 		return true;
 	}
@@ -254,17 +252,17 @@ public class FantailConnector {
 		Instances intervalData;
 		
 		// Be careful changing this!
-		if( interval_size != null ) {
-			intervalData = new Instances( fulldata, start, Math.min( interval_size, fulldata.numInstances() - start ) );
-			intervalData = applyFilter( intervalData, new StringToNominal(), "-R first-last" );
-			intervalData.setClassIndex( fulldata.classIndex() );
+		if (interval_size != null) {
+			intervalData = new Instances(fulldata, start, Math.min(interval_size, fulldata.numInstances() - start));
+			intervalData = applyFilter(intervalData, new StringToNominal(), "-R first-last");
+			intervalData.setClassIndex(fulldata.classIndex());
 		} else {
 			intervalData = fulldata;
 			// todo: use StringToNominal filter? might be to expensive
 		}
 		
 		for(Characterizer dc : batchCharacterizers) {
-			if (qualitiesAvailable != null && qualitiesAvailable.containsAll(Arrays.asList(dc.getIDs())) == false) { 
+			if (qualitiesAvailable != null && qualitiesAvailable.containsAll(Arrays.asList(dc.getIDs())) == false || interval_size != null) { // only skip if not for interval data
 				Conversion.log("OK","Extract Batch Features", dc.getClass().getName() + ": " + Arrays.toString(dc.getIDs()));
 				Map<String,Double> qualities = dc.characterize(intervalData);
 				result.addAll(hashMaptoList(qualities, start, interval_size));
@@ -275,17 +273,17 @@ public class FantailConnector {
 		return result;
 	}
 	
-	public static List<Quality> hashMaptoList( Map<String, Double> map, Integer start, Integer size ) {
+	public static List<Quality> hashMaptoList(Map<String, Double> map, Integer start, Integer size) {
 		List<Quality> result = new ArrayList<DataQuality.Quality>();
-		for( String quality : map.keySet() ) {
+		for(String quality : map.keySet()) {
 			Integer end = start != null ? start + size : null;
-			result.add( new Quality( quality, map.get( quality ) + "", start, end ) );
+			result.add(new Quality(quality, map.get(quality) + "", start, end));
 		}
 		return result;
 	}
 	
-	private static Instances applyFilter( Instances dataset, Filter filter, String options ) throws Exception {
-		((OptionHandler) filter).setOptions( Utils.splitOptions( options ) );
+	private static Instances applyFilter(Instances dataset, Filter filter, String options) throws Exception {
+		((OptionHandler) filter).setOptions(Utils.splitOptions(options));
 		filter.setInputFormat(dataset);
 		return Filter.useFilter(dataset, filter);
 	}

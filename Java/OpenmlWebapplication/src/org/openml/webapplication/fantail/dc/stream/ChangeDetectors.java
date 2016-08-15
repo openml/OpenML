@@ -11,7 +11,7 @@ public class ChangeDetectors extends StreamCharacterizer {
 	private final RunChangeDetectorTask rcdt;
 	
 	public ChangeDetectors( Integer interval_size ) {
-		rcdt = new RunChangeDetectorTask( interval_size );
+		rcdt = new RunChangeDetectorTask(interval_size);
 	}
 	
 	@Override
