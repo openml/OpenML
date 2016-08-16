@@ -120,33 +120,37 @@ public class FantailConnector {
 	}
 	
 	public Integer getDatasetId(int expectedQualities, Integer window_size, boolean random, String priorityTag) throws JSONException, Exception {
+		String tagJoin = "";
+		String tagSelect = "";
+		String tagSort = "";
+		if (priorityTag != null) {
+			tagSelect = ", t.tag ";
+			tagSort = "t.tag DESC, "; // to avoid NULL values first
+			tagJoin = "LEFT JOIN dataset_tag t ON q.data = t.id AND t.tag = '" + priorityTag + "' ";
+		}
+		
 		String sql = 
-			"SELECT `d`.`did`, `q`.`value` AS `numInstances`, `interval_end` - `interval_start` AS `interval_size`, " +
+			"SELECT `d`.`did`, `q`.`value` AS `numInstances`, `i`.`interval_end` - `i`.`interval_start` AS `interval_size`, " +
 			"CEIL(`q`.`value` / " + window_size + ") AS `numIntervals`, " +
 			"(COUNT(*) / CEIL(`q`.`value` / " + window_size + ")) AS `qualitiesPerInterval`, " +
-			"COUNT(*) AS `qualities` " +
-			"FROM `data_quality` `q`, `dataset` `d`" +
+			"COUNT(*) AS `qualities` " + tagSelect + 
+			"FROM `data_quality` `q` " + tagJoin + 
+			", `dataset` `d`" +
 			"LEFT JOIN `data_quality_interval` `i` ON `d`.`did` = `i`.`data` AND `i`.`interval_end` - `i`.`interval_start` =  " + window_size + " " +
 			"WHERE `q`.`quality` IS NOT NULL " +
 			"AND `d`.`did` = `q`.`data` " +
 			"AND `q`.`quality` = 'NumberOfInstances'  " +
 			"AND `d`.`error` = 'false' AND `d`.`processed` IS NOT NULL " +
-			"AND `d`.`did` IN " + 
-			"(SELECT i.value AS did FROM task_inputs i, task_tag t WHERE t.id = i.task_id AND i.input = 'source_data' AND t.tag = 'streams') " +
 			"GROUP BY `d`.`did` " +
 			"HAVING (COUNT(*) / CEIL(`q`.`value` / " + window_size + ")) < " + expectedQualities + " " +
-			"ORDER BY `qualitiesPerInterval` ASC LIMIT 0,100; ";
+			"ORDER BY " + tagSort + "`qualitiesPerInterval` ASC LIMIT 0,100; ";
 		
 		if(window_size == null) {
-			String tagJoin = "";
-			String tagSelect = "";
-			String tagSort = "";
-			if (priorityTag != null) {
-				tagSelect = ", t.tag";
-				tagSort = "t.tag DESC, "; // to avoid NULL values first
-				tagJoin = "LEFT JOIN dataset_tag t ON q.data = t.id AND t.tag = '" + priorityTag + "'";
-			}
-			sql = "SELECT q.data, COUNT(*) AS `numQualities`" + tagSelect + " FROM data_quality q " + tagJoin + " GROUP BY q.data HAVING numQualities < " + expectedQualities + " ORDER BY " + tagSort + "q.data LIMIT 0,100";
+			sql = 
+				"SELECT q.data, COUNT(*) AS `numQualities`" + tagSelect + 
+				"FROM data_quality q " + tagJoin + 
+				"GROUP BY q.data HAVING numQualities < " + expectedQualities + 
+				"ORDER BY " + tagSort + "q.data LIMIT 0,100";
 		}
 		
 		Conversion.log("OK", "FantailQuery", sql);
