@@ -36,8 +36,6 @@ import weka.core.Instances;
 
 public class ExtractFeatures {
 	
-	public static final int BASIC_FEATURES = SimpleMetaFeatures.ids.length;
-	
 	public static List<Feature> getFeatures(Instances dataset, String defaultClass) {
 		if (defaultClass != null) { 
 			dataset.setClass(dataset.attribute(defaultClass));
