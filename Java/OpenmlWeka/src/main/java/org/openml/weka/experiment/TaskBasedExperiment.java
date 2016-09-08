@@ -135,7 +135,9 @@ public class TaskBasedExperiment extends Experiment {
 		// before advancing the counters
 		// check if we want to built a model over the full dataset.
 		if (m_RunNumber == getRunUpper()) {
-			String modelFullDataset = openmlconfig.getModelFullDataset();
+			//String modelFullDataset = openmlconfig.getModelFullDataset();
+			String modelFullDataset = openmlconfig.get("model_full_dataset"); // TODO: replace with above
+			
 			if (modelFullDataset == null || modelFullDataset.equals("false") == false) {
 				((TaskResultProducer) m_ResultProducer).doFullRun();
 			}

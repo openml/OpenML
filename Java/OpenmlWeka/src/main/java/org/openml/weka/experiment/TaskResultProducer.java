@@ -376,7 +376,9 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 							}
 						}
 					}
-					String modelWaitForFull = openmlconfig.getModelFullDataset();
+					//String modelWaitForFull = openmlconfig.getModelFullDataset();
+					String modelWaitForFull = openmlconfig.get("model_full_dataset"); // TODO: replace with above
+					
 					boolean waitForFullModel = modelWaitForFull == null ? true : (modelWaitForFull.equals("false") ? false : true);
 					if (m_ResultListener instanceof TaskResultListener) {
 						((TaskResultListener) m_ResultListener).acceptResultsForSending(m_Task, m_Instances, repeat, fold, (useSamples ? sample : null),
