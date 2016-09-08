@@ -240,7 +240,7 @@ public class OpenmlSimpleSetupPanel extends SimpleSetupPanel {
 	 */
 	public boolean setExperiment(Experiment exp_old) {
 
-		TaskBasedExperiment exp = new TaskBasedExperiment( exp_old, apiconnector );
+		TaskBasedExperiment exp = new TaskBasedExperiment(exp_old, apiconnector, openmlconfig);
 		
 		TaskResultListener trl = new TaskResultListener(apiconnector, openmlconfig);
 		try {
@@ -252,7 +252,7 @@ public class OpenmlSimpleSetupPanel extends SimpleSetupPanel {
 		}
 		exp.setResultListener(trl);
 		
-		TaskResultProducer trp = new TaskResultProducer(apiconnector);
+		TaskResultProducer trp = new TaskResultProducer(apiconnector, openmlconfig);
 		
 		SplitEvaluator se = null;
 	    Classifier sec = null;
