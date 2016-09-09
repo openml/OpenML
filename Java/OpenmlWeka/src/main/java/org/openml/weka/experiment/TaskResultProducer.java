@@ -225,6 +225,8 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 	}
 
 	public void doFullRun() throws Exception {
+		// TODO run performed test
+		
 		Conversion.log("OK", "Total Model", "Started building a model over the full dataset. ");
 		OpenmlSplitEvaluator tse = ((OpenmlSplitEvaluator) m_SplitEvaluator);
 
@@ -268,7 +270,7 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 		if (m_Task == null) {
 			throw new Exception("No task set");
 		}
-
+		
 		if (openmlconfig.getSkipRunPerformedTest() == false) {
 			Integer setupId = WekaAlgorithm.getSetupId((String) tse.getKey()[0], (String) tse.getKey()[1], apiconnector);
 
