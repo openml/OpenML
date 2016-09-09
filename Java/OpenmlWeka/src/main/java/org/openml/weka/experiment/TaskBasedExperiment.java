@@ -9,8 +9,8 @@ import javax.swing.DefaultListModel;
 
 import org.openml.apiconnector.algorithms.TaskInformation;
 import org.openml.apiconnector.io.OpenmlConnector;
-import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.Task;
+import org.openml.weka.algorithm.WekaConfig;
 
 import weka.classifiers.Classifier;
 import weka.core.Utils;
@@ -33,9 +33,9 @@ public class TaskBasedExperiment extends Experiment {
 
 	protected final OpenmlConnector apiconnector;
 	
-	protected final Config openmlconfig;
+	protected final WekaConfig openmlconfig;
 
-	public TaskBasedExperiment(Experiment exp, OpenmlConnector apiconnector, Config config) {
+	public TaskBasedExperiment(Experiment exp, OpenmlConnector apiconnector, WekaConfig config) {
 		this.m_ResultListener = exp.getResultListener();
 		this.m_ResultProducer = exp.getResultProducer();
 		this.m_RunLower = exp.getRunLower();
@@ -135,10 +135,7 @@ public class TaskBasedExperiment extends Experiment {
 		// before advancing the counters
 		// check if we want to built a model over the full dataset.
 		if (m_RunNumber == getRunUpper()) {
-			//String modelFullDataset = openmlconfig.getModelFullDataset();
-			String modelFullDataset = openmlconfig.get("model_full_dataset"); // TODO: replace with above
-			
-			if (modelFullDataset == null || modelFullDataset.equals("false") == false) {
+			if (openmlconfig.getModelFullDataset()) {
 				((TaskResultProducer) m_ResultProducer).doFullRun();
 			}
 		}
@@ -216,7 +213,7 @@ public class TaskBasedExperiment extends Experiment {
 
 	public static void main(String[] args) {
 		try {
-			Config openmlconfig = new Config();
+			WekaConfig openmlconfig = new WekaConfig();
 
 			if (openmlconfig.getApiKey() == null) {
 				throw new Exception("No Api Key provided in config file. ");

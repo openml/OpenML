@@ -17,7 +17,6 @@ import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.io.ApiException;
 import org.openml.apiconnector.models.Metric;
 import org.openml.apiconnector.models.MetricScore;
-import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.settings.Constants;
 import org.openml.apiconnector.xml.Flow;
 import org.openml.apiconnector.xml.Run;
@@ -29,6 +28,7 @@ import org.openml.apiconnector.xstream.XstreamXmlMapping;
 import org.openml.weka.algorithm.OptimizationTrace;
 import org.openml.weka.algorithm.WekaAlgorithm;
 import org.openml.weka.algorithm.OptimizationTrace.Quadlet;
+import org.openml.weka.algorithm.WekaConfig;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -59,16 +59,19 @@ public class TaskResultListener extends InstancesResultListener {
 	private final ArrayList<String> tasksWithErrors;
 
 	private final OpenmlConnector apiconnector;
-
+	
 	private final String[] all_tags;
 
-	public TaskResultListener(OpenmlConnector apiconnector, Config config) {
+	boolean skipJvmBenchmark = false;
+	
+	public TaskResultListener(OpenmlConnector apiconnector, WekaConfig config) {
 		super();
 
 		this.apiconnector = apiconnector;
 		currentlyCollecting = new HashMap<String, OpenmlExecutedTask>();
 		tasksWithErrors = new ArrayList<String>();
 		all_tags = ArrayUtils.addAll(DEFAULT_TAGS, config.getTags());
+		skipJvmBenchmark = config.getSkipJvmBenchmark();
 	}
 
 	public void acceptFullModel(Task t, Instances sourceData, Classifier classifier, String options, Map<String, Object> splitEvaluatorResults,
@@ -129,9 +132,10 @@ public class TaskResultListener extends InstancesResultListener {
 
 		// also add information about CPU performance and OS to run:
 		SciMark benchmarker = SciMark.getInstance();
-		oet.getRun().addOutputEvaluation("os_information", "openml.userdefined.os_information(1.0)", null, "[" + StringUtils.join(benchmarker.getOsInfo(), ", ") + "]");
-		oet.getRun().addOutputEvaluation("scimark_benchmark", "openml.userdefined.scimark_benchmark(1.0)", benchmarker.getResult(), "[" + StringUtils.join(benchmarker.getStringArray(), ", ") + "]");
-
+		oet.getRun().addOutputEvaluation("os_information", "openml.userdefined.os_information(1.0)", null, "['" + StringUtils.join(benchmarker.getOsInfo(), "', '") + "']");
+		if (skipJvmBenchmark == false) {
+			oet.getRun().addOutputEvaluation("scimark_benchmark", "openml.userdefined.scimark_benchmark(1.0)", benchmarker.getResult(), "[" + StringUtils.join(benchmarker.getStringArray(), ", ") + "]");
+		}
 		tmpPredictionsFile = Conversion.stringToTempFile(oet.getPredictions().toString(), "weka_generated_predictions", Constants.DATASET_FORMAT);
 		tmpDescriptionFile = Conversion.stringToTempFile(xstream.toXML(oet.getRun()), "weka_generated_run", "xml");
 		Map<String, File> output_files = new HashMap<String, File>();

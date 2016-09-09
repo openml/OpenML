@@ -49,8 +49,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import org.openml.apiconnector.io.OpenmlConnector;
-import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.settings.Constants;
+import org.openml.weka.algorithm.WekaConfig;
 import org.openml.weka.experiment.OpenmlClassificationSplitEvaluator;
 import org.openml.weka.experiment.TaskBasedExperiment;
 import org.openml.weka.experiment.TaskResultListener;
@@ -109,7 +109,7 @@ public class OpenmlSimpleSetupPanel extends SimpleSetupPanel {
 	
 	protected OpenmlConnector apiconnector;
 	
-	protected Config openmlconfig;
+	protected WekaConfig openmlconfig;
 	
 	
 	/** Label for destination field */
@@ -139,7 +139,7 @@ public class OpenmlSimpleSetupPanel extends SimpleSetupPanel {
 		m_ResultsDestinationPathTField.setEnabled(false);
 		
 		try {
-			openmlconfig = new Config();
+			openmlconfig = new WekaConfig();
 			
 			String apiKey = openmlconfig.getApiKey();
 			

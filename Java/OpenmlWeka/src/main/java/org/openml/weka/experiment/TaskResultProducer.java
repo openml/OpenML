@@ -13,7 +13,6 @@ import org.openml.apiconnector.algorithms.TaskInformation;
 import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.models.Metric;
 import org.openml.apiconnector.models.MetricScore;
-import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.DataSetDescription;
 import org.openml.apiconnector.xml.RunList;
 import org.openml.apiconnector.xml.RunList.Run;
@@ -24,6 +23,7 @@ import org.openml.weka.algorithm.InstancesHelper;
 import org.openml.weka.algorithm.OptimizationTrace;
 import org.openml.weka.algorithm.WekaAlgorithm;
 import org.openml.weka.algorithm.OptimizationTrace.Quadlet;
+import org.openml.weka.algorithm.WekaConfig;
 
 import weka.core.AttributeStats;
 import weka.core.Instances;
@@ -49,9 +49,7 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 
 	public static final String TASK_FIELD_NAME = "OpenML_Task_id";
 	public static final String SAMPLE_FIELD_NAME = "Sample";
-
-	public static final Boolean CHECK_DATABASE = false;
-
+	
 	/** The task to be run */
 	protected Task m_Task;
 	protected boolean regressionTask;
@@ -67,9 +65,9 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 	protected String currentTaskRepresentation = "";
 
 	protected OpenmlConnector apiconnector;
-	protected Config openmlconfig;
+	protected WekaConfig openmlconfig;
 
-	public TaskResultProducer(OpenmlConnector apiconnector, Config openmlconfig) {
+	public TaskResultProducer(OpenmlConnector apiconnector, WekaConfig openmlconfig) {
 		super();
 		this.m_SplitEvaluator = new OpenmlClassificationSplitEvaluator();
 		this.apiconnector = apiconnector;
@@ -271,7 +269,7 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 			throw new Exception("No task set");
 		}
 
-		if (CHECK_DATABASE) {
+		if (openmlconfig.getSkipRunPerformedTest() == false) {
 			Integer setupId = WekaAlgorithm.getSetupId((String) tse.getKey()[0], (String) tse.getKey()[1], apiconnector);
 
 			if (setupId != null) {
@@ -376,14 +374,12 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 							}
 						}
 					}
-					//String modelWaitForFull = openmlconfig.getModelFullDataset();
-					String modelWaitForFull = openmlconfig.get("model_full_dataset"); // TODO: replace with above
 					
-					boolean waitForFullModel = modelWaitForFull == null ? true : (modelWaitForFull.equals("false") ? false : true);
+					boolean modelFullDataset = openmlconfig.getModelFullDataset();
 					if (m_ResultListener instanceof TaskResultListener) {
 						((TaskResultListener) m_ResultListener).acceptResultsForSending(m_Task, m_Instances, repeat, fold, (useSamples ? sample : null),
 								tse.getClassifier(), (String) tse.getKey()[1], rowids.get(foldSampleIdx(fold, sample)), tse.recentPredictions(), userMeasures,
-								trace, waitForFullModel);
+								trace, modelFullDataset);
 					}
 				} catch (UnsupportedAttributeTypeException ex) {
 					// Save the train and test data sets for debugging purposes?
