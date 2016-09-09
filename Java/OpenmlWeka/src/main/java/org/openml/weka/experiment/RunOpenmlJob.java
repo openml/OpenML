@@ -95,4 +95,16 @@ public class RunOpenmlJob implements CommandlineRunnable {
 			}
 		}
 	}
+
+	@Override
+	public void postExecution() throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void preExecution() throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
 }
