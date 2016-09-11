@@ -40,7 +40,7 @@ public class Delete {
 		Config c = new Config();
 		OpenmlConnector connector = new OpenmlConnector( c.getServer(), c.getApiKey() );
 		connector.setVerboseLevel(1);
-		int[] ids = QueryUtils.getIdsFromDatabase(connector, sql);
+		Integer[] ids = QueryUtils.getIdsFromDatabase(connector, sql);
 		
 		Conversion.log( "OK", "Init", "Total runs to be deleted: " + ids.length );
 		for( int id : ids ) {

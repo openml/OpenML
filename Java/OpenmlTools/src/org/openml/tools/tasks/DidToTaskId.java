@@ -52,7 +52,7 @@ public class DidToTaskId {
 			Input number_samples = new Input("number_samples", "" + numSamples);
 			Input[] inputs = {estimation_procedure, data_set, target_feature, number_samples};
 			
-			Task_new task = new Task_new(null, 3, inputs); // no task_id (will be determined by server), task type id = 2, and give inputs
+			Task_new task = new Task_new(null, 3, inputs, null); // no task_id (will be determined by server), task type id = 2, and give inputs
 			File taskFile = Conversion.stringToTempFile(xstream.toXML(task), "task", "xml");
 			
 			try {

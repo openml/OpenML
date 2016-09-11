@@ -40,7 +40,7 @@ public class Reset {
 		Config c = new Config();
 		OpenmlConnector connector = new OpenmlConnector( c.getServer(), c.getApiKey() );
 		
-		int[] ids = QueryUtils.getIdsFromDatabase(connector, sql);
+		Integer[] ids = QueryUtils.getIdsFromDatabase(connector, sql);
 		
 		Conversion.log( "OK", "Init", "Total runs to be resetted: " + ids.length );
 		for( int id : ids ) {
