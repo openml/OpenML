@@ -13,8 +13,8 @@ import weka.filters.unsupervised.instance.Randomize;
 public class DataToTabular {
 
 	public static void main(String[] args) throws Exception {
-		String fileLocation = "/home/rijnjnvan/data/mushroom.arff";
-		int numInstances = 35; // 51 for landscape, 35 for portrait
+		String fileLocation = "/home/rijnjnvan/data/dataset.arff";
+		int numInstances = 105; // 51 for landscape, 35 for portrait
 		
 		// black=k,brown=n,buff=b,chocolate=h,gray=g,
 		// green=r,orange=o,pink=p,purple=u,red=e,
@@ -108,41 +108,26 @@ public class DataToTabular {
 		attributeMapper.put("spore-print-color","\\specialcell[t]{spore-print\\\\color}");
 		
 	//	Integer[] attributes = {2,4,12,13,19,20,21,22}; // portrait
-		Integer[] attributes = {2,4,6,7,8,11,12,14,19,20,21,-1,22}; // landscape
-	//	Integer[] attributes = {0,1,2,3,4};
+	//	Integer[] attributes = {2,4,6,7,8,11,12,14,19,20,21,-1,22}; // landscape
+		Integer[] attributes = {0,1,2,3};
 		
-		String ls = "";
-		for (int i = 0; i < attributes.length; ++i) {
-			ls += "l ";
-		}
 		
 		Instances dataset = new Instances(new FileReader(new File(fileLocation)));
 		
-		dataset = InstancesHelper.applyFilter(dataset, new Randomize(), "-S 42");
+	//	dataset = InstancesHelper.applyFilter(dataset, new Randomize(), "-S 42");
 		
-		System.out.println("\\begin{tabular}{"+ls+"}");
-		System.out.println("\\hline");
+		boolean twoCols = true;
 		
-		for (Integer idx : attributes) {
-			if (idx > attributes[0] || idx == -1) {
-				System.out.print(" & ");
+		printHeader(attributes, attributeMapper, dataset);
+		
+		for (int i = 0, inCol = 0; i < numInstances; ++i, ++inCol) {
+			if (twoCols && i == Math.ceil(numInstances * 1.0 / 2)) {
+				System.out.println("\\hline\n\\end{tabular}\\hspace{0.4cm}");
+
+				printHeader(attributes, attributeMapper, dataset);
+				inCol = 0;
 			}
-			
-			String name;
-			if (idx == -1) {
-				name = "\\ldots";
-			} else {
-				name = dataset.attribute(idx).name();
-			}
-			
-			if (attributeMapper.containsKey(name)) {
-				name = attributeMapper.get(name);
-			}
-			System.out.print(name.replace('-', ' '));
-		}
-		System.out.println(" \\\\\n\\hline");
-		for (int i = 0; i < numInstances; ++i) {
-			if (i % 2 == 0) System.out.print("\\rowcolor{columnGray} "); 
+			if (inCol % 2 == 0) System.out.print("\\rowcolor{columnGray} "); 
 			for (Integer idx : attributes) {
 				String value; 
 				String attribute; 
@@ -167,11 +152,40 @@ public class DataToTabular {
 				if (idx > attributes[0] || idx == -1) {
 					System.out.print(" & ");
 				}
-				System.out.print(value);
+				System.out.print(value.replace("_", "\\_"));
 			}
 			System.out.println(" \\\\");
 		}
 		System.out.println("\\hline\n\\end{tabular}");
 	}
 	
+	public static void printHeader(Integer[] attributes, Map<String, String> attributeMapper, Instances dataset) {
+
+		String ls = "";
+		for (int i = 0; i < attributes.length; ++i) {
+			ls += "l ";
+		}
+		System.out.println("\\begin{tabular}{"+ls+"}");
+		
+		System.out.println("\\hline");
+		
+		for (Integer idx : attributes) {
+			if (idx > attributes[0] || idx == -1) {
+				System.out.print(" & ");
+			}
+			
+			String name;
+			if (idx == -1) {
+				name = "\\ldots";
+			} else {
+				name = dataset.attribute(idx).name();
+			}
+			
+			if (attributeMapper.containsKey(name)) {
+				name = attributeMapper.get(name);
+			}
+			System.out.print(name.replace('-', ' '));
+		}
+		System.out.println(" \\\\\n\\hline");
+	}
 }
