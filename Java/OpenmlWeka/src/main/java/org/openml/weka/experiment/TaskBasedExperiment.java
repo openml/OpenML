@@ -158,6 +158,7 @@ public class TaskBasedExperiment extends Experiment {
 						}
 
 						Conversion.log("INFO", "Skip", "Skipping run "+classifierName+" (setup #"+setupId+") repeat "+m_RunNumber+", already available. Run ids: " + runIds);
+						advanceCounters();
 						return;
 					}
 				} catch (Exception e) {}
