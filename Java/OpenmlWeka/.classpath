@@ -16,7 +16,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/apiconnector"/>
 	<classpathentry kind="lib" path="lib/commons-math3-3.6.1.jar"/>
 	<classpathentry kind="lib" path="dependencies/multisearch-2016.6.7.jar"/>
-	<classpathentry kind="lib" path="/home/rijnjnvan/apps/weka-3-9-0/weka.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="/home/vanrijn/appl/weka-3-9-0/weka.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

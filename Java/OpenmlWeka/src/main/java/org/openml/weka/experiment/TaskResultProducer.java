@@ -1,7 +1,6 @@
 package org.openml.weka.experiment;
 
 import java.io.FileReader;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,8 +13,6 @@ import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.models.Metric;
 import org.openml.apiconnector.models.MetricScore;
 import org.openml.apiconnector.xml.DataSetDescription;
-import org.openml.apiconnector.xml.RunList;
-import org.openml.apiconnector.xml.RunList.Run;
 import org.openml.apiconnector.xml.Task;
 import org.openml.apiconnector.xml.Task.Input.Data_set;
 import org.openml.apiconnector.xml.Task.Input.Estimation_procedure;
@@ -125,14 +122,12 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 
 		m_NumFolds = 1;
 		m_NumSamples = 1;
-		try {
-			m_NumFolds = TaskInformation.getNumberOfFolds(t);
-		} catch (Exception e) {
-		}
-		try {
-			m_NumSamples = TaskInformation.getNumberOfSamples(t);
-		} catch (Exception e) {
-		}
+		try { m_NumFolds = TaskInformation.getNumberOfFolds(t); } catch (Exception e) { }
+		try { m_NumSamples = TaskInformation.getNumberOfSamples(t); } catch (Exception e) { }
+	}
+	
+	public Object getSplitEvaluatorKey(int index) {
+		return m_SplitEvaluator.getKey()[index];
 	}
 
 	@Override
@@ -140,93 +135,7 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 		throw new RuntimeException("TaskResultProducer Exception: function setInstances may not be invoked. Use setTask instead. ");
 	}
 
-	/**
-	 * Gets the names of each of the columns produced for a single run. This
-	 * method should really be static.
-	 * 
-	 * @return an array containing the name of each column
-	 */
-	@Override
-	public String[] getKeyNames() {
-		// TODO: also add keys of splitevaluator again, for analyse panel
-		// String[] keyNames = m_SplitEvaluator.getKeyNames();
-		// Add in the names of our extra key fields
-		String[] newKeyNames = new String[/* keyNames.length + */5];
-		newKeyNames[0] = DATASET_FIELD_NAME;
-		newKeyNames[1] = RUN_FIELD_NAME;
-		newKeyNames[2] = FOLD_FIELD_NAME;
-		newKeyNames[3] = SAMPLE_FIELD_NAME;
-		newKeyNames[4] = TASK_FIELD_NAME;
-		// System.arraycopy(keyNames, 0, newKeyNames, 5, keyNames.length);
-		return newKeyNames;
-	}
-
-	/**
-	 * Gets the data types of each of the columns produced for a single run.
-	 * This method should really be static.
-	 * 
-	 * @return an array containing objects of the type of each column. The
-	 *         objects should be Strings, or Doubles.
-	 */
-	@Override
-	public Object[] getKeyTypes() {
-
-		// TODO: also add keys of splitevaluator again, for analyse panel
-		// Object[] keyTypes = m_SplitEvaluator.getKeyTypes();
-		// Add in the types of our extra fields
-		Object[] newKeyTypes = new String[/* keyTypes.length + */5];
-		newKeyTypes[0] = new String();
-		newKeyTypes[1] = new String();
-		newKeyTypes[2] = new String();
-		newKeyTypes[3] = new String();
-		newKeyTypes[4] = new String();
-		// System.arraycopy(keyTypes, 0, newKeyTypes, 5, keyTypes.length);
-		return newKeyTypes;
-	}
-
-	/**
-	 * Gets the names of each of the columns produced for a single run. This
-	 * method should really be static.
-	 * 
-	 * @return an array containing the name of each column
-	 */
-	@Override
-	public String[] getResultNames() {
-
-		// TODO: also add keys of splitevaluator again, for analyse panel
-		// String[] resultNames = m_SplitEvaluator.getResultNames();
-		// Add in the names of our extra Result fields
-		String[] newResultNames = new String[/* resultNames.length + */1];
-		newResultNames[0] = TIMESTAMP_FIELD_NAME;
-		// System.arraycopy(resultNames, 0, newResultNames, 1,
-		// resultNames.length);
-		return newResultNames;
-	}
-
-	/**
-	 * Gets the data types of each of the columns produced for a single run.
-	 * This method should really be static.
-	 * 
-	 * 
-	 * @return an array containing objects of the type of each column. The
-	 *         objects should be Strings, or Doubles.
-	 */
-	@Override
-	public Object[] getResultTypes() {
-
-		// TODO: also add keys of splitevaluator again, for analyse panel
-		// Object[] resultTypes = m_SplitEvaluator.getResultTypes();
-		// Add in the types of our extra Result fields
-		Object[] newResultTypes = new Object[/* resultTypes.length + */1];
-		newResultTypes[0] = new Double(0);
-		// System.arraycopy(resultTypes, 0, newResultTypes, 1,
-		// resultTypes.length);
-		return newResultTypes;
-	}
-
 	public void doFullRun() throws Exception {
-		// TODO run performed test
-		
 		Conversion.log("OK", "Total Model", "Started building a model over the full dataset. ");
 		OpenmlSplitEvaluator tse = ((OpenmlSplitEvaluator) m_SplitEvaluator);
 
@@ -269,31 +178,6 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 
 		if (m_Task == null) {
 			throw new Exception("No task set");
-		}
-		
-		if (openmlconfig.getSkipRunPerformedTest() == false) {
-			Integer setupId = WekaAlgorithm.getSetupId((String) tse.getKey()[0], (String) tse.getKey()[1], apiconnector);
-
-			if (setupId != null) {
-				List<Integer> taskIds = new ArrayList<Integer>();
-				taskIds.add(m_Task.getTask_id());
-				List<Integer> setupIds = new ArrayList<Integer>();
-				setupIds.add(setupId);
-
-				try {
-					RunList rl = apiconnector.runList(taskIds, setupIds);
-
-					if (rl.getRuns().length > 0) {
-						List<Integer> runIds = new ArrayList<Integer>();
-						for (Run r : rl.getRuns()) {
-							runIds.add(r.getRun_id());
-						}
-
-						Conversion.log("INFO", "Skip", "Skipping run, already available. Run ids: " + runIds);
-						return;
-					}
-				} catch (Exception e) {}
-			}
 		}
 
 		// creating all empty copies for each fold

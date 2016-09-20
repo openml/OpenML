@@ -4,12 +4,18 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.File;
 import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.DefaultListModel;
 
+import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.algorithms.TaskInformation;
 import org.openml.apiconnector.io.OpenmlConnector;
+import org.openml.apiconnector.xml.RunList;
 import org.openml.apiconnector.xml.Task;
+import org.openml.apiconnector.xml.RunList.Run;
+import org.openml.weka.algorithm.WekaAlgorithm;
 import org.openml.weka.algorithm.WekaConfig;
 
 import weka.classifiers.Classifier;
@@ -129,7 +135,36 @@ public class TaskBasedExperiment extends Experiment {
 			}
 
 		}
+		
+		if (openmlconfig.getAvoidDuplicateRuns()) {
+			String classifierName = (String) ((TaskResultProducer) m_ResultProducer).getSplitEvaluatorKey(0);
+			String classifierOptions = (String) ((TaskResultProducer) m_ResultProducer).getSplitEvaluatorKey(1);
+			
+			Integer setupId = WekaAlgorithm.getSetupId(classifierName, classifierOptions, apiconnector);
 
+			if (setupId != null) {
+				List<Integer> taskIds = new ArrayList<Integer>();
+				taskIds.add(m_CurrentTask.getTask_id());
+				List<Integer> setupIds = new ArrayList<Integer>();
+				setupIds.add(setupId);
+
+				try {
+					RunList rl = apiconnector.runList(taskIds, setupIds);
+
+					if (rl.getRuns().length > 0) {
+						List<Integer> runIds = new ArrayList<Integer>();
+						for (Run r : rl.getRuns()) {
+							runIds.add(r.getRun_id());
+						}
+
+						Conversion.log("INFO", "Skip", "Skipping run "+classifierName+" (setup #"+setupId+") repeat "+m_RunNumber+", already available. Run ids: " + runIds);
+						return;
+					}
+				} catch (Exception e) {}
+			}
+		}
+		
+		
 		m_ResultProducer.doRun(m_RunNumber);
 
 		// before advancing the counters

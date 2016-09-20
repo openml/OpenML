@@ -5,6 +5,7 @@ import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.Job;
+import org.openml.weka.algorithm.WekaConfig;
 
 import weka.core.CommandlineRunnable;
 import weka.core.Utils;
@@ -17,9 +18,13 @@ public class RunOpenmlJob implements CommandlineRunnable {
 		rj.run(rj, args);
 	}
 
-	public static void obtainTask(int ttid, Config config, OpenmlConnector apiconnector) {
+	public static void obtainTask(int ttid, WekaConfig config, OpenmlConnector apiconnector) {
 		try {
-			Job j = apiconnector.jobRequest("Weka_" + Version.VERSION, "" + ttid);
+			String task_tag = config.getJobRequestTaskTag();
+			String setup_tag = config.getJobRequestSetupTag();
+			Integer setupId = config.getJobRequestSetupId();
+			
+			Job j = apiconnector.jobRequest("Weka_" + Version.VERSION, "" + ttid, task_tag, setup_tag, setupId);
 			
 			Conversion.log("OK", "Obtain Task", "Task: " + j.getTask_id() + "; learner: " + j.getLearner());
 			
@@ -57,7 +62,7 @@ public class RunOpenmlJob implements CommandlineRunnable {
 		String strTaskid;
 		String setup_string;
 		
-		Config config = new Config();
+		WekaConfig config = new WekaConfig();
 		OpenmlConnector apiconnector;
 
 		String username = config.getApiKey();

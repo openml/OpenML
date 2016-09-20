@@ -34,15 +34,30 @@ public class WekaConfig extends Config {
 	
 
 	/**
-	 * @return Whether to build a model over full dataset in runs (takes time)
+	 * @return Whether to avoid duplicate runs
 	 */
-	public boolean getSkipRunPerformedTest() {
-		if (get("skip_run_performed_test") == null) {
-			return false; // default value
+	public boolean getAvoidDuplicateRuns() {
+		if (get("avoid_duplicate_runs") == null) {
+			return true; // default value
 		}
-		if (get("skip_run_performed_test").equals("true")) {
-			return true;
+		if (get("avoid_duplicate_runs").equals("false")) {
+			return false;
 		}
-		return false;
+		return true;
+	}
+	
+	public String getJobRequestTaskTag() {
+		return get("job_request_task_tag");
+	}
+	
+	public String getJobRequestSetupTag() {
+		return get("job_request_setup_tag");
+	}
+	
+	public Integer getJobRequestSetupId() {
+		if (get("job_request_setup_id") != null) {
+			return Integer.parseInt(get("job_request_setup_id"));
+		}
+		return null;
 	}
 }
