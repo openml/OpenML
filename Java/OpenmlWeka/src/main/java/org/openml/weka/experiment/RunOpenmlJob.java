@@ -3,7 +3,6 @@ package org.openml.weka.experiment;
 import org.apache.commons.lang3.ArrayUtils;
 import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.io.OpenmlConnector;
-import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.Job;
 import org.openml.weka.algorithm.WekaConfig;
 
