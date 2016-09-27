@@ -6,6 +6,14 @@ public class WekaConfig extends Config {
 	
 	private static final long serialVersionUID = 5388614163709096253L;
 
+	public WekaConfig() {
+		super();
+	}
+	
+	public WekaConfig(String config) {
+		super(config);
+	}
+	
 	/**
 	 * @return Whether to build a model over full dataset in runs (takes time)
 	 */

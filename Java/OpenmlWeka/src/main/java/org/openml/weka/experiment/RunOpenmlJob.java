@@ -61,7 +61,15 @@ public class RunOpenmlJob implements CommandlineRunnable {
 		String strTaskid;
 		String setup_string;
 		
-		WekaConfig config = new WekaConfig();
+		WekaConfig config;
+		
+		
+		try {
+			config = new WekaConfig(Utils.getOption("config", args));
+		} catch (Exception e) {
+			config = new WekaConfig();
+		}
+		
 		OpenmlConnector apiconnector;
 
 		String username = config.getApiKey();

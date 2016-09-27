@@ -20,7 +20,6 @@ import org.openml.apiconnector.xml.EvaluationScore;
 import org.openml.apiconnector.xml.Run;
 import org.openml.apiconnector.xml.RunEvaluate;
 import org.openml.apiconnector.xml.RunEvaluation;
-import org.openml.apiconnector.xml.RunReset;
 import org.openml.apiconnector.xml.RunTrace;
 import org.openml.apiconnector.xml.Task;
 import org.openml.apiconnector.xml.Task.Input.Data_set;
