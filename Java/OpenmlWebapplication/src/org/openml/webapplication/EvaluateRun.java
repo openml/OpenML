@@ -272,7 +272,11 @@ public class EvaluateRun {
 			Map<String,String> parameters = new HashMap<String, String>();
 			for (int j = 0; j < parameterIndexes.size(); ++j) {
 				int attIdx = parameterIndexes.get(j);
-				parameters.put(traceDataset.attribute(attIdx).name(),current.stringValue(attIdx));
+				if (traceDataset.attribute(attIdx).isNumeric()) {
+					parameters.put(traceDataset.attribute(attIdx).name(),current.value(attIdx) + "");
+				} else {
+					parameters.put(traceDataset.attribute(attIdx).name(),current.stringValue(attIdx));
+				}
 			}
 			String setup_string = new JSONObject(parameters).toString();
 			
