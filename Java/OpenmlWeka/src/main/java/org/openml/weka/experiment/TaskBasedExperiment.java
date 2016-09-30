@@ -249,22 +249,26 @@ public class TaskBasedExperiment extends Experiment {
 
 	public static void main(String[] args) {
 		try {
-			WekaConfig openmlconfig = new WekaConfig();
-
-			if (openmlconfig.getApiKey() == null) {
-				throw new Exception("No Api Key provided in config file. ");
-			}
-
-			OpenmlConnector apiconnector;
-			if (openmlconfig.getServer() != null) {
-				apiconnector = new OpenmlConnector(openmlconfig.getServer(), openmlconfig.getApiKey());
+			String strConfig;
+			WekaConfig config;
+			
+			try { strConfig = Utils.getOption("config", args); } catch (Exception e) { strConfig = null; }
+			if (strConfig != null & strConfig.equals("") == false) {
+				config = new WekaConfig(strConfig);
 			} else {
-				apiconnector = new OpenmlConnector(openmlconfig.getApiKey());
+				config = new WekaConfig();
+			}
+			
+			OpenmlConnector apiconnector;
+			if (config.getServer() != null) {
+				apiconnector = new OpenmlConnector(config.getServer(), config.getApiKey());
+			} else {
+				apiconnector = new OpenmlConnector(config.getApiKey());
 			}
 
-			TaskBasedExperiment exp = new TaskBasedExperiment(new Experiment(), apiconnector, openmlconfig);
-			ResultProducer rp = new TaskResultProducer(apiconnector, openmlconfig);
-			TaskResultListener rl = new TaskResultListener(apiconnector, openmlconfig);
+			TaskBasedExperiment exp = new TaskBasedExperiment(new Experiment(), apiconnector, config);
+			ResultProducer rp = new TaskResultProducer(apiconnector, config);
+			TaskResultListener rl = new TaskResultListener(apiconnector, config);
 			SplitEvaluator se = new OpenmlClassificationSplitEvaluator();
 			Classifier sec = null;
 

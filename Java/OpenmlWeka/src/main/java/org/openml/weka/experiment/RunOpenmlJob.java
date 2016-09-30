@@ -28,10 +28,12 @@ public class RunOpenmlJob implements CommandlineRunnable {
 			Conversion.log("OK", "Obtain Task", "Task: " + j.getTask_id() + "; learner: " + j.getLearner());
 			
 			String[] classArgs = Utils.splitOptions(j.getLearner());
-			String[] taskArgs = new String[3];
-			taskArgs[0] = "-T";
-			taskArgs[1] = "" + j.getTask_id();
-			taskArgs[2] = "-C";
+			String[] taskArgs = new String[5];
+			taskArgs[0] = "-config";
+			taskArgs[1] = config.toString();
+			taskArgs[2] = "-T";
+			taskArgs[3] = "" + j.getTask_id();
+			taskArgs[4] = "-C";
 
 			TaskBasedExperiment.main(ArrayUtils.addAll(taskArgs, classArgs));
 		} catch (Exception e) {
@@ -41,13 +43,15 @@ public class RunOpenmlJob implements CommandlineRunnable {
 		}
 	}
 	
-	public static void executeTask(Integer task_id, String setup_string) throws Exception {
+	public static void executeTask(WekaConfig config, Integer task_id, String setup_string) throws Exception {
 		String[] classArgs = Utils.splitOptions(setup_string);
-		String[] taskArgs = new String[3];
-		taskArgs[0] = "-T";
-		taskArgs[1] = "" + task_id;
-		taskArgs[2] = "-C";
-
+		String[] taskArgs = new String[5];
+		taskArgs[0] = "-config";
+		taskArgs[1] = config.toString();
+		taskArgs[2] = "-T";
+		taskArgs[3] = "" + task_id;
+		taskArgs[4] = "-C";
+		
 		TaskBasedExperiment.main(ArrayUtils.addAll(taskArgs, classArgs));
 	}
 	
@@ -61,12 +65,13 @@ public class RunOpenmlJob implements CommandlineRunnable {
 		String strTaskid;
 		String setup_string;
 		
+		String strConfig;
 		WekaConfig config;
 		
-		
-		try {
-			config = new WekaConfig(Utils.getOption("config", args));
-		} catch (Exception e) {
+		try { strConfig = Utils.getOption("config", args); } catch (Exception e) { strConfig = null; }
+		if (strConfig != null & strConfig.equals("") == false) {
+			config = new WekaConfig(strConfig);
+		} else {
 			config = new WekaConfig();
 		}
 		
@@ -100,9 +105,8 @@ public class RunOpenmlJob implements CommandlineRunnable {
 			}
 		} else {
 			try {
-				executeTask(Integer.parseInt(strTaskid), setup_string);
+				executeTask(config, Integer.parseInt(strTaskid), setup_string);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
