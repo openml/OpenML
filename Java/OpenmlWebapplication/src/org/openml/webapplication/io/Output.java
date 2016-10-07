@@ -48,6 +48,7 @@ public class Output {
 			// here all measures for regression tasks
 			m.put(new Metric("mean_absolute_error", "openml.evaluation.mean_absolute_error(1.0)"), new MetricScore( evaluator.meanAbsoluteError(), (int) evaluator.numInstances() ) );
 			m.put(new Metric("mean_prior_absolute_error", "openml.evaluation.mean_prior_absolute_error(1.0)"), new MetricScore( evaluator.meanPriorAbsoluteError(), (int) evaluator.numInstances() ) );
+			m.put(new Metric("number_of_instances", "openml.evaluation.number_of_instances(1.0)"), new MetricScore( evaluator.numInstances(), (int) evaluator.numInstances() ) );
 			m.put(new Metric("root_mean_squared_error", "openml.evaluation.root_mean_squared_error(1.0)"), new MetricScore( evaluator.rootMeanSquaredError(), (int) evaluator.numInstances() ) );
 			m.put(new Metric("root_mean_prior_squared_error", "openml.evaluation.root_mean_prior_squared_error(1.0)"), new MetricScore( evaluator.rootMeanPriorSquaredError(), (int) evaluator.numInstances() ) );
 			m.put(new Metric("relative_absolute_error", "openml.evaluation.relative_absolute_error(1.0)"), new MetricScore( evaluator.relativeAbsoluteError() / 100, (int) evaluator.numInstances() ) );

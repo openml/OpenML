@@ -24,6 +24,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Map;
 
+import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.algorithms.MathHelper;
 import org.openml.apiconnector.models.Metric;
 import org.openml.apiconnector.models.MetricScore;
@@ -53,6 +54,8 @@ public class EvaluateStreamPredictions implements PredictionEvaluator {
 	private Map<Metric, MetricScore> globalMeasures;
 	
 	public EvaluateStreamPredictions( URL datasetUrl, URL predictionsUrl, String classAttribute) throws Exception {
+		Conversion.log("OK", "EvaluateBatchPredictions", "dataset url: " + datasetUrl);
+		Conversion.log("OK", "EvaluateBatchPredictions", "splits url : " + predictionsUrl);
 		datasetLoader = new ArffLoader();
 		datasetLoader.setURL(datasetUrl.toString());
 		datasetStructure = new Instances( datasetLoader.getStructure() );
