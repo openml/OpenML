@@ -31,7 +31,8 @@ public class SimpleMetaFeatures extends Characterizer {
 		"MajorityClassSize",
 		"MinorityClassSize",
 		"MajorityClassPercentage",
-		"MinorityClassPerentage"
+		"MinorityClassPerentage",
+		"AutoCorrelation"
 	};
 	
 	@Override
@@ -52,6 +53,7 @@ public class SimpleMetaFeatures extends Characterizer {
 		double Dimensionality = (double) dataset.numAttributes() / (double) dataset.numInstances();
 		int MajorityClassSize = -1;
 		int MinorityClassSize = Integer.MAX_VALUE;
+		double TimeBasedChanges = 0;
 		
 		// update attribute based quality counters
 		for( int i = 0; i < dataset.numAttributes(); ++i ) {
@@ -76,6 +78,15 @@ public class SimpleMetaFeatures extends Characterizer {
 			if (currentInstance.classAttribute().isNominal()) {
 				classDistribution[(int) currentInstance.classValue()] ++;
 			}
+			
+			if (i > 0) {
+				Instance previousInstance = dataset.get(i - 1);
+				if (nominalTarget == false) {
+					TimeBasedChanges += previousInstance.classValue() - currentInstance.classValue();
+				} else {
+					TimeBasedChanges += previousInstance.classValue() == currentInstance.classValue() ? 0 : 1;
+				}
+			}
 		}
 		
 		// update statistics on class attribute
@@ -90,6 +101,7 @@ public class SimpleMetaFeatures extends Characterizer {
 		double PercentageOfNumericFeatures = Conversion.percentage(NumberOfNumericFeatures, dataset.numAttributes());
 		double PercentageOfInstancesWithMissingValues = Conversion.percentage(NumberOfInstancesWithMissingValues, dataset.numInstances());
 		double PercentageOfMissingValues = Conversion.percentage(NumberOfMissingValues, dataset.numAttributes() * dataset.numInstances());
+		double AutoCorrelation = (dataset.numInstances() - 1 - TimeBasedChanges) / (dataset.numInstances() - 1);
 		
 		resultQualities.put("NumberOfInstances", (double) dataset.numInstances());
 		resultQualities.put("NumberOfFeatures", (double) dataset.numAttributes());
@@ -104,6 +116,7 @@ public class SimpleMetaFeatures extends Characterizer {
 		resultQualities.put("PercentageOfSymbolicFeatures", PercentageOfSymbolicFeatures);
 		resultQualities.put("PercentageOfBinaryFeatures", PercentageOfBinaryFeatures);
 		resultQualities.put("Dimensionality", Dimensionality);
+		resultQualities.put("AutoCorrelation", AutoCorrelation);
 		
 		if (nominalTarget) {
 			resultQualities.put("NumberOfClasses", (double) NumberOfClasses);
