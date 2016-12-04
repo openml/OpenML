@@ -149,7 +149,7 @@ public class TaskBasedExperiment extends Experiment {
 				setupIds.add(setupId);
 
 				try {
-					RunList rl = apiconnector.runList(taskIds, setupIds);
+					RunList rl = apiconnector.runList(taskIds, setupIds, null, null);
 
 					if (rl.getRuns().length > 0) {
 						List<Integer> runIds = new ArrayList<Integer>();
