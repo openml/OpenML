@@ -36,6 +36,7 @@ import org.openml.apiconnector.xml.DataSetDescription;
 import org.openml.apiconnector.xml.Task;
 import org.openml.apiconnector.xml.Task.Input.Estimation_procedure;
 import org.openml.webapplication.features.FantailConnector;
+import org.openml.webapplication.generatefolds.ChallengeSets;
 import org.openml.webapplication.generatefolds.GenerateFolds;
 import org.openml.webapplication.io.Output;
 
@@ -53,13 +54,14 @@ public class Main {
 		options.addOption("id", true, "The id of the dataset/run used");
 		options.addOption("config", true, "The config string describing the settings for API interaction");
 		options.addOption("f", true, "The function to invole");
-		options.addOption("o", true, "The output file");
+		options.addOption("o", true, "The output file / offset");
 		options.addOption("r", true, "The run id");
 		options.addOption("t", true, "The task id");
 		options.addOption("x", false, "Flag determining whether we should pick a random id");
 		options.addOption("m", false, "Flag determining whether the output of the splits file should be presented as a md5 hash");
 		options.addOption("test", true, "A list of rowids for a holdout set (fold generation)" );
 		options.addOption("tag", true, "A tag that will get priority in processing fantail features. " );
+		options.addOption("mode", true, "{train,test}" );
 		
 		try {
 			CommandLine cli  = parser.parse(options, args);
@@ -187,7 +189,7 @@ public class Main {
 					
 				} else if(function.equals("all_wrong")) {
 					
-					if( cli.hasOption("-r") && cli.hasOption("-t") ) {
+					if(cli.hasOption("-r") && cli.hasOption("-t")) {
 						
 						String[] run_ids_splitted = cli.getOptionValue("r").split(",");
 						Integer task_id = Integer.parseInt(cli.getOptionValue("t"));
@@ -225,6 +227,22 @@ public class Main {
 					} else {
 						System.out.println( Output.styleToJsonError("Missing arguments for function 'all_wrong'. Need r (run ids, comma separated) and t (task_id)") );
 					}
+				} else if(function.equals("challenge")) {
+					Integer task_id = Integer.parseInt(cli.getOptionValue("t"));
+					boolean isTrain = cli.getOptionValue("mode").equals("train");
+					Integer offset = null;
+					
+					if (cli.hasOption("-o")) {
+						offset = Integer.parseInt(cli.getOptionValue("o"));
+					}
+					
+					ChallengeSets challenge = new ChallengeSets(apiconnector, task_id);
+					if (isTrain) {
+						challenge.train(offset);
+					} else {
+						challenge.test(offset);
+					}
+					
 				} else if (function.equals("db_consistency")) {
 					DatabaseConsistency db_consistency = new DatabaseConsistency(apiconnector);
 					
