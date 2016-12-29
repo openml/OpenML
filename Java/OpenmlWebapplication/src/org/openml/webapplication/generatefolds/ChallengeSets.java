@@ -31,6 +31,11 @@ public class ChallengeSets {
 	
 	public ChallengeSets(OpenmlConnector apiconnector, Integer task_id) throws Exception {
 		Task current = apiconnector.taskGet(task_id);
+		
+		if (current.getTask_type_id() != 9) {
+			throw new Exception("Task not of type 'Data Stream Challenge': " + task_id);
+		}
+		
 		Data_set ds = TaskInformation.getSourceData(current);
 		int dataset_id = ds.getData_set_id();
 		DataSetDescription dsd = apiconnector.dataGet(dataset_id);
