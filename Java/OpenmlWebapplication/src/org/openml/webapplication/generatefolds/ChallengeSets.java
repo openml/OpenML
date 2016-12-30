@@ -48,7 +48,7 @@ public class ChallengeSets {
 		long batchesAvailable = secondsInProgres / stream_schedule.getBatch_time();
 		long trainAvailableEst = batchesAvailable * stream_schedule.getBatch_size() + stream_schedule.getInitial_batch_size();
 		trainAvailable = Math.min(numInstances, (int) trainAvailableEst);
-		testAvailable = trainAvailable + stream_schedule.getBatch_size();
+		testAvailable = Math.min(numInstances, trainAvailable + stream_schedule.getBatch_size());
 				
 		URL dataseturl = apiconnector.getOpenmlFileUrl(dsd.getFile_id(), dsd.getName() + "." + dsd.getFormat());
 		dataset = new Instances(new BufferedReader(Input.getURL(dataseturl)));
