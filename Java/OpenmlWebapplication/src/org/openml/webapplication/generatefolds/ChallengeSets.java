@@ -50,14 +50,19 @@ public class ChallengeSets {
 		trainAvailable = secondsInProgres < 0 ? 0 : Math.min(numInstances, (int) trainAvailableEst);
 		testAvailable = secondsInProgres < 0 ? 0 : Math.min(numInstances, trainAvailable + stream_schedule.getBatch_size());
 		
+		// System.out.println(secondsInProgres + "," +trainAvailable  + "," +  testAvailable);
+		
 		URL dataseturl = apiconnector.getOpenmlFileUrl(dsd.getFile_id(), dsd.getName() + "." + dsd.getFormat());
 		dataset = new Instances(new BufferedReader(Input.getURL(dataseturl)));
 		targetAttribute = dataset.attribute(ds.getTarget_feature());
 	}
 	
-	public void train(Integer offset) throws IOException {
+	public void train(Integer offset, Integer numInstances) throws IOException {
 		if (offset == null) {
 			offset = 0;
+		}
+		if (numInstances == null) {
+			numInstances = trainAvailable;
 		}
 		int size = trainAvailable - offset;
 		if (size <= 0) {
@@ -66,16 +71,19 @@ public class ChallengeSets {
 		
 		Conversion.log("OK", "Challenge Train Set", "Range <" + offset + "-" + trainAvailable + "]");
 		Instances trainingSet = new Instances(dataset, size);
-		for (int i = offset; i < trainAvailable; ++i) {
+		for (int i = offset; i < Math.min(offset + numInstances, trainAvailable); ++i) {
 			trainingSet.add((Instance) dataset.get(i).copy());
 		}
 		Output.instanes2file(trainingSet, new OutputStreamWriter(System.out), null);
 	}
 	
-	public void test(Integer offset) throws IOException {
+	public void test(Integer offset, Integer numInstances) throws IOException {
 		if (offset == null) {
 			offset = trainAvailable;
-		} 
+		}
+		if (numInstances == null) {
+			numInstances = testAvailable;
+		}
 		
 		int size = testAvailable - offset;
 		if (size <= 0) {
@@ -85,7 +93,7 @@ public class ChallengeSets {
 		Conversion.log("OK", "Challenge Test Set", "Range <" + offset + "-" + testAvailable + "]");
 		
 		Instances testSet = new Instances(dataset, size);
-		for (int i = offset; i < testAvailable; ++i) {
+		for (int i = offset; i < Math.min(offset + numInstances, testAvailable); ++i) {
 			Instance current = (Instance) dataset.get(i).copy();
 			current.setValue(targetAttribute, Double.NaN);
 			testSet.add(current);

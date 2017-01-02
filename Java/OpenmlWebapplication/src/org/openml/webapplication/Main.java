@@ -62,6 +62,7 @@ public class Main {
 		options.addOption("test", true, "A list of rowids for a holdout set (fold generation)" );
 		options.addOption("tag", true, "A tag that will get priority in processing fantail features. " );
 		options.addOption("mode", true, "{train,test}" );
+		options.addOption("size", true, "Desired size of train/test set" );
 		
 		try {
 			CommandLine cli  = parser.parse(options, args);
@@ -232,16 +233,21 @@ public class Main {
 					Integer task_id = Integer.parseInt(cli.getOptionValue("t"));
 					boolean isTrain = cli.getOptionValue("mode").equals("train");
 					Integer offset = null;
+					Integer size = null;
 					
 					if (cli.hasOption("-o")) {
 						offset = Integer.parseInt(cli.getOptionValue("o"));
+						
+						if (cli.hasOption("-size")) {
+							size = Integer.parseInt(cli.getOptionValue("size"));
+						}
 					}
 					
 					ChallengeSets challenge = new ChallengeSets(apiconnector, task_id);
 					if (isTrain) {
-						challenge.train(offset);
+						challenge.train(offset, size);
 					} else {
-						challenge.test(offset);
+						challenge.test(offset, size);
 					}
 					
 				} else if (function.equals("db_consistency")) {
