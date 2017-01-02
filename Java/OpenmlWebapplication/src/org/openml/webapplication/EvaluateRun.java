@@ -26,6 +26,7 @@ import org.openml.apiconnector.xml.Task.Input.Data_set;
 import org.openml.apiconnector.xml.Task.Input.Estimation_procedure;
 import org.openml.apiconnector.xstream.XstreamXmlMapping;
 import org.openml.webapplication.evaluate.EvaluateBatchPredictions;
+import org.openml.webapplication.evaluate.EvaluateStreamChallenge;
 import org.openml.webapplication.evaluate.EvaluateStreamPredictions;
 import org.openml.webapplication.evaluate.EvaluateSubgroups;
 import org.openml.webapplication.evaluate.EvaluateSurvivalAnalysisPredictions;
@@ -123,7 +124,7 @@ public class EvaluateRun {
 				return;
 			}
 			
-			if(file_ids.get("predictions") == null && file_ids.get("subgroups") == null) { // TODO: this is currently true, but later on we might have tasks that do not require evaluations!
+			if(file_ids.get("predictions") == null && file_ids.get("subgroups") == null && file_ids.get("predictions_0") == null) { // TODO: this is currently true, but later on we might have tasks that do not require evaluations!
 				runevaluation.setError("Required output files not present (e.g., arff predictions). ");
 				File evaluationFile = Conversion.stringToTempFile(xstream.toXML(runevaluation), "run_" + run_id + "evaluations", "xml");
 				
@@ -143,20 +144,21 @@ public class EvaluateRun {
 			Conversion.log( "OK", "Process Run", "Start prediction evaluator. " );
 			// TODO! no string comparisons, do something better
 			String filename_prefix = "Run_" + run_id + "_";
-			if( task.getTask_type().equals("Supervised Data Stream Classification") ) {
+			if( task.getTask_type_id() == 4) { // Supervised Data Stream Classification
 				predictionEvaluator = new EvaluateStreamPredictions(
 					apiconnector.getOpenmlFileUrl(dataset.getFile_id(), dataset.getName()), 
 					apiconnector.getOpenmlFileUrl( file_ids.get( "predictions" ), filename_prefix + "predictions.arff"), 
 					source_data.getTarget_feature());
-			} else if( task.getTask_type().equals("Survival Analysis") ) {
+			} else if (task.getTask_type_id() == 7) { //Survival Analysis
 				predictionEvaluator = new EvaluateSurvivalAnalysisPredictions( 
 						task, 
 						apiconnector.getOpenmlFileUrl(dataset.getFile_id(), dataset.getName()), 
 						new URL(estimationprocedure.getData_splits_url()), 
 						apiconnector.getOpenmlFileUrl( file_ids.get( "predictions" ), filename_prefix + "predictions.arff"));
-			} else if (task.getTask_type().equals("Subgroup Discovery")) {
+			} else if (task.getTask_type_id() == 8) { // Subgroup Discovery
 				predictionEvaluator = new EvaluateSubgroups();
-				
+			} else if (task.getTask_type_id() == 9) { // Stream Challenge
+				predictionEvaluator = new EvaluateStreamChallenge(apiconnector, run_id);
 			} else {
 				predictionEvaluator = new EvaluateBatchPredictions( 
 					task,
@@ -165,7 +167,7 @@ public class EvaluateRun {
 					apiconnector.getOpenmlFileUrl( file_ids.get( "predictions" ), filename_prefix + "predictions.arff"), 
 					estimationprocedure.getType().equals(EstimationProcedure.estimationProceduresTxt[6] ) );
 			}
-			runevaluation.addEvaluationMeasures( predictionEvaluator.getEvaluationScores() );
+			runevaluation.addEvaluationMeasures(predictionEvaluator.getEvaluationScores());
 			
 			if(run_description.getOutputEvaluation() != null) {
 				Conversion.log( "OK", "Process Run", "Start consistency check with user defined measures. (x " + run_description.getOutputEvaluation().length + ")" );
