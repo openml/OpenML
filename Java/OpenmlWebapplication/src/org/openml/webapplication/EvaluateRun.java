@@ -41,33 +41,35 @@ public class EvaluateRun {
 	private final XStream xstream;
 	private final OpenmlConnector apiconnector;
 	
-	public EvaluateRun( OpenmlConnector ac ) throws Exception {
-		this( ac, null, false );
+	public EvaluateRun(OpenmlConnector ac) throws Exception {
+		this(ac, null, false, null);
 	}
 	
-	public EvaluateRun( OpenmlConnector ac, Integer run_id, boolean random ) throws Exception {
+	public EvaluateRun(OpenmlConnector ac, Integer run_id, boolean random, String ttids) throws Exception {
 		apiconnector = ac;
 		xstream = XstreamXmlMapping.getInstance();
 		
 		if( run_id != null ) {
 			evaluate( run_id );
 		} else {
-			run_id = getRunId(random);
+			run_id = getRunId(random, ttids);
 			while( run_id != null ) {
 				Conversion.log("INFO","Evaluate Run","Downloading task " + run_id );
 				evaluate( run_id );
-				run_id = getRunId(random);
+				run_id = getRunId(random, ttids);
 			}
 			Conversion.log( "OK", "Process Run", "No more runs to perform. " );
 		}
 	}
 	
-	public Integer getRunId(boolean random) throws Exception {
+	public Integer getRunId(boolean random, String ttids) throws Exception {
+		String ttidsStr = ttids == null ? "" : " AND `t`.`ttid` IN ("+ttids+") ";
 		String sql = 
 			"SELECT `rid`,`start_time`,`processed`,`error` " + 
-			"FROM `run` WHERE `processed` IS NULL AND `error` IS NULL AND error_message IS NULL " + 
+			"FROM `run` `r`, `task` `t` " +
+			"WHERE `r`.`task_id` = `t`.`task_id` " + ttidsStr + 
+			"AND `processed` IS NULL AND `error` IS NULL AND error_message IS NULL " + 
 			"ORDER BY `start_time` ASC LIMIT 0, 100; "; 
-		
 		JSONArray runJson = (JSONArray) apiconnector.freeQuery( sql ).get("data");
 		
 		int randomint = 0;
