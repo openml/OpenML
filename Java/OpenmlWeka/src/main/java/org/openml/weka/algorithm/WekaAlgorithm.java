@@ -127,7 +127,7 @@ public class WekaAlgorithm {
 			description = ((TechnicalInformationHandler) classifier).getTechnicalInformation().toString();
 		}
 		
-		Flow i = new Flow( name, dependencies + "_" + version, description, language, dependencies );
+		Flow i = new Flow( name, classifier.getClass().getName(), dependencies + "_" + version, description, language, dependencies );
 		if (tags != null) {
 			for(String tag : tags) {
 				i.addTag(tag);
@@ -201,54 +201,56 @@ public class WekaAlgorithm {
 	
 	public static ArrayList<Parameter_setting> getParameterSetting(String[] parameters, Flow implementation) {
 		ArrayList<Parameter_setting> settings = new ArrayList<Parameter_setting>();
-		for(Parameter p : implementation.getParameter()) {
-			try {
-				ParameterType type = ParameterType.fromString(p.getData_type());
-				switch(type) {
-				case KERNEL:
-					String kernelvalue = Utils.getOption(p.getName(), parameters);
-					try {
-						String kernelname = kernelvalue.substring(0, kernelvalue.indexOf(' '));
-						String[] kernelsettings = Utils.splitOptions(kernelvalue.substring(kernelvalue.indexOf(' ')+1));
-						ArrayList<Parameter_setting> kernelresult = getParameterSetting(kernelsettings, implementation.getSubImplementation(p.getName()));
-						settings.addAll(kernelresult);
-						settings.add(new Parameter_setting(implementation.getId(), p.getName(), kernelname));
-					} catch(ClassNotFoundException e) {}
-					break;
-				case BASELEARNER:
-					String baselearnervalue = Utils.getOption(p.getName(), parameters);
-					try {
-						String[] baselearnersettings = Utils.partitionOptions(parameters);
-						settings.addAll(getParameterSetting(baselearnersettings, implementation.getSubImplementation(p.getName())));
-						settings.add(new Parameter_setting(implementation.getId(), p.getName(), baselearnervalue));
-					} catch(ClassNotFoundException e) {}
-					break;
-				case OPTION:
-					String optionvalue = Utils.getOption(p.getName(), parameters);
-					if(optionvalue != "") {
-						settings.add(new Parameter_setting(implementation.getId(), p.getName(), optionvalue));
-					}
-					break;
-				case FLAG:
-					boolean flagvalue = Utils.getFlag(p.getName(), parameters);
-					if(flagvalue) {
-						settings.add(new Parameter_setting(implementation.getId(), p.getName(), "true"));
-					}
-					break;
-				case ARRAY:
-					List<String> values = new ArrayList<String>();
-					String currentvalue = Utils.getOption(p.getName(), parameters);
-					while (!currentvalue.equals("")) {
-						values.add(currentvalue);
-						currentvalue = Utils.getOption(p.getName(), parameters);
-					}
-					
-					if(values.size() > 0) {
-						settings.add(new Parameter_setting(implementation.getId(), p.getName(), values.toString()));
-					}
-					break;
-				}	
-			} catch(Exception e) {/*Parameter not found. */}
+		if (implementation.getParameter() != null) {
+			for(Parameter p : implementation.getParameter()) {
+				try {
+					ParameterType type = ParameterType.fromString(p.getData_type());
+					switch(type) {
+					case KERNEL:
+						String kernelvalue = Utils.getOption(p.getName(), parameters);
+						try {
+							String kernelname = kernelvalue.substring(0, kernelvalue.indexOf(' '));
+							String[] kernelsettings = Utils.splitOptions(kernelvalue.substring(kernelvalue.indexOf(' ')+1));
+							ArrayList<Parameter_setting> kernelresult = getParameterSetting(kernelsettings, implementation.getSubImplementation(p.getName()));
+							settings.addAll(kernelresult);
+							settings.add(new Parameter_setting(implementation.getId(), p.getName(), kernelname));
+						} catch(ClassNotFoundException e) {}
+						break;
+					case BASELEARNER:
+						String baselearnervalue = Utils.getOption(p.getName(), parameters);
+						try {
+							String[] baselearnersettings = Utils.partitionOptions(parameters);
+							settings.addAll(getParameterSetting(baselearnersettings, implementation.getSubImplementation(p.getName())));
+							settings.add(new Parameter_setting(implementation.getId(), p.getName(), baselearnervalue));
+						} catch(ClassNotFoundException e) {}
+						break;
+					case OPTION:
+						String optionvalue = Utils.getOption(p.getName(), parameters);
+						if(optionvalue != "") {
+							settings.add(new Parameter_setting(implementation.getId(), p.getName(), optionvalue));
+						}
+						break;
+					case FLAG:
+						boolean flagvalue = Utils.getFlag(p.getName(), parameters);
+						if(flagvalue) {
+							settings.add(new Parameter_setting(implementation.getId(), p.getName(), "true"));
+						}
+						break;
+					case ARRAY:
+						List<String> values = new ArrayList<String>();
+						String currentvalue = Utils.getOption(p.getName(), parameters);
+						while (!currentvalue.equals("")) {
+							values.add(currentvalue);
+							currentvalue = Utils.getOption(p.getName(), parameters);
+						}
+						
+						if(values.size() > 0) {
+							settings.add(new Parameter_setting(implementation.getId(), p.getName(), values.toString()));
+						}
+						break;
+					}	
+				} catch(Exception e) {/*Parameter not found. */}
+			}
 		}
 		return settings;
 	}
