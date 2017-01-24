@@ -151,12 +151,11 @@ public class FantailConnector {
 		if(window_size == null) {
 			sql = 
 				"SELECT q.data, COUNT(*) AS `numQualities`" + tagSelect + 
-				"FROM data_quality q " + tagJoin + 
-				"GROUP BY q.data HAVING numQualities < " + expectedQualities + 
-				"ORDER BY " + tagSort + "q.data LIMIT 0,100";
+				" FROM data_quality q " + tagJoin + 
+				" GROUP BY q.data HAVING numQualities BETWEEN 0 AND " + (expectedQualities-1) + 
+				" ORDER BY " + tagSort + " q.data LIMIT 0,100";
 		}
 			
-		
 		Conversion.log("OK", "FantailQuery", sql);
 		JSONArray runJson = (JSONArray) apiconnector.freeQuery(sql).get("data");
 		
@@ -260,11 +259,16 @@ public class FantailConnector {
 			}
 		}
 		Conversion.log("OK", "Extract Features", "Done generating features, start wrapping up");
-		DataQuality dq = new DataQuality(did, qualities.toArray(new Quality[qualities.size()]));
-		String strQualities = xstream.toXML(dq);
-		
-		DataQualityUpload dqu = apiconnector.dataQualitiesUpload(Conversion.stringToTempFile(strQualities, "qualities_did_" + did, "xml"));
-		Conversion.log("OK", "Extract Features", "DONE: " + dqu.getDid());
+		if(qualities.size()>0){
+			DataQuality dq = new DataQuality(did, qualities.toArray(new Quality[qualities.size()]));
+			String strQualities = xstream.toXML(dq);
+			
+			DataQualityUpload dqu = apiconnector.dataQualitiesUpload(Conversion.stringToTempFile(strQualities, "qualities_did_" + did, "xml"));
+			Conversion.log("OK", "Extract Features", "DONE: " + dqu.getDid());
+		}
+		else{
+			Conversion.log("OK", "Extract Features", "DONE: Nothing to upload");
+		}
 		
 		return true;
 	}
