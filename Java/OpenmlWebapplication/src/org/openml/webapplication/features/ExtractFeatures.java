@@ -119,8 +119,12 @@ public class ExtractFeatures {
 	}
 	
 	public static List<Quality> getQualities(Instances dataset, String defaultClass) {
-		if (defaultClass != null) { 
-			dataset.setClass(dataset.attribute(defaultClass));
+		if (defaultClass != null) {
+			if(defaultClass.contains(",")){
+				dataset.setClass(dataset.attribute(defaultClass.split(",")[0]));
+			} else {
+				dataset.setClass(dataset.attribute(defaultClass));
+			}
 		} else {
 			dataset.setClassIndex(dataset.numAttributes()-1);
 		}
