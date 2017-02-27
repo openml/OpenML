@@ -20,11 +20,7 @@
 package org.openml.webapplication.features;
 
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.json.JSONArray;
@@ -57,6 +53,46 @@ import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.StringToNominal;
 
 public class FantailConnector {
+    public class QualityResult{
+        public QualityResult(Double value, Integer index){
+            this.value = value;
+            this.index = index;
+        }
+
+        Double value;
+        Integer index;
+    }
+
+    public class CharacterizerWrapper {
+        public CharacterizerWrapper(Characterizer characterizer){
+            this.characterizer = characterizer;
+            this.index = null;
+        }
+
+        public CharacterizerWrapper(Characterizer characterizer, int index){
+            this.characterizer = characterizer;
+            this.index = index;
+        }
+
+        public Characterizer characterizer;
+        public Integer index;
+
+        public String[] getIDs() {
+            return characterizer.getIDs();
+        }
+
+        public int getNumMetaFeatures() {
+            return getIDs().length;
+        }
+
+        public Map<String, QualityResult> characterize(Instances instances){
+            Map<String, Double> values =characterizer.characterize(instances);
+            Map <String, QualityResult> result = new HashMap<>();
+            values.forEach((s,v) -> result.put(s, new QualityResult(v, index)));
+            return result;
+        }
+    }
+
 	private final Integer window_size;
 
 	private final String preprocessingPrefix = "-E \"weka.attributeSelection.CfsSubsetEval -P 1 -E 1\" -S \"weka.attributeSelection.BestFirst -D 1 -N 5\" -W ";
@@ -66,18 +102,7 @@ public class FantailConnector {
 	private final String cpDS = "weka.classifiers.trees.DecisionStump";
 	
 	private static final XStream xstream = XstreamXmlMapping.getInstance();
-	private Characterizer[] batchCharacterizers = {
-		new SimpleMetaFeatures(), // done before, but necessary for streams
-		new Statistical(),
-		new NominalAttDistinctValues(),
-		new AttributeEntropy(), 
-		new GenericLandmarker("kNN1N", cp1NN, 2, null),
-		new GenericLandmarker("NaiveBayes", cpNB, 2, null),
-		new GenericLandmarker("DecisionStump", cpDS, 2, null),
-		new GenericLandmarker("CfsSubsetEval_kNN1N", cpASC, 2, Utils.splitOptions(preprocessingPrefix + cp1NN)),
-		new GenericLandmarker("CfsSubsetEval_NaiveBayes", cpASC, 2, Utils.splitOptions(preprocessingPrefix + cpNB)),
-		new GenericLandmarker("CfsSubsetEval_DecisionStump", cpASC, 2, Utils.splitOptions(preprocessingPrefix + cpDS))
-	};
+	private ArrayList<CharacterizerWrapper> batchCharacterizers = new ArrayList<>();
 	
 	private static StreamCharacterizer[] streamCharacterizers;
 	private static OpenmlConnector apiconnector;
@@ -86,22 +111,36 @@ public class FantailConnector {
 		int expectedQualities = 0; 
 		apiconnector = ac;
 		window_size = interval_size;
-		
+
+		Characterizer[] characterizers = {
+                new SimpleMetaFeatures(), // done before, but necessary for streams
+                new Statistical(),
+                new NominalAttDistinctValues(),
+                new AttributeEntropy(),
+                new GenericLandmarker("kNN1N", cp1NN, 2, null),
+                new GenericLandmarker("NaiveBayes", cpNB, 2, null),
+                new GenericLandmarker("DecisionStump", cpDS, 2, null),
+                new GenericLandmarker("CfsSubsetEval_kNN1N", cpASC, 2, Utils.splitOptions(preprocessingPrefix + cp1NN)),
+                new GenericLandmarker("CfsSubsetEval_NaiveBayes", cpASC, 2, Utils.splitOptions(preprocessingPrefix + cpNB)),
+                new GenericLandmarker("CfsSubsetEval_DecisionStump", cpASC, 2, Utils.splitOptions(preprocessingPrefix + cpDS))
+        };
 		// additional parameterized batch landmarkers
 		String zeros = "0";
 		for( int i = 1; i <= 3; ++i ) {
 			zeros += "0";
 			String[] j48Option = { "-C", "." + zeros + "1" };
-			batchCharacterizers = ArrayUtils.add(batchCharacterizers, new GenericLandmarker("J48." + zeros + "1.", "weka.classifiers.trees.J48", 2, j48Option));
+			characterizers = ArrayUtils.add(characterizers, new GenericLandmarker("J48." + zeros + "1.", "weka.classifiers.trees.J48", 2, j48Option));
 			
 			String[] repOption = { "-L", "" + i };
-			batchCharacterizers = ArrayUtils.add(batchCharacterizers, new GenericLandmarker("REPTreeDepth" + i, "weka.classifiers.trees.REPTree", 2, repOption));
+            characterizers = ArrayUtils.add(characterizers, new GenericLandmarker("REPTreeDepth" + i, "weka.classifiers.trees.REPTree", 2, repOption));
 			
 			String[] randomtreeOption = { "-depth", "" + i };
-			batchCharacterizers = ArrayUtils.add(batchCharacterizers, new GenericLandmarker("RandomTreeDepth" + i, "weka.classifiers.trees.RandomTree", 2, randomtreeOption));
+            characterizers = ArrayUtils.add(characterizers, new GenericLandmarker("RandomTreeDepth" + i, "weka.classifiers.trees.RandomTree", 2, randomtreeOption));
 		}
-		
-		for(Characterizer characterizer : batchCharacterizers) {
+		for (Characterizer characterizer: characterizers){
+		    batchCharacterizers.add(new CharacterizerWrapper(characterizer));
+        }
+		for(CharacterizerWrapper characterizer : batchCharacterizers) {
 			expectedQualities += characterizer.getNumMetaFeatures();
 		}
 		// add expected qualities for stream landmarkers (initialized later)
@@ -284,14 +323,14 @@ public class FantailConnector {
 			intervalData.setClassIndex(fulldata.classIndex());
 		} else {
 			intervalData = fulldata;
-			// todo: use StringToNominal filter? might be to expensive
+			// todo: use StringToNominal filter? might be too expensive
 		}
 		
-		for(Characterizer dc : batchCharacterizers) {
+		for(CharacterizerWrapper dc : batchCharacterizers) {
 			if (qualitiesAvailable != null && qualitiesAvailable.containsAll(Arrays.asList(dc.getIDs())) == false) { 
 				Conversion.log("OK","Extract Batch Features", dc.getClass().getName() + ": " + Arrays.toString(dc.getIDs()));
-				Map<String,Double> qualities = dc.characterize(intervalData);
-				result.addAll(hashMaptoList(qualities, start, interval_size));
+				Map<String,QualityResult> qualities = dc.characterize(intervalData);
+				result.addAll(qualityResultToList(qualities, start, interval_size));
 			} else {
 				Conversion.log("OK","Extract Batch Features", dc.getClass().getName() + " - already in database");
 			}
@@ -299,14 +338,24 @@ public class FantailConnector {
 		return result;
 	}
 	
-	public static List<Quality> hashMaptoList(Map<String, Double> map, Integer start, Integer size) {
+	public static List<Quality> qualityResultToList(Map<String, QualityResult> map, Integer start, Integer size) {
 		List<Quality> result = new ArrayList<DataQuality.Quality>();
 		for(String quality : map.keySet()) {
 			Integer end = start != null ? start + size : null;
-			result.add(new Quality(quality, map.get(quality) + "", start, end));
+			QualityResult qualityResult = map.get(quality);
+			result.add(new Quality(quality, qualityResult.value + "", start, end, qualityResult.index));
 		}
 		return result;
 	}
+
+    public static List<Quality> hashMaptoList(Map<String, Double> map, Integer start, Integer size) {
+        List<Quality> result = new ArrayList<DataQuality.Quality>();
+        for(String quality : map.keySet()) {
+            Integer end = start != null ? start + size : null;
+            result.add(new Quality(quality, map.get(quality) + "", start, end, null));
+        }
+        return result;
+    }
 	
 	private static Instances applyFilter(Instances dataset, Filter filter, String options) throws Exception {
 		((OptionHandler) filter).setOptions(Utils.splitOptions(options));
