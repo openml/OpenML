@@ -18,6 +18,8 @@ public class AttributesCharacterizer extends Characterizer {
 	}
 	
 	public Map<String, Double> characterize(Instances dataset) {
+		
+		//test
 		return null;
 	}
 }
