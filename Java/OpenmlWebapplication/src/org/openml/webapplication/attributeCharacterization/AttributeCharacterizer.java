@@ -154,19 +154,19 @@ public class AttributeCharacterizer extends Characterizer {
 		// MissingValues
 		qualities.put(ids[37], Math.min(MissingValuesCount, 1.0));
 		// AveragePercentageOfClass
-		qualities.put(ids[38], AverageClassCount / ValuesCount);
+		qualities.put(ids[38], AverageClassCount / NonMissingValuesCount);
 		// PercentageOfMissing
 		qualities.put(ids[39], MissingValuesCount / ValuesCount);
 		// PercentageOfNonMissing
 		qualities.put(ids[40], NonMissingValuesCount / ValuesCount);
 		// PercentageOfMostFrequentClass
-		qualities.put(ids[41], MostFequentClassCount / ValuesCount);
+		qualities.put(ids[41], MostFequentClassCount / NonMissingValuesCount);
 		// PercentageOfLeastFrequentClass
-		qualities.put(ids[42], LeastFequentClassCount / ValuesCount);
+		qualities.put(ids[42], LeastFequentClassCount / NonMissingValuesCount);
 		// ModeClassPercentage
-		qualities.put(ids[43], ModeClassCount / ValuesCount);
+		qualities.put(ids[43], ModeClassCount / NonMissingValuesCount);
 		// MedianClassPercentage
-		qualities.put(ids[44], MedianClassCount / ValuesCount);
+		qualities.put(ids[44], MedianClassCount / NonMissingValuesCount);
 
 		// Numeric specific meta-features
 		Attribute attribute = dataset.attribute(index);
@@ -307,9 +307,6 @@ public class AttributeCharacterizer extends Characterizer {
 
 		// Nominal specific meta-features
 		if (attribute.isNominal()) {
-
-			// attValuesTab
-			// classValuesTab
 
 			// UniformDiscrete ChiSquareUniformDistribution
 			double avg = Arrays.stream(attValuesTab).sum() / attValuesTab.length;
