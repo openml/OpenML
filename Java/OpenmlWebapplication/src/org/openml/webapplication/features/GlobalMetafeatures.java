@@ -8,9 +8,7 @@ import org.openml.webapplication.fantail.dc.statistical.NominalAttDistinctValues
 import org.openml.webapplication.fantail.dc.statistical.SimpleMetaFeatures;
 import org.openml.webapplication.fantail.dc.statistical.Statistical;
 import org.openml.webapplication.fantail.dc.stream.ChangeDetectors;
-import org.openml.webapplication.fantail.dc.stream.RunChangeDetectorTask;
 import weka.core.Utils;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,8 +23,9 @@ public class GlobalMetafeatures {
 
     private ArrayList<Characterizer> batchCharacterizers;
     private int expectedQualities;
+    private ArrayList<String> expectedIds = new ArrayList<>();
 
-    public GlobalMetafeatures(int window_size) throws Exception {
+    public GlobalMetafeatures(Integer window_size) throws Exception {
         Characterizer[] characterizers = {
                 new SimpleMetaFeatures(), // done before, but necessary for streams
                 new Statistical(),
@@ -55,15 +54,23 @@ public class GlobalMetafeatures {
         }
         for(Characterizer characterizer : batchCharacterizers) {
             expectedQualities += characterizer.getNumMetaFeatures();
+            expectedIds.addAll(Arrays.asList(characterizer.getIDs()));
         }
-        // add expected qualities for stream landmarkers (initialized later)
-        expectedQualities += RunChangeDetectorTask.getNumMetaFeatures();
 
         streamCharacterizers = new StreamCharacterizer[]{new ChangeDetectors(window_size)};
+
+        for (StreamCharacterizer streamCharacterizer: streamCharacterizers) {
+            expectedQualities += streamCharacterizer.getNumMetaFeatures();
+            expectedIds.addAll(Arrays.asList(streamCharacterizer.getIDs()));
+        }
     }
 
-    public int getExpectedQualities(){
+    public int getExpectedQualities() {
         return expectedQualities;
+    }
+
+    public List<String> getExpectedIds() {
+        return expectedIds;
     }
 
     public List<Characterizer> getCharacterizers(){

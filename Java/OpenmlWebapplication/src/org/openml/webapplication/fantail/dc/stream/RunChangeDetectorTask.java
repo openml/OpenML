@@ -51,11 +51,6 @@ public class RunChangeDetectorTask extends AbstractOptionHandler {
 
 	private final int interval_size;
 
-	// TODO: the expected amount of features to obtain. Keep track of this
-	public static int getNumMetaFeatures() {
-		return 8;
-	}
-
 	public String[] getIDs() {
 		String[] ids = new String[allDriftDetectors.length * 2];
 

@@ -52,7 +52,7 @@ public class DatabaseUtils {
         return dataset;
     }
 
-    public Integer getDatasetId(int expectedQualities, Integer window_size, boolean random, String priorityTag) throws JSONException, Exception {
+    public Integer getDatasetId(int expectedNumberOfQualities, Integer window_size, boolean random, String priorityTag) throws JSONException, Exception {
         String tagJoin = "";
         String tagSelect = "";
         String tagSort = "";
@@ -75,14 +75,14 @@ public class DatabaseUtils {
                         "AND `q`.`quality` = 'NumberOfInstances'  " +
                         "AND `d`.`error` = 'false' AND `d`.`processed` IS NOT NULL " +
                         "GROUP BY `d`.`did` " +
-                        "HAVING (COUNT(*) / CEIL(`q`.`value` / " + window_size + ")) < " + expectedQualities + " " +
+                        "HAVING (COUNT(*) / CEIL(`q`.`value` / " + window_size + ")) < " + expectedNumberOfQualities + " " +
                         "ORDER BY " + tagSort + "`qualitiesPerInterval` ASC LIMIT 0,100; ";
 
         if(window_size == null) {
             sql =
                     "SELECT q.data, COUNT(*) AS `numQualities`" + tagSelect +
                             " FROM data_quality q " + tagJoin +
-                            " GROUP BY q.data HAVING numQualities BETWEEN 0 AND " + (expectedQualities-1) +
+                            " GROUP BY q.data HAVING numQualities BETWEEN 0 AND " + (expectedNumberOfQualities-1) +
                             " ORDER BY " + tagSort + " q.data LIMIT 0,100";
         }
 
