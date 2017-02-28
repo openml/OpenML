@@ -62,6 +62,11 @@ public class DatabaseUtils {
             tagJoin = "LEFT JOIN dataset_tag t ON q.data = t.id AND t.tag = '" + priorityTag + "' ";
         }
 
+        // In the case the windows_size is specified we are only considering only the data_quality_interval table.
+        // In that case we take the number of instances out or regular quality table and join dataset table
+        // with all entries from the interval table. We compute the number of intervals (q.value / windows size),
+        // from that we calculate ratio of all qualities per interval. In the correct case we should expect
+        // all features in all intervals
         String sql =
                 "SELECT `d`.`did`, `q`.`value` AS `numInstances`, `i`.`interval_end` - `i`.`interval_start` AS `interval_size`, " +
                         "CEIL(`q`.`value` / " + window_size + ") AS `numIntervals`, " +
@@ -70,8 +75,7 @@ public class DatabaseUtils {
                         "FROM `data_quality` `q` " + tagJoin +
                         ", `dataset` `d`" +
                         "LEFT JOIN `data_quality_interval` `i` ON `d`.`did` = `i`.`data` AND `i`.`interval_end` - `i`.`interval_start` =  " + window_size + " " +
-                        "WHERE `q`.`quality` IS NOT NULL " +
-                        "AND `d`.`did` = `q`.`data` " +
+                        "WHERE `d`.`did` = `q`.`data` " +
                         "AND `q`.`quality` = 'NumberOfInstances'  " +
                         "AND `d`.`error` = 'false' AND `d`.`processed` IS NOT NULL " +
                         "GROUP BY `d`.`did` " +
