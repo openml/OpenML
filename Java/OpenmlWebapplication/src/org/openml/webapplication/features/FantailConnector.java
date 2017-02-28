@@ -27,59 +27,21 @@ import org.openml.apiconnector.xml.DataQuality.Quality;
 import org.openml.apiconnector.xml.DataQualityUpload;
 import org.openml.apiconnector.xml.DataSetDescription;
 import org.openml.apiconnector.xstream.XstreamXmlMapping;
+import org.openml.webapplication.attributeCharacterization.AttributeCharacterizer;
 import org.openml.webapplication.fantail.dc.Characterizer;
 import org.openml.webapplication.fantail.dc.StreamCharacterizer;
 import weka.core.Instances;
-import weka.core.OptionHandler;
 import weka.core.Utils;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.StringToNominal;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 public class FantailConnector {
-    public class QualityResult{
-        public QualityResult(Double value, Integer index){
-            this.value = value;
-            this.index = index;
-        }
-
-        Double value;
-        Integer index;
-    }
-
-    public class CharacterizerWrapper {
-        public CharacterizerWrapper(Characterizer characterizer){
-            this.characterizer = characterizer;
-            this.index = null;
-        }
-
-        public CharacterizerWrapper(Characterizer characterizer, int index){
-            this.characterizer = characterizer;
-            this.index = index;
-        }
-
-        public Characterizer characterizer;
-        public Integer index;
-
-        public String[] getIDs() {
-            return characterizer.getIDs();
-        }
-
-        public int getNumMetaFeatures() {
-            return getIDs().length;
-        }
-
-        public Map<String, QualityResult> characterize(Instances instances){
-            Map<String, Double> values =characterizer.characterize(instances);
-            Map <String, QualityResult> result = new HashMap<>();
-            values.forEach((s,v) -> result.put(s, new QualityResult(v, index)));
-            return result;
-        }
-    }
-
 	private final Integer window_size;
-	
 	private static final XStream xstream = XstreamXmlMapping.getInstance();
 	private OpenmlConnector apiconnector;
 	private DatabaseUtils dbUtils;
@@ -97,7 +59,6 @@ public class FantailConnector {
 			computeMetafeatures(dataset_id);
 
 		} else {
-
 			dataset_id = dbUtils.getDatasetId(getExpectedNumberOfMetafeatures(), window_size, random, priorityTag);
 			while( dataset_id != null ) {
 				Conversion.log("OK", "Process Dataset", "Processing dataset " + dataset_id + " as obtained from database. ");
@@ -121,9 +82,9 @@ public class FantailConnector {
         extractFeatures(dsd, dataset, qualitiesAvailable);
     }
 	
-	private boolean extractFeatures(DataSetDescription dsd, Instances dataset, List<String> qualitiesAvailable) throws Exception {
+	private void extractFeatures(DataSetDescription dsd, Instances dataset, List<String> qualitiesAvailable) throws Exception {
 		Conversion.log("OK", "Extract Features", "Start extracting features for dataset: " + dsd.getId());
-		
+
 		dataset.setClass(dataset.attribute(dsd.getDefault_target_attribute()));
 		if (dsd.getRow_id_attribute() != null) {
 			if (dataset.attribute(dsd.getRow_id_attribute()) != null) {
@@ -188,21 +149,19 @@ public class FantailConnector {
 		else{
 			Conversion.log("OK", "Extract Features", "DONE: Nothing to upload");
 		}
-		
-		return true;
 	}
 
-	private List<Quality> datasetCharacteristics(Instances fulldata, Integer start, Integer interval_size, List<String> qualitiesAvailable) throws Exception {
+	private List<Quality> datasetCharacteristics(Instances dataset, Integer start, Integer interval_size, List<String> qualitiesAvailable) throws Exception {
 		List<Quality> result = new ArrayList<DataQuality.Quality>();
 		Instances intervalData;
 		
 		// Be careful changing this!
 		if (interval_size != null) {
-			intervalData = new Instances(fulldata, start, Math.min(interval_size, fulldata.numInstances() - start));
+			intervalData = new Instances(dataset, start, Math.min(interval_size, dataset.numInstances() - start));
 			intervalData = applyFilter(intervalData, new StringToNominal(), "-R first-last");
-			intervalData.setClassIndex(fulldata.classIndex());
+			intervalData.setClassIndex(dataset.classIndex());
 		} else {
-			intervalData = fulldata;
+			intervalData = dataset;
 			// todo: use StringToNominal filter? might be too expensive
 		}
 		
@@ -215,21 +174,17 @@ public class FantailConnector {
 				Conversion.log("OK","Extract Batch Features", dc.getClass().getName() + " - already in database");
 			}
 		}
-		return result;
-	}
-	
-	public static List<Quality> qualityResultToList(Map<String, QualityResult> map, Integer start, Integer size) {
-		List<Quality> result = new ArrayList<DataQuality.Quality>();
-		for(String quality : map.keySet()) {
-			Integer end = start != null ? start + size : null;
-			QualityResult qualityResult = map.get(quality);
-			result.add(new Quality(quality, qualityResult.value + "", start, end, qualityResult.index));
-		}
+        AttributeMetafeatures attributeMetafeatures = new AttributeMetafeatures(dataset.numAttributes());
+        for (AttributeCharacterizer attributeCharacterizer : attributeMetafeatures.getAttributeCharacterizers()) {
+            Map<String,QualityResult> qualities = attributeMetafeatures.characterize(dataset, attributeCharacterizer);
+            result.addAll(attributeMetafeatures.qualityResultToList(qualities, start, interval_size));
+        }
 		return result;
 	}
 
+
     public static List<Quality> hashMaptoList(Map<String, Double> map, Integer start, Integer size) {
-        List<Quality> result = new ArrayList<DataQuality.Quality>();
+        List<Quality> result = new ArrayList<>();
         for(String quality : map.keySet()) {
             Integer end = start != null ? start + size : null;
             result.add(new Quality(quality, map.get(quality) + "", start, end, null));
@@ -238,7 +193,7 @@ public class FantailConnector {
     }
 	
 	private static Instances applyFilter(Instances dataset, Filter filter, String options) throws Exception {
-		((OptionHandler) filter).setOptions(Utils.splitOptions(options));
+		filter.setOptions(Utils.splitOptions(options));
 		filter.setInputFormat(dataset);
 		return Filter.useFilter(dataset, filter);
 	}
