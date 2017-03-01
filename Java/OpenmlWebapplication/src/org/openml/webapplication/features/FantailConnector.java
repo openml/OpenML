@@ -59,20 +59,19 @@ public class FantailConnector {
 			computeMetafeatures(dataset_id);
 
 		} else {
-			dataset_id = dbUtils.getDatasetId(getExpectedNumberOfMetafeatures(), window_size, random, priorityTag);
+			dataset_id = dbUtils.getDatasetId(getExpectedNumberOfMetafeatures(), AttributeMetafeatures.numberOfAttributeMetafeatures(), window_size, random, priorityTag);
 			while( dataset_id != null ) {
 				Conversion.log("OK", "Process Dataset", "Processing dataset " + dataset_id + " as obtained from database. ");
 				computeMetafeatures(dataset_id);
-				dataset_id = dbUtils.getDatasetId(getExpectedNumberOfMetafeatures(), window_size, random, priorityTag);
+				dataset_id = dbUtils.getDatasetId(getExpectedNumberOfMetafeatures(), AttributeMetafeatures.numberOfAttributeMetafeatures(), window_size, random, priorityTag);
 			}
 			Conversion.log("OK", "Process Dataset", "No more datasets to process. ");
 		}
 	}
 
 	private int getExpectedNumberOfMetafeatures(){
-		//TODO: modify code to work with expected attribute metafeatures,
-		//TODO: perhaps modify it so it really verifies that all valid qualities are computed
-		return globalMetafeatures.getExpectedQualities();
+		int expectedGlobal = globalMetafeatures.getExpectedQualities();
+		return expectedGlobal;
 	}
 
 	private void computeMetafeatures(int datasetId) throws Exception {
@@ -104,6 +103,7 @@ public class FantailConnector {
 
 			if (qualitiesAvailable.containsAll(Arrays.asList(sc.getIDs())) == false) {
 				Conversion.log("OK", "Extract Features", "Running Stream Characterizers (full data)");
+				//This just precomputes everything, result will be used later depending on the windows size
 				sc.characterize(dataset);
 			} else {
 				Conversion.log("OK", "Extract Features", "Skipping Stream Characterizers (full data) - already in database");
