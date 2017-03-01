@@ -436,7 +436,7 @@ public class AttributeCharacterizer extends Characterizer {
 				Double RationOfDistinguishingCategoriesByKolmogorovSmirnoffSlashChiSquare = null;
 				Double RationOfDistinguishingCategoriesByUtest = null;
 				try {
-					if (index == dataset.classIndex()) {
+					if (index != dataset.classIndex()) {
 						int nbValuesChangingTargetDistributionKs = 0;
 						int nbValuesChangingTargetDistributionU = 0;
 						for (Double value : ValuesCounts.keySet()) {
