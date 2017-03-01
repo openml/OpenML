@@ -35,6 +35,10 @@ public class AttributeCharacterizer extends Characterizer {
 		this.index = index;
 	}
 
+	public AttributeCharacterizer() {
+		this.index = -1;
+	}
+
 	public static final String[] ids = new String[] { "ValuesCount", "NonMissingValuesCount", "MissingValuesCount", "Distinct", "AverageClassCount", "Entropy",
 			"MostFequentClassCount", "LeastFequentClassCount", "ModeClassCount", "MedianClassCount", "PearsonCorrellationCoefficient",
 			"SpearmanCorrelationCoefficient", "CovarianceWithTarget",
@@ -56,6 +60,9 @@ public class AttributeCharacterizer extends Characterizer {
 	}
 
 	public Map<String, Double> characterize(Instances dataset) {
+		if (index < 0 || index > dataset.numAttributes())
+			throw new RuntimeException("Invalid index (" + index + ") in AttributeCharacterizer for dataset " + dataset.relationName());
+
 		Map<String, Double> qualities = new HashMap<String, Double>();
 
 		// list of non missing values and counts of values
@@ -114,9 +121,15 @@ public class AttributeCharacterizer extends Characterizer {
 
 		// Entropy
 		Double Entropy = 0.0;
-		for (Integer count : ValuesCounts.values()) {
-			double valueProb = count / ValuesCount;
-			Entropy -= valueProb * (Utils.log2(valueProb));
+		try {
+			for (Integer count : ValuesCounts.values()) {
+				double valueProb = count / ValuesCount;
+				Entropy -= valueProb * (Utils.log2(valueProb));
+			}
+			if (!Double.isFinite(Entropy))
+				throw new Exception();
+		} catch (Exception e) {
+			Entropy = null;
 		}
 
 		// PearsonCorrellationCoefficient SpearmanCorrelationCoefficient Covariance
@@ -129,9 +142,30 @@ public class AttributeCharacterizer extends Characterizer {
 		SpearmansCorrelation spearmans = new SpearmansCorrelation();
 		PearsonsCorrelation pearsons = new PearsonsCorrelation();
 		Covariance covariance = new Covariance();
-		Double SpearmanCorrelationCoefficient = spearmans.correlation(attValuesTab, classValuesTab);
-		Double PearsonCorrellationCoefficient = pearsons.correlation(attValuesTab, classValuesTab);
-		Double CovarianceWithTarget = covariance.covariance(attValuesTab, classValuesTab);
+		Double SpearmanCorrelationCoefficient;
+		Double PearsonCorrellationCoefficient;
+		Double CovarianceWithTarget;
+		try {
+			SpearmanCorrelationCoefficient = spearmans.correlation(attValuesTab, classValuesTab);
+			if (!Double.isFinite(SpearmanCorrelationCoefficient) || SpearmanCorrelationCoefficient<-1 || SpearmanCorrelationCoefficient>1)
+				throw new Exception();
+		} catch (Exception e) {
+			SpearmanCorrelationCoefficient = null;
+		}
+		try {
+			PearsonCorrellationCoefficient = pearsons.correlation(attValuesTab, classValuesTab);
+			if (!Double.isFinite(PearsonCorrellationCoefficient) || PearsonCorrellationCoefficient<-1 || PearsonCorrellationCoefficient>1)
+				throw new Exception();
+		} catch (Exception e) {
+			PearsonCorrellationCoefficient = null;
+		}
+		try {
+			CovarianceWithTarget = covariance.covariance(attValuesTab, classValuesTab);
+			if (!Double.isFinite(CovarianceWithTarget))
+				throw new Exception();
+		} catch (Exception e) {
+			CovarianceWithTarget = null;
+		}
 
 		// ValuesCount
 		qualities.put(ids[0], ValuesCount);
@@ -324,23 +358,24 @@ public class AttributeCharacterizer extends Characterizer {
 			// RationOfDistinguishingCategories
 			int nbValuesChangingTargetDistributionKs = 0;
 			int nbValuesChangingTargetDistributionU = 0;
+
 			for (Double value : ValuesCounts.keySet()) {
 				double[] classValuesSubset = new double[ValuesCounts.get(value)];
 				int subsetIndex = 0;
 				for (int i = 0; i < classValuesTab.length; i++) {
 					if (value.doubleValue() == attValuesTab[i]) {
 						classValuesSubset[subsetIndex] = classValuesTab[i];
+						subsetIndex++;
 					}
-					subsetIndex++;
 				}
-				
+
 				KolmogorovSmirnovTest ksTest = new KolmogorovSmirnovTest();
-				if(ksTest.kolmogorovSmirnovTest(classValuesTab, classValuesSubset) > 0.05){
+				if (ksTest.kolmogorovSmirnovTest(classValuesTab, classValuesSubset) > 0.05) {
 					nbValuesChangingTargetDistributionKs++;
 				}
-				
+
 				MannWhitneyUTest UTest = new MannWhitneyUTest();
-				if(UTest.mannWhitneyUTest(classValuesTab, classValuesSubset) > 0.05){
+				if (UTest.mannWhitneyUTest(classValuesTab, classValuesSubset) > 0.05) {
 					nbValuesChangingTargetDistributionU++;
 				}
 			}
@@ -350,9 +385,9 @@ public class AttributeCharacterizer extends Characterizer {
 			// ChiSquareUniformDistribution
 			qualities.put(ids[34], chiSquare);
 			// RationOfDistinguishingCategoriesByKolmogorovSmirnoffSlashChiSquare
-			qualities.put(ids[35], nbValuesChangingTargetDistributionKs/Distinct);
+			qualities.put(ids[35], nbValuesChangingTargetDistributionKs / Distinct);
 			// RationOfDistinguishingCategoriesByUtest
-			qualities.put(ids[36], nbValuesChangingTargetDistributionU/Distinct);
+			qualities.put(ids[36], nbValuesChangingTargetDistributionU / Distinct);
 
 		} else {
 			// UniformDiscrete
