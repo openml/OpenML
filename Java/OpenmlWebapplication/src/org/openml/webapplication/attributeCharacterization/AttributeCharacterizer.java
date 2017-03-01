@@ -294,10 +294,13 @@ public class AttributeCharacterizer extends Characterizer {
 				Double IsUniform = null;
 				double uniformPval;
 				try {
-					KolmogorovSmirnovTest ksTest = new KolmogorovSmirnovTest();
-					uniformPval = ksTest.kolmogorovSmirnovTest(new UniformRealDistribution(AttributeStats.getMin(), AttributeStats.getMax()),
-							dataset.attributeToDoubleArray(index));
-					IsUniform = (uniformPval > 0.05 ? 1.0 : 0.0);
+					if (Distinct == 1) {
+						IsUniform = 1.0;
+					} else {
+						KolmogorovSmirnovTest ksTest = new KolmogorovSmirnovTest();
+						uniformPval = ksTest.kolmogorovSmirnovTest(new UniformRealDistribution(AttributeStats.getMin(), AttributeStats.getMax()), attValuesTab);
+						IsUniform = (uniformPval > 0.05 ? 1.0 : 0.0);
+					}
 				} catch (Exception e) {
 					IsUniform = null;
 				}
