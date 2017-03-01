@@ -37,4 +37,8 @@ public class AttributeMetafeatures {
     public List<AttributeCharacterizer> getAttributeCharacterizers(){
         return attributeCharacterizers;
     }
+
+    public static int numberOfAttributeMetafeatures(){
+        return AttributeCharacterizer.ids.length;
+    }
 }

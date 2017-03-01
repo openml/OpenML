@@ -52,7 +52,7 @@ public class DatabaseUtils {
         return dataset;
     }
 
-    public Integer getDatasetId(int expectedNumberOfQualities, Integer window_size, boolean random, String priorityTag) throws JSONException, Exception {
+    public Integer getDatasetId(int globalMetafeatures, int attributeMetafeatures, Integer window_size, boolean random, String priorityTag) throws JSONException, Exception {
         String tagJoin = "";
         String tagSelect = "";
         String tagSort = "";
@@ -79,14 +79,17 @@ public class DatabaseUtils {
                         "AND `q`.`quality` = 'NumberOfInstances'  " +
                         "AND `d`.`error` = 'false' AND `d`.`processed` IS NOT NULL " +
                         "GROUP BY `d`.`did` " +
-                        "HAVING (COUNT(*) / CEIL(`q`.`value` / " + window_size + ")) < " + expectedNumberOfQualities + " " +
+                        "HAVING (COUNT(*) / CEIL(`q`.`value` / " + window_size + ")) < " + globalMetafeatures + " " +
                         "ORDER BY " + tagSort + "`qualitiesPerInterval` ASC LIMIT 0,100; ";
 
         if(window_size == null) {
             sql =
                     "SELECT q.data, COUNT(*) AS `numQualities`" + tagSelect +
                             " FROM data_quality q " + tagJoin +
-                            " GROUP BY q.data HAVING numQualities BETWEEN 0 AND " + (expectedNumberOfQualities-1) +
+                            " JOIN (SELECT dataset.did, COUNT(*) as `number_of_attributes` FROM dataset JOIN data_feature" +
+                            " ON dataset.did = data_feature.did" +
+                            " GROUP BY dataset.did) as `attCounts` ON attCounts.did = q.data" +
+                            " GROUP BY q.data HAVING numQualities BETWEEN 0 AND (" + (globalMetafeatures-1) + " + max(attCounts.number_of_attributes)*"+ attributeMetafeatures +")" +
                             " ORDER BY " + tagSort + " q.data LIMIT 0,100";
         }
 
@@ -102,7 +105,8 @@ public class DatabaseUtils {
         }
 
         if(runJson.length() > 0) {
-            int dataset_id = ((JSONArray) runJson.get(randomint % runJson.length())).getInt(0);
+            JSONArray result = (JSONArray) runJson.get(randomint % runJson.length());
+            int dataset_id = result.getInt(0);
             return dataset_id;
         } else {
             return null;
