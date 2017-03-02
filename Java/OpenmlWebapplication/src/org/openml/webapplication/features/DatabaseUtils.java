@@ -55,7 +55,7 @@ public class DatabaseUtils {
                                                     Integer window_size,
                                                     boolean random,
                                                     String priorityTag
-    ) throws JSONException, Exception {
+    ) throws Exception {
         int globalMetafeaturesCount = globalMetafeatures.size();
         String tagJoin = "";
         String tagSelect = "";
