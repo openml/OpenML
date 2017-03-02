@@ -7,12 +7,10 @@ import org.openml.apiconnector.algorithms.QueryUtils;
 import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.xml.DataSetDescription;
 import weka.core.Instances;
-
 import java.io.FileReader;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-
 
 public class DatabaseUtils {
     public DatabaseUtils(OpenmlConnector connector){
@@ -52,7 +50,13 @@ public class DatabaseUtils {
         return dataset;
     }
 
-    public Integer getDatasetId(int globalMetafeatures, int attributeMetafeatures, Integer window_size, boolean random, String priorityTag) throws JSONException, Exception {
+    public Integer findDatasetIdWithoutMetafeatures(List<String> globalMetafeatures,
+                                                    List<String> attributeMetafeatures,
+                                                    Integer window_size,
+                                                    boolean random,
+                                                    String priorityTag
+    ) throws JSONException, Exception {
+        int globalMetafeaturesCount = globalMetafeatures.size();
         String tagJoin = "";
         String tagSelect = "";
         String tagSort = "";
@@ -79,37 +83,66 @@ public class DatabaseUtils {
                         "AND `q`.`quality` = 'NumberOfInstances'  " +
                         "AND `d`.`error` = 'false' AND `d`.`processed` IS NOT NULL " +
                         "GROUP BY `d`.`did` " +
-                        "HAVING (COUNT(*) / CEIL(`q`.`value` / " + window_size + ")) < " + globalMetafeatures + " " +
+                        "HAVING (COUNT(*) / CEIL(`q`.`value` / " + window_size + ")) < " + globalMetafeaturesCount + " " +
                         "ORDER BY " + tagSort + "`qualitiesPerInterval` ASC LIMIT 0,100; ";
 
         if(window_size == null) {
-            sql =
+            //find all datasets with all metafeatures in globalMetafeatures that have all of them computed
+            // and substract this from the set of all datasets
+            sql =   "SELECT DISTINCT dataset.did FROM dataset LEFT JOIN (" +
                     "SELECT q.data, COUNT(*) AS `numQualities`" + tagSelect +
                             " FROM data_quality q " + tagJoin +
-                            " JOIN (SELECT dataset.did, COUNT(*) as `number_of_attributes` FROM dataset JOIN data_feature" +
-                            " ON dataset.did = data_feature.did" +
-                            " GROUP BY dataset.did) as `attCounts` ON attCounts.did = q.data" +
-                            " GROUP BY q.data HAVING numQualities BETWEEN 0 AND (" + (globalMetafeatures-1) + " + max(attCounts.number_of_attributes)*"+ attributeMetafeatures +")" +
-                            " ORDER BY " + tagSort + " q.data LIMIT 0,100";
+                            " WHERE q.quality in ('" +  String.join("','", globalMetafeatures) + "')" +
+                            " GROUP BY q.data HAVING numQualities = " + globalMetafeaturesCount + ") as `result2`" +
+                            " ON dataset.did = result2.data WHERE result2.data IS NULL" +
+                            " ORDER BY " + tagSort + " dataset.did LIMIT 0,100";
         }
 
         Conversion.log("OK", "FantailQuery", sql);
-        JSONArray runJson = (JSONArray) apiconnector.freeQuery(sql).get("data");
+        JSONArray sqlResult = (JSONArray) apiconnector.freeQuery(sql).get("data");
+        Integer datasetWithoutGlobal = pickSample(sqlResult, random);
+        if (datasetWithoutGlobal != null){
+            return datasetWithoutGlobal;
+        }
+        if (window_size == null){
+            return getDatasetWithoutAttributeMetafeatures(attributeMetafeatures, tagJoin, tagSelect, tagSort, random);
+        }
+        return null;
 
+    }
 
+    public Integer pickSample(JSONArray sqlResult, boolean random) throws JSONException {
         int randomint = 0;
-
         if (random) {
             Random randomgen = new Random(System.currentTimeMillis());
             randomint = Math.abs(randomgen.nextInt());
         }
 
-        if(runJson.length() > 0) {
-            JSONArray result = (JSONArray) runJson.get(randomint % runJson.length());
+        if(sqlResult.length() > 0) {
+            JSONArray result = (JSONArray) sqlResult.get(randomint % sqlResult.length());
             int dataset_id = result.getInt(0);
             return dataset_id;
         } else {
             return null;
         }
+    }
+
+    public int getDatasetWithoutAttributeMetafeatures(
+            List<String> attributeMetafeatures, String tagJoin, String tagSelect, String tagSort, boolean random) throws Exception {
+        int attributeMetafeaturesCount = attributeMetafeatures.size();
+        //Same query like in the sql for obtaining datasets without global attributes
+        String sql =   "SELECT DISTINCT dataset.did FROM dataset LEFT JOIN (" +
+                "SELECT q.data, COUNT(*) AS `numQualities`" + tagSelect +
+                " FROM feature_quality q " + tagJoin +
+                " JOIN (SELECT data_feature.did, COUNT(*) as `number_of_attributes` FROM data_feature" +
+                " GROUP BY data_feature.did) as `attCounts` ON attCounts.did = q.data" +
+                " WHERE q.quality in ('" +  String.join("','", attributeMetafeatures) + "')" +
+                " GROUP BY q.data HAVING numQualities = " + "max(attCounts.number_of_attributes)*"+ attributeMetafeaturesCount + ") as `result2`" +
+                " ON dataset.did = result2.data WHERE result2.data IS NULL" +
+                " ORDER BY " + tagSort + " dataset.did LIMIT 0,100";
+
+        JSONArray sqlResult = (JSONArray) apiconnector.freeQuery(sql).get("data");
+        Conversion.log("OK", "FantailQuery", sql);
+        return pickSample(sqlResult, random);
     }
 }

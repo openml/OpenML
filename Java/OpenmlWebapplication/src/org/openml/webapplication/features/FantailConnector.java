@@ -63,21 +63,16 @@ public class FantailConnector {
 			computeMetafeatures(dataset_id);
 
 		} else {
-			dataset_id = dbUtils.getDatasetId(getExpectedNumberOfMetafeatures(), AttributeMetafeatures.numberOfAttributeMetafeatures(), window_size, random,
+			dataset_id = dbUtils.findDatasetIdWithoutMetafeatures(globalMetafeatures.getExpectedIds(), AttributeMetafeatures.getAttributeMetafeatures(), window_size, random,
 					priorityTag);
 			while (dataset_id != null) {
 				Conversion.log("OK", "Process Dataset", "Processing dataset " + dataset_id + " as obtained from database. ");
 				computeMetafeatures(dataset_id);
-				dataset_id = dbUtils.getDatasetId(getExpectedNumberOfMetafeatures(), AttributeMetafeatures.numberOfAttributeMetafeatures(), window_size, random,
+				dataset_id = dbUtils.findDatasetIdWithoutMetafeatures(globalMetafeatures.getExpectedIds(), AttributeMetafeatures.getAttributeMetafeatures(), window_size, random,
 						priorityTag);
 			}
 			Conversion.log("OK", "Process Dataset", "No more datasets to process. ");
 		}
-	}
-
-	private int getExpectedNumberOfMetafeatures() {
-		int expectedGlobal = globalMetafeatures.getExpectedQualities();
-		return expectedGlobal;
 	}
 
 	private void computeMetafeatures(int datasetId) throws Exception {
