@@ -5,6 +5,7 @@ import org.openml.apiconnector.xml.DataSetDescription;
 import org.openml.webapplication.attributeCharacterization.AttributeCharacterizer;
 import weka.core.Instances;
 import java.util.*;
+import java.util.concurrent.*;
 
 public class AttributeMetafeatures {
 
@@ -58,9 +59,26 @@ public class AttributeMetafeatures {
 		return result;
 	}
 
-	public List<AttributeCharacterizer> getAttributeCharacterizers() {
-		return attributeCharacterizers;
-	}
+	public void computeAndAppendAttributeMetafeatures(Instances fullDataset, Integer start, Integer interval_size, int threads, List<DataQuality.Quality> result) throws ExecutionException, InterruptedException {
+        ExecutorService service = Executors.newFixedThreadPool(threads);
+
+        List<Future<List<DataQuality.Quality>>> futures = new ArrayList<>();
+        for (final AttributeCharacterizer attributeCharacterizer : attributeCharacterizers) {
+            Callable<List<DataQuality.Quality>> callable = () -> {
+                List<DataQuality.Quality> output = new ArrayList<>();
+                Map<String, QualityResult> qualities =characterize(fullDataset, attributeCharacterizer);
+                output.addAll(qualityResultToList(qualities, start, interval_size));
+                return output;
+            };
+            futures.add(service.submit(callable));
+        }
+
+        service.shutdown();
+
+        for (Future<List<DataQuality.Quality>> future : futures) {
+            result.addAll(future.get());
+        }
+    }
 
 	public static List<String> getAttributeMetafeatures() {
 		return Arrays.asList(AttributeCharacterizer.ids);

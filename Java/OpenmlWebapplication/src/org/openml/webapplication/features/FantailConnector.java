@@ -28,7 +28,6 @@ import org.openml.apiconnector.xml.DataQuality.Quality;
 import org.openml.apiconnector.xml.DataQualityUpload;
 import org.openml.apiconnector.xml.DataSetDescription;
 import org.openml.apiconnector.xstream.XstreamXmlMapping;
-import org.openml.webapplication.attributeCharacterization.AttributeCharacterizer;
 import org.openml.webapplication.fantail.dc.Characterizer;
 import org.openml.webapplication.fantail.dc.StreamCharacterizer;
 import weka.core.Instances;
@@ -40,10 +39,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 public class FantailConnector {
 	private final Integer window_size;
@@ -115,7 +110,7 @@ public class FantailConnector {
 			}
 		}
 
-		List<Quality> qualities = new ArrayList<DataQuality.Quality>();
+		List<Quality> qualities = new ArrayList<>();
 		if (window_size != null) {
 			Conversion.log("OK", "Extract Features", "Running Batch Characterizers (partial data)");
 
@@ -158,7 +153,7 @@ public class FantailConnector {
 
 	private List<Quality> datasetCharacteristics(Instances dataset, Integer start, Integer interval_size, List<String> qualitiesAvailable,
 			Instances fullDataset, DataSetDescription dsd) throws Exception {
-		List<Quality> result = new ArrayList<DataQuality.Quality>();
+		List<Quality> result = new ArrayList<>();
 		Instances intervalData;
 
 		// Be careful changing this!
@@ -184,32 +179,7 @@ public class FantailConnector {
 
 		// parallel computation of attribute meta-features
 		int threads = Runtime.getRuntime().availableProcessors();
-		ExecutorService service = Executors.newFixedThreadPool(threads);
-
-		List<Future<List<Quality>>> futures = new ArrayList<Future<List<Quality>>>();
-		for (final AttributeCharacterizer attributeCharacterizer : attributeMetafeatures.getAttributeCharacterizers()) {
-			Callable<List<Quality>> callable = new Callable<List<Quality>>() {
-				public List<Quality> call() throws Exception {
-					List<Quality> output = new ArrayList<Quality>();
-					Map<String, QualityResult> qualities = attributeMetafeatures.characterize(fullDataset, attributeCharacterizer);
-					output.addAll(attributeMetafeatures.qualityResultToList(qualities, start, interval_size));
-					return output;
-				}
-			};
-			futures.add(service.submit(callable));
-		}
-
-		service.shutdown();
-
-		for (Future<List<Quality>> future : futures) {
-			result.addAll(future.get());
-		}
-
-		// old for loop
-		// for (AttributeCharacterizer attributeCharacterizer : attributeMetafeatures.getAttributeCharacterizers()) {
-		// Map<String,QualityResult> qualities = attributeMetafeatures.characterize(dataset, attributeCharacterizer);
-		// result.addAll(attributeMetafeatures.qualityResultToList(qualities, start, interval_size));
-		// }
+		attributeMetafeatures.computeAndAppendAttributeMetafeatures(fullDataset, start, interval_size, threads, result);
 		return result;
 	}
 
