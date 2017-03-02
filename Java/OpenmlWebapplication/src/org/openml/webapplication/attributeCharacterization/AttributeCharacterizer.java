@@ -295,7 +295,7 @@ public class AttributeCharacterizer extends Characterizer {
 				Double IsUniform = null;
 				double uniformPval;
 				try {
-					if (Distinct == 1) {
+					if (Distinct < 2) {
 						IsUniform = 1.0;
 					} else {
 						KolmogorovSmirnovTest ksTest = new KolmogorovSmirnovTest();
