@@ -89,11 +89,12 @@ public class FantailConnector {
 
 	private void extractFeatures(DataSetDescription dsd, Instances dataset, List<String> qualitiesAvailable) throws Exception {
 		Conversion.log("OK", "Extract Features", "Start extracting features for dataset: " + dsd.getId());
-		
-		//keeping the full dataset for attribute identification purposes
-		Instances fullDataset = new Instances(dataset);
 
 		dataset.setClass(dataset.attribute(dsd.getDefault_target_attribute()));
+
+		// keeping the full dataset for attribute identification purposes
+		Instances fullDataset = new Instances(dataset);
+
 		if (dsd.getRow_id_attribute() != null) {
 			if (dataset.attribute(dsd.getRow_id_attribute()) != null) {
 				dataset.deleteAttributeAt(dataset.attribute(dsd.getRow_id_attribute()).index());
