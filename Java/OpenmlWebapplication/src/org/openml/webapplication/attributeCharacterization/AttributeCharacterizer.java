@@ -14,6 +14,7 @@ import org.apache.commons.math3.distribution.UniformRealDistribution;
 import org.openml.webapplication.fantail.dc.Characterizer;
 import java.util.Arrays;
 import org.apache.commons.math3.special.Gamma;
+import jsc.independentsamples.SmirnovTest;
 
 import weka.core.Attribute;
 import weka.core.Instances;
@@ -294,7 +295,7 @@ public class AttributeCharacterizer extends Characterizer {
 				Double IsUniform = null;
 				double uniformPval;
 				try {
-					if (Distinct == 1) {
+					if (Distinct < 2) {
 						IsUniform = 1.0;
 					} else {
 						KolmogorovSmirnovTest ksTest = new KolmogorovSmirnovTest();
@@ -435,11 +436,13 @@ public class AttributeCharacterizer extends Characterizer {
 					UniformDiscrete = null;
 					ChiSquareUniformDistribution = null;
 				}
+
 				// RationOfDistinguishingCategories
 				Double RationOfDistinguishingCategoriesByKolmogorovSmirnoffSlashChiSquare = null;
 				Double RationOfDistinguishingCategoriesByUtest = null;
-				try {
-					if (index != dataset.classIndex()) {
+				if (index != dataset.classIndex()) {
+					try {
+
 						int nbValuesChangingTargetDistributionKs = 0;
 						int nbValuesChangingTargetDistributionU = 0;
 						for (Double value : ValuesCounts.keySet()) {
@@ -451,9 +454,14 @@ public class AttributeCharacterizer extends Characterizer {
 									subsetIndex++;
 								}
 							}
+							// KolmogorovSmirnovTest ksTest1 = new KolmogorovSmirnovTest();
+							// if (ksTest1.kolmogorovSmirnovTest(classValuesTab, classValuesSubset, false) > 0.05) {
+							// nbValuesChangingTargetDistributionKs++;
+							// }
 
-							KolmogorovSmirnovTest ksTest = new KolmogorovSmirnovTest();
-							if (ksTest.kolmogorovSmirnovTest(classValuesTab, classValuesSubset) > 0.05) {
+							SmirnovTest ksTest = new SmirnovTest(classValuesTab, classValuesSubset);
+							double p = ksTest.getSP();
+							if (p > 0.05) {
 								nbValuesChangingTargetDistributionKs++;
 							}
 
@@ -465,10 +473,11 @@ public class AttributeCharacterizer extends Characterizer {
 
 						RationOfDistinguishingCategoriesByKolmogorovSmirnoffSlashChiSquare = nbValuesChangingTargetDistributionKs / Distinct;
 						RationOfDistinguishingCategoriesByUtest = nbValuesChangingTargetDistributionU / Distinct;
+
+					} catch (Exception e) {
+						RationOfDistinguishingCategoriesByKolmogorovSmirnoffSlashChiSquare = null;
+						RationOfDistinguishingCategoriesByUtest = null;
 					}
-				} catch (Exception e) {
-					RationOfDistinguishingCategoriesByKolmogorovSmirnoffSlashChiSquare = null;
-					RationOfDistinguishingCategoriesByUtest = null;
 				}
 
 				// UniformDiscrete

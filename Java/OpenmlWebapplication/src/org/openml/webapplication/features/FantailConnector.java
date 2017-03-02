@@ -84,6 +84,9 @@ public class FantailConnector {
 
 	private void extractFeatures(DataSetDescription dsd, Instances dataset, List<String> qualitiesAvailable) throws Exception {
 		Conversion.log("OK", "Extract Features", "Start extracting features for dataset: " + dsd.getId());
+		
+		//keeping the full dataset for attribute identification purposes
+		Instances fullDataset = new Instances(dataset);
 
 		dataset.setClass(dataset.attribute(dsd.getDefault_target_attribute()));
 		if (dsd.getRow_id_attribute() != null) {
@@ -120,7 +123,7 @@ public class FantailConnector {
 					Conversion.log("OK", "FantailConnector",
 							"Starting window [" + i + "," + (i + window_size) + "> (did = " + dsd.getId() + ",total size = " + dataset.numInstances() + ")");
 				}
-				qualities.addAll(datasetCharacteristics(dataset, i, window_size, null));
+				qualities.addAll(datasetCharacteristics(dataset, i, window_size, null, fullDataset, dsd));
 
 				for (StreamCharacterizer sc : globalMetafeatures.getStreamCharacterizers()) {
 					// preventing nullpointer exception (if stream characterizer was already run)
@@ -132,7 +135,7 @@ public class FantailConnector {
 
 		} else {
 			Conversion.log("OK", "Extract Features", "Running Batch Characterizers (full data, might take a while)");
-			qualities.addAll(datasetCharacteristics(dataset, null, null, qualitiesAvailable));
+			qualities.addAll(datasetCharacteristics(dataset, null, null, qualitiesAvailable, fullDataset, dsd));
 			for (StreamCharacterizer sc : globalMetafeatures.getStreamCharacterizers()) {
 				Map<String, Double> streamqualities = sc.global();
 				if (streamqualities != null) {
@@ -152,7 +155,8 @@ public class FantailConnector {
 		}
 	}
 
-	private List<Quality> datasetCharacteristics(Instances dataset, Integer start, Integer interval_size, List<String> qualitiesAvailable) throws Exception {
+	private List<Quality> datasetCharacteristics(Instances dataset, Integer start, Integer interval_size, List<String> qualitiesAvailable,
+			Instances fullDataset, DataSetDescription dsd) throws Exception {
 		List<Quality> result = new ArrayList<DataQuality.Quality>();
 		Instances intervalData;
 
@@ -175,7 +179,7 @@ public class FantailConnector {
 				Conversion.log("OK", "Extract Batch Features", dc.getClass().getName() + " - already in database");
 			}
 		}
-		AttributeMetafeatures attributeMetafeatures = new AttributeMetafeatures(dataset.numAttributes());
+		AttributeMetafeatures attributeMetafeatures = new AttributeMetafeatures(dataset.numAttributes(), fullDataset, dsd);
 
 		// parallel computation of attribute meta-features
 		int threads = Runtime.getRuntime().availableProcessors();
@@ -186,7 +190,7 @@ public class FantailConnector {
 			Callable<List<Quality>> callable = new Callable<List<Quality>>() {
 				public List<Quality> call() throws Exception {
 					List<Quality> output = new ArrayList<Quality>();
-					Map<String, QualityResult> qualities = attributeMetafeatures.characterize(dataset, attributeCharacterizer);
+					Map<String, QualityResult> qualities = attributeMetafeatures.characterize(fullDataset, attributeCharacterizer);
 					output.addAll(attributeMetafeatures.qualityResultToList(qualities, start, interval_size));
 					return output;
 				}
