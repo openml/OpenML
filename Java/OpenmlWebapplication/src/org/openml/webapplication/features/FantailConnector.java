@@ -143,7 +143,7 @@ public class FantailConnector {
 		if (qualities.size() > 0) {
 			DataQuality dq = new DataQuality(dsd.getId(), qualities.toArray(new Quality[qualities.size()]));
 			String strQualities = xstream.toXML(dq);
-
+            apiconnector.setVerboseLevel(1);
 			DataQualityUpload dqu = apiconnector.dataQualitiesUpload(Conversion.stringToTempFile(strQualities, "qualities_did_" + dsd.getId(), "xml"));
 			Conversion.log("OK", "Extract Features", "DONE: " + dqu.getDid());
 		} else {
