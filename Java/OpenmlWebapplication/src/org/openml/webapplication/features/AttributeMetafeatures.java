@@ -3,10 +3,8 @@ package org.openml.webapplication.features;
 import org.openml.apiconnector.xml.DataQuality;
 import org.openml.webapplication.attributeCharacterization.AttributeCharacterizer;
 import weka.core.Instances;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 
 public class AttributeMetafeatures {
     private List<AttributeCharacterizer> attributeCharacterizers = new ArrayList<>();
@@ -38,7 +36,7 @@ public class AttributeMetafeatures {
         return attributeCharacterizers;
     }
 
-    public static int numberOfAttributeMetafeatures(){
-        return AttributeCharacterizer.ids.length;
+    public static List<String> getAttributeMetafeatures(){
+        return Arrays.asList(AttributeCharacterizer.ids);
     }
 }
