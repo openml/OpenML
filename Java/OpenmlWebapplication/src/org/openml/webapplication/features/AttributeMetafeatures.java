@@ -38,8 +38,15 @@ public class AttributeMetafeatures {
 		List<DataQuality.Quality> result = new ArrayList<>();
 		for (String quality : map.keySet()) {
 			Integer end = start != null ? start + size : null;
+
 			QualityResult qualityResult = map.get(quality);
-			result.add(new DataQuality.Quality(quality, qualityResult.value + "", start, end, qualityResult.index));
+			String value = "";
+			if (qualityResult.value != null) {
+				value = qualityResult.value + "";
+			}
+
+			result.add(new DataQuality.Quality(quality, value, start, end, qualityResult.index));
+
 		}
 		return result;
 	}
@@ -55,7 +62,7 @@ public class AttributeMetafeatures {
 		return attributeCharacterizers;
 	}
 
-    public static List<String> getAttributeMetafeatures(){
-        return Arrays.asList(AttributeCharacterizer.ids);
-    }
+	public static List<String> getAttributeMetafeatures() {
+		return Arrays.asList(AttributeCharacterizer.ids);
+	}
 }
