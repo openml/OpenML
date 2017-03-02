@@ -30,7 +30,7 @@ public class AttributeCharacterizerTests {
 
 		OpenmlConnector connector = new OpenmlConnector("ad6244a6f01a5c9fc4985a0875b30b97");
 
-		DataSet[] datasets = connector.dataList("study_14").getData();
+		DataSet[] datasets = connector.dataList("study_1").getData();
 
 		for (DataSet d : datasets) {
 			DataSetDescription dataDesc = connector.dataGet(d.getDid());
@@ -48,15 +48,16 @@ public class AttributeCharacterizerTests {
 				// System.err.println("attribute " + i);
 				AttributeCharacterizer characterizer = new AttributeCharacterizer(i);
 				attributeCharacterizers.add(characterizer);
+
+				double start = System.nanoTime()/1000000000;
 				Map<String, Double> mfs = characterizer.characterize(dataset);
+				System.err.println("attribute " + dataset.attribute(i).name() + " took : " + (System.nanoTime()/1000000000 - start));
 
 				int nbnull = 0;
 				for (String key : mfs.keySet()) {
-					// System.err.println(key + " : " + mfs.get(key));
 					if (mfs.get(key) == null)
 						nbnull++;
 				}
-				// System.err.println("nbnull : " + nbnull);
 
 				int expectedNull = 0;
 				if (dataset.attribute(i).isNominal()) {
@@ -66,7 +67,7 @@ public class AttributeCharacterizerTests {
 				}
 
 				if (nbnull != expectedNull) {
-					System.err.println("attribute " + dataset.attribute(i).name() + " nulls : ");
+					System.err.print("nulls : ");
 					for (String key : mfs.keySet()) {
 						if (mfs.get(key) == null) {
 							if (dataset.attribute(i).isNominal() && !numerics.contains(key)) {
