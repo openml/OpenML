@@ -41,7 +41,7 @@ public class AttributeMetafeatures {
 			Integer end = start != null ? start + size : null;
 
 			QualityResult qualityResult = map.get(quality);
-			String value = "";
+			String value = "''";
 			if (qualityResult.value != null) {
 				value = qualityResult.value + "";
 			}
