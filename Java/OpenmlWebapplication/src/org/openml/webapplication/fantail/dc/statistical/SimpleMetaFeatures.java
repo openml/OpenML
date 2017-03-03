@@ -31,7 +31,7 @@ public class SimpleMetaFeatures extends Characterizer {
 		"MajorityClassSize",
 		"MinorityClassSize",
 		"MajorityClassPercentage",
-		"MinorityClassPerentage",
+		"MinorityClassPercentage",
 		"AutoCorrelation"
 	};
 	
