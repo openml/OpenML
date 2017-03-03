@@ -1,5 +1,6 @@
 package org.openml.webapplication.features;
 
+import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.xml.DataQuality;
 import org.openml.apiconnector.xml.DataSetDescription;
 import org.openml.webapplication.attributeCharacterization.AttributeCharacterizer;
@@ -66,6 +67,7 @@ public class AttributeMetafeatures {
         for (final AttributeCharacterizer attributeCharacterizer : attributeCharacterizers) {
             Callable<List<DataQuality.Quality>> callable = () -> {
                 List<DataQuality.Quality> output = new ArrayList<>();
+                Conversion.log("OK", "Extract Attribute Features", attributeCharacterizer.getClass().getName() + ": " + Arrays.toString(attributeCharacterizer.getIDs()));
                 Map<String, QualityResult> qualities =characterize(fullDataset, attributeCharacterizer);
                 output.addAll(qualityResultToList(qualities, start, interval_size));
                 return output;

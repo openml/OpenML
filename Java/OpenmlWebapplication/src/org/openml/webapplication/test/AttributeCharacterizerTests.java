@@ -12,7 +12,6 @@ import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.xml.Data.DataSet;
 import org.openml.apiconnector.xml.DataSetDescription;
 import org.openml.webapplication.attributeCharacterization.AttributeCharacterizer;
-
 import weka.core.Instances;
 import weka.core.converters.ArffLoader.ArffReader;
 
@@ -30,7 +29,7 @@ public class AttributeCharacterizerTests {
 
 		OpenmlConnector connector = new OpenmlConnector("ad6244a6f01a5c9fc4985a0875b30b97");
 
-		DataSet[] datasets = connector.dataList("study_1").getData();
+		DataSet[] datasets = connector.dataList("tmp").getData();
 
 		for (DataSet d : datasets) {
 			DataSetDescription dataDesc = connector.dataGet(d.getDid());
@@ -49,9 +48,11 @@ public class AttributeCharacterizerTests {
 				AttributeCharacterizer characterizer = new AttributeCharacterizer(i);
 				attributeCharacterizers.add(characterizer);
 
-				double start = System.nanoTime()/1000000000;
+				double start = System.nanoTime() / 1000000000;
 				Map<String, Double> mfs = characterizer.characterize(dataset);
-				System.err.println("attribute " + dataset.attribute(i).name() + " took : " + (System.nanoTime()/1000000000 - start));
+				double end = (System.nanoTime() / 1000000000 - start);
+				if (end > 1)
+					System.err.println("attribute " + dataset.attribute(i).name() + " took : " + end);
 
 				int nbnull = 0;
 				for (String key : mfs.keySet()) {
@@ -67,7 +68,7 @@ public class AttributeCharacterizerTests {
 				}
 
 				if (nbnull != expectedNull) {
-					System.err.print("nulls : ");
+					System.err.print(dataset.attribute(i).name() + " nulls : ");
 					for (String key : mfs.keySet()) {
 						if (mfs.get(key) == null) {
 							if (dataset.attribute(i).isNominal() && !numerics.contains(key)) {
@@ -83,6 +84,7 @@ public class AttributeCharacterizerTests {
 
 		}
 		System.err.println("");
+
 	}
 
 }

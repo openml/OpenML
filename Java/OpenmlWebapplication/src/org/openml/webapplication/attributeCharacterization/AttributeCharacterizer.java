@@ -3,6 +3,11 @@ package org.openml.webapplication.attributeCharacterization;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.math3.stat.correlation.Covariance;
 import org.apache.commons.math3.stat.correlation.PearsonsCorrelation;
@@ -454,15 +459,26 @@ public class AttributeCharacterizer extends Characterizer {
 									subsetIndex++;
 								}
 							}
-							// KolmogorovSmirnovTest ksTest1 = new KolmogorovSmirnovTest();
-							// if (ksTest1.kolmogorovSmirnovTest(classValuesTab, classValuesSubset, false) > 0.05) {
-							// nbValuesChangingTargetDistributionKs++;
-							// }
 
-							SmirnovTest ksTest = new SmirnovTest(classValuesTab, classValuesSubset);
-							double p = ksTest.getSP();
-							if (p > 0.05) {
-								nbValuesChangingTargetDistributionKs++;
+							try {
+								ExecutorService service = Executors.newFixedThreadPool(1);
+								Future<Double> future;
+								Callable<Double> callable = () -> {
+									SmirnovTest ksTest = new SmirnovTest(classValuesTab, classValuesSubset);
+									return ksTest.getSP();
+								};
+								future = service.submit(callable);
+								service.shutdown();
+
+								double p = future.get(2, TimeUnit.SECONDS);
+
+								if (!service.awaitTermination(2, TimeUnit.SECONDS)) {
+									service.shutdownNow();
+								}
+								if (p > 0.05) {
+									nbValuesChangingTargetDistributionKs++;
+								}
+							} catch (Exception e) {
 							}
 
 							MannWhitneyUTest UTest = new MannWhitneyUTest();
