@@ -7,3 +7,6 @@ OpenML.Rproj
 .Rproj.user
 R/openML.Rcheck
 R/openML/man
+.project
+Java/OpenmlWebapplication/.settings/org.eclipse.jdt.core.prefs
+Java/OpenmlWebapplication/.classpath
