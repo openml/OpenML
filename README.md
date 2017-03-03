@@ -3,7 +3,7 @@
 
 OpenML: Open Machine Learning
 =============================
-How to contribute: https://github.com/openml/OpenML/wiki/How-to-contribute
+How to contribute: https://github.com/openml/OpenML/wiki/How-to-contribute  
 Developers: to keep track of issues, we use Waffle: https://waffle.io/openml/OpenML  
 Citation and Honor Code: http://openml.org/guide/#!terms  
 Google Group / Email List: https://groups.google.com/forum/?hl=de#!forum/openml
