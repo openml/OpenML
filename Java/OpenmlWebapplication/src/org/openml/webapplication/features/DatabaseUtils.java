@@ -88,13 +88,13 @@ public class DatabaseUtils {
 
         if(window_size == null) {
             //find all datasets with all metafeatures in globalMetafeatures that have all of them computed
-            // and substract this from the set of all datasets
+            // and substract this from the set of all datasets that were processed without error
             sql =   "SELECT DISTINCT dataset.did FROM dataset LEFT JOIN (" +
                     "SELECT q.data, COUNT(*) AS `numQualities`" + tagSelect +
                             " FROM data_quality q " + tagJoin +
                             " WHERE q.quality in ('" +  String.join("','", globalMetafeatures) + "')" +
                             " GROUP BY q.data HAVING numQualities = " + globalMetafeaturesCount + ") as `result2`" +
-                            " ON dataset.did = result2.data WHERE result2.data IS NULL" +
+                            " ON dataset.did = result2.data WHERE result2.data IS NULL AND dataset.error = 'false'" +
                             " ORDER BY " + tagSort + " dataset.did LIMIT 0,100";
         }
 
@@ -138,7 +138,7 @@ public class DatabaseUtils {
                 " GROUP BY data_feature.did) as `attCounts` ON attCounts.did = q.data" +
                 " WHERE q.quality in ('" +  String.join("','", attributeMetafeatures) + "')" +
                 " GROUP BY q.data HAVING numQualities = " + "max(attCounts.number_of_attributes)*"+ attributeMetafeaturesCount + ") as `result2`" +
-                " ON dataset.did = result2.data WHERE result2.data IS NULL" +
+                " ON dataset.did = result2.data WHERE result2.data IS NULL AND dataset.error = 'false" +
                 " ORDER BY " + tagSort + " dataset.did LIMIT 0,100";
 
         JSONArray sqlResult = (JSONArray) apiconnector.freeQuery(sql).get("data");
