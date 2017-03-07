@@ -3,11 +3,6 @@ package org.openml.webapplication.attributeCharacterization;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.math3.stat.correlation.Covariance;
 import org.apache.commons.math3.stat.correlation.PearsonsCorrelation;
@@ -19,7 +14,6 @@ import org.apache.commons.math3.distribution.UniformRealDistribution;
 import org.openml.webapplication.fantail.dc.Characterizer;
 import java.util.Arrays;
 import org.apache.commons.math3.special.Gamma;
-import jsc.independentsamples.SmirnovTest;
 
 import weka.core.Attribute;
 import weka.core.Instances;
@@ -328,7 +322,6 @@ public class AttributeCharacterizer extends Characterizer {
 				qualities.put("HasNegativeValues", Math.min(NegativeCount, 1.0));
 			}
 
-			
 			// ************* Nominal specific meta-features ********************
 			if (attribute.isNominal()) {
 
@@ -364,25 +357,31 @@ public class AttributeCharacterizer extends Characterizer {
 								}
 							}
 
-							try {
-								ExecutorService service = Executors.newFixedThreadPool(1);
-								Future<Double> future;
-								Callable<Double> callable = () -> {
-									SmirnovTest ksTest = new SmirnovTest(classValuesTab, classValuesSubset);
-									return ksTest.getSP();
-								};
-								future = service.submit(callable);
-								service.shutdown();
+							// use if computation of ksTest seems to hang indefinitely
+//							try {
+//								ExecutorService service = Executors.newFixedThreadPool(1);
+//								Future<Double> future;
+//								Callable<Double> callable = () -> {
+//									KolmogorovSmirnovTest ksTest = new KolmogorovSmirnovTest();
+//									return ksTest.kolmogorovSmirnovStatistic(classValuesTab, classValuesSubset);
+//								};
+//								future = service.submit(callable);
+//								service.shutdown();
+//
+//								double p = future.get(2, TimeUnit.SECONDS);
+//
+//								if (!service.awaitTermination(2, TimeUnit.SECONDS)) {
+//									service.shutdownNow();
+//								}
+//								if (p > 0.05) {
+//									nbValuesChangingTargetDistributionKs++;
+//								}
+//							} catch (Exception e) {
+//							}
 
-								double p = future.get(2, TimeUnit.SECONDS);
-
-								if (!service.awaitTermination(2, TimeUnit.SECONDS)) {
-									service.shutdownNow();
-								}
-								if (p > 0.05) {
-									nbValuesChangingTargetDistributionKs++;
-								}
-							} catch (Exception e) {
+							KolmogorovSmirnovTest ksTest = new KolmogorovSmirnovTest();
+							if (ksTest.kolmogorovSmirnovStatistic(classValuesTab, classValuesSubset) > 0.05) {
+								nbValuesChangingTargetDistributionKs++;
 							}
 
 							MannWhitneyUTest UTest = new MannWhitneyUTest();
@@ -399,7 +398,8 @@ public class AttributeCharacterizer extends Characterizer {
 						RationOfDistinguishingCategoriesByUtest = null;
 					}
 				}
-				qualities.put("RationOfDistinguishingCategoriesByKolmogorovSmirnoffSlashChiSquare", RationOfDistinguishingCategoriesByKolmogorovSmirnoffSlashChiSquare);
+				qualities.put("RationOfDistinguishingCategoriesByKolmogorovSmirnoffSlashChiSquare",
+						RationOfDistinguishingCategoriesByKolmogorovSmirnoffSlashChiSquare);
 				qualities.put("RationOfDistinguishingCategoriesByUtest", RationOfDistinguishingCategoriesByUtest);
 			}
 
