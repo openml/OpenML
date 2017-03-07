@@ -174,9 +174,9 @@ public class FantailConnector {
 				Conversion.log("OK", "Extract Batch Features", dc.getClass().getName() + " - already in database");
 			}
 		}
-		AttributeMetafeatures attributeMetafeatures = new AttributeMetafeatures(dataset.numAttributes(), fullDataset, dsd);
-
+		
 		// parallel computation of attribute meta-features
+		AttributeMetafeatures attributeMetafeatures = new AttributeMetafeatures(dataset.numAttributes(), fullDataset, dsd);
 		int threads = Runtime.getRuntime().availableProcessors();
 		attributeMetafeatures.computeAndAppendAttributeMetafeatures(fullDataset, start, interval_size, threads, result);
 		return result;

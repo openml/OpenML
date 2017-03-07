@@ -12,8 +12,14 @@ import weka.core.Instances;
 public class SimpleMetaFeatures extends Characterizer {
 
 	public static final String[] ids = new String[] { "NumberOfInstances", "NumberOfFeatures", "NumberOfInstancesWithMissingValues", "NumberOfMissingValues",
-			"PercentageOfInstancesWithMissingValues", "PercentageOfMissingValues", "NumberOfNumericFeatures", "NumberOfSymbolicFeatures",
-			"NumberOfBinaryFeatures", "PercentageOfNumericFeatures", "PercentageOfSymbolicFeatures", "PercentageOfBinaryFeatures", "Dimensionality",
+			
+			"PercentageOfInstancesWithMissingValues", "PercentageOfMissingValues", 
+			
+			"NumberOfNumericFeatures", "NumberOfSymbolicFeatures",			"NumberOfBinaryFeatures", 
+			
+			"PercentageOfNumericFeatures", "PercentageOfSymbolicFeatures", "PercentageOfBinaryFeatures", 
+			
+			"Dimensionality",
 			"NumberOfClasses", "DefaultAccuracy", "MajorityClassSize", "MinorityClassSize", "MajorityClassPercentage", "MinorityClassPercentage",
 			"AutoCorrelation" };
 
@@ -126,7 +132,7 @@ public class SimpleMetaFeatures extends Characterizer {
 				MajorityClassPercentage = (NumberOfInstances > 0 ? MajorityClassSize / NumberOfInstances : null);
 				MinorityClassPercentage = (NumberOfInstances > 0 ? MinorityClassSize / NumberOfInstances : null);
 				DefaultAccuracy = MajorityClassPercentage;
-				
+
 			} catch (Exception e) {
 				NumberOfClasses = null;
 				DefaultAccuracy = null;

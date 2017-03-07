@@ -78,12 +78,11 @@ public class AttributeCharacterizer extends Characterizer {
 		Map<String, Double> qualities = new HashMap<String, Double>();
 		try {
 
-			// list of non missing values and counts of values
+			// lists of non missing values and counts of values
 			ArrayList<Double> attValuesList = new ArrayList<Double>();
 			ArrayList<Double> classValuesList = new ArrayList<Double>();
 			HashMap<Double, Integer> ValuesCounts = new HashMap<Double, Integer>();
 
-			// ValuesCount MissingValuesCount NonMissingValuesCount Distinct
 			Double ValuesCount = null;
 			Double MissingValuesCount = null;
 			Double NonMissingValuesCount = null;
@@ -102,6 +101,7 @@ public class AttributeCharacterizer extends Characterizer {
 			Double ModeClassPercentage = null;
 			Double MedianClassPercentage = null;
 			try {
+
 				ValuesCount = 0.0;
 				MissingValuesCount = 0.0;
 				NonMissingValuesCount = 0.0;
@@ -127,7 +127,7 @@ public class AttributeCharacterizer extends Characterizer {
 				}
 				Distinct += ValuesCounts.size();
 
-				// AverageClassCount MostFequentClassCount LeastFequentClassCount MedianClassCount Mode
+				// ClassCounts
 				DescriptiveStatistics ValuesCountsStats = new DescriptiveStatistics();
 				HashMap<Integer, Integer> ValuesCountsCounts = new HashMap<Integer, Integer>();
 				for (Integer count : ValuesCounts.values()) {
@@ -150,6 +150,7 @@ public class AttributeCharacterizer extends Characterizer {
 				}
 				ModeClassCount = ValuesCountsCountsStats.getMax();
 
+				// Percentages
 				MissingValues = Math.min(MissingValuesCount, 1.0);
 				AveragePercentageOfClass = (NonMissingValuesCount > 0 ? AverageClassCount / NonMissingValuesCount : 0.0);
 				PercentageOfMissing = (ValuesCount > 0 ? MissingValuesCount / ValuesCount : 1.0);
@@ -158,6 +159,7 @@ public class AttributeCharacterizer extends Characterizer {
 				PercentageOfLeastFrequentClass = (NonMissingValuesCount > 0 ? LeastFequentClassCount / NonMissingValuesCount : 0.0);
 				ModeClassPercentage = (NonMissingValuesCount > 0 ? ModeClassCount / NonMissingValuesCount : 0.0);
 				MedianClassPercentage = (NonMissingValuesCount > 0 ? MedianClassCount / NonMissingValuesCount : 0.0);
+
 			} catch (Exception e) {
 				ValuesCount = null;
 				MissingValuesCount = null;
@@ -177,6 +179,23 @@ public class AttributeCharacterizer extends Characterizer {
 				ModeClassPercentage = null;
 				MedianClassPercentage = null;
 			}
+			qualities.put("ValuesCount", ValuesCount);
+			qualities.put("NonMissingValuesCount", NonMissingValuesCount);
+			qualities.put("MissingValuesCount", MissingValuesCount);
+			qualities.put("Distinct", Distinct);
+			qualities.put("AverageClassCount", AverageClassCount);
+			qualities.put("MostFequentClassCount", MostFequentClassCount);
+			qualities.put("LeastFequentClassCount", LeastFequentClassCount);
+			qualities.put("ModeClassCount", ModeClassCount);
+			qualities.put("MedianClassCount", MedianClassCount);
+			qualities.put("MissingValues", MissingValues);
+			qualities.put("AveragePercentageOfClass", AveragePercentageOfClass);
+			qualities.put("PercentageOfMissing", PercentageOfMissing);
+			qualities.put("PercentageOfNonMissing", PercentageOfNonMissing);
+			qualities.put("PercentageOfMostFrequentClass", PercentageOfMostFrequentClass);
+			qualities.put("PercentageOfLeastFrequentClass", PercentageOfLeastFrequentClass);
+			qualities.put("ModeClassPercentage", ModeClassPercentage);
+			qualities.put("MedianClassPercentage", MedianClassPercentage);
 
 			// Entropy
 			Double Entropy = 0.0;
@@ -188,11 +207,12 @@ public class AttributeCharacterizer extends Characterizer {
 			} catch (Exception e) {
 				Entropy = null;
 			}
+			qualities.put("Entropy", Entropy);
 
 			// PearsonCorrellationCoefficient SpearmanCorrelationCoefficient Covariance
-			Double SpearmanCorrelationCoefficient;
-			Double PearsonCorrellationCoefficient;
-			Double CovarianceWithTarget;
+			Double SpearmanCorrelationCoefficient = null;
+			Double PearsonCorrellationCoefficient = null;
+			Double CovarianceWithTarget = null;
 			double[] attValuesTab = new double[attValuesList.size()];
 			double[] classValuesTab = new double[classValuesList.size()];
 			for (int i = 0; i < attValuesList.size(); i++) {
@@ -200,12 +220,7 @@ public class AttributeCharacterizer extends Characterizer {
 				classValuesTab[i] = classValuesList.get(i);
 			}
 
-			if (index == dataset.classIndex()) {
-				SpearmanCorrelationCoefficient = null;
-				PearsonCorrellationCoefficient = null;
-				CovarianceWithTarget = null;
-
-			} else {
+			if (index != dataset.classIndex()) {
 				SpearmansCorrelation spearmans = new SpearmansCorrelation();
 				PearsonsCorrelation pearsons = new PearsonsCorrelation();
 				Covariance covariance = new Covariance();
@@ -230,51 +245,11 @@ public class AttributeCharacterizer extends Characterizer {
 					CovarianceWithTarget = null;
 				}
 			}
+			qualities.put("PearsonCorrellationCoefficient", PearsonCorrellationCoefficient);
+			qualities.put("SpearmanCorrelationCoefficient", SpearmanCorrelationCoefficient);
+			qualities.put("CovarianceWithTarget", CovarianceWithTarget);
 
-			// ValuesCount
-			qualities.put(ids[0], ValuesCount);
-			// NonMissingValuesCount
-			qualities.put(ids[1], NonMissingValuesCount);
-			// MissingValuesCount
-			qualities.put(ids[2], MissingValuesCount);
-			// Distinct
-			qualities.put(ids[3], Distinct);
-			// AverageClassCount
-			qualities.put(ids[4], AverageClassCount);
-			// Entropy
-			qualities.put(ids[5], Entropy);
-			// MostFequentClassCount
-			qualities.put(ids[6], MostFequentClassCount);
-			// LeastFequentClassCount
-			qualities.put(ids[7], LeastFequentClassCount);
-			// ModeClassCount
-			qualities.put(ids[8], ModeClassCount);
-			// MedianClassCount
-			qualities.put(ids[9], MedianClassCount);
-			// PearsonCorrellationCoefficient
-			qualities.put(ids[10], PearsonCorrellationCoefficient);
-			// SpearmanCorrelationCoefficient
-			qualities.put(ids[11], SpearmanCorrelationCoefficient);
-			// CovarianceWithTarget
-			qualities.put(ids[12], CovarianceWithTarget);
-			// MissingValues
-			qualities.put(ids[37], MissingValues);
-			// AveragePercentageOfClass
-			qualities.put(ids[38], AveragePercentageOfClass);
-			// PercentageOfMissing
-			qualities.put(ids[39], PercentageOfMissing);
-			// PercentageOfNonMissing
-			qualities.put(ids[40], PercentageOfNonMissing);
-			// PercentageOfMostFrequentClass
-			qualities.put(ids[41], PercentageOfMostFrequentClass);
-			// PercentageOfLeastFrequentClass
-			qualities.put(ids[42], PercentageOfLeastFrequentClass);
-			// ModeClassPercentage
-			qualities.put(ids[43], ModeClassPercentage);
-			// MedianClassPercentage
-			qualities.put(ids[44], MedianClassPercentage);
-
-			// Numeric specific meta-features
+			// ******************** Numeric specific meta-features ********************
 			Attribute attribute = dataset.attribute(index);
 			if (attribute.isNumeric()) {
 
@@ -325,109 +300,36 @@ public class AttributeCharacterizer extends Characterizer {
 					Mode = null;
 				}
 
-				// IsUniform
-				qualities.put(ids[13], IsUniform);
-				// IntegersOnly
-				qualities.put(ids[14], (IntegersOnly ? 1.0 : 0.0));
-				// Min
-				qualities.put(ids[15], AttributeStats.getMin());
-				// Max
-				qualities.put(ids[16], AttributeStats.getMax());
-				// Kurtosis
-				qualities.put(ids[17], AttributeStats.getKurtosis());
-				// Mean
-				qualities.put(ids[18], AttributeStats.getMean());
-				// Skewness
-				qualities.put(ids[19], AttributeStats.getSkewness());
-				// StandardDeviation
-				qualities.put(ids[20], AttributeStats.getStandardDeviation());
-				// Variance
-				qualities.put(ids[21], AttributeStats.getVariance());
-				// Mode
-				qualities.put(ids[22], Mode);
-				// Median
-				qualities.put(ids[23], AttributeStats.getPercentile(50));
-				// ValueRange
-				qualities.put(ids[24], AttributeStats.getMax() - AttributeStats.getMin());
-				// LowerOuterFence
-				qualities.put(ids[25], AttributeStats.getPercentile(25) - 3 * (AttributeStats.getPercentile(75) - AttributeStats.getPercentile(25)));
-				// HigherOuterFence
-				qualities.put(ids[26], AttributeStats.getPercentile(75) + 3 * (AttributeStats.getPercentile(75) - AttributeStats.getPercentile(25)));
-				// LowerQuartile
-				qualities.put(ids[27], AttributeStats.getPercentile(25));
-				// HigherQuartile
-				qualities.put(ids[28], AttributeStats.getPercentile(75));
-				// HigherConfidence
-				qualities.put(ids[29], (NonMissingValuesCount > 0
+				qualities.put("IsUniform", IsUniform);
+				qualities.put("IntegersOnly", (IntegersOnly ? 1.0 : 0.0));
+				qualities.put("Min", AttributeStats.getMin());
+				qualities.put("Max", AttributeStats.getMax());
+				qualities.put("Kurtosis", AttributeStats.getKurtosis());
+				qualities.put("Mean", AttributeStats.getMean());
+				qualities.put("Skewness", AttributeStats.getSkewness());
+				qualities.put("StandardDeviation", AttributeStats.getStandardDeviation());
+				qualities.put("Variance", AttributeStats.getVariance());
+				qualities.put("Mode", Mode);
+				qualities.put("Median", AttributeStats.getPercentile(50));
+				qualities.put("ValueRange", AttributeStats.getMax() - AttributeStats.getMin());
+				qualities.put("LowerOuterFence", AttributeStats.getPercentile(25) - 3 * (AttributeStats.getPercentile(75) - AttributeStats.getPercentile(25)));
+				qualities.put("HigherOuterFence", AttributeStats.getPercentile(75) + 3 * (AttributeStats.getPercentile(75) - AttributeStats.getPercentile(25)));
+				qualities.put("LowerQuartile", AttributeStats.getPercentile(25));
+				qualities.put("HigherQuartile", AttributeStats.getPercentile(75));
+				qualities.put("HigherConfidence", (NonMissingValuesCount > 0
 						? AttributeStats.getMean() + 1.96 * AttributeStats.getStandardDeviation() / Math.sqrt(NonMissingValuesCount) : null));
-				// LowerConfidence
-				qualities.put(ids[30], (NonMissingValuesCount > 0
+				qualities.put("LowerConfidence", (NonMissingValuesCount > 0
 						? AttributeStats.getMean() - 1.96 * AttributeStats.getStandardDeviation() / Math.sqrt(NonMissingValuesCount) : null));
-				// PositiveCount
-				qualities.put(ids[31], PositiveCount);
-				// NegativeCount
-				qualities.put(ids[32], NegativeCount);
-				// PositivePercentage
-				qualities.put(ids[45], (NonMissingValuesCount > 0 ? PositiveCount / NonMissingValuesCount : 0.0));
-				// NegativePercentage
-				qualities.put(ids[46], (NonMissingValuesCount > 0 ? NegativeCount / NonMissingValuesCount : 0.0));
-				// HasPositiveValues
-				qualities.put(ids[47], Math.min(PositiveCount, 1.0));
-				// HasNegativeValues
-				qualities.put(ids[48], Math.min(NegativeCount, 1.0));
-
-			} else {
-				// IsUniform
-				qualities.put(ids[13], null);
-				// IntegersOnly
-				qualities.put(ids[14], null);
-				// Min
-				qualities.put(ids[15], null);
-				// Max
-				qualities.put(ids[16], null);
-				// Kurtosis
-				qualities.put(ids[17], null);
-				// Mean
-				qualities.put(ids[18], null);
-				// Skewness
-				qualities.put(ids[19], null);
-				// StandardDeviation
-				qualities.put(ids[20], null);
-				// Variance
-				qualities.put(ids[21], null);
-				// Mode
-				qualities.put(ids[22], null);
-				// Median
-				qualities.put(ids[23], null);
-				// ValueRange
-				qualities.put(ids[24], null);
-				// LowerOuterFence
-				qualities.put(ids[25], null);
-				// HigherOuterFence
-				qualities.put(ids[26], null);
-				// LowerQuartile
-				qualities.put(ids[27], null);
-				// HigherQuartile
-				qualities.put(ids[28], null);
-				// HigherConfidence
-				qualities.put(ids[29], null);
-				// LowerConfidence
-				qualities.put(ids[30], null);
-				// PositiveCount
-				qualities.put(ids[31], null);
-				// NegativeCount
-				qualities.put(ids[32], null);
-				// PositivePercentage
-				qualities.put(ids[45], null);
-				// NegativePercentage
-				qualities.put(ids[46], null);
-				// HasPositiveValues
-				qualities.put(ids[47], null);
-				// HasNegativeValues
-				qualities.put(ids[48], null);
+				qualities.put("PositiveCount", PositiveCount);
+				qualities.put("NegativeCount", NegativeCount);
+				qualities.put("PositivePercentage", (NonMissingValuesCount > 0 ? PositiveCount / NonMissingValuesCount : 0.0));
+				qualities.put("NegativePercentage", (NonMissingValuesCount > 0 ? NegativeCount / NonMissingValuesCount : 0.0));
+				qualities.put("HasPositiveValues", Math.min(PositiveCount, 1.0));
+				qualities.put("HasNegativeValues", Math.min(NegativeCount, 1.0));
 			}
 
-			// Nominal specific meta-features
+			
+			// ************* Nominal specific meta-features ********************
 			if (attribute.isNominal()) {
 
 				// UniformDiscrete ChiSquareUniformDistribution
@@ -441,6 +343,8 @@ public class AttributeCharacterizer extends Characterizer {
 					UniformDiscrete = null;
 					ChiSquareUniformDistribution = null;
 				}
+				qualities.put("UniformDiscrete", UniformDiscrete);
+				qualities.put("ChiSquareUniformDistribution", ChiSquareUniformDistribution);
 
 				// RationOfDistinguishingCategories
 				Double RationOfDistinguishingCategoriesByKolmogorovSmirnoffSlashChiSquare = null;
@@ -495,31 +399,14 @@ public class AttributeCharacterizer extends Characterizer {
 						RationOfDistinguishingCategoriesByUtest = null;
 					}
 				}
-
-				// UniformDiscrete
-				qualities.put(ids[33], UniformDiscrete);
-				// ChiSquareUniformDistribution
-				qualities.put(ids[34], ChiSquareUniformDistribution);
-				// RationOfDistinguishingCategoriesByKolmogorovSmirnoffSlashChiSquare
-				qualities.put(ids[35], RationOfDistinguishingCategoriesByKolmogorovSmirnoffSlashChiSquare);
-				// RationOfDistinguishingCategoriesByUtest
-				qualities.put(ids[36], RationOfDistinguishingCategoriesByUtest);
-
-			} else {
-				// UniformDiscrete
-				qualities.put(ids[33], null);
-				// ChiSquareUniformDistribution
-				qualities.put(ids[34], null);
-				// RationOfDistinguishingCategoriesByKolmogorovSmirnoffSlashChiSquare
-				qualities.put(ids[35], null);
-				// RationOfDistinguishingCategoriesByUtest
-				qualities.put(ids[36], null);
+				qualities.put("RationOfDistinguishingCategoriesByKolmogorovSmirnoffSlashChiSquare", RationOfDistinguishingCategoriesByKolmogorovSmirnoffSlashChiSquare);
+				qualities.put("RationOfDistinguishingCategoriesByUtest", RationOfDistinguishingCategoriesByUtest);
 			}
 
 		} catch (Exception e) {
 		}
 
-		// enforce finite double or null for all qualities
+		// enforce finite double or null for all existing qualities
 		for (String key : qualities.keySet()) {
 			if (qualities.get(key) != null && !Double.isFinite(qualities.get(key)))
 				qualities.replace(key, null);
