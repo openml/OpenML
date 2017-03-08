@@ -11,17 +11,10 @@ import weka.core.Instances;
 
 public class SimpleMetaFeatures extends Characterizer {
 
-	public static final String[] ids = new String[] { "NumberOfInstances", "NumberOfFeatures", "NumberOfInstancesWithMissingValues", "NumberOfMissingValues",
-			
-			"PercentageOfInstancesWithMissingValues", "PercentageOfMissingValues", 
-			
-			"NumberOfNumericFeatures", "NumberOfSymbolicFeatures",			"NumberOfBinaryFeatures", 
-			
-			"PercentageOfNumericFeatures", "PercentageOfSymbolicFeatures", "PercentageOfBinaryFeatures", 
-			
-			"Dimensionality",
-			"NumberOfClasses", "DefaultAccuracy", "MajorityClassSize", "MinorityClassSize", "MajorityClassPercentage", "MinorityClassPercentage",
-			"AutoCorrelation" };
+	public static final String[] ids = new String[] { "NumberOfInstances", "NumberOfFeatures", "NumberOfClasses", "Dimensionality",
+			"NumberOfInstancesWithMissingValues", "NumberOfMissingValues", "PercentageOfInstancesWithMissingValues", "PercentageOfMissingValues",
+			"NumberOfNumericFeatures", "NumberOfSymbolicFeatures", "NumberOfBinaryFeatures", "PercentageOfNumericFeatures", "PercentageOfSymbolicFeatures",
+			"PercentageOfBinaryFeatures", "MajorityClassSize", "MinorityClassSize", "MajorityClassPercentage", "MinorityClassPercentage", "AutoCorrelation" };
 
 	@Override
 	public String[] getIDs() {
@@ -49,7 +42,6 @@ public class SimpleMetaFeatures extends Characterizer {
 			Double AutoCorrelation = null;
 
 			Double NumberOfClasses = null;
-			Double DefaultAccuracy = null;
 			Double MajorityClassSize = null;
 			Double MinorityClassSize = null;
 			Double MajorityClassPercentage = null;
@@ -131,11 +123,9 @@ public class SimpleMetaFeatures extends Characterizer {
 				NumberOfClasses = (double) ValuesCounts.size();
 				MajorityClassPercentage = (NumberOfInstances > 0 ? MajorityClassSize / NumberOfInstances : null);
 				MinorityClassPercentage = (NumberOfInstances > 0 ? MinorityClassSize / NumberOfInstances : null);
-				DefaultAccuracy = MajorityClassPercentage;
 
 			} catch (Exception e) {
 				NumberOfClasses = null;
-				DefaultAccuracy = null;
 				MajorityClassSize = null;
 				MinorityClassSize = null;
 				MajorityClassPercentage = null;
@@ -157,7 +147,6 @@ public class SimpleMetaFeatures extends Characterizer {
 			qualities.put("Dimensionality", Dimensionality);
 			qualities.put("AutoCorrelation", AutoCorrelation);
 			qualities.put("NumberOfClasses", NumberOfClasses);
-			qualities.put("DefaultAccuracy", DefaultAccuracy);
 			qualities.put("MajorityClassSize", MajorityClassSize);
 			qualities.put("MinorityClassSize", MinorityClassSize);
 			qualities.put("MajorityClassPercentage", MajorityClassPercentage);
