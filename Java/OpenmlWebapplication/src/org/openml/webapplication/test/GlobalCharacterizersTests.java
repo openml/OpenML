@@ -20,7 +20,7 @@ public class GlobalCharacterizersTests {
 
 		OpenmlConnector connector = new OpenmlConnector("ad6244a6f01a5c9fc4985a0875b30b97");
 
-		DataSet[] datasets = connector.dataList("tmp").getData();
+		DataSet[] datasets = connector.dataList("study_20").getData();
 
 		for (DataSet d : datasets) {
 			try {
@@ -34,7 +34,10 @@ public class GlobalCharacterizersTests {
 
 				System.err.println("Dataset " + dataDesc.getId() + " : " + dataDesc.getName());
 
-				Characterizer characterizer = new SimpleMetaFeatures();
+				Characterizer simple = new SimpleMetaFeatures();
+				Map<String, Double> simples = simple.characterize(dataset);
+				
+				Characterizer characterizer = new NominalAttDistinctValues();
 
 				double start = System.nanoTime() / 1000000000;
 				Map<String, Double> mfs = characterizer.characterize(dataset);
@@ -48,16 +51,19 @@ public class GlobalCharacterizersTests {
 						nbnull++;
 				}
 
-				if (nbnull > 0) {
+				if (simples.get("NumberOfSymbolicFeatures")>0 && nbnull > 0) {
+					System.err.println("Nulls : ");
 					for (String key : mfs.keySet()) {
 						if (mfs.get(key) == null) {
 							System.err.print(key + ", ");
 						}
 					}
 					System.err.println("");
+					throw new Exception();
 				}
 
 			} catch (Exception e) {
+				e.printStackTrace();
 			}
 
 		}

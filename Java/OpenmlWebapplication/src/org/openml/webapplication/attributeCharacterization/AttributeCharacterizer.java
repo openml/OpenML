@@ -17,7 +17,6 @@ import org.apache.commons.math3.special.Gamma;
 
 import weka.core.Attribute;
 import weka.core.Instances;
-import weka.core.Utils;
 
 public class AttributeCharacterizer extends Characterizer {
 
@@ -39,9 +38,11 @@ public class AttributeCharacterizer extends Characterizer {
 		this.index = -1;
 	}
 
-	public static final String[] ids = new String[] { "ValuesCount", "NonMissingValuesCount", "MissingValuesCount", "Distinct", "AverageClassCount", "Entropy",
+	public static final String[] ids = new String[] { "ValuesCount", "NonMissingValuesCount", "MissingValuesCount", "Distinct", "AverageClassCount",
 			"MostFequentClassCount", "LeastFequentClassCount", "ModeClassCount", "MedianClassCount", "PearsonCorrellationCoefficient",
 			"SpearmanCorrelationCoefficient", "CovarianceWithTarget",
+
+			"Entropy", "JointEntropy", "MutualInformation",
 
 			"IsUniform", "IntegersOnly", "Min", "Max", "Kurtosis", "Mean", "Skewness", "StandardDeviation", "Variance", "Mode", "Median", "ValueRange",
 			"LowerOuterFence", "HigherOuterFence", "LowerQuartile", "HigherQuartile", "HigherConfidence", "LowerConfidence", "PositiveCount", "NegativeCount",
@@ -72,9 +73,7 @@ public class AttributeCharacterizer extends Characterizer {
 		Map<String, Double> qualities = new HashMap<String, Double>();
 		try {
 
-			// lists of non missing values and counts of values
-			ArrayList<Double> attValuesList = new ArrayList<Double>();
-			ArrayList<Double> classValuesList = new ArrayList<Double>();
+			// counts of values
 			HashMap<Double, Integer> ValuesCounts = new HashMap<Double, Integer>();
 
 			Double ValuesCount = null;
@@ -99,7 +98,6 @@ public class AttributeCharacterizer extends Characterizer {
 				ValuesCount = 0.0;
 				MissingValuesCount = 0.0;
 				NonMissingValuesCount = 0.0;
-				Distinct = 0.0;
 				for (int i = 0; i < dataset.numInstances(); i++) {
 					ValuesCount++;
 
@@ -109,9 +107,6 @@ public class AttributeCharacterizer extends Characterizer {
 						double value = dataset.get(i).value(index);
 						NonMissingValuesCount++;
 
-						attValuesList.add(value);
-						classValuesList.add(dataset.get(i).classValue());
-
 						if (ValuesCounts.containsKey(value)) {
 							ValuesCounts.replace(value, ValuesCounts.get(value) + 1);
 						} else {
@@ -119,7 +114,7 @@ public class AttributeCharacterizer extends Characterizer {
 						}
 					}
 				}
-				Distinct += ValuesCounts.size();
+				Distinct = (double) ValuesCounts.size();
 
 				// ClassCounts
 				DescriptiveStatistics ValuesCountsStats = new DescriptiveStatistics();
@@ -191,17 +186,78 @@ public class AttributeCharacterizer extends Characterizer {
 			qualities.put("ModeClassPercentage", ModeClassPercentage);
 			qualities.put("MedianClassPercentage", MedianClassPercentage);
 
+			// counts of class values for entropy and correlations
+			HashMap<Double, Integer> classValuesCounts = new HashMap<Double, Integer>();
+			HashMap<Double, HashMap<Double, Integer>> attClassValuesCounts = new HashMap<Double, HashMap<Double, Integer>>();
+			ArrayList<Double> attValuesList = new ArrayList<Double>();
+			ArrayList<Double> classValuesList = new ArrayList<Double>();
+			int fullPairsCount = 0;
+			for (int i = 0; i < dataset.numInstances(); i++) {
+				if (!dataset.get(i).isMissing(index) && !dataset.get(i).classIsMissing()) {
+					fullPairsCount++;
+					double attValue = dataset.get(i).value(index);
+					double classValue = dataset.get(i).classValue();
+
+					attValuesList.add(dataset.get(i).value(index));
+					classValuesList.add(dataset.get(i).classValue());
+
+					if (classValuesCounts.containsKey(classValue)) {
+						classValuesCounts.replace(classValue, classValuesCounts.get(classValue) + 1);
+					} else {
+						classValuesCounts.put(classValue, 1);
+					}
+
+					if (attClassValuesCounts.containsKey(attValue)) {
+						HashMap<Double, Integer> attValSpecClassCounts = attClassValuesCounts.get(attValue);
+						if (attValSpecClassCounts.containsKey(classValue)) {
+							attValSpecClassCounts.replace(classValue, attValSpecClassCounts.get(classValue) + 1);
+						} else {
+							attValSpecClassCounts.put(classValue, 1);
+						}
+					} else {
+						HashMap<Double, Integer> attValSpecClassCounts = new HashMap<Double, Integer>();
+						attValSpecClassCounts.put(classValue, 1);
+						attClassValuesCounts.put(attValue, attValSpecClassCounts);
+					}
+				}
+			}
+
 			// Entropy
 			Double Entropy = 0.0;
+			Double ClassEntropy = 0.0;
+			Double JointEntropy = 0.0;
+			Double MutualInformation = 0.0;
 			try {
+				if (ValuesCount == 0.0 || fullPairsCount == 0)
+					throw new Exception();
+
 				for (Integer count : ValuesCounts.values()) {
 					double valueProb = count / ValuesCount;
-					Entropy -= valueProb * (Utils.log2(valueProb));
+					Entropy -= valueProb * (Math.log(valueProb) / Math.log(2));
 				}
+
+				for (Integer count : classValuesCounts.values()) {
+					double valueProb = count / fullPairsCount;
+					ClassEntropy -= valueProb * (Math.log(valueProb) / Math.log(2));
+				}
+
+				for (HashMap<Double, Integer> counts : attClassValuesCounts.values()) {
+					for (Integer count : counts.values()) {
+						double valueProb = count / fullPairsCount;
+						JointEntropy -= valueProb * (Math.log(valueProb) / Math.log(2));
+					}
+				}
+
+				MutualInformation = ClassEntropy + Entropy - JointEntropy;
+
 			} catch (Exception e) {
 				Entropy = null;
+				JointEntropy = null;
+				MutualInformation = null;
 			}
 			qualities.put("Entropy", Entropy);
+			qualities.put("JointEntropy", JointEntropy);
+			qualities.put("MutualInformation", MutualInformation);
 
 			// PearsonCorrellationCoefficient SpearmanCorrelationCoefficient Covariance
 			Double SpearmanCorrelationCoefficient = null;
@@ -358,26 +414,26 @@ public class AttributeCharacterizer extends Characterizer {
 							}
 
 							// use if computation of ksTest seems to hang indefinitely
-//							try {
-//								ExecutorService service = Executors.newFixedThreadPool(1);
-//								Future<Double> future;
-//								Callable<Double> callable = () -> {
-//									KolmogorovSmirnovTest ksTest = new KolmogorovSmirnovTest();
-//									return ksTest.kolmogorovSmirnovStatistic(classValuesTab, classValuesSubset);
-//								};
-//								future = service.submit(callable);
-//								service.shutdown();
-//
-//								double p = future.get(2, TimeUnit.SECONDS);
-//
-//								if (!service.awaitTermination(2, TimeUnit.SECONDS)) {
-//									service.shutdownNow();
-//								}
-//								if (p > 0.05) {
-//									nbValuesChangingTargetDistributionKs++;
-//								}
-//							} catch (Exception e) {
-//							}
+							// try {
+							// ExecutorService service = Executors.newFixedThreadPool(1);
+							// Future<Double> future;
+							// Callable<Double> callable = () -> {
+							// KolmogorovSmirnovTest ksTest = new KolmogorovSmirnovTest();
+							// return ksTest.kolmogorovSmirnovStatistic(classValuesTab, classValuesSubset);
+							// };
+							// future = service.submit(callable);
+							// service.shutdown();
+							//
+							// double p = future.get(2, TimeUnit.SECONDS);
+							//
+							// if (!service.awaitTermination(2, TimeUnit.SECONDS)) {
+							// service.shutdownNow();
+							// }
+							// if (p > 0.05) {
+							// nbValuesChangingTargetDistributionKs++;
+							// }
+							// } catch (Exception e) {
+							// }
 
 							KolmogorovSmirnovTest ksTest = new KolmogorovSmirnovTest();
 							if (ksTest.kolmogorovSmirnovStatistic(classValuesTab, classValuesSubset) > 0.05) {
