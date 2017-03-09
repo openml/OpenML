@@ -35,9 +35,10 @@ public class GlobalCharacterizersTests {
 				System.err.println("Dataset " + dataDesc.getId() + " : " + dataDesc.getName());
 
 				Characterizer simple = new SimpleMetaFeatures();
+				@SuppressWarnings("unused")
 				Map<String, Double> simples = simple.characterize(dataset);
 				
-				Characterizer characterizer = new NominalAttDistinctValues();
+				Characterizer characterizer = new AttributeEntropy();
 
 				double start = System.nanoTime() / 1000000000;
 				Map<String, Double> mfs = characterizer.characterize(dataset);
@@ -51,7 +52,7 @@ public class GlobalCharacterizersTests {
 						nbnull++;
 				}
 
-				if (simples.get("NumberOfSymbolicFeatures")>0 && nbnull > 0) {
+				if (nbnull > 0) {
 					System.err.println("Nulls : ");
 					for (String key : mfs.keySet()) {
 						if (mfs.get(key) == null) {

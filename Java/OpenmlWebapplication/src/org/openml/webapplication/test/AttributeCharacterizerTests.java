@@ -28,7 +28,7 @@ public class AttributeCharacterizerTests {
 	public static void main(String[] args) throws Exception {
 
 		OpenmlConnector connector = new OpenmlConnector("ad6244a6f01a5c9fc4985a0875b30b97");
-		DataSet[] datasets = connector.dataList("tmp").getData();
+		DataSet[] datasets = connector.dataList("study_20").getData();
 
 		for (DataSet d : datasets) {
 			try {
@@ -61,14 +61,26 @@ public class AttributeCharacterizerTests {
 					}
 
 					int expectedNull = 0;
+					if (i == dataset.classIndex() || mfs.get("NonMissingValuesCount") < 2) {
+						expectedNull += 3; // correlations + covariance
+					} else if (mfs.get("Distinct") < 2) {
+						expectedNull += 2; // correlations
+					}
+					if (mfs.get("MutualInformation") ==0) {
+						expectedNull += 2; // EquivalentNumberOfAtts & NoiseToSignalRatio
+					}
 					if (dataset.attribute(i).isNominal()) {
-						expectedNull = 24;
+						expectedNull += 24; // numeric specific
+						if (i == dataset.classIndex() || mfs.get("LeastFequentClassCount") < 2)
+							expectedNull += 2; // RationOfDistinguishingCategories
 					} else if (dataset.attribute(i).isNumeric()) {
-						expectedNull = 4;
+						expectedNull += 4; // nominal specific
+						if (mfs.get("Distinct") < 2)
+							expectedNull += 2; // kurtosis skewness
 					}
 
 					if (nbnull != expectedNull) {
-						System.err.print(dataset.attribute(i).name() + " nulls : ");
+						System.err.print(dataset.attribute(i).name() + " has " + nbnull + " nulls for " + expectedNull + " expected :");
 						for (String key : mfs.keySet()) {
 							if (mfs.get(key) == null) {
 								if (dataset.attribute(i).isNominal() && !numerics.contains(key)) {

@@ -42,7 +42,7 @@ public class AttributeCharacterizer extends Characterizer {
 			"MostFequentClassCount", "LeastFequentClassCount", "ModeClassCount", "MedianClassCount", "PearsonCorrellationCoefficient",
 			"SpearmanCorrelationCoefficient", "CovarianceWithTarget",
 
-			"Entropy", "JointEntropy", "MutualInformation",
+			"Entropy", "JointEntropy", "MutualInformation", "EquivalentNumberOfAtts", "NoiseToSignalRatio",
 
 			"IsUniform", "IntegersOnly", "Min", "Max", "Kurtosis", "Mean", "Skewness", "StandardDeviation", "Variance", "Mode", "Median", "ValueRange",
 			"LowerOuterFence", "HigherOuterFence", "LowerQuartile", "HigherQuartile", "HigherConfidence", "LowerConfidence", "PositiveCount", "NegativeCount",
@@ -191,7 +191,7 @@ public class AttributeCharacterizer extends Characterizer {
 			HashMap<Double, HashMap<Double, Integer>> attClassValuesCounts = new HashMap<Double, HashMap<Double, Integer>>();
 			ArrayList<Double> attValuesList = new ArrayList<Double>();
 			ArrayList<Double> classValuesList = new ArrayList<Double>();
-			int fullPairsCount = 0;
+			double fullPairsCount = 0;
 			for (int i = 0; i < dataset.numInstances(); i++) {
 				if (!dataset.get(i).isMissing(index) && !dataset.get(i).classIsMissing()) {
 					fullPairsCount++;
@@ -227,37 +227,45 @@ public class AttributeCharacterizer extends Characterizer {
 			Double ClassEntropy = 0.0;
 			Double JointEntropy = 0.0;
 			Double MutualInformation = 0.0;
+			Double EquivalentNumberOfAtts = 0.0;
+			Double NoiseToSignalRatio = 0.0;
 			try {
 				if (ValuesCount == 0.0 || fullPairsCount == 0)
 					throw new Exception();
 
-				for (Integer count : ValuesCounts.values()) {
+				for (double count : ValuesCounts.values()) {
 					double valueProb = count / ValuesCount;
 					Entropy -= valueProb * (Math.log(valueProb) / Math.log(2));
 				}
 
-				for (Integer count : classValuesCounts.values()) {
+				for (double count : classValuesCounts.values()) {
 					double valueProb = count / fullPairsCount;
 					ClassEntropy -= valueProb * (Math.log(valueProb) / Math.log(2));
 				}
 
 				for (HashMap<Double, Integer> counts : attClassValuesCounts.values()) {
-					for (Integer count : counts.values()) {
+					for (double count : counts.values()) {
 						double valueProb = count / fullPairsCount;
 						JointEntropy -= valueProb * (Math.log(valueProb) / Math.log(2));
 					}
 				}
 
 				MutualInformation = ClassEntropy + Entropy - JointEntropy;
+				EquivalentNumberOfAtts = (MutualInformation == 0 ? null : ClassEntropy / MutualInformation);
+				NoiseToSignalRatio = (MutualInformation == 0 ? null : (Entropy - MutualInformation) / MutualInformation);
 
 			} catch (Exception e) {
 				Entropy = null;
 				JointEntropy = null;
 				MutualInformation = null;
+				EquivalentNumberOfAtts = null;
+				NoiseToSignalRatio = null;
 			}
 			qualities.put("Entropy", Entropy);
 			qualities.put("JointEntropy", JointEntropy);
 			qualities.put("MutualInformation", MutualInformation);
+			qualities.put("EquivalentNumberOfAtts", EquivalentNumberOfAtts);
+			qualities.put("NoiseToSignalRatio", NoiseToSignalRatio);
 
 			// PearsonCorrellationCoefficient SpearmanCorrelationCoefficient Covariance
 			Double SpearmanCorrelationCoefficient = null;
