@@ -2,10 +2,12 @@ package org.openml.webapplication.fantail.dc.landmarking;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import org.openml.webapplication.fantail.dc.Characterizer;
 
 import weka.classifiers.AbstractClassifier;
+import weka.classifiers.evaluation.Evaluation;
 import weka.core.Instances;
 
 public class GenericLandmarker extends Characterizer {
@@ -36,24 +38,27 @@ public class GenericLandmarker extends Characterizer {
 
 	@Override
 	public Map<String, Double> characterize(Instances instances) {
+		
 		Map<String, Double> results = new HashMap<String, Double>();
 		
 		try {
-			weka.classifiers.Evaluation eval = new weka.classifiers.Evaluation(instances);
+			
+			Evaluation eval = new Evaluation(instances);
 			AbstractClassifier cls = (AbstractClassifier) Class.forName( className ).newInstance();
 			cls.setOptions( options );
 			
-			eval.crossValidateModel(cls, instances, numFolds, new java.util.Random(1));
+			eval.crossValidateModel(cls, instances, numFolds, new Random(1));
 
 			results.put( landmarkerName + "AUC", eval.weightedAreaUnderROC() );
 			results.put( landmarkerName + "ErrRate", eval.errorRate() );
 			results.put( landmarkerName + "Kappa", eval.kappa() );
+			
 		} catch( Exception e ) {
-			e.printStackTrace();
-			results.put( landmarkerName + "AUC", -1.0 );
-			results.put( landmarkerName + "ErrRate", -1.0 );
-			results.put( landmarkerName + "Kappa", -1.0 );
+			results.put( landmarkerName + "AUC", null );
+			results.put( landmarkerName + "ErrRate", null );
+			results.put( landmarkerName + "Kappa", null );
 		}
+		
 		return results;
 	}
 
