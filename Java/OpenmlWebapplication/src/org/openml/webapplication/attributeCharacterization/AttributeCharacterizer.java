@@ -63,8 +63,8 @@ public class AttributeCharacterizer extends Characterizer {
 	/**
 	 * @param weka.core.Instances
 	 *            dataset : the dataset on wich to compute the (index)th attribute meta-features
-	 * @return Map<String, Double> qualities : map of meta-features (name->value), every quality from getIDs() is supposed to be present and value is guaranteed
-	 *         has to be either a finite Double or null. null means that the meta-feature makes no sense on this attribute, or that it failed computation.
+	 * @return Map<String, Double> qualities : map of meta-features (name->value), every quality from getIDs() is supposed to be present and value has to be
+	 *         either a finite Double or null. null means that the meta-feature makes no sense on this attribute, or that it failed computation.
 	 */
 	public Map<String, Double> characterize(Instances dataset) {
 		if (index < 0 || index > dataset.numAttributes())
