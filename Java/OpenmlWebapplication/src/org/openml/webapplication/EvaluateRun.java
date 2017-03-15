@@ -14,6 +14,7 @@ import org.json.JSONObject;
 import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.algorithms.Input;
 import org.openml.apiconnector.algorithms.TaskInformation;
+import org.openml.apiconnector.io.HttpConnector;
 import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.xml.DataSetDescription;
 import org.openml.apiconnector.xml.EvaluationScore;
@@ -41,6 +42,7 @@ import com.thoughtworks.xstream.XStream;
 public class EvaluateRun {
 	private final XStream xstream;
 	private final OpenmlConnector apiconnector;
+	private final int EVALUATION_ENGINE_ID = 1;
 	
 	public EvaluateRun(OpenmlConnector ac) throws Exception {
 		this(ac, null, false, null);
@@ -66,11 +68,11 @@ public class EvaluateRun {
 	public Integer getRunId(boolean random, String ttids) throws Exception {
 		String ttidsStr = ttids == null ? "" : " AND `t`.`ttid` IN ("+ttids+") ";
 		String sql = 
-			"SELECT `rid`,`start_time`,`processed`,`error` " + 
-			"FROM `run` `r`, `task` `t` " +
-			"WHERE `r`.`task_id` = `t`.`task_id` " + ttidsStr + 
-			"AND `processed` IS NULL AND `error` IS NULL AND error_message IS NULL " + 
-			"ORDER BY `start_time` ASC LIMIT 0, 100; "; 
+			"SELECT `r`.`rid`, `r`.`start_time`, `e`.`evaluation_date`, `e`.`error` FROM  `task` `t`, `run` `r` " + 
+			"LEFT JOIN run_evaluated `e` ON `r`.`rid` = `e`.`run_id` AND `e`.`evaluation_engine_id` = 1 " +
+			"WHERE `r`.`task_id` = `t`.`task_id` " + ttidsStr +
+			"AND `e`.`run_id` IS NULL " + 
+			"ORDER BY `r`.`start_time` ASC LIMIT 0, 100; "; 
 		JSONArray runJson = (JSONArray) apiconnector.freeQuery( sql ).get("data");
 		
 		int randomint = 0;
@@ -94,7 +96,7 @@ public class EvaluateRun {
 		final DataSetDescription dataset;
 		
 		PredictionEvaluator predictionEvaluator;
-		RunEvaluation runevaluation = new RunEvaluation(run_id);
+		RunEvaluation runevaluation = new RunEvaluation(run_id, EVALUATION_ENGINE_ID);
 		RunTrace trace = null;
 		
 		JSONArray runJson = (JSONArray) apiconnector.freeQuery( "SELECT `task_id` FROM `run` WHERE `rid` = " + run_id ).get("data");
@@ -136,8 +138,9 @@ public class EvaluateRun {
 			if (file_ids.get("trace") != null) {
 				trace = traceToXML(file_ids.get("trace"), task_id, run_id);
 			}
+			String description_url = apiconnector.getOpenmlFileUrl(file_ids.get("description"), "Run_" + run_id + "_description.xml").toString();
+			String description = HttpConnector.getStringFromUrl(description_url, false);
 			
-			String description = OpenmlConnector.getStringFromUrl( apiconnector.getOpenmlFileUrl( file_ids.get( "description" ), "Run_" + run_id + "_description.xml").toString() );
 			Run run_description = (Run) xstream.fromXML( description );
 			dataset = apiconnector.dataGet(dataset_id);
 			
@@ -221,7 +224,6 @@ public class EvaluateRun {
 		Conversion.log( "OK", "Process Run", "Start uploading results ... " );
 		try {
 			String runEvaluation = xstream.toXML( runevaluation );
-			System.out.println(runEvaluation);
 			File evaluationFile = Conversion.stringToTempFile( runEvaluation, "run_" + run_id + "evaluations", "xml" );
 			RunEvaluate re = apiconnector.runEvaluate( evaluationFile );
 			
