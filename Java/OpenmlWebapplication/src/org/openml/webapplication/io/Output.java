@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.openml.apiconnector.models.Metric;
 import org.openml.apiconnector.models.MetricScore;
 import org.openml.webapplication.evaluate.TaskType;
 import org.openml.webapplication.models.JsonItem;
@@ -40,34 +39,34 @@ public class Output {
 	/*
 	 *  Transforms a Weka Evaluation object into a HashMap with scores.
 	 */
-	public static Map<Metric, MetricScore> evaluatorToMap( Evaluation evaluator, int classes, TaskType task ) throws Exception {
-		Map<Metric, MetricScore> m = new HashMap<Metric, MetricScore>();
+	public static Map<String, MetricScore> evaluatorToMap( Evaluation evaluator, int classes, TaskType task ) throws Exception {
+		Map<String, MetricScore> m = new HashMap<String, MetricScore>();
 		
 		if( task == TaskType.REGRESSION ) {
 			
 			// here all measures for regression tasks
-			m.put(new Metric("mean_absolute_error", "openml.evaluation.mean_absolute_error(1.0)"), new MetricScore( evaluator.meanAbsoluteError(), (int) evaluator.numInstances() ) );
-			m.put(new Metric("mean_prior_absolute_error", "openml.evaluation.mean_prior_absolute_error(1.0)"), new MetricScore( evaluator.meanPriorAbsoluteError(), (int) evaluator.numInstances() ) );
-			m.put(new Metric("number_of_instances", "openml.evaluation.number_of_instances(1.0)"), new MetricScore( evaluator.numInstances(), (int) evaluator.numInstances() ) );
-			m.put(new Metric("root_mean_squared_error", "openml.evaluation.root_mean_squared_error(1.0)"), new MetricScore( evaluator.rootMeanSquaredError(), (int) evaluator.numInstances() ) );
-			m.put(new Metric("root_mean_prior_squared_error", "openml.evaluation.root_mean_prior_squared_error(1.0)"), new MetricScore( evaluator.rootMeanPriorSquaredError(), (int) evaluator.numInstances() ) );
-			m.put(new Metric("relative_absolute_error", "openml.evaluation.relative_absolute_error(1.0)"), new MetricScore( evaluator.relativeAbsoluteError() / 100, (int) evaluator.numInstances() ) );
-			m.put(new Metric("root_relative_squared_error", "openml.evaluation.root_relative_squared_error(1.0)"), new MetricScore( evaluator.rootRelativeSquaredError() / 100, (int) evaluator.numInstances() ) );
+			m.put("mean_absolute_error", new MetricScore( evaluator.meanAbsoluteError(), (int) evaluator.numInstances() ) );
+			m.put("mean_prior_absolute_error", new MetricScore( evaluator.meanPriorAbsoluteError(), (int) evaluator.numInstances() ) );
+			m.put("number_of_instances", new MetricScore( evaluator.numInstances(), (int) evaluator.numInstances() ) );
+			m.put("root_mean_squared_error", new MetricScore( evaluator.rootMeanSquaredError(), (int) evaluator.numInstances() ) );
+			m.put("root_mean_prior_squared_error", new MetricScore( evaluator.rootMeanPriorSquaredError(), (int) evaluator.numInstances() ) );
+			m.put("relative_absolute_error", new MetricScore( evaluator.relativeAbsoluteError() / 100, (int) evaluator.numInstances() ) );
+			m.put("root_relative_squared_error", new MetricScore( evaluator.rootRelativeSquaredError() / 100, (int) evaluator.numInstances() ) );
 			
 		} else if( task == TaskType.CLASSIFICATION || task == TaskType.LEARNINGCURVE || task == TaskType.TESTTHENTRAIN ) {
 			
-			m.put(new Metric("average_cost", "openml.evaluation.average_cost(1.0)"), new MetricScore( evaluator.avgCost(), (int) evaluator.numInstances() ) );
-			m.put(new Metric("total_cost", "openml.evaluation.total_cost(1.0)"), new MetricScore( evaluator.totalCost(), (int) evaluator.numInstances() ) );
+			m.put("average_cost", new MetricScore( evaluator.avgCost(), (int) evaluator.numInstances() ) );
+			m.put("total_cost", new MetricScore( evaluator.totalCost(), (int) evaluator.numInstances() ) );
 				
-			m.put(new Metric("mean_absolute_error", "openml.evaluation.mean_absolute_error(1.0)"), new MetricScore( evaluator.meanAbsoluteError(), (int) evaluator.numInstances() ) );
-			m.put(new Metric("mean_prior_absolute_error", "openml.evaluation.mean_prior_absolute_error(1.0)"), new MetricScore( evaluator.meanPriorAbsoluteError(), (int) evaluator.numInstances() ) );
-			m.put(new Metric("root_mean_squared_error", "openml.evaluation.root_mean_squared_error(1.0)"), new MetricScore( evaluator.rootMeanSquaredError(), (int) evaluator.numInstances() ) );
-			m.put(new Metric("root_mean_prior_squared_error", "openml.evaluation.root_mean_prior_squared_error(1.0)"), new MetricScore( evaluator.rootMeanPriorSquaredError(), (int) evaluator.numInstances() ) );
-			m.put(new Metric("relative_absolute_error", "openml.evaluation.relative_absolute_error(1.0)"), new MetricScore( evaluator.relativeAbsoluteError() / 100, (int) evaluator.numInstances() ) );
-			m.put(new Metric("root_relative_squared_error", "openml.evaluation.root_relative_squared_error(1.0)"), new MetricScore( evaluator.rootRelativeSquaredError() / 100, (int) evaluator.numInstances() ) );
+			m.put("mean_absolute_error", new MetricScore( evaluator.meanAbsoluteError(), (int) evaluator.numInstances() ) );
+			m.put("mean_prior_absolute_error", new MetricScore( evaluator.meanPriorAbsoluteError(), (int) evaluator.numInstances() ) );
+			m.put("root_mean_squared_error", new MetricScore( evaluator.rootMeanSquaredError(), (int) evaluator.numInstances() ) );
+			m.put("root_mean_prior_squared_error", new MetricScore( evaluator.rootMeanPriorSquaredError(), (int) evaluator.numInstances() ) );
+			m.put("relative_absolute_error", new MetricScore( evaluator.relativeAbsoluteError() / 100, (int) evaluator.numInstances() ) );
+			m.put("root_relative_squared_error", new MetricScore( evaluator.rootRelativeSquaredError() / 100, (int) evaluator.numInstances() ) );
 				
-			m.put(new Metric("prior_entropy", "openml.evaluation.prior_entropy(1.0)"), new MetricScore( evaluator.priorEntropy(), (int) evaluator.numInstances() ) );
-			m.put(new Metric("kb_relative_information_score", "openml.evaluation.kb_relative_information_score(1.0)"), new MetricScore( evaluator.KBRelativeInformation() / 100, (int) evaluator.numInstances() ) );
+			m.put("prior_entropy", new MetricScore( evaluator.priorEntropy(), (int) evaluator.numInstances() ) );
+			m.put("kb_relative_information_score", new MetricScore( evaluator.KBRelativeInformation() / 100, (int) evaluator.numInstances() ) );
 			
 			Double[] precision = new Double[classes];
 			Double[] recall = new Double[classes];
@@ -86,18 +85,18 @@ public class Output {
 				}
 			}
 			
-			m.put(new Metric("predictive_accuracy", "openml.evaluation.predictive_accuracy(1.0)"), new MetricScore( evaluator.pctCorrect() / 100, (int) evaluator.numInstances() ) );
-			m.put(new Metric("kappa", "openml.evaluation.kappa(1.0)"), new MetricScore( evaluator.kappa(), (int) evaluator.numInstances() ) );
+			m.put("predictive_accuracy", new MetricScore( evaluator.pctCorrect() / 100, (int) evaluator.numInstances() ) );
+			m.put("kappa", new MetricScore( evaluator.kappa(), (int) evaluator.numInstances() ) );
 			
-			m.put(new Metric("number_of_instances", "openml.evaluation.number_of_instances(1.0)"), new MetricScore( evaluator.numInstances(), instancesPerClass, (int) evaluator.numInstances() ) );
+			m.put("number_of_instances", new MetricScore( evaluator.numInstances(), instancesPerClass, (int) evaluator.numInstances() ) );
 			
-			m.put(new Metric("precision", "openml.evaluation.precision(1.0)"),new MetricScore( evaluator.weightedPrecision(), precision, (int) evaluator.numInstances() ) );
-			m.put(new Metric("recall", "openml.evaluation.recall(1.0)"),new MetricScore( evaluator.weightedRecall(), recall, (int) evaluator.numInstances() ) );
-			m.put(new Metric("f_measure", "openml.evaluation.f_measure(1.0)"),new MetricScore( evaluator.weightedFMeasure(), fMeasure, (int) evaluator.numInstances() ) );
+			m.put("precision",new MetricScore( evaluator.weightedPrecision(), precision, (int) evaluator.numInstances() ) );
+			m.put("recall",new MetricScore( evaluator.weightedRecall(), recall, (int) evaluator.numInstances() ) );
+			m.put("f_measure",new MetricScore( evaluator.weightedFMeasure(), fMeasure, (int) evaluator.numInstances() ) );
 			if( Utils.isMissingValue( evaluator.weightedAreaUnderROC() ) == false ) {
-				m.put(new Metric("area_under_roc_curve", "openml.evaluation.area_under_roc_curve(1.0)"), new MetricScore( evaluator.weightedAreaUnderROC(), auroc, (int) evaluator.numInstances() ) );
+				m.put("area_under_roc_curve", new MetricScore( evaluator.weightedAreaUnderROC(), auroc, (int) evaluator.numInstances() ) );
 			}
-			m.put(new Metric("confusion_matrix","openml.evaluation.confusion_matrix(1.0)"), new MetricScore(confussion_matrix));
+			m.put("confusion_matrix", new MetricScore(confussion_matrix));
 		}
 		return m;
 	}
@@ -108,7 +107,7 @@ public class Output {
 	 *  or 1 (otherwise) elements. evaluator[0] contains all unseen instances, evaluator[1]
 	 *  contains all instances that occured in the trainings set. 
 	 */
-	public static Map<Metric, MetricScore> evaluatorToMap( Evaluation[] evaluator, int classes, TaskType task, boolean bootstrap ) throws Exception {
+	public static Map<String, MetricScore> evaluatorToMap( Evaluation[] evaluator, int classes, TaskType task, boolean bootstrap ) throws Exception {
 		if( bootstrap && evaluator.length != 2 ) {
 			throw new Exception("Output->evaluatorToMap problem: Can not perform bootstrap scores, evaluation array is of wrong length. ");
 		} else if( bootstrap == false && evaluator.length != 1 ) {
@@ -118,10 +117,10 @@ public class Output {
 		if( bootstrap == false ) {
 			return evaluatorToMap(evaluator[0], classes, task);
 		} else {
-			Map<Metric, MetricScore> e0 = evaluatorToMap(evaluator[0], classes, task); // pessimistic test score
-			Map<Metric, MetricScore> el = evaluatorToMap(evaluator[0], classes, task); // training score
+			Map<String, MetricScore> e0 = evaluatorToMap(evaluator[0], classes, task); // pessimistic test score
+			Map<String, MetricScore> el = evaluatorToMap(evaluator[0], classes, task); // training score
 			
-			Map<Metric, MetricScore> total = new HashMap<Metric, MetricScore>();
+			Map<String, MetricScore> total = new HashMap<String, MetricScore>();
 
 			// TODO: define the multiply and sum operator for MetricScore
 			/*for( Metric m : e0.keySet() ) {

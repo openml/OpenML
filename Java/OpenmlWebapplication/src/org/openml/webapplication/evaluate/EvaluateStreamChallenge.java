@@ -31,7 +31,6 @@ import org.openml.apiconnector.algorithms.DateParser;
 import org.openml.apiconnector.algorithms.MathHelper;
 import org.openml.apiconnector.algorithms.TaskInformation;
 import org.openml.apiconnector.io.OpenmlConnector;
-import org.openml.apiconnector.models.Metric;
 import org.openml.apiconnector.models.MetricScore;
 import org.openml.apiconnector.xml.DataSetDescription;
 import org.openml.apiconnector.xml.EvaluationScore;
@@ -65,7 +64,7 @@ public class EvaluateStreamChallenge implements PredictionEvaluator {
 	private int ATT_PREDICTION_PREDICTION;
 	private int[] ATT_PREDICTION_CONFIDENCE;
 	
-	private Map<Metric, MetricScore> globalMeasures;
+	private Map<String, MetricScore> globalMeasures;
 	
 	public EvaluateStreamChallenge(OpenmlConnector connector, int run_id) throws Exception {
 		Run run = connector.runGet(run_id);
@@ -190,13 +189,12 @@ public class EvaluateStreamChallenge implements PredictionEvaluator {
 	
 	public EvaluationScore[] getEvaluationScores() {
 		ArrayList<EvaluationScore> evaluationMeasures = new ArrayList<EvaluationScore>();
-		for( Metric m : globalMeasures.keySet() ) {
-			MetricScore score = globalMeasures.get( m );
+		for( String math_function : globalMeasures.keySet() ) {
+			MetricScore score = globalMeasures.get(math_function);
 			DecimalFormat dm = MathHelper.defaultDecimalFormat;
 			evaluationMeasures.add( 
 				new EvaluationScore( 
-					m.implementation, 
-					m.name, 
+					math_function, 
 					score.getScore() == null ? null : dm.format( score.getScore() ), 
 					null, 
 					score.getArrayAsString( dm ) ) );

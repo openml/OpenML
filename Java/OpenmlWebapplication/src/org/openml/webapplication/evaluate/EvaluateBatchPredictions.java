@@ -30,7 +30,6 @@ import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.algorithms.Input;
 import org.openml.apiconnector.algorithms.MathHelper;
 import org.openml.apiconnector.algorithms.TaskInformation;
-import org.openml.apiconnector.models.Metric;
 import org.openml.apiconnector.models.MetricScore;
 import org.openml.apiconnector.xml.EvaluationScore;
 import org.openml.apiconnector.xml.Task;
@@ -215,13 +214,13 @@ public class EvaluateBatchPredictions implements PredictionEvaluator {
 		}
 
 		List<EvaluationScore> evaluationMeasuresList = new ArrayList<EvaluationScore>();
-		Map<Metric, MetricScore> globalMeasures = Output.evaluatorToMap(e, nrOfClasses, taskType, bootstrap);
-		for (Metric m : globalMeasures.keySet()) {
-			MetricScore score = globalMeasures.get(m);
+		Map<String, MetricScore> globalMeasures = Output.evaluatorToMap(e, nrOfClasses, taskType, bootstrap);
+		for (String math_function : globalMeasures.keySet()) {
+			MetricScore score = globalMeasures.get(math_function);
 			// preventing divisions by zero and infinite scores (given by Weka)
 			if (score.getScore() != null && score.getScore().isNaN() == false && score.getScore().isInfinite() == false) { 
 				DecimalFormat dm = MathHelper.defaultDecimalFormat;
-				EvaluationScore em = new EvaluationScore(m.implementation, m.name,
+				EvaluationScore em = new EvaluationScore(math_function,
 						score.getScore() == null ? null : dm.format(score.getScore()), null,
 						score.getArrayAsString(dm));
 				evaluationMeasuresList.add(em);
@@ -231,22 +230,22 @@ public class EvaluateBatchPredictions implements PredictionEvaluator {
 		for (int i = 0; i < sampleEvaluation.length; ++i) {
 			for (int j = 0; j < sampleEvaluation[i].length; ++j) {
 				for (int k = 0; k < sampleEvaluation[i][j].length; ++k) {
-					Map<Metric, MetricScore> currentMeasures = Output.evaluatorToMap(sampleEvaluation[i][j][k],
+					Map<String, MetricScore> currentMeasures = Output.evaluatorToMap(sampleEvaluation[i][j][k],
 							nrOfClasses, taskType, bootstrap);
-					for (Metric m : currentMeasures.keySet()) {
-						MetricScore score = currentMeasures.get(m);
+					for (String math_function : currentMeasures.keySet()) {
+						MetricScore score = currentMeasures.get(math_function);
 						// preventing divisions by zero and infinite scores (given by Weka)
 						if (score.getScore() != null && score.getScore().isNaN() == false && score.getScore().isInfinite() == false) { 
 							DecimalFormat dm = MathHelper.defaultDecimalFormat;
 							EvaluationScore currentMeasure;
 
 							if (taskType == TaskType.LEARNINGCURVE) {
-								currentMeasure = new EvaluationScore(m.implementation, m.name,
+								currentMeasure = new EvaluationScore(math_function,
 										score.getScore() == null ? null : dm.format(score.getScore()),
 										score.getArrayAsString(dm), i, j, k,
 										predictionCounter.getShadowTypeSize(i, j, k));
 							} else {
-								currentMeasure = new EvaluationScore(m.implementation, m.name,
+								currentMeasure = new EvaluationScore(math_function,
 										score.getScore() == null ? null : dm.format(score.getScore()),
 										score.getArrayAsString(dm), i, j);
 							}

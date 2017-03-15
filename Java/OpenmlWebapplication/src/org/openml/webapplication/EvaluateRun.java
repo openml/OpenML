@@ -180,7 +180,7 @@ public class EvaluateRun {
 					boolean foundSame = false;
 					
 					// important check: because of legacy (implementation_id), the flow id might be missing
-					if (recorded.getFlow() != null && recorded.getFunction() != null) { 
+					if (recorded.getFunction() != null) { 
 						for( EvaluationScore calculated : runevaluation.getEvaluation_scores() ) {
 							if( recorded.isSame( calculated ) ) {
 								foundSame = true;
@@ -221,7 +221,7 @@ public class EvaluateRun {
 		Conversion.log( "OK", "Process Run", "Start uploading results ... " );
 		try {
 			String runEvaluation = xstream.toXML( runevaluation );
-			//System.out.println(runEvaluation);
+			System.out.println(runEvaluation);
 			File evaluationFile = Conversion.stringToTempFile( runEvaluation, "run_" + run_id + "evaluations", "xml" );
 			RunEvaluate re = apiconnector.runEvaluate( evaluationFile );
 			
