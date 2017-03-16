@@ -10,7 +10,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.algorithms.TaskInformation;
 import org.openml.apiconnector.io.OpenmlConnector;
-import org.openml.apiconnector.models.Metric;
 import org.openml.apiconnector.models.MetricScore;
 import org.openml.apiconnector.xml.DataSetDescription;
 import org.openml.apiconnector.xml.Task;
@@ -31,13 +30,13 @@ import weka.experiment.OutputZipper;
 public class TaskResultProducer extends CrossValidationResultProducer {
 
 	private static UserMeasures[] USER_MEASURES = {
-			new UserMeasures("predictive_accuracy", "openml.evaluation.predictive_accuracy(1.0)", "Percent_correct", .01),
-			new UserMeasures("kappa", "openml.evaluation.kappa(1.0)", "Kappa_statistic"),
-			new UserMeasures("root_mean_squared_error", "openml.evaluation.root_mean_squared_error(1.0)", "Root_mean_squared_error"),
-			new UserMeasures("root_relative_squared_error", "openml.evaluation.root_relative_squared_error(1.0)", "Root_relative_squared_error", .01),
-			new UserMeasures("usercpu_time_millis_training", "openml.evaluation.usercpu_time_millis_training(1.0)", "UserCPU_Time_millis_training"),
-			new UserMeasures("usercpu_time_millis_testing", "openml.evaluation.usercpu_time_millis_testing(1.0)", "UserCPU_Time_millis_testing"),
-			new UserMeasures("usercpu_time_millis", "openml.evaluation.usercpu_time_millis(1.0)", "UserCPU_Time_millis"), };
+			new UserMeasures("predictive_accuracy", "Percent_correct", .01),
+			new UserMeasures("kappa", "Kappa_statistic"),
+			new UserMeasures("root_mean_squared_error", "Root_mean_squared_error"),
+			new UserMeasures("root_relative_squared_error", "Root_relative_squared_error", .01),
+			new UserMeasures("usercpu_time_millis_training", "UserCPU_Time_millis_training"),
+			new UserMeasures("usercpu_time_millis_testing", "UserCPU_Time_millis_testing"),
+			new UserMeasures("usercpu_time_millis", "UserCPU_Time_millis"), };
 
 	private static final long serialVersionUID = 1L;
 
@@ -229,7 +228,7 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 				Conversion.log("INFO", "Perform Run", "Started on performing " + currentRunRepresentation + ", " + currentFoldRepresentation);
 
 				try {
-					Map<Metric, MetricScore> userMeasures = new HashMap<Metric, MetricScore>();
+					Map<String, MetricScore> userMeasures = new HashMap<String, MetricScore>();
 
 					Object[] seResults = tse.getResult(trainingSets[fold][sample], testSets[fold][sample]);
 					Object[] results = new Object[seResults.length + 1];
@@ -255,8 +254,7 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 					if (missingLabels == false) {
 						for (UserMeasures um : USER_MEASURES) {
 							if (splitEvaluatorResults.containsKey(um.wekaFunctionName)) {
-								userMeasures.put(new Metric(um.openmlFunctionName, um.openmlImplementationName), new MetricScore(
-										((Double) splitEvaluatorResults.get(um.wekaFunctionName)) * um.factor, testSets[fold][sample].size()));
+								userMeasures.put(um.openmlFunctionName, new MetricScore(((Double) splitEvaluatorResults.get(um.wekaFunctionName)) * um.factor, testSets[fold][sample].size()));
 							}
 						}
 					}
@@ -285,19 +283,17 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 
 	private static class UserMeasures {
 		private final String openmlFunctionName;
-		private final String openmlImplementationName;
 		private final String wekaFunctionName;
 		private final double factor;
 
-		private UserMeasures(String openmlFunctionName, String openmlImplementationName, String wekaFunctionName, double factor) {
+		private UserMeasures(String openmlFunctionName, String wekaFunctionName, double factor) {
 			this.openmlFunctionName = openmlFunctionName;
-			this.openmlImplementationName = openmlImplementationName;
 			this.wekaFunctionName = wekaFunctionName;
 			this.factor = factor;
 		}
 
-		private UserMeasures(String openmlFunctionName, String openmlImplementationName, String wekaFunctionName) {
-			this(openmlFunctionName, openmlImplementationName, wekaFunctionName, 1.0D);
+		private UserMeasures(String openmlFunctionName, String wekaFunctionName) {
+			this(openmlFunctionName, wekaFunctionName, 1.0D);
 		}
 	}
 }

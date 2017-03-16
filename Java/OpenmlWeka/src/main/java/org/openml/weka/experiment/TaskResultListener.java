@@ -15,9 +15,9 @@ import org.openml.apiconnector.algorithms.SciMark;
 import org.openml.apiconnector.algorithms.TaskInformation;
 import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.io.ApiException;
-import org.openml.apiconnector.models.Metric;
 import org.openml.apiconnector.models.MetricScore;
 import org.openml.apiconnector.settings.Constants;
+import org.openml.apiconnector.xml.EvaluationScore;
 import org.openml.apiconnector.xml.Flow;
 import org.openml.apiconnector.xml.Run;
 import org.openml.apiconnector.xml.Run.Parameter_setting;
@@ -93,7 +93,7 @@ public class TaskResultListener extends InstancesResultListener {
 	}
 
 	public void acceptResultsForSending(Task t, Instances sourceData, Integer repeat, Integer fold, Integer sample, Classifier classifier, String options,
-			Integer[] rowids, ArrayList<Prediction> predictions, Map<Metric, MetricScore> userMeasures,
+			Integer[] rowids, ArrayList<Prediction> predictions, Map<String, MetricScore> userMeasures,
 			List<Quadlet<String, Double, List<Entry<String, Object>>, Boolean>> optimizationTrace, boolean wantFullModel) throws Exception {
 		// TODO: do something better than undefined
 		String revision = (classifier instanceof RevisionHandler) ? ((RevisionHandler) classifier).getRevision() : "undefined";
@@ -132,9 +132,9 @@ public class TaskResultListener extends InstancesResultListener {
 
 		// also add information about CPU performance and OS to run:
 		SciMark benchmarker = SciMark.getInstance();
-		oet.getRun().addOutputEvaluation("os_information", "openml.userdefined.os_information(1.0)", null, "['" + StringUtils.join(benchmarker.getOsInfo(), "', '") + "']");
+		oet.getRun().addOutputEvaluation(new EvaluationScore("os_information", null, null, "['" + StringUtils.join(benchmarker.getOsInfo(), "', '") + "']"));
 		if (skipJvmBenchmark == false) {
-			oet.getRun().addOutputEvaluation("scimark_benchmark", "openml.userdefined.scimark_benchmark(1.0)", benchmarker.getResult(), "[" + StringUtils.join(benchmarker.getStringArray(), ", ") + "]");
+			oet.getRun().addOutputEvaluation(new EvaluationScore("scimark_benchmark", benchmarker.getResult() + "", null, "[" + StringUtils.join(benchmarker.getStringArray(), ", ") + "]"));
 		}
 		tmpPredictionsFile = Conversion.stringToTempFile(oet.getPredictions().toString(), "weka_generated_predictions", Constants.DATASET_FORMAT);
 		tmpDescriptionFile = Conversion.stringToTempFile(xstream.toXML(oet.getRun()), "weka_generated_run", "xml");
@@ -293,12 +293,12 @@ public class TaskResultListener extends InstancesResultListener {
 			}
 		}
 
-		public void addUserDefinedMeasures(Integer fold, Integer repeat, Integer sample, Map<Metric, MetricScore> userMeasures) throws Exception {
+		public void addUserDefinedMeasures(Integer fold, Integer repeat, Integer sample, Map<String, MetricScore> userMeasures) throws Exception {
 			// attach fold/sample specific user measures to run
-			for (Metric m : userMeasures.keySet()) {
+			for (String m : userMeasures.keySet()) {
 				MetricScore score = userMeasures.get(m);
 
-				getRun().addOutputEvaluation(m.name, repeat, fold, sample, m.implementation, score.getScore());
+				getRun().addOutputEvaluation(new EvaluationScore(m, score.getScore() + "", null, repeat, fold, sample, null));
 			}
 		}
 
@@ -314,9 +314,9 @@ public class TaskResultListener extends InstancesResultListener {
 				Double totalTimeTesting = (Double) splitEvaluatorResults.get(keyTesting);
 				Double totalTime = totalTimeTesting + totalTimeTraining;
 				
-				getRun().addOutputEvaluation(keyTesting.toLowerCase(), "openml.evaluation." + keyTesting.toLowerCase() + "(1.0)", totalTimeTesting, null);
-				getRun().addOutputEvaluation(keyTraining.toLowerCase(), "openml.evaluation." + keyTraining.toLowerCase() + "(1.0)", totalTimeTraining, null);
-				getRun().addOutputEvaluation("usercpu_time_millis", "openml.evaluation.usercpu_time_millis(1.0)", totalTime, null);
+				getRun().addOutputEvaluation(new EvaluationScore(keyTesting.toLowerCase(), "" + totalTimeTesting, null, null));
+				getRun().addOutputEvaluation(new EvaluationScore(keyTraining.toLowerCase(), "" + totalTimeTraining, null, null));
+				getRun().addOutputEvaluation(new EvaluationScore("usercpu_time_millis", "" + totalTime, null, null));
 			}
 
 			try {
