@@ -83,8 +83,6 @@ public class Main {
 			if( cli.hasOption("-id") ) {
 				id = Integer.parseInt(cli.getOptionValue("id"));
 			}
-
-			apiconnector.setVerboseLevel(1);
 			
 			if( cli.hasOption("f") ) {
 				
