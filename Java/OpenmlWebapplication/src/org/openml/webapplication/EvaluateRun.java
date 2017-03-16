@@ -43,6 +43,7 @@ public class EvaluateRun {
 	private final XStream xstream;
 	private final OpenmlConnector apiconnector;
 	private final int EVALUATION_ENGINE_ID = 1;
+	private final int MAX_LENGTH_WARNING = 1024;
 	
 	public EvaluateRun(OpenmlConnector ac) throws Exception {
 		this(ac, null, false, null);
@@ -118,7 +119,7 @@ public class EvaluateRun {
 			}
 			
 			if(file_ids.get("description") == null) {
-				runevaluation.setError("Run description file not present. ");
+				runevaluation.setError("Run description file not present. ", MAX_LENGTH_WARNING);
 				File evaluationFile = Conversion.stringToTempFile(xstream.toXML(runevaluation), "run_" + run_id + "evaluations", "xml");
 				
 				RunEvaluate re = apiconnector.runEvaluate(evaluationFile);
@@ -127,7 +128,7 @@ public class EvaluateRun {
 			}
 			
 			if(file_ids.get("predictions") == null && file_ids.get("subgroups") == null && file_ids.get("predictions_0") == null) { // TODO: this is currently true, but later on we might have tasks that do not require evaluations!
-				runevaluation.setError("Required output files not present (e.g., arff predictions). ");
+				runevaluation.setError("Required output files not present (e.g., arff predictions). ", MAX_LENGTH_WARNING);
 				File evaluationFile = Conversion.stringToTempFile(xstream.toXML(runevaluation), "run_" + run_id + "evaluations", "xml");
 				
 				RunEvaluate re = apiconnector.runEvaluate(evaluationFile);
@@ -141,7 +142,7 @@ public class EvaluateRun {
 			String description_url = apiconnector.getOpenmlFileUrl(file_ids.get("description"), "Run_" + run_id + "_description.xml").toString();
 			String description = HttpConnector.getStringFromUrl(description_url, false);
 			
-			Run run_description = (Run) xstream.fromXML( description );
+			Run run_description = (Run) xstream.fromXML(description);
 			dataset = apiconnector.dataGet(dataset_id);
 			
 			Conversion.log( "OK", "Process Run", "Start prediction evaluator. " );
@@ -209,21 +210,21 @@ public class EvaluateRun {
 						}
 					}
 				}
-				if( warningFound ) runevaluation.setWarning( warningMessage );
+				if( warningFound ) runevaluation.setWarning( warningMessage, MAX_LENGTH_WARNING );
 			} else {
 				Conversion.log( "OK", "Process Run", "No local evaluation measures to compare to. " );
 			}
 		} catch( Exception e ) {
 			e.printStackTrace();
 			Conversion.log( "Warning", "Process Run", "Unexpected error, will proceed with upload process: " + e.getMessage() );
-			runevaluation.setError( e.getMessage() );
+			runevaluation.setError( e.getMessage(), MAX_LENGTH_WARNING );
 		}
 
 		
 		
 		Conversion.log( "OK", "Process Run", "Start uploading results ... " );
 		try {
-			String runEvaluation = xstream.toXML( runevaluation );
+			String runEvaluation = xstream.toXML(runevaluation);
 			File evaluationFile = Conversion.stringToTempFile( runEvaluation, "run_" + run_id + "evaluations", "xml" );
 			RunEvaluate re = apiconnector.runEvaluate( evaluationFile );
 			
@@ -238,6 +239,7 @@ public class EvaluateRun {
 			Conversion.log( "OK", "Process Run", "Run processed: " + re.getRun_id() );
 		} catch( Exception  e ) {
 			Conversion.log( "ERROR", "Process Run", "An error occured during API call: " + e.getMessage() );
+			e.printStackTrace();
 		}
 	}
 	
