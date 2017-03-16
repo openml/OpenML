@@ -239,8 +239,11 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 					List<Quadlet<String, Double, List<Entry<String, Object>>, Boolean>> trace = null;
 					try {
 						trace = OptimizationTrace.extractTrace(tse.getClassifier());
+
+						Conversion.log("OK", "Trace", "Found MultiSearch or FilteredClassifier(MultiSearch). Extracting trace. ");
 					} catch (Exception e) {
-						Conversion.log("OK", "Trace", e.getMessage());
+						// This is totally OK, no need to catch this
+						
 					}
 
 					// just adding an additional measure: UserCPU_Time_millis

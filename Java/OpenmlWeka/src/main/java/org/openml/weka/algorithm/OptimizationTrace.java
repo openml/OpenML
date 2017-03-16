@@ -73,6 +73,7 @@ public class OptimizationTrace {
 			}
 			if (!(classifierReference instanceof MultiSearch)) {
 				throw new Exception("Classifier not instance of 'weka.classifiers.meta.MultiSearch'");
+				// Is OK, will be catched by outer function
 			}
 			
 			MultiSearch multiSearch = (MultiSearch) classifierReference;

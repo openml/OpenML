@@ -173,17 +173,22 @@ public class WekaAlgorithm {
 					
 					i.addComponent(parameter.name(), subimplementation);
 					i.addParameter(parameter.name(), type.getName(), currentValue, parameter.description());
-				} else if (parameterObject instanceof AbstractParameter) { 
-					// TODO: The statement above will only be correctly executed if
-					// the MultiSearch package is installed. We *should* surround it
-					// with a try/catch(NoClassDefFoundError) block. Complicated
-					// construction, and for now it will not cause problems. TODO for later
-					type = ParameterType.ARRAY;
-					i.addParameter(parameter.name(), type.getName(), null, parameter.description());
 				} else {
-					Exception current = new ClassNotFoundException("Parameter class found, but no known procedure to handle it found. Will be handled as plain: " + currentValueSplitted[0]);
-					Conversion.log("Warning","FlowCreation",current.getMessage());
-					throw current;
+					try {
+						// AbstractParameter class is part of MultiSearch Package, and might not be present. 
+						if (parameterObject instanceof AbstractParameter) { 
+							type = ParameterType.ARRAY;
+							i.addParameter(parameter.name(), type.getName(), null, parameter.description());
+						} else {
+							Exception current = new ClassNotFoundException("Parameter class found, but no known procedure to handle it found. Will be handled as plain: " + currentValueSplitted[0]);
+							Conversion.log("Warning","FlowCreation",current.getMessage());
+							throw current;
+						}
+					} catch (NoClassDefFoundError e) {
+						Exception current = new ClassNotFoundException("Parameter class found, but no known procedure to handle it found. Will be handled as plain: " + currentValueSplitted[0]);
+						Conversion.log("Warning","FlowCreation",current.getMessage());
+						throw current;
+					}
 				}
 			} catch(ClassNotFoundException e) {
 				// if this parameter did contain a subimplementation, we already
