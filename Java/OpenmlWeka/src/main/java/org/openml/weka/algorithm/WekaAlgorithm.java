@@ -1,12 +1,8 @@
 package org.openml.weka.algorithm;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -16,7 +12,6 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openml.apiconnector.algorithms.Conversion;
-import org.openml.apiconnector.algorithms.OptionParser;
 import org.openml.apiconnector.algorithms.ParameterType;
 import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.xml.Flow;
@@ -63,7 +58,7 @@ public class WekaAlgorithm {
 	public static Integer getSetupId(String classifierName, String option_str, OpenmlConnector apiconnector) throws Exception {
 		
 		// first find flow. if the flow doesn't exist, neither does the setup.
-		Flow find = WekaAlgorithm.create(classifierName, option_str, null);
+		Flow find = WekaAlgorithm.serializeClassifier(classifierName, null);
 		int flow_id = -1;
 		try {
 			FlowExists result = apiconnector.flowExists(find.getName(), find.getExternal_version());
@@ -102,17 +97,12 @@ public class WekaAlgorithm {
 		String xml = XstreamXmlMapping.getInstance().toXML(implementation);
 		//System.err.println(xml);
 		File implementationFile = Conversion.stringToTempFile(xml, implementation.getName(), "xml");
-		File source = null;
-		File binary = null;
-		try { source = getFile(classifier, "src/", "java"); } catch(IOException e) {}
-		try { binary = getFile(classifier, "bin/", "class"); } catch(IOException e) {}
-		UploadFlow ui = apiconnector.flowUpload(implementationFile, binary, source);
+		UploadFlow ui = apiconnector.flowUpload(implementationFile, null, null);
 		return ui.getId();
 	}
 
-	public static Flow create(String classifier_name, String option_str, String[] tags) throws Exception {
+	public static Flow serializeClassifier(String classifier_name, String[] tags) throws Exception {
 		Object classifier = Class.forName(classifier_name).newInstance();
-		String[] currentOptions = Utils.splitOptions( option_str );
 		String[] defaultOptions = ((OptionHandler) classifier).getClass().newInstance().getOptions();
 		
 		String classPath = classifier.getClass().getName();
@@ -142,10 +132,8 @@ public class WekaAlgorithm {
 			String currentValue = "";
 			if(parameter.numArguments() == 0) {
 				defaultValue = Utils.getFlag(parameter.name(), defaultOptions) == true ? "true" : "";
-				currentValue = Utils.getFlag(parameter.name(), currentOptions) == true ? "true" : "";
 			} else {
 				defaultValue = Utils.getOption(parameter.name(), defaultOptions);
-				currentValue = Utils.getOption(parameter.name(), currentOptions);
 			}
 			
 			String[] currentValueSplitted = currentValue.split(" ");
@@ -157,18 +145,14 @@ public class WekaAlgorithm {
 				
 				if(parameterObject instanceof Kernel) {
 					// Kernels etc. All parameters of the kernel are on the same currentOptions entry
-					subimplementation = create( 
-						currentValueSplitted[0], 
-						StringUtils.join(OptionParser.removeFirstElement(currentValueSplitted), " "), tags );
+					subimplementation = serializeClassifier(currentValueSplitted[0], tags);
 					type = ParameterType.KERNEL;
 					
 					i.addComponent(parameter.name(), subimplementation);
 					i.addParameter(parameter.name(), type.getName(), currentValueSplitted[0], parameter.description());
 				} else if (parameterObject instanceof Classifier) {
 					// Meta algorithms and stuff. All parameters follow from the hyphen in currentOptions
-					subimplementation = create( 
-						currentValueSplitted[0], 
-						StringUtils.join( Utils.partitionOptions(currentOptions), " "), tags);
+					subimplementation = serializeClassifier( currentValueSplitted[0], tags);
 					type = ParameterType.BASELEARNER;
 					
 					i.addComponent(parameter.name(), subimplementation);
@@ -258,38 +242,6 @@ public class WekaAlgorithm {
 			}
 		}
 		return settings;
-	}
-	
-	public static File getFile(Classifier classifier, String prefix, String extension) throws IOException {
-		Class<? extends Classifier> c = classifier.getClass();
-		String sourcefile = c.getName().replace('.', '/');
-		InputStream is = getFis( sourcefile + "." + extension, prefix );
-		if(is == null) throw new IOException("Could not find resource " + sourcefile + "." + extension);
-		BufferedReader br = new BufferedReader(new InputStreamReader(is));
-		StringBuilder totalSource = new StringBuilder();
-		String line = br.readLine();
-		while(line != null) {
-			totalSource.append(line + "\n");
-			line = br.readLine();
-		}
-		return Conversion.stringToTempFile(totalSource.toString(), c.getName(), extension);
-	}
-
-	private static InputStream getFis(String classname, String prefix) {
-		WekaAlgorithm loader = new WekaAlgorithm();
-		InputStream is = null;
-		
-		is = loader.getClass().getResourceAsStream('/'+classname);
-		
-		if(is == null) {
-			try {
-				File f = new File(prefix + classname);
-				if(f.exists()) {
-					is = new FileInputStream(f);
-				}
-			} catch( IOException e ) { e.printStackTrace(); }
-		}
-		return is;
 	}
 	
 	public static File classifierSerializedToFile(Classifier cls, Integer task_id) throws IOException {
