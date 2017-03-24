@@ -115,7 +115,6 @@ public class Main {
 						Task current = apiconnector.taskGet(id);
 						int dataset_id = TaskInformation.getSourceData(current).getData_set_id();
 						DataSetDescription dsd = apiconnector.dataGet(dataset_id);
-						System.out.println("id: " + dsd.getId() + "; file id " + dsd.getFile_id());
 						Estimation_procedure ep = TaskInformation.getEstimationProcedure(current);
 						Integer numberOfRepeats = null;
 						Integer numberOfFolds = null;
