@@ -146,19 +146,27 @@ public class EvaluateRun {
 			dataset = apiconnector.dataGet(dataset_id);
 			
 			Conversion.log( "OK", "Process Run", "Start prediction evaluator. " );
-			// TODO! no string comparisons, do something better
+			
 			String filename_prefix = "Run_" + run_id + "_";
+			URL datasetUrl = apiconnector.getOpenmlFileUrl(dataset.getFile_id(), dataset.getName());
+			if (dataset.getFile_id() == null) {
+				// TODO: fallback mechanism for datasets without file reference. Do something better. 
+				datasetUrl = new URL(dataset.getUrl());
+			}
+			
 			if( task.getTask_type_id() == 4) { // Supervised Data Stream Classification
+				URL predictionsUrl = apiconnector.getOpenmlFileUrl(file_ids.get("predictions"), filename_prefix + "predictions.arff");
 				predictionEvaluator = new EvaluateStreamPredictions(
-					apiconnector.getOpenmlFileUrl(dataset.getFile_id(), dataset.getName()), 
-					apiconnector.getOpenmlFileUrl( file_ids.get( "predictions" ), filename_prefix + "predictions.arff"), 
+					datasetUrl, 
+					predictionsUrl, 
 					source_data.getTarget_feature());
 			} else if (task.getTask_type_id() == 7) { //Survival Analysis
+				URL predictionsUrl = apiconnector.getOpenmlFileUrl(file_ids.get("predictions"), filename_prefix + "predictions.arff");
 				predictionEvaluator = new EvaluateSurvivalAnalysisPredictions( 
-						task, 
-						apiconnector.getOpenmlFileUrl(dataset.getFile_id(), dataset.getName()), 
-						new URL(estimationprocedure.getData_splits_url()), 
-						apiconnector.getOpenmlFileUrl( file_ids.get( "predictions" ), filename_prefix + "predictions.arff"));
+					task, 
+					datasetUrl, 
+					new URL(estimationprocedure.getData_splits_url()), 
+					predictionsUrl);
 			} else if (task.getTask_type_id() == 8) { // Subgroup Discovery
 				predictionEvaluator = new EvaluateSubgroups();
 			} else if (task.getTask_type_id() == 9) { // Stream Challenge
@@ -166,7 +174,7 @@ public class EvaluateRun {
 			} else {
 				predictionEvaluator = new EvaluateBatchPredictions( 
 					task,
-					apiconnector.getOpenmlFileUrl(dataset.getFile_id(), dataset.getName()), 
+					datasetUrl, 
 					new URL(estimationprocedure.getData_splits_url()), 
 					apiconnector.getOpenmlFileUrl( file_ids.get( "predictions" ), filename_prefix + "predictions.arff"), 
 					estimationprocedure.getType().equals(EstimationProcedure.estimationProceduresTxt[6] ) );
@@ -226,6 +234,7 @@ public class EvaluateRun {
 		try {
 			String runEvaluation = xstream.toXML(runevaluation);
 			File evaluationFile = Conversion.stringToTempFile( runEvaluation, "run_" + run_id + "evaluations", "xml" );
+			//apiconnector.setVerboseLevel(1);
 			RunEvaluate re = apiconnector.runEvaluate( evaluationFile );
 			
 			if (trace != null) {
