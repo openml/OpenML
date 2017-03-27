@@ -246,7 +246,7 @@ public class TaskResultListener extends InstancesResultListener {
 
 			predictions = new Instances("openml_task_" + t.getTask_id() + "_predictions", attInfo, 0);
 
-			Flow find = WekaAlgorithm.create(classifier.getClass().getName(), options, tags);
+			Flow find = WekaAlgorithm.serializeClassifier(classifier.getClass().getName(), tags);
 
 			implementation_id = WekaAlgorithm.getImplementationId(find, classifier, apiconnector);
 			Flow implementation = apiconnector.flowGet(implementation_id);
