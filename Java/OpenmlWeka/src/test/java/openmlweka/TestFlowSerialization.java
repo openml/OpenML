@@ -32,7 +32,7 @@ import weka.classifiers.trees.RandomForest;
 public class TestFlowSerialization {
 	
 	public final String[] TAGS = {"OpenmlWeka", "weka"};
-	public final boolean USE_SENTINEL = false;
+	public final boolean USE_SENTINEL = true;
 	public final XStream xstream = XstreamXmlMapping.getInstance();
 	public final OpenmlConnector connector = new OpenmlConnector(
 			"https://test.openml.org/", "8baa83ecddfe44b561fd3d92442e3319");
