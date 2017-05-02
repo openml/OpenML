@@ -50,7 +50,7 @@ public class Cardinality extends Characterizer {
 			}
 		}
 		
-		Collections.sort(all);
+		Collections.sort(all, Collections.reverseOrder());
 		
 		if (hasNum) {
 			results.put("MeanCardinalityOfNumericAttributes", num.getMean());
@@ -80,14 +80,14 @@ public class Cardinality extends Characterizer {
 		Double cardinalityAtFour = null;
 		
 		if (instances.numAttributes() >= 2) {
-			cardinalityAtTwo = (double) all.get(all.size()-1) * all.get(all.size()-2);
+			cardinalityAtTwo = (double) all.get(0) * all.get(1);
 		}
 		if (instances.numAttributes() >= 3) {
-			cardinalityAtThree = (double) all.get(all.size()-1) * all.get(all.size()-2) * all.get(all.size()-3);
+			cardinalityAtThree = (double) all.get(0) * all.get(1) * all.get(2);
 		}
 
 		if (instances.numAttributes() >= 4) {
-			cardinalityAtFour = (double) all.get(all.size()-1) * all.get(all.size()-2) * all.get(all.size()-3) * all.get(all.size()-4);
+			cardinalityAtFour = (double) all.get(0) * all.get(1) * all.get(2) * all.get(3);
 		}
 		
 		results.put("CardinalityAtTwo", cardinalityAtTwo);
