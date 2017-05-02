@@ -11,8 +11,10 @@ import weka.core.Instances;
 
 public class NominalAttDistinctValues extends Characterizer {
 
-	protected final String[] ids = new String[] { "MaxNominalAttDistinctValues", "MinNominalAttDistinctValues", "MeanNominalAttDistinctValues",
-			"StdvNominalAttDistinctValues" };
+	protected final String[] ids = new String[] { 
+		"MaxNominalAttDistinctValues", "MinNominalAttDistinctValues", 
+		"MeanNominalAttDistinctValues", "StdvNominalAttDistinctValues"
+	};
 
 	@Override
 	public String[] getIDs() {
