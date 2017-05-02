@@ -18,7 +18,7 @@ public class Cardinality extends Characterizer {
 		"MeanCardinalityOfNumericAttributes", "StdevCardinalityOfNumericAttributes", 
 		"MinCardinalityOfNumericAttributes", "MaxCardinalityOfNumericAttributes", 
 		"MeanCardinalityOfNominalAttributes", "StdevCardinalityOfNominalAttributes", 
-		"MinCardinalityOfNonimalAttributes", "MaxCardinalityOfNominalAttributes", 
+		"MinCardinalityOfNominalAttributes", "MaxCardinalityOfNominalAttributes", 
 		"CardinalityAtTwo", "CardinalityAtThree", "CardinalityAtFour"
 	};
 	
@@ -65,12 +65,12 @@ public class Cardinality extends Characterizer {
 		}
 		if (hasNom) {
 			results.put("MeanCardinalityOfNominalAttributes", nom.getMean());
-			results.put("StdevCardinalityOfNoninalAttributes", nom.getStandardDeviation());
+			results.put("StdevCardinalityOfNominalAttributes", nom.getStandardDeviation());
 			results.put("MinCardinalityOfNominalAttributes", nom.getMin());
 			results.put("MaxCardinalityOfNominalAttributes", nom.getMax());
 		} else {
 			results.put("MeanCardinalityOfNominalAttributes", null);
-			results.put("StdevCardinalityOfNoninalAttributes", null);
+			results.put("StdevCardinalityOfNominalAttributes", null);
 			results.put("MinCardinalityOfNominalAttributes", null);
 			results.put("MaxCardinalityOfNominalAttributes", null);
 		}

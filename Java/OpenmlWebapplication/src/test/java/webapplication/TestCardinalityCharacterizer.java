@@ -1,7 +1,10 @@
 package webapplication;
 
+import static org.junit.Assert.*;
+
 import java.io.BufferedReader;
 import java.net.URL;
+import java.util.Map;
 
 import org.junit.Test;
 import org.openml.apiconnector.algorithms.Input;
@@ -26,9 +29,14 @@ public class TestCardinalityCharacterizer {
 	
 	@Test
 	public void testAnneal() throws Exception {
-		int id = 2;
-		Instances dataset = getById(id);
+		int dataid = 1;
+		Instances dataset = getById(dataid);
 		
-		System.out.println(Cardinality.characterize(dataset));
+		Map<String, Double> results = Cardinality.characterize(dataset);
+		
+		for (String id : Cardinality.getIDs()) {
+			assertTrue(results.containsKey(id));
+			assertTrue(results.get(id) >= 1);
+		}
 	}
 }
