@@ -85,4 +85,14 @@ public class AttributeMetafeatures {
 	public static List<String> getAttributeMetafeatures() {
 		return Arrays.asList(AttributeCharacterizer.ids);
 	}
+	
+	class QualityResult {
+	    private final Double value;
+	    private final Integer index;
+	    
+		public QualityResult(Double value, Integer index){
+	        this.value = value;
+	        this.index = index;
+	    }
+	}
 }
