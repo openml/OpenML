@@ -11,8 +11,10 @@ import org.openml.apiconnector.xml.UploadFlow;
 import org.openml.apiconnector.xstream.XstreamXmlMapping;
 
 public class SdFlow {
-	public static final String NAME = "SubgroupDiscovery";
-	public static final String EXTERNAL_VERSION = "3073";
+	public static final String NAME = "nl.liacs.subdisc.SubgroupDiscovery";
+	public static final String EXTERNAL_VERSION = "3103";
+	public static final String CUSTOM_NAME = "SubgroupDiscovery";
+	public static final String CLASS_NAME = "nl.liacs.subdisc.SubgroupDiscovery";
 	public static final String DESCRIPTION = "Subgroup Discovery search algorithm. ";
 	public static final String[] CREATOR = {"Arno Knobbe", "Marving Meeng"};
 	public static final String[] CONTRIBUTOR = {"Matthijs van Leeuwen", "Wouter Duivensteijn", "Claudio Sa"};
@@ -44,7 +46,7 @@ public class SdFlow {
 	};
 	
 	private static Flow getFlow() {
-		Flow flow = new Flow(NAME, EXTERNAL_VERSION, DESCRIPTION, CREATOR, CONTRIBUTOR, LICENSE, LANGUAGE, null, null, DEPENDENCIES, TAGS);
+		Flow flow = new Flow(NAME, CUSTOM_NAME, CLASS_NAME, EXTERNAL_VERSION, DESCRIPTION, CREATOR, CONTRIBUTOR, LICENSE, LANGUAGE, null, null, DEPENDENCIES, TAGS);
 		for (Parameter p : PARAMETERS) {
 			flow.addParameter(p);
 		}

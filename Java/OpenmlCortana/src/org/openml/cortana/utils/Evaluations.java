@@ -32,11 +32,11 @@ public class Evaluations {
 			arrayDataPositives.add((int) Double.parseDouble(csvRecord.get(5)));
 		}
 		
-		scores.add(new EvaluationScore("openml.evaluation.coverage(1.0)", "coverage", arrayDataCoverage.get(0) + "", null, arrayDataCoverage.toString()));
-		scores.add(new EvaluationScore("openml.evaluation.quality(1.0)", "quality", arrayDataQuality.get(0) + "", null, arrayDataQuality.toString()));
-		scores.add(new EvaluationScore("openml.evaluation.probability(1.0)", "probability", arrayDataProbability.get(0) + "", null, arrayDataProbability.toString()));
-		scores.add(new EvaluationScore("openml.evaluation.positives(1.0)", "positives", arrayDataPositives.get(0) + "", null, arrayDataPositives.toString()));
-		scores.add(new EvaluationScore("openml.evaluation."+nameMapping(measure)+"(1.0)", nameMapping(measure), arrayDataQuality.get(0) + "", null, arrayDataQuality.toString()));
+		scores.add(new EvaluationScore("coverage", arrayDataCoverage.get(0) + "", null, arrayDataCoverage.toString()));
+		scores.add(new EvaluationScore("quality", arrayDataQuality.get(0) + "", null, arrayDataQuality.toString()));
+		scores.add(new EvaluationScore("probability", arrayDataProbability.get(0) + "", null, arrayDataProbability.toString()));
+		scores.add(new EvaluationScore("positives", arrayDataPositives.get(0) + "", null, arrayDataPositives.toString()));
+		scores.add(new EvaluationScore(nameMapping(measure), arrayDataQuality.get(0) + "", null, arrayDataQuality.toString()));
 		
 		return scores;
 	}
