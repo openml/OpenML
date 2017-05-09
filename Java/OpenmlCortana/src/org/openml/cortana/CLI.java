@@ -1,9 +1,10 @@
 package org.openml.cortana;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStreamReader;
 import java.lang.management.ManagementFactory;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -11,25 +12,20 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Options;
-import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
-import org.openml.apiconnector.algorithms.*;
-import org.openml.apiconnector.io.*;
-import org.openml.apiconnector.settings.*;
-import org.openml.apiconnector.xml.*;
-import org.openml.apiconnector.xml.DataFeature.Feature;
+import org.openml.apiconnector.algorithms.Conversion;
+import org.openml.apiconnector.io.OpenmlConnector;
+import org.openml.apiconnector.settings.Config;
+import org.openml.apiconnector.xml.EvaluationScore;
+import org.openml.apiconnector.xml.Job;
+import org.openml.apiconnector.xml.Run;
 import org.openml.apiconnector.xml.Run.Parameter_setting;
-import org.openml.apiconnector.xml.SetupParameters.Parameter;
-import org.openml.apiconnector.xml.Task.Input;
-import org.openml.apiconnector.xml.Task.Input.Data_set;
+import org.openml.apiconnector.xml.UploadRun;
 import org.openml.apiconnector.xstream.XstreamXmlMapping;
 import org.openml.cortana.utils.Evaluations;
 import org.openml.cortana.utils.SdFlow;
+import org.openml.cortana.utils.XMLUtils;
 import org.openml.cortana.xml.AutoRun;
-import org.openml.cortana.xml.AutoRun.Experiment.Table.*;
-
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.xml.*;
 
 public class CLI {
 
@@ -37,16 +33,13 @@ public class CLI {
 	public static final Integer SD_TTID = 8;
 	public static final String CORTANA_DEPENDENCY = "cortana.3073";
 	
-	private static final XStream xstream = new XStream(new DomDriver("UTF-8", new XmlFriendlyNameCoder("_-", "_")));
-	
 	public static void main(String[] args) throws Exception {
 		OpenmlConnector openml = null;
 		Integer task_id = null;
 		String cortanaJar = null;
-		Map<String, String> searchParams = null;
+		String setupString = null;
 		boolean verbose = false;
 
-		xstream.processAnnotations(AutoRun.class);
 		
 		CommandLineParser parser = new GnuParser();
 		Options options = new Options();
@@ -83,7 +76,7 @@ public class CLI {
 			Job job = openml.jobRequest(CORTANA_DEPENDENCY, SD_TTID + "");
 			task_id = job.getTask_id();
 			
-			searchParams = jsonToMap(job.getLearner());
+			setupString = job.getLearner();
 			
 			Conversion.log("OK", "Job retrieval", "Task: " + task_id + "; setup: " + job.getLearner());
 		}
@@ -100,89 +93,39 @@ public class CLI {
 			}
 		}
 		
-		if (searchParams == null) {
+		if (setupString == null) {
 			if (cli.hasOption("-s")) {
-				SetupParameters sp = openml.setupParameters(Integer.parseInt(cli.getOptionValue("s")));
-				searchParams = new HashMap<String, String>();
+				String setupId = cli.getOptionValue("s");
+				process(openml, task_id, cortanaJar, setupId, verbose);
 				
-				for (Parameter p : sp.getParameters()) {
-					searchParams.put(p.getParameter_name(), p.getValue());
-				}
 			} else if (cli.hasOption("-json")) {
-				searchParams = jsonToMap(cli.getOptionValue("json"));
+				String jsonString = cli.getOptionValue("json");
+				process(openml, task_id, cortanaJar, jsonString, verbose);
 				
 			} else {
 				throw new Exception("Search parameters not specified (-s or -json)");
 			}
+		} else {
+			process(openml, task_id, cortanaJar, setupString, verbose);
 		}
 		
-		process(openml, task_id, cortanaJar, searchParams, verbose);
 	}
 	
-	private static void process(OpenmlConnector openml, Integer task_id, String cortanaJar, Map<String,String> searchParams, boolean verbose) throws Exception {
+	private static void process(OpenmlConnector openml, Integer taskId, String cortanaJar, String setupIdOrJsonStr, boolean verbose) throws Exception {
 		
 		String current_run_name = "Cortana-Run-" + ManagementFactory.getRuntimeMXBean().getName();
-		
-		Task task = openml.taskGet(task_id);
-		
-		if (task.getTask_type().equals("Subgroup Discovery") == false) {
-			throw new Exception("Wrong task type. ");
+		AutoRun ar;
+		try {
+			// first check if we obtained a setup id
+			Integer setupId = Integer.parseInt(setupIdOrJsonStr);
+			ar = XMLUtils.generateAutoRunFromSetup(openml, setupId, taskId);
+		} catch(NumberFormatException nfe) {
+			// probably a json sting 
+			ar = XMLUtils.generateAutoRunFromJson(openml, setupIdOrJsonStr, taskId);
 		}
+		File runXMLtmp = XMLUtils.autoRunToTmpFile(ar, current_run_name);
 		
-		Integer dataset_id = null;
-		String target_feature = null;
-		String target_value = null;
-		Double time_limit = null;
-		String quality_measure = null;
 		
-		for (Input i : task.getInputs()) {
-			if (i.getName().equals("source_data")) {
-				Data_set ds = i.getData_set();
-				
-				dataset_id = ds.getData_set_id();
-				target_feature = ds.getTarget_feature();
-				target_value = ds.getTarget_value();
-				
-			}
-			
-			if (i.getName().equals("time_limit")) {
-				time_limit = i.getTime_limit();
-			}
-			
-			if (i.getName().equals("quality_measure")) {
-				quality_measure = i.getQuality_measure();
-			}
-		}
-		searchParams.put("time_limit", "" + time_limit);
-		
-		DataSetDescription dsd = openml.dataGet(dataset_id);
-		File dataset = dsd.getDataset(openml.getApiKey());
-		File datasetTmp = Conversion.stringToTempFile("", dsd.getName(), dsd.getFormat());
-		IOUtils.copy(new FileInputStream(dataset), new FileOutputStream(datasetTmp));
-		
-		Feature[] features = openml.dataFeatures(dataset_id).getFeatures();
-		Column[] column = new Column[features.length];
-		for (int i = 0; i < features.length; ++i) {
-			column[i] = new Column(features[i].getDataType(), features[i].getName(), i, "0.0", true);
-		}
-		
-		AutoRun ar = new AutoRun(
-			target_feature, target_value, quality_measure, 
-			Integer.parseInt(searchParams.get("search_depth")), 
-			Integer.parseInt(searchParams.get("minimum_coverage")), 
-			Double.parseDouble(searchParams.get("maximum_coverage_fraction")), 
-			Integer.parseInt(searchParams.get("maximum_subgroups")), 
-			Double.parseDouble(searchParams.get("time_limit")), 
-			searchParams.get("search_strategy"), 
-			Boolean.parseBoolean(searchParams.get("use_nominal_sets")), 
-			Integer.parseInt(searchParams.get("search_strategy_width")), 
-			searchParams.get("numeric_operators"), 
-			searchParams.get("numeric_strategy"), 
-			Integer.parseInt(searchParams.get("nr_bins")), 
-			Integer.parseInt(searchParams.get("nr_threads")), 
-			dsd.getName(), datasetTmp.getName(), column);
-		
-		File runXMLtmp = Conversion.stringToTempFile("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<!DOCTYPE autorun SYSTEM \"autorun.dtd\">\n" + xstream.toXML(ar), current_run_name, "xml");
 		String cmd = "java -jar " + cortanaJar + " " + runXMLtmp.getAbsolutePath() + " 0 1";
 	//	String[] cliArguments = {runXMLtmp.getAbsolutePath(), "0", "1"};
 		
@@ -208,7 +151,7 @@ public class CLI {
 		resultTxt.renameTo(subgroups);
 
 		// update search params with only relevant parameters
-		searchParams = ar.getExperiment().getSearchParameters().getParameters();
+		Map<String, String> searchParams = ar.getExperiment().getSearchParameters().getParameters();
 
 		int flow_id = SdFlow.getFlowId(openml);
 		Parameter_setting[] params = new Parameter_setting[searchParams.size()];
@@ -218,8 +161,8 @@ public class CLI {
 			params[i++] = new Parameter_setting(flow_id, key, searchParams.get(key));
 		}
 		String setupString = new JSONObject(searchParams).toString();
-		Run r = new Run(task_id, null, flow_id, setupString, params, TAGS);
-		List<EvaluationScore> scores = Evaluations.extract(subgroups, quality_measure);
+		Run r = new Run(taskId, null, flow_id, setupString, params, TAGS);
+		List<EvaluationScore> scores = Evaluations.extract(subgroups, searchParams.get("quality_measure"));
 		for (EvaluationScore s : scores) { r.addOutputEvaluation(s); }
 		
 		File runfile = Conversion.stringToTempFile(XstreamXmlMapping.getInstance().toXML(r), "run", "xml");
@@ -256,19 +199,5 @@ public class CLI {
 			err.printStackTrace();
 			return false;
 		}
-	}
-	
-	private static final Map<String, String> jsonToMap(String s) {
-		Map<String, String> searchParams = new HashMap<String, String>();
-		JSONObject jObject = new JSONObject(s);
-        Iterator<?> keys = jObject.keys();
-        searchParams = new HashMap<String, String>();
-        
-        while( keys.hasNext() ){
-            String key = (String)keys.next();
-            String value = jObject.getString(key); 
-            searchParams.put(key, value);
-        }
-        return searchParams;
 	}
 }
