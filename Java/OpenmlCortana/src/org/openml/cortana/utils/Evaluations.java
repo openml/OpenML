@@ -27,8 +27,8 @@ public class Evaluations {
 			i+=1;
 			if (i == 0) continue; // skip csv header
 			arrayDataCoverage.add(Integer.parseInt(csvRecord.get(2)));
-			arrayDataQuality.add(Double.parseDouble(csvRecord.get(3)));
-			arrayDataProbability.add(Double.parseDouble(csvRecord.get(4)));
+			arrayDataQuality.add(roundDigits(Double.parseDouble(csvRecord.get(3)), 7));
+			arrayDataProbability.add(roundDigits(Double.parseDouble(csvRecord.get(4)), 7));
 			arrayDataPositives.add((int) Double.parseDouble(csvRecord.get(5)));
 		}
 		
@@ -42,6 +42,13 @@ public class Evaluations {
 	}
 	
 	private static final String nameMapping(String measure) {
+		System.out.println(measure);
 		return measure.replace(' ', '_').toLowerCase();
+	}
+	
+	private static double roundDigits(double val, int numDigits) {
+		double factor = Math.pow(10, numDigits);
+		val = Math.round(val * factor);
+		return val / factor;
 	}
 }

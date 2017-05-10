@@ -17,7 +17,6 @@ import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.EvaluationScore;
-import org.openml.apiconnector.xml.Job;
 import org.openml.apiconnector.xml.Run;
 import org.openml.apiconnector.xml.Run.Parameter_setting;
 import org.openml.apiconnector.xml.UploadRun;
@@ -37,7 +36,6 @@ public class CLI {
 		OpenmlConnector openml = null;
 		Integer task_id = null;
 		String cortanaJar = null;
-		String setupString = null;
 		boolean verbose = false;
 
 		
@@ -47,7 +45,6 @@ public class CLI {
 		options.addOption("c", true, "The cortana jar location");
 		options.addOption("t", true, "The task id");
 		options.addOption("s", true, "The setup id (for setting search parameters)");
-		options.addOption("x", false, "Obtains a job from Openml servers");
 		options.addOption("v", false, "Verbose - Outputs cortana data");
 	//	options.addOption("xml", true, "The auto run xml (for setting search parameters)");
 		options.addOption("json", true, "The auto run json (for setting search parameters)");
@@ -72,15 +69,6 @@ public class CLI {
 			cortanaJar = cli.getOptionValue("c");
 		}
 		
-		if (cli.hasOption("-x")) {
-			Job job = openml.jobRequest(CORTANA_DEPENDENCY, SD_TTID + "");
-			task_id = job.getTask_id();
-			
-			setupString = job.getLearner();
-			
-			Conversion.log("OK", "Job retrieval", "Task: " + task_id + "; setup: " + job.getLearner());
-		}
-		
 		if (cli.hasOption("-v")) {
 			verbose = true;
 		}
@@ -93,20 +81,16 @@ public class CLI {
 			}
 		}
 		
-		if (setupString == null) {
-			if (cli.hasOption("-s")) {
-				String setupId = cli.getOptionValue("s");
-				process(openml, task_id, cortanaJar, setupId, verbose);
-				
-			} else if (cli.hasOption("-json")) {
-				String jsonString = cli.getOptionValue("json");
-				process(openml, task_id, cortanaJar, jsonString, verbose);
-				
-			} else {
-				throw new Exception("Search parameters not specified (-s or -json)");
-			}
+		if (cli.hasOption("-s")) {
+			String setupId = cli.getOptionValue("s");
+			process(openml, task_id, cortanaJar, setupId, verbose);
+			
+		} else if (cli.hasOption("-json")) {
+			String jsonString = cli.getOptionValue("json");
+			process(openml, task_id, cortanaJar, jsonString, verbose);
+			
 		} else {
-			process(openml, task_id, cortanaJar, setupString, verbose);
+			throw new Exception("Search parameters not specified (-s or -json)");
 		}
 		
 	}
@@ -152,7 +136,7 @@ public class CLI {
 
 		// update search params with only relevant parameters
 		Map<String, String> searchParams = ar.getExperiment().getSearchParameters().getParameters();
-
+		String qualityMeasure = ar.getExperiment().getSearchParameters().getQuality_measure();
 		int flow_id = SdFlow.getFlowId(openml);
 		Parameter_setting[] params = new Parameter_setting[searchParams.size()];
 		
@@ -162,10 +146,11 @@ public class CLI {
 		}
 		String setupString = new JSONObject(searchParams).toString();
 		Run r = new Run(taskId, null, flow_id, setupString, params, TAGS);
-		List<EvaluationScore> scores = Evaluations.extract(subgroups, searchParams.get("quality_measure"));
+		List<EvaluationScore> scores = Evaluations.extract(subgroups, qualityMeasure);
 		for (EvaluationScore s : scores) { r.addOutputEvaluation(s); }
-		
-		File runfile = Conversion.stringToTempFile(XstreamXmlMapping.getInstance().toXML(r), "run", "xml");
+		String runFileStr = XstreamXmlMapping.getInstance().toXML(r);
+		System.out.println(runFileStr);
+		File runfile = Conversion.stringToTempFile(runFileStr, "run", "xml");
 		
 		Map<String,File> uploadFiles = new HashMap<String, File>();
 		uploadFiles.put("subgroups", subgroups);
