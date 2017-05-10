@@ -262,6 +262,9 @@ public class Main {
 			e.printStackTrace();
 			System.out.println( Output.styleToJsonError(e.getMessage() ));
 		}
+		
+		// makes sure the system halts, even when cortana is executed
+		System.exit(0);
 	}
 
 	public static boolean isInteger(String s) {
