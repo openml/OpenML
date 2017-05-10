@@ -18,5 +18,7 @@
 	<classpathentry kind="lib" path="lib/commons-codec-1.9.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/apiconnector"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="lib/cortana.3103.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/OpenmlCortana"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

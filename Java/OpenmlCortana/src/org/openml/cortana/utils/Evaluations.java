@@ -42,7 +42,6 @@ public class Evaluations {
 	}
 	
 	private static final String nameMapping(String measure) {
-		System.out.println(measure);
 		return measure.replace(' ', '_').toLowerCase();
 	}
 	

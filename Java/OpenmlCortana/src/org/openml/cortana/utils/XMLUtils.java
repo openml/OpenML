@@ -62,25 +62,25 @@ public class XMLUtils {
 		String target_value = null;
 		Double time_limit = null;
 		String quality_measure = null;
+		Map<String, Input> inputs = task.getInputsAsMap();
 		
-		for (Input i : task.getInputs()) {
-			if (i.getName().equals("source_data")) {
-				Data_set ds = i.getData_set();
-				
-				dataset_id = ds.getData_set_id();
-				target_feature = ds.getTarget_feature();
-				target_value = ds.getTarget_value();
-				
-			}
+		if (inputs.containsKey("source_data")) {
+			Data_set ds = inputs.get("source_data").getData_set();
 			
-			if (i.getName().equals("time_limit")) {
-				time_limit = i.getTime_limit();
-			}
+			dataset_id = ds.getData_set_id();
+			target_feature = ds.getTarget_feature();
+			target_value = ds.getTarget_value();
 			
-			if (i.getName().equals("quality_measure")) {
-				quality_measure = i.getQuality_measure();
-			}
 		}
+		
+		if (inputs.containsKey("time_limit")) {
+			time_limit = inputs.get("time_limit").getTime_limit();
+		}
+		
+		if (inputs.containsKey("quality_measure")) {
+			quality_measure = inputs.get("quality_measure").getQuality_measure();
+		}
+		
 		searchParams.put("time_limit", "" + time_limit);
 		
 		DataSetDescription dsd = openml.dataGet(dataset_id);
