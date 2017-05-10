@@ -168,7 +168,7 @@ public class EvaluateRun {
 					new URL(estimationprocedure.getData_splits_url()), 
 					predictionsUrl);
 			} else if (task.getTask_type_id() == 8) { // Subgroup Discovery
-				predictionEvaluator = new EvaluateSubgroups();
+				predictionEvaluator = new EvaluateSubgroups(run_id, apiconnector);
 			} else if (task.getTask_type_id() == 9) { // Stream Challenge
 				predictionEvaluator = new EvaluateStreamChallenge(apiconnector, run_id);
 			} else {

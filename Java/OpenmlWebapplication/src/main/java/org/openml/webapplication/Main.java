@@ -171,8 +171,6 @@ public class Main {
 						}
 					}
 					
-					apiconnector.setVerboseLevel(0);
-					System.out.println(datasetUrl);
 					GenerateFolds gf = new GenerateFolds(
 							apiconnector, 
 							config.getApiKey(),
