@@ -102,12 +102,12 @@ public class CLI {
 		try {
 			// first check if we obtained a setup id
 			Integer setupId = Integer.parseInt(setupIdOrJsonStr);
-			ar = XMLUtils.generateAutoRunFromSetup(openml, setupId, taskId);
+			ar = XMLUtils.generateAutoRunFromSetup(openml, setupId, taskId, null);
 		} catch(NumberFormatException nfe) {
 			// probably a json sting 
-			ar = XMLUtils.generateAutoRunFromJson(openml, setupIdOrJsonStr, taskId);
+			ar = XMLUtils.generateAutoRunFromJson(openml, setupIdOrJsonStr, taskId, null);
 		}
-		File runXMLtmp = XMLUtils.autoRunToTmpFile(ar, current_run_name);
+		File runXMLtmp = XMLUtils.autoRunToTmpFile(ar, current_run_name, null);
 		
 		
 		String cmd = "java -jar " + cortanaJar + " " + runXMLtmp.getAbsolutePath() + " 0 1";
