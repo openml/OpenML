@@ -29,28 +29,28 @@ import com.thoughtworks.xstream.io.xml.XmlFriendlyNameCoder;
 public class XMLUtils {
 	private static String XML_PREFIX = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<!DOCTYPE autorun SYSTEM \"autorun.dtd\">\n";
 	
-	public static File autoRunToTmpFile(AutoRun ar, String runName) throws IOException {
+	public static File autoRunToTmpFile(AutoRun ar, String tmpFilePrefix, File directory) throws IOException {
 		XStream xstream = new XStream(new DomDriver("UTF-8", new XmlFriendlyNameCoder("_-", "_")));
 		xstream.processAnnotations(AutoRun.class);
-		File runXMLtmp = Conversion.stringToTempFile(XML_PREFIX + xstream.toXML(ar), runName, "xml");
+		File runXMLtmp = Conversion.stringToTempFile(XML_PREFIX + xstream.toXML(ar), tmpFilePrefix, "xml", directory);
 		return runXMLtmp;
 	}
 	
-	public static AutoRun generateAutoRunFromJson(OpenmlConnector openml, String setupString, int taskId) throws Exception {
-		return generateAutoRun(openml, jsonToMap(setupString), taskId);
+	public static AutoRun generateAutoRunFromJson(OpenmlConnector openml, String setupString, int taskId, File directory) throws Exception {
+		return generateAutoRun(openml, jsonToMap(setupString), taskId, directory);
 	}
 	
-	public static AutoRun generateAutoRunFromSetup(OpenmlConnector openml, int setupId, int taskId) throws Exception {
+	public static AutoRun generateAutoRunFromSetup(OpenmlConnector openml, int setupId, int taskId, File directory) throws Exception {
 		SetupParameters sp = openml.setupParameters(setupId);
 		Map<String, String> searchParams = new HashMap<String, String>();
 		
 		for (Parameter p : sp.getParameters()) {
 			searchParams.put(p.getParameter_name(), p.getValue());
 		}
-		return generateAutoRun(openml, searchParams, taskId);
+		return generateAutoRun(openml, searchParams, taskId, directory);
 	}
 
-	private static AutoRun generateAutoRun(OpenmlConnector openml, Map<String,String> searchParams, int taskId) throws Exception {
+	private static AutoRun generateAutoRun(OpenmlConnector openml, Map<String,String> searchParams, int taskId, File directory) throws Exception {
 		Task task = openml.taskGet(taskId);
 		
 		if (task.getTask_type().equals("Subgroup Discovery") == false) {
@@ -85,7 +85,7 @@ public class XMLUtils {
 		
 		DataSetDescription dsd = openml.dataGet(dataset_id);
 		File dataset = dsd.getDataset(openml.getApiKey());
-		File datasetTmp = Conversion.stringToTempFile("", dsd.getName(), dsd.getFormat());
+		File datasetTmp = Conversion.stringToTempFile("", dsd.getName(), dsd.getFormat(), directory);
 		IOUtils.copy(new FileInputStream(dataset), new FileOutputStream(datasetTmp));
 		
 		Feature[] features = openml.dataFeatures(dataset_id).getFeatures();
