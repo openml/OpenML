@@ -12,8 +12,8 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
+import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.io.HttpConnector;
 import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.xml.EvaluationScore;
@@ -43,6 +43,7 @@ import nl.liacs.subdisc.gui.ResultTableModel;
 
 public class EvaluateSubgroups implements PredictionEvaluator {
 	
+	private final File tmpDirectory;
 	private final Run currentRun;
 	private final Task currentTask;
 	private final File cortanaXml;
@@ -56,14 +57,18 @@ public class EvaluateSubgroups implements PredictionEvaluator {
 		this.currentRun = openml.runGet(runId);
 		this.currentTask = openml.taskGet(currentRun.getTask_id());
 		this.evaluation_measure = currentTask.getInputsAsMap().get("quality_measure").getQuality_measure();
+		this.tmpDirectory = File.createTempFile("openml-run-"+ runId, "");
+		this.tmpDirectory.delete();
+		this.tmpDirectory.mkdir();
+		this.tmpDirectory.deleteOnExit();
 		
 		int subgroupsFileId = currentRun.getOutputFileAsMap().get("subgroups").getFileId();
 		URL subgroupsURL = openml.getOpenmlFileUrl(subgroupsFileId, "subgroups.csv");
-		subgroupsCsv = File.createTempFile("subgroups", ".tmp");
+		subgroupsCsv = File.createTempFile("subgroups", ".tmp", this.tmpDirectory);
 		subgroupsCsv = HttpConnector.getFileFromUrl(subgroupsURL, subgroupsCsv.getAbsolutePath(), false);
 		
-		AutoRun autoRun = XMLUtils.generateAutoRunFromSetup(openml, currentRun.getSetup_id(), currentRun.getTask_id());
-		cortanaXml = XMLUtils.autoRunToTmpFile(autoRun, "openml-run-" + runId + "-" + UUID.randomUUID().toString());
+		AutoRun autoRun = XMLUtils.generateAutoRunFromSetup(openml, currentRun.getSetup_id(), currentRun.getTask_id(), tmpDirectory);
+		cortanaXml = XMLUtils.autoRunToTmpFile(autoRun, "openml-run-" + runId + "-" + System.currentTimeMillis(), tmpDirectory);
 	}
 	
 	@Override
@@ -85,11 +90,10 @@ public class EvaluateSubgroups implements PredictionEvaluator {
 	
 
 	// Written by MM
-	private final List<EvaluationScore> doMagic() throws IOException
-	{
+	private final List<EvaluationScore> doMagic() throws IOException {
 		// load autorun.xml file, it contains all relevant information
 		FileLoaderXML l = new FileLoaderXML(cortanaXml);
-
+		
 		Table t = l.getTable();
 		SearchParameters s = l.getSearchParameters();
 
@@ -102,7 +106,7 @@ public class EvaluateSubgroups implements PredictionEvaluator {
 		// instead, ConditionLists are obtained through ExternalKnowledgeFileLoader
 
 		// assume result file from xml is named: xml.csv
-		List<ConditionList> old = getConditionLists(subgroupsCsv.getAbsolutePath(), t);
+		List<ConditionList> old = getConditionLists(subgroupsCsv, t);
 
 		print("loading result file done");
 
@@ -153,20 +157,19 @@ public class EvaluateSubgroups implements PredictionEvaluator {
 	}
 
 	// returns a List of (Deprecated) ConditionLists
-	private static final List<ConditionList> getConditionLists(String theResultFile, Table t)
+	private static final List<ConditionList> getConditionLists(File subgroupsCsv, Table t)
 	{
 		List<ConditionList> l = Collections.emptyList();
 
 		// ExternalKnowledgeFileLoader only parses '.gkf' / '.lkf' files
-		File f = new File(theResultFile);
-		File g = new File(theResultFile +  "." + System.currentTimeMillis() + ".gkf");
+		File g = new File(subgroupsCsv.getAbsolutePath() +  "." + System.currentTimeMillis() + ".gkf");
 
 		// TODO file checks go here
 
 		// do not read and write at the same time
 
 		List<String> a = new ArrayList<String>();
-		try (BufferedReader br = new BufferedReader(new FileReader(f)))
+		try (BufferedReader br = new BufferedReader(new FileReader(subgroupsCsv)))
 		{
 			// assume Conditions are in last column
 			int i = ResultTableModel.COLUMN_COUNT-1;
@@ -305,4 +308,5 @@ public class EvaluateSubgroups implements PredictionEvaluator {
 	{
 		System.out.println(theMessage);
 	}
+	
 }
