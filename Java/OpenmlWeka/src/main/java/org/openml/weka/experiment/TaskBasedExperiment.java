@@ -1,7 +1,5 @@
 package org.openml.weka.experiment;
 
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
 import java.io.File;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -18,14 +16,7 @@ import org.openml.apiconnector.xml.RunList.Run;
 import org.openml.weka.algorithm.WekaAlgorithm;
 import org.openml.weka.algorithm.WekaConfig;
 
-import weka.classifiers.Classifier;
-import weka.core.Utils;
-import weka.experiment.ClassifierSplitEvaluator;
-import weka.experiment.CrossValidationResultProducer;
 import weka.experiment.Experiment;
-import weka.experiment.PropertyNode;
-import weka.experiment.ResultProducer;
-import weka.experiment.SplitEvaluator;
 
 public class TaskBasedExperiment extends Experiment {
 
@@ -198,106 +189,6 @@ public class TaskBasedExperiment extends Experiment {
 					m_Finished = true;
 				}
 			}
-		}
-	}
-
-	/**
-	 * Parses a given list of options.
-	 * 
-	 * <pre>
-	 * -T &lt;task_id&gt;
-	 *  The OpenML task to run the experiment on. (required)
-	 * </pre>
-	 * 
-	 * 
-	 * <pre>
-	 * -C &lt;class name&gt;
-	 *  The full class name of the classifier.
-	 *  eg: weka.classifiers.bayes.NaiveBayes
-	 * </pre>
-	 * 
-	 * <!-- options-end -->
-	 * 
-	 * All options after -- will be passed to the classifier.
-	 * <p>
-	 * 
-	 * @param options
-	 *            the list of options as an array of strings
-	 * @throws Exception
-	 *             if an option is not supported
-	 */
-	public void setOptions(String[] options) throws Exception {
-
-		Integer task_id = Integer.parseInt(Utils.getOption('T', options));
-		String classifierName = Utils.getOption('C', options);
-		String[] classifierOptions = Utils.partitionOptions(options);
-
-		DefaultListModel<Task> tasks = new DefaultListModel<Task>();
-		tasks.add(0, apiconnector.taskGet(task_id));
-		setTasks(tasks);
-
-		Classifier[] cArray = new Classifier[1];
-		try {
-			cArray[0] = (Classifier) Utils.forName(Classifier.class, classifierName, classifierOptions);
-		} catch (Exception e) {
-			// Try again, this time loading packages first
-			weka.core.WekaPackageManager.loadPackages(false);
-			cArray[0] = (Classifier) Utils.forName(Classifier.class, classifierName, classifierOptions);
-		}
-		setPropertyArray(cArray);
-	}
-
-	public static void main(String[] args) {
-		try {
-			String strConfig;
-			WekaConfig config;
-			
-			try { strConfig = Utils.getOption("config", args); } catch (Exception e) { strConfig = null; }
-			if (strConfig != null & strConfig.equals("") == false) {
-				config = new WekaConfig(strConfig);
-			} else {
-				config = new WekaConfig();
-			}
-			
-			OpenmlConnector apiconnector;
-			if (config.getServer() != null) {
-				apiconnector = new OpenmlConnector(config.getServer(), config.getApiKey());
-			} else {
-				apiconnector = new OpenmlConnector(config.getApiKey());
-			}
-
-			TaskBasedExperiment exp = new TaskBasedExperiment(new Experiment(), apiconnector, config);
-			ResultProducer rp = new TaskResultProducer(apiconnector, config);
-			TaskResultListener rl = new TaskResultListener(apiconnector, config);
-			SplitEvaluator se = new OpenmlClassificationSplitEvaluator();
-			Classifier sec = null;
-
-			exp.setResultProducer(rp);
-			exp.setResultListener(rl);
-			exp.setUsePropertyIterator(true);
-
-			sec = ((ClassifierSplitEvaluator) se).getClassifier();
-			PropertyNode[] propertyPath = new PropertyNode[2];
-			try {
-				propertyPath[0] = new PropertyNode(se, new PropertyDescriptor("splitEvaluator", CrossValidationResultProducer.class),
-						CrossValidationResultProducer.class);
-				propertyPath[1] = new PropertyNode(sec, new PropertyDescriptor("classifier", se.getClass()), se.getClass());
-			} catch (IntrospectionException err) {
-				err.printStackTrace();
-			}
-			exp.setPropertyPath(propertyPath);
-
-			exp.setOptions(args);
-
-			System.err.println("Initializing...");
-			exp.initialize();
-			System.err.println("Iterating...");
-			exp.runExperiment();
-			System.err.println("Postprocessing...");
-			exp.postProcess();
-			System.err.println("Done");
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 }

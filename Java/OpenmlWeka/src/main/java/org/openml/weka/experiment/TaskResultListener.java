@@ -14,7 +14,6 @@ import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.algorithms.SciMark;
 import org.openml.apiconnector.algorithms.TaskInformation;
 import org.openml.apiconnector.io.OpenmlConnector;
-import org.openml.apiconnector.io.ApiException;
 import org.openml.apiconnector.models.MetricScore;
 import org.openml.apiconnector.settings.Constants;
 import org.openml.apiconnector.xml.EvaluationScore;
@@ -56,11 +55,13 @@ public class TaskResultListener extends InstancesResultListener {
 	 * List of OpenML tasks that reported back with errors. Will be send to
 	 * server with error message
 	 */
-	private final ArrayList<String> tasksWithErrors;
+	private final List<String> tasksWithErrors;
 
 	private final OpenmlConnector apiconnector;
 	
 	private final String[] all_tags;
+	
+	private final List<Integer> runIds;
 
 	boolean skipJvmBenchmark = false;
 	
@@ -72,6 +73,7 @@ public class TaskResultListener extends InstancesResultListener {
 		tasksWithErrors = new ArrayList<String>();
 		all_tags = ArrayUtils.addAll(DEFAULT_TAGS, config.getTags());
 		skipJvmBenchmark = config.getSkipJvmBenchmark();
+		runIds = new ArrayList<>();
 	}
 
 	public void acceptFullModel(Task t, Instances sourceData, Classifier classifier, String options, Map<String, Object> splitEvaluatorResults,
@@ -87,13 +89,14 @@ public class TaskResultListener extends InstancesResultListener {
 		oet.modelFullDataset(splitEvaluatorResults, tse);
 
 		if (oet.complete()) {
-			sendTask(oet);
+			int runId = sendTask(oet);
 			currentlyCollecting.remove(key);
+			runIds.add(runId);
 		}
 	}
 
 	public void acceptResultsForSending(Task t, Instances sourceData, Integer repeat, Integer fold, Integer sample, Classifier classifier, String options,
-			Integer[] rowids, ArrayList<Prediction> predictions, Map<String, MetricScore> userMeasures,
+			List<Integer> rowids, ArrayList<Prediction> predictions, Map<String, MetricScore> userMeasures,
 			List<Quadlet<String, Double, List<Entry<String, Object>>, Boolean>> optimizationTrace, boolean wantFullModel) throws Exception {
 		// TODO: do something better than undefined
 		String revision = (classifier instanceof RevisionHandler) ? ((RevisionHandler) classifier).getRevision() : "undefined";
@@ -107,8 +110,9 @@ public class TaskResultListener extends InstancesResultListener {
 		oet.addUserDefinedMeasures(fold, repeat, sample, userMeasures);
 
 		if (oet.complete()) {
-			sendTask(oet);
+			int runId = sendTask(oet);
 			currentlyCollecting.remove(key);
+			runIds.add(runId);
 		}
 	}
 
@@ -120,11 +124,12 @@ public class TaskResultListener extends InstancesResultListener {
 
 		if (tasksWithErrors.contains(key) == false) {
 			tasksWithErrors.add(key);
-			sendTaskWithError(new OpenmlExecutedTask(t, classifier, sourceData, error_message, options, apiconnector, false, all_tags));
+			int runId = sendTaskWithError(new OpenmlExecutedTask(t, classifier, sourceData, error_message, options, apiconnector, false, all_tags));
+			runIds.add(runId);
 		}
 	}
 
-	private void sendTask(OpenmlExecutedTask oet) throws Exception {
+	private int sendTask(OpenmlExecutedTask oet) throws Exception {
 		Conversion.log("INFO", "Upload Run", "Starting send run process... ");
 		XStream xstream = XstreamXmlMapping.getInstance();
 		File tmpPredictionsFile;
@@ -151,30 +156,23 @@ public class TaskResultListener extends InstancesResultListener {
 			output_files.put("trace", Conversion.stringToTempFile(oet.optimizationTrace.toString(), "optimization_trace", "arff"));
 		}
 
-		try {
-			UploadRun ur = apiconnector.runUpload(tmpDescriptionFile, output_files);
-			Conversion.log("INFO", "Upload Run",
-					"Run was uploaded with rid " + ur.getRun_id() + ". Obtainable at " + apiconnector.getApiUrl() + "run/" + ur.getRun_id());
-		} catch (ApiException ae) {
-			ae.printStackTrace();
-			Conversion.log("ERROR", "Upload Run", "Failed to upload run: " + ae.getMessage());
-		}
+		UploadRun ur = apiconnector.runUpload(tmpDescriptionFile, output_files);
+		return ur.getRun_id();
 	}
 
-	private void sendTaskWithError(OpenmlExecutedTask oet) throws Exception {
+	private int sendTaskWithError(OpenmlExecutedTask oet) throws Exception {
 		Conversion.log("WARNING", "Upload Run", "Starting to upload run... (including error results) ");
 		XStream xstream = XstreamXmlMapping.getInstance();
 		File tmpDescriptionFile;
 
 		tmpDescriptionFile = Conversion.stringToTempFile(xstream.toXML(oet.getRun()), "weka_generated_run", Constants.DATASET_FORMAT);
-		try {
-			UploadRun ur = apiconnector.runUpload(tmpDescriptionFile, new HashMap<String, File>());
-			Conversion.log("WARNING", "Upload Run", "Run was uploaded with rid " + ur.getRun_id() + ". It includes an error message. Obtainable at "
-					+ apiconnector.getApiUrl() + "?f=openml.run.get&run_id=" + ur.getRun_id());
-		} catch (ApiException ae) {
-			ae.printStackTrace();
-			Conversion.log("ERROR", "Upload Run", "Failed to upload run: " + ae.getMessage());
-		}
+		
+		UploadRun ur = apiconnector.runUpload(tmpDescriptionFile, new HashMap<String, File>());
+		return ur.getRun_id();
+	}
+	
+	public List<Integer> getRunIds() {
+		return runIds;
 	}
 
 	private class OpenmlExecutedTask {
@@ -262,20 +260,20 @@ public class TaskResultListener extends InstancesResultListener {
 			run = new Run(t.getTask_id(), error_message, implementation.getId(), setup_string, list.toArray(new Parameter_setting[list.size()]), tags);
 		}
 
-		public void addBatchOfPredictions(Integer fold, Integer repeat, Integer sample, Integer[] rowids, ArrayList<Prediction> batchPredictions,
+		public void addBatchOfPredictions(Integer fold, Integer repeat, Integer sample, List<Integer> rowids, ArrayList<Prediction> batchPredictions,
 				List<Quadlet<String, Double, List<Entry<String, Object>>, Boolean>> optimizationTraceFold) {
 			nrOfResultBatches += 1;
-			for (int i = 0; i < rowids.length; ++i) {
+			for (int i = 0; i < rowids.size(); ++i) {
 				Prediction current = batchPredictions.get(i);
 				double[] values = new double[predictions.numAttributes()];
-				values[predictions.attribute("row_id").index()] = rowids[i];
+				values[predictions.attribute("row_id").index()] = rowids.get(i);
 				values[predictions.attribute("fold").index()] = fold;
 				values[predictions.attribute("repeat").index()] = repeat;
 				values[predictions.attribute("prediction").index()] = current.predicted();
 				if (predictions.attribute("sample") != null) {
 					values[predictions.attribute("sample").index()] = sample;
 				}
-				values[predictions.attribute("correct").index()] = inputData.instance(rowids[i]).classValue();
+				values[predictions.attribute("correct").index()] = inputData.instance(rowids.get(i)).classValue();
 
 				if (current instanceof NominalPrediction) {
 					double[] confidences = ((NominalPrediction) current).distribution();

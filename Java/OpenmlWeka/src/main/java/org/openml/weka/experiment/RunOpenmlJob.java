@@ -1,14 +1,25 @@
 package org.openml.weka.experiment;
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.openml.apiconnector.algorithms.Conversion;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+
+import javax.swing.DefaultListModel;
+
 import org.openml.apiconnector.io.OpenmlConnector;
-import org.openml.apiconnector.xml.Job;
+import org.openml.apiconnector.xml.Task;
 import org.openml.weka.algorithm.WekaConfig;
 
+import weka.classifiers.AbstractClassifier;
+import weka.classifiers.Classifier;
 import weka.core.CommandlineRunnable;
+import weka.core.OptionHandler;
 import weka.core.Utils;
-import weka.core.Version;
+import weka.experiment.ClassifierSplitEvaluator;
+import weka.experiment.CrossValidationResultProducer;
+import weka.experiment.Experiment;
+import weka.experiment.PropertyNode;
+import weka.experiment.ResultProducer;
+import weka.experiment.SplitEvaluator;
 
 public class RunOpenmlJob implements CommandlineRunnable {
 
@@ -16,54 +27,54 @@ public class RunOpenmlJob implements CommandlineRunnable {
 		RunOpenmlJob rj = new RunOpenmlJob();
 		rj.run(rj, args);
 	}
-
-	public static void obtainTask(int ttid, WekaConfig config, OpenmlConnector apiconnector) {
-		try {
-			String task_tag = config.getJobRequestTaskTag();
-			String setup_tag = config.getJobRequestSetupTag();
-			Integer setupId = config.getJobRequestSetupId();
-			
-			Job j = apiconnector.jobRequest("Weka_" + Version.VERSION, "" + ttid, task_tag, setup_tag, setupId);
-			
-			Conversion.log("OK", "Obtain Task", "Task: " + j.getTask_id() + "; learner: " + j.getLearner());
-			
-			String[] classArgs = Utils.splitOptions(j.getLearner());
-			String[] taskArgs = new String[5];
-			taskArgs[0] = "-config";
-			taskArgs[1] = config.toString();
-			taskArgs[2] = "-T";
-			taskArgs[3] = "" + j.getTask_id();
-			taskArgs[4] = "-C";
-
-			TaskBasedExperiment.main(ArrayUtils.addAll(taskArgs, classArgs));
-		} catch (Exception e) {
-			e.printStackTrace();
-		} catch (Error e) {
-			e.printStackTrace();
-		}
-	}
 	
-	public static void executeTask(WekaConfig config, Integer task_id, String setup_string) throws Exception {
-		String[] classArgs = Utils.splitOptions(setup_string);
-		String[] taskArgs = new String[5];
-		taskArgs[0] = "-config";
-		taskArgs[1] = config.toString();
-		taskArgs[2] = "-T";
-		taskArgs[3] = "" + task_id;
-		taskArgs[4] = "-C";
+	public static int executeTask(OpenmlConnector openml, WekaConfig config, Integer task_id, Classifier classifier) throws Exception {
+		TaskBasedExperiment exp = new TaskBasedExperiment(new Experiment(), openml, config);
+		ResultProducer rp = new TaskResultProducer(openml, config);
+		TaskResultListener rl = new TaskResultListener(openml, config);
+		SplitEvaluator se = new OpenmlClassificationSplitEvaluator();
+		Classifier sec = null;
+
+		exp.setResultProducer(rp);
+		exp.setResultListener(rl);
+		exp.setUsePropertyIterator(true);
+
+		sec = ((ClassifierSplitEvaluator) se).getClassifier();
+		PropertyNode[] propertyPath = new PropertyNode[2];
+		try {
+			propertyPath[0] = new PropertyNode(se, new PropertyDescriptor("splitEvaluator", CrossValidationResultProducer.class),
+					CrossValidationResultProducer.class);
+			propertyPath[1] = new PropertyNode(sec, new PropertyDescriptor("classifier", se.getClass()), se.getClass());
+		} catch (IntrospectionException err) {
+			err.printStackTrace();
+		}
+		exp.setPropertyPath(propertyPath);
 		
-		TaskBasedExperiment.main(ArrayUtils.addAll(taskArgs, classArgs));
+		// set classifier
+		Classifier[] cArray = {classifier};
+		exp.setPropertyArray(cArray);
+		
+		// set task
+		DefaultListModel<Task> tasks = new DefaultListModel<Task>();
+		tasks.add(0, openml.taskGet(task_id));
+		exp.setTasks(tasks);
+		
+		// run the stuff
+		System.err.println("Initializing...");
+		exp.initialize();
+		System.err.println("Iterating...");
+		exp.runExperiment();
+		System.err.println("Postprocessing...");
+		exp.postProcess();
+		System.err.println("Done");
+		
+		int runId = ((TaskResultListener) exp.getResultListener()).getRunIds().get(0);
+		return runId;
 	}
 	
 	@Override
-	public void run(Object arg0, String[] args) throws IllegalArgumentException {
-		int n;
-		Integer ttid;
-		
-		String strN;
-		String strTtid;
+	public void run(Object arg0, String[] args) throws Exception {
 		String strTaskid;
-		String setup_string;
 		
 		String strConfig;
 		WekaConfig config;
@@ -87,29 +98,35 @@ public class RunOpenmlJob implements CommandlineRunnable {
 		}
 
 		try {
-			strN = Utils.getOption('N', args);
-			strTtid = Utils.getOption('T', args);
 			strTaskid = Utils.getOption("task_id", args);
-			setup_string = Utils.getOption("C", args);
 		} catch (Exception e) {
 			throw new IllegalArgumentException(e.getMessage());
 		}
 		
-		if (strTaskid.equals("")) {
-			// obtain tasks from server
-			n = (strN.equals("")) ? 1 : Integer.parseInt(strN);
-			ttid = (strTtid.equals("")) ? 1 : Integer.parseInt(strTtid);
-			
-			for (int i = 0; i < n; ++i) {
-				obtainTask(ttid, config, apiconnector);
-			}
-		} else {
-			try {
-				executeTask(config, Integer.parseInt(strTaskid), setup_string);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+		String classifierCliString = Utils.getOption('C', args);
+	    if (classifierCliString.length() == 0) {
+	      throw new Exception("A classifier must be specified with the -C option.");
 		}
+		String[] classifierOptions = Utils.splitOptions(classifierCliString);
+		// Do it first without options, so if an exception is thrown during
+		// the option setting, listOptions will contain options for the actual
+		// Classifier.
+
+		Classifier classifier;
+		try {
+			classifier = (AbstractClassifier.forName(classifierOptions[0], null));
+			classifierOptions[0] = "";
+		} catch (Exception e) {
+			weka.core.WekaPackageManager.loadPackages(false);
+			classifier = (AbstractClassifier.forName(classifierOptions[0], null));
+			classifierOptions[0] = "";
+		}
+		
+		if (classifier instanceof OptionHandler) {
+			((OptionHandler) classifier).setOptions(classifierOptions);
+		}
+
+		executeTask(apiconnector, config, Integer.parseInt(strTaskid), classifier);
 	}
 
 	@Override
