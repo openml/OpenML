@@ -48,10 +48,10 @@ public class EvaluateRun {
 	private final int MAX_LENGTH_WARNING = 1024;
 	
 	public EvaluateRun(OpenmlConnector ac) throws Exception {
-		this(ac, null, "normal", null, null);
+		this(ac, null, "normal", null, null, null);
 	}
 	
-	public EvaluateRun(OpenmlConnector ac, Integer run_id, String mode, Integer ttid, String tag) throws Exception {
+	public EvaluateRun(OpenmlConnector ac, Integer run_id, String mode, Integer ttid, String tag, Integer uploaderId) throws Exception {
 		apiconnector = ac;
 		xstream = XstreamXmlMapping.getInstance();
 		
@@ -66,6 +66,9 @@ public class EvaluateRun {
 				}
 				if (tag != null) {
 					filters.put("tag", tag);
+				}
+				if (uploaderId != null) {
+					filters.put("uploader", "" + uploaderId);
 				}
 				
 				while(true) {

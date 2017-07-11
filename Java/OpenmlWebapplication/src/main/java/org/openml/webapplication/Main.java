@@ -52,6 +52,7 @@ public class Main {
 		Config config;
 		
 		options.addOption("id", true, "The id of the dataset/run used");
+		options.addOption("u", true, "The user id");
 		options.addOption("config", true, "The config string describing the settings for API interaction");
 		options.addOption("f", true, "The function to invole");
 		options.addOption("o", true, "The output file / offset");
@@ -89,10 +90,11 @@ public class Main {
 				String function = cli.getOptionValue("f");
 				if( function.equals("evaluate_run") ) {
 					Integer ttid = cli.hasOption("-mode") ? Integer.parseInt(cli.getOptionValue("mode")) : null;
+					Integer uploaderId = cli.hasOption("-u") ? Integer.parseInt(cli.getOptionValue("u")) : null;
 					String evaluationMode = cli.hasOption("x") ? "random" : "normal";
 					
 					// bootstrap evaluate run
-					new EvaluateRun(apiconnector, id, evaluationMode, ttid, cli.getOptionValue("tag"));
+					new EvaluateRun(apiconnector, id, evaluationMode, ttid, cli.getOptionValue("tag"), uploaderId);
 					
 				} else if( function.equals("process_dataset") ) {
 					
