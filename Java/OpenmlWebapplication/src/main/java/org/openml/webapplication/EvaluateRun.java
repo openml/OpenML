@@ -7,16 +7,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
+import java.util.TreeMap;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.algorithms.Input;
 import org.openml.apiconnector.algorithms.TaskInformation;
+import org.openml.apiconnector.io.ApiException;
 import org.openml.apiconnector.io.HttpConnector;
 import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.xml.DataSetDescription;
+import org.openml.apiconnector.xml.EvaluationRequest;
 import org.openml.apiconnector.xml.EvaluationScore;
 import org.openml.apiconnector.xml.Run;
 import org.openml.apiconnector.xml.RunEvaluate;
@@ -46,47 +48,35 @@ public class EvaluateRun {
 	private final int MAX_LENGTH_WARNING = 1024;
 	
 	public EvaluateRun(OpenmlConnector ac) throws Exception {
-		this(ac, null, false, null);
+		this(ac, null, "normal", null, null);
 	}
 	
-	public EvaluateRun(OpenmlConnector ac, Integer run_id, boolean random, String ttids) throws Exception {
+	public EvaluateRun(OpenmlConnector ac, Integer run_id, String mode, Integer ttid, String tag) throws Exception {
 		apiconnector = ac;
 		xstream = XstreamXmlMapping.getInstance();
 		
-		if( run_id != null ) {
+		if(run_id != null) {
 			evaluate( run_id );
 		} else {
-			run_id = getRunId(random, ttids);
-			while( run_id != null ) {
-				Conversion.log("INFO","Evaluate Run","Downloading task " + run_id );
-				evaluate( run_id );
-				run_id = getRunId(random, ttids);
+			try {
+				// while loop will be broken when when there are no runs left on server (catch)
+				Map<String, String> filters = new TreeMap<>();
+				if (ttid != null) {
+					filters.put("ttid", "" + ttid);
+				}
+				if (tag != null) {
+					filters.put("tag", tag);
+				}
+				
+				while(true) {
+					EvaluationRequest er = ac.evaluationRequest(1, "reverse", filters);
+					run_id = er.getRuns()[0].getRun_id();
+					Conversion.log("INFO","Evaluate Run","Downloading task " + run_id );
+					evaluate( run_id );
+				}
+			} catch(ApiException e) {
+				Conversion.log( "OK", "Process Run", "No more runs to evaluate. Api response: " + e.getMessage());
 			}
-			Conversion.log( "OK", "Process Run", "No more runs to perform. " );
-		}
-	}
-	
-	public Integer getRunId(boolean random, String ttids) throws Exception {
-		String ttidsStr = ttids == null ? "" : " AND `t`.`ttid` IN ("+ttids+") ";
-		String sql = 
-			"SELECT `r`.`rid`, `r`.`start_time`, `e`.`evaluation_date`, `e`.`error` FROM  `task` `t`, `run` `r` " + 
-			"LEFT JOIN run_evaluated `e` ON `r`.`rid` = `e`.`run_id` AND `e`.`evaluation_engine_id` = 1 " +
-			"WHERE `r`.`task_id` = `t`.`task_id` " + ttidsStr +
-			"AND `e`.`run_id` IS NULL " + 
-			"ORDER BY `r`.`start_time` ASC LIMIT 0, 100; "; 
-		JSONArray runJson = (JSONArray) apiconnector.freeQuery( sql ).get("data");
-		
-		int randomint = 0;
-		
-		if (random) {
-			Random r = new Random();
-			randomint = Math.abs(r.nextInt());
-		}
-		if( runJson.length() > 0 ) {
-			int run_id = ((JSONArray) runJson.get( randomint % runJson.length() )).getInt( 0 );
-			return run_id;
-		} else {
-			return null;
 		}
 	}
 	

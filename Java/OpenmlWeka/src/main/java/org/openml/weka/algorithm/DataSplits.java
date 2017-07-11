@@ -1,9 +1,14 @@
 package org.openml.weka.algorithm;
 
+import java.io.BufferedReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openml.apiconnector.algorithms.Input;
 import org.openml.apiconnector.algorithms.TaskInformation;
+import org.openml.apiconnector.io.OpenmlConnector;
+import org.openml.apiconnector.xml.DataSetDescription;
 import org.openml.apiconnector.xml.Task;
 
 import weka.core.Attribute;
@@ -19,7 +24,24 @@ public class DataSplits {
 	public final int FOLDS;
 	public final int SAMPLES;
 	public final int DATASET_ID;
-
+	
+	// TODO: should overload?? 
+	public static DataSplits get(OpenmlConnector openml, int taskId) throws Exception {
+		Task task = openml.taskGet(taskId);
+		String targetAttribute = TaskInformation.getSourceData(task).getTarget_feature();
+		int dataId = TaskInformation.getSourceData(task).getData_set_id();
+		DataSetDescription dsd = openml.dataGet(dataId);
+		URL splitsUrl = new URL(TaskInformation.getEstimationProcedure(task).getData_splits_url());
+		URL datasetUrl = openml.getOpenmlFileUrl(dsd.getFile_id(), dsd.getName() + ".arff");
+		
+		Instances dataset = new Instances(new BufferedReader(Input.getURL(datasetUrl)));
+		
+		dataset.setClass(dataset.attribute(targetAttribute));
+		Instances splits = new Instances(new BufferedReader(Input.getURL(splitsUrl)));
+		
+		return new DataSplits(task, dataset, splits);
+	}
+	
 	@SuppressWarnings("unchecked")
 	public DataSplits(Task task, Instances dataset, Instances datasplits) throws Exception {
 		int numRepeats = TaskInformation.getNumberOfRepeats(task);
@@ -66,8 +88,17 @@ public class DataSplits {
 		}
 	}
 
+
+	public Instances getTrainingSet(int repeat, int fold) {
+		return subsamples[repeat][fold][0][0];
+	}
+	
 	public Instances getTrainingSet(int repeat, int fold, int sample) {
 		return subsamples[repeat][fold][sample][0];
+	}
+
+	public Instances getTestSet(int repeat, int fold) {
+		return subsamples[repeat][fold][0][1];
 	}
 
 	public Instances getTestSet(int repeat, int fold, int sample) {

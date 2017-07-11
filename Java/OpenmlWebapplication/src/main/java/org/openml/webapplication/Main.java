@@ -88,9 +88,11 @@ public class Main {
 				
 				String function = cli.getOptionValue("f");
 				if( function.equals("evaluate_run") ) {
-					String ttids = cli.hasOption("-mode") ? cli.getOptionValue("mode") : null;
+					Integer ttid = cli.hasOption("-mode") ? Integer.parseInt(cli.getOptionValue("mode")) : null;
+					String evaluationMode = cli.hasOption("x") ? "random" : "normal";
+					
 					// bootstrap evaluate run
-					new EvaluateRun(apiconnector, id, cli.hasOption("x"), ttids);
+					new EvaluateRun(apiconnector, id, evaluationMode, ttid, cli.getOptionValue("tag"));
 					
 				} else if( function.equals("process_dataset") ) {
 					
