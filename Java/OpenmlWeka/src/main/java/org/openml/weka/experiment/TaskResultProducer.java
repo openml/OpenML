@@ -10,7 +10,6 @@ import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.algorithms.TaskInformation;
 import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.models.MetricScore;
-import org.openml.apiconnector.xml.DataSetDescription;
 import org.openml.apiconnector.xml.Task;
 import org.openml.apiconnector.xml.Task.Input.Data_set;
 import org.openml.apiconnector.xml.Task.Input.Estimation_procedure;
@@ -83,37 +82,16 @@ public class TaskResultProducer extends CrossValidationResultProducer {
 		 * instanceof OpenmlClassificationSplitEvaluator ) ) { m_SplitEvaluator
 		 * = new OpenmlClassificationSplitEvaluator(); }
 		 */
-
+		
+		m_Instances = InstancesHelper.getDatasetFromTask(apiconnector, m_Task);
 		Data_set ds = TaskInformation.getSourceData(m_Task);
-		Estimation_procedure ep = TaskInformation.getEstimationProcedure(m_Task);
-
-		DataSetDescription dsd = ds.getDataSetDescription(apiconnector);
-		m_Instances = new Instances(new FileReader(dsd.getDataset(apiconnector.getApiKey())));
-
-		InstancesHelper.setTargetAttribute(m_Instances, ds.getTarget_feature());
 		int targetAttributeIndex = InstancesHelper.getAttributeIndex(m_Instances, ds.getTarget_feature());
 		AttributeStats targetStats = m_Instances.attributeStats(targetAttributeIndex);
-		missingLabels = targetStats.missingCount > 0;
-
-		// remove attributes that may not be used.
-		if (dsd.getIgnore_attribute() != null) {
-			for (String ignoreAttr : dsd.getIgnore_attribute()) {
-				String attName = ignoreAttr;
-				Integer attIdx = m_Instances.attribute(ignoreAttr).index();
-				Conversion.log("OK", "Remove Attribte", "Removing attribute " + attName + " (1-based index: " + attIdx + ")");
-				m_Instances.deleteAttributeAt(attIdx);
-			}
-		}
-
-		if (dsd.getRow_id_attribute() != null) {
-			String attName = dsd.getRow_id_attribute();
-			Integer attIdx = m_Instances.attribute(dsd.getRow_id_attribute()).index();
-			Conversion.log("OK", "Remove Attribte", "Removing attribute " + attName + " (1-based index: " + attIdx + ")");
-			m_Instances.deleteAttributeAt(attIdx);
-		}
-
-		Instances splits = new Instances(new FileReader(ep.getDataSplits(m_Task.getTask_id())));
 		
+		Estimation_procedure ep = TaskInformation.getEstimationProcedure(m_Task);
+		Instances splits = new Instances(new FileReader(ep.getDataSplits(m_Task.getTask_id())));
+
+		missingLabels = targetStats.missingCount > 0;
 		m_DataSplits = new DataSplits(m_Task, m_Instances, splits);
 		m_NumFolds = m_DataSplits.FOLDS;
 		m_NumSamples = m_DataSplits.SAMPLES;
