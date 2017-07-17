@@ -92,9 +92,10 @@ public class Main {
 					Integer ttid = cli.hasOption("-mode") ? Integer.parseInt(cli.getOptionValue("mode")) : null;
 					Integer uploaderId = cli.hasOption("-u") ? Integer.parseInt(cli.getOptionValue("u")) : null;
 					String evaluationMode = cli.hasOption("x") ? "random" : "normal";
+					String taskIds = cli.hasOption("t") ? cli.getOptionValue("t") : null;
 					
 					// bootstrap evaluate run
-					new EvaluateRun(apiconnector, id, evaluationMode, ttid, cli.getOptionValue("tag"), uploaderId);
+					new EvaluateRun(apiconnector, id, evaluationMode, ttid, taskIds, cli.getOptionValue("tag"), uploaderId);
 					
 				} else if( function.equals("process_dataset") ) {
 					

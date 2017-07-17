@@ -48,13 +48,12 @@ public class EvaluateRun {
 	private final int MAX_LENGTH_WARNING = 1024;
 	
 	public EvaluateRun(OpenmlConnector ac) throws Exception {
-		this(ac, null, "normal", null, null, null);
+		this(ac, null, "normal", null, null, null, null);
 	}
 	
-	public EvaluateRun(OpenmlConnector ac, Integer run_id, String mode, Integer ttid, String tag, Integer uploaderId) throws Exception {
+	public EvaluateRun(OpenmlConnector ac, Integer run_id, String mode, Integer ttid, String taskIds, String tag, Integer uploaderId) throws Exception {
 		apiconnector = ac;
 		xstream = XstreamXmlMapping.getInstance();
-		
 		if(run_id != null) {
 			evaluate( run_id );
 		} else {
@@ -63,6 +62,9 @@ public class EvaluateRun {
 				Map<String, String> filters = new TreeMap<>();
 				if (ttid != null) {
 					filters.put("ttid", "" + ttid);
+				}
+				if (taskIds != null) {
+					filters.put("task", taskIds);
 				}
 				if (tag != null) {
 					filters.put("tag", tag);
@@ -103,7 +105,8 @@ public class EvaluateRun {
 			Estimation_procedure estimationprocedure = null;
 			try { estimationprocedure = TaskInformation.getEstimationProcedure(task); } catch(Exception e) {}
 			Integer dataset_id = source_data.getLabeled_data_set_id() != null ? source_data.getLabeled_data_set_id() : source_data.getData_set_id();
-			
+
+			Conversion.log("OK", "Process Run", "Task: " + task_id + "; dataset id: " + source_data.getData_set_id());
 			for(int i = 0; i < filesJson.length(); ++i) {
 				String field = ((JSONArray) filesJson.get(i)).getString(0);
 				int file_index = ((JSONArray) filesJson.get(i)).getInt(1);
@@ -226,6 +229,7 @@ public class EvaluateRun {
 		Conversion.log( "OK", "Process Run", "Start uploading results ... " );
 		try {
 			String runEvaluation = xstream.toXML(runevaluation);
+			//System.out.println(runEvaluation);
 			File evaluationFile = Conversion.stringToTempFile( runEvaluation, "run_" + run_id + "evaluations", "xml" );
 			//apiconnector.setVerboseLevel(1);
 			RunEvaluate re = apiconnector.runEvaluate( evaluationFile );
