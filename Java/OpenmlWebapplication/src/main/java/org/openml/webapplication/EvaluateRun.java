@@ -85,65 +85,57 @@ public class EvaluateRun {
 		}
 	}
 	
-	public void evaluate( int run_id) throws Exception {
-		Conversion.log( "OK", "Process Run", "Start processing run: " + run_id );
-		final Map<String,Integer> file_ids = new HashMap<String, Integer>();
-		final Task task;
+	public void evaluate(int runId) throws Exception {
+		Conversion.log("OK", "Process Run", "Start processing run: " + runId);
 		final DataSetDescription dataset;
+		final Run runServer = apiconnector.runGet(runId);
+		final Task task = apiconnector.taskGet(runServer.getTask_id());
+		final Map<String, Run.Data.File> runFiles = runServer.getOutputFileAsMap();
+		final Data_set source_data = TaskInformation.getSourceData(task);
+		final Integer dataset_id = source_data.getLabeled_data_set_id() != null ? source_data.getLabeled_data_set_id() : source_data.getData_set_id();
+		final Integer task_id = runServer.getTask_id();
+		Estimation_procedure estimationprocedure = null;
+		try { estimationprocedure = TaskInformation.getEstimationProcedure(task); } catch(Exception e) {}
 		
 		PredictionEvaluator predictionEvaluator;
-		RunEvaluation runevaluation = new RunEvaluation(run_id, EVALUATION_ENGINE_ID);
+		RunEvaluation runevaluation = new RunEvaluation(runId, EVALUATION_ENGINE_ID);
 		RunTrace trace = null;
 		
-		JSONArray runJson = (JSONArray) apiconnector.freeQuery( "SELECT `task_id` FROM `run` WHERE `rid` = " + run_id ).get("data");
-		JSONArray filesJson =  (JSONArray) apiconnector.freeQuery( "SELECT `field`,`file_id` FROM `runfile` WHERE `source` = " + run_id ).get("data");
-
 		try {
-			int task_id = ((JSONArray) runJson.get(0)).getInt(0);
-			task = apiconnector.taskGet(task_id);
-			Data_set source_data = TaskInformation.getSourceData(task);
-			Estimation_procedure estimationprocedure = null;
-			try { estimationprocedure = TaskInformation.getEstimationProcedure(task); } catch(Exception e) {}
-			Integer dataset_id = source_data.getLabeled_data_set_id() != null ? source_data.getLabeled_data_set_id() : source_data.getData_set_id();
 
 			Conversion.log("OK", "Process Run", "Task: " + task_id + "; dataset id: " + source_data.getData_set_id());
-			for(int i = 0; i < filesJson.length(); ++i) {
-				String field = ((JSONArray) filesJson.get(i)).getString(0);
-				int file_index = ((JSONArray) filesJson.get(i)).getInt(1);
-				
-				file_ids.put(field, file_index);
-			}
 			
-			if(file_ids.get("description") == null) {
+			
+			if(runFiles.get("description") == null) {
 				runevaluation.setError("Run description file not present. ", MAX_LENGTH_WARNING);
-				File evaluationFile = Conversion.stringToTempFile(xstream.toXML(runevaluation), "run_" + run_id + "evaluations", "xml");
+				File evaluationFile = Conversion.stringToTempFile(xstream.toXML(runevaluation), "run_" + runId + "evaluations", "xml");
 				
 				RunEvaluate re = apiconnector.runEvaluate(evaluationFile);
 				Conversion.log("Error", "Process Run", "Run processed, but with error: " + re.getRun_id());
 				return;
 			}
 			
-			if(file_ids.get("predictions") == null && file_ids.get("subgroups") == null && file_ids.get("predictions_0") == null) { // TODO: this is currently true, but later on we might have tasks that do not require evaluations!
+			if(runFiles.get("predictions") == null && runFiles.get("subgroups") == null && runFiles.get("predictions_0") == null) { // TODO: this is currently true, but later on we might have tasks that do not require evaluations!
 				runevaluation.setError("Required output files not present (e.g., arff predictions). ", MAX_LENGTH_WARNING);
-				File evaluationFile = Conversion.stringToTempFile(xstream.toXML(runevaluation), "run_" + run_id + "evaluations", "xml");
+				File evaluationFile = Conversion.stringToTempFile(xstream.toXML(runevaluation), "run_" + runId + "evaluations", "xml");
 				
 				RunEvaluate re = apiconnector.runEvaluate(evaluationFile);
 				Conversion.log("Error", "Process Run", "Run processed, but with error: " + re.getRun_id());
 				return;
 			}
 			
-			if (file_ids.get("trace") != null) {
-				trace = traceToXML(file_ids.get("trace"), task_id, run_id);
+			if (runFiles.get("trace") != null) {
+				trace = traceToXML(runFiles.get("trace").getFileId(), task_id, runId);
 			}
-			String description_url = apiconnector.getOpenmlFileUrl(file_ids.get("description"), "Run_" + run_id + "_description.xml").toString();
-			String description = HttpConnector.getStringFromUrl(description_url, false);
+			String description_url = apiconnector.getOpenmlFileUrl(runFiles.get("description").getFileId(), "Run_" + runId + "_description.xml").toString();
+			String description = HttpConnector.getStringFromUrl(new URL(description_url), false);
 			
 			Run run_description = (Run) xstream.fromXML(description);
 			dataset = apiconnector.dataGet(dataset_id);
 			
 			Conversion.log( "OK", "Process Run", "Start prediction evaluator. " );
 			
-			String filename_prefix = "Run_" + run_id + "_";
+			String filename_prefix = "Run_" + runId + "_";
 			URL datasetUrl = apiconnector.getOpenmlFileUrl(dataset.getFile_id(), dataset.getName());
 			if (dataset.getFile_id() == null) {
 				// TODO: fallback mechanism for datasets without file reference. Do something better. 
@@ -151,28 +143,22 @@ public class EvaluateRun {
 			}
 			
 			if( task.getTask_type_id() == 4) { // Supervised Data Stream Classification
-				URL predictionsUrl = apiconnector.getOpenmlFileUrl(file_ids.get("predictions"), filename_prefix + "predictions.arff");
-				predictionEvaluator = new EvaluateStreamPredictions(
-					datasetUrl, 
-					predictionsUrl, 
-					source_data.getTarget_feature());
+				URL predictionsUrl = apiconnector.getOpenmlFileUrl(runFiles.get("predictions").getFileId(), filename_prefix + "predictions.arff");
+				predictionEvaluator = new EvaluateStreamPredictions(datasetUrl, predictionsUrl, source_data.getTarget_feature());
 			} else if (task.getTask_type_id() == 7) { //Survival Analysis
-				URL predictionsUrl = apiconnector.getOpenmlFileUrl(file_ids.get("predictions"), filename_prefix + "predictions.arff");
-				predictionEvaluator = new EvaluateSurvivalAnalysisPredictions( 
-					task, 
-					datasetUrl, 
-					new URL(estimationprocedure.getData_splits_url()), 
-					predictionsUrl);
+				URL predictionsUrl = apiconnector.getOpenmlFileUrl(runFiles.get("predictions").getFileId(), filename_prefix + "predictions.arff");
+				URL splitsUrl = new URL(estimationprocedure.getData_splits_url());
+				predictionEvaluator = new EvaluateSurvivalAnalysisPredictions(task, datasetUrl, splitsUrl, predictionsUrl);
 			} else if (task.getTask_type_id() == 8) { // Subgroup Discovery
-				predictionEvaluator = new EvaluateSubgroups(run_id, apiconnector);
+				predictionEvaluator = new EvaluateSubgroups(runId, apiconnector);
 			} else if (task.getTask_type_id() == 9) { // Stream Challenge
-				predictionEvaluator = new EvaluateStreamChallenge(apiconnector, run_id);
+				predictionEvaluator = new EvaluateStreamChallenge(apiconnector, runId);
 			} else {
 				predictionEvaluator = new EvaluateBatchPredictions( 
 					task,
 					datasetUrl, 
 					new URL(estimationprocedure.getData_splits_url()), 
-					apiconnector.getOpenmlFileUrl( file_ids.get( "predictions" ), filename_prefix + "predictions.arff"), 
+					apiconnector.getOpenmlFileUrl( runFiles.get( "predictions" ).getFileId(), filename_prefix + "predictions.arff"), 
 					estimationprocedure.getType().equals(EstimationProcedure.estimationProceduresTxt[6] ) );
 			}
 			runevaluation.addEvaluationMeasures(predictionEvaluator.getEvaluationScores());
@@ -230,14 +216,14 @@ public class EvaluateRun {
 		try {
 			String runEvaluation = xstream.toXML(runevaluation);
 			//System.out.println(runEvaluation);
-			File evaluationFile = Conversion.stringToTempFile( runEvaluation, "run_" + run_id + "evaluations", "xml" );
+			File evaluationFile = Conversion.stringToTempFile( runEvaluation, "run_" + runId + "evaluations", "xml" );
 			//apiconnector.setVerboseLevel(1);
 			RunEvaluate re = apiconnector.runEvaluate( evaluationFile );
 			
 			if (trace != null) {
 				String runTrace = xstream.toXML( trace );
 				//System.out.println(runTrace);
-				File traceFile = Conversion.stringToTempFile( runTrace, "run_" + run_id + "trace", "xml" );
+				File traceFile = Conversion.stringToTempFile( runTrace, "run_" + runId + "trace", "xml" );
 				
 				apiconnector.runTraceUpload(traceFile);
 			}
