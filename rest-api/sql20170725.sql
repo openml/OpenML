@@ -1,7 +1,3 @@
-# MISC I
-ALTER TABLE `data_feature` CHANGE `did` `did` INT( 10 ) UNSIGNED NOT NULL;
-ALTER TABLE `data_feature` CHANGE `index` `index` INT( 10 ) UNSIGNED NOT NULL DEFAULT '0';
-
 # DATA PROCESSED
 
 CREATE TABLE `data_processed` (
@@ -16,9 +12,21 @@ PRIMARY KEY (`did`, `evaluation_engine_id`)
 ALTER TABLE `data_processed` ADD FOREIGN KEY (`did`) REFERENCES `openml_expdb`.`dataset` (`did`) ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE `data_processed` ADD FOREIGN KEY (`evaluation_engine_id`) REFERENCES `openml_expdb`.`evaluation_engine` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
+# FILL DATA PROCESSED
+
 INSERT INTO data_processed (`did`,`evaluation_engine_id`,`user_id`,`processing_date`,`error`) SELECT `did`, "1", "1", `processed`, `error_message` FROM `dataset`;
 
+# DATA_FEATURE
+ALTER TABLE `data_feature` CHANGE `did` `did` INT( 10 ) UNSIGNED NOT NULL;
+ALTER TABLE `data_feature` CHANGE `index` `index` INT( 10 ) UNSIGNED NOT NULL DEFAULT '0';
 
+ALTER TABLE `data_feature` ADD `evaluation_engine_id` INT( 16 ) NOT NULL AFTER `index` ;
+ALTER TABLE `data_feature` ADD INDEX ( `evaluation_engine_id` ) ;
+UPDATE `data_feature` SET `evaluation_engine_id` = 1;
+
+ALTER TABLE `data_feature` ADD FOREIGN KEY ( `did` ) REFERENCES `openml_expdb`.`dataset` (`did`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `data_feature` ADD FOREIGN KEY ( `evaluation_engine_id` ) REFERENCES `openml_expdb`.`evaluation_engine` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `data_feature` ADD FOREIGN KEY (`did`, `evaluation_engine_id`) REFERENCES `openml_expdb`.`data_processed` (`did`, `evaluation_engine_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 
 # DATA_QUALITY

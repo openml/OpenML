@@ -18,7 +18,7 @@ public class GlobalCharacterizersTests {
 
 	public static void main(String[] args) throws Exception {
 
-		OpenmlConnector connector = new OpenmlConnector("ad6244a6f01a5c9fc4985a0875b30b97");
+		/*OpenmlConnector connector = new OpenmlConnector("ad6244a6f01a5c9fc4985a0875b30b97");
 
 		DataSet[] datasets = connector.dataList("tmp").getData();
 
@@ -61,7 +61,7 @@ public class GlobalCharacterizersTests {
 			}
 
 		}
-		System.err.println("");
+		System.err.println(""); */
 
 	}
 

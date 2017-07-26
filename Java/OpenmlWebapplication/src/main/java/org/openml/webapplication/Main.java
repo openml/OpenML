@@ -21,13 +21,13 @@ package org.openml.webapplication;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Options;
 import org.json.JSONArray;
-import org.openml.apiconnector.algorithms.QueryUtils;
 import org.openml.apiconnector.algorithms.TaskInformation;
 import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.settings.Config;
@@ -101,7 +101,9 @@ public class Main {
 					
 					
 					// bootstrap process dataset
-					new ProcessDataset(apiconnector, id, cli.hasOption("x"));
+					String processMode = cli.hasOption("x") ? "random" : "normal";
+					
+					new ProcessDataset(apiconnector, id, processMode);
 				} else if( function.equals("extract_features_all") ) {
 					
 					FantailConnector fc = new FantailConnector( apiconnector, id, cli.hasOption("x"), cli.getOptionValue("tag"), null);
@@ -115,9 +117,10 @@ public class Main {
 					String custum_testset = null; 
 					
 					
-					if( cli.hasOption("-id") ) {
-						id = Integer.parseInt( cli.getOptionValue("id") );
+					if(cli.hasOption("-id")) {
+						id = Integer.parseInt(cli.getOptionValue("id"));
 						Task current = apiconnector.taskGet(id);
+						Map<String, String> inputs = apiconnector.taskInputs(id).getInputsAsMap();
 						int dataset_id = TaskInformation.getSourceData(current).getData_set_id();
 						DataSetDescription dsd = apiconnector.dataGet(dataset_id);
 						Estimation_procedure ep = TaskInformation.getEstimationProcedure(current);
@@ -135,29 +138,26 @@ public class Main {
 						if (numberOfFolds != null) {estimation_procedure += "_" + numberOfFolds;}
 						if (percentage != null) {estimation_procedure += "_" + percentage;}
 						
-						
-						try {
-							String sql = "SELECT value FROM task_inputs WHERE input = 'custom_testset' AND task_id = " + id;
-						
-							custum_testset = QueryUtils.getStringFromDatabase(apiconnector, sql);
-						} catch(Exception e) {/*No problem, just no custom testset */}
+						if (inputs.containsKey("custom_testset")) {
+							custum_testset = inputs.get("custom_testset");
+						}
 					} else {
-						System.out.println( Output.styleToJsonError("Missing arguments for function 'generate_folds'. Need id (task_id). ") );
+						System.out.println(Output.styleToJsonError("Missing arguments for function 'generate_folds'. Need id (task_id). "));
 						return;
 					}
 					
 
 					List<List<List<Integer>>> testset = new ArrayList<List<List<Integer>>>();
-					if( custum_testset != null && custum_testset.length() > 0 ) {
+					if(custum_testset != null && custum_testset.length() > 0) {
 						JSONArray rowidsJson;
 						try {
 							rowidsJson = new JSONArray(custum_testset);
 						} catch(Exception e) {
-							System.out.println( Output.styleToJsonError("Problem parsing custom splits.  ") );
+							System.out.println(Output.styleToJsonError("Problem parsing custom splits.  "));
 							return;
 						}
 						
-						for( int i = 0; i < rowidsJson.length(); ++i ) {
+						for(int i = 0; i < rowidsJson.length(); ++i) {
 							while (testset.size() <= i) {
 								testset.add(new ArrayList<List<Integer>>());
 							}
@@ -253,10 +253,6 @@ public class Main {
 						challenge.test(offset, size);
 					}
 					
-				} else if (function.equals("db_consistency")) {
-					DatabaseConsistency db_consistency = new DatabaseConsistency(apiconnector);
-					
-					System.out.println( db_consistency.all_checks() );
 				} else {
 					System.out.println( Output.styleToJsonError("call to unknown function: " + function) );
 				}

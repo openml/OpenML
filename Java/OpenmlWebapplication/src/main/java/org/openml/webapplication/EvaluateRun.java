@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.algorithms.Input;
@@ -35,6 +34,7 @@ import org.openml.webapplication.evaluate.EvaluateSubgroups;
 import org.openml.webapplication.evaluate.EvaluateSurvivalAnalysisPredictions;
 import org.openml.webapplication.evaluate.PredictionEvaluator;
 import org.openml.webapplication.generatefolds.EstimationProcedure;
+import org.openml.webapplication.settings.Settings;
 
 import weka.core.Instance;
 import weka.core.Instances;
@@ -44,7 +44,6 @@ import com.thoughtworks.xstream.XStream;
 public class EvaluateRun {
 	private final XStream xstream;
 	private final OpenmlConnector apiconnector;
-	private final int EVALUATION_ENGINE_ID = 1;
 	private final int MAX_LENGTH_WARNING = 1024;
 	
 	public EvaluateRun(OpenmlConnector ac) throws Exception {
@@ -98,7 +97,7 @@ public class EvaluateRun {
 		try { estimationprocedure = TaskInformation.getEstimationProcedure(task); } catch(Exception e) {}
 		
 		PredictionEvaluator predictionEvaluator;
-		RunEvaluation runevaluation = new RunEvaluation(runId, EVALUATION_ENGINE_ID);
+		RunEvaluation runevaluation = new RunEvaluation(runId, Settings.EVALUATION_ENGINE_ID);
 		RunTrace trace = null;
 		
 		try {

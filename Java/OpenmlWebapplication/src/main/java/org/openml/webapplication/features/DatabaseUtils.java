@@ -1,19 +1,8 @@
 package org.openml.webapplication.features;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.openml.apiconnector.algorithms.Conversion;
-import org.openml.apiconnector.algorithms.QueryUtils;
-import org.openml.apiconnector.io.OpenmlConnector;
-import org.openml.apiconnector.xml.DataSetDescription;
-import weka.core.Instances;
-import java.io.FileReader;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
 
 public class DatabaseUtils {
-    public DatabaseUtils(OpenmlConnector connector){
+    /*public DatabaseUtils(OpenmlConnector connector){
         this.apiconnector = connector;
     }
     private OpenmlConnector apiconnector;
@@ -111,22 +100,6 @@ public class DatabaseUtils {
 
     }
 
-    public Integer pickSample(JSONArray sqlResult, boolean random) throws JSONException {
-        int randomint = 0;
-        if (random) {
-            Random randomgen = new Random(System.currentTimeMillis());
-            randomint = Math.abs(randomgen.nextInt());
-        }
-
-        if(sqlResult.length() > 0) {
-            JSONArray result = (JSONArray) sqlResult.get(randomint % sqlResult.length());
-            int dataset_id = result.getInt(0);
-            return dataset_id;
-        } else {
-            return null;
-        }
-    }
-
     public int getDatasetWithoutAttributeMetafeatures(
             List<String> attributeMetafeatures, String tagJoin, String tagSelect, String tagSort, boolean random) throws Exception {
         int attributeMetafeaturesCount = attributeMetafeatures.size();
@@ -144,5 +117,5 @@ public class DatabaseUtils {
         JSONArray sqlResult = (JSONArray) apiconnector.freeQuery(sql).get("data");
         Conversion.log("OK", "FantailQuery", sql);
         return pickSample(sqlResult, random);
-    }
+    }*/
 }

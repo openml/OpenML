@@ -27,30 +27,31 @@ import org.openml.apiconnector.xml.DataQuality;
 import org.openml.apiconnector.xml.DataQuality.Quality;
 import org.openml.apiconnector.xml.DataQualityUpload;
 import org.openml.apiconnector.xml.DataSetDescription;
+import org.openml.apiconnector.xml.DataUnprocessed;
 import org.openml.apiconnector.xstream.XstreamXmlMapping;
 import org.openml.webapplication.fantail.dc.Characterizer;
 import org.openml.webapplication.fantail.dc.StreamCharacterizer;
+import org.openml.webapplication.settings.Settings;
+
 import weka.core.Instances;
 import weka.core.Utils;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.StringToNominal;
 
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 public class FantailConnector {
-	private final Integer window_size;
+	private final Integer window_size = null; // TODO: make it work again
 	private static final XStream xstream = XstreamXmlMapping.getInstance();
 	private OpenmlConnector apiconnector;
-	private DatabaseUtils dbUtils;
 	private GlobalMetafeatures globalMetafeatures;
 
 	public FantailConnector(OpenmlConnector ac, Integer dataset_id, boolean random, String priorityTag, Integer interval_size) throws Exception {
-		window_size = interval_size;
 		apiconnector = ac;
-		dbUtils = new DatabaseUtils(apiconnector);
 		globalMetafeatures = new GlobalMetafeatures(window_size);
 
 		if (dataset_id != null) {
@@ -58,22 +59,20 @@ public class FantailConnector {
 			computeMetafeatures(dataset_id);
 
 		} else {
-			dataset_id = dbUtils.findDatasetIdWithoutMetafeatures(globalMetafeatures.getExpectedIds(), AttributeMetafeatures.getAttributeMetafeatures(), window_size, random,
-					priorityTag);
-			while (dataset_id != null) {
+			DataUnprocessed du = apiconnector.dataqualitiesUnprocessed(Settings.EVALUATION_ENGINE_ID, "random", false, globalMetafeatures.getExpectedIds());
+			while (du != null) {
 				Conversion.log("OK", "Process Dataset", "Processing dataset " + dataset_id + " as obtained from database. ");
-				computeMetafeatures(dataset_id);
-				dataset_id = dbUtils.findDatasetIdWithoutMetafeatures(globalMetafeatures.getExpectedIds(), AttributeMetafeatures.getAttributeMetafeatures(), window_size, random,
-						priorityTag);
+				computeMetafeatures(du.getDatasets()[0].getDid());
+				du = apiconnector.dataqualitiesUnprocessed(Settings.EVALUATION_ENGINE_ID, "random", false, globalMetafeatures.getExpectedIds());
 			}
 			Conversion.log("OK", "Process Dataset", "No more datasets to process. ");
 		}
 	}
 
 	private void computeMetafeatures(int datasetId) throws Exception {
-		DataSetDescription dsd = dbUtils.GetDatasetDescription(datasetId);
-		Instances dataset = dbUtils.getDataset(dsd);
-		List<String> qualitiesAvailable = dbUtils.GetQualitiesAvailable(datasetId, window_size);
+		DataSetDescription dsd = apiconnector.dataGet(datasetId);
+		Instances dataset = new Instances(new FileReader(dsd.getDataset(apiconnector.getApiKey())));
+		List<String> qualitiesAvailable = Arrays.asList(apiconnector.dataQualities(datasetId).getQualityNames());
 		extractFeatures(dsd, dataset, qualitiesAvailable);
 	}
 
@@ -141,7 +140,7 @@ public class FantailConnector {
 		}
 		Conversion.log("OK", "Extract Features", "Done generating features, start wrapping up");
 		if (qualities.size() > 0) {
-			DataQuality dq = new DataQuality(dsd.getId(), qualities.toArray(new Quality[qualities.size()]));
+			DataQuality dq = new DataQuality(dsd.getId(), Settings.EVALUATION_ENGINE_ID, qualities.toArray(new Quality[qualities.size()]));
 			String strQualities = xstream.toXML(dq);
 			DataQualityUpload dqu = apiconnector.dataQualitiesUpload(Conversion.stringToTempFile(strQualities, "qualities_did_" + dsd.getId(), "xml"));
 			Conversion.log("OK", "Extract Features", "DONE: " + dqu.getDid());
@@ -176,9 +175,9 @@ public class FantailConnector {
 		}
 		
 		// parallel computation of attribute meta-features
-		AttributeMetafeatures attributeMetafeatures = new AttributeMetafeatures(dataset.numAttributes(), fullDataset, dsd);
-		int threads = Runtime.getRuntime().availableProcessors();
-		attributeMetafeatures.computeAndAppendAttributeMetafeatures(fullDataset, start, interval_size, threads, result);
+		//AttributeMetafeatures attributeMetafeatures = new AttributeMetafeatures(dataset.numAttributes(), fullDataset, dsd);
+		//int threads = Runtime.getRuntime().availableProcessors();
+		//attributeMetafeatures.computeAndAppendAttributeMetafeatures(fullDataset, start, interval_size, threads, result);
 		return result;
 	}
 
