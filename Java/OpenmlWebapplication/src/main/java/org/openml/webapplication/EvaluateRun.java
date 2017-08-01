@@ -73,7 +73,7 @@ public class EvaluateRun {
 				}
 				
 				while(true) {
-					EvaluationRequest er = ac.evaluationRequest(1, "reverse", filters);
+					EvaluationRequest er = ac.evaluationRequest(1, mode, filters);
 					run_id = er.getRuns()[0].getRun_id();
 					Conversion.log("INFO","Evaluate Run","Downloading task " + run_id );
 					evaluate( run_id );
