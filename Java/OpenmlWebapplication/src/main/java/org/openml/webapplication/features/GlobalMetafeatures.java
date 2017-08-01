@@ -19,7 +19,7 @@ public class GlobalMetafeatures {
     private final String cpNB = "weka.classifiers.bayes.NaiveBayes";
     private final String cpASC = "weka.classifiers.meta.AttributeSelectedClassifier";
     private final String cpDS = "weka.classifiers.trees.DecisionStump";
-    private final StreamCharacterizer[] streamCharacterizers;
+    //private final StreamCharacterizer[] streamCharacterizers;
 
     private ArrayList<Characterizer> batchCharacterizers;
     private int expectedQualities;
@@ -57,12 +57,12 @@ public class GlobalMetafeatures {
             expectedIds.addAll(Arrays.asList(characterizer.getIDs()));
         }
 
-        streamCharacterizers = new StreamCharacterizer[]{new ChangeDetectors(window_size)};
+   /*     streamCharacterizers = new StreamCharacterizer[]{new ChangeDetectors(window_size)};
 
         for (StreamCharacterizer streamCharacterizer: streamCharacterizers) {
             expectedQualities += streamCharacterizer.getNumMetaFeatures();
             expectedIds.addAll(Arrays.asList(streamCharacterizer.getIDs()));
-        }
+        } */
     }
 
     public int getExpectedQualities() {
@@ -77,5 +77,5 @@ public class GlobalMetafeatures {
         return batchCharacterizers;
     }
 
-    public StreamCharacterizer[] getStreamCharacterizers() { return streamCharacterizers; }
+    //public StreamCharacterizer[] getStreamCharacterizers() { return streamCharacterizers; }
 }

@@ -106,7 +106,8 @@ public class Main {
 					new ProcessDataset(apiconnector, id, processMode);
 				} else if( function.equals("extract_features_all") ) {
 					
-					FantailConnector fc = new FantailConnector( apiconnector, id, cli.hasOption("x"), cli.getOptionValue("tag"), null);
+					String mode = cli.hasOption("x") ? "random" : "normal";
+					FantailConnector fc = new FantailConnector( apiconnector, id, mode, cli.getOptionValue("tag"), null);
 					fc.toString();
 					
 				} else if( function.equals("generate_folds") ) {

@@ -50,7 +50,7 @@ public class FantailConnector {
 	private OpenmlConnector apiconnector;
 	private GlobalMetafeatures globalMetafeatures;
 
-	public FantailConnector(OpenmlConnector ac, Integer dataset_id, boolean random, String priorityTag, Integer interval_size) throws Exception {
+	public FantailConnector(OpenmlConnector ac, Integer dataset_id, String mode, String priorityTag, Integer interval_size) throws Exception {
 		apiconnector = ac;
 		globalMetafeatures = new GlobalMetafeatures(window_size);
 
@@ -59,11 +59,11 @@ public class FantailConnector {
 			computeMetafeatures(dataset_id);
 
 		} else {
-			DataUnprocessed du = apiconnector.dataqualitiesUnprocessed(Settings.EVALUATION_ENGINE_ID, "random", false, globalMetafeatures.getExpectedIds());
+			DataUnprocessed du = apiconnector.dataqualitiesUnprocessed(Settings.EVALUATION_ENGINE_ID, mode, false, globalMetafeatures.getExpectedIds());
 			while (du != null) {
 				Conversion.log("OK", "Process Dataset", "Processing dataset " + dataset_id + " as obtained from database. ");
 				computeMetafeatures(du.getDatasets()[0].getDid());
-				du = apiconnector.dataqualitiesUnprocessed(Settings.EVALUATION_ENGINE_ID, "random", false, globalMetafeatures.getExpectedIds());
+				du = apiconnector.dataqualitiesUnprocessed(Settings.EVALUATION_ENGINE_ID, mode, false, globalMetafeatures.getExpectedIds());
 			}
 			Conversion.log("OK", "Process Dataset", "No more datasets to process. ");
 		}
@@ -98,7 +98,7 @@ public class FantailConnector {
 		}
 
 		// first run stream characterizers
-		for (StreamCharacterizer sc : globalMetafeatures.getStreamCharacterizers()) {
+		/*for (StreamCharacterizer sc : globalMetafeatures.getStreamCharacterizers()) {
 
 			if (qualitiesAvailable.containsAll(Arrays.asList(sc.getIDs())) == false) {
 				Conversion.log("OK", "Extract Features", "Running Stream Characterizers (full data)");
@@ -107,7 +107,7 @@ public class FantailConnector {
 			} else {
 				Conversion.log("OK", "Extract Features", "Skipping Stream Characterizers (full data) - already in database");
 			}
-		}
+		}*/
 
 		List<Quality> qualities = new ArrayList<>();
 		if (window_size != null) {
@@ -120,23 +120,23 @@ public class FantailConnector {
 				}
 				qualities.addAll(datasetCharacteristics(dataset, i, window_size, null, fullDataset, dsd));
 
-				for (StreamCharacterizer sc : globalMetafeatures.getStreamCharacterizers()) {
+				/*for (StreamCharacterizer sc : globalMetafeatures.getStreamCharacterizers()) {
 					// preventing nullpointer exception (if stream characterizer was already run)
 					if (qualitiesAvailable.containsAll(Arrays.asList(sc.getIDs())) == false) {
 						qualities.addAll(hashMaptoList(sc.interval(i), i, window_size));
 					}
-				}
+				}*/
 			}
 
 		} else {
 			Conversion.log("OK", "Extract Features", "Running Batch Characterizers (full data, might take a while)");
 			qualities.addAll(datasetCharacteristics(dataset, null, null, qualitiesAvailable, fullDataset, dsd));
-			for (StreamCharacterizer sc : globalMetafeatures.getStreamCharacterizers()) {
+			/*for (StreamCharacterizer sc : globalMetafeatures.getStreamCharacterizers()) {
 				Map<String, Double> streamqualities = sc.global();
 				if (streamqualities != null) {
 					qualities.addAll(hashMaptoList(streamqualities, null, null));
 				}
-			}
+			}*/
 		}
 		Conversion.log("OK", "Extract Features", "Done generating features, start wrapping up");
 		if (qualities.size() > 0) {

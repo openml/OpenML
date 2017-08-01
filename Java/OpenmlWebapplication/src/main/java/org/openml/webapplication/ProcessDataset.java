@@ -35,7 +35,6 @@ public class ProcessDataset {
 	public ProcessDataset(OpenmlConnector connector, Integer dataset_id, String mode) throws Exception {
 		apiconnector = connector;
 		xstream = XstreamXmlMapping.getInstance();
-		apiconnector.setVerboseLevel(1);
 		if(dataset_id != null) {
 			Conversion.log( "OK", "Process Dataset", "Processing dataset " + dataset_id + " on special request. ");
 			process(dataset_id);
