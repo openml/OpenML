@@ -1,6 +1,5 @@
 package org.openml.tools.run;
 
-import org.openml.apiconnector.algorithms.QueryUtils;
 import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.settings.Config;
 

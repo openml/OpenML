@@ -2,7 +2,6 @@ package org.openml.tools.tag;
 
 import java.util.Arrays;
 
-import org.openml.apiconnector.algorithms.QueryUtils;
 import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.settings.Config;
 
@@ -11,7 +10,6 @@ public class Tag {
 	// CONFIG THIS:
 	private final static String TAG = "study_16";
 	private final static TagEntities type = TagEntities.run;
-	private final static String sql = tagRunFromTaskSetup();
 	private final static boolean untag = false;
 	private static Integer[] ids = null; //{3542,3551,3593,3567,3550,3608};
 	
@@ -21,9 +19,6 @@ public class Tag {
 		Config c = new Config();
 		openmlConnector = new OpenmlConnector(c.getServer(), c.getApiKey());
 		openmlConnector.setVerboseLevel(1);
-		if (sql != null) {
-			ids = QueryUtils.getIdsFromDatabase(openmlConnector, sql);
-		} 
 		
 		System.out.println(Arrays.toString(ids));
 		for(int id : ids) {

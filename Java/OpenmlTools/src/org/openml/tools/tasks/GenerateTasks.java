@@ -7,8 +7,8 @@ import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.io.ApiException;
 import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.xml.DataSetDescription;
-import org.openml.apiconnector.xml.Task_new;
-import org.openml.apiconnector.xml.Task_new.Input;
+import org.openml.apiconnector.xml.TaskInputs;
+import org.openml.apiconnector.xml.TaskInputs.Input;
 import org.openml.apiconnector.xstream.XstreamXmlMapping;
 
 import com.thoughtworks.xstream.XStream;
@@ -47,7 +47,7 @@ public class GenerateTasks {
 				Input target_feature = new Input("target_feature", dsd.getDefault_target_attribute());
 				Input[] inputs = {source_data, estimation_procedure, target_feature};
 				
-				Task_new task = new Task_new(null, ttid, inputs, null);
+				TaskInputs task = new TaskInputs(null, ttid, inputs, null);
 				String taskAsString = xstream.toXML(task);
 				try {
 					connector.taskUpload(Conversion.stringToTempFile(taskAsString, "task", "xml"));
