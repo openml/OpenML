@@ -4,7 +4,7 @@
 
 OpenML: Open Machine Learning
 =============================
-Getting started: see the [OpenML Website](https://www.openml.org), [Bootcamp](https://www.openml.org/guide), [APIs](https://www.openml.org/guide/api), [Integrations](https://www.openml.org/guide/integrations)
+Getting started: see the [OpenML Website](https://www.openml.org), [Bootcamp](https://www.openml.org/guide), [APIs](https://www.openml.org/guide/api), [Integrations](https://www.openml.org/guide/integrations)  
 How to contribute: https://github.com/openml/OpenML/wiki/How-to-contribute  
 Citation and Honor Code: http://openml.org/cite  
 Google Group / Email List: https://groups.google.com/forum/?hl=de#!forum/openml
