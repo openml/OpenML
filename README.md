@@ -13,14 +13,14 @@ OpenML is an online machine learning platform for sharing and organizing data, m
 
 As an open science platform, OpenML provides important benefits for the science community and beyond.
 
-## Benefits for Science
+### Benefits for Science
 Many sciences have made significant breakthroughs by adopting online tools that help organizing, structuring and analyzing scientific data
 online. Indeed, any shared idea, question, observation or tool may be noticed by someone who has just the right expertise to spark new ideas, answer open questions, reinterpret observations or reuse data and tools in unexpected new ways. Therefore, sharing research results and collaborating online as a (possibly cross-disciplinary) team enables scientists to quickly build on and extend the results of others,
 fostering new discoveries.
 
 Moreover, ever larger studies become feasible as a lot of data are already available. Questions such as “Which hyperparameter is important to tune?”, “Which is the best known workflow for analyzing this data set?” or “Which data sets are similar in structure to my own?” can be answered in minutes by reusing prior experiments, instead of spending days setting up and running new experiments.
 
-## Benefits for Scientists
+### Benefits for Scientists
 Scientists can also benefit personally from using OpenML. For example, they can save time, because OpenML assists in many routine and tedious duties: finding data sets, tasks, flows and prior results, setting up experiments and organizing all experiments for further analysis. Moreover, new experiments are immediately compared to the state of the art without always having to rerun other people’s
 experiments. 
 
@@ -28,6 +28,6 @@ Another benefit is that linking one’s results to those of others has a large p
 
 Finally, OpenML can help scientists to reinforce their reputation by making their work (published or not) visible to a wide group of people and by showing how often one’s data, code and experiments are downloaded or reused in the experiments of others.
 
-## Benefits for Society
+### Benefits for Society
 OpenML also provides a useful learning and working environment for students, citizen scientists and practitioners. Students and citizen scientist can easily explore the state of the art and work together with top minds by contributing their own algorithms and experiments. Teachers can challenge their students by letting them compete on OpenML tasks or by reusing OpenML data in assignments. Finally, machine learning practitioners can explore and reuse the best solutions for specific analysis problems, interact with the scientific community or efficiently try out many possible approaches.
 
