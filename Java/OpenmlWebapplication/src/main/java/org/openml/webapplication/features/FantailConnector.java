@@ -30,7 +30,6 @@ import org.openml.apiconnector.xml.DataSetDescription;
 import org.openml.apiconnector.xml.DataUnprocessed;
 import org.openml.apiconnector.xstream.XstreamXmlMapping;
 import org.openml.webapplication.fantail.dc.Characterizer;
-import org.openml.webapplication.fantail.dc.StreamCharacterizer;
 import org.openml.webapplication.settings.Settings;
 
 import weka.core.Instances;
@@ -70,8 +69,9 @@ public class FantailConnector {
 	}
 
 	private void computeMetafeatures(int datasetId) throws Exception {
+		Conversion.log("OK", "Download", "Start downloading dataset: " + datasetId);
 		DataSetDescription dsd = apiconnector.dataGet(datasetId);
-		Instances dataset = new Instances(new FileReader(dsd.getDataset(apiconnector.getApiKey())));
+		Instances dataset = new Instances(new FileReader(dsd.getDataset(apiconnector)));
 		List<String> qualitiesAvailable = Arrays.asList(apiconnector.dataQualities(datasetId).getQualityNames());
 		extractFeatures(dsd, dataset, qualitiesAvailable);
 	}

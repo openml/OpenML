@@ -72,10 +72,10 @@ public class ProcessDataset {
 			
 			Conversion.log("OK", "Process Dataset", "Dataset " + did + " - Processed successfully. ");
 		} catch(Exception e) {
+			e.printStackTrace();
 			DataFeature datafeature = new DataFeature(did, Settings.EVALUATION_ENGINE_ID, e.getMessage());
 			File dataFeatureFile = Conversion.stringToTempFile(xstream.toXML(datafeature), "features-error-did" + did, "xml");
 			DataFeatureUpload dfu = apiconnector.dataFeaturesUpload( dataFeatureFile );
-			e.printStackTrace();
 			Conversion.log("Error", "Process Dataset", "Dataset " + dfu.getDid() + " - Error: " + e.getMessage());
 		} catch (OutOfMemoryError oome) {
 		    // move on

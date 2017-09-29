@@ -84,7 +84,7 @@ public class XMLUtils {
 		searchParams.put("time_limit", "" + time_limit);
 		
 		DataSetDescription dsd = openml.dataGet(dataset_id);
-		File dataset = dsd.getDataset(openml.getApiKey());
+		File dataset = dsd.getDataset(openml);
 		File datasetTmp = Conversion.stringToTempFile("", dsd.getName(), dsd.getFormat(), directory);
 		IOUtils.copy(new FileInputStream(dataset), new FileOutputStream(datasetTmp));
 		
