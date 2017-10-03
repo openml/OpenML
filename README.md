@@ -12,7 +12,7 @@ We want to make machine learning and data analysis **simple**, **accessible**, *
 Want to learn about OpenML or get involved? Please do and [get in touch](openmlHQ@googlegroups.com) in case of questions or comments! :incoming_envelope:
 
 Getting started: Check out the [OpenML Website](https://www.openml.org), the general OpenML [Bootcamp](https://www.openml.org/guide), info on the different [APIs](https://www.openml.org/guide/api) and [Integrations](https://www.openml.org/guide/integrations)  
-How to contribute: https://github.com/openml/OpenML/wiki/How-to-contribute  
+How to contribute: https://github.com/openml/OpenML/blob/master/CONTRIBUTING.md 
 Citation and Honor Code: http://openml.org/cite  
 Communication / Contact: https://github.com/openml/OpenML/wiki/Communication-Channels
 
