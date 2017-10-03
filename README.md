@@ -43,5 +43,5 @@ OpenML also provides a useful learning and working environment for students, cit
 
 OpenML has grown into quite a big project. We could use many more hands to help us out :wrench:. 
 
-- **You wanna contribute?**: Awesome! Check out our wiki page on [how to contribute](https://github.com/openml/OpenML/wiki/How-to-contribute) or [get in touch](https://github.com/openml/OpenML/wiki/Communication-Channels). There may be unexpected ways for how you could help. We are open for any ideas. 
-- **You wanna support us financially?**: YES! It is very difficult for us to get funding. We are happy about every small contribution. Please send an email (openmlHQ@googlegroups.com)!
+- **You want to contribute?**: Awesome! Check out our wiki page on [how to contribute](https://github.com/openml/OpenML/wiki/How-to-contribute) or [get in touch](https://github.com/openml/OpenML/wiki/Communication-Channels). There may be unexpected ways for how you could help. We are open for any ideas. 
+- **You want to support us financially?**: YES! Getting funding through conventional channels is very competitive, and we are happy about every small contribution. Please send an email to openmlHQ@googlegroups.com!
