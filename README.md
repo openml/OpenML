@@ -11,10 +11,10 @@ We want to make machine learning and data analysis **simple**, **accessible**, *
 
 Want to learn about OpenML or get involved? Please do and [get in touch](openmlHQ@googlegroups.com) in case of questions or comments! :incoming_envelope:
 
-Getting started: Check out the [OpenML Website](https://www.openml.org), the general OpenML [Bootcamp](https://www.openml.org/guide), info on the different [APIs](https://www.openml.org/guide/api) and [Integrations](https://www.openml.org/guide/integrations)  
-How to contribute: https://github.com/openml/OpenML/blob/master/CONTRIBUTING.md 
-Citation and Honor Code: http://openml.org/cite  
-Communication / Contact: https://github.com/openml/OpenML/wiki/Communication-Channels
+- Getting started: Check out the [OpenML Website](https://www.openml.org), the general OpenML [Bootcamp](https://www.openml.org/guide), info on the different [APIs](https://www.openml.org/guide/api) and [Integrations](https://www.openml.org/guide/integrations)  
+- How to contribute: https://github.com/openml/OpenML/blob/master/CONTRIBUTING.md 
+- Citation and Honor Code: http://openml.org/cite  
+- Communication / Contact: https://github.com/openml/OpenML/wiki/Communication-Channels
 
 OpenML is an online machine learning platform for sharing and organizing data, machine learning algorithms and experiments. It is designed to create a frictionless, networked ecosystem, that you can readily integrate into your existing processes/code/environments, allowing people all over the world to collaborate and build directly on each other’s latest ideas, data and results, irrespective of the tools and infrastructure they happen to use. 
 
