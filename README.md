@@ -6,6 +6,15 @@ OpenML: Open Machine Learning
 =============================
 Welcome to the OpenML GitHub page! :tada:
 
+Contents:
+* [Who are we?](#who-are-we)
+* [What is OpenML?](#what-is-openml)
+     * [Benefits for Science](#benefits-for-science)
+     * [Benefits for Scientists](#benefits-for-scientists)
+     * [Benefits for Society](#benefits-for-society)
+* [Get involved](#get-involved)
+
+
 ## Who are we?
 We are a group of people who are excited about open science, open data and machine learning. 
 We want to make machine learning and data analysis **simple**, **accessible**, **collaborative** and **open** with an optimal **division of labour** between computers and humans. 
