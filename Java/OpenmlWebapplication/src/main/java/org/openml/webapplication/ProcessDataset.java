@@ -52,11 +52,13 @@ public class ProcessDataset {
 	}
 	
 	public void process(Integer did) throws Exception {
+
 		DataSetDescription dsd = apiconnector.dataGet(did);
 		URL datasetURL = apiconnector.getOpenmlFileUrl(dsd.getFile_id(), dsd.getName() + "." + dsd.getFormat());
 		String defaultTarget = dsd.getDefault_target_attribute();
 		
 		try {
+			
 			Instances dataset = new Instances(new BufferedReader(Input.getURL(datasetURL)));
 			Conversion.log( "OK", "Process Dataset", "Processing dataset " + did + " - obtaining basic qualities. " );
 			List<Quality> qualities = ExtractFeatures.getQualities(dataset,defaultTarget);

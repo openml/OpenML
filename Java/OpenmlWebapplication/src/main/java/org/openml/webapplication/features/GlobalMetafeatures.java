@@ -1,13 +1,11 @@
 package org.openml.webapplication.features;
 
 import org.openml.webapplication.fantail.dc.Characterizer;
-import org.openml.webapplication.fantail.dc.StreamCharacterizer;
 import org.openml.webapplication.fantail.dc.landmarking.GenericLandmarker;
 import org.openml.webapplication.fantail.dc.statistical.AttributeEntropy;
 import org.openml.webapplication.fantail.dc.statistical.NominalAttDistinctValues;
 import org.openml.webapplication.fantail.dc.statistical.SimpleMetaFeatures;
 import org.openml.webapplication.fantail.dc.statistical.Statistical;
-import org.openml.webapplication.fantail.dc.stream.ChangeDetectors;
 import weka.core.Utils;
 import java.util.ArrayList;
 import java.util.Arrays;

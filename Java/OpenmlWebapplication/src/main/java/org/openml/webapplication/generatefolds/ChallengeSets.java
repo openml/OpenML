@@ -39,8 +39,8 @@ public class ChallengeSets {
 		Data_set ds = TaskInformation.getSourceData(current);
 		int dataset_id = ds.getData_set_id();
 		DataSetDescription dsd = apiconnector.dataGet(dataset_id);
-		Map<String, String> dq = apiconnector.dataQualities(dsd.getId()).getQualitiesMap();
-		Integer numInstances = Integer.parseInt(dq.get("NumberOfInstances"));
+		Map<String, Double> dq = apiconnector.dataQualities(dsd.getId()).getQualitiesMap();
+		Integer numInstances = dq.get("NumberOfInstances").intValue();
 		
 		Stream_schedule stream_schedule = TaskInformation.getStreamSchedule(current);
 		

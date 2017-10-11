@@ -42,9 +42,9 @@ public class AttributeMetafeatures {
 			Integer end = start != null ? start + size : null;
 
 			QualityResult qualityResult = map.get(quality);
-            String value = null;
+            Double value = null;
 			if (qualityResult.value != null) {
-				value = qualityResult.value + "";
+				value = qualityResult.value;
 			}
 
 			result.add(new DataQuality.Quality(quality, value, start, end, qualityResult.index));

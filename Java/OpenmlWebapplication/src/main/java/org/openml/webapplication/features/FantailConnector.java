@@ -185,7 +185,7 @@ public class FantailConnector {
 		List<Quality> result = new ArrayList<>();
 		for (String quality : map.keySet()) {
 			Integer end = start != null ? start + size : null;
-			result.add(new Quality(quality, map.get(quality) + "", start, end, null));
+			result.add(new Quality(quality, map.get(quality), start, end, null));
 		}
 		return result;
 	}

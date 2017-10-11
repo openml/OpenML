@@ -136,7 +136,7 @@ public class ExtractFeatures {
 		Characterizer simpleQualities = new SimpleMetaFeatures();
 		Map<String,Double> qualities = simpleQualities.characterize(dataset);
 		for (String quality : qualities.keySet()) {
-			result.add(new Quality(quality, qualities.get(quality) + ""));
+			result.add(new Quality(quality, qualities.get(quality)));
 		}
 		return result;
 	}
