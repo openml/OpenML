@@ -6,12 +6,27 @@ OpenML: Open Machine Learning
 =============================
 Welcome to the OpenML GitHub page! :tada:
 
+Contents:
+<!-- TOC depthFrom:2 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
+* [Who are we?](#who-are-we)
+* [What is OpenML?](#what-is-openml)
+     * [Benefits for Science](#benefits-for-science)
+     * [Benefits for Scientists](#benefits-for-scientists)
+     * [Benefits for Society](#benefits-for-society)
+* [Get involved](#get-involved)
+<!-- /TOC -->
+
+## Who are we?
 We are a group of people who are excited about open science, open data and machine learning. 
 We want to make machine learning and data analysis **simple**, **accessible**, **collaborative** and **open** with an optimal **division of labour** between computers and humans. 
 
+## What is OpenML?
 Want to learn about OpenML or get involved? Please do and [get in touch](openmlHQ@googlegroups.com) in case of questions or comments! :incoming_envelope:
 
-- Getting started: Check out the [OpenML Website](https://www.openml.org), the general OpenML [Bootcamp](https://www.openml.org/guide), info on the different [APIs](https://www.openml.org/guide/api) and [Integrations](https://www.openml.org/guide/integrations)  
+- Getting started:
+    - Check out the [OpenML Website](https://www.openml.org) to get a first impression of what OpenML is 
+    - The OpenML [Bootcamp](https://www.openml.org/guide) gives an introduction in details and features
+    - OpenML has different [APIs](https://www.openml.org/guide/api) and [integrations](https://www.openml.org/guide/integrations) so that everyone can work with their favorite tool. 
 - How to contribute: https://github.com/openml/OpenML/blob/master/CONTRIBUTING.md 
 - Citation and Honor Code: http://openml.org/cite  
 - Communication / Contact: https://github.com/openml/OpenML/wiki/Communication-Channels
@@ -39,7 +54,7 @@ Finally, OpenML can help scientists to reinforce their reputation by making thei
 OpenML also provides a useful learning and working environment for students, citizen scientists and practitioners. Students and citizen scientist can easily explore the state of the art and work together with top minds by contributing their own algorithms and experiments. Teachers can challenge their students by letting them compete on OpenML tasks or by reusing OpenML data in assignments. Finally, machine learning practitioners can explore and reuse the best solutions for specific analysis problems, interact with the scientific community or efficiently try out many possible approaches.
 
 -------------------
-## We need help!
+## Get involved
 
 OpenML has grown into quite a big project. We could use many more hands to help us out :wrench:. 
 
