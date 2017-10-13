@@ -13,7 +13,6 @@ import java.util.BitSet;
 import java.util.Collections;
 import java.util.List;
 
-import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.io.HttpConnector;
 import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.xml.EvaluationScore;

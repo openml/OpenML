@@ -36,7 +36,7 @@ public class AttributeEntropy extends Characterizer {
 		"MeanAttributeEntropy", 
 		"MeanMutualInformation",
 		"EquivalentNumberOfAtts", 
-		"NoiseToSignalRatio",
+		"MeanNoiseToSignalRatio",
 		
 		"MinAttributeEntropy",
 		"MinMutualInformation",
