@@ -11,12 +11,14 @@ import org.openml.apiconnector.xml.UploadFlow;
 import org.openml.apiconnector.xstream.XstreamXmlMapping;
 
 public class SdFlow {
-	public static final String NAME = "SubgroupDiscovery";
-	public static final String EXTERNAL_VERSION = "3073";
+	public static final String NAME = "nl.liacs.subdisc.SubgroupDiscovery";
+	public static final String EXTERNAL_VERSION = "3103";
+	public static final String CUSTOM_NAME = "SubgroupDiscovery";
+	public static final String CLASS_NAME = "nl.liacs.subdisc.SubgroupDiscovery";
 	public static final String DESCRIPTION = "Subgroup Discovery search algorithm. ";
-	public static final String[] CREATOR = {"Arno Knobbe", "Marving Meeng"};
-	public static final String[] CONTRIBUTOR = {"Matthijs van Leeuwen", "Wouter Duivensteijn", "Claudio Sa"};
-	public static final String LICENSE = "Public Domain";
+	public static final String[] CREATOR = {"Arno_Knobbe", "Marving_Meeng"};
+	public static final String[] CONTRIBUTOR = {"Matthijs_van_Leeuwen", "Wouter_Duivensteijn", "Claudio_Sa"};
+	public static final String LICENSE = null;
 	public static final String LANGUAGE = "English";
 	public static final String DEPENDENCIES = "cortana." + EXTERNAL_VERSION;
 	public static final String[] TAGS = {"Cortana"};
@@ -44,7 +46,7 @@ public class SdFlow {
 	};
 	
 	private static Flow getFlow() {
-		Flow flow = new Flow(NAME, EXTERNAL_VERSION, DESCRIPTION, CREATOR, CONTRIBUTOR, LICENSE, LANGUAGE, null, null, DEPENDENCIES, TAGS);
+		Flow flow = new Flow(NAME, CUSTOM_NAME, CLASS_NAME, EXTERNAL_VERSION, DESCRIPTION, CREATOR, CONTRIBUTOR, LICENSE, LANGUAGE, null, null, DEPENDENCIES, TAGS);
 		for (Parameter p : PARAMETERS) {
 			flow.addParameter(p);
 		}
@@ -61,7 +63,7 @@ public class SdFlow {
 		} catch( Exception e ) { /* Suppress Exception since it is totally OK. */ }
 		// It does not exist. Create it. 
 		String xml = XstreamXmlMapping.getInstance().toXML(flow);
-		//System.err.println(xml);
+		System.err.println(xml);
 		File implementationFile = Conversion.stringToTempFile(xml, flow.getName(), "xml");
 		UploadFlow ui = apiconnector.flowUpload(implementationFile, null, null);
 		return ui.getId();
