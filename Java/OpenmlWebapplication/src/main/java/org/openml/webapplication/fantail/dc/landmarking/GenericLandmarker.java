@@ -2,10 +2,12 @@ package org.openml.webapplication.fantail.dc.landmarking;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import org.openml.webapplication.fantail.dc.Characterizer;
 
 import weka.classifiers.AbstractClassifier;
+import weka.classifiers.evaluation.Evaluation;
 import weka.core.Instances;
 
 public class GenericLandmarker extends Characterizer {
@@ -34,26 +36,34 @@ public class GenericLandmarker extends Characterizer {
 		return keys;
 	}
 
-	@Override
+	/**
+	 * @param weka.core.Instances
+	 *            dataset : the dataset on wich to compute the meta-features
+	 * @return Map<String, Double> qualities : map of meta-features (name->value), every quality from getIDs() is supposed to be present and value has to be
+	 *         either a finite Double or null. null means that the meta-feature makes no sense on this attribute, or that it failed computation.
+	 */
 	public Map<String, Double> characterize(Instances instances) {
+		
 		Map<String, Double> results = new HashMap<String, Double>();
 		
 		try {
-			weka.classifiers.Evaluation eval = new weka.classifiers.Evaluation(instances);
+			
+			Evaluation eval = new Evaluation(instances);
 			AbstractClassifier cls = (AbstractClassifier) Class.forName( className ).newInstance();
 			cls.setOptions( options );
 			
-			eval.crossValidateModel(cls, instances, numFolds, new java.util.Random(1));
+			eval.crossValidateModel(cls, instances, numFolds, new Random(1));
 
 			results.put( landmarkerName + "AUC", eval.weightedAreaUnderROC() );
 			results.put( landmarkerName + "ErrRate", eval.errorRate() );
 			results.put( landmarkerName + "Kappa", eval.kappa() );
+			
 		} catch( Exception e ) {
-			e.printStackTrace();
-			results.put( landmarkerName + "AUC", -1.0 );
-			results.put( landmarkerName + "ErrRate", -1.0 );
-			results.put( landmarkerName + "Kappa", -1.0 );
+			results.put( landmarkerName + "AUC", null );
+			results.put( landmarkerName + "ErrRate", null );
+			results.put( landmarkerName + "Kappa", null );
 		}
+		
 		return results;
 	}
 
