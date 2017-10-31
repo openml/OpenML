@@ -12,6 +12,7 @@ import org.openml.webapplication.fantail.dc.Characterizer;
 import weka.core.AttributeStats;
 import weka.core.Instances;
 
+// this is never used, and redondant with other meta-features. delete or replace NominalAttDistinctValues ?
 public class Cardinality extends Characterizer {
 	
 	protected final String[] ids = new String[] { 

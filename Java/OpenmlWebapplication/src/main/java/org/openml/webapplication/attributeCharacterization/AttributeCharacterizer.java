@@ -71,8 +71,8 @@ public class AttributeCharacterizer extends Characterizer {
 			throw new RuntimeException("Invalid index (" + index + ") in AttributeCharacterizer for dataset " + dataset.relationName());
 
 		Map<String, Double> qualities = new HashMap<String, Double>();
-		try {
-
+		
+			// ****************************************************************************************
 			// counts of values
 			HashMap<Double, Integer> ValuesCounts = new HashMap<Double, Integer>();
 
@@ -93,81 +93,61 @@ public class AttributeCharacterizer extends Characterizer {
 			Double PercentageOfLeastFrequentClass = null;
 			Double ModeClassPercentage = null;
 			Double MedianClassPercentage = null;
-			try {
 
-				ValuesCount = 0.0;
-				MissingValuesCount = 0.0;
-				NonMissingValuesCount = 0.0;
-				for (int i = 0; i < dataset.numInstances(); i++) {
-					ValuesCount++;
+			ValuesCount = 0.0;
+			MissingValuesCount = 0.0;
+			NonMissingValuesCount = 0.0;
+			for (int i = 0; i < dataset.numInstances(); i++) {
+				ValuesCount++;
 
-					if (dataset.get(i).isMissing(index)) {
-						MissingValuesCount++;
+				if (dataset.get(i).isMissing(index)) {
+					MissingValuesCount++;
+				} else {
+					double value = dataset.get(i).value(index);
+					NonMissingValuesCount++;
+
+					if (ValuesCounts.containsKey(value)) {
+						ValuesCounts.replace(value, ValuesCounts.get(value) + 1);
 					} else {
-						double value = dataset.get(i).value(index);
-						NonMissingValuesCount++;
-
-						if (ValuesCounts.containsKey(value)) {
-							ValuesCounts.replace(value, ValuesCounts.get(value) + 1);
-						} else {
-							ValuesCounts.put(value, 1);
-						}
+						ValuesCounts.put(value, 1);
 					}
 				}
-				Distinct = (double) ValuesCounts.size();
-
-				// ClassCounts
-				DescriptiveStatistics ValuesCountsStats = new DescriptiveStatistics();
-				HashMap<Integer, Integer> ValuesCountsCounts = new HashMap<Integer, Integer>();
-				for (Integer count : ValuesCounts.values()) {
-					ValuesCountsStats.addValue(count);
-					if (ValuesCountsCounts.containsKey(count)) {
-						ValuesCountsCounts.replace(count, ValuesCountsCounts.get(count) + 1);
-					} else {
-						ValuesCountsCounts.put(count, 1);
-					}
-				}
-				AverageClassCount = ValuesCountsStats.getMean();
-				MostFequentClassCount = ValuesCountsStats.getMax();
-				LeastFequentClassCount = ValuesCountsStats.getMin();
-				MedianClassCount = ValuesCountsStats.getPercentile(50);
-
-				// ModeClassCount
-				DescriptiveStatistics ValuesCountsCountsStats = new DescriptiveStatistics();
-				for (Integer value : ValuesCountsCounts.values()) {
-					ValuesCountsCountsStats.addValue(value);
-				}
-				ModeClassCount = ValuesCountsCountsStats.getMax();
-
-				// Percentages
-				MissingValues = Math.min(MissingValuesCount, 1.0);
-				AveragePercentageOfClass = (NonMissingValuesCount > 0 ? AverageClassCount / NonMissingValuesCount : 0.0);
-				PercentageOfMissing = (ValuesCount > 0 ? MissingValuesCount / ValuesCount : 1.0);
-				PercentageOfNonMissing = (ValuesCount > 0 ? NonMissingValuesCount / ValuesCount : 0.0);
-				PercentageOfMostFrequentClass = (NonMissingValuesCount > 0 ? MostFequentClassCount / NonMissingValuesCount : 0.0);
-				PercentageOfLeastFrequentClass = (NonMissingValuesCount > 0 ? LeastFequentClassCount / NonMissingValuesCount : 0.0);
-				ModeClassPercentage = (NonMissingValuesCount > 0 ? ModeClassCount / NonMissingValuesCount : 0.0);
-				MedianClassPercentage = (NonMissingValuesCount > 0 ? MedianClassCount / NonMissingValuesCount : 0.0);
-
-			} catch (Exception e) {
-				ValuesCount = null;
-				MissingValuesCount = null;
-				NonMissingValuesCount = null;
-				Distinct = null;
-				AverageClassCount = null;
-				MostFequentClassCount = null;
-				LeastFequentClassCount = null;
-				MedianClassCount = null;
-				ModeClassCount = null;
-				MissingValues = null;
-				AveragePercentageOfClass = null;
-				PercentageOfMissing = null;
-				PercentageOfNonMissing = null;
-				PercentageOfMostFrequentClass = null;
-				PercentageOfLeastFrequentClass = null;
-				ModeClassPercentage = null;
-				MedianClassPercentage = null;
 			}
+			Distinct = (double) ValuesCounts.size();
+
+			// ClassCounts
+			DescriptiveStatistics ValuesCountsStats = new DescriptiveStatistics();
+			HashMap<Integer, Integer> ValuesCountsCounts = new HashMap<Integer, Integer>();
+			for (Integer count : ValuesCounts.values()) {
+				ValuesCountsStats.addValue(count);
+				if (ValuesCountsCounts.containsKey(count)) {
+					ValuesCountsCounts.replace(count, ValuesCountsCounts.get(count) + 1);
+				} else {
+					ValuesCountsCounts.put(count, 1);
+				}
+			}
+			AverageClassCount = ValuesCountsStats.getMean();
+			MostFequentClassCount = ValuesCountsStats.getMax();
+			LeastFequentClassCount = ValuesCountsStats.getMin();
+			MedianClassCount = ValuesCountsStats.getPercentile(50);
+
+			// ModeClassCount
+			DescriptiveStatistics ValuesCountsCountsStats = new DescriptiveStatistics();
+			for (Integer value : ValuesCountsCounts.values()) {
+				ValuesCountsCountsStats.addValue(value);
+			}
+			ModeClassCount = ValuesCountsCountsStats.getMax();
+
+			// Percentages
+			MissingValues = Math.min(MissingValuesCount, 1.0);
+			AveragePercentageOfClass = (NonMissingValuesCount > 0 ? AverageClassCount / NonMissingValuesCount : 0.0);
+			PercentageOfMissing = (ValuesCount > 0 ? MissingValuesCount / ValuesCount : 1.0);
+			PercentageOfNonMissing = (ValuesCount > 0 ? NonMissingValuesCount / ValuesCount : 0.0);
+			PercentageOfMostFrequentClass = (NonMissingValuesCount > 0 ? MostFequentClassCount / NonMissingValuesCount : 0.0);
+			PercentageOfLeastFrequentClass = (NonMissingValuesCount > 0 ? LeastFequentClassCount / NonMissingValuesCount : 0.0);
+			ModeClassPercentage = (NonMissingValuesCount > 0 ? ModeClassCount / NonMissingValuesCount : 0.0);
+			MedianClassPercentage = (NonMissingValuesCount > 0 ? MedianClassCount / NonMissingValuesCount : 0.0);
+
 			qualities.put("ValuesCount", ValuesCount);
 			qualities.put("NonMissingValuesCount", NonMissingValuesCount);
 			qualities.put("MissingValuesCount", MissingValuesCount);
@@ -186,6 +166,7 @@ public class AttributeCharacterizer extends Characterizer {
 			qualities.put("ModeClassPercentage", ModeClassPercentage);
 			qualities.put("MedianClassPercentage", MedianClassPercentage);
 
+			// ****************************************************************************************
 			// counts of class values for entropy and correlations
 			HashMap<Double, Integer> classValuesCounts = new HashMap<Double, Integer>();
 			HashMap<Double, HashMap<Double, Integer>> attClassValuesCounts = new HashMap<Double, HashMap<Double, Integer>>();
@@ -222,6 +203,7 @@ public class AttributeCharacterizer extends Characterizer {
 				}
 			}
 
+			// ****************************************************************************************
 			// Entropy
 			Double Entropy = 0.0;
 			Double ClassEntropy = 0.0;
@@ -229,44 +211,35 @@ public class AttributeCharacterizer extends Characterizer {
 			Double MutualInformation = 0.0;
 			Double EquivalentNumberOfAtts = 0.0;
 			Double NoiseToSignalRatio = 0.0;
-			try {
-				if (ValuesCount == 0.0 || fullPairsCount == 0)
-					throw new Exception();
 
-				for (double count : ValuesCounts.values()) {
-					double valueProb = count / ValuesCount;
-					Entropy -= valueProb * (Math.log(valueProb) / Math.log(2));
-				}
-
-				for (double count : classValuesCounts.values()) {
-					double valueProb = count / fullPairsCount;
-					ClassEntropy -= valueProb * (Math.log(valueProb) / Math.log(2));
-				}
-
-				for (HashMap<Double, Integer> counts : attClassValuesCounts.values()) {
-					for (double count : counts.values()) {
-						double valueProb = count / fullPairsCount;
-						JointEntropy -= valueProb * (Math.log(valueProb) / Math.log(2));
-					}
-				}
-
-				MutualInformation = ClassEntropy + Entropy - JointEntropy;
-				EquivalentNumberOfAtts = (MutualInformation == 0 ? null : ClassEntropy / MutualInformation);
-				NoiseToSignalRatio = (MutualInformation == 0 ? null : (Entropy - MutualInformation) / MutualInformation);
-
-			} catch (Exception e) {
-				Entropy = null;
-				JointEntropy = null;
-				MutualInformation = null;
-				EquivalentNumberOfAtts = null;
-				NoiseToSignalRatio = null;
+			for (double count : ValuesCounts.values()) {
+				double valueProb = count / ValuesCount;
+				Entropy -= valueProb * (Math.log(valueProb) / Math.log(2));
 			}
+
+			for (double count : classValuesCounts.values()) {
+				double valueProb = count / fullPairsCount;
+				ClassEntropy -= valueProb * (Math.log(valueProb) / Math.log(2));
+			}
+
+			for (HashMap<Double, Integer> counts : attClassValuesCounts.values()) {
+				for (double count : counts.values()) {
+					double valueProb = count / fullPairsCount;
+					JointEntropy -= valueProb * (Math.log(valueProb) / Math.log(2));
+				}
+			}
+
+			MutualInformation = ClassEntropy + Entropy - JointEntropy;
+			EquivalentNumberOfAtts = (MutualInformation == 0 ? null : ClassEntropy / MutualInformation);
+			NoiseToSignalRatio = (MutualInformation == 0 ? null : (Entropy - MutualInformation) / MutualInformation);
+
 			qualities.put("Entropy", Entropy);
 			qualities.put("JointEntropy", JointEntropy);
 			qualities.put("MutualInformation", MutualInformation);
 			qualities.put("EquivalentNumberOfAtts", EquivalentNumberOfAtts);
 			qualities.put("NoiseToSignalRatio", NoiseToSignalRatio);
 
+			// ****************************************************************************************
 			// PearsonCorrellationCoefficient SpearmanCorrelationCoefficient Covariance
 			Double SpearmanCorrelationCoefficient = null;
 			Double PearsonCorrellationCoefficient = null;
@@ -307,7 +280,8 @@ public class AttributeCharacterizer extends Characterizer {
 			qualities.put("SpearmanCorrelationCoefficient", SpearmanCorrelationCoefficient);
 			qualities.put("CovarianceWithTarget", CovarianceWithTarget);
 
-			// ******************** Numeric specific meta-features ********************
+			// ****************************************************************************************
+			// ******************** Numeric specific meta-features
 			Attribute attribute = dataset.attribute(index);
 			if (attribute.isNumeric()) {
 
@@ -386,20 +360,18 @@ public class AttributeCharacterizer extends Characterizer {
 				qualities.put("HasNegativeValues", Math.min(NegativeCount, 1.0));
 			}
 
-			// ************* Nominal specific meta-features ********************
+			// ****************************************************************************************
+			// ************* Nominal specific meta-features
 			if (attribute.isNominal()) {
 
 				// UniformDiscrete ChiSquareUniformDistribution
 				Double UniformDiscrete = null;
 				Double ChiSquareUniformDistribution = null;
-				try {
+
 					double avg = Arrays.stream(attValuesTab).sum() / attValuesTab.length;
 					ChiSquareUniformDistribution = Arrays.stream(attValuesTab).reduce(0, (a, b) -> a + Math.pow((b - avg), 2));
 					UniformDiscrete = ((Gamma.regularizedGammaQ((attValuesTab.length - 1.0) / 2, ChiSquareUniformDistribution / (2 * avg)) > 0.05) ? 1.0 : 0.0);
-				} catch (Exception e) {
-					UniformDiscrete = null;
-					ChiSquareUniformDistribution = null;
-				}
+
 				qualities.put("UniformDiscrete", UniformDiscrete);
 				qualities.put("ChiSquareUniformDistribution", ChiSquareUniformDistribution);
 
@@ -407,7 +379,6 @@ public class AttributeCharacterizer extends Characterizer {
 				Double RationOfDistinguishingCategoriesByKolmogorovSmirnoffSlashChiSquare = null;
 				Double RationOfDistinguishingCategoriesByUtest = null;
 				if (index != dataset.classIndex()) {
-					try {
 
 						int nbValuesChangingTargetDistributionKs = 0;
 						int nbValuesChangingTargetDistributionU = 0;
@@ -457,18 +428,11 @@ public class AttributeCharacterizer extends Characterizer {
 						RationOfDistinguishingCategoriesByKolmogorovSmirnoffSlashChiSquare = nbValuesChangingTargetDistributionKs / Distinct;
 						RationOfDistinguishingCategoriesByUtest = nbValuesChangingTargetDistributionU / Distinct;
 
-					} catch (Exception e) {
-						RationOfDistinguishingCategoriesByKolmogorovSmirnoffSlashChiSquare = null;
-						RationOfDistinguishingCategoriesByUtest = null;
-					}
 				}
 				qualities.put("RationOfDistinguishingCategoriesByKolmogorovSmirnoffSlashChiSquare",
 						RationOfDistinguishingCategoriesByKolmogorovSmirnoffSlashChiSquare);
 				qualities.put("RationOfDistinguishingCategoriesByUtest", RationOfDistinguishingCategoriesByUtest);
 			}
-
-		} catch (Exception e) {
-		}
 
 		// enforce finite double or null for all existing qualities
 		for (String key : qualities.keySet()) {

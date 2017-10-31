@@ -42,7 +42,7 @@ public class AttributeMetafeatures {
 			Integer end = start != null ? start + size : null;
 
 			QualityResult qualityResult = map.get(quality);
-            Double value = null;
+			Double value = null;
 			if (qualityResult.value != null) {
 				value = qualityResult.value;
 			}
@@ -60,39 +60,42 @@ public class AttributeMetafeatures {
 		return result;
 	}
 
-	public void computeAndAppendAttributeMetafeatures(Instances fullDataset, Integer start, Integer interval_size, int threads, List<DataQuality.Quality> result) throws ExecutionException, InterruptedException {
-        ExecutorService service = Executors.newFixedThreadPool(threads);
+	public void computeAndAppendAttributeMetafeatures(Instances fullDataset, Integer start, Integer interval_size, int threads,
+			List<DataQuality.Quality> result) throws ExecutionException, InterruptedException {
+		
+		ExecutorService service = Executors.newFixedThreadPool(threads);
 
-        List<Future<List<DataQuality.Quality>>> futures = new ArrayList<>();
-        for (final AttributeCharacterizer attributeCharacterizer : attributeCharacterizers) {
-            Callable<List<DataQuality.Quality>> callable = () -> {
-                List<DataQuality.Quality> output = new ArrayList<>();
-                Conversion.log("OK", "Extract Attribute Features", attributeCharacterizer.getClass().getName() + ": " + Arrays.toString(attributeCharacterizer.getIDs()));
-                Map<String, QualityResult> qualities =characterize(fullDataset, attributeCharacterizer);
-                output.addAll(qualityResultToList(qualities, start, interval_size));
-                return output;
-            };
-            futures.add(service.submit(callable));
-        }
+		List<Future<List<DataQuality.Quality>>> futures = new ArrayList<>();
+		for (final AttributeCharacterizer attributeCharacterizer : attributeCharacterizers) {
+			Callable<List<DataQuality.Quality>> callable = () -> {
+				List<DataQuality.Quality> output = new ArrayList<>();
+				Conversion.log("OK", "Extract Attribute Features",
+						attributeCharacterizer.getClass().getName() + ": " + Arrays.toString(attributeCharacterizer.getIDs()));
+				Map<String, QualityResult> qualities = characterize(fullDataset, attributeCharacterizer);
+				output.addAll(qualityResultToList(qualities, start, interval_size));
+				return output;
+			};
+			futures.add(service.submit(callable));
+		}
 
-        service.shutdown();
+		service.shutdown();
 
-        for (Future<List<DataQuality.Quality>> future : futures) {
-            result.addAll(future.get());
-        }
-    }
+		for (Future<List<DataQuality.Quality>> future : futures) {
+			result.addAll(future.get());
+		}
+	}
 
 	public static List<String> getAttributeMetafeatures() {
 		return Arrays.asList(AttributeCharacterizer.ids);
 	}
-	
+
 	class QualityResult {
-	    private final Double value;
-	    private final Integer index;
-	    
-		public QualityResult(Double value, Integer index){
-	        this.value = value;
-	        this.index = index;
-	    }
+		private final Double value;
+		private final Integer index;
+
+		public QualityResult(Double value, Integer index) {
+			this.value = value;
+			this.index = index;
+		}
 	}
 }

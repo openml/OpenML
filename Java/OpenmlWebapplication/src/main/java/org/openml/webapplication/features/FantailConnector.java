@@ -174,10 +174,10 @@ public class FantailConnector {
 			}
 		}
 		
-		// parallel computation of attribute meta-features
-		//AttributeMetafeatures attributeMetafeatures = new AttributeMetafeatures(dataset.numAttributes(), fullDataset, dsd);
-		//int threads = Runtime.getRuntime().availableProcessors();
-		//attributeMetafeatures.computeAndAppendAttributeMetafeatures(fullDataset, start, interval_size, threads, result);
+		//parallel computation of attribute meta-features
+		AttributeMetafeatures attributeMetafeatures = new AttributeMetafeatures(dataset.numAttributes(), fullDataset, dsd);
+		int threads = Runtime.getRuntime().availableProcessors();
+		attributeMetafeatures.computeAndAppendAttributeMetafeatures(fullDataset, start, interval_size, threads, result);
 		return result;
 	}
 
@@ -191,7 +191,7 @@ public class FantailConnector {
 	}
 
 	private static Instances applyFilter(Instances dataset, Filter filter, String options) throws Exception {
-		filter.setOptions(Utils.splitOptions(options));
+		((StringToNominal) filter).setOptions(Utils.splitOptions(options));
 		filter.setInputFormat(dataset);
 		return Filter.useFilter(dataset, filter);
 	}

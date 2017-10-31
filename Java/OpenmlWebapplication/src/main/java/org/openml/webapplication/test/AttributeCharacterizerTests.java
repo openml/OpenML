@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,7 +29,10 @@ public class AttributeCharacterizerTests {
 	public static void main(String[] args) throws Exception {
 
 		OpenmlConnector connector = new OpenmlConnector("ad6244a6f01a5c9fc4985a0875b30b97");
-		DataSet[] datasets = connector.dataList("study_20").getData();
+
+		HashMap<String, String> filter = new HashMap<String, String>();
+		filter.put("tag", "study_20");
+		DataSet[] datasets = connector.dataList(filter).getData();
 
 		for (DataSet d : datasets) {
 			try {
@@ -66,7 +70,7 @@ public class AttributeCharacterizerTests {
 					} else if (mfs.get("Distinct") < 2) {
 						expectedNull += 2; // correlations
 					}
-					if (mfs.get("MutualInformation") ==0) {
+					if (mfs.get("MutualInformation") == 0) {
 						expectedNull += 2; // EquivalentNumberOfAtts & NoiseToSignalRatio
 					}
 					if (dataset.attribute(i).isNominal()) {
@@ -98,7 +102,7 @@ public class AttributeCharacterizerTests {
 			}
 
 		}
-		System.err.println(""); */
+		System.err.println("");
 
 	}
 
