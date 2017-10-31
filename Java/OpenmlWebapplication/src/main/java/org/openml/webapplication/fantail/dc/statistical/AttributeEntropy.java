@@ -10,35 +10,10 @@ import weka.core.Instances;
 
 public class AttributeEntropy extends Characterizer {
 
-<<<<<<< HEAD
 	protected static final String[] ids = new String[] { "ClassEntropy", "MeanAttributeEntropy", "MeanMutualInformation", "EquivalentNumberOfAtts",
-			"NoiseToSignalRatio", "MinAttributeEntropy", "MinMutualInformation", "MaxAttributeEntropy", "MaxMutualInformation", "Quartile1AttributeEntropy",
+			"MeanNoiseToSignalRatio", "MinAttributeEntropy", "MinMutualInformation", "MaxAttributeEntropy", "MaxMutualInformation", "Quartile1AttributeEntropy",
 			"Quartile1MutualInformation", "Quartile2AttributeEntropy", "Quartile2MutualInformation", "Quartile3AttributeEntropy", "Quartile3MutualInformation",
 			"MeanJointEntropy", "MinJointEntropy", "MaxJointEntropy", "Quartile1JointEntropy", "Quartile2JointEntropy", "Quartile3JointEntropy" };
-=======
-	protected static final String[] ids = new String[] { 
-		"ClassEntropy",
-		"MeanAttributeEntropy", 
-		"MeanMutualInformation",
-		"EquivalentNumberOfAtts", 
-		"MeanNoiseToSignalRatio",
-		
-		"MinAttributeEntropy",
-		"MinMutualInformation",
-
-		"MaxAttributeEntropy",
-		"MaxMutualInformation",
-		
-		"Quartile1AttributeEntropy",
-		"Quartile1MutualInformation",
-		
-		"Quartile2AttributeEntropy",
-		"Quartile2MutualInformation",
-		
-		"Quartile3AttributeEntropy",
-		"Quartile3MutualInformation",
-	};
->>>>>>> master
 
 	@Override
 	public String[] getIDs() {
@@ -180,7 +155,7 @@ public class AttributeEntropy extends Characterizer {
 		NoiseToSignalRatio = (MeanMutualInformation == 0 ? null : (MeanAttributeEntropy - MeanMutualInformation) / MeanMutualInformation);
 
 		qualities.put("EquivalentNumberOfAtts", EquivalentNumberOfAtts);
-		qualities.put("NoiseToSignalRatio", NoiseToSignalRatio);
+		qualities.put("MeanNoiseToSignalRatio", NoiseToSignalRatio);
 
 		// enforce finite double or null for all qualities
 		for (String key : qualities.keySet()) {
