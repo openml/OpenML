@@ -22,8 +22,7 @@ public class NominalAttDistinctValues extends Characterizer {
 	/**
 	 * @param weka.core.Instances
 	 *            dataset : the dataset on wich to compute the meta-features
-	 * @return Map<String, Double> qualities : map of meta-features (name->value), every quality from getIDs() is supposed to be present and value has to be
-	 *         either a finite Double or null. null means that the meta-feature makes no sense on this attribute, or that it failed computation.
+	 * @return Map<String, Double> qualities : map of meta-features (name->value)
 	 */
 	public Map<String, Double> characterize(Instances dataset) {
 		Map<String, Double> qualities = new HashMap<String, Double>();
@@ -41,7 +40,6 @@ public class NominalAttDistinctValues extends Characterizer {
 						}
 					}
 				}
-
 				distinctValuesStats.addValue(valuesList.size());
 			}
 		}
@@ -51,15 +49,10 @@ public class NominalAttDistinctValues extends Characterizer {
 		qualities.put("MeanNominalAttDistinctValues", distinctValuesStats.getMean());
 		qualities.put("StdvNominalAttDistinctValues", distinctValuesStats.getStandardDeviation());
 
-		// enforce finite double or null for all qualities
+		// ensure finite double
 		for (String key : qualities.keySet()) {
 			if (qualities.get(key) != null && !Double.isFinite(qualities.get(key)))
 				qualities.replace(key, null);
-		}
-
-		for (String key : ids) {
-			if (!qualities.containsKey(key))
-				qualities.put(key, null);
 		}
 
 		return qualities;

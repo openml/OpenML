@@ -23,8 +23,7 @@ public class AttributeEntropy extends Characterizer {
 	/**
 	 * @param weka.core.Instances
 	 *            dataset : the dataset on wich to compute the meta-features
-	 * @return Map<String, Double> qualities : map of meta-features (name->value), every quality from getIDs() is supposed to be present and value has to be
-	 *         either a finite Double or null. null means that the meta-feature makes no sense on this attribute.
+	 * @return Map<String, Double> qualities : map of meta-features (name->value)
 	 * @throws Exception
 	 */
 	public Map<String, Double> characterize(Instances dataset) throws Exception {
@@ -57,7 +56,6 @@ public class AttributeEntropy extends Characterizer {
 		DescriptiveStatistics MutualInformationStats = new DescriptiveStatistics();
 
 		for (int attribute = 0; attribute < dataset.numAttributes(); attribute++) {
-			try {
 				// counts of attribute values
 				HashMap<Double, Integer> attValuesCounts = new HashMap<Double, Integer>();
 				HashMap<Double, HashMap<Double, Integer>> attClassValuesCounts = new HashMap<Double, HashMap<Double, Integer>>();
@@ -120,10 +118,6 @@ public class AttributeEntropy extends Characterizer {
 				EntropyStats.addValue(Entropy);
 				JointEntropyStats.addValue(JointEntropy);
 				MutualInformationStats.addValue(MutualInformation);
-
-			} catch (Exception e) {
-				// ignore useless atts
-			}
 		}
 
 		qualities.put("ClassEntropy", ClassEntropy);
@@ -157,15 +151,10 @@ public class AttributeEntropy extends Characterizer {
 		qualities.put("EquivalentNumberOfAtts", EquivalentNumberOfAtts);
 		qualities.put("MeanNoiseToSignalRatio", NoiseToSignalRatio);
 
-		// enforce finite double or null for all qualities
+		// ensure finite double
 		for (String key : qualities.keySet()) {
 			if (qualities.get(key) != null && !Double.isFinite(qualities.get(key)))
 				qualities.replace(key, null);
-		}
-
-		for (String key : ids) {
-			if (!qualities.containsKey(key))
-				qualities.put(key, null);
 		}
 
 		return qualities;
