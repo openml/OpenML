@@ -56,51 +56,49 @@ public class AttributeEntropy extends Characterizer {
 		DescriptiveStatistics MutualInformationStats = new DescriptiveStatistics();
 
 		for (int attribute = 0; attribute < dataset.numAttributes(); attribute++) {
-				// counts of attribute values
-				HashMap<Double, Integer> attValuesCounts = new HashMap<Double, Integer>();
-				HashMap<Double, HashMap<Double, Integer>> attClassValuesCounts = new HashMap<Double, HashMap<Double, Integer>>();
-				double instancesWithAtt = 0;
-				double instancesWithAttClass = 0;
-				for (int i = 0; i < dataset.numInstances(); i++) {
+			// counts of attribute values
+			HashMap<Double, Integer> attValuesCounts = new HashMap<Double, Integer>();
+			HashMap<Double, HashMap<Double, Integer>> attClassValuesCounts = new HashMap<Double, HashMap<Double, Integer>>();
+			double instancesWithAtt = 0;
+			double instancesWithAttClass = 0;
+			for (int i = 0; i < dataset.numInstances(); i++) {
 
-					if (!dataset.get(i).isMissing(attribute)) {
-						instancesWithAtt++;
-						double attValue = dataset.get(i).value(attribute);
+				if (!dataset.get(i).isMissing(attribute)) {
+					instancesWithAtt++;
+					double attValue = dataset.get(i).value(attribute);
 
-						if (attValuesCounts.containsKey(attValue)) {
-							attValuesCounts.replace(attValue, attValuesCounts.get(attValue) + 1);
-						} else {
-							attValuesCounts.put(attValue, 1);
-						}
-
-						if (!dataset.get(i).classIsMissing()) {
-							instancesWithAttClass++;
-							double classValue = dataset.get(i).classValue();
-
-							if (attClassValuesCounts.containsKey(attValue)) {
-								HashMap<Double, Integer> attValSpecClassCounts = attClassValuesCounts.get(attValue);
-								if (attValSpecClassCounts.containsKey(classValue)) {
-									attValSpecClassCounts.replace(classValue, attValSpecClassCounts.get(classValue) + 1);
-								} else {
-									attValSpecClassCounts.put(classValue, 1);
-								}
-							} else {
-								HashMap<Double, Integer> attValSpecClassCounts = new HashMap<Double, Integer>();
-								attValSpecClassCounts.put(classValue, 1);
-								attClassValuesCounts.put(attValue, attValSpecClassCounts);
-							}
-						}
-
+					if (attValuesCounts.containsKey(attValue)) {
+						attValuesCounts.replace(attValue, attValuesCounts.get(attValue) + 1);
+					} else {
+						attValuesCounts.put(attValue, 1);
 					}
+
+					if (!dataset.get(i).classIsMissing()) {
+						instancesWithAttClass++;
+						double classValue = dataset.get(i).classValue();
+
+						if (attClassValuesCounts.containsKey(attValue)) {
+							HashMap<Double, Integer> attValSpecClassCounts = attClassValuesCounts.get(attValue);
+							if (attValSpecClassCounts.containsKey(classValue)) {
+								attValSpecClassCounts.replace(classValue, attValSpecClassCounts.get(classValue) + 1);
+							} else {
+								attValSpecClassCounts.put(classValue, 1);
+							}
+						} else {
+							HashMap<Double, Integer> attValSpecClassCounts = new HashMap<Double, Integer>();
+							attValSpecClassCounts.put(classValue, 1);
+							attClassValuesCounts.put(attValue, attValSpecClassCounts);
+						}
+					}
+
 				}
+			}
 
-				double Entropy = 0.0;
-				double JointEntropy = 0.0;
-				double MutualInformation = 0.0;
+			double Entropy = 0.0;
+			double JointEntropy = 0.0;
+			double MutualInformation = 0.0;
 
-				if (instancesWithAtt == 0 || instancesWithAttClass == 0)
-					throw new Exception();
-
+			if (instancesWithAtt != 0 && instancesWithAttClass != 0) {
 				for (double count : attValuesCounts.values()) {
 					double valueProb = count / instancesWithAtt;
 					Entropy -= valueProb * (Math.log(valueProb) / Math.log(2));
@@ -118,6 +116,7 @@ public class AttributeEntropy extends Characterizer {
 				EntropyStats.addValue(Entropy);
 				JointEntropyStats.addValue(JointEntropy);
 				MutualInformationStats.addValue(MutualInformation);
+			}
 		}
 
 		qualities.put("ClassEntropy", ClassEntropy);
@@ -140,13 +139,10 @@ public class AttributeEntropy extends Characterizer {
 		qualities.put("Quartile2MutualInformation", MutualInformationStats.getPercentile(50));
 		qualities.put("Quartile3MutualInformation", MutualInformationStats.getPercentile(75));
 
-		Double EquivalentNumberOfAtts = 0.0;
-		Double NoiseToSignalRatio = 0.0;
-		double MeanMutualInformation = MutualInformationStats.getMean();
-		double MeanAttributeEntropy = EntropyStats.getMean();
-
-		EquivalentNumberOfAtts = (MeanMutualInformation == 0 ? null : ClassEntropy / MeanMutualInformation);
-		NoiseToSignalRatio = (MeanMutualInformation == 0 ? null : (MeanAttributeEntropy - MeanMutualInformation) / MeanMutualInformation);
+		Double MeanMutualInformation = MutualInformationStats.getMean();
+		Double MeanAttributeEntropy = EntropyStats.getMean();
+		Double EquivalentNumberOfAtts = (MeanMutualInformation == 0 ? null : ClassEntropy / MeanMutualInformation);
+		Double NoiseToSignalRatio = (MeanMutualInformation == 0 ? null : (MeanAttributeEntropy - MeanMutualInformation) / MeanMutualInformation);
 
 		qualities.put("EquivalentNumberOfAtts", EquivalentNumberOfAtts);
 		qualities.put("MeanNoiseToSignalRatio", NoiseToSignalRatio);
