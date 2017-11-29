@@ -122,7 +122,7 @@ public class ExtractFeatures {
 		return resultFeatures;
 	}
 	
-	public static List<Quality> getQualities(Instances dataset, String defaultClass) {
+	public static List<Quality> getQualities(Instances dataset, String defaultClass) throws Exception {
 		if (defaultClass != null) {
 			if(defaultClass.contains(",")){
 				dataset.setClass(dataset.attribute(defaultClass.split(",")[0]));

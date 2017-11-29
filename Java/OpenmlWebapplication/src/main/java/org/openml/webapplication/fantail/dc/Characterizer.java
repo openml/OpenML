@@ -28,7 +28,7 @@ public abstract class Characterizer {
 
 	public abstract String[] getIDs();
 
-	public abstract Map<String, Double> characterize(Instances instances);
+	public abstract Map<String, Double> characterize(Instances instances) throws Exception;
 
 	public int getNumMetaFeatures() {
 		return getIDs().length;

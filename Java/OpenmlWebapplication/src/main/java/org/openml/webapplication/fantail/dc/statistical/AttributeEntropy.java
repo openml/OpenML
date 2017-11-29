@@ -1,118 +1,160 @@
-/*
- *  Webapplication - Java library that runs on OpenML servers
- *  Copyright (C) 2014 
- *  @author Jan N. van Rijn (j.n.van.rijn@liacs.leidenuniv.nl)
- *  @author Quan Sun (quan.sun.nz@gmail.com)
- *  
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *  
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *  
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *  
- */
 package org.openml.webapplication.fantail.dc.statistical;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.math3.stat.StatUtils;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.openml.webapplication.fantail.dc.Characterizer;
-import org.openml.webapplication.fantail.dc.DCUntils;
 
 import weka.core.Instances;
 
 public class AttributeEntropy extends Characterizer {
 
-	protected static final String[] ids = new String[] { 
-		"ClassEntropy",
-		"MeanAttributeEntropy", 
-		"MeanMutualInformation",
-		"EquivalentNumberOfAtts", 
-		"MeanNoiseToSignalRatio",
-		
-		"MinAttributeEntropy",
-		"MinMutualInformation",
-
-		"MaxAttributeEntropy",
-		"MaxMutualInformation",
-		
-		"Quartile1AttributeEntropy",
-		"Quartile1MutualInformation",
-		
-		"Quartile2AttributeEntropy",
-		"Quartile2MutualInformation",
-		
-		"Quartile3AttributeEntropy",
-		"Quartile3MutualInformation",
-	};
+	protected static final String[] ids = new String[] { "ClassEntropy", "MeanAttributeEntropy", "MeanMutualInformation", "EquivalentNumberOfAtts",
+			"MeanNoiseToSignalRatio", "MinAttributeEntropy", "MinMutualInformation", "MaxAttributeEntropy", "MaxMutualInformation", "Quartile1AttributeEntropy",
+			"Quartile1MutualInformation", "Quartile2AttributeEntropy", "Quartile2MutualInformation", "Quartile3AttributeEntropy", "Quartile3MutualInformation",
+			"MeanJointEntropy", "MinJointEntropy", "MaxJointEntropy", "Quartile1JointEntropy", "Quartile2JointEntropy", "Quartile3JointEntropy" };
 
 	@Override
 	public String[] getIDs() {
 		return ids;
 	}
 
-	@Override
-	public Map<String, Double> characterize(Instances data) {
-		int nominal_count = 0;
-		for (int i = 0; i < data.numAttributes(); ++i) {
-			if (data.attribute(i).isNominal() && data.classIndex() != i) {
-				nominal_count += 1;
-			}
-		}
-		
+	/**
+	 * @param weka.core.Instances
+	 *            dataset : the dataset on wich to compute the meta-features
+	 * @return Map<String, Double> qualities : map of meta-features (name->value)
+	 * @throws Exception
+	 */
+	public Map<String, Double> characterize(Instances dataset) throws Exception {
 		Map<String, Double> qualities = new HashMap<String, Double>();
-		if (data.classAttribute().isNominal()) {
-			double classEntropy = DCUntils.computeClassEntropy(data);
-			double[] attEntropy = DCUntils.computeAttributeEntropy(data);
-			double[] mutualInformation = DCUntils.computeMutualInformation(data);
-			
-			double meanMI = StatUtils.mean(mutualInformation);
-			double meanAttEntropy = nominal_count > 0 ? StatUtils.mean(attEntropy) : -1;
-			
-			double noiseSignalRatio;
-			double ena = 0;
-	
-			if (meanMI <= 0) {
-				ena = -1;
-				noiseSignalRatio = -1;
-			} else {
-				ena = classEntropy / meanMI;
-				noiseSignalRatio = (meanAttEntropy - meanMI) / meanMI;
-			}
-	
-			qualities.put(ids[0], classEntropy);
-			qualities.put(ids[1], meanAttEntropy);
-			qualities.put(ids[2], meanMI);
-			qualities.put(ids[3], ena);
-			qualities.put(ids[4], noiseSignalRatio);
-			
-			qualities.put(ids[5], StatUtils.min(attEntropy));
-			qualities.put(ids[6], StatUtils.min(mutualInformation));
-			
-			qualities.put(ids[7], StatUtils.max(attEntropy));
-			qualities.put(ids[8], StatUtils.max(mutualInformation));
-			
-			qualities.put(ids[9], StatUtils.percentile(attEntropy,25));
-			qualities.put(ids[10], StatUtils.percentile(mutualInformation,25));
-			
-			qualities.put(ids[11], StatUtils.percentile(attEntropy,50));
-			qualities.put(ids[12], StatUtils.percentile(mutualInformation,50));
-			
-			qualities.put(ids[13], StatUtils.percentile(attEntropy,75));
-			qualities.put(ids[14], StatUtils.percentile(mutualInformation,75));
-		} else { // numeric target
-			for (int i = 0; i < ids.length; ++i) {
-				qualities.put(ids[i], -1.0);
+
+		// counts of class values
+		HashMap<Double, Integer> classValuesCounts = new HashMap<Double, Integer>();
+		double instancesWithClass = 0.0;
+		for (int i = 0; i < dataset.numInstances(); i++) {
+			if (!dataset.get(i).classIsMissing()) {
+				instancesWithClass++;
+				double classValue = dataset.get(i).classValue();
+
+				if (classValuesCounts.containsKey(classValue)) {
+					classValuesCounts.replace(classValue, classValuesCounts.get(classValue) + 1);
+				} else {
+					classValuesCounts.put(classValue, 1);
+				}
 			}
 		}
+
+		Double ClassEntropy = 0.0;
+		for (double count : classValuesCounts.values()) {
+			double valueProb = count / instancesWithClass;
+			ClassEntropy -= valueProb * (Math.log(valueProb) / Math.log(2));
+		}
+
+		DescriptiveStatistics EntropyStats = new DescriptiveStatistics();
+		DescriptiveStatistics JointEntropyStats = new DescriptiveStatistics();
+		DescriptiveStatistics MutualInformationStats = new DescriptiveStatistics();
+
+		for (int attribute = 0; attribute < dataset.numAttributes(); attribute++) {
+			// counts of attribute values
+			HashMap<Double, Integer> attValuesCounts = new HashMap<Double, Integer>();
+			HashMap<Double, HashMap<Double, Integer>> attClassValuesCounts = new HashMap<Double, HashMap<Double, Integer>>();
+			double instancesWithAtt = 0;
+			double instancesWithAttClass = 0;
+			for (int i = 0; i < dataset.numInstances(); i++) {
+
+				if (!dataset.get(i).isMissing(attribute)) {
+					instancesWithAtt++;
+					double attValue = dataset.get(i).value(attribute);
+
+					if (attValuesCounts.containsKey(attValue)) {
+						attValuesCounts.replace(attValue, attValuesCounts.get(attValue) + 1);
+					} else {
+						attValuesCounts.put(attValue, 1);
+					}
+
+					if (!dataset.get(i).classIsMissing()) {
+						instancesWithAttClass++;
+						double classValue = dataset.get(i).classValue();
+
+						if (attClassValuesCounts.containsKey(attValue)) {
+							HashMap<Double, Integer> attValSpecClassCounts = attClassValuesCounts.get(attValue);
+							if (attValSpecClassCounts.containsKey(classValue)) {
+								attValSpecClassCounts.replace(classValue, attValSpecClassCounts.get(classValue) + 1);
+							} else {
+								attValSpecClassCounts.put(classValue, 1);
+							}
+						} else {
+							HashMap<Double, Integer> attValSpecClassCounts = new HashMap<Double, Integer>();
+							attValSpecClassCounts.put(classValue, 1);
+							attClassValuesCounts.put(attValue, attValSpecClassCounts);
+						}
+					}
+
+				}
+			}
+
+			double Entropy = 0.0;
+			double JointEntropy = 0.0;
+			double MutualInformation = 0.0;
+
+			if (instancesWithAtt != 0 && instancesWithAttClass != 0) {
+				for (double count : attValuesCounts.values()) {
+					double valueProb = count / instancesWithAtt;
+					Entropy -= valueProb * (Math.log(valueProb) / Math.log(2));
+				}
+
+				for (HashMap<Double, Integer> counts : attClassValuesCounts.values()) {
+					for (double count : counts.values()) {
+						double valueProb = count / instancesWithAttClass;
+						JointEntropy -= valueProb * (Math.log(valueProb) / Math.log(2));
+					}
+				}
+
+				MutualInformation = ClassEntropy + Entropy - JointEntropy;
+
+				EntropyStats.addValue(Entropy);
+				JointEntropyStats.addValue(JointEntropy);
+				MutualInformationStats.addValue(MutualInformation);
+			}
+		}
+
+		qualities.put("ClassEntropy", ClassEntropy);
+		qualities.put("MeanAttributeEntropy", EntropyStats.getMean());
+		qualities.put("MinAttributeEntropy", EntropyStats.getMin());
+		qualities.put("MaxAttributeEntropy", EntropyStats.getMax());
+		qualities.put("Quartile1AttributeEntropy", EntropyStats.getPercentile(25));
+		qualities.put("Quartile2AttributeEntropy", EntropyStats.getPercentile(50));
+		qualities.put("Quartile3AttributeEntropy", EntropyStats.getPercentile(75));
+		qualities.put("MeanJointEntropy", JointEntropyStats.getMean());
+		qualities.put("MinJointEntropy", JointEntropyStats.getMin());
+		qualities.put("MaxJointEntropy", JointEntropyStats.getMax());
+		qualities.put("Quartile1JointEntropy", JointEntropyStats.getPercentile(25));
+		qualities.put("Quartile2JointEntropy", JointEntropyStats.getPercentile(50));
+		qualities.put("Quartile3JointEntropy", JointEntropyStats.getPercentile(75));
+		qualities.put("MeanMutualInformation", MutualInformationStats.getMean());
+		qualities.put("MinMutualInformation", MutualInformationStats.getMin());
+		qualities.put("MaxMutualInformation", MutualInformationStats.getMax());
+		qualities.put("Quartile1MutualInformation", MutualInformationStats.getPercentile(25));
+		qualities.put("Quartile2MutualInformation", MutualInformationStats.getPercentile(50));
+		qualities.put("Quartile3MutualInformation", MutualInformationStats.getPercentile(75));
+
+		Double MeanMutualInformation = MutualInformationStats.getMean();
+		Double MeanAttributeEntropy = EntropyStats.getMean();
+		Double EquivalentNumberOfAtts = (MeanMutualInformation == 0 ? null : ClassEntropy / MeanMutualInformation);
+		Double NoiseToSignalRatio = (MeanMutualInformation == 0 ? null : (MeanAttributeEntropy - MeanMutualInformation) / MeanMutualInformation);
+
+		qualities.put("EquivalentNumberOfAtts", EquivalentNumberOfAtts);
+		qualities.put("MeanNoiseToSignalRatio", NoiseToSignalRatio);
+
+		// ensure finite double
+		for (String key : qualities.keySet()) {
+			if (qualities.get(key) != null && !Double.isFinite(qualities.get(key)))
+				qualities.replace(key, null);
+		}
+
 		return qualities;
+
 	}
+
 }
