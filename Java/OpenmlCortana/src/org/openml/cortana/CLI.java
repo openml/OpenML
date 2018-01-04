@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadMXBean;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,7 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Options;
+import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.io.OpenmlConnector;
@@ -30,9 +32,9 @@ public class CLI {
 
 	public static final String[] TAGS = {"Cortana"};
 	public static final Integer SD_TTID = 8;
-	public static final String CORTANA_DEPENDENCY = "cortana.3073";
+	public static final String CORTANA_DEPENDENCY = "cortana.3103";
 	
-	public static void main(String[] args) throws Exception {
+	/*public static void main(String[] args) throws Exception {
 		OpenmlConnector openml = null;
 		Integer task_id = null;
 		String cortanaJar = null;
@@ -83,43 +85,50 @@ public class CLI {
 		
 		if (cli.hasOption("-s")) {
 			String setupId = cli.getOptionValue("s");
-			process(openml, task_id, cortanaJar, setupId, verbose);
+			process(openml, task_id, cortanaJar, null, setupId, verbose, false);
 			
 		} else if (cli.hasOption("-json")) {
 			String jsonString = cli.getOptionValue("json");
-			process(openml, task_id, cortanaJar, jsonString, verbose);
+			process(openml, task_id, cortanaJar, null, jsonString, verbose, false);
 			
 		} else {
 			throw new Exception("Search parameters not specified (-s or -json)");
 		}
 		
-	}
+	}*/
 	
-	private static void process(OpenmlConnector openml, Integer taskId, String cortanaJar, String setupIdOrJsonStr, boolean verbose) throws Exception {
-		
+	public static void process(OpenmlConnector openml, Integer taskId, String cortanaJarLocation, File saveDirectory, String setupIdOrJsonStr, boolean upload, boolean verbose) throws Exception {
 		String current_run_name = "Cortana-Run-" + ManagementFactory.getRuntimeMXBean().getName();
 		AutoRun ar;
+		
+		File autoRun;
+		File subgroups;
+		File resultTxt = null;
+		File runFile;
+		
 		try {
 			// first check if we obtained a setup id
 			Integer setupId = Integer.parseInt(setupIdOrJsonStr);
 			ar = XMLUtils.generateAutoRunFromSetup(openml, setupId, taskId, null);
 		} catch(NumberFormatException nfe) {
 			// probably a json sting 
-			ar = XMLUtils.generateAutoRunFromJson(openml, setupIdOrJsonStr, taskId, null);
+			ar = XMLUtils.generateAutoRunFromJson(openml, setupIdOrJsonStr, taskId, saveDirectory);
 		}
-		File runXMLtmp = XMLUtils.autoRunToTmpFile(ar, current_run_name, null);
+		if (saveDirectory == null) {
+			autoRun = XMLUtils.autoRunToTmpFile(ar, current_run_name);
+		} else {
+			autoRun = XMLUtils.autoRunToFile(ar, new File(saveDirectory + "/" + current_run_name + ".xml"));
+		}
 		
-		
-		String cmd = "java -jar " + cortanaJar + " " + runXMLtmp.getAbsolutePath() + " 0 1";
+		String cmd = "java -jar " + cortanaJarLocation + " " + autoRun.getAbsolutePath() + " 0 1";
 	//	String[] cliArguments = {runXMLtmp.getAbsolutePath(), "0", "1"};
 		
 	//	System.out.println(xstream.toXML(ar));
 		
 		executeCommand(cmd,verbose);
 		
-		File dir = runXMLtmp.getParentFile();
+		File dir = autoRun.getParentFile();
 		
-		File resultTxt = null;
 		for (File f : dir.listFiles()) {
 			if (f.getName().startsWith(current_run_name) && f.getName().endsWith(".txt")) {
 				
@@ -131,7 +140,11 @@ public class CLI {
 			}
 		}
 		if (resultTxt == null) { throw new Exception("Result txt file not found. "); }
-		File subgroups = File.createTempFile("subgroups", ".csv");
+		if (saveDirectory == null) {
+			subgroups = File.createTempFile("subgroups", ".csv");
+		} else {
+			subgroups = new File(saveDirectory + "/subgroups.csv");
+		}
 		resultTxt.renameTo(subgroups);
 
 		// update search params with only relevant parameters
@@ -149,21 +162,31 @@ public class CLI {
 		List<EvaluationScore> scores = Evaluations.extract(subgroups, qualityMeasure);
 		for (EvaluationScore s : scores) { r.addOutputEvaluation(s); }
 		String runFileStr = XstreamXmlMapping.getInstance().toXML(r);
-		System.out.println(runFileStr);
-		File runfile = Conversion.stringToTempFile(runFileStr, "run", "xml");
 		
-		Map<String,File> uploadFiles = new HashMap<String, File>();
-		uploadFiles.put("subgroups", subgroups);
-		
-		UploadRun ur = openml.runUpload(runfile, uploadFiles);
-		
-		Conversion.log("OK", "Upload", "Run uploaded. Rid: " + ur.getRun_id()); 
+		if (saveDirectory == null) { 
+			runFile = Conversion.stringToTempFile(runFileStr, "run", "xml");
+		} else {
+			runFile = new File(saveDirectory + "/run.xml");
+			FileUtils.writeStringToFile(runFile, runFileStr);
+		}
+			
+		if (upload) {
+			Map<String,File> uploadFiles = new HashMap<String, File>();
+			uploadFiles.put("subgroups", subgroups);
+			
+			UploadRun ur = openml.runUpload(runFile, uploadFiles);
+			
+			Conversion.log("OK", "Upload", "Run uploaded. Rid: " + ur.getRun_id()); 
+		}
 	}
 	
 	private static boolean executeCommand(String cmd, boolean verbose) {
 		Conversion.log("OK", "CMD", "Command: " + cmd);
+		ThreadMXBean bean = ManagementFactory.getThreadMXBean();
 		try {
 			String line;
+
+			//long startTime = bean.getCurrentThreadCpuTime();
 			Process p = Runtime.getRuntime().exec(cmd);
 			BufferedReader bri = new BufferedReader(new InputStreamReader(
 					p.getInputStream()));
@@ -173,6 +196,9 @@ public class CLI {
 				if (verbose) { Conversion.log("OK", "CMD", line); }
 			}
 			bri.close();
+			//long cpuTimeMillies = (bean.getCurrentThreadCpuTime() - startTime) / 1000000;
+			//Conversion.log("OK", "cputime", "" + cpuTimeMillies + "ms");
+			
 			while ((line = bre.readLine()) != null) {
 				if (verbose) { Conversion.log("OK", "CMD", line); }
 			}

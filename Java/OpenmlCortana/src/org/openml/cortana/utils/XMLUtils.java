@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 import org.openml.apiconnector.algorithms.Conversion;
@@ -29,11 +30,18 @@ import com.thoughtworks.xstream.io.xml.XmlFriendlyNameCoder;
 public class XMLUtils {
 	private static String XML_PREFIX = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<!DOCTYPE autorun SYSTEM \"autorun.dtd\">\n";
 	
-	public static File autoRunToTmpFile(AutoRun ar, String tmpFilePrefix, File directory) throws IOException {
+	public static File autoRunToTmpFile(AutoRun ar, String tmpFilePrefix) throws IOException {
 		XStream xstream = new XStream(new DomDriver("UTF-8", new XmlFriendlyNameCoder("_-", "_")));
 		xstream.processAnnotations(AutoRun.class);
-		File runXMLtmp = Conversion.stringToTempFile(XML_PREFIX + xstream.toXML(ar), tmpFilePrefix, "xml", directory);
+		File runXMLtmp = Conversion.stringToTempFile(XML_PREFIX + xstream.toXML(ar), tmpFilePrefix, "xml");
 		return runXMLtmp;
+	}
+	
+	public static File autoRunToFile(AutoRun ar, File file) throws Exception {
+		XStream xstream = new XStream(new DomDriver("UTF-8", new XmlFriendlyNameCoder("_-", "_")));
+		xstream.processAnnotations(AutoRun.class);
+		FileUtils.writeStringToFile(file, XML_PREFIX + xstream.toXML(ar));
+		return file;
 	}
 	
 	public static AutoRun generateAutoRunFromJson(OpenmlConnector openml, String setupString, int taskId, File directory) throws Exception {
@@ -60,7 +68,6 @@ public class XMLUtils {
 		Integer dataset_id = null;
 		String target_feature = null;
 		String target_value = null;
-		Double time_limit = null;
 		String quality_measure = null;
 		Map<String, Input> inputs = task.getInputsAsMap();
 		
@@ -73,15 +80,9 @@ public class XMLUtils {
 			
 		}
 		
-		if (inputs.containsKey("time_limit")) {
-			time_limit = inputs.get("time_limit").getTime_limit();
-		}
-		
 		if (inputs.containsKey("quality_measure")) {
 			quality_measure = inputs.get("quality_measure").getQuality_measure();
 		}
-		
-		searchParams.put("time_limit", "" + time_limit);
 		
 		DataSetDescription dsd = openml.dataGet(dataset_id);
 		File dataset = dsd.getDataset(openml);
@@ -118,7 +119,7 @@ public class XMLUtils {
         Iterator<?> keys = jObject.keys();
         searchParams = new HashMap<String, String>();
         
-        while( keys.hasNext() ){
+        while(keys.hasNext()){
             String key = (String)keys.next();
             String value = jObject.getString(key); 
             searchParams.put(key, value);
