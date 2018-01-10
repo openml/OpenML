@@ -30,10 +30,10 @@ import com.thoughtworks.xstream.io.xml.XmlFriendlyNameCoder;
 public class XMLUtils {
 	private static String XML_PREFIX = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<!DOCTYPE autorun SYSTEM \"autorun.dtd\">\n";
 	
-	public static File autoRunToTmpFile(AutoRun ar, String tmpFilePrefix) throws IOException {
+	public static File autoRunToTmpFile(AutoRun ar, String tmpFilePrefix, File tmpDirectory) throws IOException {
 		XStream xstream = new XStream(new DomDriver("UTF-8", new XmlFriendlyNameCoder("_-", "_")));
-		xstream.processAnnotations(AutoRun.class);
-		File runXMLtmp = Conversion.stringToTempFile(XML_PREFIX + xstream.toXML(ar), tmpFilePrefix, "xml");
+		xstream.processAnnotations(AutoRun.class); 
+		File runXMLtmp = Conversion.stringToTempFile(XML_PREFIX + xstream.toXML(ar), tmpFilePrefix, "xml", tmpDirectory);
 		return runXMLtmp;
 	}
 	

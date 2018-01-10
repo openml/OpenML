@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.openml.apiconnector.algorithms.Conversion;
 import org.openml.apiconnector.io.OpenmlConnector;
 import org.openml.apiconnector.settings.Config;
 import org.openml.apiconnector.xml.Tasks;
@@ -16,6 +17,7 @@ import org.openml.apiconnector.xml.Tasks.Task;
 
 public class ScheduleMeta {
 	
+	private static boolean verbose = false;
 	private static final Config config = new Config();
 	private static OpenmlConnector connector = new OpenmlConnector(config.getApiKey());
 	private static final String experiment_directory = System.getProperty("user.home") + "/data/SD";
@@ -32,10 +34,11 @@ public class ScheduleMeta {
 			setup_json += ",\"" + param_names[i] + "\":\"" + values.get(i) + "\"";
 			directory_suffix += "___" + param_names[i] + "__" + values.get(i);
 		}
+		Conversion.log("OK", "Check", "Setup " + setup_json);
 		
 		setup_json = "{" + prefix + setup_json + "}";
 		directory_suffix = directory_suffix.substring(3).replaceAll("[^A-Za-z0-9_-]", ""); // remove leading underscores
-		
+
 		for (Task t : tasks.task) {
 			String current_directory = experiment_directory + "/" + t.getTask_id() + "/" + directory_suffix;
 			File directory = new File(current_directory);
@@ -48,34 +51,34 @@ public class ScheduleMeta {
 				continue;
 			}
 			
-			File lockFile = new File(experiment_directory + ".lock.txt");
+			File lockFile = new File(current_directory + "/.lock.txt");
 			lockFile.createNewFile();
 			
 			RandomAccessFile raf = new RandomAccessFile(lockFile, "rw");
 		    FileChannel fileChannel = raf.getChannel();
 		    FileLock lock = null;
 			try {
-				lock = fileChannel.lock();
-				
-				CLI.process(connector, t.getTask_id(), cortanaJarLocation, directory, setup_json, false, false);
-				
-			} catch (IOException e) {
-				e.printStackTrace();
-				System.out.println("couldn't get lock");
-				// Do nothing, next experiment
+				lock = fileChannel.tryLock();
+				if (lock != null) {
+					Conversion.log("OK", "Lock", "Start on Task " + t.getTask_id() + ". ");
+					CLI.process(connector, t.getTask_id(), cortanaJarLocation, directory, setup_json, false, verbose);
+				} else {
+					Conversion.log("OK", "Lock", "Task " + t.getTask_id() + ", couldn't get lock. ");
+				}
 			} finally {
 				if (lock != null) {
 					try {
 						lock.release();
+						Conversion.log("OK", "Lock", "Task " + t.getTask_id() + " lock released. ");
 					} catch (IOException e) {
 						// Oops, this seems bad ..
+						Conversion.log("Error", "Release", "Could not release lock: " + e.getMessage());
+						e.printStackTrace();
 					}
 				}
 				raf.close();
 			}
 		}
-		
-		System.out.println(setup_json);
 	}
 	
 	public static void add(int param_idx, List<String> values) throws Exception {
@@ -102,8 +105,14 @@ public class ScheduleMeta {
 	public static void main(String[] args) throws Exception {
 		tasks = connector.taskList("study_17");
 		
-		String[] ref_depth = {"4"};
-		String[] search_width = {"1024"};
+		if (args.length > 0) {
+			if (args[0] == "verbose") {
+				verbose = true;
+			}
+		}
+		
+		String[] ref_depth = {"1", "2", "3", "4"};
+		String[] search_width = {"1", "4", "16", "64", "256", "1024"};
 		String[] numeric_operators = {"<html>&#8804;, &#8805;, =<\\/html>", "<html>&#8804;, &#8805;<\\/html>", "="};
 		String[] num_bins = {"1", "2", "4", "8", "16", "32", "64", "128"};
 		String[] numeric_strat = {"best-bins", "bins", "all", "best"};
@@ -117,7 +126,7 @@ public class ScheduleMeta {
 		parameters.add(Arrays.asList(num_bins));
 		parameters.add(Arrays.asList(time_limit));
 		
-		add(0, new ArrayList<>());
+		add(0, new ArrayList<String>());
 		
 	}
 }

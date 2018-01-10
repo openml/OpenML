@@ -115,7 +115,7 @@ public class CLI {
 			ar = XMLUtils.generateAutoRunFromJson(openml, setupIdOrJsonStr, taskId, saveDirectory);
 		}
 		if (saveDirectory == null) {
-			autoRun = XMLUtils.autoRunToTmpFile(ar, current_run_name);
+			autoRun = XMLUtils.autoRunToTmpFile(ar, current_run_name, null);
 		} else {
 			autoRun = XMLUtils.autoRunToFile(ar, new File(saveDirectory + "/" + current_run_name + ".xml"));
 		}
