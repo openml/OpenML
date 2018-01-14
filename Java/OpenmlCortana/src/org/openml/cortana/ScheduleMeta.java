@@ -31,6 +31,10 @@ public class ScheduleMeta {
 		String setup_json = "";
 		String directory_suffix = "";
 		for (int i = 0; i < values.size(); ++i) {
+			if (!parameters.get(i).contains(values.get(i))) {
+				throw new Exception("Parameter " + param_names[i] + " illegal value: " + values.get(i));
+			}
+			
 			setup_json += ",\"" + param_names[i] + "\":\"" + values.get(i) + "\"";
 			directory_suffix += "___" + param_names[i] + "__" + values.get(i);
 		}
@@ -96,7 +100,9 @@ public class ScheduleMeta {
 			}
 			// for non-bin based strategies
 			if (deepened == false) {
+				values.add("1");
 				add(param_idx + 1, values);
+				values.remove(values.size()-1);
 			}
 		}
 	}

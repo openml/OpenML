@@ -105,6 +105,7 @@ public class CLI {
 		File subgroups;
 		File resultTxt = null;
 		File runFile;
+		File datasetTmp = null;
 		
 		try {
 			// first check if we obtained a setup id
@@ -114,10 +115,18 @@ public class CLI {
 			// probably a json sting 
 			ar = XMLUtils.generateAutoRunFromJson(openml, setupIdOrJsonStr, taskId, saveDirectory);
 		}
+		
 		if (saveDirectory == null) {
 			autoRun = XMLUtils.autoRunToTmpFile(ar, current_run_name, null);
 		} else {
 			autoRun = XMLUtils.autoRunToFile(ar, new File(saveDirectory + "/" + current_run_name + ".xml"));
+		}
+
+		// find source data (for verification and cleaning up later)
+		String datasetTmpPath = autoRun.getParentFile().getAbsolutePath() + "/" +  ar.getExperiment().getTable().getSource();
+		datasetTmp = new File(datasetTmpPath);
+		if (!datasetTmp.exists()) {
+			throw new Exception("Could not find dataset to run SD: " + datasetTmpPath);
 		}
 		
 		String cmd = "java -jar " + cortanaJarLocation + " " + autoRun.getAbsolutePath() + " 0 1";
@@ -146,7 +155,8 @@ public class CLI {
 			subgroups = new File(saveDirectory + "/subgroups.csv");
 		}
 		resultTxt.renameTo(subgroups);
-
+		datasetTmp.delete();
+		
 		// update search params with only relevant parameters
 		Map<String, String> searchParams = ar.getExperiment().getSearchParameters().getParameters();
 		String qualityMeasure = ar.getExperiment().getSearchParameters().getQuality_measure();
@@ -182,7 +192,6 @@ public class CLI {
 	
 	private static boolean executeCommand(String cmd, boolean verbose) {
 		Conversion.log("OK", "CMD", "Command: " + cmd);
-		ThreadMXBean bean = ManagementFactory.getThreadMXBean();
 		try {
 			String line;
 

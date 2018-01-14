@@ -77,7 +77,6 @@ public class XMLUtils {
 			dataset_id = ds.getData_set_id();
 			target_feature = ds.getTarget_feature();
 			target_value = ds.getTarget_value();
-			
 		}
 		
 		if (inputs.containsKey("quality_measure")) {
@@ -85,9 +84,9 @@ public class XMLUtils {
 		}
 		
 		DataSetDescription dsd = openml.dataGet(dataset_id);
-		File dataset = dsd.getDataset(openml);
+		File dataset_downloaded = openml.datasetGet(dsd);
 		File datasetTmp = Conversion.stringToTempFile("", dsd.getName(), dsd.getFormat(), directory);
-		IOUtils.copy(new FileInputStream(dataset), new FileOutputStream(datasetTmp));
+		IOUtils.copy(new FileInputStream(dataset_downloaded), new FileOutputStream(datasetTmp));
 		
 		Feature[] features = openml.dataFeatures(dataset_id).getFeatures();
 		Column[] column = new Column[features.length];
@@ -95,20 +94,31 @@ public class XMLUtils {
 			column[i] = new Column(features[i].getDataType(), features[i].getName(), i, "0.0", true);
 		}
 		
+		Conversion.log("OK", "AutoRun", "Constructing AutoRun from: " + searchParams.toString());
+		Integer search_depth = Integer.parseInt(searchParams.get("search_depth"));
+		Integer minimum_coverage = Integer.parseInt(searchParams.get("minimum_coverage"));
+		Double maximum_coverage_fraction = Double.parseDouble(searchParams.get("maximum_coverage_fraction"));
+		Integer maximum_subgroups = Integer.parseInt(searchParams.get("maximum_subgroups"));
+		Double time_limit = Double.parseDouble(searchParams.get("time_limit"));
+		Boolean use_nominal_testset = Boolean.parseBoolean(searchParams.get("use_nominal_sets"));
+		Integer search_strategy_width = Integer.parseInt(searchParams.get("search_strategy_width"));
+		Integer nr_bins = Integer.parseInt(searchParams.get("nr_bins"));
+		Integer nr_threads = Integer.parseInt(searchParams.get("nr_threads"));
+		
 		AutoRun ar = new AutoRun(
 			target_feature, target_value, quality_measure, 
-			Integer.parseInt(searchParams.get("search_depth")), 
-			Integer.parseInt(searchParams.get("minimum_coverage")), 
-			Double.parseDouble(searchParams.get("maximum_coverage_fraction")), 
-			Integer.parseInt(searchParams.get("maximum_subgroups")), 
-			Double.parseDouble(searchParams.get("time_limit")), 
+			search_depth, 
+			minimum_coverage, 
+			maximum_coverage_fraction, 
+			maximum_subgroups, 
+			time_limit, 
 			searchParams.get("search_strategy"), 
-			Boolean.parseBoolean(searchParams.get("use_nominal_sets")), 
-			Integer.parseInt(searchParams.get("search_strategy_width")), 
+			use_nominal_testset, 
+			search_strategy_width, 
 			searchParams.get("numeric_operators"), 
 			searchParams.get("numeric_strategy"), 
-			Integer.parseInt(searchParams.get("nr_bins")), 
-			Integer.parseInt(searchParams.get("nr_threads")), 
+			nr_bins, 
+			nr_threads, 
 			dsd.getName(), datasetTmp.getName(), column);
 		return ar;
 	}
