@@ -71,7 +71,7 @@ public class FantailConnector {
 	private void computeMetafeatures(int datasetId) throws Exception {
 		Conversion.log("OK", "Download", "Start downloading dataset: " + datasetId);
 		DataSetDescription dsd = apiconnector.dataGet(datasetId);
-		Instances dataset = new Instances(new FileReader(dsd.getDataset(apiconnector)));
+		Instances dataset = new Instances(new FileReader(apiconnector.datasetGet(dsd)));
 		List<String> qualitiesAvailable = Arrays.asList(apiconnector.dataQualities(datasetId).getQualityNames());
 		extractFeatures(dsd, dataset, qualitiesAvailable);
 	}

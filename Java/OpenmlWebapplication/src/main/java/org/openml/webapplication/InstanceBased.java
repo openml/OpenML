@@ -80,7 +80,7 @@ public class InstanceBased {
 				task_splits.add(new DenseInstance(1.0, attValues));
 			}
 		} else {
-			URL taskUrl = new URL(TaskInformation.getEstimationProcedure(currentTask).getData_splits_url());
+			URL taskUrl = TaskInformation.getEstimationProcedure(currentTask).getData_splits_url();
 			task_splits = new Instances(new BufferedReader(Input.getURL(taskUrl)));
 		}
 			

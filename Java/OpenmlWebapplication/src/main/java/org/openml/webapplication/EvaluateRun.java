@@ -146,7 +146,7 @@ public class EvaluateRun {
 				predictionEvaluator = new EvaluateStreamPredictions(datasetUrl, predictionsUrl, source_data.getTarget_feature());
 			} else if (task.getTask_type_id() == 7) { //Survival Analysis
 				URL predictionsUrl = apiconnector.getOpenmlFileUrl(runFiles.get("predictions").getFileId(), filename_prefix + "predictions.arff");
-				URL splitsUrl = new URL(estimationprocedure.getData_splits_url());
+				URL splitsUrl = estimationprocedure.getData_splits_url();
 				predictionEvaluator = new EvaluateSurvivalAnalysisPredictions(task, datasetUrl, splitsUrl, predictionsUrl);
 			} else if (task.getTask_type_id() == 8) { // Subgroup Discovery
 				predictionEvaluator = new EvaluateSubgroups(runId, apiconnector);
@@ -156,7 +156,7 @@ public class EvaluateRun {
 				predictionEvaluator = new EvaluateBatchPredictions( 
 					task,
 					datasetUrl, 
-					new URL(estimationprocedure.getData_splits_url()), 
+					estimationprocedure.getData_splits_url(), 
 					apiconnector.getOpenmlFileUrl( runFiles.get( "predictions" ).getFileId(), filename_prefix + "predictions.arff"), 
 					estimationprocedure.getType().equals(EstimationProcedure.estimationProceduresTxt[6] ) );
 			}

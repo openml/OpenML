@@ -19,6 +19,7 @@
  */
 package org.openml.webapplication;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -112,10 +113,11 @@ public class Main {
 					
 				} else if( function.equals("generate_folds") ) {
 					
-					String datasetUrl;
+					URL datasetUrl;
 					String target_feature;
 					String estimation_procedure;
 					String custum_testset = null; 
+					String datasetName;
 					
 					
 					if(cli.hasOption("-id")) {
@@ -131,8 +133,8 @@ public class Main {
 						try {numberOfRepeats = TaskInformation.getNumberOfRepeats(current);} catch(Exception e) {}
 						try {numberOfFolds = TaskInformation.getNumberOfFolds(current);} catch(Exception e) {}
 						try {percentage = TaskInformation.getPercentage(current);} catch(Exception e) {}
-						
-						datasetUrl = dsd.getUrl();
+						datasetName = dsd.getName();
+						datasetUrl = apiconnector.getOpenmlFileUrl(dsd.getFile_id(), dsd.getName());
 						target_feature = TaskInformation.getSourceData(current).getTarget_feature();
 						estimation_procedure = ep.getType();
 						if (numberOfRepeats != null) {estimation_procedure += "_" + numberOfRepeats;}
@@ -179,7 +181,7 @@ public class Main {
 					
 					GenerateFolds gf = new GenerateFolds(
 							apiconnector, 
-							config.getApiKey(),
+							datasetName,
 							datasetUrl, 
 							estimation_procedure, 
 							target_feature, 

@@ -55,18 +55,17 @@ public class GenerateFolds {
 	private final ArffMapping am;
 	private final Random rand;
 	
-	public GenerateFolds( OpenmlConnector ac, String api_key, String datasetPath, String estimationProcedure, String targetFeature, List<List<List<Integer>>> testset, int random_seed ) throws Exception {
+	public GenerateFolds( OpenmlConnector ac, String datasetName, URL datasetPath, String estimationProcedure, String targetFeature, List<List<List<Integer>>> testset, int random_seed ) throws Exception {
 		
 		rand = new Random(random_seed);
-		String totalPath = datasetPath + "?api_key=" + api_key;
-		dataset = new Instances( new BufferedReader( Input.getURL( new URL(totalPath) ) ) );
+		dataset = new Instances( new BufferedReader(Input.getURL(datasetPath)));
 		evaluationMethod = new EstimationProcedure(estimationProcedure,dataset);
 		
 		InstancesHelper.setTargetAttribute( dataset, targetFeature );
 		
 		am = new ArffMapping( evaluationMethod.getEvaluationMethod() == EstimationProcedureType.LEARNINGCURVE);
 		
-		splits_name = Input.filename( datasetPath ) + "_splits";
+		splits_name = datasetName + "_splits";
 		splits_size = evaluationMethod.getSplitsSize(dataset);
 		
 		// we are not allowed to use official row_id, even if it exist,
