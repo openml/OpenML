@@ -60,3 +60,21 @@ OpenML has grown into quite a big project. We could use many more hands to help 
 
 - **You want to contribute?**: Awesome! Check out our wiki page on [how to contribute](https://github.com/openml/OpenML/wiki/How-to-contribute) or [get in touch](https://github.com/openml/OpenML/wiki/Communication-Channels). There may be unexpected ways for how you could help. We are open for any ideas. 
 - **You want to support us financially?**: YES! Getting funding through conventional channels is very competitive, and we are happy about every small contribution. Please send an email to openmlHQ@googlegroups.com!
+
+
+-------------------
+## GitHub organization structure
+
+OpenML's code distrubuted over different repositories to simplify development. Please see their individual readme's and issue trackers of you like to contribute. These are the most important ones:
+
+- **[openml/OpenML](https://github.com/openml/openml)**: This repo is being phased out. It currently only contains Java code for certain backend tasks (e.g. evaluating predictions and computing meta-features).
+- **[openml/website](https://github.com/openml/website)**: Contains the website and REST API.
+- **[openml/openml-python](https://github.com/openml/openml)**: The Python API, to talk to OpenML from Python scripts (including scikit-learn).
+- **[openml/openml-r](https://github.com/openml/openml)**: The R API, to talk to OpenML from R scripts (inclusing mlr).
+- **[openml/java](https://github.com/openml/openml)**: The Java API, to talk to OpenML from Java scripts.
+- **[openml/openml-weka](https://github.com/openml/openml)**: The WEKA plugin, to talk to OpenML from the WEKA toolbox.
+
+
+
+
+
