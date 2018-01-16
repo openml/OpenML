@@ -148,7 +148,10 @@ public class CLI {
 				}
 			}
 		}
-		if (resultTxt == null) { throw new Exception("Result txt file not found. "); }
+		autoRun.delete();
+		if (resultTxt == null) { 
+			throw new Exception("Result txt file not found. "); 
+		}
 		if (saveDirectory == null) {
 			subgroups = File.createTempFile("subgroups", ".csv");
 		} else {

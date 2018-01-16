@@ -65,7 +65,11 @@ public class ScheduleMeta {
 				lock = fileChannel.tryLock();
 				if (lock != null) {
 					Conversion.log("OK", "Lock", "Start on Task " + t.getTask_id() + ". ");
-					CLI.process(connector, t.getTask_id(), cortanaJarLocation, directory, setup_json, false, verbose);
+					try {
+						CLI.process(connector, t.getTask_id(), cortanaJarLocation, directory, setup_json, false, verbose);
+					} catch(Exception e) {
+						e.printStackTrace();
+					}
 				} else {
 					Conversion.log("OK", "Lock", "Task " + t.getTask_id() + ", couldn't get lock. ");
 				}
