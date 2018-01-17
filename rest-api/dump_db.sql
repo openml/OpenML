@@ -1,1 +1,0 @@
-mysqldump -u root -p openml_expdb algorithm algorithm_quality bibliographical_reference dataset data_class data_feature data_quality estimation_procedure evaluates_function implementation input math_function quality queries query_graphs task_type task_type_function task_type_io > openml_expdb.sql
