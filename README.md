@@ -67,8 +67,7 @@ OpenML has grown into quite a big project. We could use many more hands to help 
 
 OpenML's code distrubuted over different repositories to simplify development. Please see their individual readme's and issue trackers of you like to contribute. These are the most important ones:
 
-- **[openml/OpenML](https://github.com/openml/openml)**: This repo is being phased out. It currently only contains Java code for certain backend tasks (e.g. evaluating predictions and computing meta-features).
-- **[openml/website](https://github.com/openml/website)**: Contains the website and REST API.
+- **[openml/OpenML](https://github.com/openml/openml)**: The OpenML web application, including the REST API.
 - **[openml/openml-python](https://github.com/openml/openml)**: The Python API, to talk to OpenML from Python scripts (including scikit-learn).
 - **[openml/openml-r](https://github.com/openml/openml)**: The R API, to talk to OpenML from R scripts (inclusing mlr).
 - **[openml/java](https://github.com/openml/openml)**: The Java API, to talk to OpenML from Java scripts.
