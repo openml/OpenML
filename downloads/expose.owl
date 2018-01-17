@@ -1,0 +1,1514 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY dc "http://purl.org/dc/elements/1.1/" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY owl2xml "http://www.w3.org/2006/12/owl2-xml#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY OntoDM "http://kt.ijs.si/panovp/OntoDM/OntoDM#" >
+    <!ENTITY Expose "http://expdb.cs.kuleuven.be/Expose.owl#" >
+    <!ENTITY RO "http://expdb.cs.kuleuven.be/Expose.owl#RO:" >
+    <!ENTITY IAO "http://expdb.cs.kuleuven.be/Expose.owl#IAO:" >
+    <!ENTITY BFO "http://expdb.cs.kuleuven.be/Expose.owl#BFO:" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+    <!ENTITY OBI "http://expdb.cs.kuleuven.be/Expose.owl#OBI:" >
+    <!ENTITY OntoDM3 "http://kt.ijs.si/panovp/OntoDM/OntoDM#OntoDM:" >
+    <!ENTITY OntoDM2 "http://expdb.cs.kuleuven.be/Expose.owl#OntoDM:" >
+    <!ENTITY experiment "http://expdb.cs.kuleuven.be/Expose.owl#experiment/" >
+]>
+
+
+<rdf:RDF xmlns="http://expdb.cs.kuleuven.be/Expose.owl#"
+     xml:base="http://expdb.cs.kuleuven.be/Expose.owl"
+     xmlns:experiment="&Expose;experiment/"
+     xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#"
+     xmlns:OBI="&Expose;OBI:"
+     xmlns:OntoDM2="&Expose;OntoDM:"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:BFO="&Expose;BFO:"
+     xmlns:OntoDM="http://kt.ijs.si/panovp/OntoDM/OntoDM#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:Expose="http://expdb.cs.kuleuven.be/Expose.owl#"
+     xmlns:RO="&Expose;RO:"
+     xmlns:IAO="&Expose;IAO:"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:OntoDM3="&OntoDM;OntoDM:">
+    <owl:Ontology rdf:about="">
+        <dc:title
+            >Ontology of Data Mining Experiments</dc:title>
+        <dc:contributor
+            >Larisa Soldatova</dc:contributor>
+        <dc:creator
+            >Joaquin Vanschoren</dc:creator>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <owl:AnnotationProperty rdf:about="#DM-speak"/>
+    <owl:AnnotationProperty rdf:about="&dc;creator"/>
+    <owl:AnnotationProperty rdf:about="&dc;contributor"/>
+    <owl:AnnotationProperty rdf:about="&dc;title"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#BFO:has_part -->
+
+    <owl:ObjectProperty rdf:about="#BFO:has_part"/>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#BFO:part_of -->
+
+    <owl:ObjectProperty rdf:about="#BFO:part_of">
+        <owl:inverseOf rdf:resource="#BFO:has_part"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#IAO:is_represented_as -->
+
+    <owl:ObjectProperty rdf:about="#IAO:is_represented_as">
+        <rdfs:comment
+            >for describing data type of parameters</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#OBI:achieves_planned_objective -->
+
+    <owl:ObjectProperty rdf:about="#OBI:achieves_planned_objective"/>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#OBI:has_role -->
+
+    <owl:ObjectProperty rdf:about="#OBI:has_role"/>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#OBI:is_concretization_of -->
+
+    <owl:ObjectProperty rdf:about="#OBI:is_concretization_of"/>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#OBI:is_concretized_as -->
+
+    <owl:ObjectProperty rdf:about="#OBI:is_concretized_as">
+        <owl:inverseOf rdf:resource="#OBI:is_concretization_of"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#OBI:is_realized_by -->
+
+    <owl:ObjectProperty rdf:about="#OBI:is_realized_by">
+        <owl:inverseOf rdf:resource="#OBI:realizes"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#OBI:realizes -->
+
+    <owl:ObjectProperty rdf:about="#OBI:realizes"/>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#RO:contained_in -->
+
+    <owl:ObjectProperty rdf:about="#RO:contained_in"/>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#RO:contains -->
+
+    <owl:ObjectProperty rdf:about="#RO:contains">
+        <rdfs:comment
+            >useful for describing with algorithms contain which preprocessing/postprocessing steps</rdfs:comment>
+        <owl:inverseOf rdf:resource="#RO:contained_in"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#RO:preceded_by -->
+
+    <owl:ObjectProperty rdf:about="#RO:preceded_by"/>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#RO:precedes -->
+
+    <owl:ObjectProperty rdf:about="#RO:precedes">
+        <rdfs:comment
+            >useful for describing which preprocessing application preceded another one</rdfs:comment>
+        <owl:inverseOf rdf:resource="#RO:preceded_by"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#RO:transformation_of -->
+
+    <owl:ObjectProperty rdf:about="#RO:transformation_of">
+        <owl:inverseOf rdf:resource="#RO:transformed_into"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#RO:transformed_into -->
+
+    <owl:ObjectProperty rdf:about="#RO:transformed_into"/>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#has_component -->
+
+    <owl:ObjectProperty rdf:about="#has_component">
+        <rdfs:comment
+            >Relationship indicating that the second entity is a component of the first entity</rdfs:comment>
+        <rdfs:subPropertyOf rdf:resource="#BFO:has_part"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#has_description -->
+
+    <owl:ObjectProperty rdf:about="#has_description">
+        <rdfs:comment
+            >IAO: is about: has description</rdfs:comment>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#has_parameter -->
+
+    <owl:ObjectProperty rdf:about="#has_parameter">
+        <rdf:type rdf:resource="&owl;SymmetricProperty"/>
+        <rdfs:comment
+            >Relationship indicating that the second entity is a parameter of the first entity</rdfs:comment>
+        <rdfs:subPropertyOf rdf:resource="#BFO:has_part"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#BFO:realizable_entity -->
+
+    <owl:Class rdf:about="#BFO:realizable_entity">
+        <rdfs:subClassOf rdf:resource="&owl;Thing"/>
+        <DM-speak>implementation</DM-speak>
+        <rdfs:comment
+            >A realizable entity is something that can be physically implemented. As such, it is a superclass for all implementation-related aspects of DM experiments. It belongs to the BFO ontology.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#Bagging_algorithm_application -->
+
+    <owl:Class rdf:about="#Bagging_algorithm_application">
+        <rdfs:subClassOf rdf:resource="#inductive_algorithm_application"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#Bagging_algorithm_implementation -->
+
+    <owl:Class rdf:about="#Bagging_algorithm_implementation">
+        <rdfs:subClassOf rdf:resource="#LibraryImplementation"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#Bagging_algorithm_specification -->
+
+    <owl:Class rdf:about="#Bagging_algorithm_specification">
+        <rdfs:subClassOf rdf:resource="#ensemble_learner"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#C45_pruning -->
+
+    <owl:Class rdf:about="#C45_pruning">
+        <rdfs:subClassOf rdf:resource="#decision_tree_pruning"/>
+        <rdfs:comment
+            >Pruning technique of the C4.5 algorithm </rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#DM_algorithm_parameter -->
+
+    <owl:Class rdf:about="#DM_algorithm_parameter">
+        <rdfs:subClassOf rdf:resource="#IAO:information_content_entity"/>
+        <rdfs:comment
+            >A parameter often used in certain data mining algorithms. These are parameters that affect the inner working of the algorithm and have primitive values. For structured components used inside data mining algorithm, see DM_component. These are NOT parameters that have to do with implementation-specific aspects of an algorithm (e.g. debug).</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#DM_library -->
+
+    <owl:Class rdf:about="#DM_library">
+        <rdfs:subClassOf rdf:resource="#BFO:realizable_entity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#DM_task -->
+
+    <owl:Class rdf:about="#DM_task">
+        <rdfs:subClassOf rdf:resource="#IAO:information_content_entity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#IAO:information_content_entity -->
+
+    <owl:Class rdf:about="#IAO:information_content_entity">
+        <rdfs:subClassOf rdf:resource="&owl;Thing"/>
+        <rdfs:comment
+            >OBI:0000283
+http://purl.obofoundry.org/obo/iao.owl</rdfs:comment>
+        <DM-speak
+            >abstract specification</DM-speak>
+        <rdfs:comment
+            >An information content entity provides a specification of a certain object. As such, it is a superclass for all bits of information used to describe parts of a DM experiment. It belongs to the IAO ontology.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#J48_algorithm_application -->
+
+    <owl:Class rdf:about="#J48_algorithm_application">
+        <rdfs:subClassOf rdf:resource="#inductive_algorithm_application"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#J48_algorithm_implementation -->
+
+    <owl:Class rdf:about="#J48_algorithm_implementation">
+        <rdfs:subClassOf rdf:resource="#LibraryImplementation"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#J48_algorithm_specification -->
+
+    <owl:Class rdf:about="#J48_algorithm_specification">
+        <rdfs:subClassOf rdf:resource="#decision_tree_learner"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#LibraryImplementation -->
+
+    <owl:Class rdf:about="#LibraryImplementation">
+        <rdfs:subClassOf rdf:resource="#OntoDM:algorithm_implementation"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#OBI:objective -->
+
+    <owl:Class rdf:about="#OBI:objective">
+        <rdfs:subClassOf rdf:resource="#IAO:information_content_entity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#OBI:plan -->
+
+    <owl:Class rdf:about="#OBI:plan">
+        <rdfs:subClassOf rdf:resource="#BFO:realizable_entity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#OBI:plan_specification -->
+
+    <owl:Class rdf:about="#OBI:plan_specification">
+        <rdfs:subClassOf rdf:resource="#IAO:information_content_entity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#OBI:planned_process -->
+
+    <owl:Class rdf:about="#OBI:planned_process">
+        <rdfs:subClassOf rdf:resource="&owl;Thing"/>
+        <rdfs:comment
+            >A planned process is the realization of a plan, executed by an agent to achieve a certain goal. It is a superclass for all application-specific aspects of a DM experiment.</rdfs:comment>
+        <rdfs:comment
+            >OBI:0000011
+http://purl.obolibrary.org/obo/obi.owl</rdfs:comment>
+        <DM-speak>application</DM-speak>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#OBI:role -->
+
+    <owl:Class rdf:about="#OBI:role">
+        <rdfs:subClassOf rdf:resource="#BFO:realizable_entity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#OntoDM:DM_scenario_application -->
+
+    <owl:Class rdf:about="#OntoDM:DM_scenario_application">
+        <rdfs:subClassOf rdf:resource="#OBI:planned_process"/>
+        <rdfs:comment
+            >An often used sequence of DM operators</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#OntoDM:DM_scenario_specification -->
+
+    <owl:Class rdf:about="#OntoDM:DM_scenario_specification">
+        <rdfs:subClassOf rdf:resource="#OBI:plan_specification"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#OntoDM:algorithm_application -->
+
+    <owl:Class rdf:about="#OntoDM:algorithm_application">
+        <rdfs:subClassOf rdf:resource="#OBI:planned_process"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#OntoDM:algorithm_implementation -->
+
+    <owl:Class rdf:about="#OntoDM:algorithm_implementation">
+        <rdfs:subClassOf rdf:resource="#OBI:plan"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#OntoDM:algorithm_specification -->
+
+    <owl:Class rdf:about="#OntoDM:algorithm_specification">
+        <rdfs:subClassOf rdf:resource="#OBI:plan_specification"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#OntoDM:identifier -->
+
+    <owl:Class rdf:about="#OntoDM:identifier">
+        <rdfs:subClassOf rdf:resource="#IAO:information_content_entity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#OntoDM:mathematical_function -->
+
+    <owl:Class rdf:about="#OntoDM:mathematical_function">
+        <rdfs:subClassOf rdf:resource="#BFO:realizable_entity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#R_library -->
+
+    <owl:Class rdf:about="#R_library">
+        <rdfs:subClassOf rdf:resource="#DM_library"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#algorithm_component -->
+
+    <owl:Class rdf:about="#algorithm_component">
+        <rdfs:subClassOf rdf:resource="#OBI:role"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#algorithm_function -->
+
+    <owl:Class rdf:about="#algorithm_function">
+        <rdfs:subClassOf rdf:resource="#IAO:information_content_entity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#algorithm_implementation_version -->
+
+    <owl:Class rdf:about="#algorithm_implementation_version">
+        <rdfs:subClassOf rdf:resource="#OntoDM:identifier"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#base_learner -->
+
+    <owl:Class rdf:about="#base_learner">
+        <rdfs:subClassOf rdf:resource="#algorithm_component"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#bias_variance_analysis -->
+
+    <owl:Class rdf:about="#bias_variance_analysis">
+        <rdfs:subClassOf rdf:resource="#learner_evaluation_scenario"/>
+        <rdfs:comment
+            >list DM tasks
+
+first level: do you want to do query/experiment/...</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#binary_splits_for_nominal_features_flag -->
+
+    <owl:Class rdf:about="#binary_splits_for_nominal_features_flag">
+        <rdfs:subClassOf rdf:resource="#decision_tree_parameters"/>
+        <rdfs:comment
+            >Parameter indicating whether or not the algorithm should use binary splits when choosing to split on a nominal feature</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#bound -->
+
+    <owl:Class rdf:about="#bound">
+        <rdfs:subClassOf rdf:resource="#mathematical_entity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#build_bayesian_rule_classifier -->
+
+    <owl:Class rdf:about="#build_bayesian_rule_classifier">
+        <rdfs:subClassOf rdf:resource="#algorithm_function"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#compare_learners -->
+
+    <owl:Class rdf:about="#compare_learners">
+        <rdfs:subClassOf rdf:resource="#experiment/query_task"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#data_application -->
+
+    <owl:Class rdf:about="#data_application">
+        <rdfs:subClassOf rdf:resource="#OBI:planned_process"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#decision_tree_learner -->
+
+    <owl:Class rdf:about="#decision_tree_learner">
+        <rdfs:subClassOf rdf:resource="#hypothesis_refinement_learner"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#has_parameter"/>
+                <owl:someValuesFrom rdf:resource="#min_number_instances_per_leaf"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <owl:incompatibleWith
+            >A decision tree learner is an inductive algoritm that assumes that the data can be correctly modelled using a decision tree. Each node usually contains a test on one of the features of the given data, and branches out for different outcomes of that test. They incrementally expand the tree as more data points are given, refining the initial hypothesis.</owl:incompatibleWith>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#decision_tree_parameters -->
+
+    <owl:Class rdf:about="#decision_tree_parameters">
+        <rdfs:subClassOf rdf:resource="#DM_algorithm_parameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#decision_tree_pruning -->
+
+    <owl:Class rdf:about="#decision_tree_pruning">
+        <rdfs:subClassOf rdf:resource="#post-processing_algorithm"/>
+        <rdfs:comment
+            >Pruning is a post-processing technique used for decision tree learners. They work by deleting (pruning) branches from a decision tree that are not helpful, because they cause overfitting: modelling noise instead of the target concept.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#distance_function -->
+
+    <owl:Class rdf:about="#distance_function">
+        <rdfs:subClassOf rdf:resource="#algorithm_component"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#distance_function_application -->
+
+    <owl:Class rdf:about="#distance_function_application">
+        <rdfs:subClassOf rdf:resource="#function_application"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#distance_function_implementation -->
+
+    <owl:Class rdf:about="#distance_function_implementation">
+        <rdfs:subClassOf rdf:resource="#function_implementation"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#distance_function_specification -->
+
+    <owl:Class rdf:about="#distance_function_specification">
+        <rdfs:subClassOf rdf:resource="#function_specification"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#downsampling_percentage -->
+
+    <owl:Class rdf:about="#downsampling_percentage">
+        <rdfs:label rdf:resource="#genid1249996370152018000"/>
+        <rdfs:subClassOf rdf:resource="#DM_algorithm_parameter"/>
+        <rdfs:comment
+            >The percentage of the original size of the dataset to which must be downsampled. E.g. 90 means the resulting dataset will have a size 90% that of the original dataset.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#employ_decision_table_approach -->
+
+    <owl:Class rdf:about="#employ_decision_table_approach">
+        <rdfs:subClassOf rdf:resource="#algorithm_function"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#employ_nearest_neighbor_approach -->
+
+    <owl:Class rdf:about="#employ_nearest_neighbor_approach">
+        <rdfs:subClassOf rdf:resource="#algorithm_function"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#ensemble_learner -->
+
+    <owl:Class rdf:about="#ensemble_learner">
+        <rdfs:subClassOf rdf:resource="#inductive_algorithm"/>
+        <rdfs:comment
+            >Ensemble algorithms are inductive algorithms that utilise other inductive algorithms (base learners) to provide models (and predictions) for often overlapping parts of the given data and combine their predictions, e.g. by voting, to give the final predictions. Examples are bagging, boosting and stacking.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#ensemble_parameters -->
+
+    <owl:Class rdf:about="#ensemble_parameters">
+        <rdfs:subClassOf rdf:resource="#DM_algorithm_parameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#entropy_based_splitting_criterion -->
+
+    <owl:Class rdf:about="#entropy_based_splitting_criterion">
+        <rdfs:subClassOf rdf:resource="#splitting_criterion_specification"/>
+        <rdfs:comment
+            >An entropy-based splitting criterion is a splitting criterion for decision trees based on the entropy of a class distribution. Entropy is a measure for the (im)purity (or randomness) of an arbitrary distribution. Features whose value distributions have low entropy are often good candidates for the next split.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#entropy_splitting_criterion -->
+
+    <owl:Class rdf:about="#entropy_splitting_criterion">
+        <rdfs:subClassOf rdf:resource="#entropy_based_splitting_criterion"/>
+        <rdfs:comment
+            >Entropy is a splitting criterium for decision trees. It chooses the feature with the lowest entropy.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#evaluation_application -->
+
+    <owl:Class rdf:about="#evaluation_application">
+        <rdfs:subClassOf rdf:resource="#OBI:planned_process"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#evaluation_method_application -->
+
+    <owl:Class rdf:about="#evaluation_method_application">
+        <rdfs:subClassOf rdf:resource="#OBI:planned_process"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#experiment/query_task -->
+
+    <owl:Class rdf:about="#experiment/query_task">
+        <rdfs:subClassOf rdf:resource="#IAO:information_content_entity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#experiment_id -->
+
+    <owl:Class rdf:about="#experiment_id">
+        <rdfs:subClassOf rdf:resource="#OntoDM:identifier"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#feature_generation_algorithm -->
+
+    <owl:Class rdf:about="#feature_generation_algorithm">
+        <rdfs:subClassOf rdf:resource="#pre-processing_algorithm"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#feature_selection_algorithm -->
+
+    <owl:Class rdf:about="#feature_selection_algorithm">
+        <rdfs:subClassOf rdf:resource="#pre-processing_algorithm"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#function_application -->
+
+    <owl:Class rdf:about="#function_application">
+        <rdfs:subClassOf rdf:resource="#OBI:planned_process"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#function_implementation -->
+
+    <owl:Class rdf:about="#function_implementation">
+        <rdfs:subClassOf rdf:resource="#OBI:plan"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#function_specification -->
+
+    <owl:Class rdf:about="#function_specification">
+        <rdfs:subClassOf rdf:resource="#OBI:plan_specification"/>
+        <rdfs:comment
+            >TODO Equal to a heuristic?
+</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#handles_nominal_classes -->
+
+    <owl:Class rdf:about="#handles_nominal_classes">
+        <rdfs:subClassOf rdf:resource="#algorithm_function"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#handles_numeric_classes -->
+
+    <owl:Class rdf:about="#handles_numeric_classes">
+        <rdfs:subClassOf rdf:resource="#algorithm_function"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#hard_lower_bound -->
+
+    <owl:Class rdf:about="#hard_lower_bound">
+        <rdfs:subClassOf rdf:resource="#lower_bound"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#hard_upper_bound -->
+
+    <owl:Class rdf:about="#hard_upper_bound">
+        <rdfs:subClassOf rdf:resource="#upper_bound"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#hypothesis_optimization_learner -->
+
+    <owl:Class rdf:about="#hypothesis_optimization_learner">
+        <rdfs:subClassOf rdf:resource="#inductive_algorithm"/>
+        <rdfs:comment
+            >An hypothesis optimization learner is an inductive algorithm that assumes the data can be correctly modelled by a given mathematical function, and that adjusts that function (e.g. by adjusting weights) to fit the given data optimally. Examples are linear regression, backpropagation in artificial neural networks, Bayes rule in Bayesian methods and the kernel trick in kernel methods.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#hypothesis_refinement_learner -->
+
+    <owl:Class rdf:about="#hypothesis_refinement_learner">
+        <rdfs:subClassOf rdf:resource="#inductive_algorithm"/>
+        <rdfs:comment
+            >An hypothesis refinement learner is an inductive algorithm that assumes the data can be correctly modelled by a given model, and that incrementally adjusts that model as it sees new data points (observations). Examples are decision tree learners, covering learners (rule learners), kMeans and logical induction.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#improve_perceptron_behavior -->
+
+    <owl:Class rdf:about="#improve_perceptron_behavior">
+        <rdfs:subClassOf rdf:resource="#algorithm_function"/>
+        <rdfs:comment
+            >E.g. winnow in case of irrelevant dimensions</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#induce_model -->
+
+    <owl:Class rdf:about="#induce_model">
+        <rdfs:subClassOf rdf:resource="#OBI:objective"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#inductive_algorithm -->
+
+    <owl:Class rdf:about="#inductive_algorithm">
+        <rdfs:subClassOf rdf:resource="#OntoDM:algorithm_specification"/>
+        <rdfs:comment
+            >An inductive algorithm is an algorithm that, given a number of observations, can predict the outcome of future observations and/or can plan future actions based on those observations.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#inductive_algorithm_application -->
+
+    <owl:Class rdf:about="#inductive_algorithm_application">
+        <rdfs:subClassOf rdf:resource="#OntoDM:algorithm_application"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#RO:preceded_by"/>
+                <owl:allValuesFrom rdf:resource="#preprocessing_application"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#RO:precedes"/>
+                <owl:allValuesFrom rdf:resource="#postprocessing_application"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#OBI:achieves_planned_objective"/>
+                <owl:someValuesFrom rdf:resource="#OBI:objective"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#information_gain_ratio_splitting_criterion -->
+
+    <owl:Class rdf:about="#information_gain_ratio_splitting_criterion">
+        <rdfs:subClassOf rdf:resource="#entropy_based_splitting_criterion"/>
+        <rdfs:comment
+            >Information gain ratio is a splitting criterion which normalizes the information gain with the &#39;gain ratio&#39;, a value based on the number of examples left in each class after the test on the attribute. It biases the decision tree against considering attributes with a large number of distinct values.
+
+It solves a drawback of information gain: attributes with large numbers of distinct values (e.g. credit card numbers) usually have high information gain, but tend to overfit the data. An alternative solution is using binary splits for nominal attributes.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#information_gain_splitting_criterion -->
+
+    <owl:Class rdf:about="#information_gain_splitting_criterion">
+        <rdfs:subClassOf rdf:resource="#entropy_based_splitting_criterion"/>
+        <rdfs:comment
+            >Information gain is a splitting criterium for decision trees. It calculates the expected reduction in entropy caused by knowing the value of a certain feature. Splitting the data based on the feature with the highest information gain will thus gain the highest drop in entropy.</rdfs:comment>
+        <rdfs:comment
+            >Information gain is a synonym for the Kullback-Leibler divergence.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#kernel_function -->
+
+    <owl:Class rdf:about="#kernel_function">
+        <rdfs:subClassOf rdf:resource="#algorithm_component"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#kernel_function_application -->
+
+    <owl:Class rdf:about="#kernel_function_application">
+        <rdfs:subClassOf rdf:resource="#function_application"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#kernel_function_implementation -->
+
+    <owl:Class rdf:about="#kernel_function_implementation">
+        <rdfs:subClassOf rdf:resource="#function_implementation"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#kernel_function_specification -->
+
+    <owl:Class rdf:about="#kernel_function_specification">
+        <rdfs:subClassOf rdf:resource="#function_specification"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#kernel_learner -->
+
+    <owl:Class rdf:about="#kernel_learner">
+        <rdfs:subClassOf rdf:resource="#hypothesis_optimization_learner"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#lazy_learner -->
+
+    <owl:Class rdf:about="#lazy_learner">
+        <rdfs:subClassOf rdf:resource="#inductive_algorithm"/>
+        <rdfs:comment
+            >A lazy learner is an inductive algorithm that does not try to model the given data. Instead, it keeps all observations in memory and bases its predictions on &#39;similar&#39; prior observations.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#learner_evaluation_application -->
+
+    <owl:Class rdf:about="#learner_evaluation_application">
+        <rdfs:subClassOf rdf:resource="#OntoDM:DM_scenario_application"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#BFO:has_part"/>
+                <owl:someValuesFrom rdf:resource="#evaluation_application"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#BFO:has_part"/>
+                <owl:someValuesFrom rdf:resource="#inductive_algorithm_application"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#BFO:has_part"/>
+                <owl:someValuesFrom rdf:resource="#data_application"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#BFO:has_part"/>
+                <owl:someValuesFrom rdf:resource="#evaluation_method_application"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#learner_evaluation_scenario -->
+
+    <owl:Class rdf:about="#learner_evaluation_scenario">
+        <rdfs:subClassOf rdf:resource="#OntoDM:DM_scenario_specification"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#lower_bound -->
+
+    <owl:Class rdf:about="#lower_bound">
+        <rdfs:subClassOf rdf:resource="#bound"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#make_prediction -->
+
+    <owl:Class rdf:about="#make_prediction">
+        <rdfs:subClassOf rdf:resource="#OBI:objective"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#mathematical_entity -->
+
+    <owl:Class rdf:about="#mathematical_entity">
+        <rdfs:subClassOf rdf:resource="#IAO:information_content_entity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#min_number_instances_per_leaf -->
+
+    <owl:Class rdf:about="#min_number_instances_per_leaf">
+        <rdfs:subClassOf rdf:resource="#decision_tree_parameters"/>
+        <rdfs:comment
+            >A parameter of a decision tree learner. It defines the minimum number of instances that can be allocated in each leaf before the algorithm decides to split the leaf in several branches.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#n_fold_cross_validation -->
+
+    <owl:Class rdf:about="#n_fold_cross_validation">
+        <rdfs:subClassOf rdf:resource="#learner_evaluation_scenario"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#nr_folds_for_pruning -->
+
+    <owl:Class rdf:about="#nr_folds_for_pruning">
+        <rdfs:subClassOf rdf:resource="#pruning_parameters"/>
+        <rdfs:comment
+            >The number of folds in which the training data will be split for reduced error pruning. One fold will be used for pruning, the others for training. The inverse of this number is the percentage of data set aside for pruning.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#number_of_iterations -->
+
+    <owl:Class rdf:about="#number_of_iterations">
+        <rdfs:subClassOf rdf:resource="#ensemble_parameters"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#operation_specification -->
+
+    <owl:Class rdf:about="#operation_specification">
+        <rdfs:subClassOf rdf:resource="#IAO:information_content_entity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#optimize_F-measure_for_probabilistic_learner -->
+
+    <owl:Class rdf:about="#optimize_F-measure_for_probabilistic_learner">
+        <rdfs:subClassOf rdf:resource="#algorithm_function"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#perform_classification -->
+
+    <owl:Class rdf:about="#perform_classification">
+        <rdfs:subClassOf rdf:resource="#algorithm_function"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#perform_regression -->
+
+    <owl:Class rdf:about="#perform_regression">
+        <rdfs:subClassOf rdf:resource="#algorithm_function"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#post-processing_algorithm -->
+
+    <owl:Class rdf:about="#post-processing_algorithm">
+        <rdfs:subClassOf rdf:resource="#OntoDM:algorithm_specification"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#postprocess_induced_model -->
+
+    <owl:Class rdf:about="#postprocess_induced_model">
+        <rdfs:subClassOf rdf:resource="#OBI:objective"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#postprocessing_application -->
+
+    <owl:Class rdf:about="#postprocessing_application">
+        <rdfs:subClassOf rdf:resource="#OntoDM:algorithm_application"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#RO:preceded_by"/>
+                <owl:allValuesFrom rdf:resource="#inductive_algorithm_application"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#RO:preceded_by"/>
+                <owl:allValuesFrom rdf:resource="#postprocessing_application"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#RO:precedes"/>
+                <owl:allValuesFrom rdf:resource="#postprocessing_application"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#OBI:achieves_planned_objective"/>
+                <owl:someValuesFrom rdf:resource="#postprocess_induced_model"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#pre-processing_algorithm -->
+
+    <owl:Class rdf:about="#pre-processing_algorithm">
+        <rdfs:subClassOf rdf:resource="#OntoDM:algorithm_specification"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#preprocess_data -->
+
+    <owl:Class rdf:about="#preprocess_data">
+        <rdfs:subClassOf rdf:resource="#OBI:objective"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#preprocessing_application -->
+
+    <owl:Class rdf:about="#preprocessing_application">
+        <rdfs:subClassOf rdf:resource="#OntoDM:algorithm_application"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#RO:preceded_by"/>
+                <owl:allValuesFrom rdf:resource="#preprocessing_application"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#RO:precedes"/>
+                <owl:allValuesFrom rdf:resource="#preprocessing_application"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#OBI:achieves_planned_objective"/>
+                <owl:someValuesFrom rdf:resource="#preprocess_data"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#pruning_confidence_threshold -->
+
+    <owl:Class rdf:about="#pruning_confidence_threshold">
+        <rdfs:subClassOf rdf:resource="#pruning_parameters"/>
+        <rdfs:comment
+            >TODO The confidence threshold for deciding whether a node in a decision tree should be pruned. It is part of a chi squared test? </rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#pruning_parameters -->
+
+    <owl:Class rdf:about="#pruning_parameters">
+        <rdfs:subClassOf rdf:resource="#DM_algorithm_parameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#random_sampling_with_replacement -->
+
+    <owl:Class rdf:about="#random_sampling_with_replacement">
+        <rdfs:subClassOf rdf:resource="#pre-processing_algorithm"/>
+        <rdfs:comment
+            >Randomly selects instances from the original dataset. It is possible that the same instance is selected twice.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#random_seed -->
+
+    <owl:Class rdf:about="#random_seed">
+        <rdfs:subClassOf rdf:resource="#DM_algorithm_parameter"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#reduced_error_pruning -->
+
+    <owl:Class rdf:about="#reduced_error_pruning">
+        <rdfs:subClassOf rdf:resource="#decision_tree_pruning"/>
+        <rdfs:comment
+            >Used to counter overfitting: yields the smallest version of the most accurate subtree. However, since it claims part of the training data, the tree&#39;s performance will suffer if not enough data is available.</rdfs:comment>
+        <rdfs:comment
+            >Reduced error pruning is a decision tree pruning technique in which a part of the training data is set aside (the validation set). The decision tree is grown on the remaining data, and afterwards, the performance of the tree is tested against another version of the tree in which branches are pruned. Greedily removes the branch that most improves the validation set accuracy.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#search_function -->
+
+    <owl:Class rdf:about="#search_function">
+        <rdfs:subClassOf rdf:resource="#algorithm_component"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#search_function_application -->
+
+    <owl:Class rdf:about="#search_function_application">
+        <rdfs:subClassOf rdf:resource="#function_application"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#search_function_implementation -->
+
+    <owl:Class rdf:about="#search_function_implementation">
+        <rdfs:subClassOf rdf:resource="#function_implementation"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#search_function_specification -->
+
+    <owl:Class rdf:about="#search_function_specification">
+        <rdfs:subClassOf rdf:resource="#function_specification"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#soft_lower_bound -->
+
+    <owl:Class rdf:about="#soft_lower_bound">
+        <rdfs:subClassOf rdf:resource="#lower_bound"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#soft_upper_bound -->
+
+    <owl:Class rdf:about="#soft_upper_bound">
+        <rdfs:subClassOf rdf:resource="#upper_bound"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#splitting_criterion -->
+
+    <owl:Class rdf:about="#splitting_criterion">
+        <rdfs:subClassOf rdf:resource="#algorithm_component"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#splitting_criterion_specification -->
+
+    <owl:Class rdf:about="#splitting_criterion_specification">
+        <rdfs:subClassOf rdf:resource="#function_specification"/>
+        <rdfs:comment
+            >A splitting criterion is a heuristic that defines which node in a decision tree should be split up next.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#stopping_criterion -->
+
+    <owl:Class rdf:about="#stopping_criterion">
+        <rdfs:subClassOf rdf:resource="#algorithm_component"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#stopping_criterion_specification -->
+
+    <owl:Class rdf:about="#stopping_criterion_specification">
+        <rdfs:subClassOf rdf:resource="#function_specification"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#stratified_sampling_with_replacement -->
+
+    <owl:Class rdf:about="#stratified_sampling_with_replacement">
+        <rdfs:subClassOf rdf:resource="#pre-processing_algorithm"/>
+        <rdfs:comment
+            >Randomly selects instances from the original dataset, but ensures that the class distribution is roughly the same as in the original dataset. It is possible that the same instance is selected twice.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#upper_bound -->
+
+    <owl:Class rdf:about="#upper_bound">
+        <rdfs:subClassOf rdf:resource="#bound"/>
+    </owl:Class>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#weka_library -->
+
+    <owl:Class rdf:about="#weka_library">
+        <rdfs:subClassOf rdf:resource="#DM_library"/>
+    </owl:Class>
+    
+
+
+    <!-- http://kt.ijs.si/panovp/OntoDM/OntoDM#OntoDM:datatype -->
+
+    <owl:Class rdf:about="&OntoDM;OntoDM:datatype">
+        <rdfs:subClassOf rdf:resource="#IAO:information_content_entity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://kt.ijs.si/panovp/OntoDM/OntoDM#boolean_datatype -->
+
+    <owl:Class rdf:about="&OntoDM;boolean_datatype">
+        <rdfs:subClassOf rdf:resource="&OntoDM;ordinal_datatype"/>
+    </owl:Class>
+    
+
+
+    <!-- http://kt.ijs.si/panovp/OntoDM/OntoDM#graph_datatype -->
+
+    <owl:Class rdf:about="&OntoDM;graph_datatype">
+        <rdfs:subClassOf rdf:resource="&OntoDM;structured_datatype"/>
+    </owl:Class>
+    
+
+
+    <!-- http://kt.ijs.si/panovp/OntoDM/OntoDM#integer_datatype -->
+
+    <owl:Class rdf:about="&OntoDM;integer_datatype">
+        <rdfs:subClassOf rdf:resource="&OntoDM;real_datatype"/>
+    </owl:Class>
+    
+
+
+    <!-- http://kt.ijs.si/panovp/OntoDM/OntoDM#nominal_datatype -->
+
+    <owl:Class rdf:about="&OntoDM;nominal_datatype">
+        <rdfs:subClassOf rdf:resource="&OntoDM;non_ordered_datatype"/>
+    </owl:Class>
+    
+
+
+    <!-- http://kt.ijs.si/panovp/OntoDM/OntoDM#non_negative_real_datatype -->
+
+    <owl:Class rdf:about="&OntoDM;non_negative_real_datatype">
+        <rdfs:subClassOf rdf:resource="&OntoDM;real_datatype"/>
+    </owl:Class>
+    
+
+
+    <!-- http://kt.ijs.si/panovp/OntoDM/OntoDM#non_ordered_datatype -->
+
+    <owl:Class rdf:about="&OntoDM;non_ordered_datatype">
+        <rdfs:subClassOf rdf:resource="&OntoDM;primitive_datatype"/>
+    </owl:Class>
+    
+
+
+    <!-- http://kt.ijs.si/panovp/OntoDM/OntoDM#numeric_datatype -->
+
+    <owl:Class rdf:about="&OntoDM;numeric_datatype">
+        <rdfs:subClassOf rdf:resource="&OntoDM;ordinal_datatype"/>
+    </owl:Class>
+    
+
+
+    <!-- http://kt.ijs.si/panovp/OntoDM/OntoDM#ordered_datatype -->
+
+    <owl:Class rdf:about="&OntoDM;ordered_datatype">
+        <rdfs:subClassOf rdf:resource="&OntoDM;primitive_datatype"/>
+    </owl:Class>
+    
+
+
+    <!-- http://kt.ijs.si/panovp/OntoDM/OntoDM#ordinal_datatype -->
+
+    <owl:Class rdf:about="&OntoDM;ordinal_datatype">
+        <rdfs:subClassOf rdf:resource="&OntoDM;ordered_datatype"/>
+    </owl:Class>
+    
+
+
+    <!-- http://kt.ijs.si/panovp/OntoDM/OntoDM#primitive_datatype -->
+
+    <owl:Class rdf:about="&OntoDM;primitive_datatype">
+        <rdfs:subClassOf rdf:resource="&OntoDM;OntoDM:datatype"/>
+    </owl:Class>
+    
+
+
+    <!-- http://kt.ijs.si/panovp/OntoDM/OntoDM#real_datatype -->
+
+    <owl:Class rdf:about="&OntoDM;real_datatype">
+        <rdfs:subClassOf rdf:resource="&OntoDM;numeric_datatype"/>
+    </owl:Class>
+    
+
+
+    <!-- http://kt.ijs.si/panovp/OntoDM/OntoDM#real_from_0_to_1_datatype -->
+
+    <owl:Class rdf:about="&OntoDM;real_from_0_to_1_datatype">
+        <rdfs:subClassOf rdf:resource="&OntoDM;real_datatype"/>
+    </owl:Class>
+    
+
+
+    <!-- http://kt.ijs.si/panovp/OntoDM/OntoDM#sequence_datatype -->
+
+    <owl:Class rdf:about="&OntoDM;sequence_datatype">
+        <rdfs:subClassOf rdf:resource="&OntoDM;tree_datatype"/>
+    </owl:Class>
+    
+
+
+    <!-- http://kt.ijs.si/panovp/OntoDM/OntoDM#set_datatype -->
+
+    <owl:Class rdf:about="&OntoDM;set_datatype">
+        <rdfs:subClassOf rdf:resource="&OntoDM;structured_datatype"/>
+    </owl:Class>
+    
+
+
+    <!-- http://kt.ijs.si/panovp/OntoDM/OntoDM#structured_datatype -->
+
+    <owl:Class rdf:about="&OntoDM;structured_datatype">
+        <rdfs:subClassOf rdf:resource="&OntoDM;OntoDM:datatype"/>
+    </owl:Class>
+    
+
+
+    <!-- http://kt.ijs.si/panovp/OntoDM/OntoDM#tree_datatype -->
+
+    <owl:Class rdf:about="&OntoDM;tree_datatype">
+        <rdfs:subClassOf rdf:resource="&OntoDM;graph_datatype"/>
+    </owl:Class>
+    
+
+
+    <!-- http://kt.ijs.si/panovp/OntoDM/OntoDM#tuple_datatype -->
+
+    <owl:Class rdf:about="&OntoDM;tuple_datatype">
+        <rdfs:subClassOf rdf:resource="&OntoDM;structured_datatype"/>
+    </owl:Class>
+    
+
+
+    <!-- http://kt.ijs.si/panovp/OntoDM/OntoDM#vector_datatype -->
+
+    <owl:Class rdf:about="&OntoDM;vector_datatype">
+        <rdfs:subClassOf rdf:resource="&OntoDM;tuple_datatype"/>
+    </owl:Class>
+    
+
+
+    <!-- http://kt.ijs.si/panovp/OntoDM/OntoDM#vector_of_primitive_datatypes -->
+
+    <owl:Class rdf:about="&OntoDM;vector_of_primitive_datatypes">
+        <rdfs:subClassOf rdf:resource="&OntoDM;vector_datatype"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.w3.org/2002/07/owl#Thing -->
+
+    <owl:Class rdf:about="&owl;Thing"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#genid1249996370152018000 -->
+
+    <owl:Thing rdf:about="#genid1249996370152018000">
+        <rdf:type rdf:resource="&OntoDM;integer_datatype"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#j48 -->
+
+    <owl:Thing rdf:about="#j48">
+        <rdf:type rdf:resource="#J48_algorithm_implementation"/>
+    </owl:Thing>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#test -->
+
+    <owl:Thing rdf:about="#test"/>
+    
+
+
+    <!-- http://expdb.cs.kuleuven.be/Expose.owl#weka.j48 -->
+
+    <owl:Thing rdf:about="#weka.j48"/>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 2.2.1.1138) http://owlapi.sourceforge.net -->
+

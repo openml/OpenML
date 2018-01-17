@@ -1,0 +1,27 @@
+<xs:schema targetNamespace="http://openml.org/openml" xmlns:oml="http://openml.org/openml" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="task_inputs" type="oml:task_inputs"/>
+  <xs:complexType name="task_inputs">
+	  <xs:sequence>
+		  <xs:element name="task_id" minOccurs="0" type="xs:integer" /> <!-- Ignored by server when uploading/creating a task -->
+		  <xs:element name="task_type_id" type="xs:integer" />
+		  <xs:element name="input" minOccurs="1" maxOccurs="unbounded" type="oml:input" />		<!-- The inputs given for this task (e.g. datasets) -->
+		  <xs:element name="tag" minOccurs="0" maxOccurs="unbounded" type="oml:system_string" />
+	  </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="input">
+	  <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="name" type="oml:system_string"></xs:attribute>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+
+  <xs:simpleType name="system_string"> <!-- Subset on xs:string. Highly restricted form of string. URL-friendly -->
+    <xs:restriction base="xs:string">
+       <xs:pattern value="([a-zA-Z0-9_\-\.])+"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>
+

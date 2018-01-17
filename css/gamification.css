@@ -1,0 +1,234 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Feb 12, 2016, 11:11:27 AM
+    Author     : s092766
+*/
+
+.btn-link, .btn-link:hover, .btn-link:focus, .btn-link:active{
+    padding: 0px 0px 0px 0px;
+    margin: 0px 0px 0px 0px;
+    color: #009688;
+    display: inline;
+}
+
+.reach{
+    color: #8E24AA;//#BED31B;//#d9534f;
+}
+
+.reach-bg{
+    background-color: #CE93D8 !important;
+}
+
+.impact{
+    color: #8E24AA;//#eeee22;
+}
+
+.impact-bg{
+    background-color: #CE93D8 !important;
+}
+
+.activity{
+    color: #8E24AA;//#77AA11;//#62bb66;
+}
+
+.activity-bg{
+    background-color: #CE93D8 !important;
+}
+
+.dataset{
+    color:#4caf50;
+}
+
+.flow{
+    color:#03a9f4;
+}
+
+.run{
+    color:#f44336;
+}
+
+.task{
+    color:#ff5722;
+}
+
+.likes{
+    color: #009926;
+}
+
+.downloads{
+    color: #1db34f;
+}
+
+.nav-pills.activity-bg{
+    background-color: #CE93D8 !important;
+    color: black;
+}
+
+.nav-pills.activity-bg>li{
+    color:black;
+    background-color: #CE93D8 !important;
+}
+
+.nav-pills.activity-bg>li>a{
+    color:black;
+    background-color: #CE93D8 !important;
+}
+
+.nav-pills.activity-bg>li.active>a{
+    color:#8E24AA;
+    background-color:black !important;
+}
+
+.nav-pills.reach-bg{
+    background-color: #CE93D8 !important;
+    color: black;
+}
+
+.nav-pills.reach-bg>li{
+    color:black;
+    background-color: #CE93D8 !important;
+}
+
+.nav-pills.reach-bg>li>a{
+    color:black;
+    background-color: #CE93D8 !important;
+}
+
+.nav-pills.reach-bg>li.active>a{
+    color:#8E24AA;
+    background-color:black !important;
+}
+
+.nav-pills.impact-bg{
+    background-color: #CE93D8 !important;
+    color: black;
+}
+
+.nav-pills.impact-bg>li{
+    color:black;
+    background-color: #CE93D8 !important;
+}
+
+.nav-pills.impact-bg>li>a{
+    color:black;
+    background-color: #CE93D8 !important;
+}
+
+.nav-pills.impact-bg>li.active>a{
+    color:white;
+    background-color:black !important;
+}
+
+.nav-pills.activity{
+    background-color:none !important;
+    color: black;
+    font-weight: normal !important;
+}
+
+.nav-pills.activity>li{
+    background-color:none !important;
+    color: black;
+    padding: 0px;
+}
+
+.nav-pills.activity>li>a{
+    background-color:none !important;
+    color: black;
+}
+
+.nav-pills.activity>li>a>i{
+    color: #8E24AA;
+}
+
+.nav-pills.activity>li.active>a{
+    background-color: #CE93D8;
+    color: black;
+}
+
+.nav-pills.activity>li.active>a>i{
+    color: black;
+}
+
+.nav-pills.reach{
+    background-color:none !important;
+    color: black;
+    font-weight: normal !important;
+}
+
+.nav-pills.reach>li{
+    background-color:none !important;
+    color: black;
+    padding: 0px;
+}
+
+.nav-pills.reach>li>a{
+    background-color:none !important;
+    color: black;
+}
+
+.nav-pills.reach>li>a>i{
+    color: #8E24AA;
+}
+
+.nav-pills.reach>li.active>a{
+    background-color: #CE93D8;
+    color: black;
+}
+
+.nav-pills.reach>li.active>a>i{
+    color: black;
+}
+
+.nav-pills.impact{
+    background-color:none !important;
+    color: black;
+    font-weight: normal !important;
+}
+
+.nav-pills.impact>li{
+    background-color:none !important;
+    color: black;
+    padding: 0px;
+}
+
+.nav-pills.impact>li>a{
+    background-color:none !important;
+    color: black;
+}
+
+.nav-pills.impact>li>a>i{
+    color: #8E24AA;
+}
+
+.nav-pills.impact>li>a>sub>i{
+    color: #8E24AA;
+}
+
+.nav-pills.impact>li.active>a{
+    background-color: #CE93D8;
+    color: black;
+}
+
+.nav-pills.impact>li.active>a>i{
+    color: black;
+}
+
+.nav-pills.impact>li.active>a>sub>i{
+    color: black;
+}
+
+.usertable{
+    color: black;
+}
+
+.usertable td.mainvalue{
+    color: black;
+}
+
+.usertable td.borderless{
+    border-top: none !important;
+}

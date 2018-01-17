@@ -1,12 +1,5 @@
-OpenML_Util/bin/
-RapidMiner/OpenML/bin/
-RapidMiner/OpenML/build/
-
-.Rhistory
-OpenML.Rproj
-.Rproj.user
-R/openML.Rcheck
-R/openML/man
-.project
-Java/OpenmlWebapplication/.settings/org.eclipse.jdt.core.prefs
-Java/OpenmlWebapplication/.classpath
+data/*
+!data/sql/
+index.php
+openml_OS/config/BASE_CONFIG.php
+openml_OS/third_party/OpenML/Java/old-evaluate.jar

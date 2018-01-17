@@ -1,0 +1,8 @@
+INSERT INTO `task_io_types` (`name`, `description`) VALUES
+('CostMatrix', 'A matrix describing the cost of miss-classifications per type. '),
+('Dataset', 'The id of an OpenML dataset, to be fetched separately.'),
+('EstimationProcedure', 'XML representation of a procedure to evaluate models, for instance, cross-validation. See the list of <a href=\'a\'>estimation procedures</a> supported by OpenML. In most cases, a train-test split file will be generated based on the input data of the task.'),
+('File', 'A file in any format. Typically used to allow additional outputs of a run for future reference.'),
+('KeyValue', 'List of key-value pairs in XML format. Replace \'outputs\' and \'output\' by the name of the output (or input).<br><br>\r\n\r\n[outputs]<br>\r\n [output name=\'key\']value[/output]<br>\r\n [output name=\'key\']value[/output]<br>\r\n[outputs]<br><br>\r\n* replace brackets by tags\r\n'),
+('PredictionsFile', 'Valid ARFF file containing the predictions of a model under evaluation. Must use the following signature. Repeat, fold and rowid correspond to the values given in the train-test split file. Fill in the task id and the list of class names corresponding to the input data. For probabilistic algorithms, add an attribute for each class containing the confidence of the prediction for each class.<br><br>\r\n\r\n@relation openml_task_[task_id]_predictions <br>\r\n\r\n@ATTRIBUTE repeat INTEGER<br>\r\n@ATTRIBUTE fold INTEGER<br>\r\n@ATTRIBUTE rowid INTEGER<br>\r\n@ATTRIBUTE prediction {list of classes}<br>\r\n@ATTRIBUTE confidence.class1 NUMERIC<br>\r\n@ATTRIBUTE confidence.class2 NUMERIC<br>\r\n'),
+('String', 'A simple string, possibly containing a list of comma-separated values.');

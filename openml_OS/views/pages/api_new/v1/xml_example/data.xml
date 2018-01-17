@@ -1,0 +1,11 @@
+<oml:data_set_description xmlns:oml="http://openml.org/openml">
+<oml:name>anneal</oml:name>
+<oml:description>Description of the dataset</oml:description>
+<oml:format>ARFF</oml:format>
+<oml:url>Enter if you upload via URL instead of attaching a file</oml:url>
+<oml:default_target_attribute>Name of the attribute to be used as the target, if any</oml:default_target_attribute>
+<oml:row_id_attribute>Name of the attribute that represents row ID's, if any</oml:row_id_attribute>
+<oml:ignore_attribute>Name(s) of attribute(s) that should be ignored for training models, if any. Use multiple tags for multiple attributes.</oml:ignore_attribute>
+<oml:version_label>Enter if you have a version label for your dataset</oml:version_label>
+</oml:data_set_description>
+

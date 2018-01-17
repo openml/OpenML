@@ -1,0 +1,7 @@
+org.openml.apiconnector
+org.openml.apiconnector.algorithms
+org.openml.apiconnector.io
+org.openml.apiconnector.models
+org.openml.apiconnector.settings
+org.openml.apiconnector.xml
+org.openml.apiconnector.xstream
