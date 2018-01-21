@@ -284,14 +284,20 @@ if (session_status() === PHP_SESSION_NONE){session_start();}
                   <?php } else { ?>
                       <li <?php echo ($section == '' ?  'class="topactive"' : '');?>><a href="u/<?php echo $this->user->id; ?>"><img src="<?php echo htmlentities( authorImage( $this->user->image ) ); ?>" width="25" height="25" class="img-circle" alt="<?php echo $this->user->first_name . ' ' . $this->user->last_name; ?>" /> <?php echo user_display_text(); ?></a></li>
                   <?php } ?> -->
-                      <li <?php echo ($section == 'Data' ?  'class="topactive"' : '');?>><a href="search?type=data<?php if(array_key_exists("q",$_GET)) echo '&q='.$_GET["q"];?>" class="icongreen"><i class="fa fa-fw fa-lg fa-database"></i> Data<span id="datacounter" class="counter"></span></a></li>
-                      <li <?php echo ($section == 'Task' ?  'class="topactive"' : '');?>><a href="search?type=task<?php if(array_key_exists("q",$_GET)) echo '&q='.$_GET["q"];?>" class="iconyellow"><i class="fa fa-fw fa-lg fa-trophy"></i> Tasks<span id="taskcounter" class="counter"></span></a></li>
-                      <li <?php echo ($section == 'Flow' ?  'class="topactive"' : '');?>><a href="search?type=flow<?php if(array_key_exists("q",$_GET)) echo '&q='.$_GET["q"];?>" class="iconblue"><i class="fa fa-fw fa-lg fa-cogs"></i> Flows<span id="flowcounter" class="counter"></span></a></li>
-                      <li <?php echo ($section == 'Run' ?  'class="topactive"' : '');?>><a href="search?type=run<?php if(array_key_exists("q",$_GET)) echo '&q='.$_GET["q"];?>" class="iconred"><i class="fa fa-fw fa-lg fa-star"></i> Runs<span id="runcounter" class="counter"></span></a></li>
-                      <li <?php echo ($section == 'Study' ?  'class="topactive"' : '');?>><a href="search?type=study<?php if(array_key_exists("q",$_GET)) echo '&q='.$_GET["q"];?>" class="iconpurple"><i class="fa fa-fw fa-lg fa-flask"></i> Studies<span id="studycounter" class="counter"></span></a></li>
-                      <li <?php echo ($section == 'Task type' ?  'class="topactive"' : '');?>><a href="search?type=task_type<?php if(array_key_exists("q",$_GET)) echo '&q='.$_GET["q"];?>" class="iconorange"><i class="fa fa-fw fa-lg fa-flag-o"></i> Task Types<span id="task_typecounter" class="counter"></span></a></li>
-                      <li <?php echo ($section == 'Measure' ?  'class="topactive"' : '');?>><a href="search?type=measure<?php if(array_key_exists("q",$_GET)) echo '&q='.$_GET["q"];?>" class="iconbluegray"><i class="fa fa-fw fa-lg fa-bar-chart-o"></i> Measures<span id="measurecounter" class="counter"></span></a></li>
-                      <li <?php echo ($section == 'People' ?  'class="topactive"' : '');?>><a href="search?type=user<?php if(array_key_exists("q",$_GET)) echo '&q='.$_GET["q"];?>" class="iconblueacc"><i class="fa fa-fw fa-lg fa-users"></i> People<span id="usercounter" class="counter"></span></a></li>
+                      <?php
+
+                        $sections = ["Data", "Task", "Flow", "Run", "Study", "Task type", "Measure", "People"];
+                        $types    = ["data", "task", "flow", "run", "study", "task_type", "measure", "user"];
+                        $colors   = ["green", "yellow", "blue", "red", "purple", "orange", "bluegray", "blueacc"];
+                        $icons    = ["database", "trophy", "cogs", "star", "flask", "flag-o", "bar-chart-o", "users"];
+
+                        for( $i = 0; $i < count($sections); $i++ ) {
+                          echo "<li" . ($section == $sections[$i] ? " class=\"topactive\"" : "") . ">";
+                          echo "<a href=\"search?type=" . $types[$i] . (array_key_exists("q", $_GET) ? "&amp;q=" . safe($_GET["q"]) : "") . "\" class=\"icon{$colors[$i]}\">";
+                          echo "<i class=\"fa fa-fw fa-lg fa-{$icons[$i]}\"></i> $sections[$i]<span id=\"{$types[$i]}counter\" class=\"counter\"></span></a></li>" . PHP_EOL;
+                        }
+
+                      ?>
                 </ul>
               </li>
                 <li class="panel guidechapter">
