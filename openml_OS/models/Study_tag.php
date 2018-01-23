@@ -15,7 +15,6 @@ class Study_tag extends Database_write {
       'AND (t.write_access = "public" OR s.creator = "' . $user_id . '") ' .
       'AND (t.window_start IS NULL OR t.window_start < "' . $time . '")' .
       'AND (t.window_end IS NULL OR t.window_end > "' . $time . '")';
-    }
 
     return $this->getColumnFromSql('study_id', $sql);
   }
