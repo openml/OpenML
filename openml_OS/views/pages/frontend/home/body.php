@@ -270,9 +270,11 @@
         <div class="twitter-header">
          <a href="https://twitter.com/intent/tweet?text=%23OpenML" data-related="open_ml"><i class="fa fa-twitter fa-2x"></i></a>
         </div>
-        <a class="twitter-timeline" data-chrome="noheader" data-dnt="true" href="https://twitter.com/joavanschoren/timelines/616186899376525312" data-widget-id="616191425143816192">Click here if tweets don't load.</a>
-        <script defer="defer">!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+        <a class="twitter-timeline" data-dnt="true" href="https://twitter.com/joavanschoren/timelines/616186899376525312" data-widget-id="616191425143816192">Click here if tweets don't load.</a>
+        <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
   </div>
+
+
 
 
 
