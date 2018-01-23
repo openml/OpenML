@@ -66,7 +66,7 @@ if(isset ($this->specialterms))
 	$this->terms = $this->specialterms;
 else{
   $this->specialterms = "";
-	$this->terms = safe($this->input->get('q'));
+	$this->terms = htmlspecialchars(safe($this->input->get('q')), ENT_QUOTES);
   $this->terms = str_replace('lt;','<',$this->terms);
   $this->terms = str_replace('gt;','>',$this->terms);
   $this->terms = explode('/',$this->terms)[0];
