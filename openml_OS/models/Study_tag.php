@@ -9,13 +9,16 @@ class Study_tag extends Database_write {
 
   // given a tagged entity, return all the studies that need to be updated with it
   function studiesToUpdate($tag, $time, $user_id) {
+    $is_admin = $this->ion_auth->is_admin($user_id);
+
     $sql =
       'SELECT t.study_id FROM study_tag t, study s ' .
-      'WHERE t.study_id = s.id AND tag = "' . $tag . '" ' .
-      'AND (t.write_access = "public" OR s.creator = "' . $user_id . '") ' .
-      'AND (t.window_start IS NULL OR t.window_start < "' . $time . '")' .
-      'AND (t.window_end IS NULL OR t.window_end > "' . $time . '")';
-
+      'WHERE t.study_id = s.id AND tag = "' . $tag . '" ';
+    if(!$this->ion_auth->is_admin($user_id)){
+      $sql .=   'AND (t.write_access = "public" OR s.creator = "' . $user_id . '") ' .
+                'AND (t.window_start IS NULL OR t.window_start < "' . $time . '")' .
+                'AND (t.window_end IS NULL OR t.window_end > "' . $time . '")';
+    }
 
     return $this->getColumnFromSql('study_id', $sql);
   }
