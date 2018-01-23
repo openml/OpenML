@@ -117,7 +117,7 @@ echo 'search?'.$att; ?>"><i class="fa <?php echo ($this->listids ? 'fa-align-jus
 </div>
 
 <div class="searchstats"><?php echo $this->results['hits']['total'];?> results</div>
-<?php if($this->filtertype and in_array($this->filtertype, array("data"))){?>
+<?php if($this->filtertype and in_array($this->filtertype, array("data")) and (!array_key_exists('status',$this->filters) or $this->filters['status'] != 'all')){?>
 						<p class="searchstatdetail">Only showing <a data-toggle="collapse" href="#filterBox" aria-expanded="true" aria-controls="filterBox"><?php echo (array_key_exists('status',$this->filters) ? $this->filters['status'] : 'active');?></a> datasets (public or shared with you).</p>
 <?php } ?>
 </div>

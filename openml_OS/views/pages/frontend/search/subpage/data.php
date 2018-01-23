@@ -19,6 +19,12 @@
      value="<?php if(array_key_exists('tags.tag',$this->filters)){ echo $this->filters['tags.tag'];}?>" placeholder="Tag">
 </li>
 <li>
-    <input type="text" class="form-control floating-label" id="status" name="status" data-hint="Dataset status (active, in_preparation, deactivated,...)"
-     value="<?php echo (array_key_exists('status',$this->filters) ? $this->filters['status'] : 'active')?>" placeholder="Status">
+     <select class="form-control input-small selectpicker" name="status" id="status" data-hint="Dataset status (active, in_preparation, deactivated,...)">
+       <option value="<?php echo $m;?>" <?php if(array_key_exists('evaluation_measures',$this->filters) and $this->filters['evaluation_measures'] == $m){ echo 'selected';}?>><?php echo str_replace('_', ' ', $m);?></option>
+
+         <option value="all" <?php if(array_key_exists('status',$this->filters) and $this->filters['status'] == 'all'){ echo 'selected';}?>>all</option>
+         <option value="active" <?php if(array_key_exists('status',$this->filters) or $this->filters['status'] == 'active' or $this->filters['status'] == ''){ echo 'selected';}?>>active</option>
+         <option value="in_preparation" <?php if(array_key_exists('status',$this->filters) and $this->filters['status'] == 'in_preparation'){ echo 'selected';}?>>in_preparation</option>
+         <option value="deactivated" <?php if(array_key_exists('status',$this->filters) and $this->filters['status'] == 'deactivated'){ echo 'selected';}?>>deactivated</option>
+    </select>
 </li>
