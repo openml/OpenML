@@ -12,6 +12,7 @@ if($this->study['visibility'] == 'private' and (!$this->ion_auth->logged_in() or
   //if(strlen($this->wikiwrapper)>400)
   //  $this->hidedescription = true;
 }
+
 ?>
 <div id="subtitle"><?php echo $this->study['name']; ?></div>
 <div class="container-fluid topborder endless openmlsectioninfo">
@@ -25,6 +26,14 @@ if($this->study['visibility'] == 'private' and (!$this->ion_auth->logged_in() or
     <div class="datainfo">
        <i class="fa fa-cloud-upload"></i> Created <?php echo dateNeat( $this->study['date']); ?> by <a href="u/<?php echo $this->study['uploader_id'] ?>"><?php echo $this->study['uploader'] ?></a>
        <i class="fa fa-eye-slash"></i> Visibility: <?php echo strtolower($this->study['visibility']); ?>
+       <?php if ($this->ion_auth->logged_in()) { ?>
+       <i class="fa fa-refresh"></i>
+         <form method="post" action="" enctype="multipart/form-data" style="display:inline;">
+           <input type="hidden" name="index_type" id="index_type" value="study" />
+           <input type="hidden" name="index_id" id="index_id" value="<?php echo $this->id; ?>" />
+           <input type="submit" class="btn-link datalink" value="Refresh" />
+         </form>
+       <?php } ?>
     </div>
 
     <div class="tabbed-submenu" style="margin-bottom: -60px;">

@@ -41,4 +41,12 @@ if($this->input->post('versions')){
   if($this->input->post('content'))
   	header('Location: '.BASE_URL.'s/'.$this->id);
 }
+if(isset($_POST["index_type"])){
+  try{
+    $this->elasticsearch->index($_POST["index_type"],$_POST["index_id"]);
+    redirect('s/'.$this->id);
+  } catch (Exception $e) {
+    echo 'Caught exception: ',  $e->getMessage(), "\n";
+  }
+}
 ?>
