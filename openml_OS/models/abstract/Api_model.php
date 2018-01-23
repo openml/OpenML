@@ -239,7 +239,7 @@ class Api_model extends CI_Model {
       return false;
     }
 
-    if (!$supress_output) { 
+    if (!$supress_output) {
       $tags = $this->{$model_name_tag}->getColumnWhere('tag', 'id = ' . $id);
       $this->xmlContents(
         'entity-tag',
