@@ -19,8 +19,6 @@
      value="<?php if(array_key_exists('tags.tag',$this->filters)){ echo $this->filters['tags.tag'];}?>" placeholder="Tag">
 </li>
 <li>
-    <input type="text" class="form-control floating-label" id="status" name="status" data-hint="Dataset status (active, in_preparation, deactivated,...)"
-     value="<?php echo (array_key_exists('status',$this->filters) ? $this->filters['status'] : 'active')?>" placeholder="Status">
      <select class="form-control input-small selectpicker" name="status" id="status" data-hint="Dataset status (active, in_preparation, deactivated,...)">
          <option value="all">all</option>
          <option value="active">active</option>
