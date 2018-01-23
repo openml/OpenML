@@ -18,6 +18,21 @@ class Study_tag extends Database_write {
 
     return $this->getColumnFromSql('study_id', $sql);
   }
+  
+  function getStudyIdsFromEntity($entity_type, $entity_id) {
+    if (!in_array($entity_type, array('dataset', 'task', 'flow', 'setup', 'run'))) {
+      return false;
+    }
+    
+    $sql =
+      'SELECT t.study_id FROM  study s, study_tag t, '.$entity_type.'_tag d ' .
+      'WHERE t.study_id = s.id AND d.tag = t.tag AND d.id = ' . $entity_id . ' ' .
+      'AND (t.write_access = "public" OR s.creator = d.uploader) ' .
+      'AND (t.window_start IS NULL OR t.window_start < d.time)' .
+      'AND (t.window_end IS NULL OR t.window_end > d.time)';
+
+    return $this->getColumnFromSql('study_id', $sql);
+  }
 
   function getDataIdsFromStudy($study_id) {
     $sql =
