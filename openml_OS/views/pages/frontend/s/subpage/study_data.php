@@ -4,7 +4,7 @@
     <?php
       $this->filtertype = 'data';
       $this->sort = 'date';
-      $this->specialterms = 'tags.tag:study_'.$this->id;
+      $this->specialterms = 'status:all tags.tag:study_'.$this->id;
       loadpage('search', true, 'pre');
       $this->dataonly = true;
       loadpage('search/subpage', true, 'results'); ?>
