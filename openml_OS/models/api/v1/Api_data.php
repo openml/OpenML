@@ -228,6 +228,10 @@ class Api_data extends Api_model {
     foreach( $this->xml_fields_dataset['csv'] as $field ) {
       $dataset->{$field} = getcsv( $dataset->{$field} );
     }
+    
+    # TMP hack for testing
+    $studies = $this->Study_tag->getStudyIdsFromEntity('dataset', $dataset->did);
+    $dataset->studies = $studies != false ? $studies : array();
 
     $this->xmlContents( 'data-get', $this->version, $dataset );
   }
