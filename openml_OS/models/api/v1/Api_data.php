@@ -230,7 +230,7 @@ class Api_data extends Api_model {
     }
     
     # TMP hack for testing
-    $studies = $this->Study_tag->getStudyIdsFromEntity($dataset->did);
+    $studies = $this->Study_tag->getStudyIdsFromEntity('dataset', $dataset->did);
     $dataset->studies = $studies != false ? $studies : array();
 
     $this->xmlContents( 'data-get', $this->version, $dataset );
