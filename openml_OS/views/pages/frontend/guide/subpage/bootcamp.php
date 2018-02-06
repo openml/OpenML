@@ -1,8 +1,5 @@
-<h2>OpenML Bootcamp</h2>
-<p style="margin-top:20px;">
-<b><i>OpenML aims to make machine learning and data analysis simple, accessible, collaborative and open,
-  automating many manual tasks to create a frictionless working and learning environment.</i></b>
-<p>
+<div class="bootcamp-callout">OpenML makes machine learning more accessible, collaborative and automated,
+  creating a <i>frictionless</i> working and learning environment.</div>
 
 <p><i class="fa fa-globe fa-fw fa-lg"></i> <a href="d">Data sets</a> from various sources automatically analyzed, annotated, and organized online for easy access</p>
 <p><i class="fa fa-cogs fa-fw fa-lg"></i> Integrated into <a href="guide/integrations">machine learning tools</a> for automated experimentation, logging, and <a href="f">workflow</a> sharing</p>

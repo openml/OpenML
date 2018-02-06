@@ -92,7 +92,12 @@ $frontend_pages = array(
           'contact',
           'preview',
           'query',
-          'project' );
+          'project',
+          'python_api',
+          'java_api',
+          'weka_api',
+          'python_guide',
+          'r_guide');
 
 foreach( $frontend_pages as $page ) {
   $route[$page]     = 'frontend/page/'.$page;

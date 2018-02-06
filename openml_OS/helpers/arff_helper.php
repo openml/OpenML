@@ -14,8 +14,10 @@ function ARFFparseString($line, $pos, &$token, $delimiters)
 	{
 		$quote = $line[$pos];
 		$pos++;
-		$end = strpos($line, $quote, $pos);
-		if ($end === FALSE) return "missing trailing quote in string";
+		do{ #find next occurence of the quote
+			$end = strpos($line, $quote, max($pos, $end + 1));
+			if ($end === FALSE) return "missing trailing quote in string";
+		} while($line[$end-1] != '\\'); #but ignore escaped quotes
 		$token = substr($line, $pos, $end - $pos);
 		$end++;
 		if ($end == $len) return $end;
@@ -44,7 +46,7 @@ function ARFFparseString($line, $pos, &$token, $delimiters)
 	return $end;
 }
 
-// This function checks whether the content from $filepath appears to be a 
+// This function checks whether the content from $filepath appears to be a
 // valid ARFF file. It checks the header section and up to $numLines data lines,
 // in dense or sparse format. In case of an ARFF format violation it returns an
 // error message string, otherwise it returns TRUE.
@@ -132,7 +134,7 @@ function ARFFcheck($filepath, $numLines = 100)
 					$s = strtolower($s);
 					if ($s == "binary" or $s == "integer" or $s == "real") $s = "numeric";   // map nonofficial types to official numeric type
 					if ($s != "numeric" and $s != "string" and $s != "date")
-					{ 
+					{
 						fclose($filehandle);
 						return "unsupported attribute type: " . $s . " (l.".$lineNumber.")";
 					}

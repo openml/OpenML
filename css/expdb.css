@@ -1,13 +1,113 @@
 /*::-webkit-scrollbar {
     display: none;
 }*/
-
 #subtitle{
   display: none;
 }
 
+#python_api_frame{
+  margin-top: -50px;
+}
+
+#weka_api_frame, #java_api_frame{
+  margin-top: 10px;
+}
+
+#r_api_frame{
+  margin-top: 10px;
+}
+
+#guidelist{
+  margin-top: 50px;
+  position: sticky;
+}
+
+.bootcamp-callout{
+  margin-top:40px;
+  font-size: 28px !important;
+  margin-bottom:40px;
+}
+
 .bootcamplist dt {
+  padding-top: 20px;
+  padding-bottom: 10px;
+  font-size: 18px !important;
+  font-weight: 100;
+}
+
+.navbar-subbrand {
+    position: relative;
+    line-height: 30px;
+    color: inherit;
+    float: left;
+    padding-top: 20px;
+    font-size: 18px;
+    line-height: 20px;
+    font-style: bold;
+}
+
+.menu-dropdown{
+  display: inline-block;
+}
+
+.dropdown-toggle:after {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    margin-left: .255em;
+    vertical-align: .255em;
+    content: "";
+    border-top: .3em solid;
+    border-right: .3em solid transparent;
+    border-bottom: 0;
+    border-left: .3em solid transparent;
+}
+
+.dropdown-menu .dropdown-item {
+    position: relative;
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+    min-width: 7rem;
+    max-width: 17.5rem;
+    min-height: 3rem;
+    padding: .8rem 1rem;
+    overflow: hidden;
+    line-height: 1;
+    text-overflow: ellipsis;
+    word-wrap: break-word;
+    padding-right: 1.5rem;
+    padding-left: 2rem;
+    font-size: 1.5rem;
+}
+
+.dropdown-menu a{
+    color: #000;
+    text-decoration: none;
+}
+
+.dropdown-menu-right {
+    right: 0;
+    left: auto;
+    padding: .5rem 0;
+}
+
+.dropdown-item.active {
+    font-weight: 500;
+    color: #212529;
+    background-color: transparent;
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath fill='%23292b2c' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: .4rem 1.1rem;
+    background-size: 1rem 1rem;
+}
+
+.nav > .btn{
   padding-top: 10px;
+}
+
+#section-brand{
+  padding-right:40px !important;
 }
 
 .swagger-section .operations h4{
@@ -840,6 +940,8 @@ select{
   background-color: #ffffff;
   height: 100%;
   min-height: 1000px;
+  width: 100%;
+  margin-left: 0px;
 }
 
 .guidechapter{
@@ -3058,6 +3160,10 @@ svg:not(:root){
 }
 
 @media screen and (max-width: 768px) {
+
+.wrapguide{
+  margin-top:100px !important;
+}
 
 
 
