@@ -363,7 +363,7 @@ options = {
 		point: {
                     events: {
                         //click: function(){$('#runModal').modal({remote: 'r/' + this.r + '/html'}); $('#runModal').modal('show');}
-                        click: function() { window.open('http://www.openml.org/r/' + this.r);}
+                        click: function() { window.open('https://www.openml.org/r/' + this.r);}
 
                     }
                 }
@@ -433,8 +433,10 @@ options = {
 }
 
 function getEval(arr, value) {
-  var result  = arr.filter(function(o){return o.evaluation_measure == value;} );
-  return result ? (result[0] ? result[0]['value'] : null) : null; // or undefined
+  if(arr != null){
+    var result  = arr.filter(function(o){return o.evaluation_measure == value;} );
+    return result ? (result[0] ? result[0]['value'] : null) : null; // or undefined
+  }
 }
 
 function getPar(arr, value) {
