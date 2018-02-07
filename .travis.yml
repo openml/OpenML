@@ -1,9 +1,0 @@
-language: java
-jdk:
-  - oraclejdk8
-  - oraclejdk7
-sudo: false
-before_script: 
-cd Java/OpenmlWeka
-ant make_external -DpackageName=OpenmlWeka
-script: ant test
