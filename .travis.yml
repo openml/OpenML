@@ -1,0 +1,12 @@
+language: python
+install:
+- pip install mkdocs
+script:
+- mkdocs build --verbose --clean --strict
+deploy:
+ provider: pages
+ skip_cleanup: true
+ github_token: $travis_ci_key # Set in travis-ci.org dashboard
+ local_dir: site
+ on:
+   branch: master
