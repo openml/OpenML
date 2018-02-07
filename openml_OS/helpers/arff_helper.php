@@ -17,7 +17,7 @@ function ARFFparseString($line, $pos, &$token, $delimiters)
 		do{ #find next occurence of the quote
 			$end = strpos($line, $quote, max($pos, $end + 1));
 			if ($end === FALSE) return "missing trailing quote in string";
-		} while($line[$end-1] != '\\'); #but ignore escaped quotes
+		} while($end !== FALSE and $line[$end-1] == '\\'); #but ignore escaped quotes
 		$token = substr($line, $pos, $end - $pos);
 		$end++;
 		if ($end == $len) return $end;

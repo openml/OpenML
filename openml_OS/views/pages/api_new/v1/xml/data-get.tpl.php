@@ -18,6 +18,7 @@
   <?php if ($version_label != null): ?><oml:version_label><?php echo htmlspecialchars($version_label); ?></oml:version_label><?php endif; ?>
   <?php if ($citation != null): ?><oml:citation><?php echo htmlspecialchars($citation); ?></oml:citation><?php endif; ?>
   <?php if( is_array( $tag ) ) foreach( $tag as $t ): ?><oml:tag><?php echo htmlspecialchars($t); ?></oml:tag><?php endforeach; ?>
+  <!-- <?php if( is_array( $studies ) ) foreach( $studies as $s ): ?><oml:study><?php echo $s; ?></oml:study><?php endforeach; ?> -->
   <?php if ($visibility != null): ?><oml:visibility><?php echo htmlspecialchars($visibility); ?></oml:visibility><?php endif; ?>
   <?php if ($original_data_url != null): ?><oml:original_data_url><?php echo htmlspecialchars($original_data_url); ?></oml:original_data_url><?php endif; ?>
   <?php if ($paper_url != null): ?><oml:paper_url><?php echo htmlspecialchars($paper_url); ?></oml:paper_url><?php endif; ?>
