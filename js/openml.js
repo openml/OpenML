@@ -160,7 +160,7 @@ $(function() {
   });
 
   // automatically show/hide the menu depending on the page width
-  if($('#sectiontitle').html() == 'OpenML'){
+  if($('#sectiontitle').html() == 'OpenML' || $('#sectiontitle').html() == 'Guide'){
     $('#mainmenu').css("display","none");
   } else if($('#wrap').width()>992){
     $('#mainmenu').css("display","block");
@@ -184,60 +184,62 @@ $(function() {
     $(this).prev().css( "font-weight", "normal" );
   });
 
-  // auto-suggest for the search box
-  $("#openmlsearch").autocomplete({
-    html: true,
-    position: {
-        my: "left top+13" // Shift 0px to the left, 20px down.
-    },
-    source: function(request, fresponse) {
-      client.search({
-        index: 'openml',
-        body: {
-          suggest: {
-            mysuggester: {
-              prefix: request.term,
-              completion: { field: 'suggest' }
+  // auto-suggest for the search box (if shown)
+  if( $('#openmlsearch').length ){
+    $("#openmlsearch").autocomplete({
+      html: true,
+      position: {
+          my: "left top+13" // Shift 0px to the left, 20px down.
+      },
+      source: function(request, fresponse) {
+        client.search({
+          index: 'openml',
+          body: {
+            suggest: {
+              mysuggester: {
+                prefix: request.term,
+                completion: { field: 'suggest' }
+              }
             }
           }
-        }
-      }, function (error, response) {
-        fresponse($.map(response['suggest']['mysuggester'][0]['options'], function(item) {
-          if(item['_type'] == 'data' && (item['_source']['visibility'] != 'public' || item['_source']['status'] != 'active')){}
-          else{
-           obj_description = '';
-           obj_text = item['text'];
-           obj_image = '<i class="' + icons[item['_type']] + '"></i>';
-           if(item['_type'] == 'data'){
-             obj_description = (typeof item['_source']['suggest']['input'][1] === 'string' ? item['_source']['suggest']['input'][1].substring(0,70) : '')
-           }
-           else if(item['_type'] == 'task'){
-             obj_description = item['_source']['suggest']['input'][0] + ', target ' + item['_source']['suggest']['input'][4] + ', with ' +  item['_source']['suggest']['input'][2]
-           }
-           else if(item['_type'] == 'user'){
-             obj_text = item['_source']['first_name']+' '+item['_source']['last_name'];
-             obj_description = item['_source']['affiliation']+', '+item['_source']['bio'];
-             obj_image = '<img src="'+item['_source']['image']+'" width=25, height=25, class="img-circle" onerror="this.src=\'img/community/misc/anonymousMan.png\'">';
-           }
-           else if(item['_type'] == 'flow'){
-             obj_text = item['_source']['name'];
-             obj_description = 'v.'+item['_source']['version']+', '+item['_source']['dependencies']+', '+item['_source']['description']
-           }
-           return {
-              type: item['_type'],
-              id: item['_id'],
-              description: obj_description,
-              text: obj_text,
-              image: obj_image
-            }
-          };
-        }));
-      });
+        }, function (error, response) {
+          fresponse($.map(response['suggest']['mysuggester'][0]['options'], function(item) {
+            if(item['_type'] == 'data' && (item['_source']['visibility'] != 'public' || item['_source']['status'] != 'active')){}
+            else{
+             obj_description = '';
+             obj_text = item['text'];
+             obj_image = '<i class="' + icons[item['_type']] + '"></i>';
+             if(item['_type'] == 'data'){
+               obj_description = (typeof item['_source']['suggest']['input'][1] === 'string' ? item['_source']['suggest']['input'][1].substring(0,70) : '')
+             }
+             else if(item['_type'] == 'task'){
+               obj_description = item['_source']['suggest']['input'][0] + ', target ' + item['_source']['suggest']['input'][4] + ', with ' +  item['_source']['suggest']['input'][2]
+             }
+             else if(item['_type'] == 'user'){
+               obj_text = item['_source']['first_name']+' '+item['_source']['last_name'];
+               obj_description = item['_source']['affiliation']+', '+item['_source']['bio'];
+               obj_image = '<img src="'+item['_source']['image']+'" width=25, height=25, class="img-circle" onerror="this.src=\'img/community/misc/anonymousMan.png\'">';
+             }
+             else if(item['_type'] == 'flow'){
+               obj_text = item['_source']['name'];
+               obj_description = 'v.'+item['_source']['version']+', '+item['_source']['dependencies']+', '+item['_source']['description']
+             }
+             return {
+                type: item['_type'],
+                id: item['_id'],
+                description: obj_description,
+                text: obj_text,
+                image: obj_image
+              }
+            };
+          }));
+        });
+      }
+    }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+      return $( "<li>" )
+      .append( '<a href="' + urlprefix[item.type] + '/' + item.id +'">' + item.image + ' ' + item.text + ' <span>' + item.description + '</span></a>' )
+      .appendTo( ul );
     }
-  }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
-    return $( "<li>" )
-    .append( '<a href="' + urlprefix[item.type] + '/' + item.id +'">' + item.image + ' ' + item.text + ' <span>' + item.description + '</span></a>' )
-    .appendTo( ul );
   }
 
   //reflow hidden charts and tables when they become visible

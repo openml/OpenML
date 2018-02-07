@@ -177,6 +177,7 @@ var oTableRuns = false;
 
 /// RESULT TABLE
 function buildTable(dataSet) {
+    $.fn.dataTable.ext.errMode = 'none';
     $('#flowtable').removeAttr('width').DataTable( {
         dom: 'Bfrtip',
         buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
@@ -256,21 +257,20 @@ function buildTableData(data){
 	tabledata = [];
 	for(key in data){
 		o = data[key]['_source'];
-		eval = o['evaluations'].filter(function(obj){return obj.evaluation_measure == evaluation_measure;})[0];
-		if(eval){
-			tabledata.push(['<a href="r/'+o['run_id']+'">'+o['run_id']+'</a>','<a href="d/'+o['run_task']['source_data']['data_id']+'">'+o['run_task']['source_data']['name']+'</a>',eval['value'],o['run_flow']['parameters'].map(shortParam)]);
-		}
+    if(o['evaluations'] != null){
+		    eval = o['evaluations'].filter(function(obj){return obj.evaluation_measure == evaluation_measure;})[0];
+		      if(eval){
+			         tabledata.push(['<a href="r/'+o['run_id']+'">'+o['run_id']+'</a>','<a href="d/'+o['run_task']['source_data']['data_id']+'">'+o['run_task']['source_data']['name']+'</a>',eval['value'],o['run_flow']['parameters'].map(shortParam)]);
+		           }
+        }
 	}
 	return tabledata;
 }
 
 function shortParam(a){
-	par = a.parameter.split('_').pop();
+	par = a.parameter;
 	val = a.value;
-	if(val.length>10){
-		val = val.split('.').pop();
-	}
-	return par+':'+val;
+	return '\n'+par+':'+val;
 }
 
 function updateTableHeader(){
@@ -363,7 +363,7 @@ options = {
 		point: {
                     events: {
                         //click: function(){$('#runModal').modal({remote: 'r/' + this.r + '/html'}); $('#runModal').modal('show');}
-                        click: function() { window.open('http://www.openml.org/r/' + this.r);}
+                        click: function() { window.open('https://www.openml.org/r/' + this.r);}
 
                     }
                 }
@@ -433,8 +433,10 @@ options = {
 }
 
 function getEval(arr, value) {
-  var result  = arr.filter(function(o){return o.evaluation_measure == value;} );
-  return result ? (result[0] ? result[0]['value'] : null) : null; // or undefined
+  if(arr != null){
+    var result  = arr.filter(function(o){return o.evaluation_measure == value;} );
+    return result ? (result[0] ? result[0]['value'] : null) : null; // or undefined
+  }
 }
 
 function getPar(arr, value) {
