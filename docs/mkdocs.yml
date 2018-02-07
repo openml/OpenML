@@ -1,0 +1,60 @@
+site_name: OpenML Developer Docs
+repo_url: https://github.com/openml/OpenML/
+theme:
+  name: null
+  custom_dir: 'mkdocs-material/material'
+  language: 'en'
+  palette:
+    primary: 'green'
+    accent: 'green'
+  font:
+    text: 'Roboto'
+    code: 'Roboto Mono'
+  logo:
+    icon: 'school'
+  feature:
+    tabs: true
+markdown_extensions:
+  - pymdownx.arithmatex
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.critic
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_generator: !!python/name:pymdownx.emoji.to_svg
+  - pymdownx.inlinehilite
+  - pymdownx.magiclink
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+pages:
+  - Home: 
+    - Welcome: index.md
+    - Community:
+        - 'How to contribute': Contributing.md
+        - 'Communication Channels' : Communication-Channels.md
+        - 'Core team': Core-team.md
+    - Usage guides:
+        - 'Basic Concepts': Basic-Concepts.md
+        - 'Editing Documentation': OpenML-Docs.md
+        - 'Weka quickstart': Weka.md 
+        - 'MOA quickstart': MOA.md
+        - 'Java API': Java-API.md
+        - '.Net API': .Net-API.md
+        - 'Data Formats': Data-Formats.md  
+    - Developer info:
+        - 'Client API Standards': Client-API-Standards.md   
+        - 'User Authentication': API-Authentication-and-User-types.md  
+        - 'Data collections': Data-collections.md
+        - 'Data Repositories': Data-Repositories.md 
+        - 'Helper functions': Helper-functions.md    
+        - 'URL Mapping': URL-Mapping.md
+        - 'Job Scheduling': Job-Scheduling.md    
+    - Backend:
+        - 'Local Installation': Local-Installation.md
+        - 'WebApp (PHP)': WebApp-(PHP).md
+        - 'Java Backend': Java-App.md
