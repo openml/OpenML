@@ -177,6 +177,7 @@ var oTableRuns = false;
 
 /// RESULT TABLE
 function buildTable(dataSet) {
+    $.fn.dataTable.ext.errMode = 'none';
     $('#flowtable').removeAttr('width').DataTable( {
         dom: 'Bfrtip',
         buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
@@ -267,12 +268,9 @@ function buildTableData(data){
 }
 
 function shortParam(a){
-	par = a.parameter.split('_').pop();
+	par = a.parameter;
 	val = a.value;
-	if(val.length>10){
-		val = val.split('.').pop();
-	}
-	return par+':'+val;
+	return '\n'+par+':'+val;
 }
 
 function updateTableHeader(){
