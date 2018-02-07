@@ -256,10 +256,12 @@ function buildTableData(data){
 	tabledata = [];
 	for(key in data){
 		o = data[key]['_source'];
-		eval = o['evaluations'].filter(function(obj){return obj.evaluation_measure == evaluation_measure;})[0];
-		if(eval){
-			tabledata.push(['<a href="r/'+o['run_id']+'">'+o['run_id']+'</a>','<a href="d/'+o['run_task']['source_data']['data_id']+'">'+o['run_task']['source_data']['name']+'</a>',eval['value'],o['run_flow']['parameters'].map(shortParam)]);
-		}
+    if(o['evaluations'] != null){
+		    eval = o['evaluations'].filter(function(obj){return obj.evaluation_measure == evaluation_measure;})[0];
+		      if(eval){
+			         tabledata.push(['<a href="r/'+o['run_id']+'">'+o['run_id']+'</a>','<a href="d/'+o['run_task']['source_data']['data_id']+'">'+o['run_task']['source_data']['name']+'</a>',eval['value'],o['run_flow']['parameters'].map(shortParam)]);
+		           }
+        }
 	}
 	return tabledata;
 }
