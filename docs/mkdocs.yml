@@ -32,7 +32,7 @@ markdown_extensions:
       custom_checkbox: true
   - pymdownx.tilde
 pages:
-  - Home: 
+  - Developers: 
     - Welcome: index.md
     - Community:
         - 'How to contribute': Contributing.md

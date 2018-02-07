@@ -9,6 +9,10 @@
   margin-top: -50px;
 }
 
+#dev_doc_frame{
+  margin-top: -90px;
+}
+
 #weka_api_frame, #java_api_frame{
   margin-top: 10px;
 }

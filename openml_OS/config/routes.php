@@ -94,6 +94,7 @@ $frontend_pages = array(
           'query',
           'project',
           'python_api',
+          'dev_docs',
           'java_api',
           'weka_api',
           'python_guide',

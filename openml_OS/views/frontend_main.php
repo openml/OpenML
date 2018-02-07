@@ -157,7 +157,7 @@ if (session_status() === PHP_SESSION_NONE){session_start();}
             $section = 'OpenML';
             $href = $ch;
           }
-      elseif($ch=='api_docs' or $ch=='api_data_docs' or $ch=='python_api' or $ch=='java_api' or $ch=='weka_api' or $ch=='python_guide' or $ch=='r_guide'){
+      elseif($ch=='api_docs' or $ch=='dev_docs' or $ch=='api_data_docs' or $ch=='python_api' or $ch=='java_api' or $ch=='weka_api' or $ch=='python_guide' or $ch=='r_guide'){
             $section = 'Guide';
             $href = $ch;
             $materialcolor = "green";
