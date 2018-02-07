@@ -270,7 +270,7 @@ if (session_status() === PHP_SESSION_NONE){session_start();}
              </div>
 
 
-            <a class="btn btn-material-green" href="guide/developers">Developers</a>
+            <a class="btn btn-material-green" href="dev_docs">Developers</a>
       </div>
       <?php } ?>
 
