@@ -68,10 +68,10 @@ OpenML has grown into quite a big project. We could use many more hands to help 
 OpenML's code distrubuted over different repositories to simplify development. Please see their individual readme's and issue trackers of you like to contribute. These are the most important ones:
 
 - **[openml/OpenML](https://github.com/openml/openml)**: The OpenML web application, including the REST API.
-- **[openml/openml-python](https://github.com/openml/openml)**: The Python API, to talk to OpenML from Python scripts (including scikit-learn).
-- **[openml/openml-r](https://github.com/openml/openml)**: The R API, to talk to OpenML from R scripts (inclusing mlr).
-- **[openml/java](https://github.com/openml/openml)**: The Java API, to talk to OpenML from Java scripts.
-- **[openml/openml-weka](https://github.com/openml/openml)**: The WEKA plugin, to talk to OpenML from the WEKA toolbox.
+- **[openml/openml-python](https://github.com/openml/openml-python)**: The Python API, to talk to OpenML from Python scripts (including scikit-learn).
+- **[openml/openml-r](https://github.com/openml/openml-r)**: The R API, to talk to OpenML from R scripts (inclusing mlr).
+- **[openml/java](https://github.com/openml/java)**: The Java API, to talk to OpenML from Java scripts.
+- **[openml/openml-weka](https://github.com/openml/openml-weka)**: The WEKA plugin, to talk to OpenML from the WEKA toolbox.
 
 
 
