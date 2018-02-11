@@ -1685,11 +1685,15 @@ class ElasticSearch {
 
     private function build_function($d) {
         $id = str_replace("_", "-", $d->name);
+        $desc = $d->description . '<div class="codehighlight">Source Code:<pre>' . $d->source_code . '</pre></div>';
+        $desc = str_replace("<math>","$$",$desc);
+        $desc = str_replace("</math>","$$",$desc);
+
         return array(
             'eval_id' => $id,
             'measure_type' => 'evaluation_measure',
             'name' => $d->name,
-            'description' => $d->description,
+            'description' => $desc,
             'min' => $d->min,
             'max' => $d->max,
             'unit' => $d->unit,
