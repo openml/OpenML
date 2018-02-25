@@ -1,8 +1,10 @@
 #!/bin/sh
 
+msg=$(git log --format=%B -n 1)
+
 body='{
 "request": {
-"message": "Triggered by OpenML",
+"message": "Triggered by OpenML commit: '"$msg"'",
 "branch":"master"
 }}'
 
