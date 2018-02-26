@@ -135,7 +135,7 @@ class Api_run extends Api_model {
     }
 
     $where_task = $task_id == false ? '' : ' AND `r`.`task_id` IN (' . $task_id . ') ';
-    $where_task_type = $task_type_id == false ? '' : ' AND `task`.`ttid` IN (' . $task_type_id . ') ';
+    $where_task_type = $task_type_id == false ? '' : ' AND `t`.`ttid` IN (' . $task_type_id . ') ';
     $where_setup = $setup_id == false ? '' : ' AND `r`.`setup` IN (' . $setup_id . ') ';
     $where_uploader = $uploader_id == false ? '' : ' AND `r`.`uploader` IN (' . $uploader_id . ') ';
     $where_impl = $implementation_id == false ? '' : ' AND `i`.`id` IN (' . $implementation_id . ') ';
