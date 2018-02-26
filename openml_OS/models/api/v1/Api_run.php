@@ -162,7 +162,7 @@ class Api_run extends Api_model {
       'FROM algorithm_setup s, implementation i, task t ' .
       'LEFT JOIN task_inputs ti ON t.task_id = ti.task_id AND ti.input = "source_data" ' .
       'LEFT JOIN dataset d ON ti.value = d.did, ' . 
-      'run r '
+      'run r ' .
       'LEFT JOIN run_evaluated e ON r.rid = e.run_id ' .
       'WHERE r.setup = s.sid AND i.id = s.implementation_id AND task.task_id = r.task_id ' .
       $where_total .
