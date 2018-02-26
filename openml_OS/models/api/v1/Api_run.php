@@ -124,7 +124,7 @@ class Api_run extends Api_model {
     $offset = element('offset',$query_string);
     $show_errors = element('show_errors',$query_string);
 
-    if ($task_id == false && $setup_id == false && $implementation_id == false && $uploader_id == false && $run_id == false && $tag == false && $limit == false) {
+    if ($task_id == false && $task_type_id == false && $setup_id == false && $implementation_id == false && $uploader_id == false && $run_id == false && $tag == false && $limit == false) {
       $this->returnError( 510, $this->version );
       return;
     }
@@ -156,12 +156,13 @@ class Api_run extends Api_model {
     $where_total = $where_task . $where_task_type . $where_setup . $where_uploader . $where_impl . $where_run . $where_tag . $where_server_error;
 
     $sql =
-      'SELECT r.rid, r.uploader, r.task_id, r.start_time, d.did AS dataset_id, d.name AS dataset_name,' .
+      'SELECT r.rid, r.uploader, r.task_id, r.start_time, t.ttid, d.did AS dataset_id, d.name AS dataset_name,' .
              'r.setup, i.id AS flow_id, i.name AS flow_name, r.error_message, r.run_details ' .
              //', GROUP_CONCAT(tag) AS tags ' .
-      'FROM algorithm_setup s, implementation i, run r, task ' .
-      'LEFT JOIN task_inputs t ON r.task_id = t.task_id AND t.input = "source_data" ' .
-      'LEFT JOIN dataset d ON t.value = d.did ' . 
+      'FROM algorithm_setup s, implementation i, task t ' .
+      'LEFT JOIN task_inputs ti ON t.task_id = ti.task_id AND ti.input = "source_data" ' .
+      'LEFT JOIN dataset d ON ti.value = d.did, ' . 
+      'run r '
       'LEFT JOIN run_evaluated e ON r.rid = e.run_id ' .
       'WHERE r.setup = s.sid AND i.id = s.implementation_id AND task.task_id = r.task_id ' .
       $where_total .
