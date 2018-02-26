@@ -164,7 +164,7 @@ class Api_run extends Api_model {
       'LEFT JOIN dataset d ON ti.value = d.did, ' . 
       'run r ' .
       'LEFT JOIN run_evaluated e ON r.rid = e.run_id ' .
-      'WHERE r.setup = s.sid AND i.id = s.implementation_id AND task.task_id = r.task_id ' .
+      'WHERE r.setup = s.sid AND i.id = s.implementation_id AND t.task_id = r.task_id ' .
       $where_total .
       // 'GROUP BY r.rid ' .
       $where_limit;
