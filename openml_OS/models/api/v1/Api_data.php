@@ -151,7 +151,7 @@ class Api_data extends Api_model {
     $where_class = $nr_class == false ? '' : ' AND `did` IN (select data from data_quality dq where quality="NumberOfClasses" and value ' . (strpos($nr_class, '..') !== false ? 'BETWEEN ' . str_replace('..',' AND ',$nr_class) : '= '. $nr_class) . ') ';
     $where_miss = $nr_miss == false ? '' : ' AND `did` IN (select data from data_quality dq where quality="NumberOfMissingValues" and value ' . (strpos($nr_miss, '..') !== false ? 'BETWEEN ' . str_replace('..',' AND ',$nr_miss) : '= '. $nr_miss) . ') ';
     // by default, only return active datasets
-    $where_status = $status == false ? ' AND status = "active" ' : ' AND status = "'. $status . '" ';
+    $where_status = $status == false ? ' AND status = "active" ' : ($status != "all" ? ' AND status = "'. $status . '" ' : '');
     $where_total = $where_tag . $where_name . $where_version . $where_insts . $where_feats . $where_class . $where_miss . $where_status;
     $where_limit = $limit == false ? '' : ' LIMIT ' . $limit;
     if($limit != false && $offset != false){
@@ -228,7 +228,7 @@ class Api_data extends Api_model {
     foreach( $this->xml_fields_dataset['csv'] as $field ) {
       $dataset->{$field} = getcsv( $dataset->{$field} );
     }
-    
+
     # TMP hack for testing
     $studies = $this->Study_tag->getStudyIdsFromEntity('dataset', $dataset->did);
     $dataset->studies = $studies != false ? $studies : array();
@@ -427,7 +427,7 @@ class Api_data extends Api_model {
     } catch (Exception $e) {
       // TODO: should log
     }
-    
+
     // insert tags. This relies on the ES record to exist.
     foreach ($tags as $tag) {
       $success = $this->entity_tag_untag('dataset', $id, $tag, false, 'data', false);
@@ -928,7 +928,7 @@ class Api_data extends Api_model {
                ' GROUP BY q.data HAVING numQualities = ' . count($requiredMetafeatures) . ') as `qualityCount` ' .
              ' ON d.did = qualityCount.data '.
              ' WHERE qualityCount.data IS NULL ' .
-             ' AND d.did = p.did AND p.evaluation_engine_id = ' . $this->config->item('default_evaluation_engine_id') . 
+             ' AND d.did = p.did AND p.evaluation_engine_id = ' . $this->config->item('default_evaluation_engine_id') .
              ' AND p.error IS NULL ' .
              ' ORDER BY ' . $tagSort . ' d.did ';
     } else {
@@ -940,7 +940,7 @@ class Api_data extends Api_model {
                ' GROUP BY q.data HAVING numQualities = max(attCounts.number_of_attributes)*' . count($requiredMetafeatures) . ') as `qualityCount`' .
              ' ON d.did = qualityCount.data ' .
              ' WHERE qualityCount.data IS NULL ' .
-             ' AND d.did = p.did AND p.evaluation_engine_id = ' . $this->config->item('default_evaluation_engine_id') . 
+             ' AND d.did = p.did AND p.evaluation_engine_id = ' . $this->config->item('default_evaluation_engine_id') .
              ' AND p.error IS NULL ' .
              ' ORDER BY ' . $tagSort . ' d.did ';
     }
