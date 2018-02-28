@@ -25,8 +25,8 @@ Want to learn about OpenML or get involved? Please do and [get in touch](openmlH
 
 - Getting started:
     - Check out the [OpenML Website](https://www.openml.org) to get a first impression of what OpenML is 
-    - The OpenML [Bootcamp](https://www.openml.org/guide) gives an introduction in details and features
-    - OpenML has different [APIs](https://www.openml.org/guide/api) and [integrations](https://www.openml.org/guide/integrations) so that everyone can work with their favorite tool. 
+    - The OpenML [Documentation page](https://openml.github.io/OpenML/) gives an introduction in details and features, as well as
+    - OpenML's different [APIs](https://openml.github.io/OpenML/APIs) and [integrations](https://openml.github.io/OpenML/sklearn/) so that everyone can work with their favorite tool. 
 - How to contribute: https://github.com/openml/OpenML/blob/master/CONTRIBUTING.md 
 - Citation and Honor Code: http://openml.org/cite  
 - Communication / Contact: https://github.com/openml/OpenML/wiki/Communication-Channels
