@@ -1,0 +1,89 @@
+site_name: OpenML Documentation
+repo_url: https://github.com/openml/OpenML/docs/
+theme:
+  name: null
+  custom_dir: 'mkdocs-material/material'
+  language: 'en'
+  palette:
+    primary: indigo
+    accent: indigo
+  font:
+    text: 'Roboto'
+    code: 'Roboto Mono'
+  logo:
+    icon: 'school'
+  feature:
+    tabs: true
+markdown_extensions:
+  - pymdownx.arithmatex
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.critic
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_generator: !!python/name:pymdownx.emoji.to_svg
+  - pymdownx.inlinehilite
+  - pymdownx.magiclink
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+  - fontawesome_markdown
+  - admonition
+pages:
+  - Bootcamp:
+    - Get started: index.md
+    - Integrations:
+        - 'scikit-learn': sklearn.md
+        - 'mlr': mlr.md
+        - 'WEKA': Weka.md
+        - 'MOA': MOA.md
+    - Community:
+        - 'How to contribute': Contributing.md
+        - 'Communication Channels' : Communication-Channels.md
+        - 'Core team': Core-team.md
+    - Benchmarking: benchmark.md
+    - Altmetrics: altmetrics.md
+    - Terms: terms.md
+  - APIs:
+    - OpenML APIs: APIs.md
+    - REST:
+        - Tutorial: REST-tutorial.md
+        - API Reference: REST-API.md
+    - Java:
+        - Tutorial: Java-guide.md
+    - Python:
+        - Start: Python-start.md
+        - Tutorial: Python-guide.md
+        - API Reference: Python-API.md
+    - R:
+        - Tutorial: R-guide.md
+        - API Reference: R-API.md
+    - '.NET (C#)':
+        - Tutorial: .Net-API.md
+  - Developers:
+    - Welcome: developers.md
+    - 'Basic Concepts': Basic-Concepts.md
+    - 'Editing Documentation': OpenML-Docs.md
+    - 'API development':
+        - 'Client API Standards': Client-API-Standards.md
+        - 'Server API Development': API-rules.md
+        - 'User Authentication': API-Authentication-and-User-types.md
+    - 'Data handling':
+        - 'Data Formats': Data-Formats.md
+        - 'Data Repositories': Data-Repositories.md
+        - 'Data collections': Data-collections.md
+    - Backend:
+        - 'Local Installation': Local-Installation.md
+        - 'WebApp (PHP)': WebApp-(PHP).md
+        - 'URL Mapping': URL-Mapping.md
+        - 'Java Backend': Java-App.md
+        - 'Helper functions': Helper-functions.md
+        - 'Job Scheduling': Job-Scheduling.md
+extra_css:
+        - css/extra.css
+extra_javascript:
+        - js/extra.js

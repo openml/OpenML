@@ -113,14 +113,20 @@ define( 'API_KEY', 'FILL_IN_KEY' );
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Configuration details for the ElasticSearch server (Username, password)
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * API_USERNAME: The username under which the system may perform queries (other than GET)
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * API_PASSWORD: The password that belongs to the username
+ * ES_USERNAME and ES_PASSWORD can be set by ElasticSearch or a protected proxy
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 define( 'ES_URL', 'FILL_IN' );
 define( 'ES_USERNAME', 'FILL_IN' );
 define( 'ES_PASSWORD', 'FILL_IN' );
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Configuration details for the Wiki server (Username, password)
+ * We use the Gollem Wiki Engine
+ * WIKI_USERNAME and WIKI_PASSWORD can be set by a protected proxy
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+define( 'WIKI_URL', 'localhost:443/wiki' );
+define( 'WIKI_USERNAME', 'username' );
+define( 'WIKI_PASSWORD', 'password' );
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * * * * * *

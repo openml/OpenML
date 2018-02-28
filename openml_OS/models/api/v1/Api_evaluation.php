@@ -113,7 +113,7 @@ class Api_evaluation extends Api_model {
       if (!$implementation_id) {
         $sql_test =
           'SELECT count(distinct r.rid) as count ' .
-          'FROM run r WHERE ' .
+          'FROM run r WHERE 1 ' . // 1 important to make concatenated query work
           $where_runs . $where_limit;
         $count = $this->Evaluation->query($sql_test)[0]->count;
       } else {

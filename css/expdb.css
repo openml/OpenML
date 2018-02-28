@@ -9,6 +9,10 @@
   margin-top: -50px;
 }
 
+#dev_doc_frame{
+  margin-top: -90px;
+}
+
 #weka_api_frame, #java_api_frame{
   margin-top: 10px;
 }
@@ -3635,6 +3639,9 @@ input:-webkit-autofill, input:-webkit-autofill:focus {
   padding-top:10px;
   padding-bottom: 30px;
   font-size:140%;
+}
+.evaltitle a{
+  text-decoration: none;
 }
 
 @-moz-document url-prefix() {

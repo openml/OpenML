@@ -103,7 +103,7 @@ class Api_run extends Api_model {
 
 
   private function run_list($segs) {
-    $legal_filters = array('task', 'setup', 'flow', 'uploader', 'run', 'tag', 'limit', 'offset', 'show_errors');
+    $legal_filters = array('task', 'setup', 'flow', 'uploader', 'run', 'tag', 'limit', 'offset', 'task_type', 'show_errors');
     $query_string = array();
     for ($i = 0; $i < count($segs); $i += 2) {
       $query_string[$segs[$i]] = urldecode($segs[$i+1]);
@@ -114,6 +114,7 @@ class Api_run extends Api_model {
     }
 
     $task_id = element('task', $query_string);
+    $task_type_id = element('task_type', $query_string);
     $setup_id = element('setup',$query_string);
     $implementation_id = element('flow',$query_string);
     $uploader_id = element('uploader',$query_string);
@@ -123,17 +124,18 @@ class Api_run extends Api_model {
     $offset = element('offset',$query_string);
     $show_errors = element('show_errors',$query_string);
 
-    if ($task_id == false && $setup_id == false && $implementation_id == false && $uploader_id == false && $run_id == false && $tag == false && $limit == false) {
+    if ($task_id == false && $task_type_id == false && $setup_id == false && $implementation_id == false && $uploader_id == false && $run_id == false && $tag == false && $limit == false) {
       $this->returnError( 510, $this->version );
       return;
     }
 
-    if (!(is_safe($task_id) && is_safe($setup_id) && is_safe($implementation_id) && is_safe($uploader_id) && is_safe($run_id) && is_safe($tag) && is_safe($limit) && is_safe($offset))) {
+    if (!(is_safe($task_id) && is_safe($setup_id) && is_safe($task_type_id) && is_safe($implementation_id) && is_safe($uploader_id) && is_safe($run_id) && is_safe($tag) && is_safe($limit) && is_safe($offset))) {
       $this->returnError(511, $this->version );
       return;
     }
 
     $where_task = $task_id == false ? '' : ' AND `r`.`task_id` IN (' . $task_id . ') ';
+    $where_task_type = $task_type_id == false ? '' : ' AND `t`.`ttid` IN (' . $task_type_id . ') ';
     $where_setup = $setup_id == false ? '' : ' AND `r`.`setup` IN (' . $setup_id . ') ';
     $where_uploader = $uploader_id == false ? '' : ' AND `r`.`uploader` IN (' . $uploader_id . ') ';
     $where_impl = $implementation_id == false ? '' : ' AND `i`.`id` IN (' . $implementation_id . ') ';
@@ -151,17 +153,18 @@ class Api_run extends Api_model {
       $where_limit =  ' LIMIT ' . $offset . ', ' . $limit;
     }
 
-    $where_total = $where_task . $where_setup . $where_uploader . $where_impl . $where_run . $where_tag . $where_server_error;
+    $where_total = $where_task . $where_task_type . $where_setup . $where_uploader . $where_impl . $where_run . $where_tag . $where_server_error;
 
     $sql =
-      'SELECT r.rid, r.uploader, r.task_id, r.start_time, d.did AS dataset_id, d.name AS dataset_name,' .
+      'SELECT r.rid, r.uploader, r.task_id, r.start_time, t.ttid, d.did AS dataset_id, d.name AS dataset_name,' .
              'r.setup, i.id AS flow_id, i.name AS flow_name, r.error_message, r.run_details ' .
              //', GROUP_CONCAT(tag) AS tags ' .
-      'FROM algorithm_setup s, implementation i, run r '.
-      'LEFT JOIN task_inputs t ON r.task_id = t.task_id AND t.input = "source_data" ' .
-      'LEFT JOIN dataset d ON t.value = d.did ' . 
+      'FROM algorithm_setup s, implementation i, task t ' .
+      'LEFT JOIN task_inputs ti ON t.task_id = ti.task_id AND ti.input = "source_data" ' .
+      'LEFT JOIN dataset d ON ti.value = d.did, ' . 
+      'run r ' .
       'LEFT JOIN run_evaluated e ON r.rid = e.run_id ' .
-      'WHERE r.setup = s.sid AND i.id = s.implementation_id ' .
+      'WHERE r.setup = s.sid AND i.id = s.implementation_id AND t.task_id = r.task_id ' .
       $where_total .
       // 'GROUP BY r.rid ' .
       $where_limit;

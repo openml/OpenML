@@ -1,4 +1,5 @@
 <?php
+$this->load_javascript = array('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML');
 
 if(false === strpos($_SERVER['REQUEST_URI'],'/a/')) {
   header('Location: search?type=measure');

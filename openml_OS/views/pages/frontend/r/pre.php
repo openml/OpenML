@@ -56,6 +56,12 @@ function format_eval_name($name){
 	return ucfirst($name);
 }
 
+function format_eval_link($name){
+	$name = str_replace('_','-',$name);
+	$name = str_replace(' ','-',$name);
+	return $name;
+}
+
 function box_plot_values($array)
 {
     $return = array(

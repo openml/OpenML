@@ -98,7 +98,7 @@ class Api_task extends Api_model {
     $where_feats = $nr_feats == false ? '' : ' AND `d`.`did` IN (select data from data_quality dq where quality="NumberOfFeatures" and value ' . (strpos($nr_feats, '..') !== false ? 'BETWEEN ' . str_replace('..',' AND ',$nr_feats) : '= '. $nr_feats) . ') ';
     $where_class = $nr_class == false ? '' : ' AND `d`.`did` IN (select data from data_quality dq where quality="NumberOfClasses" and value ' . (strpos($nr_class, '..') !== false ? 'BETWEEN ' . str_replace('..',' AND ',$nr_class) : '= '. $nr_class) . ') ';
     $where_miss = $nr_miss == false ? '' : ' AND `d`.`did` IN (select data from data_quality dq where quality="NumberOfMissingValues" and value ' . (strpos($nr_miss, '..') !== false ? 'BETWEEN ' . str_replace('..',' AND ',$nr_miss) : '= '. $nr_miss) . ') ';
-    $where_status = $status == false ? ' AND status = "active" ' : ' AND status = "'. $status . '" ';
+    $where_status = $status == false ? ' AND status = "active" ' : ($status != "all" ? ' AND status = "'. $status . '" ' : '');
 
     $where_total = $where_type . $where_tag . $where_data_tag . $where_status . $where_did . $where_data_name . $where_insts . $where_feats . $where_class . $where_miss;
     $where_task_total = $where_type . $where_tag;
@@ -118,7 +118,7 @@ class Api_task extends Api_model {
             'GROUP BY t.task_id ' . $where_limit;
     $dq = 'SELECT * FROM data_quality WHERE quality IN ("' . implode('","', $this->config->item('basic_qualities')).'") AND evaluation_engine_id = ' . $this->config->item('default_evaluation_engine_id');
     $full = 'SELECT core.*, CONCAT(\'"\', GROUP_CONCAT(`quality` SEPARATOR \'","\'),\'"\') AS `qualities`, CONCAT(\'"\', GROUP_CONCAT(`value` SEPARATOR \'","\'),\'"\') AS `quality_values` FROM (' . $dq . ') dq RIGHT JOIN (' . $core . ') core ON dq.data = core.did GROUP BY core.task_id;';
-    
+
     $tasks_res = $this->Task->query($full);
 
     if(is_array($tasks_res) == false || count($tasks_res) == 0) {
@@ -159,20 +159,20 @@ class Api_task extends Api_model {
 
     $this->xmlContents('task-get', $this->version, array('task' => $task, 'task_type' => $task_type, 'name' => $name, 'parsed_io' => $parsed_io, 'tags' => $tags));
   }
-  
+
   private function task_inputs($task_id) {
     $task = $this->Task->getById($task_id);
     if($task === false) {
       $this->returnError(156, $this->version);
       return;
     }
-    
+
     $inputs = $this->Task_inputs->getAssociativeArray('input', 'value', 'task_id = ' . $task_id);
     if ($inputs === false) {
       $this->returnError(157, $this->version);
       return;
     }
-    
+
     $this->xmlContents('task-inputs', $this->version, array('task' => $task, 'inputs' => $inputs));
   }
 

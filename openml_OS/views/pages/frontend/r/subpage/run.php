@@ -165,7 +165,7 @@
       if(in_array($r['evaluation_measure'], $this->binary_measures))
         $perclass = true;
       ?>
-    <tr class="cardrow"><td><div class="col-md-3 evaltitle"><b><?php echo format_eval_name($r['evaluation_measure']); ?></b></div><div class="col-md-9">
+    <tr class="cardrow"><td><div class="col-md-3 evaltitle"><a href="a/evaluation-measures/<?php echo format_eval_link($r['evaluation_measure']); ?>"><b><?php echo format_eval_name($r['evaluation_measure']); ?></b></a></div><div class="col-md-9">
       <div class="list-group"><div class="list-group-item">
       <?php
         if(array_key_exists('value',$r))

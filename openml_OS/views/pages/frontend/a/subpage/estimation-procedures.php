@@ -6,7 +6,7 @@
 
 	<p><?php echo $this->measure['description']; ?></p>
 	<ul class="hotlinks">
-		<li><a href="https://github.com/openml/OpenML/tree/master/Java/OpenmlWebapplication/src/org/openml/webapplication/generatefolds"><i class="fa fa-gears"></i> View code</a></li>
+		<li><a href="https://github.com/openml/EvaluationEngine/tree/master/src/main/java/org/openml/webapplication/generatefolds"><i class="fa fa-gears"></i> View code</a></li>
 	</ul>
 	<h2>Properties</h2>
 		<div class='table-responsive'><table class='table table-striped'>

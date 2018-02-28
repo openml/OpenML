@@ -5,7 +5,8 @@
 
 	<p><?php echo $this->measure['description']; ?></p>
 	<ul class="hotlinks">
-		<li><a href="https://github.com/openml/OpenML/tree/master/Java/OpenmlWebapplication/src/org/openml/webapplication/evaluate"><i class="fa fa-gears"></i> View code</a></li>
+		<li><a href="https://github.com/openml/EvaluationEngine/tree/master/src/main/java/org/openml/webapplication/evaluate"><i class="fa fa-gears"></i> View code</a></li>
+    <li><a href="http://grepcode.com/file/repo1.maven.org/maven2/nz.ac.waikato.cms.weka/weka-stable/3.6.6/weka/classifiers/Evaluation.java"><i class="fa fa-gears"></i> Measure implementation (WEKA)</a></li>
 	</ul>
 	<h2>Properties</h2>
 		<div class='table-responsive'><table class='table table-striped'>
