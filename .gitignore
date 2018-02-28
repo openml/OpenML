@@ -1,4 +1,5 @@
 data/*
+docs/site/*
 !data/sql/
 index.php
 openml_OS/config/BASE_CONFIG.php
