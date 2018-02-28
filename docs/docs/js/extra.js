@@ -5,7 +5,7 @@ element.innerHTML = "<a href='https://www.openml.org'><b>OpenML</b></a> Document
     var startingTime = new Date().getTime();
     // Load the script
     var script = document.createElement("SCRIPT");
-    script.src = 'http://code.jquery.com/jquery-3.3.1.slim.min.js';
+    script.src = 'https://code.jquery.com/jquery-3.3.1.slim.min.js';
     script.type = 'text/javascript';
     script.onload = function() {
     	var $ = window.jQuery;
