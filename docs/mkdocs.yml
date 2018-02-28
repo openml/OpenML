@@ -61,6 +61,7 @@ pages:
         - API Reference: Python-API.md
     - R:
         - Tutorial: R-guide.md
+        - API Reference: R-API.md
     - '.NET (C#)':
         - Tutorial: .Net-API.md
   - Developers:
