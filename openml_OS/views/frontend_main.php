@@ -16,8 +16,19 @@ if (session_status() === PHP_SESSION_NONE){session_start();}
 
 <html class="no-js" lang="en" xmlns:og="http://ogp.me/ns#">
     <!--<![endif]-->
+
     <head>
         <base href="<?php echo BASE_URL; ?>" />
+        <?php
+            $section = "OpenML";
+            $materialcolor = "yellow";
+            $href = "";
+            $url = explode('/', $_SERVER['REQUEST_URI']);
+            $ch = $url[1];
+            if($ch=='guide'){
+              echo '<meta http-equiv="refresh" content="0; url=https://docs.openml.org">';
+            }
+        ?>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
         <meta name="viewport" content="width=device-width">
@@ -55,11 +66,6 @@ if (session_status() === PHP_SESSION_NONE){session_start();}
     </head>
     <body>
   <?php
-      $section = "OpenML";
-      $materialcolor = "yellow";
-      $href = "";
-      $url = explode('/', $_SERVER['REQUEST_URI']);
-      $ch = $url[1];
       $req = array_slice($url, 1);
       if(sizeof($url)>2){
         $id=$url[2];
@@ -157,11 +163,6 @@ if (session_status() === PHP_SESSION_NONE){session_start();}
             $section = 'OpenML';
             $href = $ch;
           }
-      elseif($ch=='api_docs' or $ch=='dev_docs' or $ch=='api_data_docs' or $ch=='python_api' or $ch=='java_api' or $ch=='weka_api' or $ch=='python_guide' or $ch=='r_guide'){
-            $section = 'Guide';
-            $href = $ch;
-            $materialcolor = "green";
-          }
 
     $this->section = $section;
     $this->materialcolor = $materialcolor;
@@ -175,15 +176,13 @@ if (session_status() === PHP_SESSION_NONE){session_start();}
         <div id="sectiontitle"><?php echo $section;?></div>
         <div class="navbar navbar-static-top navbar-fixed-top navbar-material-<?php echo $materialcolor;?>" id="openmlheader" style="margin-bottom: 0px;">
             <div class="navbar-inner">
-              <div class="<?php echo ($section != 'Guide' ? 'col-xs-6 col-sm-3 col-md-3' : 'fixedbrand'); ?>">
+              <div class="col-xs-6 col-sm-3 col-md-3">
               <div class="nav pull-left">
                 <a class="navbar-brand menubutton"><i class="fa fa-bars fa-lg"></i></a>
               </div>
-              <a class="navbar-brand" id="section-brand" href="home">OpenML <?php if ($section == 'Guide'){ echo 'Guide';}?></a>
+              <a class="navbar-brand" id="section-brand" href="home">OpenML</a>
               </div>
-            <?php if ($section != 'Guide'){ ?>
             <a class="openmlsoc openmlsocicon col-xs-2 hidden-sm hidden-md hidden-lg pull-left searchicon" onclick="showsearch()"><i class="fa fa-search fa-2x"></i></a>
-            <?php } ?>
 
        <div class="menuicons">
 			<?php if ($this->ion_auth->logged_in()) {
@@ -214,17 +213,14 @@ if (session_status() === PHP_SESSION_NONE){session_start();}
             <li><a href="new/study" class="iconpurple"><i class="fa fa-fw fa-lg fa-flask"></i> New study</a></li>
   			  </ul>
   			</div>
-      <?php if ($section != 'Guide'){ ?>
         <div class="nav pull-right openmlsocicons">
-          <a href="guide" class="openmlsoc openmlsocicon"><i class="fa fa-leanpub fa-2x"></i></a>
+          <a href="https://docs.openml.org" class="openmlsoc openmlsocicon"><i class="fa fa-leanpub fa-2x"></i></a>
         </div>
         <script>var logged_in = true;</script>
-			<?php }} else { ?>
+			<?php } else { ?>
         <script>var logged_in = false;</script>
 			<div class="nav pull-right openmlsocicons">
-          <?php if ($section != 'Guide'){ ?>
-                  <a href="guide" class="btn btn-material-<?php echo $materialcolor;?>">Guide</a>
-          <?php } ?>
+                  <a href="https://docs.openml.org" class="btn btn-material-<?php echo $materialcolor;?>">Help</a>
                   <a class="btn btn-material-<?php echo $materialcolor;?>" data-toggle="modal" data-target="#login-dialog">Sign in</a>
       </div>
 			<?php } ?>
@@ -244,35 +240,7 @@ if (session_status() === PHP_SESSION_NONE){session_start();}
       <!-- <button class="btn btn-primary btn-small" type="submit" style="height: 30px; vertical-align:top; font-size: 8pt;"><i class="fa fa-search fa-lg"></i></button>-->
       </form>
        </div>
-     <?php } else { ?>
-
-      <!-- Guide menus -->
-      <div class="nav pull-left">
-            <a class="btn btn-material-green" href="guide">Bootcamp</a>
-
-            <div class="dropdown menu-dropdown">
-            <a class="btn btn-material-green dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">User Guides</a>
-               <div class="dropdown-menu dropdown-menu-right" aria-labelledby="user-guides">
-                   <a class="dropdown-item <?php echo ($href=='python_guide' ? 'active' :'');?>" href="python_guide">Python</a>
-                   <a class="dropdown-item <?php echo ($href=='r_guide' ? 'active' :'');?>" href="r_guide">R</a>
-               </div>
-             </div>
-
-            <div class="dropdown menu-dropdown">
-            <a class="btn btn-material-green dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">API Docs</a>
-               <div class="dropdown-menu dropdown-menu-right" aria-labelledby="api-guides">
-                 <a class="dropdown-item <?php echo ($href=='python_api' ? 'active' :'');?>" href="python_api">Python API</a>
-                 <a class="dropdown-item <?php echo ($href=='java_api' ? 'active' :'');?>" href="java_api">Java API</a>
-                 <a class="dropdown-item <?php echo ($href=='weka_api' ? 'active' :'');?>" href="weka_api">Weka API</a>
-                 <a class="dropdown-item <?php echo ($href=='api_docs' ? 'active' :'');?>" href="api_docs">REST API</a>
-                 <a class="dropdown-item <?php echo ($href=='api_data_docs' ? 'active' :'');?>" href="api_data_docs">Data API</a>
-               </div>
-             </div>
-
-
-            <a class="btn btn-material-green" href="dev_docs">Developers</a>
-      </div>
-      <?php } ?>
+     <?php } ?>
 
 
                     <!--/.nav-collapse -->
@@ -283,7 +251,7 @@ if (session_status() === PHP_SESSION_NONE){session_start();}
           loadpage('login', true, 'body');
         ?>
 
-        <div id="wrap" <?php if($section == 'Guide') {?>class="wrapguide"<?php }?>>
+        <div id="wrap">
             <div class="alertbox col-md-12">
             <!-- USER MESSAGE -->
             <noscript>
@@ -338,7 +306,7 @@ if (session_status() === PHP_SESSION_NONE){session_start();}
                       ?>
                 </ul>
               </li>
-                <li class="menu-cite <?php echo ($section == 'Guide' ?  'topactive' : '');?>"><a href="guide" class="icongreen"><i class="fa fa-fw fa-lg fa-leanpub"></i> <b>Guide</b></a></li>
+                <li class="menu-cite <?php echo ($section == 'Guide' ?  'topactive' : '');?>"><a href="https://docs.openml.org" class="icongreen"><i class="fa fa-fw fa-lg fa-leanpub"></i> <b>Help</b></a></li>
                 <li class="menu-cite"><a href="https://medium.com/open-machine-learning" class="iconyellow" target="_blank"><i class="fa fa-fw fa-lg fa-rss-square"></i> <b>Blog</b></a></li>
                 <li class="menu-cite <?php echo ($section == 'Contact' ?  'topactive' : '');?>"><a href="contact" class="iconblue"><i class="fa fa-fw fa-lg fa-bullhorn"></i> <b>Contact</b></a></li>
                 <li class="menu-cite <?php echo ($section == 'Citing' ?  'topactive' : '');?>"><a href="cite" class="iconred"><i class="fa fa-fw fa-lg fa-heart"></i> <b>Please cite us</b></a></li>

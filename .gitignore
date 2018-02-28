@@ -1,5 +1,7 @@
 data/*
-docs/site/*
+docs/site/
 !data/sql/
+!data/docs/
+!data/mkdocs-material/
 openml_OS/config/BASE_CONFIG.php
 openml_OS/third_party/OpenML/Java/old-evaluate.jar

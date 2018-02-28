@@ -1,5 +1,6 @@
 site_name: OpenML Documentation
-repo_url: https://github.com/openml/OpenML/docs/
+repo_url: https://github.com/openml/OpenML/
+edit_uri: edit/master/docs/docs/
 theme:
   name: null
   custom_dir: 'mkdocs-material/material'
