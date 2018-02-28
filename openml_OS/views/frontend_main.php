@@ -214,13 +214,13 @@ if (session_status() === PHP_SESSION_NONE){session_start();}
   			  </ul>
   			</div>
         <div class="nav pull-right openmlsocicons">
-          <a href="guide" class="openmlsoc openmlsocicon"><i class="fa fa-leanpub fa-2x"></i></a>
+          <a href="https://docs.openml.org" class="openmlsoc openmlsocicon"><i class="fa fa-leanpub fa-2x"></i></a>
         </div>
         <script>var logged_in = true;</script>
 			<?php } else { ?>
         <script>var logged_in = false;</script>
 			<div class="nav pull-right openmlsocicons">
-                  <a href="https://docs.openml.org" class="btn btn-material-<?php echo $materialcolor;?>">Guide</a>
+                  <a href="https://docs.openml.org" class="btn btn-material-<?php echo $materialcolor;?>">Help</a>
                   <a class="btn btn-material-<?php echo $materialcolor;?>" data-toggle="modal" data-target="#login-dialog">Sign in</a>
       </div>
 			<?php } ?>
@@ -306,7 +306,7 @@ if (session_status() === PHP_SESSION_NONE){session_start();}
                       ?>
                 </ul>
               </li>
-                <li class="menu-cite <?php echo ($section == 'Guide' ?  'topactive' : '');?>"><a href="https://docs.openml.org" class="icongreen"><i class="fa fa-fw fa-lg fa-leanpub"></i> <b>Guide</b></a></li>
+                <li class="menu-cite <?php echo ($section == 'Guide' ?  'topactive' : '');?>"><a href="https://docs.openml.org" class="icongreen"><i class="fa fa-fw fa-lg fa-leanpub"></i> <b>Help</b></a></li>
                 <li class="menu-cite"><a href="https://medium.com/open-machine-learning" class="iconyellow" target="_blank"><i class="fa fa-fw fa-lg fa-rss-square"></i> <b>Blog</b></a></li>
                 <li class="menu-cite <?php echo ($section == 'Contact' ?  'topactive' : '');?>"><a href="contact" class="iconblue"><i class="fa fa-fw fa-lg fa-bullhorn"></i> <b>Contact</b></a></li>
                 <li class="menu-cite <?php echo ($section == 'Citing' ?  'topactive' : '');?>"><a href="cite" class="iconred"><i class="fa fa-fw fa-lg fa-heart"></i> <b>Please cite us</b></a></li>
