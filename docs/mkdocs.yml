@@ -34,6 +34,8 @@ markdown_extensions:
   - pymdownx.tilde
   - fontawesome_markdown
   - admonition
+  - toc:
+      permalink: ➚
 pages:
   - Bootcamp:
     - Get started: index.md
