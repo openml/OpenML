@@ -1661,13 +1661,13 @@
                   <h1>Tutorial</h1>
                 
                 <p>The Java API allows you connect to OpenML from Java applications.</p>
-<h2 id="java-docs">Java Docs<a class="headerlink" href="#java-docs" title="Permanent link"></a></h2>
+<h2 id="java-docs">Java Docs<a class="headerlink" href="#java-docs" title="Permanent link">➚</a></h2>
 <p><a href="https://openml.github.io/java/">Read the full Java Docs</a></p>
-<h2 id="download">Download<a class="headerlink" href="#download" title="Permanent link"></a></h2>
+<h2 id="download">Download<a class="headerlink" href="#download" title="Permanent link">➚</a></h2>
 <p>Stable releases of the Java API are available from <a href="http://search.maven.org/#search%7Cga%7C1%7Copenml">Maven Central</a>
 Or, you can check out the developer version from <a href="https://github.com/openml/java">GitHub</a></p>
 <p>Include the jar file in your projects as usual, or <a href="http://maven.apache.org/guides/getting-started/maven-in-five-minutes.html">install via Maven</a>.</p>
-<h2 id="quick-start">Quick Start<a class="headerlink" href="#quick-start" title="Permanent link"></a></h2>
+<h2 id="quick-start">Quick Start<a class="headerlink" href="#quick-start" title="Permanent link">➚</a></h2>
 <ul>
 <li>Create an <code>OpenmlConnector</code> instance with your authentication details. This will create a client with all OpenML functionalities.<blockquote>
 <p>OpenmlConnector client = new OpenmlConnector("api_key")</p>
@@ -1675,7 +1675,7 @@ Or, you can check out the developer version from <a href="https://github.com/ope
 </li>
 </ul>
 <p>All functions are described in the <a href="https://www.openml.org/docs">Java Docs</a>.</p>
-<h4 id="downloading">Downloading<a class="headerlink" href="#downloading" title="Permanent link"></a></h4>
+<h4 id="downloading">Downloading<a class="headerlink" href="#downloading" title="Permanent link">➚</a></h4>
 <p>To download data, flows, tasks, runs, etc. you need the unique id of that resource. The id is shown on each item's webpage and in the corresponding url. For instance, let's download <a href="../d/1">Data set 1</a>. The following returns a DataSetDescription object that contains all information about that data set.</p>
 <div class="codehighlight">
 
@@ -1684,7 +1684,7 @@ Or, you can check out the developer version from <a href="https://github.com/ope
 </div>
 
 <p>You can also <a href="../search">search</a> for the items you need online, and click the icon to get all id's that match a search.</p>
-<h4 id="uploading">Uploading<a class="headerlink" href="#uploading" title="Permanent link"></a></h4>
+<h4 id="uploading">Uploading<a class="headerlink" href="#uploading" title="Permanent link">➚</a></h4>
 <p>To upload data, flows, runs, etc. you need to provide a description of the object. We provide wrapper classes to provide this information, e.g. <code>DataSetDescription</code>, as well as to capture the server response, e.g. <code>UploadDataSet</code>, which always includes the generated id for reference:</p>
 <div class="codehighlight">
 
@@ -1695,8 +1695,8 @@ Or, you can check out the developer version from <a href="https://github.com/ope
 </div>
 
 <p>More details are given in the corresponding functions below. Also see the <a href="../docs">Java Docs</a> for all possible inputs and return values.</p>
-<h3 id="data-download">Data download<a class="headerlink" href="#data-download" title="Permanent link"></a></h3>
-<h5 id="datagetint-data_id"><code>dataGet(int data_id)</code><a class="headerlink" href="#datagetint-data_id" title="Permanent link"></a></h5>
+<h3 id="data-download">Data download<a class="headerlink" href="#data-download" title="Permanent link">➚</a></h3>
+<h5 id="datagetint-data_id"><code>dataGet(int data_id)</code><a class="headerlink" href="#datagetint-data_id" title="Permanent link">➚</a></h5>
 <p>Retrieves the description of a specified data set.</p>
 <div class="codehighlight">
 
@@ -1708,7 +1708,7 @@ Or, you can check out the developer version from <a href="https://github.com/ope
 
 </div>
 
-<h5 id="datafeaturesint-data_id"><code>dataFeatures(int data_id)</code><a class="headerlink" href="#datafeaturesint-data_id" title="Permanent link"></a></h5>
+<h5 id="datafeaturesint-data_id"><code>dataFeatures(int data_id)</code><a class="headerlink" href="#datafeaturesint-data_id" title="Permanent link">➚</a></h5>
 <p>Retrieves the description of the features of a specified data set.</p>
 <div class="codehighlight">
 
@@ -1720,7 +1720,7 @@ Or, you can check out the developer version from <a href="https://github.com/ope
 
 </div>
 
-<h5 id="dataqualityint-data_id"><code>dataQuality(int data_id)</code><a class="headerlink" href="#dataqualityint-data_id" title="Permanent link"></a></h5>
+<h5 id="dataqualityint-data_id"><code>dataQuality(int data_id)</code><a class="headerlink" href="#dataqualityint-data_id" title="Permanent link">➚</a></h5>
 <p>Retrieves the description of the qualities (meta-features) of a specified data set.</p>
 <div class="codehighlight">
 
@@ -1731,7 +1731,7 @@ Or, you can check out the developer version from <a href="https://github.com/ope
 
 </div>
 
-<h5 id="dataqualityint-data_id-int-start-int-end-int-interval_size"><code>dataQuality(int data_id, int start, int end, int interval_size)</code><a class="headerlink" href="#dataqualityint-data_id-int-start-int-end-int-interval_size" title="Permanent link"></a></h5>
+<h5 id="dataqualityint-data_id-int-start-int-end-int-interval_size"><code>dataQuality(int data_id, int start, int end, int interval_size)</code><a class="headerlink" href="#dataqualityint-data_id-int-start-int-end-int-interval_size" title="Permanent link">➚</a></h5>
 <p>For data streams. Retrieves the description of the qualities (meta-features) of a specified portion of a data stream.</p>
 <div class="codehighlight">
 
@@ -1739,7 +1739,7 @@ Or, you can check out the developer version from <a href="https://github.com/ope
 
 </div>
 
-<h5 id="dataqualitylist"><code>dataQualityList()</code><a class="headerlink" href="#dataqualitylist" title="Permanent link"></a></h5>
+<h5 id="dataqualitylist"><code>dataQualityList()</code><a class="headerlink" href="#dataqualitylist" title="Permanent link">➚</a></h5>
 <p>Retrieves a list of all data qualities known to OpenML.</p>
 <div class="codehighlight">
 
@@ -1748,8 +1748,8 @@ Or, you can check out the developer version from <a href="https://github.com/ope
 
 </div>
 
-<h3 id="data-upload">Data upload<a class="headerlink" href="#data-upload" title="Permanent link"></a></h3>
-<h5 id="datauploaddatasetdescription-description-file-dataset"><code>dataUpload(DataSetDescription description, File dataset)</code><a class="headerlink" href="#datauploaddatasetdescription-description-file-dataset" title="Permanent link"></a></h5>
+<h3 id="data-upload">Data upload<a class="headerlink" href="#data-upload" title="Permanent link">➚</a></h3>
+<h5 id="datauploaddatasetdescription-description-file-dataset"><code>dataUpload(DataSetDescription description, File dataset)</code><a class="headerlink" href="#datauploaddatasetdescription-description-file-dataset" title="Permanent link">➚</a></h5>
 <p>Uploads a data set file to OpenML given a description. Throws an exception if the upload failed, see <a href="#openml_data_upload">openml.data.upload</a> for error codes.</p>
 <div class="codehighlight">
 
@@ -1759,7 +1759,7 @@ Or, you can check out the developer version from <a href="https://github.com/ope
 
 </div>
 
-<h5 id="datauploaddatasetdescription-description"><code>dataUpload(DataSetDescription description)</code><a class="headerlink" href="#datauploaddatasetdescription-description" title="Permanent link"></a></h5>
+<h5 id="datauploaddatasetdescription-description"><code>dataUpload(DataSetDescription description)</code><a class="headerlink" href="#datauploaddatasetdescription-description" title="Permanent link">➚</a></h5>
 <p>Registers an existing dataset (hosted elsewhere). The description needs to include the url of the data set. Throws an exception if the upload failed, see <a href="#openml_data_upload">openml.data.upload</a> for error codes.</p>
 <div class="codehighlight">
 
@@ -1770,8 +1770,8 @@ Or, you can check out the developer version from <a href="https://github.com/ope
 
 </div>
 
-<h3 id="flow-download">Flow download<a class="headerlink" href="#flow-download" title="Permanent link"></a></h3>
-<h5 id="flowgetint-flow_id"><code>flowGet(int flow_id)</code><a class="headerlink" href="#flowgetint-flow_id" title="Permanent link"></a></h5>
+<h3 id="flow-download">Flow download<a class="headerlink" href="#flow-download" title="Permanent link">➚</a></h3>
+<h5 id="flowgetint-flow_id"><code>flowGet(int flow_id)</code><a class="headerlink" href="#flowgetint-flow_id" title="Permanent link">➚</a></h5>
 <p>Retrieves the description of the flow/implementation with the given id.</p>
 <div class="codehighlight">
 
@@ -1785,8 +1785,8 @@ Or, you can check out the developer version from <a href="https://github.com/ope
 
 </div>
 
-<h3 id="flow-management">Flow management<a class="headerlink" href="#flow-management" title="Permanent link"></a></h3>
-<h5 id="flowowned"><code>flowOwned()</code><a class="headerlink" href="#flowowned" title="Permanent link"></a></h5>
+<h3 id="flow-management">Flow management<a class="headerlink" href="#flow-management" title="Permanent link">➚</a></h3>
+<h5 id="flowowned"><code>flowOwned()</code><a class="headerlink" href="#flowowned" title="Permanent link">➚</a></h5>
 <p>Retrieves an array of id's of all flows/implementations owned by you.</p>
 <div class="codehighlight">
 
@@ -1795,7 +1795,7 @@ Or, you can check out the developer version from <a href="https://github.com/ope
 
 </div>
 
-<h5 id="flowexistsstring-name-string-version"><code>flowExists(String name, String version)</code><a class="headerlink" href="#flowexistsstring-name-string-version" title="Permanent link"></a></h5>
+<h5 id="flowexistsstring-name-string-version"><code>flowExists(String name, String version)</code><a class="headerlink" href="#flowexistsstring-name-string-version" title="Permanent link">➚</a></h5>
 <p>Checks whether an implementation with the given name and version is already registered on OpenML.</p>
 <div class="codehighlight">
 
@@ -1805,7 +1805,7 @@ Or, you can check out the developer version from <a href="https://github.com/ope
 
 </div>
 
-<h5 id="flowdeleteint-id"><code>flowDelete(int id)</code><a class="headerlink" href="#flowdeleteint-id" title="Permanent link"></a></h5>
+<h5 id="flowdeleteint-id"><code>flowDelete(int id)</code><a class="headerlink" href="#flowdeleteint-id" title="Permanent link">➚</a></h5>
 <p>Removes the flow with the given id (if you are its owner).</p>
 <div class="codehighlight">
 
@@ -1813,8 +1813,8 @@ Or, you can check out the developer version from <a href="https://github.com/ope
 
 </div>
 
-<h3 id="flow-upload">Flow upload<a class="headerlink" href="#flow-upload" title="Permanent link"></a></h3>
-<h5 id="flowuploadimplementation-description-file-binary-file-source"><code>flowUpload(Implementation description, File binary, File source)</code><a class="headerlink" href="#flowuploadimplementation-description-file-binary-file-source" title="Permanent link"></a></h5>
+<h3 id="flow-upload">Flow upload<a class="headerlink" href="#flow-upload" title="Permanent link">➚</a></h3>
+<h5 id="flowuploadimplementation-description-file-binary-file-source"><code>flowUpload(Implementation description, File binary, File source)</code><a class="headerlink" href="#flowuploadimplementation-description-file-binary-file-source" title="Permanent link">➚</a></h5>
 <p>Uploads implementation files (binary and/or source) to OpenML given a description.</p>
 <div class="codehighlight">
 
@@ -1824,8 +1824,8 @@ Or, you can check out the developer version from <a href="https://github.com/ope
 
 </div>
 
-<h3 id="task-download">Task download<a class="headerlink" href="#task-download" title="Permanent link"></a></h3>
-<h5 id="taskgetint-task_id"><code>taskGet(int task_id)</code><a class="headerlink" href="#taskgetint-task_id" title="Permanent link"></a></h5>
+<h3 id="task-download">Task download<a class="headerlink" href="#task-download" title="Permanent link">➚</a></h3>
+<h5 id="taskgetint-task_id"><code>taskGet(int task_id)</code><a class="headerlink" href="#taskgetint-task_id" title="Permanent link">➚</a></h5>
 <p>Retrieves the description of the task with the given id.</p>
 <div class="codehighlight">
 
@@ -1836,7 +1836,7 @@ Or, you can check out the developer version from <a href="https://github.com/ope
 
 </div>
 
-<h5 id="taskevaluationsint-task_id"><code>taskEvaluations(int task_id)</code><a class="headerlink" href="#taskevaluationsint-task_id" title="Permanent link"></a></h5>
+<h5 id="taskevaluationsint-task_id"><code>taskEvaluations(int task_id)</code><a class="headerlink" href="#taskevaluationsint-task_id" title="Permanent link">➚</a></h5>
 <p>Retrieves all evaluations for the task with the given id.</p>
 <div class="codehighlight">
 
@@ -1845,7 +1845,7 @@ Or, you can check out the developer version from <a href="https://github.com/ope
 
 </div>
 
-<h5 id="taskevaluationsint-task_id-int-start-int-end-int-interval_size"><code>taskEvaluations(int task_id, int start, int end, int interval_size)</code><a class="headerlink" href="#taskevaluationsint-task_id-int-start-int-end-int-interval_size" title="Permanent link"></a></h5>
+<h5 id="taskevaluationsint-task_id-int-start-int-end-int-interval_size"><code>taskEvaluations(int task_id, int start, int end, int interval_size)</code><a class="headerlink" href="#taskevaluationsint-task_id-int-start-int-end-int-interval_size" title="Permanent link">➚</a></h5>
 <p>For data streams. Retrieves all evaluations for the task over the specified window of the stream.</p>
 <div class="codehighlight">
 
@@ -1854,8 +1854,8 @@ Or, you can check out the developer version from <a href="https://github.com/ope
 
 </div>
 
-<h3 id="run-download">Run download<a class="headerlink" href="#run-download" title="Permanent link"></a></h3>
-<h5 id="rungetint-run_id"><code>runGet(int run_id)</code><a class="headerlink" href="#rungetint-run_id" title="Permanent link"></a></h5>
+<h3 id="run-download">Run download<a class="headerlink" href="#run-download" title="Permanent link">➚</a></h3>
+<h5 id="rungetint-run_id"><code>runGet(int run_id)</code><a class="headerlink" href="#rungetint-run_id" title="Permanent link">➚</a></h5>
 <p>Retrieves the description of the run with the given id.</p>
 <div class="codehighlight">
 
@@ -1867,8 +1867,8 @@ Or, you can check out the developer version from <a href="https://github.com/ope
 
 </div>
 
-<h3 id="run-management">Run management<a class="headerlink" href="#run-management" title="Permanent link"></a></h3>
-<h5 id="rundeleteint-run_id"><code>runDelete(int run_id)</code><a class="headerlink" href="#rundeleteint-run_id" title="Permanent link"></a></h5>
+<h3 id="run-management">Run management<a class="headerlink" href="#run-management" title="Permanent link">➚</a></h3>
+<h5 id="rundeleteint-run_id"><code>runDelete(int run_id)</code><a class="headerlink" href="#rundeleteint-run_id" title="Permanent link">➚</a></h5>
 <p>Deletes the run with the given id (if you are its owner).</p>
 <div class="codehighlight">
 
@@ -1876,8 +1876,8 @@ Or, you can check out the developer version from <a href="https://github.com/ope
 
 </div>
 
-<h3 id="run-upload">Run upload<a class="headerlink" href="#run-upload" title="Permanent link"></a></h3>
-<h5 id="runuploadrun-description-mapstringfile-output_files"><code>runUpload(Run description, Map&lt;String,File&gt; output_files)</code><a class="headerlink" href="#runuploadrun-description-mapstringfile-output_files" title="Permanent link"></a></h5>
+<h3 id="run-upload">Run upload<a class="headerlink" href="#run-upload" title="Permanent link">➚</a></h3>
+<h5 id="runuploadrun-description-mapstringfile-output_files"><code>runUpload(Run description, Map&lt;String,File&gt; output_files)</code><a class="headerlink" href="#runuploadrun-description-mapstringfile-output_files" title="Permanent link">➚</a></h5>
 <p>Uploads a run to OpenML, including a description and a set of output files depending on the task type.</p>
 <div class="codehighlight">
 

@@ -1206,20 +1206,20 @@
                   <a href="https://github.com/openml/OpenML/edit/master/docs/docs/REST-tutorial.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <h1 id="rest-tutorial">REST tutorial<a class="headerlink" href="#rest-tutorial" title="Permanent link"></a></h1>
+                <h1 id="rest-tutorial">REST tutorial<a class="headerlink" href="#rest-tutorial" title="Permanent link">➚</a></h1>
 <p>OpenML offers a RESTful Web API, with predictive URLs, for uploading and downloading machine learning resources. Try the <a href="https://www.openml.org/api_docs" target="_blank">API Documentation</a> to see examples of all calls, and test them right in your browser.</p>
-<h2 id="getting-started">Getting started<a class="headerlink" href="#getting-started" title="Permanent link"></a></h2>
+<h2 id="getting-started">Getting started<a class="headerlink" href="#getting-started" title="Permanent link">➚</a></h2>
 <ul>
 <li>REST services can be called using simple HTTP GET or POST actions.</li>
 <li>The REST Endpoint URL is <code class="http"><a href="https://www.openml.org/api/v1/">https://www.openml.org/api/v1/</a></code></li>
 <li>The default endpoint returns data in XML. If you prefer JSON, use the endpoint <code class="http"><a href="https://www.openml.org/api/v1/json/">https://www.openml.org/api/v1/json/</a></code>. Note that, to upload content, you still need to use XML (at least for now).</li>
 </ul>
-<h2 id="testing">Testing<a class="headerlink" href="#testing" title="Permanent link"></a></h2>
+<h2 id="testing">Testing<a class="headerlink" href="#testing" title="Permanent link">➚</a></h2>
 <p>For continuous integration and testing purposes, we have a test server offering the same API, but which does not affect the production server.</p>
 <ul>
 <li>The test server REST Endpoint URL is <code class="http"><a href="https://test.openml.org/api/v1/">https://test.openml.org/api/v1/</a></code></li>
 </ul>
-<h2 id="error-messages">Error messages<a class="headerlink" href="#error-messages" title="Permanent link"></a></h2>
+<h2 id="error-messages">Error messages<a class="headerlink" href="#error-messages" title="Permanent link">➚</a></h2>
 <p>Error messages will look like this:</p>
 <div class="highlight"><pre><span></span><span class="nt">&lt;oml:error</span> <span class="na">xmlns:oml=</span><span class="s">&quot;http://openml.org/error&quot;</span><span class="nt">&gt;</span>
 <span class="nt">&lt;oml:code&gt;</span>100<span class="nt">&lt;/oml:code&gt;</span>
@@ -1233,9 +1233,9 @@
 <li>in XML: <a href="https://www.openml.org/api_new/v1/data/99999" target="_blank"><a href="https://www.openml.org/api_new/v1/data/99999">https://www.openml.org/api_new/v1/data/99999</a></a></li>
 <li>in JSON: <a href="https://www.openml.org/api_new/v1/json/data/99999" target="_blank"><a href="https://www.openml.org/api_new/v1/json/data/99999">https://www.openml.org/api_new/v1/json/data/99999</a></a></li>
 </ul>
-<h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link"></a></h2>
+<h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">➚</a></h2>
 <p>You need to be logged in for these examples to work.</p>
-<h3 id="download-a-dataset">Download a dataset<a class="headerlink" href="#download-a-dataset" title="Permanent link"></a></h3>
+<h3 id="download-a-dataset">Download a dataset<a class="headerlink" href="#download-a-dataset" title="Permanent link">➚</a></h3>
 <p><img alt="Dataset" src="../img/api_get_dataset.png" /></p>
 <ul>
 <li>User asks for a dataset using the <a href="https://www.openml.org/api_docs/#!/data/get_data_id">/data/{id}</a> service. The <code>dataset id</code> is typically part of a task, or can be found on OpenML.org.</li>
@@ -1243,7 +1243,7 @@
 <li>The dataset description contains the URL where the dataset can be downloaded. The user calls that URL to download the dataset.</li>
 <li>The dataset is returned by the server hosting the dataset. This can be OpenML, but also any other data repository. <a href="http://www.openml.org/data/download/1/dataset_1_anneal.arff" type="button" class="btn btn-primary btn-xs" target="_blank">Try it now</a></li>
 </ul>
-<h3 id="download-a-flow">Download a flow<a class="headerlink" href="#download-a-flow" title="Permanent link"></a></h3>
+<h3 id="download-a-flow">Download a flow<a class="headerlink" href="#download-a-flow" title="Permanent link">➚</a></h3>
 <p><img alt="Flow" src="../img/api_get_implementation.png" /></p>
 <ul>
 <li>User asks for a flow using the <a href="https://www.openml.org/api_docs/#!/flow/get_flow_id">/flow/{id}</a> service and a <code>flow id</code>. The <code>flow id</code> can be found on OpenML.org.</li>
@@ -1251,7 +1251,7 @@
 <li>The flow description contains the URL where the flow can be downloaded (e.g. GitHub), either as source, binary or both, as well as additional information on history, dependencies and licence. The user calls the right URL to download it.</li>
 <li>The flow is returned by the server hosting it. This can be OpenML, but also any other code repository. <a href="http://sourceforge.net/projects/weka/files/weka-3-4/3.4.8/weka-3-4-8a.zip/download" type="button" class="btn btn-primary btn-xs" target="_blank">Try it now</a></li>
 </ul>
-<h3 id="download-a-task">Download a task<a class="headerlink" href="#download-a-task" title="Permanent link"></a></h3>
+<h3 id="download-a-task">Download a task<a class="headerlink" href="#download-a-task" title="Permanent link">➚</a></h3>
 <p><img alt="Task" src="../img/api_get_task.png" /></p>
 <ul>
 <li>User asks for a task using the <a href="https://www.openml.org/api_docs/#!/task/get_task_id">/task/{id}</a> service and a <code>task id</code>. The <code>task id</code> is typically returned when searching for tasks.</li>

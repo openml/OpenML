@@ -1164,9 +1164,9 @@
                   <a href="https://github.com/openml/OpenML/edit/master/docs/docs/Basic-Concepts.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <h1 id="basic-concepts">Basic Concepts<a class="headerlink" href="#basic-concepts" title="Permanent link"></a></h1>
+                <h1 id="basic-concepts">Basic Concepts<a class="headerlink" href="#basic-concepts" title="Permanent link">➚</a></h1>
 <p>Researchers are encouraged to upload their experimental results on OpenML, so that these can be reused by anyone. Various high level papers  have been published that overview the design goals, benefits and opportunities (for example, at <a href="http://link.springer.com/chapter/10.1007%2F978-3-642-40994-3_46">ECML/PKDD 2013</a>, <a href="http://dl.acm.org/citation.cfm?id=2641198">SIGKDD Explorations</a> and <a href="http://www.jmlr.org/proceedings/papers/v41/vanschoren15.html">JMLR</a>). However, there is no clear overview of the basic concepts upon which the platform is build. In this blog post I will review these, and discuss some best practices. This page is a slightly updated version of <a href="https://medium.com/open-machine-learning/basic-components-of-openml-a5745634c664">this blogpost</a></p>
-<h2 id="data">Data<a class="headerlink" href="#data" title="Permanent link"></a></h2>
+<h2 id="data">Data<a class="headerlink" href="#data" title="Permanent link">➚</a></h2>
 <p>One of the core components of OpenML are datasets. People can upload their datasets, and the system automatically organises these on line. An example of a dataset is the well-known <a href="http://www.openml.org/d/61">Iris dataset</a>. It shows all features, once of these is identified as the 'default target attribute', although this concept is flexible. It also shows some automatically computed data qualities (or, meta-features). Each dataset has its own unique ID.</p>
 <p>Information about the dataset, the data features and the data qualities can be obtained automatically by means of the following API functions:</p>
 <ul>
@@ -1175,7 +1175,7 @@
 <li><a href="http://www.openml.org/api_docs/#!/data/get_data_features_id">Get data features</a> (requires the data id)</li>
 <li><a href="http://www.openml.org/api_docs/#!/data/get_data_qualities_id">Get data qualities</a> (requires the data id)</li>
 </ul>
-<h2 id="task-types-and-tasks">Task types and tasks<a class="headerlink" href="#task-types-and-tasks" title="Permanent link"></a></h2>
+<h2 id="task-types-and-tasks">Task types and tasks<a class="headerlink" href="#task-types-and-tasks" title="Permanent link">➚</a></h2>
 <p>A dataset alone does not constitute a scientific task. We must first agree on what types of results are expected to be shared. This is expressed in task types: they define what types of inputs are given, which types of output are expected to be returned, and what protocols should be used. For instance, classification tasks should include well-defined cross-validation procedures, labelled input data, and require predictions as outputs. The collection of all this information together is called a task. The Iris dataset has various tasks defined on it, <a href="http://www.openml.org/t/59">for example this one</a>. Although the web-interface does not show it, this task formally describes the target attribute that should be modelled (in this case the same as the default target attribute of the dataset, but this is flexible), the quality estimation procedure (10-fold cross-validation), the evaluation measure (predictive accuracy) and the cross-validation folds.</p>
 <p>Useful API operations include:</p>
 <ul>
@@ -1184,7 +1184,7 @@
 <li><a href="http://www.openml.org/api_docs/#!/task/get_task_id">Get the details of a task</a> (requires task id)</li>
 </ul>
 <p>Currently, there are a wide range of task types defined on OpenML, including classification, regression, on line learning, clustering and subgroup discovery. Although this set can be extended, this is currently not a supported API operation (meaning that we will add them by hand). If you interested in task types that are currently not supported, please contact us. </p>
-<h2 id="flows">Flows<a class="headerlink" href="#flows" title="Permanent link"></a></h2>
+<h2 id="flows">Flows<a class="headerlink" href="#flows" title="Permanent link">➚</a></h2>
 <p>Tasks can be 'solved' by classifiers (or algorithms, workflows, flows). OpenML stores references to these flows. It is important to stress that flows are actually ran on the computer of the user, only meta-information about the flow is stored on OpenML. This  information includes basic trivialities such as the creator, toolbox and compilation instructions, but also more formal description about hyper parameter. A flow can also contain subflows, for example, the flow Bagging can have a subflow 'Decision Tree' which would make the flow 'Bagging of Decision Trees'. A flow is distinguished by its name and 'external version', which are both provided by the uploader. When uploading a flow, it is important to think about a good naming convention for the both, for example, the git commit number could be used as external version, as this uniquely identifies a state of the code. Ideally, when two persons are using the same flow, they will use the same name and external version, so that results of the flows can be compared across tasks. (This is ensured when using the toolboxed in which OpenML is integrated, such as Weka, Scikit Learn and MLR).</p>
 <p>Useful API functions are:</p>
 <ul>
@@ -1192,7 +1192,7 @@
 <li><a href="http://www.openml.org/api_docs/#!/flow/get_flow_owned">List all my flows</a></li>
 <li><a href="http://www.openml.org/api_docs/#!/flow/get_flow_id">Give details about a given flow</a> (requires flow id)</li>
 </ul>
-<h2 id="runs">Runs<a class="headerlink" href="#runs" title="Permanent link"></a></h2>
+<h2 id="runs">Runs<a class="headerlink" href="#runs" title="Permanent link">➚</a></h2>
 <p>Whenever a flow executes a task, this is called a run. The existence of runs is actually the main contribution of OpenML. Some experiments take weeks to complete, and having the results stored on OpenML helps other researchers reuse the experiments. The task description specifies which information should be uploaded in order to have a valid run, in most cases, for each cross-validation fold the predictions on the test set. This allows OpenML to calculate basic evaluation measures, such as predictive accuracy, ROC curves and many more. Also information about the flow and hyper parameter settings should be provided.</p>
 <p>Some useful API functions:</p>
 <ul>
@@ -1201,7 +1201,7 @@
 <li>And many more ...</li>
 </ul>
 <p>Usually, the result is in some XML or JSON format (depending on the preference of the user), linking together various task ids, flow ids, etc. In order for this to become meaningful, the user needs to perform other API tasks to get information about what flows were executed, what tasks and datasets were used, etc. Details about this will be provided in another post.</p>
-<h2 id="setups">Setups<a class="headerlink" href="#setups" title="Permanent link"></a></h2>
+<h2 id="setups">Setups<a class="headerlink" href="#setups" title="Permanent link">➚</a></h2>
 <p>Every run that is executed by a flow, contains information about the hyper parameter settings of the flow. A setup is the combination of all parameter settings of a given flow. OpenML internally links the result of a given run to a setup id. This way, experiments can be done across hyper parameter settings.</p>
 <p>For example,  </p>
 <ul>
