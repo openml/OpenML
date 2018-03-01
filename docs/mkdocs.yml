@@ -35,7 +35,7 @@ markdown_extensions:
   - fontawesome_markdown
   - admonition
   - toc:
-      permalink: ➚
+      permalink: true
 pages:
   - Bootcamp:
     - Get started: index.md
