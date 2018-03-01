@@ -1127,14 +1127,14 @@
 <p>Another example is the following:</p>
 <p><code>java -jar webapplication -config &quot;api_key=S3CR3T_AP1_K3Y&quot; -f all_wrong -r 81,161 -t 59</code></p>
 <p>Which takes a comma separated list of run ids (no spaces) and a task id as input and outputs the test examples on the dataset on which all algorithms used in the runs produced wrong examples (in this case, weka.BayesNet_K2 and weka.SMO, respectively). An error will be displayed if there are runs not consistent with the task id in there. </p>
-<h2 id="extending-the-java-app">Extending the Java App<a class="headerlink" href="#extending-the-java-app" title="Permanent link">➚</a></h2>
+<h2 id="extending-the-java-app">Extending the Java App<a class="headerlink" href="#extending-the-java-app" title="Permanent link">&para;</a></h2>
 <p>The bootstrap class of the webapplication is</p>
 <p><code>org.openml.webapplication.Main</code></p>
 <p>It automatically checks authentication settings (such as api_key) and the determines which function to invoke. </p>
 <p>It uses a switch-like if - else contruction to facilitate the functionalities of the various functions. Additional functions can be added to this freely. From there on, it is easy to add functionality to the webapplication. </p>
 <p>Parameters are handled using the Apache Commons CommandLineParser class, which makes sure that the passed parameters are available to the program. </p>
 <p>In order to make new functionalities available to the website, there also needs to be programmed an interface to the function, somewhere in the website. The next section details on that. </p>
-<h2 id="interfacing-from-the-openml-api">Interfacing from the OpenML API<a class="headerlink" href="#interfacing-from-the-openml-api" title="Permanent link">➚</a></h2>
+<h2 id="interfacing-from-the-openml-api">Interfacing from the OpenML API<a class="headerlink" href="#interfacing-from-the-openml-api" title="Permanent link">&para;</a></h2>
 <p>By design, the REST API is not allowed to communicate with the Java App. All interfaces with the Java webapplication should go through other controllers of the PHP CodeIgniter framework., for example api_splits. Currently, the website features two main API's. These are represented by a Controller. Controllers can be found in the folder openml_OS/controllers. Here we see:
 * api_new.php, representing the REST API
 * api_splits.php, representing an API interfacing to the Java webapplication. </p>

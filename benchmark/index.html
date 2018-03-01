@@ -1190,7 +1190,7 @@
                   <a href="https://github.com/openml/OpenML/edit/master/docs/docs/benchmark.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <h1 id="benchmarking">Benchmarking<a class="headerlink" href="#benchmarking" title="Permanent link">➚</a></h1>
+                <h1 id="benchmarking">Benchmarking<a class="headerlink" href="#benchmarking" title="Permanent link">&para;</a></h1>
 <p>OpenML significantly simplifies benchmarking by:</p>
 
 <p></li><li>offering a large set of datasets in standardized data formats
@@ -1201,7 +1201,7 @@
 <p>In addition, OpenML offers <b>benchmarking suites</b>: curated, comprehensive sets of machine learning datasets,
 covering a wide spectrum of domains and statistical properties and standardized evaluation procedures (defined in tasks).
 This makes benchmarking results more comparable, more complete, and allows more standardized analysis of algorithms under different conditions.</p>
-<h2 id="openml100">OpenML100<a class="headerlink" href="#openml100" title="Permanent link">➚</a></h2>
+<h2 id="openml100">OpenML100<a class="headerlink" href="#openml100" title="Permanent link">&para;</a></h2>
 <p>As a first such suite, we propose the OpenML100, <a href="https://www.openml.org/search?q=tags.tag%3AOpenML100&type=data&table=1&size=100" target="_blank">a machine learning benchmark suite of 100 classification datasets</a> carefully curated from the thousands of datasets available. We selected classification datasets for this benchmarking suite to satisfy the following requirements:</p>
 <ul><li>the number of observations are between 500 and 100000 to focus on medium-sized datasets, that are not too small for proper training and not too big for practical experimentation,
 </li><li>the number of features does not exceed 5000 features to keep the runtime of algorithms low
@@ -1215,12 +1215,12 @@ This makes benchmarking results more comparable, more complete, and allows more 
 </li><li>are variants of other datasets (e.g. binarized regression tasks),
 </li><li>include sparse data (e.g., text mining data sets).
 </li></ul></p>
-<h2 id="code-examples">Code examples<a class="headerlink" href="#code-examples" title="Permanent link">➚</a></h2>
+<h2 id="code-examples">Code examples<a class="headerlink" href="#code-examples" title="Permanent link">&para;</a></h2>
 <p>The code below demonstrates how OpenML benchmarking suites, in this case the OpenML100, can be conveniently imported for benchmarking using the Python, Java and R APIs.</p>
 <p>The OpenML100 tasks are downloaded through the <a href="https://www.openml.org/s/14" target="_blank">study with the same name</a>,
 which contains the 100 tasks and also holds all benchmarking results obtained on them. The code also shows how to access the raw data set (although this is not needed to train a model),
 fit a simple classifier on the defined data splits, and finally publish runs on the OpenML server.</p>
-<h3 id="python-with-scikit-learn">Python (with scikit-learn)<a class="headerlink" href="#python-with-scikit-learn" title="Permanent link">➚</a></h3>
+<h3 id="python-with-scikit-learn">Python (with scikit-learn)<a class="headerlink" href="#python-with-scikit-learn" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">openml</span>
 <span class="kn">import</span> <span class="nn">sklearn</span>
 <span class="n">benchmark_suite</span> <span class="o">=</span> <span class="n">openml</span><span class="o">.</span><span class="n">study</span><span class="o">.</span><span class="n">get_study</span><span class="p">(</span><span class="s1">&#39;OpenML100&#39;</span><span class="p">,</span><span class="s1">&#39;tasks&#39;</span><span class="p">)</span> <span class="c1"># obtain the benchmark suite</span>
@@ -1239,7 +1239,7 @@ fit a simple classifier on the defined data splits, and finally publish runs on 
   <span class="k">print</span><span class="p">(</span><span class="s1">&#39;URL for run: </span><span class="si">%s</span><span class="s1">/run/</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span><span class="p">(</span><span class="n">openml</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">server</span><span class="p">,</span><span class="n">run</span><span class="o">.</span><span class="n">run_id</span><span class="p">))</span>
 </pre></div>
 
-<h3 id="java-with-weka">Java (with WEKA)<a class="headerlink" href="#java-with-weka" title="Permanent link">➚</a></h3>
+<h3 id="java-with-weka">Java (with WEKA)<a class="headerlink" href="#java-with-weka" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">runTasksAndUpload</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
   <span class="n">OpenmlConnector</span> <span class="n">openml</span> <span class="o">=</span> <span class="k">new</span> <span class="n">OpenmlConnector</span><span class="o">();</span>
   <span class="c1">// obtain the benchmark suite</span>
@@ -1255,7 +1255,7 @@ fit a simple classifier on the defined data splits, and finally publish runs on 
 <span class="o">}</span>
 </pre></div>
 
-<h3 id="r-with-mlr">R (with mlr)<a class="headerlink" href="#r-with-mlr" title="Permanent link">➚</a></h3>
+<h3 id="r-with-mlr">R (with mlr)<a class="headerlink" href="#r-with-mlr" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><span class="kn">library</span><span class="p">(</span>OpenML<span class="p">)</span>
 lrn <span class="o">=</span> makeLearner<span class="p">(</span><span class="s">&#39;classif.rpart&#39;</span><span class="p">)</span> <span class="c1"># construct a simple CART classifier</span>
 task.ids <span class="o">=</span> getOMLStudy<span class="p">(</span><span class="s">&#39;OpenML100&#39;</span><span class="p">)</span><span class="o">$</span>tasks<span class="o">$</span>task.id <span class="c1"># obtain the list of suggested tasks</span>
@@ -1268,7 +1268,7 @@ task.ids <span class="o">=</span> getOMLStudy<span class="p">(</span><span class
 <span class="p">}</span>
 </pre></div>
 
-<h2 id="creating-new-benchmark-suites">Creating new benchmark suites<a class="headerlink" href="#creating-new-benchmark-suites" title="Permanent link">➚</a></h2>
+<h2 id="creating-new-benchmark-suites">Creating new benchmark suites<a class="headerlink" href="#creating-new-benchmark-suites" title="Permanent link">&para;</a></h2>
 <p>The set of datasets on OpenML.org can <a href="https://www.openml.org/new/data">easily be extended</a>, and additional OpenML benchmark suites,
 e.g., for regression and time-series data, can easily be created by defining sets of datasets according to specific needs.
 This is done by:
