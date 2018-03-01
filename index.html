@@ -1327,7 +1327,7 @@
 
 <p><i class="fa fa-bolt fa-fw fa-lg"></i> Open source tools to automate experimentation and model building</p>
 
-<h2 id="concepts">Concepts</h2>
+<h2 id="concepts">Concepts<a class="headerlink" href="#concepts" title="Permanent link"></a></h2>
 <p>OpenML operates on a number of core concepts which are important to understand:  </p>
 <p><strong><span style="color:green"><i class="fa fa-database"></i> Datasets</span></strong><br />
 Datasets are pretty straight-forward. They simply consist of a number of rows, also called <em>instances</em>, usually in tabular form.<br />
@@ -1342,7 +1342,7 @@ A flow identifies a particular machine learning algorithm from a particular libr
 <p><strong><span style="color:red"><i class="fa fa-star"></i> Runs</span></strong><br />
 A run is a particular flow, that is algorithm, with a particular parameter setting, applied to a particular task.<br />
 <em>Example: <a href="https://www.openml.org/r/6466" target="_blank">Classifying irises with WEKA's RandomForest</a></em></p>
-<h2 id="data">Data</h2>
+<h2 id="data">Data<a class="headerlink" href="#data" title="Permanent link"></a></h2>
 <p>You can upload and download datasets through the <a href="https://www.openml.org/new/data" target="_blank">website</a>, or <a href="../API-index">API</a>. Data hosted
 elsewhere can be referenced by URL.</p>
 <p>Data consists of columns, also known as features or covariates, each of
@@ -1375,7 +1375,7 @@ discussions, and the <i>tasks</i> in which it is used.</p>
 <p class="admonition-title">Info</p>
 <p>OpenML currently only supports uploading of ARFF files. We aim to extend this in the near future, and allow conversions between the main data types.</p></p>
 </div>
-<h3 id="dataset-id-and-versions">Dataset ID and versions</h3>
+<h3 id="dataset-id-and-versions">Dataset ID and versions<a class="headerlink" href="#dataset-id-and-versions" title="Permanent link"></a></h3>
 <p>A dataset can be uniquely identified by its dataset ID, which you can find
 in the URL of the dataset page, such as 62 for <a href="https://www.openml.org/d/62" target="_blank">zoo</a>. Each
 dataset also has a name, but several dataset can have the same name. When several datasets
@@ -1384,17 +1384,17 @@ that is not necessarily true). The version number is assigned according to the o
 of upload. Different versions of a dataset can be accessed through the drop
 down menu at the top right of the dataset page.</p>
 <p><img alt="Dataset properties" src="./img/data_version.png" /></p>
-<h3 id="dataset-status">Dataset status</h3>
+<h3 id="dataset-status">Dataset status<a class="headerlink" href="#dataset-status" title="Permanent link"></a></h3>
 <p>Each dataset has a status, which can be "active", "deactivated" or
 "in_preparation". When you upload a dataset, it will be marked "in_preparation"
 until it is approved by a site administrator.  Once it is approved, the dataset
 will become "active". If a severe issue has been found with a dataset, it can
 become "deactivated". By default, the search will only display datasets that are
 "active", but you can access and download datasets with any status.</p>
-<h3 id="ignored-features">Ignored features</h3>
+<h3 id="ignored-features">Ignored features<a class="headerlink" href="#ignored-features" title="Permanent link"></a></h3>
 <p>Features in datasets can be tagged as "ignored" or "row id". Those features will not be
 considered by programming interfaces, and excluded from any tasks.</p>
-<h2 id="tasks">Tasks</h2>
+<h2 id="tasks">Tasks<a class="headerlink" href="#tasks" title="Permanent link"></a></h2>
 <p>Tasks describe what to do with the data. OpenML covers several <a
 href="https://www.openml.org/search?type=task_type" target="_blank">task types</a>, such as classification and
 clustering. You can <a href="https://www.openml.org/new/task" target="_blank">create tasks</a>
@@ -1422,7 +1422,7 @@ integrated machine learning tools, like Weka, mlr and scikit-learn.</p>
 <p class="admonition-title">Note</p>
 <p>You can also supply hidden test sets for the evaluation of solutions. Novel ways of ranking solutions will be added in the near future.</p>
 </div>
-<h2 id="flows">Flows</h2>
+<h2 id="flows">Flows<a class="headerlink" href="#flows" title="Permanent link"></a></h2>
 <p>Flows are algorithms, workflows, or scripts solving tasks. You can upload
 them through the <a href="https://www.openml.org/new/flow" target="_blank">website</a>, or <a href="./APIs">APIs</a>.
 Code hosted elsewhere (e.g., GitHub) can be
@@ -1439,7 +1439,7 @@ evaluations on all tasks, and user discussions.</p>
 <p>Each flow specifies requirements and dependencies, and you need to install these locally to execute
 a flow on a specific task. We aim to add support for VMs so that flows can be easily (re)run in any environment.</p>
 </div>
-<h2 id="runs">Runs</h2>
+<h2 id="runs">Runs<a class="headerlink" href="#runs" title="Permanent link"></a></h2>
 <p>Runs are applications of flows to a specific task. They are typically
 submitted automatically by machine learning
 environments (through the OpenML <a href="./APIs">APIs</a>), with the goal of creating a
@@ -1455,37 +1455,37 @@ properties of the data and algorithms.</p>
 <p><img alt="Run" src="./img/run-ss1.png" /></p>
 <p>OpenML stores and analyzes results in fine detail, up to the level of
 individual instances.</p>
-<h2 id="authentication">Authentication</h2>
+<h2 id="authentication">Authentication<a class="headerlink" href="#authentication" title="Permanent link"></a></h2>
 <p>You can download and inspect all datasets, tasks, flows and runs through the
 website or the API without creating an account. However, if you want to upload
 datasets or experiments, you need to <a href="https://www.openml.org/register" target="_blank">create an account</a>
 or sign in and <a href="https://www.openml.org/#api" target="_blank">create an API key</a>.
 This key can then be used with any of the <a href="./APIs">OpenML APIs</a>.</p>
-<h2 id="integrations">Integrations</h2>
+<h2 id="integrations">Integrations<a class="headerlink" href="#integrations" title="Permanent link"></a></h2>
 <p>OpenML is deeply integrated in several popular machine learning environments. Given a task, these integrations will
 automatically download the data into the environments, allow you to run any
 algorithm/flow, and automatically upload all runs.</p></p>
 <p><img alt="Plugins" src="./img/plugins-ss1.png" /></p>
-<h2 id="programming-apis">Programming APIs</h2>
+<h2 id="programming-apis">Programming APIs<a class="headerlink" href="#programming-apis" title="Permanent link"></a></h2>
 <p>If you want to integrate OpenML into your own tools, we offer several <a href="./APIs">Language-specific APIs</a>, so you can easily interact with
 OpenML to list, download and upload datasets, tasks, flows and runs.</p>
 <p>With these APIs you can download a task, run an algorithm, and upload the
 results in just a few lines of code.</p>
 <p>OpenML also offers a <a href="./APIs">REST API</a> which allows you to talk to OpenML directly.</p>
 <p><img alt="R" src="./img/r-ss1.png" /></p>
-<h2 id="tags">Tags</h2>
+<h2 id="tags">Tags<a class="headerlink" href="#tags" title="Permanent link"></a></h2>
 <p>Datasets, tasks, runs and flows can be assigned tags, either via the web
 interface or the API. These tags can be used to search and annotated datasets.
 For example the tag <a
 href="https://www.openml.org/search?q=tags.tag%3AOpenML100&type=task" target="_blank">OpenML100</a> refers to
 benchmark machine learning algorithms used as a benchmark suite. Anyone can add
 or remove tags on any entity.</p>
-<h2 id="studies-under-construction">Studies (under construction)</h2>
+<h2 id="studies-under-construction">Studies (under construction)<a class="headerlink" href="#studies-under-construction" title="Permanent link"></a></h2>
 <p>You can combine datasets, flows and runs into studies, to collaborate with others online, or simply keep a log of your work.</p>
 <p>Each project gets its own page, which can be linked to publications so that others can find all the details online.</p>
-<h2 id="circles-under-construction">Circles (under construction)</h2>
+<h2 id="circles-under-construction">Circles (under construction)<a class="headerlink" href="#circles-under-construction" title="Permanent link"></a></h2>
 <p>You can create circles of trusted researchers in which data can be shared that is not yet ready for publication.</p>
-<h2 id="jobs-under-construction">Jobs (under construction)</h2>
+<h2 id="jobs-under-construction">Jobs (under construction)<a class="headerlink" href="#jobs-under-construction" title="Permanent link"></a></h2>
 <p>OpenML can help you run large experiments. A job is a small container defining a specific flow, with specific parameters settings, to run on a specific tasks. You can generate batches of these jobs online, and you can run a helper tool on your machines/clouds/clusters that downloads these jobs (including all data), executes them, and uploads the results.</p>
                 
                   

@@ -1162,26 +1162,26 @@
                 
                   <h1>Local Installation</h1>
                 
-                <h3 id="docker-installation">Docker installation</h3>
+                <h3 id="docker-installation">Docker installation<a class="headerlink" href="#docker-installation" title="Permanent link"></a></h3>
 <p>The easiest way to set up a local version is to use the docker container provided here:
 <a href="https://github.com/nodechef/openML_docker_server">https://github.com/nodechef/openML_docker_server</a></p>
-<h3 id="requirements">Requirements</h3>
+<h3 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link"></a></h3>
 <p>You'll need to have the following software running:
 * Apache Webserver, (with the rewrite module enabled. Is installed by default,
 not enabled.)
 * MySQL Server.
 * PHP 5.5 or higher (comes also with Apache)
 Or just a XAMP (Mac), LAMP (Linux) or WAMP (Windows) package, which conveniently contains all these applications.</p>
-<h3 id="databases">Databases</h3>
+<h3 id="databases">Databases<a class="headerlink" href="#databases" title="Permanent link"></a></h3>
 <p>Next, OpenML runs on two databases, a public database with all experiment information, and a private database, with information like user accounts etc. The latest version of both databases can be downloaded here: <a href="https://www.openml.org/guide/developers">https://www.openml.org/guide/developers</a></p>
 <p>Obviously, the private database does not include any actual user account info.</p>
-<h3 id="backend">Backend</h3>
+<h3 id="backend">Backend<a class="headerlink" href="#backend" title="Permanent link"></a></h3>
 <p>The source code is available in the 'OpenML' repository: <a href="https://github.com/openml/OpenML">https://github.com/openml/OpenML</a></p>
 <p>OpenML is written in PHP, and can be 'installed' by copying all files in the 'www' or 'public_html' directory of Apache. </p>
 <p>After that, you need to provide your local paths and database accounts and passwords using the config file in:
 'APACHE_WWW_DIR'/openml_OS/config/BASE_CONFIG.php. </p>
 <p>If everything is configured correctly, OpenML should now be running.</p>
-<h3 id="search-indices">Search Indices</h3>
+<h3 id="search-indices">Search Indices<a class="headerlink" href="#search-indices" title="Permanent link"></a></h3>
 <p>If you want to run your own (separate) OpenML instance, and store your own data, you'll also want to build your own search indices to show all data on the website. The OpenML website is based on the ElasticSearch stack. To install it, follow the instructions here: <a href="http://knowm.org/how-to-set-up-the-elk-stack-elasticsearch-logstash-and-kibana/">http://knowm.org/how-to-set-up-the-elk-stack-elasticsearch-logstash-and-kibana/</a> </p>
                 
                   

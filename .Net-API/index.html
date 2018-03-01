@@ -1271,9 +1271,9 @@
                   <h1>Tutorial</h1>
                 
                 <p>The .Net API allows you connect to OpenML from .Net applications.</p>
-<h2 id="download">Download</h2>
+<h2 id="download">Download<a class="headerlink" href="#download" title="Permanent link"></a></h2>
 <p>Stable releases of the .Net API are available via <a href="https://www.nuget.org/packages/openMl">NuGet</a>. Use the NuGet package explorer in the Visual Studia, write “Install-Package openMl” to the NuGet package manager console or download the whole package from the NuGet website and add it into your project. Or, you can check out the developer version from <a href="https://github.com/openml/dotnet">GitHub</a>.</p>
-<h3 id="quick-start">Quick Start</h3>
+<h3 id="quick-start">Quick Start<a class="headerlink" href="#quick-start" title="Permanent link"></a></h3>
 <p>Create an <code>OpenmlConnector</code> instance with your api key. You can find this key in your account settings. This will create a client with OpenML functionalities, The functionalities mirror the OpenMlApi and not all of them are (yet) implemented. If you need some feature, don’t hesitate contact us via our Git page.</p>
 <div class="codehighlight">
 
@@ -1282,63 +1282,63 @@
 </div>
 
 <p>All OpenMlConnector methods are documented via the usual .Net comments.</p>
-<h4 id="get-dataset-description">Get dataset description</h4>
+<h4 id="get-dataset-description">Get dataset description<a class="headerlink" href="#get-dataset-description" title="Permanent link"></a></h4>
 <div class="codehighlight">
 
 <pre>    `var datasetDescription = connector.GetDatasetDescription(1);`</pre>
 
 </div>
 
-<h4 id="list-datasets">List datasets</h4>
+<h4 id="list-datasets">List datasets<a class="headerlink" href="#list-datasets" title="Permanent link"></a></h4>
 <div class="codehighlight">
 
 <pre>    `var data = connector.ListDatasets();`</pre>
 
 </div>
 
-<h4 id="get-run">Get run</h4>
+<h4 id="get-run">Get run<a class="headerlink" href="#get-run" title="Permanent link"></a></h4>
 <div class="codehighlight">
 
 <pre>    `var run = connector.GetRun(1);`</pre>
 
 </div>
 
-<h4 id="list-task-types">List task types</h4>
+<h4 id="list-task-types">List task types<a class="headerlink" href="#list-task-types" title="Permanent link"></a></h4>
 <div class="codehighlight">
 
 <pre>    `var taskTypes = connector.ListTaskTypes();`</pre>
 
 </div>
 
-<h4 id="get-task-type">Get task type</h4>
+<h4 id="get-task-type">Get task type<a class="headerlink" href="#get-task-type" title="Permanent link"></a></h4>
 <div class="codehighlight">
 
 <pre>    `var taskType = connector.GetTaskType(1);`</pre>
 
 </div>
 
-<h4 id="list-evaluation-measures">List evaluation measures</h4>
+<h4 id="list-evaluation-measures">List evaluation measures<a class="headerlink" href="#list-evaluation-measures" title="Permanent link"></a></h4>
 <div class="codehighlight">
 
 <pre>    `var measures = connector.ListEvaluationMeasures();`</pre>
 
 </div>
 
-<h4 id="list-estimation-procedures">List estimation procedures</h4>
+<h4 id="list-estimation-procedures">List estimation procedures<a class="headerlink" href="#list-estimation-procedures" title="Permanent link"></a></h4>
 <div class="codehighlight">
 
 <pre>    `var estimationProcs = connector.ListEstimationProcedures();`</pre>
 
 </div>
 
-<h4 id="get-estimation-procedure">Get estimation procedure</h4>
+<h4 id="get-estimation-procedure">Get estimation procedure<a class="headerlink" href="#get-estimation-procedure" title="Permanent link"></a></h4>
 <div class="codehighlight">
 
 <pre>    `var estimationProc = connector.GetEstimationProcedure(1);`</pre>
 
 </div>
 
-<h4 id="list-data-qualities">List data qualities</h4>
+<h4 id="list-data-qualities">List data qualities<a class="headerlink" href="#list-data-qualities" title="Permanent link"></a></h4>
 <div class="codehighlight">
 
 <pre>    `var dataQualities = connector.ListDataQualities();`</pre>
