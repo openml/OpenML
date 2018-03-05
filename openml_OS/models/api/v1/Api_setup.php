@@ -127,27 +127,27 @@ class Api_setup extends Api_model {
     $setups = element('setup',$query_string, null); 
     
     if ($implementation_id != null && !is_cs_natural_numbers($implementation_id)) {
-      $this->returnError(672, $this->version, 'Non-numeric input: flow');
+      $this->returnError(672, $this->version, $this->openmlGeneralErrorCode,'Non-numeric input: flow');
       return;
     }
     
     if ($setups != null && !is_cs_natural_numbers($setups)) {
-      $this->returnError(672, $this->version, 'Non-numeric input: setup');
+      $this->returnError(672, $this->version, $this->openmlGeneralErrorCode, 'Non-numeric input: setup');
       return;
     }
     
     if ($limit != null && !is_numeric($limit)) {
-      $this->returnError(672, $this->version, 'Non-numeric input: limit');
+      $this->returnError(672, $this->version, $this->openmlGeneralErrorCode, 'Non-numeric input: limit');
       return;
     }
     
     if ($offset != null && !is_numeric($offset)) {
-      $this->returnError(672, $this->version, 'Non-numeric input: offset');
+      $this->returnError(672, $this->version, $this->openmlGeneralErrorCode, 'Non-numeric input: offset');
       return;
     }
     
     if ($tag != null && !is_safe($tag)) {
-      $this->returnError(672, $this->version, 'Illegal input: tag');
+      $this->returnError(672, $this->version, $this->openmlGeneralErrorCode, 'Illegal input: tag');
       return;
     }
     
