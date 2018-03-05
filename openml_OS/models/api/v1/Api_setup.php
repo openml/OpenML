@@ -110,7 +110,7 @@ class Api_setup extends Api_model {
       return;
     }
 
-    $legal_filters = array('flow', 'setup', 'limit', 'offset');
+    $legal_filters = array('flow', 'setup', 'limit', 'offset', 'tag');
     $query_string = array();
     for ($i = 0; $i < count($segs); $i += 2) {
       $query_string[$segs[$i]] = urldecode($segs[$i+1]);
@@ -126,13 +126,38 @@ class Api_setup extends Api_model {
     $offset = element('offset',$query_string, null);
     $setups = element('setup',$query_string, null); 
     
+    if ($implementation_id != null && !is_cs_natural_numbers($implementation_id)) {
+      $this->returnError(672, $this->version, 'Non-numeric input: flow');
+      return;
+    }
+    
+    if ($setups != null && !is_cs_natural_numbers($setups)) {
+      $this->returnError(672, $this->version, 'Non-numeric input: setup');
+      return;
+    }
+    
+    if ($limit != null && !is_numeric($limit)) {
+      $this->returnError(672, $this->version, 'Non-numeric input: limit');
+      return;
+    }
+    
+    if ($offset != null && !is_numeric($offset)) {
+      $this->returnError(672, $this->version, 'Non-numeric input: offset');
+      return;
+    }
+    
+    if ($tag != null && !is_safe($tag)) {
+      $this->returnError(672, $this->version, 'Illegal input: tag');
+      return;
+    }
+    
     // JvR: Two queries, because I really don't know how to do it otherwise. 
     // TODO: improve code to remove 2 queries!
     
     // filters (unfortunatelly, they have to be at two places)
     $where = array();
     if ($implementation_id) {
-      $where[] = 'algorithm_setup.implementation_id = ' . $implementation_id;
+      $where[] = 'algorithm_setup.implementation_id IN (' . $implementation_id . ')';
     }
     if ($tag) {
       $where[] = 'tag = "' . $tag . '"';
