@@ -359,7 +359,7 @@ $this->apiErrors[661] = 'No results';
 // opennml.setups.list
 $this->apiErrors[670] = 'Please specify at least one filter. ';
 $this->apiErrors[671] = 'Illegal filter. ';
-$this->apiErrors[672] = 'No results. ';
+$this->apiErrors[672] = 'Illegal filter input. ';
 $this->apiErrors[673] = 'Result set too big. Please use one of the filters or the limit option. ';
 $this->apiErrors[674] = 'No results, please check the filter. ';
 
