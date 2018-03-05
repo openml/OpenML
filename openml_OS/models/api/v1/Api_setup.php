@@ -128,28 +128,28 @@ class Api_setup extends Api_model {
     
     if ($flows !== null) {
       if (strlen($flows) == 0 || !is_cs_natural_numbers($flows)) {
-        $this->returnError(672, $this->version, 'Non-numeric input: flow');
+        $this->returnError(672, $this->version, $this->openmlGeneralErrorCode, 'Non-numeric input: flow');
         return;
       }
     }
     
     if ($setups !== null) {
       if (strlen($setups) == 0 || !is_cs_natural_numbers($setups)) {
-        $this->returnError(672, $this->version, 'Non-numeric input: setup');
+        $this->returnError(672, $this->version, $this->openmlGeneralErrorCode, 'Non-numeric input: setup');
         return;
       }
     }
     
     if ($limit !== null) {
       if (strlen($limit) == 0 || !is_numeric($limit)) {
-        $this->returnError(672, $this->version, 'Non-numeric input: limit');
+        $this->returnError(672, $this->version, $this->openmlGeneralErrorCode, 'Non-numeric input: limit');
         return;
       }
     }
     
     if ($offset !== null) {
       if (strlen($offset) == 0 || !is_numeric($offset)) {
-        $this->returnError(672, $this->version, 'Non-numeric input: offset');
+        $this->returnError(672, $this->version, $this->openmlGeneralErrorCode, 'Non-numeric input: offset');
         return;
       }
     }
