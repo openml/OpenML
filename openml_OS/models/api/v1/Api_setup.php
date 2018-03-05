@@ -110,29 +110,64 @@ class Api_setup extends Api_model {
       return;
     }
 
-    $legal_filters = array('flow', 'setup', 'limit', 'offset');
+    $legal_filters = array('flow', 'setup', 'limit', 'offset', 'tag');
     $query_string = array();
     for ($i = 0; $i < count($segs); $i += 2) {
-      $query_string[$segs[$i]] = urldecode($segs[$i+1]);
+      $query_string[$segs[$i]] = (count($segs) > $i + 1) ? urldecode($segs[$i+1]) : ""; // empty string in else to force an error later on. 
       if (in_array($segs[$i], $legal_filters) == false) {
         $this->returnError(671, $this->version, $this->openmlGeneralErrorCode, 'Legal filter operators: ' . implode(',', $legal_filters) .'. Found illegal filter: ' . $segs[$i]);
         return;
       }
     }
 
-    $implementation_id = element('flow',$query_string, null);
+    $flows = element('flow',$query_string, null);
     $tag = element('tag',$query_string, null);
     $limit = element('limit',$query_string, null);
     $offset = element('offset',$query_string, null);
     $setups = element('setup',$query_string, null); 
+    
+    if ($flows !== null) {
+      if (strlen($flows) == 0 || !is_cs_natural_numbers($flows)) {
+        $this->returnError(672, $this->version, $this->openmlGeneralErrorCode, 'Non-numeric input: flow');
+        return;
+      }
+    }
+    
+    if ($setups !== null) {
+      if (strlen($setups) == 0 || !is_cs_natural_numbers($setups)) {
+        $this->returnError(672, $this->version, $this->openmlGeneralErrorCode, 'Non-numeric input: setup');
+        return;
+      }
+    }
+    
+    if ($limit !== null) {
+      if (strlen($limit) == 0 || !is_numeric($limit)) {
+        $this->returnError(672, $this->version, $this->openmlGeneralErrorCode, 'Non-numeric input: limit');
+        return;
+      }
+    }
+    
+    if ($offset !== null) {
+      if (strlen($offset) == 0 || !is_numeric($offset)) {
+        $this->returnError(672, $this->version, $this->openmlGeneralErrorCode, 'Non-numeric input: offset');
+        return;
+      }
+    }
+    
+    if ($tag !== null) {
+      if (len($tag) == 0 || !is_safe($tag)) {
+        $this->returnError(672, $this->version, $this->openmlGeneralErrorCode, 'Illegal input: tag');
+        return;
+      }
+    }
     
     // JvR: Two queries, because I really don't know how to do it otherwise. 
     // TODO: improve code to remove 2 queries!
     
     // filters (unfortunatelly, they have to be at two places)
     $where = array();
-    if ($implementation_id) {
-      $where[] = 'algorithm_setup.implementation_id = ' . $implementation_id;
+    if ($flows) {
+      $where[] = 'algorithm_setup.implementation_id IN (' . $flows . ')';
     }
     if ($tag) {
       $where[] = 'tag = "' . $tag . '"';
