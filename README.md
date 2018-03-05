@@ -25,8 +25,8 @@ Want to learn about OpenML or get involved? Please do and [get in touch](openmlH
 
 - Getting started:
     - Check out the [OpenML Website](https://www.openml.org) to get a first impression of what OpenML is 
-    - The OpenML [Bootcamp](https://www.openml.org/guide) gives an introduction in details and features
-    - OpenML has different [APIs](https://www.openml.org/guide/api) and [integrations](https://www.openml.org/guide/integrations) so that everyone can work with their favorite tool. 
+    - The OpenML [Documentation page](https://openml.github.io/OpenML/) gives an introduction in details and features, as well as
+    - OpenML's different [APIs](https://openml.github.io/OpenML/APIs) and [integrations](https://openml.github.io/OpenML/sklearn/) so that everyone can work with their favorite tool. 
 - How to contribute: https://github.com/openml/OpenML/blob/master/CONTRIBUTING.md 
 - Citation and Honor Code: http://openml.org/cite  
 - Communication / Contact: https://github.com/openml/OpenML/wiki/Communication-Channels
@@ -68,10 +68,10 @@ OpenML has grown into quite a big project. We could use many more hands to help 
 OpenML's code distrubuted over different repositories to simplify development. Please see their individual readme's and issue trackers of you like to contribute. These are the most important ones:
 
 - **[openml/OpenML](https://github.com/openml/openml)**: The OpenML web application, including the REST API.
-- **[openml/openml-python](https://github.com/openml/openml)**: The Python API, to talk to OpenML from Python scripts (including scikit-learn).
-- **[openml/openml-r](https://github.com/openml/openml)**: The R API, to talk to OpenML from R scripts (inclusing mlr).
-- **[openml/java](https://github.com/openml/openml)**: The Java API, to talk to OpenML from Java scripts.
-- **[openml/openml-weka](https://github.com/openml/openml)**: The WEKA plugin, to talk to OpenML from the WEKA toolbox.
+- **[openml/openml-python](https://github.com/openml/openml-python)**: The Python API, to talk to OpenML from Python scripts (including scikit-learn).
+- **[openml/openml-r](https://github.com/openml/openml-r)**: The R API, to talk to OpenML from R scripts (inclusing mlr).
+- **[openml/java](https://github.com/openml/java)**: The Java API, to talk to OpenML from Java scripts.
+- **[openml/openml-weka](https://github.com/openml/openml-weka)**: The WEKA plugin, to talk to OpenML from the WEKA toolbox.
 
 
 

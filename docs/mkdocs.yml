@@ -1,12 +1,13 @@
-site_name: OpenML Developer Docs
+site_name: OpenML Documentation
 repo_url: https://github.com/openml/OpenML/
+edit_uri: edit/master/docs/docs/
 theme:
   name: null
   custom_dir: 'mkdocs-material/material'
   language: 'en'
   palette:
-    primary: 'green'
-    accent: 'green'
+    primary: indigo
+    accent: indigo
   font:
     text: 'Roboto'
     code: 'Roboto Mono'
@@ -31,30 +32,61 @@ markdown_extensions:
   - pymdownx.tasklist:
       custom_checkbox: true
   - pymdownx.tilde
+  - fontawesome_markdown
+  - admonition
+  - toc:
+      permalink: true
 pages:
-  - Developers: 
-    - Welcome: index.md
+  - Bootcamp:
+    - Get started: index.md
+    - Integrations:
+        - 'scikit-learn': sklearn.md
+        - 'mlr': mlr.md
+        - 'WEKA': Weka.md
+        - 'MOA': MOA.md
     - Community:
         - 'How to contribute': Contributing.md
         - 'Communication Channels' : Communication-Channels.md
         - 'Core team': Core-team.md
-    - Usage guides:
-        - 'Basic Concepts': Basic-Concepts.md
-        - 'Editing Documentation': OpenML-Docs.md
-        - 'Weka quickstart': Weka.md 
-        - 'MOA quickstart': MOA.md
-        - 'Java API': Java-API.md
-        - '.Net API': .Net-API.md
-        - 'Data Formats': Data-Formats.md  
-    - Developer info:
-        - 'Client API Standards': Client-API-Standards.md   
-        - 'User Authentication': API-Authentication-and-User-types.md  
+    - Benchmarking: benchmark.md
+    - Altmetrics: altmetrics.md
+    - Terms: terms.md
+  - APIs:
+    - OpenML APIs: APIs.md
+    - REST:
+        - Tutorial: REST-tutorial.md
+        - API Reference: REST-API.md
+    - Java:
+        - Tutorial: Java-guide.md
+    - Python:
+        - Start: Python-start.md
+        - Tutorial: Python-guide.md
+        - API Reference: Python-API.md
+    - R:
+        - Tutorial: R-guide.md
+        - API Reference: R-API.md
+    - '.NET (C#)':
+        - Tutorial: .Net-API.md
+  - Developers:
+    - Welcome: developers.md
+    - 'Basic Concepts': Basic-Concepts.md
+    - 'Editing Documentation': OpenML-Docs.md
+    - 'API development':
+        - 'Client API Standards': Client-API-Standards.md
+        - 'Server API Development': API-rules.md
+        - 'User Authentication': API-Authentication-and-User-types.md
+    - 'Data handling':
+        - 'Data Formats': Data-Formats.md
+        - 'Data Repositories': Data-Repositories.md
         - 'Data collections': Data-collections.md
-        - 'Data Repositories': Data-Repositories.md 
-        - 'Helper functions': Helper-functions.md    
-        - 'URL Mapping': URL-Mapping.md
-        - 'Job Scheduling': Job-Scheduling.md    
     - Backend:
         - 'Local Installation': Local-Installation.md
         - 'WebApp (PHP)': WebApp-(PHP).md
+        - 'URL Mapping': URL-Mapping.md
         - 'Java Backend': Java-App.md
+        - 'Helper functions': Helper-functions.md
+        - 'Job Scheduling': Job-Scheduling.md
+extra_css:
+        - css/extra.css
+extra_javascript:
+        - js/extra.js

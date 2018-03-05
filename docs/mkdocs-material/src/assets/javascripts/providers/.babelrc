@@ -1,0 +1,16 @@
+{
+  "presets": [
+    ["env", {
+      "loose": true,
+      "target": {
+        "browsers": [
+          "> 1%",
+          "last 2 versions"
+        ]
+      }
+    }]
+  ],
+  "plugins": [
+    "add-module-exports"
+  ]
+}
