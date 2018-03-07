@@ -275,6 +275,7 @@ class Api_data extends Api_model {
 
     try {
       $this->elasticsearch->delete('data', $data_id);
+      $this->elasticsearch->index('user', $this->user_id);
     } catch (Exception $e) {
       $additionalMsg = get_class() . '.' . __FUNCTION__ . ':' . $e->getMessage();
       $this->returnError(105, $this->version, $this->openmlGeneralErrorCode, $additionalMsg);

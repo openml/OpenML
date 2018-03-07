@@ -206,6 +206,7 @@ class Api_task extends Api_model {
 
     try {
       $this->elasticsearch->delete('task', $task_id);
+      $this->elasticsearch->index('user', $this->user_id);
     } catch (Exception $e) {
       $additionalMsg = get_class() . '.' . __FUNCTION__ . ':' . $e->getMessage();
       $this->returnError(105, $this->version, $this->openmlGeneralErrorCode, $additionalMsg);
@@ -329,8 +330,11 @@ class Api_task extends Api_model {
     // update elastic search index.
     try {
       $this->elasticsearch->index('task', $id);
+      $this->elasticsearch->index('user', $this->user_id);
     } catch (Exception $e) {
-      // TODO: should be logged.
+      $additionalMsg = get_class() . '.' . __FUNCTION__ . ':' . $e->getMessage();
+      $this->returnError(105, $this->version, $this->openmlGeneralErrorCode, $additionalMsg);
+      return;
     }
 
     $this->xmlContents( 'task-upload', $this->version, array( 'id' => $id ) );
