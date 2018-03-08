@@ -279,11 +279,8 @@ class Api_run extends Api_model {
     $result = $result && $this->Evaluation_sample->deleteWhere('`source` = "' . $run->rid . '" ');
     $result = $result && $this->Run_evaluated->deleteWhere('`run_id` = "' . $run->rid . '" ');
 
-    $update = array( 'error' => null, 'processed' => null );
-    $this->Run->update( $run->rid, $update );
-
     if( $result == false ) {
-      $this->returnError( 394, $this->version );
+      $this->returnError(394, $this->version);
       return;
     }
     $this->xmlContents( 'run-reset', $this->version, array( 'run' => $run ) );
