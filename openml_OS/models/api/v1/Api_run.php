@@ -25,7 +25,6 @@ class Api_run extends Api_model {
     $this->load->model('Evaluation');
     $this->load->model('Evaluation_fold');
     $this->load->model('Evaluation_sample');
-    $this->load->model('Evaluation_interval');
 
     $this->load->helper('arff');
 
@@ -278,7 +277,6 @@ class Api_run extends Api_model {
     $evalPlain    = $this->Evaluation->getColumnWhere('did', '`source` = "' .  $run->rid. '" ');
     $evalFold     = $this->Evaluation_fold->getColumnWhere('did', '`source` = "' .  $run->rid. '" ');
     $evalSample   = $this->Evaluation_sample->getColumnWhere('did', '`source` = "' .  $run->rid. '" ');
-    $evalInterval = $this->Evaluation_interval->getColumnWhere('did', '`source` = "' .  $run->rid. '" ');
     if( is_array($evalPlain) == false ) $evalPlain = array();
     if( is_array($evalFold) == false ) $evalFold = array();
     if( is_array($evalSample) == false ) $evalSample = array();
@@ -293,7 +291,6 @@ class Api_run extends Api_model {
     $result = $result && $this->Evaluation->deleteWhere('`source` = "' .  $run->rid. '" ');
     $result = $result && $this->Evaluation_fold->deleteWhere('`source` = "' . $run->rid . '" ');
     $result = $result && $this->Evaluation_sample->deleteWhere('`source` = "' . $run->rid . '" ');
-    $result = $result && $this->Evaluation_interval->deleteWhere('`source` = "' . $run->rid . '" ');
     $result = $result && $this->Run_evaluated->deleteWhere('`run_id` = "' . $run->rid . '" ');
 
     $update = array( 'error' => null, 'processed' => null );
