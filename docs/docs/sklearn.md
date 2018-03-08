@@ -1,6 +1,6 @@
 # scikit-learn
 
-OpenML is readily integrated with scikit-learn through the [Python-guide](Python API).
+OpenML is readily integrated with scikit-learn through the [Python API](Python-guide).
 
 !!! example
     ```python
