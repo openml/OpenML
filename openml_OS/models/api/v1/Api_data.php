@@ -275,6 +275,7 @@ class Api_data extends Api_model {
 
     try {
       $this->elasticsearch->delete('data', $data_id);
+      $this->elasticsearch->index('user', $this->user_id);
     } catch (Exception $e) {
       $additionalMsg = get_class() . '.' . __FUNCTION__ . ':' . $e->getMessage();
       $this->returnError(105, $this->version, $this->openmlGeneralErrorCode, $additionalMsg);
@@ -652,10 +653,8 @@ class Api_data extends Api_model {
     $interval_start = false; // $this->input->get( 'interval_start' );
     $interval_end   = false; // $this->input->get( 'interval_end' );
     $interval_size  = false; // $this->input->get( 'interval_size' );
-
-    $evaluation_table_constraints = '';
+    
     if($interval_start !== false || $interval_end !== false || $interval_size !== false) {
-      $evaluation_table = 'evaluation_interval';
       $interval_constraints = '';
       if( $interval_start !== false && is_numeric( $interval_start ) ) {
         $interval_constraints .= ' AND `interval_start` >= ' . $interval_start;

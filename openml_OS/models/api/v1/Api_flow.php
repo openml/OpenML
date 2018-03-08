@@ -322,7 +322,7 @@ class Api_flow extends Api_model {
       $this->returnError(324, $this->version, $this->openmlGeneralErrorCode, '{'. implode(', ', $ids) .'} ()');
       return;
     }
-    
+
     if ($this->Implementation->isComponent($implementation->id)) {
       $parent_ids = $this->Implementation_component->getColumnWhere('parent', 'child = "'.$implementation->id.'"');
       $this->returnError(328, $this->version, $this->openmlGeneralErrorCode, '{' . implode(', ', $parent_ids) . '}');
@@ -340,12 +340,12 @@ class Api_flow extends Api_model {
       return;
     }
 
-    $this->Input->deleteWhere('implementation_id =' . $implementation->id); // should be handled by constraints .. 
+    $this->Input->deleteWhere('implementation_id =' . $implementation->id); // should be handled by constraints ..
     $this->Implementation_component->deleteWhere('parent = ' . $implementation->id);
     $result = $this->Implementation->delete($implementation->id);
     if( $implementation->binary_file_id != false ) { $this->File->delete_file($implementation->binary_file_id); }
     if( $implementation->source_file_id != false ) { $this->File->delete_file($implementation->source_file_id); }
-    
+
     // TODO: also check component parts.
 
     if($result == false) {
@@ -355,6 +355,7 @@ class Api_flow extends Api_model {
 
     try {
       $this->elasticsearch->delete('flow', $flow_id);
+      $this->elasticsearch->index('user', $this->user_id);
     } catch (Exception $e) {
       $additionalMsg = get_class() . '.' . __FUNCTION__ . ':' . $e->getMessage();
       $this->returnError(105, $this->version, $this->openmlGeneralErrorCode, $additionalMsg);
