@@ -50,9 +50,9 @@ class Api_data extends Api_model {
       $feature = (count($segments) > 4 && $segments[4] == 'feature');
       // oops, badly defined api call with two optional parameters. boolean feature and string priority tag. 
       // we will try to fix this here. 
-      if ($feature && count($features) == 6) {
+      if ($feature && count($segments) == 6) {
         $priorityTag = $segments[5];
-      } elseif ($feature == false && count($features) == 5) {
+      } elseif ($feature == false && count($segments) == 5) {
         $priorityTag = $segments[4];
       } else {
         $priorityTag = null;
