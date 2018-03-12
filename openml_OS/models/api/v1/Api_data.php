@@ -46,9 +46,19 @@ class Api_data extends Api_model {
       return;
     }
 
-    if (count($segments) >= 4 && $segments[0] == 'qualities' && $segments[1] == 'unprocessed' && is_numeric($segments[2]) && in_array($segments[3], $order_values)) {
+    if (count($segments) >= 4 && count($segments) <= 6 && $segments[0] == 'qualities' && $segments[1] == 'unprocessed' && is_numeric($segments[2]) && in_array($segments[3], $order_values)) {
       $feature = (count($segments) > 4 && $segments[4] == 'feature');
-      $this->dataqualities_unprocessed($segments[2], $segments[3], $feature);
+      // oops, badly defined api call with two optional parameters. boolean feature and string priority tag. 
+      // we will try to fix this here. 
+      if ($feature && count($features) == 6) {
+        $priorityTag = $segments[5];
+      } elseif ($feature == false && count($features) == 5) {
+        $priorityTag = $segments[4];
+      } else {
+        $priorityTag = null;
+      }
+      
+      $this->dataqualities_unprocessed($segments[2], $segments[3], $feature, $priorityTag);
       return;
     }
 
