@@ -926,7 +926,7 @@ class Api_data extends Api_model {
     if ($priorityTag != null) {
       $tagSelect = ", t.tag ";
       $tagSort = "t.tag DESC, "; // to avoid NULL values first
-      $tagJoin = "LEFT JOIN dataset_tag t ON d.data = t.id AND t.tag = '" . $priorityTag . "' ";
+      $tagJoin = "LEFT JOIN dataset_tag t ON d.did = t.id AND t.tag = '" . $priorityTag . "' ";
     }
 
     if (!$feature_attributes) {
