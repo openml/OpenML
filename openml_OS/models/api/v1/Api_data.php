@@ -965,6 +965,8 @@ class Api_data extends Api_model {
       $this->returnError(687, $this->version);
       return;
     }
+    
+    // TODO: random only in case of random argument. Also take priority tag into account
     $result = array($result[array_rand($result)]);
 
     $this->xmlContents('data-unprocessed', $this->version, array('res' => $result));
