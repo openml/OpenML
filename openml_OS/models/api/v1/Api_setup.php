@@ -166,13 +166,13 @@ class Api_setup extends Api_model {
     
     // filters (unfortunatelly, they have to be at two places)
     $where = array();
-    if ($flows) {
+    if ($flows !== null) {
       $where[] = 'algorithm_setup.implementation_id IN (' . $flows . ')';
     }
-    if ($tag) {
+    if ($tag !== null) {
       $where[] = 'tag = "' . $tag . '"';
     }
-    if ($setups) {
+    if ($setups !== null) {
       $where[] = 'sid IN (' . $setups . ')';
     }
     if (count($where)) {
