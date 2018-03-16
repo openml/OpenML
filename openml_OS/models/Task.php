@@ -44,7 +44,7 @@ class Task extends Database_write {
       $sql .= ', `'.$key.'`.`value` AS `'.$key.'`';
     }
     
-    $sql .= ' FROM `task`, `task_type`, `dataset`, `task_inputs` AS `source_data` ';
+    $sql .= ' FROM `task_type`, `dataset`, `task_inputs` AS `source_data`, `task` LEFT JOIN (SELECT `task_id`, count(*) AS `inputs_count` FROM `task_inputs` GROUP BY `task_id`) AS `c` ON `c`.`task_id` = `task`.`task_id` ';
     foreach( $keyValues as $key => $value ) {
       if($key == "source_data") continue; // already added hardcoded
       $sql .= ', `task_inputs` AS `'.$key.'`';
@@ -59,6 +59,8 @@ class Task extends Database_write {
     foreach( $keyValues as $key => $value ) {
       $sql .= ' AND `task`.`task_id` = `' . $key . '`.`task_id` AND `' . $key . '`.`input` = "' . $key . '" AND (`' . $key . '`.`value` = "' . $value . '")'; 
     }
+	
+	$sql .= ' AND `c`.`inputs_count` = ' . count($keyValues);
     
     return $this->query( $sql );
   }
