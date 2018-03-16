@@ -46,9 +46,19 @@ class Api_data extends Api_model {
       return;
     }
 
-    if (count($segments) >= 4 && $segments[0] == 'qualities' && $segments[1] == 'unprocessed' && is_numeric($segments[2]) && in_array($segments[3], $order_values)) {
+    if (count($segments) >= 4 && count($segments) <= 6 && $segments[0] == 'qualities' && $segments[1] == 'unprocessed' && is_numeric($segments[2]) && in_array($segments[3], $order_values)) {
       $feature = (count($segments) > 4 && $segments[4] == 'feature');
-      $this->dataqualities_unprocessed($segments[2], $segments[3], $feature);
+      // oops, badly defined api call with two optional parameters. boolean feature and string priority tag. 
+      // we will try to fix this here. 
+      if ($feature && count($segments) == 6) {
+        $priorityTag = $segments[5];
+      } elseif ($feature == false && count($segments) == 5) {
+        $priorityTag = $segments[4];
+      } else {
+        $priorityTag = null;
+      }
+      
+      $this->dataqualities_unprocessed($segments[2], $segments[3], $feature, $priorityTag);
       return;
     }
 
@@ -653,10 +663,8 @@ class Api_data extends Api_model {
     $interval_start = false; // $this->input->get( 'interval_start' );
     $interval_end   = false; // $this->input->get( 'interval_end' );
     $interval_size  = false; // $this->input->get( 'interval_size' );
-
-    $evaluation_table_constraints = '';
+    
     if($interval_start !== false || $interval_end !== false || $interval_size !== false) {
-      $evaluation_table = 'evaluation_interval';
       $interval_constraints = '';
       if( $interval_start !== false && is_numeric( $interval_start ) ) {
         $interval_constraints .= ' AND `interval_start` >= ' . $interval_start;
@@ -918,23 +926,25 @@ class Api_data extends Api_model {
     if ($priorityTag != null) {
       $tagSelect = ", t.tag ";
       $tagSort = "t.tag DESC, "; // to avoid NULL values first
-      $tagJoin = "LEFT JOIN dataset_tag t ON q.data = t.id AND t.tag = '" . $priorityTag . "' ";
+      $tagJoin = "LEFT JOIN dataset_tag t ON d.did = t.id AND t.tag = '" . $priorityTag . "' ";
     }
 
     if (!$feature_attributes) {
-      $sql = 'SELECT DISTINCT d.* FROM data_processed p, dataset d LEFT JOIN (' .
-               ' SELECT q.data, COUNT(*) AS `numQualities`' . $tagSelect .
-               ' FROM data_quality q ' . $tagJoin .
+      $sql = 'SELECT DISTINCT d.* ' .  $tagSelect .
+             'FROM data_processed p, dataset d LEFT JOIN (' .
+               ' SELECT q.data, COUNT(*) AS `numQualities`' .
+               ' FROM data_quality q ' . 
                ' WHERE q.quality in ("' . implode('","', $requiredMetafeatures) . '") AND q.evaluation_engine_id = ' . $evaluation_engine_id .
                ' GROUP BY q.data HAVING numQualities = ' . count($requiredMetafeatures) . ') as `qualityCount` ' .
-             ' ON d.did = qualityCount.data '.
+             ' ON d.did = qualityCount.data '. $tagJoin . 
              ' WHERE qualityCount.data IS NULL ' .
              ' AND d.did = p.did AND p.evaluation_engine_id = ' . $this->config->item('default_evaluation_engine_id') .
              ' AND p.error IS NULL ' .
              ' ORDER BY ' . $tagSort . ' d.did ';
     } else {
-      $sql = 'SELECT DISTINCT d.* FROM data_processed p, dataset d LEFT JOIN (' .
-               ' SELECT q.data, COUNT(*) AS `numQualities`' . $tagSelect .
+      $sql = 'SELECT DISTINCT d.* ' . $tagSelect .
+             'FROM data_processed p, dataset d LEFT JOIN (' .
+               ' SELECT q.data, COUNT(*) AS `numQualities`' . 
                ' FROM feature_quality q ' . $tagJoin .
                ' JOIN (SELECT data_feature.did, COUNT(*) as `number_of_attributes` FROM data_feature GROUP BY data_feature.did) as `attCounts` ON attCounts.did = q.data' .
                ' WHERE q.quality in ("' . implode('","', $requiredMetafeatures) . '") AND q.evaluation_engine_id = ' . $evaluation_engine_id .
@@ -955,6 +965,8 @@ class Api_data extends Api_model {
       $this->returnError(687, $this->version);
       return;
     }
+    
+    // TODO: random only in case of random argument. Also take priority tag into account
     $result = array($result[array_rand($result)]);
 
     $this->xmlContents('data-unprocessed', $this->version, array('res' => $result));

@@ -3,8 +3,7 @@
 $config['data_controller'] = BASE_URL . 'data/';
 
 $config['data_tables'] = array(
-  'dataset','evaluation','evaluation_fold',
-  'evaluation_sample', 'evaluation_interval', 'runfile');
+  'dataset', 'evaluation', 'evaluation_fold', 'evaluation_sample', 'runfile');
 
 $config['xml_fields_dataset'] = array(
   'string'  => array(

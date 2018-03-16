@@ -135,16 +135,6 @@ class Cron extends CI_Controller {
         $evaluation_keys = array('e.repeat', 'e.fold', 'e.sample', 'e.sample_size', 'm.name');
         $evaluation_column = 'evaluation_sample';
       }
-      if ($meta_dataset->task_type == 4) {
-        $evaluation_keys = array('e.interval_start', 'e.interval_end', 'm.name');
-        $quality_keys = array(
-          'interval_start' => 'q.interval_start',
-          'interval_end'   => 'q.interval_end'
-        );
-        $quality_colum = 'data_quality_interval';
-        $evaluation_column = 'evaluation_interval';
-
-      }
 
       if (create_dir(DATA_PATH . $this->dir_suffix) == false) {
         $this->_error_meta_dataset($meta_dataset->id, 'Failed to create data directory. ', $meta_dataset->user_id);
