@@ -2,6 +2,8 @@
 <?php
 if(false !== strpos($_SERVER['REQUEST_URI'],'/t/') and false === strpos($_SERVER['REQUEST_URI'],'/t/type')) {
 ?>
+$.fn.dataTable.ext.errMode = 'none';
+
 
 function highlight(){
 	setTimeout(function(){ highlightnow(); }, 500);
@@ -41,7 +43,7 @@ function updateTableHeader(){
 		higherIsBetter = false;
 	else
 		higherIsBetter = true;
-	console.log(higherIsBetter);
+	console.log(higherIsBetter)
 }
 
 /// TIMELINE
@@ -235,36 +237,65 @@ function leaderboard(data){
 	} );
 }
 
-  /// RESULT QUERY
+/// RESULT QUERY
 
 function showData(){
+	updateTableHeader();
 	client.search({
 	  index: 'openml',
 	  type: 'run',
-	  size: '5000',
+	  size: 0,
 	  body: {
-			_source: [ "run_id", "run_flow.name", "run_flow.parameters", "run_flow.flow_id", "uploader", "evaluations.evaluation_measure", "evaluations.value" ],
 	    query: {
-	      term: {
-	        'run_task.task_id': current_task
-	      }
-	    },
-	    sort: [
-	    {
-	      "evaluations.value": {
-	        "order": (higherIsBetter ? "desc" : "asc"),
-	        "nested_path": "evaluations",
-	        "nested_filter": {
-	          "term": {
-	            "evaluations.evaluation_measure": evaluation_measure
-	          }
-	        }
-	      }
-	    }
-	  ]
-	  }
+				 bool: {
+					 must: [{term: {'run_task.task_id': current_task }},
+					 				{nested: {path: "evaluations",
+														query: {exists: {field: "evaluations"}}}}]
+				 }
+			},
+			aggs : {
+					'flows' : {
+							terms : {
+								field : "run_flow.flow_id",
+								size: 1000
+							},
+							aggs : {
+									'top_score': {
+										  top_hits: {
+												_source: [ "run_id", "run_flow.name", "run_flow.parameters", "run_flow.flow_id", "uploader", "evaluations.evaluation_measure", "evaluations.value" ],
+												sort: [
+										    {
+										      "evaluations.value": {
+										        "order": (higherIsBetter ? "desc" : "asc"),
+										        "nested_path": "evaluations",
+										        "nested_filter": {
+										          "term": {
+										            "evaluations.evaluation_measure": evaluation_measure
+										          }
+										        }
+										      }
+										    }
+										    ],
+												size: 1000
+											}
+									}
+							}
+					}
+			}
+		}
 	}).then(function (resp) {
-		data = resp.hits.hits;
+		data = [];
+		console.log(resp);
+		buckets = resp.aggregations.flows.buckets;
+		buckets.sort(function(a, b) {
+			return parseFloat(b['top_score']['hits']['hits'][0]['sort'][0]) - parseFloat(a['top_score']['hits']['hits'][0]['sort'][0]);
+		});
+		if(!higherIsBetter){
+			buckets.reverse();
+		}
+		for(flowid in buckets){
+			data.push(...buckets[flowid].top_score.hits.hits);
+		}
 		redrawchart(data);
 		buildTable(buildTableData(data));
 	}, function (err) {
@@ -275,11 +306,13 @@ function showData(){
 function buildTableData(data){
 	tabledata = [];
 	for(key in data){
+		try{
 		o = data[key]['_source'];
 		eval = o['evaluations'].filter(function(obj){return obj.evaluation_measure == evaluation_measure;})[0];
 		if(eval){
-			tabledata.push(['<a href="r/'+o['run_id']+'">'+o['run_id']+'</a>','<a href="f/'+o['run_flow']['flow_id']+'">'+o['run_flow']['name']+'</a>',eval['value'],o['run_flow']['parameters'].map(shortParam)]);
+			tabledata.push(['<a href="r/'+o['run_id']+'">'+o['run_id']+'</a>','<a href="f/'+o['run_flow']['flow_id']+'">'+o['run_flow']['name']+'</a>',eval['value'],(o['run_flow']['parameters'] != null ? o['run_flow']['parameters'].map(shortParam) : '')]);
 		}
+	} catch(e){}
 	}
 	return tabledata;
 }
@@ -310,7 +343,7 @@ function buildTable(dataSet) {
 					paging: false,
 					scrollX: "100%",
 					destroy: true,
-					order: [[ 2, "desc" ]]
+					/// order: [[ 2, "desc" ]]
 	    } );
 			$('#table-spinner').css('display','none');
 	}
@@ -418,6 +451,7 @@ options = {
 	var map = {};
 	var d=[];
 	var c=[];
+
 	for(var i=0;i<data.length;i++){
 		var run = data[i]['_source'];
 		var flow = run['run_flow'];
@@ -485,7 +519,6 @@ function redrawCurves(){
   var query =  encodeURI("<?php echo BASE_URL; ?>"+"api_query/?q="+sql, "UTF-8");
 
   $.getJSON(query,function(jsonData){
-	console.log(jsonData);
   var data = jsonData.data;
 	var setupcount = 0;
 	var map = {}; // setup -> name
@@ -528,14 +561,17 @@ function redrawCurves(){
 
 }
 
-/// RELOAD CHARTS ON REFRESH
-
-$(document).ready(function() {
-  <?php if($this->task['tasktype']['name'] == 'Learning Curve')
+/// LOAD CHARTS ASYNCHRONOUSLY
+setTimeout(function() {
+	<?php if($this->task['tasktype']['name'] == 'Learning Curve')
 		echo 'redrawCurves();';
-	      else
-		echo 'updateTableHeader(); showData(); redrawtimechart();';
+				else
+		echo 'showData(); redrawtimechart();';
 	?>
+}, 0);
+
+/// BOOTSTRAP STUFF
+$(document).ready(function() {
 	$('.pop').popover();
 	$('.selectpicker').selectpicker();
 });

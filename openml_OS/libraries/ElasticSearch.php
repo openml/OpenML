@@ -270,6 +270,8 @@ class ElasticSearch {
                         'tag' => array('type' => 'string'),
                         'uploader' => array('type' => 'string'))),
                 'run_id' => array('type' => 'long'),
+                'run_flow.flow_id' => array('type' => 'long'),
+                'run_flow.name'  => array('type' => 'text', 'fielddata' => true),
                 'last_update' => array(
                     'type' => 'date',
                     'format' => 'yyyy-MM-dd HH:mm:ss'
