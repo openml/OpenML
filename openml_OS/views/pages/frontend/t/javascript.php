@@ -43,7 +43,6 @@ function updateTableHeader(){
 		higherIsBetter = false;
 	else
 		higherIsBetter = true;
-	console.log(higherIsBetter)
 }
 
 /// TIMELINE
