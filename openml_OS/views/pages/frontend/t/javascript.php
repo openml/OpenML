@@ -284,7 +284,6 @@ function showData(){
 		}
 	}).then(function (resp) {
 		data = [];
-		console.log(resp);
 		buckets = resp.aggregations.flows.buckets;
 		buckets.sort(function(a, b) {
 			return parseFloat(b['top_score']['hits']['hits'][0]['sort'][0]) - parseFloat(a['top_score']['hits']['hits'][0]['sort'][0]);
