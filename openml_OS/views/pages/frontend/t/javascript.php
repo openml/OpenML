@@ -341,7 +341,7 @@ function buildTable(dataSet) {
 					paging: false,
 					scrollX: "100%",
 					destroy: true,
-					/// order: [[ 2, "desc" ]]
+					order: [[ 2, "desc" ]]
 	    } );
 			$('#table-spinner').css('display','none');
 	}
