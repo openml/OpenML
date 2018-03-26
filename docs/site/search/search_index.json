@@ -82,12 +82,12 @@
         },
         {
             "location": "/sklearn/",
-            "text": "scikit-learn\n\u00b6\n\n\nOpenML is readily integrated with scikit-learn through the \nPython-guide\n.\n\n\n\n\nExample\n\n\nfrom\n \nsklearn\n \nimport\n \nensemble\n\n\nfrom\n \nopenml\n \nimport\n \ntasks\n,\n \nflows\n,\n \nRuns\n\n\n\ntask\n \n=\n \ntasks\n.\nget_task\n(\n3954\n)\n\n\nclf\n \n=\n \nensemble\n.\nRandomForestClassifier\n()\n\n\nflow\n \n=\n \nflows\n.\nsklearn_to_flow\n(\nclf\n)\n\n\nrun\n \n=\n \nruns\n.\nrun_flow_on_task\n(\ntask\n,\n \nflow\n)\n\n\nresult\n \n=\n \nrun\n.\npublish\n()\n\n\n\n\n\n\n\nKey features:  \n\n\n\n\nQuery and download OpenML datasets and use them however you like  \n\n\nBuild any sklearn estimator or pipeline and convert to OpenML flows  \n\n\nRun any flow on any task and save the experiment as run objects  \n\n\nUpload your runs for collaboration or publishing  \n\n\nQuery, download and reuse all shared runs  \n\n\n\n\nFor many more details and examples, see the \nPython-guide\n.",
+            "text": "scikit-learn\n\u00b6\n\n\nOpenML is readily integrated with scikit-learn through the \nPython API\n.\n\n\n\n\nExample\n\n\nfrom\n \nsklearn\n \nimport\n \nensemble\n\n\nfrom\n \nopenml\n \nimport\n \ntasks\n,\n \nflows\n,\n \nRuns\n\n\n\ntask\n \n=\n \ntasks\n.\nget_task\n(\n3954\n)\n\n\nclf\n \n=\n \nensemble\n.\nRandomForestClassifier\n()\n\n\nflow\n \n=\n \nflows\n.\nsklearn_to_flow\n(\nclf\n)\n\n\nrun\n \n=\n \nruns\n.\nrun_flow_on_task\n(\ntask\n,\n \nflow\n)\n\n\nresult\n \n=\n \nrun\n.\npublish\n()\n\n\n\n\n\n\n\nKey features:  \n\n\n\n\nQuery and download OpenML datasets and use them however you like  \n\n\nBuild any sklearn estimator or pipeline and convert to OpenML flows  \n\n\nRun any flow on any task and save the experiment as run objects  \n\n\nUpload your runs for collaboration or publishing  \n\n\nQuery, download and reuse all shared runs  \n\n\n\n\nFor many more details and examples, see the \nPython-guide\n.",
             "title": "scikit-learn"
         },
         {
             "location": "/sklearn/#scikit-learn",
-            "text": "OpenML is readily integrated with scikit-learn through the  Python-guide .   Example  from   sklearn   import   ensemble  from   openml   import   tasks ,   flows ,   Runs  task   =   tasks . get_task ( 3954 )  clf   =   ensemble . RandomForestClassifier ()  flow   =   flows . sklearn_to_flow ( clf )  run   =   runs . run_flow_on_task ( task ,   flow )  result   =   run . publish ()    Key features:     Query and download OpenML datasets and use them however you like    Build any sklearn estimator or pipeline and convert to OpenML flows    Run any flow on any task and save the experiment as run objects    Upload your runs for collaboration or publishing    Query, download and reuse all shared runs     For many more details and examples, see the  Python-guide .",
+            "text": "OpenML is readily integrated with scikit-learn through the  Python API .   Example  from   sklearn   import   ensemble  from   openml   import   tasks ,   flows ,   Runs  task   =   tasks . get_task ( 3954 )  clf   =   ensemble . RandomForestClassifier ()  flow   =   flows . sklearn_to_flow ( clf )  run   =   runs . run_flow_on_task ( task ,   flow )  result   =   run . publish ()    Key features:     Query and download OpenML datasets and use them however you like    Build any sklearn estimator or pipeline and convert to OpenML flows    Run any flow on any task and save the experiment as run objects    Upload your runs for collaboration or publishing    Query, download and reuse all shared runs     For many more details and examples, see the  Python-guide .",
             "title": "scikit-learn"
         },
         {
@@ -591,62 +591,62 @@
             "title": "API Reference"
         },
         {
-            "location": "/.Net-API/",
+            "location": "/NET-API/",
             "text": "The .Net API allows you connect to OpenML from .Net applications.\n\n\nDownload\n\u00b6\n\n\nStable releases of the .Net API are available via \nNuGet\n. Use the NuGet package explorer in the Visual Studia, write \u201cInstall-Package openMl\u201d to the NuGet package manager console or download the whole package from the NuGet website and add it into your project. Or, you can check out the developer version from \nGitHub\n.\n\n\nQuick Start\n\u00b6\n\n\nCreate an \nOpenmlConnector\n instance with your api key. You can find this key in your account settings. This will create a client with OpenML functionalities, The functionalities mirror the OpenMlApi and not all of them are (yet) implemented. If you need some feature, don\u2019t hesitate contact us via our Git page.\n\n\n\n\n\n    `var connector = new OpenMlConnector(\"YOURAPIKEY\");`\n\n\n\n\n\n\nAll OpenMlConnector methods are documented via the usual .Net comments.\n\n\nGet dataset description\n\u00b6\n\n\n\n\n\n    `var datasetDescription = connector.GetDatasetDescription(1);`\n\n\n\n\n\n\nList datasets\n\u00b6\n\n\n\n\n\n    `var data = connector.ListDatasets();`\n\n\n\n\n\n\nGet run\n\u00b6\n\n\n\n\n\n    `var run = connector.GetRun(1);`\n\n\n\n\n\n\nList task types\n\u00b6\n\n\n\n\n\n    `var taskTypes = connector.ListTaskTypes();`\n\n\n\n\n\n\nGet task type\n\u00b6\n\n\n\n\n\n    `var taskType = connector.GetTaskType(1);`\n\n\n\n\n\n\nList evaluation measures\n\u00b6\n\n\n\n\n\n    `var measures = connector.ListEvaluationMeasures();`\n\n\n\n\n\n\nList estimation procedures\n\u00b6\n\n\n\n\n\n    `var estimationProcs = connector.ListEstimationProcedures();`\n\n\n\n\n\n\nGet estimation procedure\n\u00b6\n\n\n\n\n\n    `var estimationProc = connector.GetEstimationProcedure(1);`\n\n\n\n\n\n\nList data qualities\n\u00b6\n\n\n\n\n\n    `var dataQualities = connector.ListDataQualities();`",
             "title": "Tutorial"
         },
         {
-            "location": "/.Net-API/#download",
+            "location": "/NET-API/#download",
             "text": "Stable releases of the .Net API are available via  NuGet . Use the NuGet package explorer in the Visual Studia, write \u201cInstall-Package openMl\u201d to the NuGet package manager console or download the whole package from the NuGet website and add it into your project. Or, you can check out the developer version from  GitHub .",
             "title": "Download"
         },
         {
-            "location": "/.Net-API/#quick-start",
+            "location": "/NET-API/#quick-start",
             "text": "Create an  OpenmlConnector  instance with your api key. You can find this key in your account settings. This will create a client with OpenML functionalities, The functionalities mirror the OpenMlApi and not all of them are (yet) implemented. If you need some feature, don\u2019t hesitate contact us via our Git page.       `var connector = new OpenMlConnector(\"YOURAPIKEY\");`   All OpenMlConnector methods are documented via the usual .Net comments.",
             "title": "Quick Start"
         },
         {
-            "location": "/.Net-API/#get-dataset-description",
+            "location": "/NET-API/#get-dataset-description",
             "text": "`var datasetDescription = connector.GetDatasetDescription(1);`",
             "title": "Get dataset description"
         },
         {
-            "location": "/.Net-API/#list-datasets",
+            "location": "/NET-API/#list-datasets",
             "text": "`var data = connector.ListDatasets();`",
             "title": "List datasets"
         },
         {
-            "location": "/.Net-API/#get-run",
+            "location": "/NET-API/#get-run",
             "text": "`var run = connector.GetRun(1);`",
             "title": "Get run"
         },
         {
-            "location": "/.Net-API/#list-task-types",
+            "location": "/NET-API/#list-task-types",
             "text": "`var taskTypes = connector.ListTaskTypes();`",
             "title": "List task types"
         },
         {
-            "location": "/.Net-API/#get-task-type",
+            "location": "/NET-API/#get-task-type",
             "text": "`var taskType = connector.GetTaskType(1);`",
             "title": "Get task type"
         },
         {
-            "location": "/.Net-API/#list-evaluation-measures",
+            "location": "/NET-API/#list-evaluation-measures",
             "text": "`var measures = connector.ListEvaluationMeasures();`",
             "title": "List evaluation measures"
         },
         {
-            "location": "/.Net-API/#list-estimation-procedures",
+            "location": "/NET-API/#list-estimation-procedures",
             "text": "`var estimationProcs = connector.ListEstimationProcedures();`",
             "title": "List estimation procedures"
         },
         {
-            "location": "/.Net-API/#get-estimation-procedure",
+            "location": "/NET-API/#get-estimation-procedure",
             "text": "`var estimationProc = connector.GetEstimationProcedure(1);`",
             "title": "Get estimation procedure"
         },
         {
-            "location": "/.Net-API/#list-data-qualities",
+            "location": "/NET-API/#list-data-qualities",
             "text": "`var dataQualities = connector.ListDataQualities();`",
             "title": "List data qualities"
         },
