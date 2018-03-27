@@ -31,7 +31,7 @@ If you are building machine learning systems in Java, there is also an API for t
 ## ![icon](img/c++.png) .NET (C#)
 The .NET library is under development, but already contains most of the functions available.
 
-* [.NET Tutorial](NET_API)
+* [.NET Tutorial](NET-API)
 * [GitHub repo](https://github.com/openml/openml-dotnet)
 
 
