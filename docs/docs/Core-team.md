@@ -1,4 +1,4 @@
-OpenML has many amazing contributors, which you can find on out [team website](https://www.openml.org/guide#!team). Should you be a contributor, but not on this page, let us know!
+OpenML has many amazing contributors, which you can find on out [team website](https://www.openml.org/contact). Should you be a contributor, but not on this page, let us know!
 
 Current members of the core team are:
 
