@@ -25,6 +25,7 @@ if($this->input->get('sort'))
 $this->active_tab = gu('tab');
 if($this->active_tab == false) $this->active_tab = 'searchtab';
 
+$this->current_measure = 'predictive_accuracy';
 /// TASK DETAIL
 
 if(false === strpos($_SERVER['REQUEST_URI'],'type') && false !== strpos($_SERVER['REQUEST_URI'],'/t/')) {
@@ -83,14 +84,15 @@ if(false === strpos($_SERVER['REQUEST_URI'],'type') && false !== strpos($_SERVER
     if ($this->ion_auth->logged_in()) {
       $this->activeuserlike = $this->searchclient->search($this->l)['hits']['hits'];
     }
-	} catch (Exception $e) {}
+
+		// evaluations
+		if(array_key_exists('evaluation_measures',$this->task))
+			$this->current_measure = $this->task['evaluation_measures'];
+	} catch (Exception $e) {
+    echo 'Caught exception: ',  $e->getMessage(), "\n";
+	}
 
 }
-
-// evaluations
-$this->current_measure = 'predictive_accuracy';
-if(array_key_exists('evaluation_measures',$this->task))
-	$this->current_measure = $this->task['evaluation_measures'];
 
 // TODO: Update ES to replace these two DB calls
 $this->allmeasures = $this->Math_function->getColumnWhere('name','functionType = "EvaluationFunction"');

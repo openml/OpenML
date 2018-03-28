@@ -14,12 +14,15 @@
       <?php if($this->task['tasktype']['tt_id'] != 6){ ?>
 
       <div class="col-xs-12 panel">
-			     <div id="data_result_visualize" class="reflow-chart">Rendering chart <i class="fa fa-spinner fa-spin"></i></div>
+			     <div id="data_result_visualize" class="reflow-chart"><span>Fetching data</span> <i class="fa fa-spinner fa-spin"></i></div>
       </div>
+			<div class="alert alert-info">
+  		<strong>Note:</strong> Chart is limited to the 1000 best flows, and the 1000 best runs for each flow.
+			</div>
 
       <div class="col-xs-12 panel">
         <div class="table-responsive reflow-table">
-           <div id="table-spinner">Rendering table <i class="fa fa-spinner fa-spin"></i></div>
+           <div id="table-spinner"><span>Fetching data</span> <i class="fa fa-spinner fa-spin"></i></div>
            <table id="tasktable" class="display" width="100%"></table>
         </div>
       </div>
