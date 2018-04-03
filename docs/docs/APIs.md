@@ -21,6 +21,7 @@ Download datasets into R scripts, build models using R machine learning packages
 * [R Tutorial](R-guide)
 * [R API Reference](R-API)
 * [Cheatsheet](https://github.com/openml/openml-r/blob/master/vignettes/openml-cheatsheet.pdf)
+* [useR 2017 Tutorial](https://github.com/openml/articles/tree/master/slides/useR2017_tutorial)
 
 ## ![icon](img/java.png) Java
 If you are building machine learning systems in Java, there is also an API for that.
