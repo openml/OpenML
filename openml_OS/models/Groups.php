@@ -5,6 +5,7 @@ class Groups extends Community {
     parent::__construct();
     $this->table = 'groups';
     $this->id_column = 'id';
+    $this->deleted_activated = 'id IS NOT NULL ';
   }
 }
 ?>
