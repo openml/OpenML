@@ -3,8 +3,8 @@ OpenML offers a range of APIs to download and upload OpenML datasets, tasks, run
 ## ![icon](img/rest.png) REST  
 The REST API allows you to talk directly to the OpenML server from any programming environment.
 
-* [REST Tutorial](Rest-tutorial)
-* [REST API Reference](Rest-API)
+* [REST Tutorial](REST-tutorial)
+* [REST API Reference](REST-API)
 
 ## ![icon](img/python.png) Python
 Download datasets into Python scripts, build models using Python machine learning libraries (e.g., <i>scikit-learn</i>), and share the results online, all in a few lines of code.
@@ -26,13 +26,13 @@ Download datasets into R scripts, build models using R machine learning packages
 If you are building machine learning systems in Java, there is also an API for that.
 
 * [Java Tutorial](Java-guide)
-* [Java API Reference](Java-API)
+* [Java API Reference](https://openml.github.io/java/)
 
 ## ![icon](img/c++.png) .NET (C#)
 The .NET library is under development, but already contains most of the functions available.
 
-* [.NET Tutorial](.NET_API)
-* [GitHub repo]("https://github.com/openml/openml-dotnet)
+* [.NET Tutorial](NET-API)
+* [GitHub repo](https://github.com/openml/openml-dotnet)
 
 
 ## Easy authentication

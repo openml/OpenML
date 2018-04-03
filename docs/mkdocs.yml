@@ -66,7 +66,7 @@ pages:
         - Tutorial: R-guide.md
         - API Reference: R-API.md
     - '.NET (C#)':
-        - Tutorial: .Net-API.md
+        - Tutorial: NET-API.md
   - Developers:
     - Welcome: developers.md
     - 'Basic Concepts': Basic-Concepts.md
