@@ -207,6 +207,8 @@ You can combine datasets, flows and runs into studies, to collaborate with other
 
 Each project gets its own page, which can be linked to publications so that others can find all the details online.
 
+To link data sets, task, flows or runs to a certain study, you can use tags. By adding the tag "study_XYZ" the object will automatically be linked and appear on the page of study XYZ (with XYZ being the study id, which can e.g. be found in the URL of the study).
+
 ## Circles (under construction)
 You can create circles of trusted researchers in which data can be shared that is not yet ready for publication.
 
