@@ -75,6 +75,13 @@ class Cron extends CI_Controller {
       $this->elasticsearch->update_tags($type, $id);
   }
 
+  // initialize all es indexes
+  public function initialize_es_indices() {
+    foreach($this->es_indices as $index) {
+      $this->elasticsearch->initialize_index($index);
+    }
+  }
+
   // builds all es indexes
   public function build_es_indices() {
     foreach($this->es_indices as $index) {
