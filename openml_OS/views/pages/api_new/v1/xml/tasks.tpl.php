@@ -12,12 +12,12 @@
     $task_inputs = json_decode($task->task_inputs);
     foreach ($task_inputs as $key => $value): ?>
       <oml:input name="<?php echo $key; ?>"><?php echo htmlspecialchars($value); ?></oml:input>
-  <?php endfor; endif; ?>
+  <?php endforeach; endif; ?>
   <?php if ($task->qualities):
     $qualities = json_decode($task->task_qualities);
     foreach ($qualities as $key => $value): ?>
       <oml:quality name="<?php echo $key; ?>"><?php echo $value; ?></oml:quality>
-  <?php endfor; endif; ?>
+  <?php endforeach; endif; ?>
   </oml:task>
   <?php endforeach; ?>
 </oml:tasks>
