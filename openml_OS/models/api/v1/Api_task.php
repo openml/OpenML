@@ -109,7 +109,7 @@ class Api_task extends Api_model {
     }
 
     // JvR: This query is bound to break in the near future, due to scalability
-    $core = 'SELECT `t`.`task_id` , `t`.`ttid` , `tt`.`name` , `d`.`did` AS `did` , `d`.`status` , `d`.`format` , `d`.`name` AS `dataset_name` , CONCAT('{',`ti`.`input`,':', `ti`.`value`, '}')) AS task_inputs ' .
+    $core = 'SELECT `t`.`task_id` , `t`.`ttid` , `tt`.`name` , `d`.`did` AS `did` , `d`.`status` , `d`.`format` , `d`.`name` AS `dataset_name` , CONCAT("{",`ti`.`input`,':', `ti`.`value`, "}")) AS task_inputs ' .
             'FROM `task` `t` , `task_type` `tt` , `task_inputs` `ti` , `task_inputs` `source` , `dataset` `d` ' .
             'WHERE `ti`.`task_id` = `t`.`task_id` AND `source`.`input` = "source_data" ' .
             'AND `source`.`task_id` = `t`.`task_id` AND `source`.`value` = `d`.`did` AND (`d`.`visibility` = "public" OR `d`.`uploader` = ' . $user_id . ')' .
@@ -117,7 +117,7 @@ class Api_task extends Api_model {
             $where_total . ' ' .
             'GROUP BY t.task_id ' . $where_limit;
     $dq = 'SELECT * FROM data_quality WHERE quality IN ("' . implode('","', $this->config->item('basic_qualities')).'") AND evaluation_engine_id = ' . $this->config->item('default_evaluation_engine_id');
-    $full = 'SELECT core.*, CONCAT('{',quality,':', value, '}')) AS `task_qualities` FROM (' . $dq . ') dq RIGHT JOIN (' . $core . ') core ON dq.data = core.did GROUP BY core.task_id;';
+    $full = 'SELECT core.*, CONCAT("{",quality,':', value, "}")) AS `task_qualities` FROM (' . $dq . ') dq RIGHT JOIN (' . $core . ') core ON dq.data = core.did GROUP BY core.task_id;';
 
     $tasks_res = $this->Task->query($full);
 
