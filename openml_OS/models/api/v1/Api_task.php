@@ -117,7 +117,7 @@ class Api_task extends Api_model {
             $where_total . ' ' .
             'GROUP BY t.task_id ' . $where_limit;
     $dq = 'SELECT * FROM data_quality WHERE quality IN ("' . implode('", "', $this->config->item('basic_qualities')).'") AND evaluation_engine_id = ' . $this->config->item('default_evaluation_engine_id');
-    $full = 'SELECT core.*, CONCAT("{", GROUP_CONCAT(CONCAT("\"",quality,"\":\"", value, "\""), "}")) AS `task_qualities` FROM (' . $dq . ') dq RIGHT JOIN (' . $core . ') core ON dq.data = core.did GROUP BY core.task_id;';
+    $full = 'SELECT core.*, CONCAT("{", GROUP_CONCAT(CONCAT("\"",quality,"\":\"", value, "\"")), "}") AS `task_qualities` FROM (' . $dq . ') dq RIGHT JOIN (' . $core . ') core ON dq.data = core.did GROUP BY core.task_id;';
 
     $tasks_res = $this->Task->query($full);
 
