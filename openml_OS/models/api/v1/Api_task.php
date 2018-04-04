@@ -109,7 +109,7 @@ class Api_task extends Api_model {
     }
 
     // JvR: This query is bound to break in the near future, due to scalability
-    $core = 'SELECT `t`.`task_id` , `t`.`ttid` , `tt`.`name` , `d`.`did` AS `did` , `d`.`status` , `d`.`format` , `d`.`name` AS `dataset_name` , GROUP_CONCAT(CONCAT("{",`ti`.`input`,":", `ti`.`value`, "}")) AS task_inputs ' .
+    $core = 'SELECT `t`.`task_id` , `t`.`ttid` , `tt`.`name` , `d`.`did` AS `did` , `d`.`status` , `d`.`format` , `d`.`name` AS `dataset_name` , GROUP_CONCAT(CONCAT("{\"",`ti`.`input`,"\":\"", `ti`.`value`, "\"}")) AS task_inputs ' .
             'FROM `task` `t` , `task_type` `tt` , `task_inputs` `ti` , `task_inputs` `source` , `dataset` `d` ' .
             'WHERE `ti`.`task_id` = `t`.`task_id` AND `source`.`input` = "source_data" ' .
             'AND `source`.`task_id` = `t`.`task_id` AND `source`.`value` = `d`.`did` AND (`d`.`visibility` = "public" OR `d`.`uploader` = ' . $user_id . ')' .
