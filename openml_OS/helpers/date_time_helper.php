@@ -6,12 +6,14 @@
 * @version 2.0.0
 */
 
-function now($days = false){ 
-	if( ! $days) { 
-		return date("Y-m-d H:i:s"); 
-	} else { 
-		return date("Y-m-d H:i:s",strtotime(date("Y-m-d H:i:s") . " +".$days." day"));
-	}
+function now() {
+	return date("Y-m-d H:i:s"); 
+}
+
+
+function now_offset($offset = '1 hour') {  
+  # time indicator can be days, hours, etc
+	return date("Y-m-d H:i:s",strtotime(date("Y-m-d H:i:s") . " +" . $offset));
 }
 
 function today(){ 

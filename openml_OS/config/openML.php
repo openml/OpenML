@@ -21,4 +21,8 @@ $config['general_http_error_code'] = 412;
 
 $config['default_evaluation_engine_id'] = 1;
 
+$config['process_data_tries'] = 3;
+$config['process_data_offset'] = '30 minutes';
+
+
 ?>

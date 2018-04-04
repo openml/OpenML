@@ -539,25 +539,33 @@ class Api_data extends Api_model {
       $this->returnError(434, $this->version);
       return;
     }
-
-    if ($this->Data_processed->getWhere('did = ' . $did . ' AND evaluation_engine_id = ' . $eval_id)) {
+    
+    $data_processed_record = $this->Data_processed->getWhere(array('did' => $did, 'evaluation_engine_id' => $eval_id));
+    if ($data_processed_record && $data_processed_record->error != null) {
       $this->returnError(431, $this->version);
       return;
+    }
+    
+    $num_tries = 0;
+    if ($data_processed_record) {
+      $num_tries = $data_processed_record->num_tries;
     }
 
     // prepare array for updating data object
     $data = array('did' => $did,
                   'evaluation_engine_id' => $eval_id,
                   'user_id' => $this->user_id,
-                  'processing_date' => now());
+                  'processing_date' => now(), 
+                  'num_tries' => $num_tries + 1);
     if($xml->children('oml', true)->{'error'}) {
       $data['error'] = htmlentities($xml->children('oml', true)->{'error'});
     }
 
     $this->db->trans_start();
-
-    $success = $this->Data_processed->insert($data);
-    if (!$success) {
+    
+    # replace is delete then insert again
+    $success = $this->Data_processed->replace($data);
+    if (!$success) {  
       $this->returnError(435, $this->version, $this->openmlGeneralErrorCode, 'Failed to create data processed record. ');
       return;
     }
@@ -879,7 +887,7 @@ class Api_data extends Api_model {
 
     $this->db->select('d.*')->from('dataset d');
     $this->db->join('data_processed p', 'd.did = p.did AND evaluation_engine_id = ' . $evaluation_engine_id, 'left');
-    $this->db->where('p.did IS NULL');
+    $this->db->where('p.did IS NULL OR (p.error NOT NULL AND p.num_tries < ' . $this->config->get('process_data_tries') . ' AND p.processing_date < ' . now_offset('-' . $this->config->('process_data_offset')) . ')');
     // JvR TODO: Because of legacy datasets. We should later make 'file_id' a non null field.
     $this->db->where('d.file_id IS NOT NULL');
 
