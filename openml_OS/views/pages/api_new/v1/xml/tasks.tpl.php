@@ -9,12 +9,12 @@
     <oml:status><?php echo $task->status; ?></oml:status>
     <oml:format><?php echo $task->format; ?></oml:format>
   <?php if ($task->task_inputs):
-    $inputs = json_decode($task->task_inputs);
+    $inputs = json_decode('[' . $task->task_inputs . ']');
     foreach ($inputs as $key => $value): ?>
       <oml:input name="<?php echo $key; ?>"><?php echo htmlspecialchars($value); ?></oml:input>
   <?php endforeach; endif; ?>
   <?php if ($task->task_qualities):
-    $qualities = json_decode($task->task_qualities);
+    $qualities = json_decode('[' . $task->task_qualities . ']');
     foreach ($qualities as $key => $value): ?>
       <oml:quality name="<?php echo $key; ?>"><?php echo $value; ?></oml:quality>
   <?php endforeach; endif; ?>
