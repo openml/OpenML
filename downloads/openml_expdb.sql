@@ -135,7 +135,8 @@ CREATE TABLE `data_processed` (
   `user_id` int(16) NOT NULL,
   `processing_date` datetime NOT NULL,
   `error` text CHARACTER SET utf8 COLLATE utf8_unicode_ci,
-  `warning` text CHARACTER SET utf8 COLLATE utf8_unicode_ci
+  `warning` text CHARACTER SET utf8 COLLATE utf8_unicode_ci,
+  `num_tries` int(8) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -589,7 +590,9 @@ CREATE TABLE `run_evaluated` (
   `user_id` int(16) NOT NULL,
   `evaluation_date` datetime NOT NULL,
   `error` text,
-  `warning` text
+  `warning` text,
+  `num_tries` int(8) NOT NULL DEFAULT '1'
+
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
