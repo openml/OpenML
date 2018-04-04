@@ -305,8 +305,7 @@ CREATE TABLE `evaluation` (
   `evaluation_engine_id` int(16) NOT NULL,
   `value` double DEFAULT NULL,
   `stdev` double DEFAULT NULL,
-  `array_data` json DEFAULT NULL,
-  `fold_data` json DEFAULT NULL
+  `array_data` text COLLATE utf8_unicode_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
@@ -324,6 +323,22 @@ CREATE TABLE `evaluation_engine` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `evaluation_fold`
+--
+
+CREATE TABLE `evaluation_fold` (
+  `source` int(10) UNSIGNED NOT NULL,
+  `function_id` int(8) NOT NULL,
+  `evaluation_engine_id` int(16) NOT NULL,
+  `fold` int(10) UNSIGNED NOT NULL DEFAULT '0',
+  `repeat` int(10) UNSIGNED NOT NULL DEFAULT '0',
+  `value` double DEFAULT NULL,
+  `array_data` text COLLATE utf8_unicode_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `evaluation_sample`
 --
 
@@ -336,7 +351,7 @@ CREATE TABLE `evaluation_sample` (
   `sample` int(10) UNSIGNED NOT NULL DEFAULT '0',
   `sample_size` int(10) NOT NULL,
   `value` double DEFAULT NULL,
-  `array_data` json DEFAULT NULL
+  `array_data` text COLLATE utf8_unicode_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
