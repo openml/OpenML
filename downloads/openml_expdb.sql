@@ -305,7 +305,7 @@ CREATE TABLE `evaluation` (
   `evaluation_engine_id` int(16) NOT NULL,
   `value` double DEFAULT NULL,
   `stdev` double DEFAULT NULL,
-  `array_data` json DEFAULT NULL
+  `array_data` text COLLATE utf8_unicode_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
@@ -333,7 +333,7 @@ CREATE TABLE `evaluation_fold` (
   `fold` int(10) UNSIGNED NOT NULL DEFAULT '0',
   `repeat` int(10) UNSIGNED NOT NULL DEFAULT '0',
   `value` double DEFAULT NULL,
-  `array_data` json DEFAULT NULL
+  `array_data` text COLLATE utf8_unicode_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
@@ -351,7 +351,7 @@ CREATE TABLE `evaluation_sample` (
   `sample` int(10) UNSIGNED NOT NULL DEFAULT '0',
   `sample_size` int(10) NOT NULL,
   `value` double DEFAULT NULL,
-  `array_data` json DEFAULT NULL
+  `array_data` text COLLATE utf8_unicode_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
