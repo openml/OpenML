@@ -541,7 +541,7 @@ class Api_data extends Api_model {
     }
     
     $data_processed_record = $this->Data_processed->getById(array($did, $eval_id));
-    if ($data_processed_record && $data_processed_record->error != null) {
+    if ($data_processed_record && $data_processed_record->error == null) {
       $this->returnError(431, $this->version);
       return;
     }
