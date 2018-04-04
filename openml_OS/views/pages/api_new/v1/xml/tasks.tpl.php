@@ -10,7 +10,7 @@
     <oml:format><?php echo $task->format; ?></oml:format>
   <?php if ($task->task_inputs):
     $task_inputs = json_decode($task->task_inputs);
-    for ($task_inputs as $key => $value): ?>
+    foreach ($task_inputs as $key => $value): ?>
       <oml:input name="<?php echo $key; ?>"><?php echo htmlspecialchars($value); ?></oml:input>
   <?php endfor; endif; ?>
   <?php if ($task->qualities):
