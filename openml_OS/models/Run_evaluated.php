@@ -30,7 +30,7 @@ class Run_evaluated extends Database_write {
     
     $this->db->join('`run_evaluated` `e`', '`r`.`rid` = `e`.`run_id` AND `e`.`evaluation_engine_id` = ' . $evaluation_engine_id, 'left');
     
-    $this->db->where('(e.run_id IS NULL OR (e.error IS NOT NULL AND e.num_tries < ' . $this->config->item('process_run_tries') . ' AND e.processing_date < "' . now_offset('-' . $this->config->item('process_run_offset')) . '"))');
+    $this->db->where('(e.run_id IS NULL OR (e.error IS NOT NULL AND e.num_tries < ' . $this->config->item('process_run_tries') . ' AND e.evaluation_date < "' . now_offset('-' . $this->config->item('process_run_offset')) . '"))');
     
     // When random results are needed, to avoid that multiple evaluators evaluate the same run,
     // get 2000 unordered results and randomly select one (or more) of them.
