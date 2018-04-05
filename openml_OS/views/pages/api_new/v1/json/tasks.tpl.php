@@ -20,7 +20,7 @@
               {"name":"<?php echo $key; ?>", "value":"<?php echo $value; ?>"}
             <?php endforeach; ?>]
     <?php endif; ?>
-    <?php  if ($task->qualities): ?>
+    <?php  if ($task->task_qualities): ?>
     ,"quality": [
       <?php $qualities = json_decode($task->task_qualities);
             $i = 0;
