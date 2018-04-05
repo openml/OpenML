@@ -22,12 +22,12 @@
     <?php endif; ?>
     <?php  if ($task->qualities): ?>
     ,"quality": [
-      <?php $qualities = str_getcsv($task->qualities);
-            $values = str_getcsv($task->quality_values);
-            for ($i = 0; $i < count($qualities); ++$i):
-              echo ($i == 0 ? "" : ","); ?>
-      {"name":"<?php echo $qualities[$i]; ?>",
-       "value":"<?php echo $values[$i]; ?>"}
+      <?php $qualities = json_decode($task->task_qualities);
+            $i = 0;
+            foreach ($qualities as $key => $value):
+              echo ($i == 0 ? "" : ","); $i += 1; ?>
+              {"name":"<?php echo $key; ?>", "value":"<?php echo $value; ?>"}
+            <?php endforeach; ?>]
     <?php endfor; ?>]
     <?php endif; ?>
     <?php if( property_exists( $task, 'tags' ) ): ?>
