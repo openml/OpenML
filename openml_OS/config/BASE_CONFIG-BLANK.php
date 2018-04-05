@@ -103,10 +103,9 @@ define( 'DB_PASS_OPENML', 'FILL_IN' );
  * API_USERNAME: The username under which the system may perform API
  * calls.
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * API_PASSWORD: The password that belongs to the username
+ * API_KEY: The API_KEY that belongs to the username
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 define( 'API_USERNAME', 'FILL_IN_USERNAME' );
-define( 'API_PASSWORD', 'FILL_IN_PASSWORD' );
 define( 'API_KEY', 'FILL_IN_KEY' );
 
 

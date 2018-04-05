@@ -9,17 +9,15 @@
     <oml:status><?php echo $task->status; ?></oml:status>
     <oml:format><?php echo $task->format; ?></oml:format>
   <?php if ($task->task_inputs):
-    $task_inputs = str_getcsv($task->task_inputs);
-    $input_values = str_getcsv($task->input_values);
-    for ($i = 0; $i < count($task_inputs); ++$i): ?>
-      <oml:input name="<?php echo $task_inputs[$i]; ?>"><?php echo htmlspecialchars($input_values[$i]); ?></oml:input>
-  <?php endfor; endif; ?>
-  <?php if ($task->qualities):
-    $qualities = str_getcsv($task->qualities);
-    $values = str_getcsv($task->quality_values);
-    for ($i = 0; $i < count($qualities); ++$i): ?>
-      <oml:quality name="<?php echo $qualities[$i]; ?>"><?php echo $values[$i]; ?></oml:quality>
-  <?php endfor; endif; ?>
+    $inputs = json_decode($task->task_inputs);
+    foreach ($inputs as $key => $value): ?>
+      <oml:input name="<?php echo $key; ?>"><?php echo htmlspecialchars($value); ?></oml:input>
+  <?php endforeach; endif; ?>
+  <?php if ($task->task_qualities):
+    $qualities = json_decode($task->task_qualities);
+    foreach ($qualities as $key => $value): ?>
+      <oml:quality name="<?php echo $key; ?>"><?php echo $value; ?></oml:quality>
+  <?php endforeach; endif; ?>
   </oml:task>
   <?php endforeach; ?>
 </oml:tasks>

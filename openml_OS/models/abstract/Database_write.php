@@ -40,6 +40,10 @@ class Database_write extends Database_read {
     return $this->db->insert_id();
   }
   
+  function replace($data) {
+    return $this->db->replace($this->table, $data);
+  }
+  
   function update( $id, $data ) {
     return $this->db->where( $this->_where_clause_on_id($id) )->update( $this->table, $data );
   }

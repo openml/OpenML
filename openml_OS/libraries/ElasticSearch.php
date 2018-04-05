@@ -502,7 +502,6 @@ class ElasticSearch {
             'time' => $d->time
         );
         return $downvote;
-
     }
 
     private function build_like($l){

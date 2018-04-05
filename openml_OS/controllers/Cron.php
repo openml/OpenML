@@ -75,6 +75,13 @@ class Cron extends CI_Controller {
       $this->elasticsearch->update_tags($type, $id);
   }
 
+  // initialize all es indexes
+  public function initialize_es_indices() {
+    foreach($this->es_indices as $index) {
+      $this->elasticsearch->initialize_index($index);
+    }
+  }
+
   // builds all es indexes
   public function build_es_indices() {
     foreach($this->es_indices as $index) {
@@ -85,7 +92,7 @@ class Cron extends CI_Controller {
   function install_database() {
     // note that this one does not come from DATA folder, as they are stored in github
     $models = directory_map('data/sql/', 1);
-    $manipulated_order = array('implementation.sql', 'algorithm_setup.sql', 'dataset.sql', 'study.sql');
+    $manipulated_order = array('implementation.sql', 'algorithm_setup.sql', 'dataset.sql', 'study.sql', 'groups.sql', 'users.sql');
 
     // moves elements of $manipulated_order to the start of the models array
     foreach (array_reverse($manipulated_order) as $name) {
@@ -95,14 +102,17 @@ class Cron extends CI_Controller {
     }
     array_unique($models);
 
-    foreach($models as $m) {
+    foreach ($models as $m) {
       $modelname = ucfirst(substr($m, 0, strpos($m, '.')));
-      if($this->load->is_model_loaded($modelname) == false) { $this->load->model($modelname); }
-      if($this->$modelname->get() === false) {
+      if ($this->load->is_model_loaded($modelname) == false) { $this->load->model($modelname); }
+      if ($this->$modelname->get() === false) {
         $sql = file_get_contents('data/sql/' . $m);
-        echo 'inserting ' . $modelname . ', with ' . strlen($sql) . ' characters... ';
+        
+        echo 'inserting ' . $modelname . ', with ' . strlen($sql) . ' characters... ' + "\n";
         // might need to adapt this, because not all models are supposed to write
         $result = $this->$modelname->query($sql);
+      } else {
+        echo 'skipping ' . $modelname . ', as it is not empty... ' + "\n";
       }
     }
   }

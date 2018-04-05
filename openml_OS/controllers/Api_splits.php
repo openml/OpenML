@@ -119,15 +119,6 @@ class Api_splits extends CI_Controller {
     readfile_chunked($filepath);
   }
   
-  function md5( $task_id ) {
-    $filepath = $this->directory . '/' . $task_id . '.arff';
-    if( file_exists( $filepath ) == false ) {
-      $this->generate( $task_id, $filepath );
-    }
-    
-    echo md5_file( $filepath );
-  }
-  
   private function generate( $task_id, $filepath = false ) {
     $task = $this->Task->getById( $task_id );
     if( $task === false || in_array( $task->ttid, $this->task_types ) === false ) {
@@ -150,7 +141,15 @@ class Api_splits extends CI_Controller {
     
     if( function_enabled('system') ) {
       header('Content-type: text/plain');
-      system( CMD_PREFIX . $command );
+      $result_status = 0;
+      $result = system( CMD_PREFIX . $command, $return_status );
+      
+      if ($return_status != 0 && defined('EMAIL_API_LOG')) {
+        $to = EMAIL_API_LOG;
+        $subject = 'OpenML API Split Generation Exception: ' . $code;
+        $content = 'Time: ' . now() . "\nTask_id:" . $task_id . "\nOutput: " . $result;
+        sendEmail($to, $subject, $content, 'text');
+      }
     } else {
       die('failed to generate arff file: php "system" function disabled. ');
     }
