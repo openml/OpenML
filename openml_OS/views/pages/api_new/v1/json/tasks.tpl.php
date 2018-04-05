@@ -28,7 +28,6 @@
               echo ($i == 0 ? "" : ","); $i += 1; ?>
               {"name":"<?php echo $key; ?>", "value":"<?php echo $value; ?>"}
             <?php endforeach; ?>]
-    <?php endfor; ?>]
     <?php endif; ?>
     <?php if( property_exists( $task, 'tags' ) ): ?>
     ,"tags": [
