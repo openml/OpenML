@@ -1,4 +1,5 @@
 <?php
+
 class Run_evaluated extends Database_write {
   function __construct() {
     parent::__construct();
@@ -28,14 +29,17 @@ class Run_evaluated extends Database_write {
     }
     
     $this->db->join('`run_evaluated` `e`', '`r`.`rid` = `e`.`run_id` AND `e`.`evaluation_engine_id` = ' . $evaluation_engine_id, 'left');
+    
+    $this->db->where('(e.run_id IS NULL OR (e.error IS NOT NULL AND e.num_tries < ' . $this->config->item('process_run_tries') . ' AND e.processing_date < "' . now_offset('-' . $this->config->item('process_run_offset')) . '"))');
+    
     // When random results are needed, to avoid that multiple evaluators evaluate the same run,
     // get 2000 unordered results and randomly select one (or more) of them.
     // This is much faster than randomizing the results in the query.
     $randomcount = 200;
     if ($order == 'random') {
-      $this->db->where('`e`.`run_id` IS NULL')->limit($randomcount);
+      $this->db->limit($randomcount);
     } else {
-      $this->db->where('`e`.`run_id` IS NULL')->limit('1');
+      $this->db->limit('1');
     }
     
     // Reverse order if needed (slower query)
