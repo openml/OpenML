@@ -13,23 +13,21 @@
     "format":"<?php echo $task->format; ?>"
     <?php if ($task->task_inputs): ?>
     ,"input": [
-      <?php $task_inputs = str_getcsv($task->task_inputs);
-            $input_values = str_getcsv($task->input_values);
-            for ($i = 0; $i < count($task_inputs); ++$i):
-              echo ($i == 0 ? "" : ","); ?>
-      {"name":"<?php echo $task_inputs[$i]; ?>",
-       "value":"<?php echo $input_values[$i]; ?>"}
-    <?php endfor; ?>]
+      <?php $inputs = json_decode($task->task_inputs);
+            $i = 0;
+            foreach ($inputs as $key => $value):
+              echo ($i == 0 ? "" : ","); $i += 1; ?>
+              {"name":"<?php echo $key; ?>", "value":"<?php echo $value; ?>"}
+            <?php endforeach; ?>]
     <?php endif; ?>
-    <?php  if ($task->qualities): ?>
+    <?php  if ($task->task_qualities): ?>
     ,"quality": [
-      <?php $qualities = str_getcsv($task->qualities);
-            $values = str_getcsv($task->quality_values);
-            for ($i = 0; $i < count($qualities); ++$i):
-              echo ($i == 0 ? "" : ","); ?>
-      {"name":"<?php echo $qualities[$i]; ?>",
-       "value":"<?php echo $values[$i]; ?>"}
-    <?php endfor; ?>]
+      <?php $qualities = json_decode($task->task_qualities);
+            $i = 0;
+            foreach ($qualities as $key => $value):
+              echo ($i == 0 ? "" : ","); $i += 1; ?>
+              {"name":"<?php echo $key; ?>", "value":"<?php echo $value; ?>"}
+            <?php endforeach; ?>]
     <?php endif; ?>
     <?php if( property_exists( $task, 'tags' ) ): ?>
     ,"tags": [
