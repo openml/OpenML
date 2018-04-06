@@ -799,7 +799,7 @@ class Api_run extends Api_model {
     $data['run_id'] = $run_id;
     $data['evaluation_engine_id'] = $eval_engine_id;
     $data['user_id'] = $this->user_id;
-    $data['num_tries'] = $num_tries;
+    $data['num_tries'] = $num_tries + 1;
     $this->Run_evaluated->replace($data);
 
     $this->db->trans_start();
