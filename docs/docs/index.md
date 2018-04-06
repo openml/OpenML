@@ -166,6 +166,8 @@ properties of the data and algorithms.
 OpenML stores and analyzes results in fine detail, up to the level of
 individual instances.
 
+!!! Want to read more?
+    A more detailed description can be found [in this blogpost](https://medium.com/open-machine-learning/basic-components-of-openml-a5745634c664).
 
 ## Authentication
 You can download and inspect all datasets, tasks, flows and runs through the
