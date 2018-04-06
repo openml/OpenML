@@ -770,7 +770,7 @@ class Api_run extends Api_model {
     $evaluation_record = $this->Run_evaluated->getById(array($run_id, $eval_engine_id));
     $evaluations_stored = $this->Evaluation->getWhere('source = "' . $run_id . '" AND evaluation_engine_id = "' . $eval_engine_id . '"');
     
-    if($evaluation_record && $evaluation_record->error != null) {
+    if($evaluation_record && $evaluation_record->error == null) {
       $this->returnError(426, $this->version);
       return;
     }
