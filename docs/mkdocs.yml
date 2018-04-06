@@ -69,8 +69,8 @@ pages:
         - Tutorial: NET-API.md
   - Developers:
     - Welcome: developers.md
-    - 'Basic Concepts': Basic-Concepts.md
     - 'Editing Documentation': OpenML-Docs.md
+    - 'Local Installation': Local-Installation.md
     - 'API development':
         - 'Client API Standards': Client-API-Standards.md
         - 'Server API Development': API-rules.md
@@ -79,13 +79,12 @@ pages:
         - 'Data Formats': Data-Formats.md
         - 'Data Repositories': Data-Repositories.md
         - 'Data collections': Data-collections.md
-    - Backend:
-        - 'Local Installation': Local-Installation.md
-        - 'WebApp (PHP)': WebApp-(PHP).md
+    - Backend (PHP):
+        - 'WebApp': WebApp-(PHP).md
         - 'URL Mapping': URL-Mapping.md
+    - Backend (Java):
         - 'Java Backend': Java-App.md
         - 'Helper functions': Helper-functions.md
-        - 'Job Scheduling': Job-Scheduling.md
 extra_css:
         - css/extra.css
 extra_javascript:
