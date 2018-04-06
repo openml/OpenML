@@ -90,14 +90,20 @@
     </url>
         
     <url>
-     <loc>/Basic-Concepts/</loc>
+     <loc>/OpenML-Docs/</loc>
      <lastmod>2018-04-06</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
-     <loc>/OpenML-Docs/</loc>
+     <loc>/Local-Installation/</loc>
      <lastmod>2018-04-06</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+        
+    <url>
+     <loc></loc>
+     <lastmod></lastmod>
      <changefreq>daily</changefreq>
     </url>
         
