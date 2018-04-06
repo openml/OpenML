@@ -1,16 +1,17 @@
 {
   "swagger" : "2.0",
   "info" : {
-    "title" : "OpenML API",
     "description" : "REST API for sharing, organizing and reusing machine learning datasets, code, and experiments. Follows a predictive URL scheme from endpoint https://www.openml.org/api/v1/json (or /xml). You need to add your `api_key` to every call (see your account settings), or simply log in. See https://www.openml.org/api_data_docs for the file server API.",
-    "version" : "1.0.0"
+    "version" : "1.0.0",
+    "title" : "OpenML API"
   },
-  "schemes" : [ "https" ],
   "basePath" : "/api/v1/json",
+  "schemes" : [ "https" ],
   "produces" : [ "application/json" ],
   "paths" : {
     "/data/{id}" : {
       "get" : {
+        "tags" : [ "data" ],
         "summary" : "Get dataset description",
         "description" : "Returns information about a dataset. The information includes the name, information about the creator, URL to download it and more.\n",
         "parameters" : [ {
@@ -24,10 +25,9 @@
           "name" : "api_key",
           "in" : "query",
           "description" : "Api key to authenticate the user",
-          "required" : true,
+          "required" : false,
           "type" : "string"
         } ],
-        "tags" : [ "data" ],
         "responses" : {
           "110" : {
             "description" : "Please provide data_id."
@@ -50,6 +50,7 @@
         }
       },
       "delete" : {
+        "tags" : [ "data" ],
         "summary" : "Delete dataset",
         "description" : "Deletes a dataset. Upon success, it returns the ID of the deleted dataset.\n",
         "parameters" : [ {
@@ -66,23 +67,11 @@
           "required" : true,
           "type" : "string"
         } ],
-        "tags" : [ "data" ],
         "responses" : {
           "200" : {
             "description" : "ID of the deleted dataset",
             "schema" : {
-              "type" : "object",
-              "properties" : {
-                "data_delete" : {
-                  "type" : "object",
-                  "properties" : {
-                    "id" : {
-                      "type" : "string",
-                      "description" : "ID of the deleted dataset, a positive integer"
-                    }
-                  }
-                }
-              }
+              "$ref" : "#/definitions/inline_response_200"
             },
             "examples" : {
               "application/json" : "{\n  \"data_delete\": {\n    \"id\": \"4328\"\n  }\n}"
@@ -111,9 +100,10 @@
     },
     "/data" : {
       "post" : {
+        "tags" : [ "data" ],
         "summary" : "Upload dataset",
-        "consumes" : [ "multipart/form-data" ],
         "description" : "Uploads a dataset. Upon success, it returns the data id.\n",
+        "consumes" : [ "multipart/form-data" ],
         "parameters" : [ {
           "name" : "description",
           "in" : "formData",
@@ -133,7 +123,6 @@
           "required" : true,
           "type" : "string"
         } ],
-        "tags" : [ "data" ],
         "responses" : {
           "130" : {
             "description" : "Problem with file uploading. There was a problem with the file upload"
@@ -183,18 +172,7 @@
           "200" : {
             "description" : "Id of the uploaded dataset",
             "schema" : {
-              "type" : "object",
-              "properties" : {
-                "upload_data_set" : {
-                  "type" : "object",
-                  "properties" : {
-                    "id" : {
-                      "type" : "string",
-                      "description" : "ID of the uploaded dataset, a positive integer"
-                    }
-                  }
-                }
-              }
+              "$ref" : "#/definitions/inline_response_200_1"
             },
             "examples" : {
               "application/json" : "{\n  \"upload_data_set\": {\n    \"id\": \"4328\"\n  }\n}"
@@ -203,8 +181,82 @@
         }
       }
     },
+    "/data/qualities" : {
+      "post" : {
+        "tags" : [ "data" ],
+        "summary" : "Upload dataset qualities",
+        "description" : "Uploads dataset qualities. Upon success, it returns the data id.\n",
+        "consumes" : [ "multipart/form-data" ],
+        "parameters" : [ {
+          "name" : "description",
+          "in" : "formData",
+          "description" : "An XML file describing the dataset. Only name, description, and data format are required. Also see the [XSD schema](https://www.openml.org/api/v1/xsd/openml.data.qualities) and an [XML example](https://www.openml.org/api/v1/xml_example/data.qualities).",
+          "required" : true,
+          "type" : "file"
+        }, {
+          "name" : "api_key",
+          "in" : "query",
+          "description" : "Api key to authenticate the user",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "381" : {
+            "description" : "Something wrong with XML, please check did and evaluation_engine_id"
+          },
+          "382" : {
+            "description" : "Please provide description xml"
+          },
+          "383" : {
+            "description" : "Problem validating uploaded description file"
+          },
+          "384" : {
+            "description" : "Dataset not processed yet"
+          }
+        }
+      }
+    },
+    "/data/features" : {
+      "post" : {
+        "tags" : [ "data" ],
+        "summary" : "Upload dataset feature description",
+        "description" : "Uploads dataset feature description. Upon success, it returns the data id.\n",
+        "consumes" : [ "multipart/form-data" ],
+        "parameters" : [ {
+          "name" : "description",
+          "in" : "formData",
+          "description" : "An XML file describing the dataset. Only name, description, and data format are required. Also see the [XSD schema](https://www.openml.org/api/v1/xsd/openml.data.features) and an [XML example](https://www.openml.org/api/v1/xml_example/data.features).",
+          "required" : true,
+          "type" : "file"
+        }, {
+          "name" : "api_key",
+          "in" : "query",
+          "description" : "Api key to authenticate the user",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "431" : {
+            "description" : "Dataset already processed"
+          },
+          "432" : {
+            "description" : "Please provide description xml"
+          },
+          "433" : {
+            "description" : "Problem validating uploaded description file"
+          },
+          "434" : {
+            "description" : "Could not find dataset"
+          },
+          "436" : {
+            "description" : "Something wrong with XML, check did and evaluation engine id"
+          }
+        }
+      }
+    },
     "/data/features/{id}" : {
       "get" : {
+        "tags" : [ "data" ],
         "summary" : "Get data features",
         "description" : "Returns the features of a dataset.\n",
         "parameters" : [ {
@@ -218,10 +270,9 @@
           "name" : "api_key",
           "in" : "query",
           "description" : "Api key to authenticate the user",
-          "required" : true,
+          "required" : false,
           "type" : "string"
         } ],
-        "tags" : [ "data" ],
         "responses" : {
           "200" : {
             "description" : "All the features of the dataset",
@@ -252,6 +303,7 @@
     },
     "/data/qualities/{id}" : {
       "get" : {
+        "tags" : [ "data" ],
         "summary" : "Get data qualities",
         "description" : "Returns the qualities of a dataset.\n",
         "parameters" : [ {
@@ -265,10 +317,9 @@
           "name" : "api_key",
           "in" : "query",
           "description" : "Api key to authenticate the user",
-          "required" : true,
+          "required" : false,
           "type" : "string"
         } ],
-        "tags" : [ "data" ],
         "responses" : {
           "200" : {
             "description" : "All the qualities of the dataset",
@@ -302,16 +353,16 @@
     },
     "/data/list" : {
       "get" : {
+        "tags" : [ "data" ],
         "summary" : "List all datasets",
-        "description" : "Returns an array with all datasets in the system.\n",
+        "description" : "Returns an array with all datasets in the system. Only returns the 'active' datasets, unless otherwise specified with the 'status' filter.\n",
         "parameters" : [ {
           "name" : "api_key",
           "in" : "query",
           "description" : "API key to authenticate the user",
-          "required" : true,
+          "required" : false,
           "type" : "string"
         } ],
-        "tags" : [ "data" ],
         "responses" : {
           "200" : {
             "description" : "A list of datasets",
@@ -330,6 +381,7 @@
     },
     "/data/list/limit/{limit}/offset/{offset}" : {
       "get" : {
+        "tags" : [ "data" ],
         "summary" : "List datasets within a range.",
         "description" : "Returns an array with a limited number of datasets.\n",
         "parameters" : [ {
@@ -350,10 +402,9 @@
           "name" : "api_key",
           "in" : "query",
           "description" : "API key to authenticate the user",
-          "required" : true,
+          "required" : false,
           "type" : "string"
         } ],
-        "tags" : [ "data" ],
         "responses" : {
           "200" : {
             "description" : "A list of datasets",
@@ -372,7 +423,8 @@
     },
     "/data/list/tag/{tag}" : {
       "get" : {
-        "summary" : "List datasets with given tag.",
+        "tags" : [ "data" ],
+        "summary" : "List datasets with given tag",
         "description" : "Returns an array with all datasets in the system with the given tag. Can also be combined with limit and offset.\n",
         "parameters" : [ {
           "name" : "tag",
@@ -384,10 +436,9 @@
           "name" : "api_key",
           "in" : "query",
           "description" : "API key to authenticate the user",
-          "required" : true,
+          "required" : false,
           "type" : "string"
         } ],
-        "tags" : [ "data" ],
         "responses" : {
           "200" : {
             "description" : "A list of datasets with the given tag",
@@ -404,24 +455,98 @@
         }
       }
     },
-    "/data/list/status/{status}" : {
+    "/data/list/data_name/{data_name}" : {
       "get" : {
-        "summary" : "List datasets with given status",
-        "description" : "Returns an array with all datasets in the system with the given status, either 'active', 'deactivated', or 'in_preparation'.\n",
+        "tags" : [ "data" ],
+        "summary" : "List datasets with the given name.",
+        "description" : "Returns a list with all datasets in the system with the given name. Can also be combined with all other filters.\n",
         "parameters" : [ {
-          "name" : "status",
+          "name" : "data_name",
           "in" : "path",
-          "description" : "The status on which to filter the results, either 'active', 'deactivated', or 'in_preparation'.",
+          "description" : "The dataset name on which to filter the results",
           "required" : true,
           "type" : "string"
         }, {
           "name" : "api_key",
           "in" : "query",
           "description" : "API key to authenticate the user",
-          "required" : true,
+          "required" : false,
           "type" : "string"
         } ],
+        "responses" : {
+          "200" : {
+            "description" : "A list of datasets with the given name",
+            "schema" : {
+              "$ref" : "#/definitions/DataList"
+            },
+            "examples" : {
+              "application/json" : "{\n  \"data\": {\n    \"dataset\": [\n      {\n        \"did\":\"1\",\n        \"name\":\"anneal\",\n        \"status\":\"active\",\n        \"format\":\"ARFF\",\n        \"quality\":[\n          {\n            \"name\":\"MajorityClassSize\",\n            \"value\":\"684\"\n          },\n          {\n            \"name\":\"MaxNominalAttDistinctValues\",\n            \"value\":\"10.0\"\n          },\n          {\n            \"name\":\"MinorityClassSize\"\n            ,\"value\":\"0\"\n          },\n          {\n            \"name\":\"NumBinaryAtts\",\n            \"value\":\"14.0\"\n          },\n          {\n            \"name\":\"NumberOfClasses\",\n            \"value\":\"6\"\n          },\n          {\n            \"name\":\"NumberOfFeatures\",\n            \"value\":\"39\"\n          },\n          {\n            \"name\":\"NumberOfInstances\",\n            \"value\":\"898\"\n          },\n          {\n            \"name\":\"NumberOfInstancesWithMissingValues\",\n            \"value\":\"0\"\n          },\n          {\n            \"name\":\"NumberOfMissingValues\",\n            \"value\":\"0\"\n          },\n          {\n            \"name\":\"NumberOfNumericFeatures\",\n            \"value\":\"6\"\n          },\n          {\n            \"name\":\"NumberOfSymbolicFeatures\",\n            \"value\":\"32\"\n          }\n        ]\n      }\n    ]\n  }\n}"
+            }
+          },
+          "372" : {
+            "description" : "No datasets available. There are no datasets in the system with the given name."
+          }
+        }
+      }
+    },
+    "/data/list/{quality}/{value}" : {
+      "get" : {
         "tags" : [ "data" ],
+        "summary" : "List datasets with the given name.",
+        "description" : "Returns a list with all datasets in the system with the given qualities, where the quality can be 'number_instances', 'number_features', 'number_classes', or 'number_missing_values' \n",
+        "parameters" : [ {
+          "name" : "quality",
+          "in" : "path",
+          "description" : "The quality name on which to filter on, either 'number_instances', 'number_features', 'number_classes', or 'number_missing_values'",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "value",
+          "in" : "path",
+          "description" : "The required value for the given quality. Can either be an exact value, e.g. '100' if you only want datasets with 100 instances, or a range '1..100' if you want all datasets with a number of instances between 1 and 100.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "api_key",
+          "in" : "query",
+          "description" : "API key to authenticate the user",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "A list of datasets with the given quality constraints",
+            "schema" : {
+              "$ref" : "#/definitions/DataList"
+            },
+            "examples" : {
+              "application/json" : "{\n  \"data\": {\n    \"dataset\": [\n      {\n        \"did\":\"1\",\n        \"name\":\"anneal\",\n        \"status\":\"active\",\n        \"format\":\"ARFF\",\n        \"quality\":[\n          {\n            \"name\":\"MajorityClassSize\",\n            \"value\":\"684\"\n          },\n          {\n            \"name\":\"MaxNominalAttDistinctValues\",\n            \"value\":\"10.0\"\n          },\n          {\n            \"name\":\"MinorityClassSize\"\n            ,\"value\":\"0\"\n          },\n          {\n            \"name\":\"NumBinaryAtts\",\n            \"value\":\"14.0\"\n          },\n          {\n            \"name\":\"NumberOfClasses\",\n            \"value\":\"6\"\n          },\n          {\n            \"name\":\"NumberOfFeatures\",\n            \"value\":\"39\"\n          },\n          {\n            \"name\":\"NumberOfInstances\",\n            \"value\":\"898\"\n          },\n          {\n            \"name\":\"NumberOfInstancesWithMissingValues\",\n            \"value\":\"0\"\n          },\n          {\n            \"name\":\"NumberOfMissingValues\",\n            \"value\":\"0\"\n          },\n          {\n            \"name\":\"NumberOfNumericFeatures\",\n            \"value\":\"6\"\n          },\n          {\n            \"name\":\"NumberOfSymbolicFeatures\",\n            \"value\":\"32\"\n          }\n        ]\n      }\n    ]\n  }\n}"
+            }
+          },
+          "372" : {
+            "description" : "No datasets available. There are no datasets in the system with the given quality constraints."
+          }
+        }
+      }
+    },
+    "/data/list/status/{status}" : {
+      "get" : {
+        "tags" : [ "data" ],
+        "summary" : "List datasets with given status",
+        "description" : "Returns an array with all datasets in the system with the given status, either 'active', 'deactivated', 'in_preparation', or 'all'. 'all' returns all datasets regardless of status.\n",
+        "parameters" : [ {
+          "name" : "status",
+          "in" : "path",
+          "description" : "The status on which to filter the results, either 'active', 'deactivated', 'in_preparation', or 'all'.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "api_key",
+          "in" : "query",
+          "description" : "API key to authenticate the user",
+          "required" : false,
+          "type" : "string"
+        } ],
         "responses" : {
           "200" : {
             "description" : "A list of datasets with the given status",
@@ -440,6 +565,7 @@
     },
     "/data/list/{filters}" : {
       "get" : {
+        "tags" : [ "data" ],
         "summary" : "Get datasets by properties",
         "description" : "Get tasks based on properties of the data - number_instances, number_features, number_classes or number_missing_values. Properties can be combined, and ranges can be used in the form '0..10'. Can also be combined with limits or tags. Returns an array with all datasets in the system that match the constraints.\n",
         "parameters" : [ {
@@ -452,10 +578,9 @@
           "name" : "api_key",
           "in" : "query",
           "description" : "API key to authenticate the user",
-          "required" : true,
+          "required" : false,
           "type" : "string"
         } ],
-        "tags" : [ "data" ],
         "responses" : {
           "200" : {
             "description" : "A list of datasets with the given task",
@@ -474,6 +599,7 @@
     },
     "/data/tag" : {
       "post" : {
+        "tags" : [ "data" ],
         "summary" : "Tag a dataset",
         "description" : "Tags a dataset.",
         "consumes" : [ "application/x-www-form-urlencoded" ],
@@ -497,23 +623,11 @@
           "required" : true,
           "type" : "string"
         } ],
-        "tags" : [ "data" ],
         "responses" : {
           "200" : {
             "description" : "The id of the tagged dataset",
             "schema" : {
-              "type" : "object",
-              "properties" : {
-                "data_tag" : {
-                  "type" : "object",
-                  "properties" : {
-                    "id" : {
-                      "type" : "string",
-                      "description" : "ID of the tagged dataset"
-                    }
-                  }
-                }
-              }
+              "$ref" : "#/definitions/inline_response_200_2"
             },
             "examples" : {
               "application/json" : "{\n  \"data_tag\": {\n    \"id\": \"2\"\n  }\n}"
@@ -539,6 +653,7 @@
     },
     "/data/untag" : {
       "post" : {
+        "tags" : [ "data" ],
         "summary" : "Untag a dataset",
         "description" : "Untags a dataset.",
         "consumes" : [ "application/x-www-form-urlencoded" ],
@@ -561,23 +676,11 @@
           "required" : true,
           "type" : "string"
         } ],
-        "tags" : [ "data" ],
         "responses" : {
           "200" : {
             "description" : "The ID of the untagged dataset",
             "schema" : {
-              "type" : "object",
-              "properties" : {
-                "data_untag" : {
-                  "type" : "object",
-                  "properties" : {
-                    "id" : {
-                      "type" : "string",
-                      "description" : "ID of the untagged dataset"
-                    }
-                  }
-                }
-              }
+              "$ref" : "#/definitions/inline_response_200_3"
             },
             "examples" : {
               "application/json" : "{\n  \"data_untag\": {\n    \"id\": \"2\"\n  }\n}"
@@ -601,8 +704,122 @@
         }
       }
     },
+    "/data/unprocessed/{data_engine_id}/{order}" : {
+      "get" : {
+        "tags" : [ "evaluation" ],
+        "summary" : "Get a list of unprocessed datasets",
+        "description" : "This call is for people running their own dataset processing engines. It returns the details of datasets that are not yet processed by the given processing engine. It doesn't process the datasets, it just returns the dataset info.\n",
+        "parameters" : [ {
+          "name" : "data_engine_id",
+          "in" : "path",
+          "description" : "The ID of the data processing engine. You get this ID when you register a new data processing engine with OpenML. The ID of the main data processing engine is 1.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "order",
+          "in" : "path",
+          "description" : "When there are multiple datasets still to process, this defines which ones to return. Options are 'normal' - the oldest datasets, or 'random'.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "api_key",
+          "in" : "query",
+          "description" : "API key to authenticate the user",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "A list of unprocessed datasets",
+            "schema" : {
+              "$ref" : "#/definitions/DataUnprocessed"
+            },
+            "examples" : {
+              "application/json" : {
+                "data_unprocessed" : {
+                  "run" : [ {
+                    "did" : "1",
+                    "name" : "anneal",
+                    "version" : "2",
+                    "status" : "deactivated",
+                    "format" : "ARFF"
+                  } ]
+                }
+              }
+            }
+          },
+          "681" : {
+            "description" : "No unprocessed datasets."
+          }
+        }
+      }
+    },
+    "/data/qualities/unprocessed/{data_engine_id}/{order}" : {
+      "post" : {
+        "tags" : [ "data" ],
+        "summary" : "Get a list of datasets with unprocessed qualities\n",
+        "description" : "This call is for people running their own dataset processing engines. It returns the details of datasets for which certain qualities are not yet processed by the given processing engine. It doesn't process the datasets, it just returns the dataset info.\n",
+        "consumes" : [ "application/x-www-form-urlencoded" ],
+        "parameters" : [ {
+          "name" : "data_engine_id",
+          "in" : "path",
+          "description" : "The ID of the data processing engine. You get this ID when you register a new data processing engine with OpenML. The ID of the main data processing engine is 1.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "order",
+          "in" : "path",
+          "description" : "When there are multiple datasets still to process, this defines which ones to return. Options are 'normal' - the oldest datasets, or 'random'.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "api_key",
+          "in" : "query",
+          "description" : "API key to authenticate the user",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "qualities",
+          "in" : "formData",
+          "description" : "Comma-separated list of (at least two) quality names, e.g. 'NumberOfInstances,NumberOfFeatures'.",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "A list of unprocessed datasets",
+            "schema" : {
+              "$ref" : "#/definitions/DataUnprocessed"
+            },
+            "examples" : {
+              "application/json" : {
+                "data_unprocessed" : {
+                  "run" : [ {
+                    "did" : "1",
+                    "name" : "anneal",
+                    "version" : "2",
+                    "status" : "deactivated",
+                    "format" : "ARFF"
+                  } ]
+                }
+              }
+            }
+          },
+          "686" : {
+            "description" : "Please specify the features the evaluation engine wants to calculate (at least 2)."
+          },
+          "687" : {
+            "description" : "No unprocessed datasets according to the given set of meta-features."
+          },
+          "688" : {
+            "description" : "Illegal qualities."
+          }
+        }
+      }
+    },
     "/task/{id}" : {
       "get" : {
+        "tags" : [ "task" ],
         "summary" : "Get task description",
         "description" : "Returns information about a task. The information includes the task type, input data, train/test sets, and more.\n",
         "parameters" : [ {
@@ -616,10 +833,9 @@
           "name" : "api_key",
           "in" : "query",
           "description" : "Api key to authenticate the user",
-          "required" : true,
+          "required" : false,
           "type" : "string"
         } ],
-        "tags" : [ "task" ],
         "responses" : {
           "150" : {
             "description" : "Please provide task_id."
@@ -639,6 +855,7 @@
         }
       },
       "delete" : {
+        "tags" : [ "task" ],
         "summary" : "Delete task",
         "description" : "Deletes a task. Upon success, it returns the ID of the deleted task.\n",
         "parameters" : [ {
@@ -655,23 +872,11 @@
           "required" : true,
           "type" : "string"
         } ],
-        "tags" : [ "task" ],
         "responses" : {
           "200" : {
             "description" : "ID of the deleted task",
             "schema" : {
-              "type" : "object",
-              "properties" : {
-                "task_delete" : {
-                  "type" : "object",
-                  "properties" : {
-                    "id" : {
-                      "type" : "string",
-                      "description" : "ID of the deleted task, a positive integer"
-                    }
-                  }
-                }
-              }
+              "$ref" : "#/definitions/inline_response_200_4"
             },
             "examples" : {
               "application/json" : "{\n  \"task_delete\": {\n    \"id\": \"4328\"\n  }\n}"
@@ -697,9 +902,10 @@
     },
     "/task" : {
       "post" : {
+        "tags" : [ "task" ],
         "summary" : "Upload task",
-        "consumes" : [ "multipart/form-data" ],
         "description" : "Uploads a task. Upon success, it returns the task id.\n",
+        "consumes" : [ "multipart/form-data" ],
         "parameters" : [ {
           "name" : "description",
           "in" : "formData",
@@ -713,23 +919,11 @@
           "required" : true,
           "type" : "string"
         } ],
-        "tags" : [ "task" ],
         "responses" : {
           "200" : {
             "description" : "Id of the uploaded task",
             "schema" : {
-              "type" : "object",
-              "properties" : {
-                "upload_task" : {
-                  "type" : "object",
-                  "properties" : {
-                    "id" : {
-                      "type" : "string",
-                      "description" : "ID of the uploaded task, a positive integer"
-                    }
-                  }
-                }
-              }
+              "$ref" : "#/definitions/inline_response_200_5"
             },
             "examples" : {
               "application/json" : "{\n  \"upload_task\": {\n    \"id\": \"4328\"\n  }\n}"
@@ -755,16 +949,16 @@
     },
     "/task/list" : {
       "get" : {
+        "tags" : [ "task" ],
         "summary" : "List all tasks",
         "description" : "Returns an array with all tasks in the system.\n",
         "parameters" : [ {
           "name" : "api_key",
           "in" : "query",
           "description" : "API key to authenticate the user",
-          "required" : true,
+          "required" : false,
           "type" : "string"
         } ],
-        "tags" : [ "task" ],
         "responses" : {
           "200" : {
             "description" : "A list of tasks",
@@ -786,6 +980,7 @@
     },
     "/task/list/limit/{limit}/offset/{offset}" : {
       "get" : {
+        "tags" : [ "task" ],
         "summary" : "List tasks within a range",
         "description" : "Returns an array with a limited number of tasks.\n",
         "parameters" : [ {
@@ -806,10 +1001,9 @@
           "name" : "api_key",
           "in" : "query",
           "description" : "API key to authenticate the user",
-          "required" : true,
+          "required" : false,
           "type" : "string"
         } ],
-        "tags" : [ "task" ],
         "responses" : {
           "200" : {
             "description" : "A list of tasks",
@@ -831,6 +1025,7 @@
     },
     "/task/list/status/{status}" : {
       "get" : {
+        "tags" : [ "task" ],
         "summary" : "List tasks with given status",
         "description" : "Returns an array with all tasks in the system with the given status, either 'active', 'deactivated', or 'in_preparation'.\n",
         "parameters" : [ {
@@ -843,10 +1038,9 @@
           "name" : "api_key",
           "in" : "query",
           "description" : "API key to authenticate the user",
-          "required" : true,
+          "required" : false,
           "type" : "string"
         } ],
-        "tags" : [ "task" ],
         "responses" : {
           "200" : {
             "description" : "A list of tasks with the given status",
@@ -865,6 +1059,7 @@
     },
     "/task/list/type/{id}" : {
       "get" : {
+        "tags" : [ "task" ],
         "summary" : "List tasks of given type.",
         "description" : "Returns an array with all tasks for the given task type id (1 = Supervised Classification). Can be combined with limits and tags.\n",
         "parameters" : [ {
@@ -878,10 +1073,9 @@
           "name" : "api_key",
           "in" : "query",
           "description" : "API key to authenticate the user",
-          "required" : true,
+          "required" : false,
           "type" : "string"
         } ],
-        "tags" : [ "task" ],
         "responses" : {
           "200" : {
             "description" : "A list of tasks",
@@ -903,6 +1097,7 @@
     },
     "/task/list/tag/{tag}" : {
       "get" : {
+        "tags" : [ "task" ],
         "summary" : "List tasks with given tag",
         "description" : "Returns an array with all tasks with the given tag. Can be combined with limits and other filters.\n",
         "parameters" : [ {
@@ -915,10 +1110,9 @@
           "name" : "api_key",
           "in" : "query",
           "description" : "API key to authenticate the user",
-          "required" : true,
+          "required" : false,
           "type" : "string"
         } ],
-        "tags" : [ "task" ],
         "responses" : {
           "200" : {
             "description" : "A list of tasks with the given tag",
@@ -937,6 +1131,7 @@
     },
     "/task/list/data_tag/{tag}" : {
       "get" : {
+        "tags" : [ "task" ],
         "summary" : "List tasks with the given data tag",
         "description" : "Returns an array with all tasks where the underlying dataset has the given tag. Can be combined with limits and other filters.\n",
         "parameters" : [ {
@@ -949,10 +1144,9 @@
           "name" : "api_key",
           "in" : "query",
           "description" : "API key to authenticate the user",
-          "required" : true,
+          "required" : false,
           "type" : "string"
         } ],
-        "tags" : [ "task" ],
         "responses" : {
           "200" : {
             "description" : "A list of tasks where the underlying dataset has the given tag",
@@ -971,6 +1165,7 @@
     },
     "/task/list/{filters}" : {
       "get" : {
+        "tags" : [ "task" ],
         "summary" : "Get tasks by data properties",
         "description" : "Get tasks based on properties of the underlying dataset - data_id, NumberOfInstances, NumberOfFeatures, NumberOfClasses or NumberOfMissingValues. Properties can be combined, and ranges can be used in the form '0..10'. Can also be combined with imits, tags, or types. Returns an array with all tasks in the system that match the constraints.\n",
         "parameters" : [ {
@@ -983,10 +1178,9 @@
           "name" : "api_key",
           "in" : "query",
           "description" : "API key to authenticate the user",
-          "required" : true,
+          "required" : false,
           "type" : "string"
         } ],
-        "tags" : [ "task" ],
         "responses" : {
           "200" : {
             "description" : "A list of tasks with the given tag",
@@ -1005,6 +1199,7 @@
     },
     "/task/tag" : {
       "post" : {
+        "tags" : [ "task" ],
         "summary" : "Tag a task",
         "description" : "Tags a task.",
         "consumes" : [ "application/x-www-form-urlencoded" ],
@@ -1028,23 +1223,11 @@
           "required" : true,
           "type" : "string"
         } ],
-        "tags" : [ "task" ],
         "responses" : {
           "200" : {
             "description" : "The id of the tagged task",
             "schema" : {
-              "type" : "object",
-              "properties" : {
-                "task_tag" : {
-                  "type" : "object",
-                  "properties" : {
-                    "id" : {
-                      "type" : "string",
-                      "description" : "ID of the tagged task"
-                    }
-                  }
-                }
-              }
+              "$ref" : "#/definitions/inline_response_200_6"
             },
             "examples" : {
               "application/json" : "{\n  \"task_tag\": {\n    \"id\": \"2\"\n  }\n}"
@@ -1070,6 +1253,7 @@
     },
     "/task/untag" : {
       "post" : {
+        "tags" : [ "task" ],
         "summary" : "Untag a task",
         "description" : "Untags a task.",
         "consumes" : [ "application/x-www-form-urlencoded" ],
@@ -1092,23 +1276,11 @@
           "required" : true,
           "type" : "string"
         } ],
-        "tags" : [ "task" ],
         "responses" : {
           "200" : {
             "description" : "A the features of the task",
             "schema" : {
-              "type" : "object",
-              "properties" : {
-                "task_untag" : {
-                  "type" : "object",
-                  "properties" : {
-                    "id" : {
-                      "type" : "string",
-                      "description" : "ID of the untagged task"
-                    }
-                  }
-                }
-              }
+              "$ref" : "#/definitions/inline_response_200_7"
             },
             "examples" : {
               "application/json" : "{\n  \"task_untag\": {\n    \"id\": \"2\"\n  }\n}"
@@ -1134,6 +1306,7 @@
     },
     "/tasktype/{id}" : {
       "get" : {
+        "tags" : [ "tasktype" ],
         "summary" : "Get task type description",
         "description" : "Returns information about a task type. The information includes a description, the given inputs and the expected outputs.\n",
         "parameters" : [ {
@@ -1147,10 +1320,9 @@
           "name" : "api_key",
           "in" : "query",
           "description" : "Api key to authenticate the user",
-          "required" : true,
+          "required" : false,
           "type" : "string"
         } ],
-        "tags" : [ "tasktype" ],
         "responses" : {
           "200" : {
             "description" : "A task type description",
@@ -1172,16 +1344,16 @@
     },
     "/tasktype/list" : {
       "get" : {
+        "tags" : [ "tasktype" ],
         "summary" : "List all task types",
         "description" : "Returns an array with all task types in the system.\n",
         "parameters" : [ {
           "name" : "api_key",
           "in" : "query",
           "description" : "API key to authenticate the user",
-          "required" : true,
+          "required" : false,
           "type" : "string"
         } ],
-        "tags" : [ "tasktype" ],
         "responses" : {
           "200" : {
             "description" : "A task description",
@@ -1203,6 +1375,7 @@
     },
     "/flow/{id}" : {
       "get" : {
+        "tags" : [ "flow" ],
         "summary" : "Get flow description",
         "description" : "Returns information about a flow. The information includes the name, information about the creator, dependencies, parameters, run instructions and more.\n",
         "parameters" : [ {
@@ -1216,10 +1389,9 @@
           "name" : "api_key",
           "in" : "query",
           "description" : "API key to authenticate the user",
-          "required" : true,
+          "required" : false,
           "type" : "string"
         } ],
-        "tags" : [ "flow" ],
         "responses" : {
           "180" : {
             "description" : "Please provide flow id."
@@ -1239,6 +1411,7 @@
         }
       },
       "delete" : {
+        "tags" : [ "flow" ],
         "summary" : "Delete a flow",
         "description" : "Deletes a flow. Upon success, it returns the ID of the deleted flow.\n",
         "parameters" : [ {
@@ -1255,23 +1428,11 @@
           "required" : true,
           "type" : "string"
         } ],
-        "tags" : [ "flow" ],
         "responses" : {
           "200" : {
             "description" : "ID of the deleted flow",
             "schema" : {
-              "type" : "object",
-              "properties" : {
-                "flow_delete" : {
-                  "type" : "object",
-                  "properties" : {
-                    "id" : {
-                      "type" : "string",
-                      "description" : "ID of the deleted flow, a positive integer"
-                    }
-                  }
-                }
-              }
+              "$ref" : "#/definitions/inline_response_200_8"
             },
             "examples" : {
               "application/json" : "{\n  \"flow_delete\": {\n    \"id\": \"4328\"\n  }\n}"
@@ -1300,9 +1461,10 @@
     },
     "/flow" : {
       "post" : {
+        "tags" : [ "flow" ],
         "summary" : "Upload a flow",
-        "consumes" : [ "multipart/form-data" ],
         "description" : "Uploads a flow. Upon success, it returns the flow id.\n",
+        "consumes" : [ "multipart/form-data" ],
         "parameters" : [ {
           "name" : "description",
           "in" : "formData",
@@ -1322,7 +1484,6 @@
           "required" : true,
           "type" : "string"
         } ],
-        "tags" : [ "flow" ],
         "responses" : {
           "160" : {
             "description" : "Error in file uploading. There was a problem with the file upload."
@@ -1363,18 +1524,7 @@
           "200" : {
             "description" : "Id of the uploaded flow",
             "schema" : {
-              "type" : "object",
-              "properties" : {
-                "upload_flow" : {
-                  "type" : "object",
-                  "properties" : {
-                    "id" : {
-                      "type" : "string",
-                      "description" : "ID of the uploaded flow, a positive integer"
-                    }
-                  }
-                }
-              }
+              "$ref" : "#/definitions/inline_response_200_9"
             },
             "examples" : {
               "application/json" : "{\n  \"upload_flow\": {\n    \"id\": \"2520\"\n  }\n}"
@@ -1385,6 +1535,7 @@
     },
     "/flow/exists/{name}/{version}" : {
       "get" : {
+        "tags" : [ "flow" ],
         "summary" : "Check whether flow exists",
         "description" : "Checks whether a flow with the given name and (external) version exists.\n",
         "parameters" : [ {
@@ -1403,30 +1554,14 @@
           "name" : "api_key",
           "in" : "query",
           "description" : "API key to authenticate the user",
-          "required" : true,
+          "required" : false,
           "type" : "string"
         } ],
-        "tags" : [ "flow" ],
         "responses" : {
           "200" : {
             "description" : "A list of flows",
             "schema" : {
-              "type" : "object",
-              "properties" : {
-                "flow_exists" : {
-                  "type" : "object",
-                  "properties" : {
-                    "exists" : {
-                      "type" : "string",
-                      "description" : "true or false"
-                    },
-                    "id" : {
-                      "type" : "string",
-                      "description" : "The id of the flow with the given name and (external) version"
-                    }
-                  }
-                }
-              }
+              "$ref" : "#/definitions/inline_response_200_10"
             },
             "examples" : {
               "application/json" : "{\n  \"flow_exists\": {\n    \"exists\": \"true\",\n    \"id\": \"65\"\n  }\n}"
@@ -1440,16 +1575,16 @@
     },
     "/flow/list" : {
       "get" : {
+        "tags" : [ "flow" ],
         "summary" : "List all flows",
         "description" : "Returns an array with all flows in the system.\n",
         "parameters" : [ {
           "name" : "api_key",
           "in" : "query",
           "description" : "API key to authenticate the user",
-          "required" : true,
+          "required" : false,
           "type" : "string"
         } ],
-        "tags" : [ "flow" ],
         "responses" : {
           "200" : {
             "description" : "A list of flows",
@@ -1468,6 +1603,7 @@
     },
     "/flow/list/limit/{limit}/offset/{offset}" : {
       "get" : {
+        "tags" : [ "flow" ],
         "summary" : "List flows within a range",
         "description" : "Returns an array with the requested flows.\n",
         "parameters" : [ {
@@ -1488,10 +1624,9 @@
           "name" : "api_key",
           "in" : "query",
           "description" : "API key to authenticate the user",
-          "required" : true,
+          "required" : false,
           "type" : "string"
         } ],
-        "tags" : [ "flow" ],
         "responses" : {
           "200" : {
             "description" : "A list of flows",
@@ -1510,6 +1645,7 @@
     },
     "/flow/list/tag/{tag}" : {
       "get" : {
+        "tags" : [ "flow" ],
         "summary" : "List flows with given tag.",
         "description" : "Returns an array with all flows in the system with the given tag.\n",
         "parameters" : [ {
@@ -1522,10 +1658,9 @@
           "name" : "api_key",
           "in" : "query",
           "description" : "API key to authenticate the user",
-          "required" : true,
+          "required" : false,
           "type" : "string"
         } ],
-        "tags" : [ "flow" ],
         "responses" : {
           "200" : {
             "description" : "A list of flows with the given tag",
@@ -1544,34 +1679,21 @@
     },
     "/flow/owned" : {
       "get" : {
+        "tags" : [ "flow" ],
         "summary" : "List flows owned by you",
         "description" : "Returns an array with all flows owned by you.\n",
         "parameters" : [ {
           "name" : "api_key",
           "in" : "query",
           "description" : "API key to authenticate the user",
-          "required" : true,
+          "required" : false,
           "type" : "string"
         } ],
-        "tags" : [ "flow" ],
         "responses" : {
           "200" : {
             "description" : "A list of flows",
             "schema" : {
-              "type" : "object",
-              "properties" : {
-                "flow_owned" : {
-                  "type" : "object",
-                  "properties" : {
-                    "id" : {
-                      "type" : "array",
-                      "items" : {
-                        "type" : "string"
-                      }
-                    }
-                  }
-                }
-              }
+              "$ref" : "#/definitions/inline_response_200_11"
             },
             "examples" : {
               "application/json" : "{\n  \"flow_owned\": {\n    \"id\": [\n      \"111\",\n      \"112\",\n      \"113\",\n      \"114\",\n      \"115\",\n      \"116\",\n      \"117\"\n    ]\n  }\n}"
@@ -1591,6 +1713,7 @@
     },
     "/flow/tag" : {
       "post" : {
+        "tags" : [ "flow" ],
         "summary" : "Tag a flow",
         "description" : "Tags a flow.",
         "consumes" : [ "application/x-www-form-urlencoded" ],
@@ -1614,23 +1737,11 @@
           "required" : true,
           "type" : "string"
         } ],
-        "tags" : [ "flow" ],
         "responses" : {
           "200" : {
             "description" : "The id of the tagged flow",
             "schema" : {
-              "type" : "object",
-              "properties" : {
-                "flow_tag" : {
-                  "type" : "object",
-                  "properties" : {
-                    "id" : {
-                      "type" : "string",
-                      "description" : "ID of the tagged flow"
-                    }
-                  }
-                }
-              }
+              "$ref" : "#/definitions/inline_response_200_12"
             },
             "examples" : {
               "application/json" : "{\n  \"flow_tag\": {\n    \"id\": \"2\"\n  }\n}"
@@ -1656,6 +1767,7 @@
     },
     "/flow/untag" : {
       "post" : {
+        "tags" : [ "flow" ],
         "summary" : "Untag a flow",
         "description" : "Untags a flow.",
         "consumes" : [ "application/x-www-form-urlencoded" ],
@@ -1678,23 +1790,11 @@
           "required" : true,
           "type" : "string"
         } ],
-        "tags" : [ "flow" ],
         "responses" : {
           "200" : {
             "description" : "The id of the untagged flow",
             "schema" : {
-              "type" : "object",
-              "properties" : {
-                "flow_untag" : {
-                  "type" : "object",
-                  "properties" : {
-                    "id" : {
-                      "type" : "string",
-                      "description" : "ID of the untagged flow"
-                    }
-                  }
-                }
-              }
+              "$ref" : "#/definitions/inline_response_200_13"
             },
             "examples" : {
               "application/json" : "{\n  \"flow_untag\": {\n    \"id\": \"2\"\n  }\n}"
@@ -1720,6 +1820,7 @@
     },
     "/setup/{id}" : {
       "get" : {
+        "tags" : [ "setup" ],
         "summary" : "Get a hyperparameter setup",
         "description" : "Returns information about a setup. The information includes the list of hyperparameters, with name, value, and default value.\n",
         "parameters" : [ {
@@ -1733,10 +1834,9 @@
           "name" : "api_key",
           "in" : "query",
           "description" : "API key to authenticate the user",
-          "required" : true,
+          "required" : false,
           "type" : "string"
         } ],
-        "tags" : [ "setup" ],
         "responses" : {
           "200" : {
             "description" : "A setup description",
@@ -1758,6 +1858,7 @@
     },
     "/run/{id}" : {
       "get" : {
+        "tags" : [ "run" ],
         "summary" : "Get run description",
         "description" : "Returns information about a run. The information includes the name, information about the creator, dependencies, parameters, run instructions and more.\n",
         "parameters" : [ {
@@ -1771,10 +1872,9 @@
           "name" : "api_key",
           "in" : "query",
           "description" : "API key to authenticate the user",
-          "required" : true,
+          "required" : false,
           "type" : "string"
         } ],
-        "tags" : [ "run" ],
         "responses" : {
           "200" : {
             "description" : "A run description",
@@ -1794,6 +1894,7 @@
         }
       },
       "delete" : {
+        "tags" : [ "run" ],
         "summary" : "Delete run",
         "description" : "Deletes a run. Upon success, it returns the ID of the deleted run.\n",
         "parameters" : [ {
@@ -1810,23 +1911,11 @@
           "required" : true,
           "type" : "string"
         } ],
-        "tags" : [ "run" ],
         "responses" : {
           "200" : {
             "description" : "ID of the deleted run",
             "schema" : {
-              "type" : "object",
-              "properties" : {
-                "data_delete" : {
-                  "type" : "object",
-                  "properties" : {
-                    "id" : {
-                      "type" : "string",
-                      "description" : "ID of the deleted run, a positive integer"
-                    }
-                  }
-                }
-              }
+              "$ref" : "#/definitions/inline_response_200_14"
             },
             "examples" : {
               "application/json" : "{\n  \"run_delete\": {\n    \"id\": \"2520\"\n  }\n}"
@@ -1852,9 +1941,10 @@
     },
     "/run" : {
       "post" : {
+        "tags" : [ "run" ],
         "summary" : "Upload run",
-        "consumes" : [ "multipart/form-data" ],
         "description" : "Uploads a run. Upon success, it returns the run id.\n",
+        "consumes" : [ "multipart/form-data" ],
         "parameters" : [ {
           "name" : "description",
           "in" : "formData",
@@ -1886,23 +1976,11 @@
           "required" : true,
           "type" : "string"
         } ],
-        "tags" : [ "run" ],
         "responses" : {
           "200" : {
             "description" : "Id of the uploaded run",
             "schema" : {
-              "type" : "object",
-              "properties" : {
-                "upload_flow" : {
-                  "type" : "object",
-                  "properties" : {
-                    "id" : {
-                      "type" : "string",
-                      "description" : "ID of the uploaded run, a positive integer"
-                    }
-                  }
-                }
-              }
+              "$ref" : "#/definitions/inline_response_200_15"
             },
             "examples" : {
               "application/json" : "{\n  \"upload_run\": {\n    \"id\": \"2520\"\n  }\n}"
@@ -1967,6 +2045,7 @@
     },
     "/run/list/limit/{limit}/offset/{offset}" : {
       "get" : {
+        "tags" : [ "run" ],
         "summary" : "Get runs by limit/offset",
         "description" : "Returns an array with all runs matching the given limit and offset.\n",
         "parameters" : [ {
@@ -1987,10 +2066,9 @@
           "name" : "api_key",
           "in" : "query",
           "description" : "API key to authenticate the user",
-          "required" : true,
+          "required" : false,
           "type" : "string"
         } ],
-        "tags" : [ "run" ],
         "responses" : {
           "200" : {
             "description" : "A list of runs descriptions",
@@ -2046,6 +2124,7 @@
     },
     "/run/list/run/{ids}" : {
       "get" : {
+        "tags" : [ "run" ],
         "summary" : "Get runs by id(s)",
         "description" : "Returns an array with all runs matching the given run id(s).\n",
         "parameters" : [ {
@@ -2058,10 +2137,9 @@
           "name" : "api_key",
           "in" : "query",
           "description" : "API key to authenticate the user",
-          "required" : true,
+          "required" : false,
           "type" : "string"
         } ],
-        "tags" : [ "run" ],
         "responses" : {
           "200" : {
             "description" : "A list of runs descriptions",
@@ -2117,6 +2195,7 @@
     },
     "/run/list/tag/{tag}" : {
       "get" : {
+        "tags" : [ "run" ],
         "summary" : "Get runs by tag",
         "description" : "Returns an array with all runs matching the given tag.\n",
         "parameters" : [ {
@@ -2129,10 +2208,9 @@
           "name" : "api_key",
           "in" : "query",
           "description" : "API key to authenticate the user",
-          "required" : true,
+          "required" : false,
           "type" : "string"
         } ],
-        "tags" : [ "run" ],
         "responses" : {
           "200" : {
             "description" : "A list of runs with the given tag",
@@ -2188,6 +2266,7 @@
     },
     "/run/list/task/{ids}" : {
       "get" : {
+        "tags" : [ "run" ],
         "summary" : "Get runs by task(s)",
         "description" : "Returns an array with all runs belonging to one of the given task(s).\n",
         "parameters" : [ {
@@ -2200,10 +2279,9 @@
           "name" : "api_key",
           "in" : "query",
           "description" : "API key to authenticate the user",
-          "required" : true,
+          "required" : false,
           "type" : "string"
         } ],
-        "tags" : [ "run" ],
         "responses" : {
           "200" : {
             "description" : "A list of runs descriptions",
@@ -2259,6 +2337,7 @@
     },
     "/run/list/uploader/{ids}" : {
       "get" : {
+        "tags" : [ "run" ],
         "summary" : "Get runs by uploader(s)",
         "description" : "Returns an array with all runs uploaded by one of the given user(s).\n",
         "parameters" : [ {
@@ -2271,10 +2350,9 @@
           "name" : "api_key",
           "in" : "query",
           "description" : "API key to authenticate the user",
-          "required" : true,
+          "required" : false,
           "type" : "string"
         } ],
-        "tags" : [ "run" ],
         "responses" : {
           "200" : {
             "description" : "A list of runs descriptions",
@@ -2330,6 +2408,7 @@
     },
     "/run/list/flow/{ids}" : {
       "get" : {
+        "tags" : [ "run" ],
         "summary" : "Get runs by flow(s)",
         "description" : "Returns an array with all runs generated by the given flow(s).\n",
         "parameters" : [ {
@@ -2342,10 +2421,9 @@
           "name" : "api_key",
           "in" : "query",
           "description" : "API key to authenticate the user",
-          "required" : true,
+          "required" : false,
           "type" : "string"
         } ],
-        "tags" : [ "run" ],
         "responses" : {
           "200" : {
             "description" : "A list of runs descriptions",
@@ -2401,6 +2479,7 @@
     },
     "/run/list/{filters}" : {
       "get" : {
+        "tags" : [ "run" ],
         "summary" : "Get runs by limit, id, task, uploader and/or flow",
         "description" : "Returns an array with all runs matching any or all of the given filters. You can combine any of the above filters any way you want.\n",
         "parameters" : [ {
@@ -2413,10 +2492,9 @@
           "name" : "api_key",
           "in" : "query",
           "description" : "API key to authenticate the user",
-          "required" : true,
+          "required" : false,
           "type" : "string"
         } ],
-        "tags" : [ "run" ],
         "responses" : {
           "200" : {
             "description" : "A list of runs descriptions",
@@ -2472,6 +2550,7 @@
     },
     "/run/tag" : {
       "post" : {
+        "tags" : [ "run" ],
         "summary" : "Tag a run",
         "description" : "Tags a run.",
         "consumes" : [ "application/x-www-form-urlencoded" ],
@@ -2495,23 +2574,11 @@
           "required" : true,
           "type" : "string"
         } ],
-        "tags" : [ "run" ],
         "responses" : {
           "200" : {
             "description" : "The id of the tagged run",
             "schema" : {
-              "type" : "object",
-              "properties" : {
-                "run_tag" : {
-                  "type" : "object",
-                  "properties" : {
-                    "id" : {
-                      "type" : "string",
-                      "description" : "ID of the tagged run"
-                    }
-                  }
-                }
-              }
+              "$ref" : "#/definitions/inline_response_200_16"
             },
             "examples" : {
               "application/json" : "{\n  \"run_tag\": {\n    \"id\": \"2\"\n  }\n}"
@@ -2537,6 +2604,7 @@
     },
     "/run/untag" : {
       "post" : {
+        "tags" : [ "run" ],
         "summary" : "Untag a run",
         "description" : "Untags a run.",
         "consumes" : [ "application/x-www-form-urlencoded" ],
@@ -2559,23 +2627,11 @@
           "required" : true,
           "type" : "string"
         } ],
-        "tags" : [ "run" ],
         "responses" : {
           "200" : {
             "description" : "The id of the untagged run",
             "schema" : {
-              "type" : "object",
-              "properties" : {
-                "run_untag" : {
-                  "type" : "object",
-                  "properties" : {
-                    "id" : {
-                      "type" : "string",
-                      "description" : "ID of the untagged run"
-                    }
-                  }
-                }
-              }
+              "$ref" : "#/definitions/inline_response_200_17"
             },
             "examples" : {
               "application/json" : "{\n  \"run_untag\": {\n    \"id\": \"2\"\n  }\n}"
@@ -2599,8 +2655,171 @@
         }
       }
     },
+    "/run/evaluate" : {
+      "post" : {
+        "tags" : [ "run" ],
+        "summary" : "Uploads a run evaluation",
+        "description" : "Uploads a run evaluation. When successful, it returns the run id.\n",
+        "consumes" : [ "multipart/form-data" ],
+        "parameters" : [ {
+          "name" : "description",
+          "in" : "formData",
+          "description" : "An XML file describing the run evaluation.Also see the [XSD schema](https://www.openml.org/api/v1/xsd/openml.run.evaluate) and an [XML example](https://www.openml.org/api/v1/xml_example/run.evaluate).",
+          "required" : true,
+          "type" : "file"
+        }, {
+          "name" : "api_key",
+          "in" : "query",
+          "description" : "Api key to authenticate the user",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Id of the evaluated run",
+            "schema" : {
+              "$ref" : "#/definitions/inline_response_200_18"
+            },
+            "examples" : {
+              "application/json" : "{\n  \"run_evaluate\": {\n    \"id\": \"2520\"\n  }\n}"
+            }
+          },
+          "422" : {
+            "description" : "Upload problem description XML"
+          },
+          "423" : {
+            "description" : "Problem validating uploaded description file"
+          },
+          "424" : {
+            "description" : "Problem opening description xml"
+          }
+        }
+      }
+    },
+    "/run/reset/{id}" : {
+      "get" : {
+        "tags" : [ "run" ],
+        "summary" : "Resets a run.",
+        "description" : "Removes all run evaluations. When a run is reset, the runs will automatically be evaluated as soon as they are picked up by the evaluation engine again.\n",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "Run ID.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "api_key",
+          "in" : "query",
+          "description" : "API key to authenticate the user",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Id of the evaluated run",
+            "schema" : {
+              "$ref" : "#/definitions/inline_response_200_19"
+            },
+            "examples" : {
+              "application/json" : "{\n  \"run_reset\": {\n    \"id\": \"2520\"\n  }\n}"
+            }
+          },
+          "394" : {
+            "description" : "Resetting run failed"
+          },
+          "412" : {
+            "description" : "Run does not exist"
+          },
+          "413" : {
+            "description" : "Run is not owned by you"
+          }
+        }
+      }
+    },
+    "/run/trace/{id}" : {
+      "get" : {
+        "tags" : [ "run" ],
+        "summary" : "Get run trace",
+        "description" : "Returns the optimization trace of run. The trace contains every setup tried, its evaluation, and whether it was selected.\n",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "ID of the run.",
+          "required" : true,
+          "type" : "number",
+          "format" : "integer"
+        }, {
+          "name" : "api_key",
+          "in" : "query",
+          "description" : "API key to authenticate the user",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "A run trace description",
+            "schema" : {
+              "$ref" : "#/definitions/RunTrace"
+            },
+            "examples" : {
+              "application/json" : "{\n  \"trace\": {\n    \"run_id\":\"573055\",\n    \"trace_iteration\": {\n        \"repeat\":\"0\",\n        \"fold\":\"0\",\n        \"repeat\":\"0\",\n        \"iteration\":\"0\",\n        \"setup_string\":{\"parameter_minNumObj\": '1',\n                        \"parameter_confidenceFactor\": '0.1'}\n        \"evaluation\":\"94.814815\",\n        \"selected\": \"true\"\n      },\n    \"trace_iteration\": {\n        \"repeat\":\"0\",\n        \"fold\":\"0\",\n        \"repeat\":\"0\",\n        \"iteration\":\"1\",\n        \"setup_string\":{\"parameter_minNumObj\": '1',\n                        \"parameter_confidenceFactor\": '0.25'}\n        \"evaluation\": \"94.074074\",\n        \"selected\": \"true\"\n      }\n  }\n}"
+            }
+          },
+          "570" : {
+            "description" : "No successful trace associated with this run"
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "run" ],
+        "summary" : "Upload run",
+        "description" : "Uploads a run. Upon success, it returns the run id.\n",
+        "consumes" : [ "multipart/form-data" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "ID of the run.",
+          "required" : true,
+          "type" : "number",
+          "format" : "integer"
+        }, {
+          "name" : "description",
+          "in" : "formData",
+          "description" : "An XML file describing the trace. Also see the [XSD schema](https://www.openml.org/api/v1/xsd/openml.run.trace) and an [XML example](https://www.openml.org/api/v1/xml_example/run.trace).",
+          "required" : true,
+          "type" : "file"
+        }, {
+          "name" : "api_key",
+          "in" : "query",
+          "description" : "Api key to authenticate the user",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Id of the run with the trace",
+            "schema" : {
+              "$ref" : "#/definitions/inline_response_200_20"
+            },
+            "examples" : {
+              "application/json" : "{\n  \"run_trace\": {\n    \"id\": \"2520\"\n  }\n}"
+            }
+          },
+          "561" : {
+            "description" : "Problem with uploaded trace file."
+          },
+          "562" : {
+            "description" : "Problem validating xml trace file."
+          },
+          "563" : {
+            "description" : "Problem loading xml trace file."
+          }
+        }
+      }
+    },
     "/evaluation/list/run/{ids}" : {
       "get" : {
+        "tags" : [ "evaluation" ],
         "summary" : "Get evaluations by run id(s)",
         "description" : "Returns an array with all evaluations matching the given run id(s).\n",
         "parameters" : [ {
@@ -2613,10 +2832,9 @@
           "name" : "api_key",
           "in" : "query",
           "description" : "API key to authenticate the user",
-          "required" : true,
+          "required" : false,
           "type" : "string"
         } ],
-        "tags" : [ "evaluation" ],
         "responses" : {
           "200" : {
             "description" : "A list of evaluation descriptions",
@@ -2672,6 +2890,7 @@
     },
     "/evaluation/list/limit/{limit}/offset/{offset}" : {
       "get" : {
+        "tags" : [ "evaluation" ],
         "summary" : "Get evaluations by limit/offset",
         "description" : "Returns an array with all evaluations matching the given limit/offset.\n",
         "parameters" : [ {
@@ -2692,10 +2911,9 @@
           "name" : "api_key",
           "in" : "query",
           "description" : "API key to authenticate the user",
-          "required" : true,
+          "required" : false,
           "type" : "string"
         } ],
-        "tags" : [ "evaluation" ],
         "responses" : {
           "200" : {
             "description" : "A list of evaluations with the given limit/offset",
@@ -2751,6 +2969,7 @@
     },
     "/evaluation/list/tag/{tag}" : {
       "get" : {
+        "tags" : [ "evaluation" ],
         "summary" : "Get evaluations by tag",
         "description" : "Returns an array with all evaluations matching the given tag.\n",
         "parameters" : [ {
@@ -2763,10 +2982,9 @@
           "name" : "api_key",
           "in" : "query",
           "description" : "API key to authenticate the user",
-          "required" : true,
+          "required" : false,
           "type" : "string"
         } ],
-        "tags" : [ "evaluation" ],
         "responses" : {
           "200" : {
             "description" : "A list of evaluations with the given tag",
@@ -2822,6 +3040,7 @@
     },
     "/evaluation/list/task/{ids}" : {
       "get" : {
+        "tags" : [ "evaluation" ],
         "summary" : "Get evaluations by task(s)",
         "description" : "Returns an array with all evaluations belonging to one of the given task(s).\n",
         "parameters" : [ {
@@ -2834,10 +3053,9 @@
           "name" : "api_key",
           "in" : "query",
           "description" : "API key to authenticate the user",
-          "required" : true,
+          "required" : false,
           "type" : "string"
         } ],
-        "tags" : [ "evaluation" ],
         "responses" : {
           "200" : {
             "description" : "A list of evaluation descriptions",
@@ -2893,6 +3111,7 @@
     },
     "/evaluation/list/uploader/{ids}" : {
       "get" : {
+        "tags" : [ "evaluation" ],
         "summary" : "Get evaluations by uploader(s)",
         "description" : "Returns an array with all evaluations uploaded by one of the given user(s).\n",
         "parameters" : [ {
@@ -2905,10 +3124,9 @@
           "name" : "api_key",
           "in" : "query",
           "description" : "API key to authenticate the user",
-          "required" : true,
+          "required" : false,
           "type" : "string"
         } ],
-        "tags" : [ "evaluation" ],
         "responses" : {
           "200" : {
             "description" : "A list of evaluation descriptions",
@@ -2964,6 +3182,7 @@
     },
     "/evaluation/list/flow/{ids}" : {
       "get" : {
+        "tags" : [ "evaluation" ],
         "summary" : "Get evaluations by flow(s)",
         "description" : "Returns an array with all evaluations generated by the given flow(s).\n",
         "parameters" : [ {
@@ -2976,10 +3195,9 @@
           "name" : "api_key",
           "in" : "query",
           "description" : "API key to authenticate the user",
-          "required" : true,
+          "required" : false,
           "type" : "string"
         } ],
-        "tags" : [ "evaluation" ],
         "responses" : {
           "200" : {
             "description" : "A list of evaluations descriptions",
@@ -3035,6 +3253,7 @@
     },
     "/evaluation/list/function/{name}" : {
       "get" : {
+        "tags" : [ "evaluation" ],
         "summary" : "Get evaluations for a specific evaluation method",
         "description" : "Returns an array with all evaluations using the given function. Can be combined with all other filters.\n",
         "parameters" : [ {
@@ -3047,10 +3266,9 @@
           "name" : "api_key",
           "in" : "query",
           "description" : "API key to authenticate the user",
-          "required" : true,
+          "required" : false,
           "type" : "string"
         } ],
-        "tags" : [ "evaluation" ],
         "responses" : {
           "200" : {
             "description" : "A list of evaluations descriptions",
@@ -3106,6 +3324,7 @@
     },
     "/evaluation/list/{filters}" : {
       "get" : {
+        "tags" : [ "evaluation" ],
         "summary" : "Get evaluations by run, task, uploader, function, and or flow (with or without limit)",
         "description" : "Returns an array with all evaluations matching any or all of the given filters. You can combine any of the four above filters any way you want.\n",
         "parameters" : [ {
@@ -3118,10 +3337,9 @@
           "name" : "api_key",
           "in" : "query",
           "description" : "API key to authenticate the user",
-          "required" : true,
+          "required" : false,
           "type" : "string"
         } ],
-        "tags" : [ "evaluation" ],
         "responses" : {
           "200" : {
             "description" : "A list of evaluations descriptions",
@@ -3175,18 +3393,74 @@
         }
       }
     },
+    "/evaluation/request/{evaluation_engine_id}/{order}" : {
+      "get" : {
+        "tags" : [ "evaluation" ],
+        "summary" : "Get an unevaluated run",
+        "description" : "This call is for people running their own evaluation engines. It returns the details of a run that is not yet evaluated by the given evaluation engine. It doesn't evaluate the run, it just returns the run info.\n",
+        "parameters" : [ {
+          "name" : "evaluation_engine_id",
+          "in" : "path",
+          "description" : "The ID of the evaluation engine. You get this ID when you register a new evaluation engine with OpenML. The ID of the main evaluation engine is 1.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "order",
+          "in" : "path",
+          "description" : "When there are multiple runs still to evaluate, this defines which one to return. Options are 'normal' - the oldest run, 'reverse' - the newest run, or 'random' - a random run.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "api_key",
+          "in" : "query",
+          "description" : "API key to authenticate the user",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "100" : {
+            "description" : "Function not valid."
+          },
+          "200" : {
+            "description" : "A list of evaluations descriptions",
+            "schema" : {
+              "$ref" : "#/definitions/EvaluationRequest"
+            },
+            "examples" : {
+              "application/json" : {
+                "evaluation_request" : {
+                  "run" : [ {
+                    "run_id" : "8943712",
+                    "task_id" : "3021",
+                    "setup_id" : "68799271",
+                    "uploader" : "1935",
+                    "upload_time" : "2018-04-03 21:05:38"
+                  } ]
+                }
+              }
+            }
+          },
+          "545" : {
+            "description" : "No unevaluated runs according to the criteria."
+          },
+          "546" : {
+            "description" : "Illegal filter."
+          }
+        }
+      }
+    },
     "/estimationprocedure/list" : {
       "get" : {
+        "tags" : [ "estimationprocedure" ],
         "summary" : "List all estimation procedures",
         "description" : "Returns an array with all model performance estimation procedures in the system.\n",
         "parameters" : [ {
           "name" : "api_key",
           "in" : "query",
           "description" : "API key to authenticate the user",
-          "required" : true,
+          "required" : false,
           "type" : "string"
         } ],
-        "tags" : [ "estimationprocedure" ],
         "responses" : {
           "200" : {
             "description" : "A list of estimation procedures",
@@ -3209,76 +3483,7 @@
       "type" : "object",
       "properties" : {
         "flow_description" : {
-          "type" : "object",
-          "properties" : {
-            "id" : {
-              "type" : "string",
-              "description" : "ID of the flow, a positive integer"
-            },
-            "uploader" : {
-              "type" : "string",
-              "description" : "The uploader of the flow"
-            },
-            "name" : {
-              "type" : "string",
-              "description" : "The name of the flow"
-            },
-            "version" : {
-              "type" : "string",
-              "description" : "The version of the flow, set by OpenML. A positive integer"
-            },
-            "version_label" : {
-              "type" : "string",
-              "description" : "The version of the flow, as defined by the uploader, for reference. Can be any format as long as it is unique."
-            },
-            "description" : {
-              "type" : "string",
-              "description" : "Wiki description of the flow, in (Git flavoured) markdown format"
-            },
-            "upload_date" : {
-              "type" : "string",
-              "description" : "The datetime that the flow was uploaded, format yyyy-MM-dd HH:mm:ss"
-            },
-            "language" : {
-              "type" : "string",
-              "description" : "The programming language the flow is written in."
-            },
-            "dependencies" : {
-              "type" : "string",
-              "description" : "The libraries that this flow depends on, and their version numbers."
-            },
-            "tag" : {
-              "type" : "array",
-              "items" : {
-                "type" : "string"
-              },
-              "description" : "Tags added by OpenML users. Includes study tags in the form `study_1`"
-            },
-            "parameter" : {
-              "type" : "array",
-              "items" : {
-                "type" : "object",
-                "properties" : {
-                  "name" : {
-                    "type" : "string",
-                    "description" : "The name of the parameter"
-                  },
-                  "data_type" : {
-                    "type" : "string",
-                    "description" : "The data type of the parameter"
-                  },
-                  "default_value" : {
-                    "type" : "string",
-                    "description" : "The default value of the parameter"
-                  },
-                  "description" : {
-                    "type" : "string",
-                    "description" : "A description of the parameter"
-                  }
-                }
-              }
-            }
-          }
+          "$ref" : "#/definitions/Flow_flow_description"
         }
       }
     },
@@ -3286,41 +3491,7 @@
       "type" : "object",
       "properties" : {
         "flows" : {
-          "type" : "object",
-          "properties" : {
-            "flow" : {
-              "type" : "array",
-              "items" : {
-                "type" : "object",
-                "properties" : {
-                  "id" : {
-                    "type" : "string",
-                    "description" : "The flow ID"
-                  },
-                  "full_name" : {
-                    "type" : "string",
-                    "description" : "The full flow name (name + internal version number)"
-                  },
-                  "name" : {
-                    "type" : "string",
-                    "description" : "The flow name"
-                  },
-                  "version" : {
-                    "type" : "string",
-                    "description" : "The internal flow version"
-                  },
-                  "external_version" : {
-                    "type" : "string",
-                    "description" : "The external flow version"
-                  },
-                  "uploader" : {
-                    "type" : "string",
-                    "description" : "The ID of the person who uploaded the flow"
-                  }
-                }
-              }
-            }
-          }
+          "$ref" : "#/definitions/FlowList_flows"
         }
       }
     },
@@ -3328,135 +3499,7 @@
       "type" : "object",
       "properties" : {
         "task_description" : {
-          "type" : "object",
-          "properties" : {
-            "task_id" : {
-              "type" : "string",
-              "description" : "ID of the task, a positive integer"
-            },
-            "task_type" : {
-              "type" : "string",
-              "description" : "The type of the task, e.g. Supervised Classification"
-            },
-            "input" : {
-              "type" : "array",
-              "items" : {
-                "type" : "object",
-                "properties" : {
-                  "name" : {
-                    "type" : "string",
-                    "description" : "The name of the input, e.g. source_data"
-                  },
-                  "data_set" : {
-                    "type" : "object",
-                    "properties" : {
-                      "data_set_id" : {
-                        "type" : "string",
-                        "description" : "The id of the dataset"
-                      },
-                      "target_feature" : {
-                        "type" : "string",
-                        "description" : "The name of the target feature for this task"
-                      }
-                    }
-                  },
-                  "estimation_procedure" : {
-                    "type" : "object",
-                    "properties" : {
-                      "type" : {
-                        "type" : "string",
-                        "description" : "The type of procedure, e.g. crossvalidation"
-                      },
-                      "data_splits_url" : {
-                        "type" : "string",
-                        "description" : "The url where the data splits can be downloaded"
-                      },
-                      "parameter" : {
-                        "type" : "array",
-                        "items" : {
-                          "type" : "object",
-                          "properties" : {
-                            "name" : {
-                              "type" : "string",
-                              "description" : "The name of the parameter"
-                            },
-                            "value" : {
-                              "type" : "string",
-                              "description" : "The value of the parameter"
-                            }
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "cost_matrix" : {
-                    "type" : "array",
-                    "items" : {
-                      "type" : "array",
-                      "items" : {
-                        "type" : "integer",
-                        "format" : "int64"
-                      }
-                    },
-                    "description" : "The cost matrix, indicating the costs for each type of misclassification"
-                  },
-                  "evaluation_measures" : {
-                    "type" : "object",
-                    "properties" : {
-                      "evaluation_measure" : {
-                        "type" : "string",
-                        "description" : "The evaluation measure to optimize in this task"
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "output" : {
-              "type" : "array",
-              "items" : {
-                "type" : "object",
-                "properties" : {
-                  "name" : {
-                    "type" : "string",
-                    "description" : "The name of the output, e.g. predictions"
-                  },
-                  "predictions" : {
-                    "type" : "object",
-                    "properties" : {
-                      "format" : {
-                        "type" : "string",
-                        "description" : "The fromat of the predictions, e.g. ARFF"
-                      },
-                      "feature" : {
-                        "type" : "array",
-                        "items" : {
-                          "type" : "object",
-                          "properties" : {
-                            "name" : {
-                              "type" : "string",
-                              "description" : "The name of the prediction feature, e.g. row_id"
-                            },
-                            "type" : {
-                              "type" : "string",
-                              "description" : "The type of the prediction feature, e.g. integer"
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "tag" : {
-              "type" : "array",
-              "items" : {
-                "type" : "string",
-                "description" : "Tags added by OpenML users. Includes study tags in the form `study_1`"
-              }
-            }
-          }
+          "$ref" : "#/definitions/Task_task_description"
         }
       }
     },
@@ -3464,80 +3507,7 @@
       "type" : "object",
       "properties" : {
         "task" : {
-          "type" : "object",
-          "properties" : {
-            "task" : {
-              "type" : "array",
-              "items" : {
-                "type" : "object",
-                "properties" : {
-                  "task_id" : {
-                    "type" : "string",
-                    "description" : "The ID of the task"
-                  },
-                  "task_type" : {
-                    "type" : "string",
-                    "description" : "The type of task (e.g. Supervised Classificationr)"
-                  },
-                  "did" : {
-                    "type" : "string",
-                    "description" : "The id of the source dataset"
-                  },
-                  "name" : {
-                    "type" : "string",
-                    "description" : "The name of the source dataset"
-                  },
-                  "status" : {
-                    "type" : "string",
-                    "description" : "The status of the source dataset, active, in_preparation, or deactivated"
-                  },
-                  "format" : {
-                    "type" : "string",
-                    "description" : "The format of the source dataset"
-                  },
-                  "input" : {
-                    "type" : "array",
-                    "items" : {
-                      "type" : "object",
-                      "properties" : {
-                        "name" : {
-                          "type" : "string",
-                          "description" : "The name of the input"
-                        },
-                        "value" : {
-                          "type" : "string",
-                          "description" : "The value of the input"
-                        }
-                      }
-                    }
-                  },
-                  "quality" : {
-                    "type" : "array",
-                    "items" : {
-                      "type" : "object",
-                      "properties" : {
-                        "name" : {
-                          "type" : "string",
-                          "description" : "The name of the quality"
-                        },
-                        "value" : {
-                          "type" : "string",
-                          "description" : "The value of the quality"
-                        }
-                      }
-                    }
-                  },
-                  "tag" : {
-                    "type" : "array",
-                    "items" : {
-                      "type" : "string",
-                      "description" : "Tags added by OpenML users. Includes study tags in the form `study_1`"
-                    }
-                  }
-                }
-              }
-            }
-          }
+          "$ref" : "#/definitions/TaskList_task"
         }
       }
     },
@@ -3545,45 +3515,7 @@
       "type" : "object",
       "properties" : {
         "estimationprocedures" : {
-          "type" : "object",
-          "properties" : {
-            "estimationprocedure" : {
-              "type" : "array",
-              "items" : {
-                "type" : "object",
-                "properties" : {
-                  "id" : {
-                    "type" : "string",
-                    "description" : "The estimation procedure ID"
-                  },
-                  "ttid" : {
-                    "type" : "string",
-                    "description" : "The task type ID"
-                  },
-                  "name" : {
-                    "type" : "string",
-                    "description" : "The estimation procedure name, e.g. '10 fold Crossvalidation'"
-                  },
-                  "type" : {
-                    "type" : "string",
-                    "description" : "The estimation procedure type, e.g. 'crossvalidation'"
-                  },
-                  "repeats" : {
-                    "type" : "string",
-                    "description" : "The number of repeats, e.g. '10'"
-                  },
-                  "folds" : {
-                    "type" : "string",
-                    "description" : "The number of cross-validation folds, e.g. '10'"
-                  },
-                  "stratified_sampling" : {
-                    "type" : "string",
-                    "description" : "Whether or not the sampling is stratified, 'true' or 'false'"
-                  }
-                }
-              }
-            }
-          }
+          "$ref" : "#/definitions/EstimationProcedureList_estimationprocedures"
         }
       }
     },
@@ -3591,49 +3523,7 @@
       "type" : "object",
       "properties" : {
         "data" : {
-          "type" : "object",
-          "properties" : {
-            "dataset" : {
-              "type" : "array",
-              "items" : {
-                "type" : "object",
-                "properties" : {
-                  "did" : {
-                    "type" : "string",
-                    "description" : "The dataset ID"
-                  },
-                  "name" : {
-                    "type" : "string",
-                    "description" : "The dataset name"
-                  },
-                  "status" : {
-                    "type" : "string",
-                    "description" : "The dataset status, either in_preparation, active, or deactivated"
-                  },
-                  "format" : {
-                    "type" : "string",
-                    "description" : "The data format of the dataset, e.g. ARFF"
-                  },
-                  "quality" : {
-                    "type" : "array",
-                    "items" : {
-                      "type" : "object",
-                      "properties" : {
-                        "name" : {
-                          "type" : "string",
-                          "description" : "The name of the property"
-                        },
-                        "value" : {
-                          "type" : "string",
-                          "description" : "The value of the property"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
+          "$ref" : "#/definitions/DataList_data"
         }
       }
     },
@@ -3641,25 +3531,7 @@
       "type" : "object",
       "properties" : {
         "data_qualities" : {
-          "type" : "object",
-          "properties" : {
-            "quality" : {
-              "type" : "array",
-              "items" : {
-                "type" : "object",
-                "properties" : {
-                  "name" : {
-                    "type" : "string",
-                    "description" : "The name of the dataset quality measures"
-                  },
-                  "value" : {
-                    "type" : "string",
-                    "description" : "The value for this dataset"
-                  }
-                }
-              }
-            }
-          }
+          "$ref" : "#/definitions/DataQualities_data_qualities"
         }
       }
     },
@@ -3667,41 +3539,7 @@
       "type" : "object",
       "properties" : {
         "data_features" : {
-          "type" : "object",
-          "properties" : {
-            "feature" : {
-              "type" : "array",
-              "items" : {
-                "type" : "object",
-                "properties" : {
-                  "index" : {
-                    "type" : "string",
-                    "description" : "Feature index"
-                  },
-                  "name" : {
-                    "type" : "string",
-                    "description" : "Feature name"
-                  },
-                  "data_type" : {
-                    "type" : "string",
-                    "description" : "Feature data type"
-                  },
-                  "is_target" : {
-                    "type" : "string",
-                    "description" : "Whether this feature is seen as a target feature"
-                  },
-                  "is_ignore" : {
-                    "type" : "string",
-                    "description" : "Whether this feature should be ignored in modelling (e.g. every value is unique)"
-                  },
-                  "is_row_identifier" : {
-                    "type" : "string",
-                    "description" : "Whether this feature is a row identifier"
-                  }
-                }
-              }
-            }
-          }
+          "$ref" : "#/definitions/DataFeatures_data_features"
         }
       }
     },
@@ -3709,77 +3547,7 @@
       "type" : "object",
       "properties" : {
         "data_set_description" : {
-          "type" : "object",
-          "required" : [ "name", "description", "format" ],
-          "properties" : {
-            "id" : {
-              "type" : "string",
-              "description" : "ID of the dataset, a positive integer"
-            },
-            "name" : {
-              "type" : "string",
-              "description" : "The name of the dataset"
-            },
-            "version" : {
-              "type" : "string",
-              "description" : "The version of the dataset, set by OpenML. A positive integer"
-            },
-            "description" : {
-              "type" : "string",
-              "description" : "Wiki description of the dataset, in (Git flavoured) markdown format"
-            },
-            "format" : {
-              "type" : "string",
-              "description" : "Data format, for instance ARFF"
-            },
-            "upload_date" : {
-              "type" : "string",
-              "description" : "The datetime that the dataset was uploaded, format yyyy-MM-dd HH:mm:ss"
-            },
-            "licence" : {
-              "type" : "string",
-              "description" : "The licence granted for using the dataset, for instance Public or CC-BY"
-            },
-            "url" : {
-              "type" : "string",
-              "description" : "The URL where the data can be downloaded"
-            },
-            "file_id" : {
-              "type" : "string",
-              "description" : "The ID of the dataset file stored on the OpenML server"
-            },
-            "default_target_attribute" : {
-              "type" : "string",
-              "description" : "For tabular data, the name of the column that is typically used as the target attribute for that data set"
-            },
-            "version_label" : {
-              "type" : "string",
-              "description" : "The version of the dataset, as defined by the uploader, for reference. Can be any format as long as it is unique."
-            },
-            "tag" : {
-              "type" : "array",
-              "items" : {
-                "type" : "string"
-              },
-              "description" : "Tags added by OpenML users. Includes study tags in the form `study_1`"
-            },
-            "visibility" : {
-              "type" : "string",
-              "description" : "Who can see the dataset. For instance `public`."
-            },
-            "original_data_url" : {
-              "type" : "string",
-              "description" : "The URL where the original data is hosted."
-            },
-            "status" : {
-              "type" : "string",
-              "description" : "active, in_preparation, or deactivated"
-            },
-            "md5_checksum" : {
-              "type" : "string",
-              "description" : "Checksum to verify downloads of the dataset"
-            }
-          }
+          "$ref" : "#/definitions/Data_data_set_description"
         }
       }
     },
@@ -3787,41 +3555,7 @@
       "type" : "object",
       "properties" : {
         "runs" : {
-          "type" : "object",
-          "properties" : {
-            "run" : {
-              "type" : "array",
-              "items" : {
-                "type" : "object",
-                "properties" : {
-                  "run_id" : {
-                    "type" : "string",
-                    "description" : "The run ID"
-                  },
-                  "task_id" : {
-                    "type" : "string",
-                    "description" : "The ID of the task solved by this run"
-                  },
-                  "setup_id" : {
-                    "type" : "string",
-                    "description" : "Ignore (internal representation of the parameter setting)"
-                  },
-                  "flow_id" : {
-                    "type" : "string",
-                    "description" : "The ID of the flow used in this run"
-                  },
-                  "uploader" : {
-                    "type" : "string",
-                    "description" : "The ID of the person uploading this run"
-                  },
-                  "error_message" : {
-                    "type" : "string",
-                    "description" : "Error message generated by the run (if any)"
-                  }
-                }
-              }
-            }
-          }
+          "$ref" : "#/definitions/RunList_runs"
         }
       }
     },
@@ -3829,41 +3563,23 @@
       "type" : "object",
       "properties" : {
         "evaluations" : {
-          "type" : "object",
-          "properties" : {
-            "evaluation" : {
-              "type" : "array",
-              "items" : {
-                "type" : "object",
-                "properties" : {
-                  "run_id" : {
-                    "type" : "string",
-                    "description" : "The run ID"
-                  },
-                  "task_id" : {
-                    "type" : "string",
-                    "description" : "The ID of the tasks solved by this run"
-                  },
-                  "flow_id" : {
-                    "type" : "string",
-                    "description" : "The ID of the flow used by this run"
-                  },
-                  "function" : {
-                    "type" : "string",
-                    "description" : "The name of the evaluation function"
-                  },
-                  "value" : {
-                    "type" : "string",
-                    "description" : "The outcome of the evaluation"
-                  },
-                  "array_data" : {
-                    "type" : "string",
-                    "description" : "For structured evaluation measures, an array of evaluation values (e.g. per-class predictions, evaluation matrices,...)"
-                  }
-                }
-              }
-            }
-          }
+          "$ref" : "#/definitions/EvaluationList_evaluations"
+        }
+      }
+    },
+    "EvaluationRequest" : {
+      "type" : "object",
+      "properties" : {
+        "evaluation_request" : {
+          "$ref" : "#/definitions/EvaluationRequest_evaluation_request"
+        }
+      }
+    },
+    "DataUnprocessed" : {
+      "type" : "object",
+      "properties" : {
+        "data_unprocessed" : {
+          "$ref" : "#/definitions/DataUnprocessed_data_unprocessed"
         }
       }
     },
@@ -3871,42 +3587,7 @@
       "type" : "object",
       "properties" : {
         "setup_parameters" : {
-          "type" : "object",
-          "properties" : {
-            "flow_id" : {
-              "type" : "string",
-              "description" : "ID of the flow, a positive integer"
-            },
-            "parameter_setting" : {
-              "type" : "array",
-              "items" : {
-                "type" : "object",
-                "description" : "Hyperparameter settings. Can be multiple.",
-                "properties" : {
-                  "full_name" : {
-                    "type" : "string",
-                    "description" : "The full name of the hyperparameter"
-                  },
-                  "parameter_name" : {
-                    "type" : "string",
-                    "description" : "The short name of the hyperparameter"
-                  },
-                  "data_type" : {
-                    "type" : "string",
-                    "description" : "The data type of the hyperparameter value"
-                  },
-                  "default_value" : {
-                    "type" : "string",
-                    "description" : "The default value of the parameter used"
-                  },
-                  "value" : {
-                    "type" : "string",
-                    "description" : "The value of the parameter used"
-                  }
-                }
-              }
-            }
-          }
+          "$ref" : "#/definitions/Setup_setup_parameters"
         }
       }
     },
@@ -3914,144 +3595,7 @@
       "type" : "object",
       "properties" : {
         "run_description" : {
-          "type" : "object",
-          "properties" : {
-            "id" : {
-              "type" : "string",
-              "description" : "ID of the run, a positive integer"
-            },
-            "uploader" : {
-              "type" : "string",
-              "description" : "The uploader of the run"
-            },
-            "uploader_name" : {
-              "type" : "string",
-              "description" : "The name of the uploader of the run"
-            },
-            "task_id" : {
-              "type" : "string",
-              "description" : "The id of the task solved by this run"
-            },
-            "task_type" : {
-              "type" : "string",
-              "description" : "The type of task solved by this run (e.g., classification)"
-            },
-            "task_evaluation_measure" : {
-              "type" : "string",
-              "description" : "The evaluation measure that is supposed to be optimized in the task, if any"
-            },
-            "flow_id" : {
-              "type" : "string",
-              "description" : "The id of the flow used in this run"
-            },
-            "flow_name" : {
-              "type" : "string",
-              "description" : "The name of the flow used in this run"
-            },
-            "setup_string" : {
-              "type" : "string",
-              "description" : "Configuration of the flow as a string, to be interpreted by the flow, its library, or command line interface."
-            },
-            "tag" : {
-              "type" : "array",
-              "items" : {
-                "type" : "string"
-              },
-              "description" : "Tags added by OpenML users. Includes study tags in the form `study_1`"
-            },
-            "parameter_setting" : {
-              "type" : "array",
-              "items" : {
-                "type" : "object",
-                "description" : "Parameter settings used in this run. Can be multiple.",
-                "properties" : {
-                  "name" : {
-                    "type" : "string",
-                    "description" : "The name of the parameter"
-                  },
-                  "value" : {
-                    "type" : "string",
-                    "description" : "The value of the parameter used"
-                  }
-                }
-              }
-            },
-            "input_data" : {
-              "type" : "object",
-              "description" : "The input data for this run.",
-              "properties" : {
-                "dataset" : {
-                  "type" : "object",
-                  "properties" : {
-                    "did" : {
-                      "type" : "string",
-                      "description" : "The id of the dataset"
-                    },
-                    "name" : {
-                      "type" : "string",
-                      "description" : "The name of the dataset"
-                    },
-                    "url" : {
-                      "type" : "string",
-                      "description" : "The download url of the dataset"
-                    }
-                  }
-                }
-              }
-            },
-            "output_data" : {
-              "type" : "object",
-              "description" : "The data generated by this run.",
-              "properties" : {
-                "file" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "object",
-                    "description" : "Files uploaded by the user, e.g. run description, predictions. Can be multiple.",
-                    "properties" : {
-                      "did" : {
-                        "type" : "string",
-                        "description" : "The id of the uploaded file"
-                      },
-                      "file_id" : {
-                        "type" : "string",
-                        "description" : "The reference id of the uploaded file, for downloading afterward"
-                      },
-                      "name" : {
-                        "type" : "string",
-                        "description" : "The name of the uploaded file (e.g., description, predictions, model,...)"
-                      }
-                    }
-                  }
-                },
-                "evaluation" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "object",
-                    "description" : "Evaluations uploaded by the user, e.g. runtimes, or computed by the server (after run upload). Can be multiple.",
-                    "properties" : {
-                      "name" : {
-                        "type" : "string",
-                        "description" : "The name of the evaluation measure"
-                      },
-                      "flow_id" : {
-                        "type" : "string",
-                        "description" : "The id of the code used to compute this evaluation method"
-                      },
-                      "value" : {
-                        "type" : "string",
-                        "description" : "The result of the evaluation"
-                      },
-                      "array_data" : {
-                        "type" : "string",
-                        "description" : "For composite evaluation measures (e.g. per-class measures, confusion matrix), a string (JSON) representation of the   evaluation."
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
+          "$ref" : "#/definitions/Run_run_description"
         }
       }
     },
@@ -4084,112 +3628,13 @@
         "input" : {
           "type" : "array",
           "items" : {
-            "type" : "object",
-            "properties" : {
-              "name" : {
-                "type" : "string",
-                "description" : "The name of the input, e.g. source_data"
-              },
-              "data_set" : {
-                "type" : "object",
-                "properties" : {
-                  "data_set_id" : {
-                    "type" : "string",
-                    "description" : "The id of the dataset"
-                  },
-                  "target_feature" : {
-                    "type" : "string",
-                    "description" : "The name of the target feature for this task"
-                  }
-                }
-              },
-              "estimation_procedure" : {
-                "type" : "object",
-                "properties" : {
-                  "type" : {
-                    "type" : "string",
-                    "description" : "The type of procedure, e.g. crossvalidation"
-                  },
-                  "data_splits_url" : {
-                    "type" : "string",
-                    "description" : "The url where the data splits can be downloaded"
-                  },
-                  "parameter" : {
-                    "type" : "array",
-                    "items" : {
-                      "type" : "object",
-                      "properties" : {
-                        "name" : {
-                          "type" : "string",
-                          "description" : "The name of the parameter"
-                        },
-                        "value" : {
-                          "type" : "string",
-                          "description" : "The value of the parameter"
-                        }
-                      }
-                    }
-                  }
-                }
-              },
-              "cost_matrix" : {
-                "type" : "array",
-                "items" : {
-                  "type" : "array",
-                  "items" : {
-                    "type" : "integer",
-                    "format" : "int64"
-                  },
-                  "description" : "The cost matrix, indicating the costs for each type of misclassification"
-                }
-              },
-              "evaluation_measures" : {
-                "type" : "object",
-                "properties" : {
-                  "evaluation_measure" : {
-                    "type" : "string",
-                    "description" : "The evaluation measure to optimize in this task"
-                  }
-                }
-              }
-            }
+            "$ref" : "#/definitions/TaskType_input"
           }
         },
         "output" : {
           "type" : "array",
           "items" : {
-            "type" : "object",
-            "properties" : {
-              "name" : {
-                "type" : "string",
-                "description" : "The name of the output, e.g. predictions"
-              },
-              "predictions" : {
-                "type" : "object",
-                "properties" : {
-                  "format" : {
-                    "type" : "string",
-                    "description" : "The format of the predictions, e.g. ARFF"
-                  },
-                  "feature" : {
-                    "type" : "array",
-                    "items" : {
-                      "type" : "object",
-                      "properties" : {
-                        "name" : {
-                          "type" : "string",
-                          "description" : "The name of the prediction feature, e.g. row_id"
-                        },
-                        "type" : {
-                          "type" : "string",
-                          "description" : "The type of the prediction feature, e.g. integer"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
+            "$ref" : "#/definitions/TaskType_output"
           }
         }
       }
@@ -4198,33 +3643,23 @@
       "type" : "object",
       "properties" : {
         "task_types" : {
-          "type" : "object",
-          "properties" : {
-            "task_type" : {
-              "type" : "array",
-              "items" : {
-                "type" : "object",
-                "properties" : {
-                  "id" : {
-                    "type" : "string",
-                    "description" : "The ID of the task type"
-                  },
-                  "name" : {
-                    "type" : "string",
-                    "description" : "The name of the task type"
-                  },
-                  "description" : {
-                    "type" : "string",
-                    "description" : "A description of the task type"
-                  },
-                  "creator" : {
-                    "type" : "string",
-                    "description" : "A comma-separated list of the task type creators"
-                  }
-                }
-              }
-            }
-          }
+          "$ref" : "#/definitions/TaskTypeList_task_types"
+        }
+      }
+    },
+    "StudyList" : {
+      "type" : "object",
+      "properties" : {
+        "study_list" : {
+          "$ref" : "#/definitions/StudyList_study_list"
+        }
+      }
+    },
+    "RunTrace" : {
+      "type" : "object",
+      "properties" : {
+        "trace" : {
+          "$ref" : "#/definitions/RunTrace_trace"
         }
       }
     },
@@ -4240,6 +3675,1366 @@
         },
         "additional_message" : {
           "type" : "string"
+        }
+      }
+    },
+    "inline_response_200_data_delete" : {
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "ID of the deleted dataset, a positive integer"
+        }
+      }
+    },
+    "inline_response_200" : {
+      "properties" : {
+        "data_delete" : {
+          "$ref" : "#/definitions/inline_response_200_data_delete"
+        }
+      }
+    },
+    "inline_response_200_1_upload_data_set" : {
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "ID of the uploaded dataset, a positive integer"
+        }
+      }
+    },
+    "inline_response_200_1" : {
+      "properties" : {
+        "upload_data_set" : {
+          "$ref" : "#/definitions/inline_response_200_1_upload_data_set"
+        }
+      }
+    },
+    "inline_response_200_2_data_tag" : {
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "ID of the tagged dataset"
+        }
+      }
+    },
+    "inline_response_200_2" : {
+      "properties" : {
+        "data_tag" : {
+          "$ref" : "#/definitions/inline_response_200_2_data_tag"
+        }
+      }
+    },
+    "inline_response_200_3_data_untag" : {
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "ID of the untagged dataset"
+        }
+      }
+    },
+    "inline_response_200_3" : {
+      "properties" : {
+        "data_untag" : {
+          "$ref" : "#/definitions/inline_response_200_3_data_untag"
+        }
+      }
+    },
+    "inline_response_200_4_task_delete" : {
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "ID of the deleted task, a positive integer"
+        }
+      }
+    },
+    "inline_response_200_4" : {
+      "properties" : {
+        "task_delete" : {
+          "$ref" : "#/definitions/inline_response_200_4_task_delete"
+        }
+      }
+    },
+    "inline_response_200_5_upload_task" : {
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "ID of the uploaded task, a positive integer"
+        }
+      }
+    },
+    "inline_response_200_5" : {
+      "properties" : {
+        "upload_task" : {
+          "$ref" : "#/definitions/inline_response_200_5_upload_task"
+        }
+      }
+    },
+    "inline_response_200_6_task_tag" : {
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "ID of the tagged task"
+        }
+      }
+    },
+    "inline_response_200_6" : {
+      "properties" : {
+        "task_tag" : {
+          "$ref" : "#/definitions/inline_response_200_6_task_tag"
+        }
+      }
+    },
+    "inline_response_200_7_task_untag" : {
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "ID of the untagged task"
+        }
+      }
+    },
+    "inline_response_200_7" : {
+      "properties" : {
+        "task_untag" : {
+          "$ref" : "#/definitions/inline_response_200_7_task_untag"
+        }
+      }
+    },
+    "inline_response_200_8_flow_delete" : {
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "ID of the deleted flow, a positive integer"
+        }
+      }
+    },
+    "inline_response_200_8" : {
+      "properties" : {
+        "flow_delete" : {
+          "$ref" : "#/definitions/inline_response_200_8_flow_delete"
+        }
+      }
+    },
+    "inline_response_200_9_upload_flow" : {
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "ID of the uploaded flow, a positive integer"
+        }
+      }
+    },
+    "inline_response_200_9" : {
+      "properties" : {
+        "upload_flow" : {
+          "$ref" : "#/definitions/inline_response_200_9_upload_flow"
+        }
+      }
+    },
+    "inline_response_200_10_flow_exists" : {
+      "properties" : {
+        "exists" : {
+          "type" : "string",
+          "description" : "true or false"
+        },
+        "id" : {
+          "type" : "string",
+          "description" : "The id of the flow with the given name and (external) version"
+        }
+      }
+    },
+    "inline_response_200_10" : {
+      "properties" : {
+        "flow_exists" : {
+          "$ref" : "#/definitions/inline_response_200_10_flow_exists"
+        }
+      }
+    },
+    "inline_response_200_11_flow_owned" : {
+      "properties" : {
+        "id" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        }
+      }
+    },
+    "inline_response_200_11" : {
+      "properties" : {
+        "flow_owned" : {
+          "$ref" : "#/definitions/inline_response_200_11_flow_owned"
+        }
+      }
+    },
+    "inline_response_200_12_flow_tag" : {
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "ID of the tagged flow"
+        }
+      }
+    },
+    "inline_response_200_12" : {
+      "properties" : {
+        "flow_tag" : {
+          "$ref" : "#/definitions/inline_response_200_12_flow_tag"
+        }
+      }
+    },
+    "inline_response_200_13_flow_untag" : {
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "ID of the untagged flow"
+        }
+      }
+    },
+    "inline_response_200_13" : {
+      "properties" : {
+        "flow_untag" : {
+          "$ref" : "#/definitions/inline_response_200_13_flow_untag"
+        }
+      }
+    },
+    "inline_response_200_14_data_delete" : {
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "ID of the deleted run, a positive integer"
+        }
+      }
+    },
+    "inline_response_200_14" : {
+      "properties" : {
+        "data_delete" : {
+          "$ref" : "#/definitions/inline_response_200_14_data_delete"
+        }
+      }
+    },
+    "inline_response_200_15_upload_flow" : {
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "ID of the uploaded run, a positive integer"
+        }
+      }
+    },
+    "inline_response_200_15" : {
+      "properties" : {
+        "upload_flow" : {
+          "$ref" : "#/definitions/inline_response_200_15_upload_flow"
+        }
+      }
+    },
+    "inline_response_200_16_run_tag" : {
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "ID of the tagged run"
+        }
+      }
+    },
+    "inline_response_200_16" : {
+      "properties" : {
+        "run_tag" : {
+          "$ref" : "#/definitions/inline_response_200_16_run_tag"
+        }
+      }
+    },
+    "inline_response_200_17_run_untag" : {
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "ID of the untagged run"
+        }
+      }
+    },
+    "inline_response_200_17" : {
+      "properties" : {
+        "run_untag" : {
+          "$ref" : "#/definitions/inline_response_200_17_run_untag"
+        }
+      }
+    },
+    "inline_response_200_18_upload_flow" : {
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "ID of the evaluated run, a positive integer"
+        }
+      }
+    },
+    "inline_response_200_18" : {
+      "properties" : {
+        "upload_flow" : {
+          "$ref" : "#/definitions/inline_response_200_18_upload_flow"
+        }
+      }
+    },
+    "inline_response_200_19" : {
+      "properties" : {
+        "run_reset" : {
+          "$ref" : "#/definitions/inline_response_200_18_upload_flow"
+        }
+      }
+    },
+    "inline_response_200_20_upload_flow" : {
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "ID of the run with the trace, a positive integer"
+        }
+      }
+    },
+    "inline_response_200_20" : {
+      "properties" : {
+        "upload_flow" : {
+          "$ref" : "#/definitions/inline_response_200_20_upload_flow"
+        }
+      }
+    },
+    "Flow_flow_description_parameter" : {
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "description" : "The name of the parameter"
+        },
+        "data_type" : {
+          "type" : "string",
+          "description" : "The data type of the parameter"
+        },
+        "default_value" : {
+          "type" : "string",
+          "description" : "The default value of the parameter"
+        },
+        "description" : {
+          "type" : "string",
+          "description" : "A description of the parameter"
+        }
+      }
+    },
+    "Flow_flow_description" : {
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "ID of the flow, a positive integer"
+        },
+        "uploader" : {
+          "type" : "string",
+          "description" : "The uploader of the flow"
+        },
+        "name" : {
+          "type" : "string",
+          "description" : "The name of the flow"
+        },
+        "version" : {
+          "type" : "string",
+          "description" : "The version of the flow, set by OpenML. A positive integer"
+        },
+        "version_label" : {
+          "type" : "string",
+          "description" : "The version of the flow, as defined by the uploader, for reference. Can be any format as long as it is unique."
+        },
+        "description" : {
+          "type" : "string",
+          "description" : "Wiki description of the flow, in (Git flavoured) markdown format"
+        },
+        "upload_date" : {
+          "type" : "string",
+          "description" : "The datetime that the flow was uploaded, format yyyy-MM-dd HH:mm:ss"
+        },
+        "language" : {
+          "type" : "string",
+          "description" : "The programming language the flow is written in."
+        },
+        "dependencies" : {
+          "type" : "string",
+          "description" : "The libraries that this flow depends on, and their version numbers."
+        },
+        "tag" : {
+          "type" : "array",
+          "description" : "Tags added by OpenML users. Includes study tags in the form `study_1`",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "parameter" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Flow_flow_description_parameter"
+          }
+        }
+      }
+    },
+    "FlowList_flows_flow" : {
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "The flow ID"
+        },
+        "full_name" : {
+          "type" : "string",
+          "description" : "The full flow name (name + internal version number)"
+        },
+        "name" : {
+          "type" : "string",
+          "description" : "The flow name"
+        },
+        "version" : {
+          "type" : "string",
+          "description" : "The internal flow version"
+        },
+        "external_version" : {
+          "type" : "string",
+          "description" : "The external flow version"
+        },
+        "uploader" : {
+          "type" : "string",
+          "description" : "The ID of the person who uploaded the flow"
+        }
+      }
+    },
+    "FlowList_flows" : {
+      "properties" : {
+        "flow" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/FlowList_flows_flow"
+          }
+        }
+      }
+    },
+    "Task_task_description_data_set" : {
+      "properties" : {
+        "data_set_id" : {
+          "type" : "string",
+          "description" : "The id of the dataset"
+        },
+        "target_feature" : {
+          "type" : "string",
+          "description" : "The name of the target feature for this task"
+        }
+      }
+    },
+    "Task_task_description_estimation_procedure_parameter" : {
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "description" : "The name of the parameter"
+        },
+        "value" : {
+          "type" : "string",
+          "description" : "The value of the parameter"
+        }
+      }
+    },
+    "Task_task_description_estimation_procedure" : {
+      "properties" : {
+        "type" : {
+          "type" : "string",
+          "description" : "The type of procedure, e.g. crossvalidation"
+        },
+        "data_splits_url" : {
+          "type" : "string",
+          "description" : "The url where the data splits can be downloaded"
+        },
+        "parameter" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Task_task_description_estimation_procedure_parameter"
+          }
+        }
+      }
+    },
+    "Task_task_description_evaluation_measures" : {
+      "properties" : {
+        "evaluation_measure" : {
+          "type" : "string",
+          "description" : "The evaluation measure to optimize in this task"
+        }
+      }
+    },
+    "Task_task_description_input" : {
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "description" : "The name of the input, e.g. source_data"
+        },
+        "data_set" : {
+          "$ref" : "#/definitions/Task_task_description_data_set"
+        },
+        "estimation_procedure" : {
+          "$ref" : "#/definitions/Task_task_description_estimation_procedure"
+        },
+        "cost_matrix" : {
+          "type" : "array",
+          "description" : "The cost matrix, indicating the costs for each type of misclassification",
+          "items" : {
+            "type" : "array",
+            "items" : {
+              "type" : "integer",
+              "format" : "int64"
+            }
+          }
+        },
+        "evaluation_measures" : {
+          "$ref" : "#/definitions/Task_task_description_evaluation_measures"
+        }
+      }
+    },
+    "Task_task_description_predictions_feature" : {
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "description" : "The name of the prediction feature, e.g. row_id"
+        },
+        "type" : {
+          "type" : "string",
+          "description" : "The type of the prediction feature, e.g. integer"
+        }
+      }
+    },
+    "Task_task_description_predictions" : {
+      "properties" : {
+        "format" : {
+          "type" : "string",
+          "description" : "The fromat of the predictions, e.g. ARFF"
+        },
+        "feature" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Task_task_description_predictions_feature"
+          }
+        }
+      }
+    },
+    "Task_task_description_output" : {
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "description" : "The name of the output, e.g. predictions"
+        },
+        "predictions" : {
+          "$ref" : "#/definitions/Task_task_description_predictions"
+        }
+      }
+    },
+    "Task_task_description" : {
+      "properties" : {
+        "task_id" : {
+          "type" : "string",
+          "description" : "ID of the task, a positive integer"
+        },
+        "task_type" : {
+          "type" : "string",
+          "description" : "The type of the task, e.g. Supervised Classification"
+        },
+        "input" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Task_task_description_input"
+          }
+        },
+        "output" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Task_task_description_output"
+          }
+        },
+        "tag" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "description" : "Tags added by OpenML users. Includes study tags in the form `study_1`"
+          }
+        }
+      }
+    },
+    "TaskList_task_input" : {
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "description" : "The name of the input"
+        },
+        "value" : {
+          "type" : "string",
+          "description" : "The value of the input"
+        }
+      }
+    },
+    "TaskList_task_quality" : {
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "description" : "The name of the quality"
+        },
+        "value" : {
+          "type" : "string",
+          "description" : "The value of the quality"
+        }
+      }
+    },
+    "TaskList_task_task" : {
+      "properties" : {
+        "task_id" : {
+          "type" : "string",
+          "description" : "The ID of the task"
+        },
+        "task_type" : {
+          "type" : "string",
+          "description" : "The type of task (e.g. Supervised Classificationr)"
+        },
+        "did" : {
+          "type" : "string",
+          "description" : "The id of the source dataset"
+        },
+        "name" : {
+          "type" : "string",
+          "description" : "The name of the source dataset"
+        },
+        "status" : {
+          "type" : "string",
+          "description" : "The status of the source dataset, active, in_preparation, or deactivated"
+        },
+        "format" : {
+          "type" : "string",
+          "description" : "The format of the source dataset"
+        },
+        "input" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/TaskList_task_input"
+          }
+        },
+        "quality" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/TaskList_task_quality"
+          }
+        },
+        "tag" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string",
+            "description" : "Tags added by OpenML users. Includes study tags in the form `study_1`"
+          }
+        }
+      }
+    },
+    "TaskList_task" : {
+      "properties" : {
+        "task" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/TaskList_task_task"
+          }
+        }
+      }
+    },
+    "EstimationProcedureList_estimationprocedures_estimationprocedure" : {
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "The estimation procedure ID"
+        },
+        "ttid" : {
+          "type" : "string",
+          "description" : "The task type ID"
+        },
+        "name" : {
+          "type" : "string",
+          "description" : "The estimation procedure name, e.g. '10 fold Crossvalidation'"
+        },
+        "type" : {
+          "type" : "string",
+          "description" : "The estimation procedure type, e.g. 'crossvalidation'"
+        },
+        "repeats" : {
+          "type" : "string",
+          "description" : "The number of repeats, e.g. '10'"
+        },
+        "folds" : {
+          "type" : "string",
+          "description" : "The number of cross-validation folds, e.g. '10'"
+        },
+        "stratified_sampling" : {
+          "type" : "string",
+          "description" : "Whether or not the sampling is stratified, 'true' or 'false'"
+        }
+      }
+    },
+    "EstimationProcedureList_estimationprocedures" : {
+      "properties" : {
+        "estimationprocedure" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/EstimationProcedureList_estimationprocedures_estimationprocedure"
+          }
+        }
+      }
+    },
+    "DataList_data_quality" : {
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "description" : "The name of the property"
+        },
+        "value" : {
+          "type" : "string",
+          "description" : "The value of the property"
+        }
+      }
+    },
+    "DataList_data_dataset" : {
+      "properties" : {
+        "did" : {
+          "type" : "string",
+          "description" : "The dataset ID"
+        },
+        "name" : {
+          "type" : "string",
+          "description" : "The dataset name"
+        },
+        "status" : {
+          "type" : "string",
+          "description" : "The dataset status, either in_preparation, active, or deactivated"
+        },
+        "format" : {
+          "type" : "string",
+          "description" : "The data format of the dataset, e.g. ARFF"
+        },
+        "quality" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/DataList_data_quality"
+          }
+        }
+      }
+    },
+    "DataList_data" : {
+      "properties" : {
+        "dataset" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/DataList_data_dataset"
+          }
+        }
+      }
+    },
+    "DataQualities_data_qualities_quality" : {
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "description" : "The name of the dataset quality measures"
+        },
+        "value" : {
+          "type" : "string",
+          "description" : "The value for this dataset"
+        }
+      }
+    },
+    "DataQualities_data_qualities" : {
+      "properties" : {
+        "quality" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/DataQualities_data_qualities_quality"
+          }
+        }
+      }
+    },
+    "DataFeatures_data_features_feature" : {
+      "properties" : {
+        "index" : {
+          "type" : "string",
+          "description" : "Feature index"
+        },
+        "name" : {
+          "type" : "string",
+          "description" : "Feature name"
+        },
+        "data_type" : {
+          "type" : "string",
+          "description" : "Feature data type"
+        },
+        "is_target" : {
+          "type" : "string",
+          "description" : "Whether this feature is seen as a target feature"
+        },
+        "is_ignore" : {
+          "type" : "string",
+          "description" : "Whether this feature should be ignored in modelling (e.g. every value is unique)"
+        },
+        "is_row_identifier" : {
+          "type" : "string",
+          "description" : "Whether this feature is a row identifier"
+        }
+      }
+    },
+    "DataFeatures_data_features" : {
+      "properties" : {
+        "feature" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/DataFeatures_data_features_feature"
+          }
+        }
+      }
+    },
+    "Data_data_set_description" : {
+      "required" : [ "description", "format", "name" ],
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "ID of the dataset, a positive integer"
+        },
+        "name" : {
+          "type" : "string",
+          "description" : "The name of the dataset"
+        },
+        "version" : {
+          "type" : "string",
+          "description" : "The version of the dataset, set by OpenML. A positive integer"
+        },
+        "description" : {
+          "type" : "string",
+          "description" : "Wiki description of the dataset, in (Git flavoured) markdown format"
+        },
+        "format" : {
+          "type" : "string",
+          "description" : "Data format, for instance ARFF"
+        },
+        "upload_date" : {
+          "type" : "string",
+          "description" : "The datetime that the dataset was uploaded, format yyyy-MM-dd HH:mm:ss"
+        },
+        "licence" : {
+          "type" : "string",
+          "description" : "The licence granted for using the dataset, for instance Public or CC-BY"
+        },
+        "url" : {
+          "type" : "string",
+          "description" : "The URL where the data can be downloaded"
+        },
+        "file_id" : {
+          "type" : "string",
+          "description" : "The ID of the dataset file stored on the OpenML server"
+        },
+        "default_target_attribute" : {
+          "type" : "string",
+          "description" : "For tabular data, the name of the column that is typically used as the target attribute for that data set"
+        },
+        "version_label" : {
+          "type" : "string",
+          "description" : "The version of the dataset, as defined by the uploader, for reference. Can be any format as long as it is unique."
+        },
+        "tag" : {
+          "type" : "array",
+          "description" : "Tags added by OpenML users. Includes study tags in the form `study_1`",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "visibility" : {
+          "type" : "string",
+          "description" : "Who can see the dataset. For instance `public`."
+        },
+        "original_data_url" : {
+          "type" : "string",
+          "description" : "The URL where the original data is hosted."
+        },
+        "status" : {
+          "type" : "string",
+          "description" : "active, in_preparation, or deactivated"
+        },
+        "md5_checksum" : {
+          "type" : "string",
+          "description" : "Checksum to verify downloads of the dataset"
+        }
+      }
+    },
+    "RunList_runs_run" : {
+      "properties" : {
+        "run_id" : {
+          "type" : "string",
+          "description" : "The run ID"
+        },
+        "task_id" : {
+          "type" : "string",
+          "description" : "The ID of the task solved by this run"
+        },
+        "setup_id" : {
+          "type" : "string",
+          "description" : "Ignore (internal representation of the parameter setting)"
+        },
+        "flow_id" : {
+          "type" : "string",
+          "description" : "The ID of the flow used in this run"
+        },
+        "uploader" : {
+          "type" : "string",
+          "description" : "The ID of the person uploading this run"
+        },
+        "error_message" : {
+          "type" : "string",
+          "description" : "Error message generated by the run (if any)"
+        }
+      }
+    },
+    "RunList_runs" : {
+      "properties" : {
+        "run" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/RunList_runs_run"
+          }
+        }
+      }
+    },
+    "EvaluationList_evaluations_evaluation" : {
+      "properties" : {
+        "run_id" : {
+          "type" : "string",
+          "description" : "The run ID"
+        },
+        "task_id" : {
+          "type" : "string",
+          "description" : "The ID of the tasks solved by this run"
+        },
+        "flow_id" : {
+          "type" : "string",
+          "description" : "The ID of the flow used by this run"
+        },
+        "function" : {
+          "type" : "string",
+          "description" : "The name of the evaluation function"
+        },
+        "value" : {
+          "type" : "string",
+          "description" : "The outcome of the evaluation"
+        },
+        "array_data" : {
+          "type" : "string",
+          "description" : "For structured evaluation measures, an array of evaluation values (e.g. per-class predictions, evaluation matrices,...)"
+        }
+      }
+    },
+    "EvaluationList_evaluations" : {
+      "properties" : {
+        "evaluation" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/EvaluationList_evaluations_evaluation"
+          }
+        }
+      }
+    },
+    "EvaluationRequest_evaluation_request_run" : {
+      "properties" : {
+        "run_id" : {
+          "type" : "string",
+          "description" : "ID of the run, a positive integer"
+        },
+        "task_id" : {
+          "type" : "string",
+          "description" : "ID of the task, a positive integer"
+        },
+        "setup_id" : {
+          "type" : "string",
+          "description" : "ID of the setup, a positive integer"
+        },
+        "uploader" : {
+          "type" : "string",
+          "description" : "ID of the uploader, a positive integer"
+        },
+        "upload_time" : {
+          "type" : "string",
+          "description" : "The datetime that the dataset was uploaded, format yyyy-MM-dd HH:mm:ss"
+        }
+      }
+    },
+    "EvaluationRequest_evaluation_request" : {
+      "properties" : {
+        "run" : {
+          "$ref" : "#/definitions/EvaluationRequest_evaluation_request_run"
+        }
+      }
+    },
+    "DataUnprocessed_data_unprocessed_dataset" : {
+      "properties" : {
+        "did" : {
+          "type" : "string",
+          "description" : "ID of the dataset a positive integer"
+        },
+        "name" : {
+          "type" : "string",
+          "description" : "The name of the dataset"
+        },
+        "version" : {
+          "type" : "string",
+          "description" : "Version of the dataset, a positive integer"
+        },
+        "status" : {
+          "type" : "string",
+          "description" : "Status of the dataset"
+        },
+        "format" : {
+          "type" : "string",
+          "description" : "The dataset format, e.g. ARFF"
+        }
+      }
+    },
+    "DataUnprocessed_data_unprocessed" : {
+      "properties" : {
+        "dataset" : {
+          "$ref" : "#/definitions/DataUnprocessed_data_unprocessed_dataset"
+        }
+      }
+    },
+    "Setup_setup_parameters_parameter_setting" : {
+      "properties" : {
+        "full_name" : {
+          "type" : "string",
+          "description" : "The full name of the hyperparameter"
+        },
+        "parameter_name" : {
+          "type" : "string",
+          "description" : "The short name of the hyperparameter"
+        },
+        "data_type" : {
+          "type" : "string",
+          "description" : "The data type of the hyperparameter value"
+        },
+        "default_value" : {
+          "type" : "string",
+          "description" : "The default value of the parameter used"
+        },
+        "value" : {
+          "type" : "string",
+          "description" : "The value of the parameter used"
+        }
+      },
+      "description" : "Hyperparameter settings. Can be multiple."
+    },
+    "Setup_setup_parameters" : {
+      "properties" : {
+        "flow_id" : {
+          "type" : "string",
+          "description" : "ID of the flow, a positive integer"
+        },
+        "parameter_setting" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Setup_setup_parameters_parameter_setting"
+          }
+        }
+      }
+    },
+    "Run_run_description_parameter_setting" : {
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "description" : "The name of the parameter"
+        },
+        "value" : {
+          "type" : "string",
+          "description" : "The value of the parameter used"
+        }
+      },
+      "description" : "Parameter settings used in this run. Can be multiple."
+    },
+    "Run_run_description_input_data_dataset" : {
+      "properties" : {
+        "did" : {
+          "type" : "string",
+          "description" : "The id of the dataset"
+        },
+        "name" : {
+          "type" : "string",
+          "description" : "The name of the dataset"
+        },
+        "url" : {
+          "type" : "string",
+          "description" : "The download url of the dataset"
+        }
+      }
+    },
+    "Run_run_description_input_data" : {
+      "properties" : {
+        "dataset" : {
+          "$ref" : "#/definitions/Run_run_description_input_data_dataset"
+        }
+      },
+      "description" : "The input data for this run."
+    },
+    "Run_run_description_output_data_file" : {
+      "properties" : {
+        "did" : {
+          "type" : "string",
+          "description" : "The id of the uploaded file"
+        },
+        "file_id" : {
+          "type" : "string",
+          "description" : "The reference id of the uploaded file, for downloading afterward"
+        },
+        "name" : {
+          "type" : "string",
+          "description" : "The name of the uploaded file (e.g., description, predictions, model,...)"
+        }
+      },
+      "description" : "Files uploaded by the user, e.g. run description, predictions. Can be multiple."
+    },
+    "Run_run_description_output_data_evaluation" : {
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "description" : "The name of the evaluation measure"
+        },
+        "flow_id" : {
+          "type" : "string",
+          "description" : "The id of the code used to compute this evaluation method"
+        },
+        "value" : {
+          "type" : "string",
+          "description" : "The result of the evaluation"
+        },
+        "array_data" : {
+          "type" : "string",
+          "description" : "For composite evaluation measures (e.g. per-class measures, confusion matrix), a string (JSON) representation of the   evaluation."
+        }
+      },
+      "description" : "Evaluations uploaded by the user, e.g. runtimes, or computed by the server (after run upload). Can be multiple."
+    },
+    "Run_run_description_output_data" : {
+      "properties" : {
+        "file" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Run_run_description_output_data_file"
+          }
+        },
+        "evaluation" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Run_run_description_output_data_evaluation"
+          }
+        }
+      },
+      "description" : "The data generated by this run."
+    },
+    "Run_run_description" : {
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "ID of the run, a positive integer"
+        },
+        "uploader" : {
+          "type" : "string",
+          "description" : "The uploader of the run"
+        },
+        "uploader_name" : {
+          "type" : "string",
+          "description" : "The name of the uploader of the run"
+        },
+        "task_id" : {
+          "type" : "string",
+          "description" : "The id of the task solved by this run"
+        },
+        "task_type" : {
+          "type" : "string",
+          "description" : "The type of task solved by this run (e.g., classification)"
+        },
+        "task_evaluation_measure" : {
+          "type" : "string",
+          "description" : "The evaluation measure that is supposed to be optimized in the task, if any"
+        },
+        "flow_id" : {
+          "type" : "string",
+          "description" : "The id of the flow used in this run"
+        },
+        "flow_name" : {
+          "type" : "string",
+          "description" : "The name of the flow used in this run"
+        },
+        "setup_string" : {
+          "type" : "string",
+          "description" : "Configuration of the flow as a string, to be interpreted by the flow, its library, or command line interface."
+        },
+        "tag" : {
+          "type" : "array",
+          "description" : "Tags added by OpenML users. Includes study tags in the form `study_1`",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "parameter_setting" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Run_run_description_parameter_setting"
+          }
+        },
+        "input_data" : {
+          "$ref" : "#/definitions/Run_run_description_input_data"
+        },
+        "output_data" : {
+          "$ref" : "#/definitions/Run_run_description_output_data"
+        }
+      }
+    },
+    "TaskType_input" : {
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "description" : "The name of the input, e.g. source_data"
+        },
+        "data_set" : {
+          "$ref" : "#/definitions/Task_task_description_data_set"
+        },
+        "estimation_procedure" : {
+          "$ref" : "#/definitions/Task_task_description_estimation_procedure"
+        },
+        "cost_matrix" : {
+          "type" : "array",
+          "items" : {
+            "type" : "array",
+            "description" : "The cost matrix, indicating the costs for each type of misclassification",
+            "items" : {
+              "type" : "integer",
+              "format" : "int64"
+            }
+          }
+        },
+        "evaluation_measures" : {
+          "$ref" : "#/definitions/Task_task_description_evaluation_measures"
+        }
+      }
+    },
+    "TaskType_predictions" : {
+      "properties" : {
+        "format" : {
+          "type" : "string",
+          "description" : "The format of the predictions, e.g. ARFF"
+        },
+        "feature" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Task_task_description_predictions_feature"
+          }
+        }
+      }
+    },
+    "TaskType_output" : {
+      "properties" : {
+        "name" : {
+          "type" : "string",
+          "description" : "The name of the output, e.g. predictions"
+        },
+        "predictions" : {
+          "$ref" : "#/definitions/TaskType_predictions"
+        }
+      }
+    },
+    "TaskTypeList_task_types_task_type" : {
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "The ID of the task type"
+        },
+        "name" : {
+          "type" : "string",
+          "description" : "The name of the task type"
+        },
+        "description" : {
+          "type" : "string",
+          "description" : "A description of the task type"
+        },
+        "creator" : {
+          "type" : "string",
+          "description" : "A comma-separated list of the task type creators"
+        }
+      }
+    },
+    "TaskTypeList_task_types" : {
+      "properties" : {
+        "task_type" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/TaskTypeList_task_types_task_type"
+          }
+        }
+      }
+    },
+    "StudyList_study_list_study" : {
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "The ID of the study"
+        },
+        "alias" : {
+          "type" : "string",
+          "description" : "The alias of the study"
+        },
+        "name" : {
+          "type" : "string",
+          "description" : "The name of the study"
+        },
+        "creation_date" : {
+          "type" : "string",
+          "description" : "The datetime that the dataset was uploaded, format yyyy-MM-dd HH:mm:ss"
+        },
+        "creator" : {
+          "type" : "string",
+          "description" : "A comma-separated list of the task type creators"
+        }
+      }
+    },
+    "StudyList_study_list" : {
+      "properties" : {
+        "study" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/StudyList_study_list_study"
+          }
+        }
+      }
+    },
+    "RunTrace_trace_trace_iteration" : {
+      "properties" : {
+        "repeat" : {
+          "type" : "string",
+          "description" : "The number of the repeat in the outer cross-valudation"
+        },
+        "fold" : {
+          "type" : "string",
+          "description" : "The number of the fold in the inner cross-validation"
+        },
+        "iteration" : {
+          "type" : "string",
+          "description" : "A number of the optimization iteration"
+        },
+        "setup_string" : {
+          "type" : "string",
+          "description" : "A JSON representation of the setup (configuration)"
+        },
+        "evaluation" : {
+          "type" : "string",
+          "description" : "The evaluation score of the setup"
+        },
+        "selected" : {
+          "type" : "string",
+          "description" : "Whether this setup was selected as the best one (true or false)"
+        }
+      }
+    },
+    "RunTrace_trace" : {
+      "properties" : {
+        "run_id" : {
+          "type" : "string",
+          "description" : "run ID"
+        },
+        "trace_iteration" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/RunTrace_trace_trace_iteration"
+          }
         }
       }
     }
