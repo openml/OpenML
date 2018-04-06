@@ -203,6 +203,7 @@ $this->apiErrors[423] = 'Problem validating uploaded description file';
 $this->apiErrors[424] = 'Problem opening description xml';
 $this->apiErrors[425] = 'Run does not exists';
 $this->apiErrors[426] = 'Run already processed';
+$this->apiErrors[427] = 'Inconsistent data, evaluations found but no run_evaluated record. Please contact developers';
 
 // for function: openml.data.features.upload
 $this->apiErrors[431] = 'Dataset already processed';
