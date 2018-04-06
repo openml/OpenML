@@ -319,7 +319,7 @@ if (session_status() === PHP_SESSION_NONE){session_start();}
 
         </div>
         <script type="text/javascript">
-          var ES_URL = '<?php echo ES_URL; ?>';
+          var ES_URL = '<?php echo ES_PUBLIC_URL; ?>';
 
           function downloadJSAtOnload() {
           //var element3= document.createElement("script");
