@@ -75,21 +75,80 @@ class Cron extends CI_Controller {
       $this->elasticsearch->update_tags($type, $id);
   }
 
+  // Creating main openml index
+  public function create_es_openml_index() {
+    echo "\r\nCreating main openml index...";
+    $params = [
+      'index' => 'openml',
+      'body' => [
+          'settings' => [
+              'number_of_shards' => 3,
+              'number_of_replicas' => 2
+              ]
+            ]
+    ];
+
+    $this->elasticsearch->client->indices()->create($params);
+    echo "\r\nDone!";
+    
+  }
+
+  // Create admin user
+  public function create_local_admin() {
+    echo "\r\nCreating local admin user...";
+  
+    $username="admin";
+    $email="admin";
+    $session_hash=md5(rand());
+    $additional_data = array(
+      'first_name' => "Admin",
+      'last_name'  => "",
+      'affiliation'=> "",
+      'country'    => "",
+      'bio'    	 => "",
+      'external_source' => null,
+      'external_id' => null,
+      'session_hash' => $session_hash
+    );
+  
+    $password=substr(md5(uniqid()), 0, 12);    
+    echo "\r\nPassword:\t" .$password;
+    echo "\r\nAPI key:\t" .$session_hash;
+
+    echo "\r\nSaving key in shared config...";
+    file_put_contents("/openmlconfig/api_key.txt",$session_hash);
+   
+    $this->load->Library('ion_auth');
+
+    # Add to admin group
+    $group = array('1');
+    $adminId=$this->ion_auth->register($username, $password, $email,$additional_data, $group);
+    
+    echo "\r\nDone! ";
+    
+  }
+
+  
   // initialize all es indexes
   public function initialize_es_indices() {
+    echo "\r\nInitialize_es_indices...";
     foreach($this->es_indices as $index) {
       $this->elasticsearch->initialize_index($index);
     }
+    echo "\r\nDone!";
   }
 
   // builds all es indexes
   public function build_es_indices() {
+    echo "\r\nBuild_es_indices...";
     foreach($this->es_indices as $index) {
       $this->indexfrom($index, 1);
     }
+    echo "\r\nDone!";
   }
 
   function install_database() {
+    echo "\r\nInstall database...";
     // note that this one does not come from DATA folder, as they are stored in github
     $models = directory_map('data/sql/', 1);
     $manipulated_order = array('implementation.sql', 'algorithm_setup.sql', 'dataset.sql', 'study.sql', 'groups.sql', 'users.sql');
@@ -115,6 +174,16 @@ class Cron extends CI_Controller {
         echo 'skipping ' . $modelname . ', as it is not empty... ' + "\n";
       }
     }
+    echo "\r\nDone!";
+  }
+
+  // Runs all local env init steps
+  public function init_local_env() {
+    $this->install_database();
+    $this->create_es_openml_index();
+    $this->initialize_es_indices();
+    $this->create_local_admin();
+    $this->build_es_indices();
   }
 
   function create_meta_dataset($id = false) {
