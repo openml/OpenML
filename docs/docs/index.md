@@ -213,6 +213,3 @@ To link data sets, task, flows or runs to a certain study, you can use tags. By 
 
 ## Circles (under construction)
 You can create circles of trusted researchers in which data can be shared that is not yet ready for publication.
-
-## Jobs (under construction)
-OpenML can help you run large experiments. A job is a small container defining a specific flow, with specific parameters settings, to run on a specific tasks. You can generate batches of these jobs online, and you can run a helper tool on your machines/clouds/clusters that downloads these jobs (including all data), executes them, and uploads the results.
