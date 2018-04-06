@@ -769,11 +769,22 @@ class Api_run extends Api_model {
 
     $evaluation_record = $this->Run_evaluated->getById(array($run_id, $eval_engine_id));
     $evaluations_stored = $this->Evaluation->getWhere('source = "' . $run_id . '" AND evaluation_engine_id = "' . $eval_engine_id . '"');
-
-    if($evaluation_record || $evaluations_stored) {
+    
+    if($evaluation_record && $evaluation_record->error == null) {
       $this->returnError(426, $this->version);
       return;
     }
+    
+    if ($evaluations_stored && !$evaluation_record) {
+      $this->returnError(427, $this->version);
+      return;
+    }
+    
+    $num_tries = 0;
+    if ($evaluation_record) {
+      $num_tries = $evaluation_record->num_tries;
+    }
+    
     $timestamps[] = microtime(true); // profiling 1
 
     $data = array('evaluation_date' => now());
@@ -788,7 +799,8 @@ class Api_run extends Api_model {
     $data['run_id'] = $run_id;
     $data['evaluation_engine_id'] = $eval_engine_id;
     $data['user_id'] = $this->user_id;
-    $this->Run_evaluated->insert($data);
+    $data['num_tries'] = $num_tries + 1;
+    $this->Run_evaluated->replace($data);
 
     $this->db->trans_start();
     foreach($xml->children('oml', true)->{'evaluation'} as $e) {
