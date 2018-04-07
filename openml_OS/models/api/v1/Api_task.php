@@ -254,6 +254,7 @@ class Api_task extends Api_model {
     
 
     foreach($xml->children('oml', true) as $input) {
+      $input_value = $input . '';
       // iterate over all fields, to extract tags and inputs.
       if ($input->getName() == 'input') {
         $name = $input->attributes() . '';
@@ -285,7 +286,7 @@ class Api_task extends Api_model {
         
         // check the type of the input
         $function = $type_check_mappings[$constraints->data_type];
-        if ($function($input) == false) {
+        if ($function($input_value) == false) {
           $this->returnError(621, $this->version, $this->openmlGeneralErrorCode, 'problematic input: ' . $name . '; should be of type: ' . $constraints->data_type);
           return;
         }
@@ -294,12 +295,12 @@ class Api_task extends Api_model {
         // TODO: custom check. if key is estimation procedure, check if EP exists (and collides with task_type_id).
         // TODO: custom check. if key is target value, check if it exists.
 
-        $inputs[$name] = $input . '';
+        $inputs[$name] = $input_value;
         // maybe a required input is satisfied
         unset($required_inputs[$name]);
 
       } elseif ($input->getName() == 'tag') {
-        $tags[] = $input . '';
+        $tags[] = $input_value;
       }
     }
 
