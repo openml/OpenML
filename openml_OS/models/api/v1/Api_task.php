@@ -16,6 +16,9 @@ class Api_task extends Api_model {
     $this->load->model('Task_type_inout');
     $this->load->model('Data_quality');
     $this->load->model('Run');
+    
+    $this->load->model('Database_singleton');
+    $this->db = $this->Database_singleton->getReadConnection();
   }
 
   function bootstrap($format, $segments, $request_type, $user_id) {
@@ -290,11 +293,19 @@ class Api_task extends Api_model {
           $this->returnError(621, $this->version, $this->openmlGeneralErrorCode, 'problematic input: ' . $name . '; should be of type: ' . $constraints->data_type);
           return;
         }
-
-        // TODO: custom check. if key is source data, check if dataset exists.
-        // TODO: custom check. if key is estimation procedure, check if EP exists (and collides with task_type_id).
-        // TODO: custom check. if key is target value, check if it exists.
-
+        
+        if ($property_exists($constraints, 'select')) {
+          $this->db->select($constraints->select)->from($constraints->from);
+          if ($property_exists($constraints, 'where')) {
+            $this->db->where($constraints->where);
+          }
+          
+          $results = $this->db->get()->row()->{$constraints->select};
+          if (!in_array($input_value, $results)) {
+            $this->returnError(622, $this->version, $this->openmlGeneralErrorCode, 'problematic input: ' . $name);
+          }
+        }
+        
         $inputs[$name] = $input_value;
         // maybe a required input is satisfied
         unset($required_inputs[$name]);
