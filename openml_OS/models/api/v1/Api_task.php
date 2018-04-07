@@ -277,7 +277,7 @@ class Api_task extends Api_model {
         }
         
         // is_json lives in text_helper
-        $type_check_mappings = array('numeric': 'is_numeric', 'json': 'is_json', 'string': 'is_string');
+        $type_check_mappings = array('numeric' => 'is_numeric', 'json' => 'is_json', 'string' => 'is_string');
         if (!array_key_exists('data_type', $constraints) || !array_key_exists($constraints['data_type'], $type_check_mappings)) {
           $this->returnError(620, $this->version, $this->openmlGeneralErrorCode, 'problematic input: ' . $name);
           return;
