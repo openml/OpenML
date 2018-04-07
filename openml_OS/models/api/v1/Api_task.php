@@ -294,9 +294,9 @@ class Api_task extends Api_model {
           return;
         }
         
-        if ($property_exists($constraints, 'select')) {
+        if (property_exists($constraints, 'select')) {
           $this->db->select($constraints->select)->from($constraints->from);
-          if ($property_exists($constraints, 'where')) {
+          if (property_exists($constraints, 'where')) {
             $this->db->where($constraints->where);
           }
           
