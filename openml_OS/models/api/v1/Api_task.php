@@ -250,7 +250,7 @@ class Api_task extends Api_model {
     $legal_inputs = $this->Task_type_inout->getAssociativeArray('name', 'requirement', 'ttid = ' . $task_type_id . ' AND io = "input"');
     // for required input check
     $required_inputs = $this->Task_type_inout->getAssociativeArray('name', 'requirement', 'ttid = ' . $task_type_id . ' AND io = "input" AND requirement = "required"');
-    $input_constraints = $this->Task_type_inout->getAssociativeArray('name', 'constraints', 'ttid = ' . $task_type_id . ' AND io = "input"');
+    $input_constraints = $this->Task_type_inout->getAssociativeArray('name', 'api_constraints', 'ttid = ' . $task_type_id . ' AND io = "input"');
     
 
     foreach($xml->children('oml', true) as $input) {
