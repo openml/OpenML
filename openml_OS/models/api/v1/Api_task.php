@@ -284,7 +284,8 @@ class Api_task extends Api_model {
         }
         
         // check the type of the input
-        if ($type_check_mappings[$constraints->data_type]($input) == false) {
+        $function = $type_check_mappings[$constraints->data_type];
+        if ($function($input) == false) {
           $this->returnError(621, $this->version, $this->openmlGeneralErrorCode, 'problematic input: ' . $name . '; should be of type: ' . $constraints->data_type);
           return;
         }
