@@ -31,6 +31,11 @@ function is_natural_number_range( $query ) {
   return preg_match('/[0-9]+..[0-9]+/', $query ) && !preg_match('/[^0-9\s.]/', $query );
 }
 
+function is_json($string) {
+  json_decode($string);
+  return (json_last_error() == JSON_ERROR_NONE);
+}
+
 //function startsWith($haystack, $needle) {
 //  // search backwards starting from haystack length characters from the end
 //  return $needle === "" || strrpos($haystack, $needle, -strlen($haystack)) !== false;

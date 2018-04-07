@@ -5,7 +5,9 @@ class Api_task extends Api_model {
 
   function __construct() {
     parent::__construct();
-
+    
+    $this->load->helper('text');
+    
     // load models
     $this->load->model('Task');
     $this->load->model('Task_tag');
@@ -220,7 +222,7 @@ class Api_task extends Api_model {
 
     $description = isset( $_FILES['description'] ) ? $_FILES['description'] : false;
     if( ! check_uploaded_file( $description ) ) {
-      $this->returnError(530, $this->version);
+      $this->returnError(611, $this->version);
       return;
     }
 
@@ -228,13 +230,13 @@ class Api_task extends Api_model {
 
     $xsd = xsd('openml.task.upload', $this->controller, $this->version);
     if (!$xsd) {
-      $this->returnError(531, $this->version, $this->openmlGeneralErrorCode);
+      $this->returnError(612, $this->version, $this->openmlGeneralErrorCode);
       return;
     }
 
     if( validateXml( $descriptionFile, $xsd, $xmlErrors ) == false ) {
       // TODO: do later!
-      $this->returnError(532, $this->version, $this->openmlGeneralErrorCode, $xmlErrors);
+      $this->returnError(613, $this->version, $this->openmlGeneralErrorCode, $xmlErrors);
       return;
     }
 
@@ -248,6 +250,8 @@ class Api_task extends Api_model {
     $legal_inputs = $this->Task_type_inout->getAssociativeArray('name', 'requirement', 'ttid = ' . $task_type_id . ' AND io = "input"');
     // for required input check
     $required_inputs = $this->Task_type_inout->getAssociativeArray('name', 'requirement', 'ttid = ' . $task_type_id . ' AND io = "input" AND requirement = "required"');
+    $input_constraints = $this->Task_type_inout->getAssociativeArray('name', 'constraints', 'ttid = ' . $task_type_id . ' AND io = "input"');
+    
 
     foreach($xml->children('oml', true) as $input) {
       // iterate over all fields, to extract tags and inputs.
@@ -256,13 +260,32 @@ class Api_task extends Api_model {
 
         // check if input is no duplicate
         if (array_key_exists($name, $inputs)) {
-          $this->returnError(536, $this->version, $this->openmlGeneralErrorCode, 'problematic input: ' . $name);
+          $this->returnError(617, $this->version, $this->openmlGeneralErrorCode, 'problematic input: ' . $name);
           return;
         }
 
         // check if input is legal
         if (array_key_exists($name, $legal_inputs) == false) {
-          $this->returnError(535, $this->version, $this->openmlGeneralErrorCode, 'problematic input: ' . $name);
+          $this->returnError(616, $this->version, $this->openmlGeneralErrorCode, 'problematic input: ' . $name);
+          return;
+        }
+        
+        $constraints = json_decode($input_constraints[$name]);
+        if ($constraints == false) {
+          $this->returnError(619, $this->version, $this->openmlGeneralErrorCode, 'problematic input: ' . $name);
+          return;
+        }
+        
+        // is_json lives in text_helper
+        $type_check_mappings = array('numeric': 'is_numeric', 'json': 'is_json', 'string': 'is_string');
+        if (!array_key_exists('data_type', $constraints) || !array_key_exists($constraints['data_type'], $type_check_mappings)) {
+          $this->returnError(620, $this->version, $this->openmlGeneralErrorCode, 'problematic input: ' . $name);
+          return;
+        }
+        
+        // check the type of the input
+        if ($type_check_mappings[$constraints['data_type']]($input) == false) {
+          $this->returnError(621, $this->version, $this->openmlGeneralErrorCode, 'problematic input: ' . $name . '; should be of type: ' . $constraints['data_type']);
           return;
         }
 
@@ -281,7 +304,7 @@ class Api_task extends Api_model {
 
     // required inputs should be empty by now
     if (count($required_inputs) > 0) {
-      $this->returnError(537, $this->version, $this->openmlGeneralErrorCode, 'problematic input(s): ' . implode(', ', array_keys($required_inputs)));
+      $this->returnError(618, $this->version, $this->openmlGeneralErrorCode, 'problematic input(s): ' . implode(', ', array_keys($required_inputs)));
       return;
     }
 
@@ -290,11 +313,9 @@ class Api_task extends Api_model {
       $task_ids = array();
       foreach($search as $s) { $task_ids[] = $s->task_id; }
 
-      $this->returnError(533, $this->version, $this->openmlGeneralErrorCode, 'matched id(s): [' . implode(',', $task_ids) . ']');
+      $this->returnError(614, $this->version, $this->openmlGeneralErrorCode, 'matched id(s): [' . implode(',', $task_ids) . ']');
       return;
     }
-
-
 
     // THE INSERTION
     $task = array(
@@ -307,7 +328,7 @@ class Api_task extends Api_model {
     // TODO: sanity check on input data!
 
     if ($id == false) {
-      $this->returnError( 534, $this->version );
+      $this->returnError( 615, $this->version );
       return;
     }
 
