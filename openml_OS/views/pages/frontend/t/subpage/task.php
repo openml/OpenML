@@ -28,12 +28,12 @@
 		<h3>How to submit runs</h3>
     <b>Using your favorite machine learning environment</b><br>
 		<p>Download this task directly in your environment and automatically upload your results</p>
-    <a href="guide/integrations" class="btn btn-primary btn-raised">OpenML integrations</a>
+    <a href="https://docs.openml.org" class="btn btn-primary btn-raised">OpenML bootcamp</a>
 
     <br><br>
     <b>From your own software</b><br>
     <p>Use one of our APIs to download data from OpenML and upload your results</p>
-    <a href="guide/api" class="btn btn-primary btn-raised">OpenML APIs</a>
+    <a href="https://docs.openml.org/APIs/" class="btn btn-primary btn-raised">OpenML APIs</a>
 
   </div>
 
