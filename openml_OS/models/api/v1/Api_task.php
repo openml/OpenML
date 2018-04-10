@@ -306,8 +306,8 @@ class Api_task extends Api_model {
         $this->db->select($constraints->select)->from($constraints->from);
         if (property_exists($constraints, 'where')) {
           // TODO: format where
-          $where = str_replace(array_keys($replace_array), array_values($replace_array), $constraints_where);
-          $this->db->where($constraints->where);
+          $where = str_replace(array_keys($replace_array), array_values($replace_array), $constraints->where);
+          $this->db->where($where);
         }
         
         $results = $this->db->get()->row()->{$constraints->select};
