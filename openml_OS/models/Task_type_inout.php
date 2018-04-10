@@ -20,7 +20,7 @@ class Task_type_inout extends Database_read {
 	    $template_name = str_replace($template, 'INPUT_NAME', $name);
 	    $result[$template_name] = $value;
 	  }
-	  $result['[TASK:ttid]'] = $ttid;
+	  $result['[TASK:ttid]'] = $task_type_id;
 	  return $result; 
 	}
 	
