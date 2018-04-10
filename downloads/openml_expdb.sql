@@ -707,7 +707,8 @@ CREATE TABLE `task` (
   `task_id` int(10) NOT NULL,
   `ttid` int(10) NOT NULL,
   `creator` int(10) DEFAULT NULL,
-  `creation_date` datetime DEFAULT NULL
+  `creation_date` datetime DEFAULT NULL,
+  `embargo_end_date` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
