@@ -312,7 +312,7 @@ class Api_task extends Api_model {
         
         $acceptable_inputs = array();
         foreach ($this->db->get()->result() as $obj) {
-          $acceptable_inputs[] = $obj[$constraints->select];
+          $acceptable_inputs[] = $obj->{$constraints->select};
         }
         
         if (!in_array($input_value, $acceptable_inputs)) {
