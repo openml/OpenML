@@ -17,7 +17,7 @@ class Task_type_inout extends Database_read {
 	  // task_input_name will be wrapped into template
 	  $result = array();
 	  foreach ($name_value as $name => $value) {
-	    $template_name = str_replace($name, 'INPUT_NAME', $template);
+	    $template_name = str_replace('INPUT_NAME', $name, $template);
 	    $result[$template_name] = $value;
 	  }
 	  $result['[TASK:ttid]'] = $task_type_id;
