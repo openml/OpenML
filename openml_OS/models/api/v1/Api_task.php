@@ -267,7 +267,7 @@ class Api_task extends Api_model {
         $tags[] = $input_value;
       }
     }
-    $replace_array = $this->Task_inputs->prepareRegex($inputs, $task_type_id);
+    $replace_array = $this->Task_type_inout->prepareRegex($inputs, $task_type_id);
     
     // for legal input check
     $legal_inputs = $this->Task_type_inout->getAssociativeArray('name', 'requirement', 'ttid = ' . $task_type_id . ' AND io = "input"');
