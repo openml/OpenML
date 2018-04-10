@@ -122,7 +122,7 @@ client.search({
 		query: {
 			 bool: {
 				 must: [{term: {'run_task.task_id': current_task }},
-							 <?php if($this->task['visibility'] == 'private'){?>
+							 <?php if($this->task['visibility'] == 'private' and !$this->is_admin){?>
 								{term: {'uploader_id': <?php echo $this->user_id; ?>}},
 							 <?php }?>
 								{nested: {path: "evaluations",
@@ -253,7 +253,7 @@ function showData(){
 	    query: {
 				 bool: {
 					 must: [{term: {'run_task.task_id': current_task }},
-								 <?php if($this->task['visibility'] == 'private'){?>
+					 			 <?php if($this->task['visibility'] == 'private' and !$this->is_admin){?>
 									{term: {'uploader_id': <?php echo $this->user_id; ?>}},
 								 <?php }?>
 					 				{nested: {path: "evaluations",

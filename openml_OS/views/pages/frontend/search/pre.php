@@ -184,8 +184,13 @@ $jsonshould = array();
 //visibility defaults
 $jsonshould[] = '{ "term" : { "visibility" : "public" } }';
 if ($this->ion_auth->logged_in()) {
-	$jsonshould[] = '{ "term" : { "uploader_id" : "'.$this->ion_auth->user()->row()->id.'" } }';
+  $jsonshould[] = '{ "term" : { "uploader_id" : "'.$this->ion_auth->user()->row()->id.'" } }';
 }
+if($this->ion_auth->is_admin()){
+  $jsonshould[] = '{ "term" : { "visibility" : "private" } }';
+}
+
+
 if($this->filtertype == 'data' and false === strpos($this->terms,'status')){
   $jsonfilters[] = '{ "term" : { "status" : "active" } }';
 }

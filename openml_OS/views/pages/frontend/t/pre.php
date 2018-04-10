@@ -12,8 +12,12 @@ $this->load_css = array('https://cdn.datatables.net/1.10.13/css/jquery.dataTable
 'https://cdn.datatables.net/buttons/1.2.4/css/buttons.dataTables.min.css');
 
 $this->user_id = -1;
+$this->is_admin = false;
 if ($this->ion_auth->logged_in()) {
 	$this->user_id = $this->ion_auth->user()->row()->id;
+	if ($this->ion_auth->is_admin()){
+		$this->is_admin = true;
+	}
 }
 
 /// SEARCH
