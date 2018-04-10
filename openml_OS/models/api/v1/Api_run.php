@@ -43,7 +43,7 @@ class Api_run extends Api_model {
 
     if (count($segments) >= 1 && $segments[0] == 'list') {
       array_shift($segments);
-      $this->run_list($segments);
+      $this->run_list($segments, $user_id);
       return;
     }
 
@@ -81,7 +81,7 @@ class Api_run extends Api_model {
       $this->run_upload();
       return;
     }
-    
+
     if (count($segments) == 1 && $segments[0] == 'tag' && $request_type == 'post') {
       $this->entity_tag_untag('run', $this->input->post('run_id'), $this->input->post('tag'), false, 'run');
       return;
@@ -96,7 +96,7 @@ class Api_run extends Api_model {
   }
 
 
-  private function run_list($segs) {
+  private function run_list($segs, $user_id) {
     $legal_filters = array('task', 'setup', 'flow', 'uploader', 'run', 'tag', 'limit', 'offset', 'task_type', 'show_errors');
     $query_string = array();
     for ($i = 0; $i < count($segs); $i += 2) {
@@ -140,14 +140,15 @@ class Api_run extends Api_model {
     if (strtolower($show_errors) == 'true') {
       $where_server_error = '';
     }
-
+    // Don't return runs of closed runs, unless the user uploaded them
+    $where_task_closed = ' AND (`t`.`embargo_end_date` < NOW() OR `r`.`uploader` = '.$user_id.')';
 
     $where_limit = $limit == false ? '' : ' LIMIT ' . $limit;
     if ($limit != false && $offset != false) {
       $where_limit =  ' LIMIT ' . $offset . ', ' . $limit;
     }
 
-    $where_total = $where_task . $where_task_type . $where_setup . $where_uploader . $where_impl . $where_run . $where_tag . $where_server_error;
+    $where_total = $where_task . $where_task_type . $where_setup . $where_uploader . $where_impl . $where_run . $where_tag . $where_server_error . $where_task_closed;
 
     $sql =
       'SELECT r.rid, r.uploader, r.task_id, r.start_time, t.ttid, d.did AS dataset_id, d.name AS dataset_name,' .
@@ -266,7 +267,7 @@ class Api_run extends Api_model {
       $this->returnError(413, $this->version);
       return;
     }
-    
+
     $result = true;
     $result = $result && $this->Trace->deleteWhere('`run_id` = "' . $run->rid . '" ');
     $result = $result && $this->Evaluation->deleteWhere('`source` = "' .  $run->rid. '" ');
@@ -636,22 +637,22 @@ class Api_run extends Api_model {
 
     $evaluation_record = $this->Run_evaluated->getById(array($run_id, $eval_engine_id));
     $evaluations_stored = $this->Evaluation->getWhere('source = "' . $run_id . '" AND evaluation_engine_id = "' . $eval_engine_id . '"');
-    
+
     if($evaluation_record && $evaluation_record->error == null) {
       $this->returnError(426, $this->version);
       return;
     }
-    
+
     if ($evaluations_stored && !$evaluation_record) {
       $this->returnError(427, $this->version);
       return;
     }
-    
+
     $num_tries = 0;
     if ($evaluation_record) {
       $num_tries = $evaluation_record->num_tries;
     }
-    
+
     $timestamps[] = microtime(true); // profiling 1
 
     $data = array('evaluation_date' => now());

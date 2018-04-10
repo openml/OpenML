@@ -17,7 +17,7 @@ class Api_evaluation extends Api_model {
 
     if (count($segments) >= 1 && $segments[0] == 'list') {
       array_shift($segments);
-      $this->evaluation_list($segments);
+      $this->evaluation_list($segments, $user_id);
       return;
     }
 
@@ -61,7 +61,7 @@ class Api_evaluation extends Api_model {
   }
 
 
-  private function evaluation_list($segs) {
+  private function evaluation_list($segs, $user_id) {
     $legal_filters = array('task', 'setup', 'flow', 'uploader', 'run', 'tag', 'limit', 'offset', 'function');
     $query_string = array();
     for ($i = 0; $i < count($segs); $i += 2) {
@@ -103,8 +103,9 @@ class Api_evaluation extends Api_model {
     if($limit != false && $offset != false){
       $where_limit =  ' LIMIT ' . $offset . ',' . $limit;
     }
+    $where_task_closed = ' AND (`r`.`task_id` NOT IN (select task_id from task where embargo_end_date > NOW()) OR `r`.`uploader` = '.$user_id.')';
 
-    $where_runs = $where_task . $where_setup . $where_uploader . $where_impl . $where_run . $where_tag;
+    $where_runs = $where_task . $where_setup . $where_uploader . $where_impl . $where_run . $where_tag . $where_task_closed;
 
     //pre-test, should be quick??
     if($limit == false || (!$offset && $limit > 10000) || ($offset && $limit-$offset > 10000)) { // skip pre-test if less than 10000 are requested by definition
