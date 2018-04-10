@@ -310,8 +310,12 @@ class Api_task extends Api_model {
           $this->db->where($where);
         }
         
-        $results = $this->db->get()->row()->{$constraints->select};
-        if (!in_array($input_value, $results)) {
+        $acceptable_inputs = array();
+        foreach ($this->db->get()->result() as $obj) {
+          $acceptable_inputs[] = $obj[$constraints->select];
+        }
+        
+        if (!in_array($input_value, $acceptable_inputs)) {
           $this->returnError(622, $this->version, $this->openmlGeneralErrorCode, 'problematic input: ' . $name);
           return;
         }
