@@ -51,8 +51,14 @@ class Api_evaluation extends Api_model {
     if ($task != false) {
       $task = explode(',', $task);
     }
+    
+    if ($ttid && !is_cs_natural_numbers($ttid)) {
+      $this->returnError(547, $this->version);
+      return;
+    }
+    $ttids = explode(',', $ttid);
 
-    $res = $this->Run_evaluated->getUnevaluatedRun($evaluation_engine_id, $order, $ttid, $task, $tag, $uploader);
+    $res = $this->Run_evaluated->getUnevaluatedRun($evaluation_engine_id, $order, $ttids, $task, $tag, $uploader);
     if ($res == false) {
       $this->returnError(545, $this->version);
       return;
