@@ -235,7 +235,7 @@ class Api_model extends CI_Model {
         }
       }
     } catch (Exception $e) {
-      $this->returnError(105, $this->version, $this->openmlGeneralErrorCode, $e->getMessage(), false, $surpressOutput);
+      $this->returnError(105, $this->version, $this->openmlGeneralErrorCode, $e->getMessage(), false, $supress_output);
       return false;
     }
 
