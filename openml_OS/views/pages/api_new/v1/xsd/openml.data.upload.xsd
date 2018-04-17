@@ -14,7 +14,7 @@
     <!-- dublin core -->
     <xs:element name="name" type="oml:casual_string128"/> <!-- Name given to the dataset -->
     <xs:element name="version" minOccurs="0" type="oml:system_string64"/> <!-- Version of this dataset. '1' for original version. Auto-incremented by server. -->
-    <xs:element name="description" type="xs:string"/>  <!-- Description of the dataset, given by the user who uploaded it. -->
+    <xs:element name="description" type="oml:basic_latin1024"/>  <!-- Description of the dataset, given by the user who uploaded it. -->
     <xs:element name="format" type="oml:casual_string64"/> <!-- Format of the dataset. Will be arff for now, all lower case, no dot -->
     <xs:element name="creator" minOccurs="0" maxOccurs="unbounded" type="oml:basic_latin128"/> <!-- The person who created the dataset -->
     <xs:element name="contributor" minOccurs="0" maxOccurs="unbounded" type="oml:basic_latin128"/> <!-- People who contributed to the current version of the datadat (e.g. reformatting) -->
@@ -29,7 +29,7 @@
     <xs:element name="row_id_attribute" minOccurs="0" type="oml:casual_string128"/>  <!-- The attribute that represents the row-id column, if present in the dataset. If not set, the tool should create a string rowid from 0 to (n.obs - 1). This is what is then used in the data splits object. If set, it should of course be excluded in modeling -->
     <xs:element name="ignore_attribute" minOccurs="0" maxOccurs="unbounded" type="oml:casual_string128"/>  <!-- Attributes that should be excluded in modelling, such as identifiers and indexes. -->
     <xs:element name="version_label" minOccurs="0" type="oml:casual_string128"/> <!-- Version label provided by user, something relevant to the user. Can also be a date, hash, or some other type of id. -->
-    <xs:element name="citation" minOccurs="0" type="xs:string"/> <!-- Reference(s) that should be cited when building on this data -->
+    <xs:element name="citation" minOccurs="0" type="oml:basic_latin1024"/> <!-- Reference(s) that should be cited when building on this data -->
     <xs:element name="tag" minOccurs="0" maxOccurs="unbounded" type="oml:system_string64"/> <!-- Tags, describing the algorithms  -->
     <xs:element name="visibility" minOccurs="0" type="oml:access_policy"/> <!-- Who can see the dataset. Typical values: 'Everyone','All my friends','Only me'. Can also be any of the user's circles. -->
     <xs:element name="original_data_url" minOccurs="0" type="xs:anyURI"/> <!-- For derived data, the url to the original dataset. This can be an OpenML dataset, e.g. 'http://openml.org/d/1'. -->
@@ -49,21 +49,21 @@
 </xs:simpleType>
 <xs:simpleType name="casual_string1024"> <!-- Subset on xs:string. Highly restricted form of string. URL-friendly -->
   <xs:restriction base="xs:string">
-    <xs:pattern value="([a-zA-Z0-9_\-\.(),])+"/>
+    <xs:pattern value="([a-zA-Z0-9_\-\.\(\),])+"/>
     <xs:maxLength value="1024" />
      <xs:minLength value="1" />
   </xs:restriction>
 </xs:simpleType>
 <xs:simpleType name="casual_string128"> <!-- Subset on xs:string. Highly restricted form of string. URL-friendly -->
   <xs:restriction base="xs:string">
-    <xs:pattern value="([a-zA-Z0-9_\-\.(),])+"/>
+    <xs:pattern value="([a-zA-Z0-9_\-\.\(\),])+"/>
     <xs:maxLength value="128" />
      <xs:minLength value="1" />
   </xs:restriction>
 </xs:simpleType>
 <xs:simpleType name="casual_string64"> <!-- Subset on xs:string. Highly restricted form of string. URL-friendly -->
   <xs:restriction base="xs:string">
-     <xs:pattern value="([a-zA-Z0-9_\-\.(),])+"/>
+     <xs:pattern value="([a-zA-Z0-9_\-\.\(\),])+"/>
      <xs:maxLength value="64" />
      <xs:minLength value="1" />
   </xs:restriction>
@@ -72,6 +72,13 @@
   <xs:restriction base="xs:string">
     <xs:pattern value="\p{IsBasicLatin}*"/>
     <xs:maxLength value="128" />
+    <xs:minLength value="1" />
+  </xs:restriction>
+</xs:simpleType>
+<xs:simpleType name="basic_latin1024">
+  <xs:restriction base="xs:string">
+    <xs:pattern value="\p{IsBasicLatin}*"/>
+    <xs:maxLength value="1024" />
     <xs:minLength value="1" />
   </xs:restriction>
 </xs:simpleType>

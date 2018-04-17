@@ -13,9 +13,16 @@
       <xs:element name="repeat" type="xs:nonNegativeInteger"/>
       <xs:element name="fold" type="xs:nonNegativeInteger"/>
       <xs:element name="iteration" type="xs:nonNegativeInteger"/>
-      <xs:element name="setup_string" type="xs:string"/>
+      <xs:element name="setup_string" type="oml:basic_latin1024"/>
       <xs:element name="evaluation" type="xs:decimal"/>
       <xs:element name="selected" type="xs:boolean" />
     </xs:sequence>
   </xs:complexType>
+  <xs:simpleType name="basic_latin1024">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="\p{IsBasicLatin}*"/>
+      <xs:maxLength value="1024" />
+      <xs:minLength value="1" />
+    </xs:restriction>
+  </xs:simpleType>
 </xs:schema>
