@@ -5,7 +5,9 @@ class Api_task extends Api_model {
 
   function __construct() {
     parent::__construct();
-
+    
+    $this->load->helper('text');
+    
     // load models
     $this->load->model('Task');
     $this->load->model('Task_tag');
@@ -14,6 +16,9 @@ class Api_task extends Api_model {
     $this->load->model('Task_type_inout');
     $this->load->model('Data_quality');
     $this->load->model('Run');
+    
+    $this->load->model('Database_singleton');
+    $this->db = $this->Database_singleton->getReadConnection();
   }
 
   function bootstrap($format, $segments, $request_type, $user_id) {
@@ -220,7 +225,7 @@ class Api_task extends Api_model {
 
     $description = isset( $_FILES['description'] ) ? $_FILES['description'] : false;
     if( ! check_uploaded_file( $description ) ) {
-      $this->returnError(530, $this->version);
+      $this->returnError(611, $this->version);
       return;
     }
 
@@ -228,13 +233,13 @@ class Api_task extends Api_model {
 
     $xsd = xsd('openml.task.upload', $this->controller, $this->version);
     if (!$xsd) {
-      $this->returnError(531, $this->version, $this->openmlGeneralErrorCode);
+      $this->returnError(612, $this->version, $this->openmlGeneralErrorCode);
       return;
     }
 
     if( validateXml( $descriptionFile, $xsd, $xmlErrors ) == false ) {
       // TODO: do later!
-      $this->returnError(532, $this->version, $this->openmlGeneralErrorCode, $xmlErrors);
+      $this->returnError(613, $this->version, $this->openmlGeneralErrorCode, $xmlErrors);
       return;
     }
 
@@ -243,45 +248,86 @@ class Api_task extends Api_model {
     $task_type_id = intval($xml->children('oml', true)->{'task_type_id'});
     $inputs = array();
     $tags = array();
-
+    
+    foreach($xml->children('oml', true) as $input) {
+      $input_value = $input . '';
+      if ($input->getName() == 'input') {
+        $name = $input->attributes() . '';
+        
+        // check if input is no duplicate
+        if (array_key_exists($name, $inputs)) {
+          $this->returnError(617, $this->version, 
+                             $this->openmlGeneralErrorCode, 
+                             'problematic input: ' . $name);
+          return;
+        }
+        
+        $inputs[$name] = $input_value;
+      } elseif ($input->getName() == 'tag') {
+        $tags[] = $input_value;
+      }
+    }
+    $replace_array = $this->Task_type_inout->prepareRegex($inputs, $task_type_id);
+    
     // for legal input check
     $legal_inputs = $this->Task_type_inout->getAssociativeArray('name', 'requirement', 'ttid = ' . $task_type_id . ' AND io = "input"');
     // for required input check
     $required_inputs = $this->Task_type_inout->getAssociativeArray('name', 'requirement', 'ttid = ' . $task_type_id . ' AND io = "input" AND requirement = "required"');
+    $input_constraints = $this->Task_type_inout->getAssociativeArray('name', 'api_constraints', 'ttid = ' . $task_type_id . ' AND io = "input"');
 
-    foreach($xml->children('oml', true) as $input) {
-      // iterate over all fields, to extract tags and inputs.
-      if ($input->getName() == 'input') {
-        $name = $input->attributes() . '';
-
-        // check if input is no duplicate
-        if (array_key_exists($name, $inputs)) {
-          $this->returnError(536, $this->version, $this->openmlGeneralErrorCode, 'problematic input: ' . $name);
-          return;
-        }
-
-        // check if input is legal
-        if (array_key_exists($name, $legal_inputs) == false) {
-          $this->returnError(535, $this->version, $this->openmlGeneralErrorCode, 'problematic input: ' . $name);
-          return;
-        }
-
-        // TODO: custom check. if key is source data, check if dataset exists.
-        // TODO: custom check. if key is estimation procedure, check if EP exists (and collides with task_type_id).
-        // TODO: custom check. if key is target value, check if it exists.
-
-        $inputs[$name] = $input . '';
-        // maybe a required input is satisfied
-        unset($required_inputs[$name]);
-
-      } elseif ($input->getName() == 'tag') {
-        $tags[] = $input . '';
+    foreach($inputs as $name => $input_value) {
+      // check if input is legal
+      if (array_key_exists($name, $legal_inputs) == false) {
+        $this->returnError(616, $this->version, $this->openmlGeneralErrorCode, 'problematic input: ' . $name);
+        return;
       }
-    }
+      
+      $constraints = json_decode($input_constraints[$name]);
+      if ($constraints == false) {
+        $this->returnError(619, $this->version, $this->openmlGeneralErrorCode, 'problematic input: ' . $name);
+        return;
+      }
+      
+      // is_json lives in text_helper
+      $type_check_mappings = array('numeric' => 'is_numeric', 'json' => 'is_json', 'string' => 'is_string');
+      if (!property_exists($constraints, 'data_type') || !array_key_exists($constraints->data_type, $type_check_mappings)) {
+        $this->returnError(620, $this->version, $this->openmlGeneralErrorCode, 'problematic input: ' . $name);
+        return;
+      }
+      
+      // check the type of the input
+      $function = $type_check_mappings[$constraints->data_type];
+      if ($function($input_value) == false) {
+        $this->returnError(621, $this->version, $this->openmlGeneralErrorCode, 'problematic input: ' . $name . '; should be of type: ' . $constraints->data_type);
+        return;
+      }
+      
+      if (property_exists($constraints, 'select')) {
+        $this->db->select($constraints->select)->from($constraints->from);
+        if (property_exists($constraints, 'where')) {
+          // TODO: format where
+          $where = str_replace(array_keys($replace_array), array_values($replace_array), $constraints->where);
+          $this->db->where($where);
+        }
+        
+        $acceptable_inputs = array();
+        foreach ($this->db->get()->result() as $obj) {
+          $acceptable_inputs[] = $obj->{$constraints->select};
+        }
+        
+        if (!in_array($input_value, $acceptable_inputs)) {
+          $this->returnError(622, $this->version, $this->openmlGeneralErrorCode, 'problematic input: ' . $name);
+          return;
+        }
+      }
+      
+      // maybe a required input is satisfied
+      unset($required_inputs[$name]);
+    } 
 
     // required inputs should be empty by now
     if (count($required_inputs) > 0) {
-      $this->returnError(537, $this->version, $this->openmlGeneralErrorCode, 'problematic input(s): ' . implode(', ', array_keys($required_inputs)));
+      $this->returnError(618, $this->version, $this->openmlGeneralErrorCode, 'problematic input(s): ' . implode(', ', array_keys($required_inputs)));
       return;
     }
 
@@ -290,11 +336,9 @@ class Api_task extends Api_model {
       $task_ids = array();
       foreach($search as $s) { $task_ids[] = $s->task_id; }
 
-      $this->returnError(533, $this->version, $this->openmlGeneralErrorCode, 'matched id(s): [' . implode(',', $task_ids) . ']');
+      $this->returnError(614, $this->version, $this->openmlGeneralErrorCode, 'matched id(s): [' . implode(',', $task_ids) . ']');
       return;
     }
-
-
 
     // THE INSERTION
     $task = array(
@@ -307,7 +351,7 @@ class Api_task extends Api_model {
     // TODO: sanity check on input data!
 
     if ($id == false) {
-      $this->returnError( 534, $this->version );
+      $this->returnError( 615, $this->version );
       return;
     }
 
@@ -329,7 +373,8 @@ class Api_task extends Api_model {
 
     // update elastic search index.
     try {
-      $this->elasticsearch->index('task', $id);
+      // TODO: uncomment when fixed
+      // $this->elasticsearch->index('task', $id);
       $this->elasticsearch->index('user', $this->user_id);
     } catch (Exception $e) {
       $additionalMsg = get_class() . '.' . __FUNCTION__ . ':' . $e->getMessage();

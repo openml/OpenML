@@ -63,6 +63,8 @@
                                   <span id="impact" title="Impact is: number or reuses of this task in runs + 0.5*reach of these runs"><i class="fa fa-bolt impact"></i><?php if(array_key_exists('impact',$this->task)): if($this->task['impact']!=null): $i = $this->task['impact']; else: $i=0; endif; else: $i=0; endif; echo $i.' impact'; ?></span>
                           <?php }?>
                      <?php }?>
+                     <br>
+                     <i class="fa fa-eye-slash"></i> Visibility: <?php echo ($this->task['visibility'] == 'public' ? 'Public' : 'Closed until '.$this->task['embargo_end_date']); ?>
       							 <form method="post" action="" enctype="multipart/form-data">
       								 <input type="hidden" name="deletetag" id="deletetag"/>
       								 <ul class="tags" id="taglist">

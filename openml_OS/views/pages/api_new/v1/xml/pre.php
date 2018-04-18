@@ -71,19 +71,20 @@ $this->apiErrors[204] = 'Unknown task';
 $this->apiErrors[205] = 'Unknown flow';
 $this->apiErrors[206] = 'Invalid file type uploaded';
 $this->apiErrors[207] = 'File upload failed';
-$this->apiErrors[208] = 'Error inserting setup record';
+//$this->apiErrors[208] = 'Error inserting setup record';
 $this->apiErrors[209] = 'Error parsing uploaded file. ';
 $this->apiErrors[210] = 'Unable to store run';
 $this->apiErrors[211] = 'Dataset not in databse';
 $this->apiErrors[212] = 'Unable to store uploaded file to file system';
 $this->apiErrors[213] = 'Parameter in run xml unknown';
 $this->apiErrors[214] = 'Unable to store input setting';
-$this->apiErrors[215] = 'Unable to evaluate predictions';
-$this->apiErrors[216] = 'Error thrown by Java Application';
+//$this->apiErrors[215] = 'Unable to evaluate predictions';
+//$this->apiErrors[216] = 'Error thrown by Java Application';
 $this->apiErrors[217] = 'Error processing output data: unknown or inconsistent evaluation measure';
 $this->apiErrors[218] = 'Wrong flow associated with run: this implements a math_function';
 $this->apiErrors[219] = 'Task does not contain field: source_data';
 $this->apiErrors[220] = 'Unable to store uploaded file in database';
+$this->apiErrors[221] = 'Database insertion error, probably due to high server load. ';
 
 // range from 225 - 239: api run
 
@@ -204,6 +205,7 @@ $this->apiErrors[424] = 'Problem opening description xml';
 $this->apiErrors[425] = 'Run does not exists';
 $this->apiErrors[426] = 'Run already processed';
 $this->apiErrors[427] = 'Inconsistent data, evaluations found but no run_evaluated record. Please contact developers';
+$this->apiErrors[428] = 'Database insertion error, probably due to high server load. ';
 
 // for function: openml.data.features.upload
 $this->apiErrors[431] = 'Dataset already processed';
@@ -267,16 +269,6 @@ $this->apiErrors[514] = 'Illegal filter specified';
 // openml.estimationprocedure.list
 $this->apiErrors[520] = 'No results';
 
-// openml.task.upload
-$this->apiErrors[530] = 'Description file not present';
-$this->apiErrors[531] = 'Xsd not found';
-$this->apiErrors[532] = 'Problem validating uploaded description file';
-$this->apiErrors[533] = 'Task already exists.';
-$this->apiErrors[534] = 'Error creating the task.';
-$this->apiErrors[535] = 'Task contains illegal inputs.';
-$this->apiErrors[536] = 'Task contains duplicate inputs.';
-$this->apiErrors[537] = 'Task does not contain all required inputs.';
-
 // openml.evaluations.list
 $this->apiErrors[540] = 'Please provide at least task, flow or setup, uploader or run, to filter results. ';
 $this->apiErrors[541] = 'Input not safe';
@@ -296,6 +288,7 @@ $this->apiErrors[551] = 'Delete query failed.';
 $this->apiErrors[561] = 'Problem with uploaded trace file.';
 $this->apiErrors[562] = 'Problem validating xml trace file.';
 $this->apiErrors[563] = 'Problem loading xml trace file.';
+$this->apiErrors[564] = 'Database insertion error, probably due to high server load. ';
 
 
 // openml.run.trace (get)
@@ -323,23 +316,20 @@ $this->apiErrors[601] = 'Study does not exists. ';
 $this->apiErrors[602] = 'Study not visible for you. ';
 $this->apiErrors[603] = 'Study does not contain any associated tags (should have at least one). ';
 
-// openml.run.attach (611-630)
-$this->apiErrors[611] = 'Run not found';
-$this->apiErrors[612] = 'Task not found';
-$this->apiErrors[613] = 'Runfile record not found';
-$this->apiErrors[614] = 'File record not found';
-$this->apiErrors[615] = 'User not equal to run owner';
-$this->apiErrors[616] = 'Task not of valid challenge type';
-$this->apiErrors[617] = 'Run already processed';
-$this->apiErrors[618] = 'Wrong number of uploaded files (should be 2)';
-$this->apiErrors[619] = 'Unallowed extension';
-$this->apiErrors[620] = 'Problem with file upload';
-$this->apiErrors[621] = 'Arff validation error';
-$this->apiErrors[622] = 'XML validation error';
-$this->apiErrors[623] = 'Description MD5 not equal to stored MD5';
-$this->apiErrors[624] = 'Prediction file with this index already exists';
-$this->apiErrors[625] = 'File registration error';
-$this->apiErrors[626] = 'Runfile record error';
+// openml.task.upload (continued)
+
+$this->apiErrors[611] = 'Description file not present';
+$this->apiErrors[612] = 'Xsd not found';
+$this->apiErrors[613] = 'Problem validating uploaded description file';
+$this->apiErrors[614] = 'Task already exists.';
+$this->apiErrors[615] = 'Error creating the task.';
+$this->apiErrors[616] = 'Task contains illegal inputs.';
+$this->apiErrors[617] = 'Task contains duplicate inputs.';
+$this->apiErrors[618] = 'Task does not contain all required inputs.';
+$this->apiErrors[619] = 'Could not decode task inputs constraints json. Please contact developers.';
+$this->apiErrors[620] = 'Could not find data_type field or the correct function. Please contact developers.';
+$this->apiErrors[621] = 'Task data type not in the right format.';
+$this->apiErrors[622] = 'Input value does not match allowed values in foreign column.';
 
 // openml.data.feature.quality
 $this->apiErrors[631] = 'Please provide data_id';

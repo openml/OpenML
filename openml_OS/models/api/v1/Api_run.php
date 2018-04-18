@@ -30,7 +30,7 @@ class Api_run extends Api_model {
 
     $this->load->model('File');
 
-    $this->db = $this->Database_singleton->getReadConnection();
+    $this->db = $this->Database_singleton->getWriteConnection();
 
     // Currently default
     $this->weka_engine_id = 1;
@@ -43,7 +43,7 @@ class Api_run extends Api_model {
 
     if (count($segments) >= 1 && $segments[0] == 'list') {
       array_shift($segments);
-      $this->run_list($segments);
+      $this->run_list($segments, $user_id);
       return;
     }
 
@@ -82,11 +82,6 @@ class Api_run extends Api_model {
       return;
     }
 
-    if (count($segments) == 2 && is_numeric($segments[0]) && is_numeric($segments[1]) && $request_type == 'post') {
-      $this->run_upload_attach($segments[0], $segments[1]);
-      return;
-    }
-
     if (count($segments) == 1 && $segments[0] == 'tag' && $request_type == 'post') {
       $this->entity_tag_untag('run', $this->input->post('run_id'), $this->input->post('tag'), false, 'run');
       return;
@@ -101,7 +96,7 @@ class Api_run extends Api_model {
   }
 
 
-  private function run_list($segs) {
+  private function run_list($segs, $user_id) {
     $legal_filters = array('task', 'setup', 'flow', 'uploader', 'run', 'tag', 'limit', 'offset', 'task_type', 'show_errors');
     $query_string = array();
     for ($i = 0; $i < count($segs); $i += 2) {
@@ -145,14 +140,15 @@ class Api_run extends Api_model {
     if (strtolower($show_errors) == 'true') {
       $where_server_error = '';
     }
-
+    // Don't return runs of closed runs, unless the user uploaded them
+    $where_task_closed = ' AND (`t`.`embargo_end_date` < NOW() OR `r`.`uploader` = '.$user_id.')';
 
     $where_limit = $limit == false ? '' : ' LIMIT ' . $limit;
     if ($limit != false && $offset != false) {
       $where_limit =  ' LIMIT ' . $offset . ', ' . $limit;
     }
 
-    $where_total = $where_task . $where_task_type . $where_setup . $where_uploader . $where_impl . $where_run . $where_tag . $where_server_error;
+    $where_total = $where_task . $where_task_type . $where_setup . $where_uploader . $where_impl . $where_run . $where_tag . $where_server_error . $where_task_closed;
 
     $sql =
       'SELECT r.rid, r.uploader, r.task_id, r.start_time, t.ttid, d.did AS dataset_id, d.name AS dataset_name,' .
@@ -271,7 +267,7 @@ class Api_run extends Api_model {
       $this->returnError(413, $this->version);
       return;
     }
-    
+
     $result = true;
     $result = $result && $this->Trace->deleteWhere('`run_id` = "' . $run->rid . '" ');
     $result = $result && $this->Evaluation->deleteWhere('`source` = "' .  $run->rid. '" ');
@@ -284,134 +280,6 @@ class Api_run extends Api_model {
       return;
     }
     $this->xmlContents( 'run-reset', $this->version, array( 'run' => $run ) );
-  }
-
-
-  private function run_upload_attach($run_id, $index) {
-    // get run, task and current description
-    $run = $this->Run->getById($run_id);
-    if ($run === false) {
-      $this->returnError(611, $this->version);
-      return;
-    }
-
-    $task = $this->Task->getById($run->task_id);
-    if ($task === false) {
-      $this->returnError(612, $this->version);
-      return;
-    }
-
-    $description_record = $this->Runfile->getWhereSingle('`source` = "' . $run->rid . '" AND `field` = "description"');
-    if ($description_record === false) {
-      $this->returnError(613, $this->version);
-      return;
-    }
-
-    $description = $this->File->getById($description_record->file_id);
-    if ($description === false) {
-      $this->returnError(614, $this->version);
-      return;
-    }
-
-    // check user
-    if ($run->uploader != $this->user_id) {
-      $this->returnError(615, $this->version);
-      return;
-    }
-
-    // check task type (should be 9)
-    if ($task->ttid != 9) {
-      $this->returnError(616, $this->version);
-      return;
-    }
-
-    $evaluation_engines = $this->Run_evaluated->getWhere(array($run_id, $this->weka_engine_id));
-    // check if run is not processed yet
-    if ($evaluation_engines != false) {
-      $this->returnError(617, $this->version);
-      return;
-    }
-
-    // check num files (exactly 2, description and predictions)
-    if (count($_FILES) != 2) {
-      $this->returnError(618, $this->version);
-      return;
-    }
-
-    // check uploaded file (format arff, arff checker)
-    foreach ($_FILES as $key => $value) { // TODO: integrate with existing (duplicate) code
-      $message = '';
-      $extension = getExtension($_FILES[$key]['name']);
-
-      if (in_array($extension,$this->config->item('allowed_extensions')) == false || $extension == false) {
-        $this->returnError(619, $this->version, $this->openmlGeneralErrorCode, 'Invalid extension for file "'.$key.'". Original filename: ' . $_FILES[$key]['name']);
-        return;
-      }
-
-      if (!check_uploaded_file($_FILES[$key], false, $message)) {
-        $this->returnError(620, $this->version, $this->openmlGeneralErrorCode, 'Upload problem with file "'.$key.'": ' . $message);
-        return;
-      }
-
-      if ($extension == 'arff') {
-        $arffCheck = ARFFcheck($_FILES[$key]['tmp_name'], 1000);
-        if ($arffCheck !== true) {
-          $this->returnError(621, $this->version, $this->openmlGeneralErrorCode, 'Arff error in predictions file: ' . $arffCheck);
-          return;
-        }
-      }
-
-      if ($extension == 'xml') {
-        $xmlCheck = simplexml_load_file($_FILES[$key]['tmp_name']);
-        if($xmlCheck === false) {
-          $this->returnError(622, $this->version, $this->openmlGeneralErrorCode, 'XML error in predictions file: ' . $xmlCheck);
-          return;
-        }
-      }
-    }
-
-    // check description (md5 should be the same as current known description)
-    $description_md5 = md5_file($_FILES['description']['tmp_name']);
-    if ($description_md5 != $description->md5_hash) {
-      $this->returnError(623, $this->version);
-      return;
-    }
-
-    // check if runfile with index does not exist yet
-    if ($this->Runfile->getWhere('source = ' . $run->rid . ' AND field = "predictions_' . $index . '"')) {
-      $this->returnError(624, $this->version);
-      return;
-    }
-
-
-    // register file
-    $to_folder = $this->data_folders['run'] . $run_id . '/';
-    $file_id = $this->File->register_uploaded_file($_FILES['predictions'], $to_folder, $this->user_id, 'predictions');
-    if(!$file_id) {
-      $this->returnError(625, $this->version);
-      return;
-    }
-    $file_record = $this->File->getById($file_id);
-
-    // attach predictions to run
-    $record = array(
-      'source' => $run->rid,
-      'field' => 'predictions_' . $index,
-      'name' => $_FILES['predictions']['name'],
-      'format' => $file_record->extension,
-      'file_id' => $file_id,
-      'upload_time' => now()
-    );
-    $did = $this->Runfile->insert($record);
-
-    if ($did === false) {
-      $this->returnError(626, $this->version);
-      return;
-    }
-
-    $run_files = $this->Runfile->getWhere('`source` = "' . $run->rid . '" AND `field` LIKE "predictions%"');
-
-    $this->xmlContents('run-upload-attach', $this->version, array('run_id' => $run->rid, 'files' => $run_files));
   }
 
   private function run_upload() {
@@ -609,7 +477,7 @@ class Api_run extends Api_model {
       $file_record = $this->File->getById($file_id);
 
       $record = array(
-        'source' => $run->rid,
+        'source' => $runId,
         'field' => $key,
         'name' => $value['name'],
         'format' => $file_record->extension,
@@ -622,7 +490,7 @@ class Api_run extends Api_model {
         $this->returnError(212, $this->version);
         return;
       }
-      $this->Run->outputData($run->rid, $did, 'runfile', $key);
+      $this->Run->outputData($runId, $did, 'runfile', $key);
     }
 
     // attach input data
@@ -632,13 +500,16 @@ class Api_run extends Api_model {
       return false;
     }
     $this->db->trans_complete();
-
+	if ($this->db->trans_status() === FALSE) {
+	  $this->returnError(221, $this->version);
+      return;
+    }
 
     $timestamps[] = microtime(true); // profiling 3
     // add to elastic search index.
 
     try {
-      $this->elasticsearch->index('run', $run->rid);
+      $this->elasticsearch->index('run', $runId);
     } catch (Exception $e) {
       // TODO: should log
     }
@@ -718,6 +589,10 @@ class Api_run extends Api_model {
       $this->Trace->insert($iteration);
     }
     $this->db->trans_complete();
+    if ($this->db->trans_status() === FALSE) {
+	  $this->returnError(564, $this->version);
+      return;
+    }
 
     $this->xmlContents('run-trace', $this->version, array('run_id' => $run_id));
   }
@@ -769,22 +644,22 @@ class Api_run extends Api_model {
 
     $evaluation_record = $this->Run_evaluated->getById(array($run_id, $eval_engine_id));
     $evaluations_stored = $this->Evaluation->getWhere('source = "' . $run_id . '" AND evaluation_engine_id = "' . $eval_engine_id . '"');
-    
+
     if($evaluation_record && $evaluation_record->error == null) {
       $this->returnError(426, $this->version);
       return;
     }
-    
+
     if ($evaluations_stored && !$evaluation_record) {
       $this->returnError(427, $this->version);
       return;
     }
-    
+
     $num_tries = 0;
     if ($evaluation_record) {
       $num_tries = $evaluation_record->num_tries;
     }
-    
+
     $timestamps[] = microtime(true); // profiling 1
 
     $data = array('evaluation_date' => now());
@@ -800,9 +675,10 @@ class Api_run extends Api_model {
     $data['evaluation_engine_id'] = $eval_engine_id;
     $data['user_id'] = $this->user_id;
     $data['num_tries'] = $num_tries + 1;
-    $this->Run_evaluated->replace($data);
 
     $this->db->trans_start();
+    $this->Run_evaluated->replace($data);
+	
     foreach($xml->children('oml', true)->{'evaluation'} as $e) {
       $evaluation = xml2assoc($e, true);
 
@@ -832,6 +708,12 @@ class Api_run extends Api_model {
       }
     }
     $this->db->trans_complete();
+    if ($this->db->trans_status() === FALSE) {
+	  $this->returnError(428, $this->version);
+      return;
+    }
+	
+	
     $timestamps[] = microtime(true); // profiling 2
 
     // update elastic search index.

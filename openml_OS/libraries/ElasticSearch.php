@@ -598,7 +598,7 @@ class ElasticSearch {
             'gamification_visibility' => $d->gamification_visibility
         );
 
-        $uploads = $this->CI->KnowledgePiece->getNumberOfUploadsOfUser($d->id);
+        $uploads = $this->CI->KnowledgePiece->getTotalNumberOfUploadsOfUser($d->id);
         $data_up = 0;
         $flow_up = 0;
         $task_up = 0;
@@ -752,7 +752,7 @@ class ElasticSearch {
         if($d->gamification_visibility=='show'){
             $user['reach'] = $this->CI->Gamification->getReachFromParts($user['likes_received'],$user['downloads_received']);
 
-            $impact_struct = $this->CI->Gamification->getImpact('u',$d->id,"2013-1-1",date("Y-m-d"));
+            $impact_struct = $this->CI->Gamification->getTotalImpact('u',$d->id,"2013-1-1",date("Y-m-d"));
 
             $user['reuse'] = $impact_struct['reuse'];
 
@@ -867,7 +867,7 @@ class ElasticSearch {
             }
             $tasks = null;
             $params['body'] = array();
-            $tasks = $this->db->query('select a.*, b.runs from (SELECT t.task_id, tt.ttid, tt.name, t.creation_date, t.creator FROM task t, task_type tt where t.ttid=tt.ttid and task_id>=' . $task_id . ' and task_id<' . ($task_id + $incr) . ') as a left outer join (select task_id, count(rid) as runs from run r group by task_id) as b on a.task_id=b.task_id');
+            $tasks = $this->db->query('select a.*, b.runs from (SELECT t.task_id, tt.ttid, tt.name, t.creation_date, t.embargo_end_date, t.creator FROM task t, task_type tt where t.ttid=tt.ttid and task_id>=' . $task_id . ' and task_id<' . ($task_id + $incr) . ') as a left outer join (select task_id, count(rid) as runs from run r group by task_id) as b on a.task_id=b.task_id');
             if ($tasks) {
                 foreach ($tasks as $t) {
                     $params['body'][] = array(
@@ -889,7 +889,7 @@ class ElasticSearch {
 
     private function build_single_task($id) {
         $time = microtime(true);
-        $task = $this->db->query('select a.*, b.runs from (SELECT t.task_id, tt.ttid, tt.name, t.creation_date, t.creator FROM task t, task_type tt where t.ttid=tt.ttid and task_id=' . $id . ') as a left outer join (select task_id, count(rid) as runs from run r group by task_id) as b on a.task_id=b.task_id');
+        $task = $this->db->query('select a.*, b.runs from (SELECT t.task_id, tt.ttid, tt.name, t.creation_date, t.embargo_end_date, t.creator FROM task t, task_type tt where t.ttid=tt.ttid and task_id=' . $id . ') as a left outer join (select task_id, count(rid) as runs from run r group by task_id) as b on a.task_id=b.task_id');
         $t = $this->build_task($task[0]);
         echo "Build task: ".(microtime(true) - $time)."\r\n";
         $time = microtime(true);
@@ -901,7 +901,7 @@ class ElasticSearch {
         $newdata = array(
             'task_id' => $d->task_id,
             'runs' => $this->checkNumeric($d->runs),
-            'visibility' => 'public',
+            'visibility' => ((strtotime($d->embargo_end_date) < time()) ? 'public' : 'private'),
             'tasktype' => array(
                 'tt_id' => $d->ttid,
                 'name' => $d->name
@@ -1031,7 +1031,7 @@ class ElasticSearch {
 
     private function fetch_tasks($id = false) {
         $index = array();
-        $tasks = $this->db->query("SELECT t.task_id, tt.name, i.value AS did, d.name AS dname, ep.name AS epname FROM task_inputs i, task_inputs i2, estimation_procedure ep,
+        $tasks = $this->db->query("SELECT t.task_id, t.embargo_end_date, tt.name, i.value AS did, d.name AS dname, ep.name AS epname FROM task_inputs i, task_inputs i2, estimation_procedure ep,
           task t, task_type tt, dataset d WHERE t.task_id = i.task_id AND t.task_id = i2.task_id AND i.input = 'source_data' AND i2.input = 'estimation_procedure' AND
           t.ttid = tt.ttid AND d.did = i.value AND ep.id = i2.value" . ($id ? ' and t.task_id=' . $id : ''));
         if ($tasks){
@@ -1042,6 +1042,7 @@ class ElasticSearch {
             foreach ($tasks as $v) {
               if(array_key_exists($v->did,$targets)){ //check whether the task is valid (uses an existing dataset)
                 $index[$v->task_id]['task_id'] = $v->task_id;
+                $index[$v->task_id]['visibility'] = ((strtotime($v->embargo_end_date) < time()) ? 'public' : 'private');
                 $index[$v->task_id]['tasktype']['name'] = $v->name;
                 $index[$v->task_id]['source_data']['data_id'] = $v->did;
                 $index[$v->task_id]['source_data']['name'] = $v->dname;
@@ -1330,7 +1331,7 @@ class ElasticSearch {
             'error' => (isset($r->error) ? $r->error : ""),
             'error_message' => (isset($r->error_message) ? $r->error_message : ""),
             'run_details' => (isset($r->run_details) ? $r->run_details : ""),
-            'visibility' => 'public'
+            'visibility' => $tasks[$r->task_id]['visibility']
         );
 
         $new_data['tags'] = array();

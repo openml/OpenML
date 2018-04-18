@@ -120,9 +120,14 @@ client.search({
 	body: {
 		_source: [ "run_id", "date", "run_flow.name", "run_flow.flow_id", "uploader", "uploader_id", "evaluations.evaluation_measure", "evaluations.value" ],
 		query: {
-			term: {
-				'run_task.task_id': current_task
-			}
+			 bool: {
+				 must: [{term: {'run_task.task_id': current_task }},
+							 <?php if($this->task['visibility'] == 'private' and !$this->is_admin){?>
+								{term: {'uploader_id': <?php echo $this->user_id; ?>}},
+							 <?php }?>
+								{nested: {path: "evaluations",
+													query: {exists: {field: "evaluations"}}}}]
+			 }
 		},
 		sort: { 'date' : 'asc' }
 	}
@@ -248,6 +253,9 @@ function showData(){
 	    query: {
 				 bool: {
 					 must: [{term: {'run_task.task_id': current_task }},
+					 			 <?php if($this->task['visibility'] == 'private' and !$this->is_admin){?>
+									{term: {'uploader_id': <?php echo $this->user_id; ?>}},
+								 <?php }?>
 					 				{nested: {path: "evaluations",
 														query: {exists: {field: "evaluations"}}}}]
 				 }

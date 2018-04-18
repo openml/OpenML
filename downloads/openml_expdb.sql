@@ -707,7 +707,8 @@ CREATE TABLE `task` (
   `task_id` int(10) NOT NULL,
   `ttid` int(10) NOT NULL,
   `creator` int(10) DEFAULT NULL,
-  `creation_date` datetime DEFAULT NULL
+  `creation_date` datetime DEFAULT NULL,
+  `embargo_end_date` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -775,6 +776,7 @@ CREATE TABLE `task_type_inout` (
   `requirement` enum('required','optional','hidden') NOT NULL,
   `description` varchar(256) NOT NULL,
   `order` int(8) NOT NULL,
+  `api_constraints` text,
   `template_api` text,
   `template_search` text
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;

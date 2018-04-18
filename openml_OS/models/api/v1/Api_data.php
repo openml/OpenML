@@ -448,7 +448,7 @@ class Api_data extends Api_model {
 
     // insert tags. This relies on the ES record to exist.
     foreach ($tags as $tag) {
-      $success = $this->entity_tag_untag('dataset', $id, $tag, false, 'data', false);
+      $success = $this->entity_tag_untag('dataset', $id, $tag, false, 'data', true);
     }
 
     // create initial wiki page
