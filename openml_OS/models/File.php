@@ -1,5 +1,5 @@
 <?php
-class File extends Community {
+class File extends Community_Model {
   
   function __construct() {
     parent::__construct();
