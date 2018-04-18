@@ -1,6 +1,6 @@
 <?php
 /* TODO: HACK. THIS CORE CLASS IS NOT AUTOLOADED BUT INCLUDED FROM MY MODEL. */
-class MY_Tag_Model extends Database_write {
+class MY_Tag_Model extends MY_Database_Write_Model {
   
   function __construct() {
     parent::__construct();
