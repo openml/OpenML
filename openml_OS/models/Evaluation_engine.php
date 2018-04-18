@@ -1,5 +1,5 @@
 <?php
-class Evaluation_engine extends Database_read {
+class Evaluation_engine extends MY_Database_Read_Model {
 	
   function __construct() {
     parent::__construct();

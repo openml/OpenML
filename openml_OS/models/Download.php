@@ -1,6 +1,6 @@
 <?php
 
-class Download extends Database_write {
+class Download extends MY_Database_Write_Model {
 
     function __construct() {
         parent::__construct();

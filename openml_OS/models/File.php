@@ -1,4 +1,5 @@
 <?php
+
 class File extends MY_Community_Model {
   
   function __construct() {

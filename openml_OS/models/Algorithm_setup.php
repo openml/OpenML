@@ -1,5 +1,5 @@
 <?php
-class Algorithm_setup extends Database_write {
+class Algorithm_setup extends Database_Write_Model {
 
   function __construct() {
     parent::__construct();

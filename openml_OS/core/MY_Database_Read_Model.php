@@ -1,6 +1,6 @@
 <?php
-/* TODO: SHOULD BE ABSTRACT CLASS. CURRENTLY NOT SUPPORTED BY CI. */
-class Database_read extends CI_Model {
+/* TODO: HACK. THIS CORE CLASS IS NOT AUTOLOADED BUT INCLUDED FROM MY MODEL. */
+class MY_Database_Read_Model extends MY_Model {
   
   protected $table;
   protected $id_column;
