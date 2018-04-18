@@ -1,6 +1,15 @@
 <?php
-/* TODO: SHOULD BE ABSTRACT CLASS. CURRENTLY NOT SUPPORTED BY CI. */
-class MY_Community_Model extends CI_Model {
+/* TODO: IT'S A SLIGHT HACK TO PUT ALL THE CUSTOM MODELS IN HERE .. */
+
+
+
+class MY_Model extends CI_Model {
+  function __construct() {
+    parent::__construct();
+  }
+}
+
+class MY_Community_Model extends MY_Model {
   
   protected $table;
   protected $include_deleted_activated;
