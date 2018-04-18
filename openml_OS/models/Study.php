@@ -1,5 +1,5 @@
 <?php
-class Study extends Database_write {
+class Study extends MY_Database_Write_Model {
 
   function __construct() {
     parent::__construct();

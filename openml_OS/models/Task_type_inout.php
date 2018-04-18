@@ -1,5 +1,5 @@
 <?php
-class Task_type_inout extends Database_read {
+class Task_type_inout extends MY_Database_Read_Model {
 	
 	function __construct() {
     parent::__construct();
