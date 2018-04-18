@@ -7,12 +7,12 @@ class Run_evaluated extends Database_write {
     $this->id_column = array('run_id', 'evaluation_engine_id');
   }
 
-  function getUnevaluatedRun($evaluation_engine_id, $order, $ttid = false, $task_ids = false, $tag = false, $uploader = false) {
+  function getUnevaluatedRun($evaluation_engine_id, $order, $ttids = false, $task_ids = false, $tag = false, $uploader = false) {
     $this->db->from('`run` `r`');
     
-    if ($ttid != false) {
+    if ($ttids != false) {
       $this->db->join('`task` `t`', '`t`.`task_id` = `r`.`task_id`', 'inner');
-      $this->db->where('`t`.`ttid` = "' . $ttid . '"');
+      $this->db->where_in('`t`.`ttid`', $ttids);
     }
     
     if ($tag != false) {

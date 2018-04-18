@@ -71,19 +71,20 @@ $this->apiErrors[204] = 'Unknown task';
 $this->apiErrors[205] = 'Unknown flow';
 $this->apiErrors[206] = 'Invalid file type uploaded';
 $this->apiErrors[207] = 'File upload failed';
-$this->apiErrors[208] = 'Error inserting setup record';
+//$this->apiErrors[208] = 'Error inserting setup record';
 $this->apiErrors[209] = 'Error parsing uploaded file. ';
 $this->apiErrors[210] = 'Unable to store run';
 $this->apiErrors[211] = 'Dataset not in databse';
 $this->apiErrors[212] = 'Unable to store uploaded file to file system';
 $this->apiErrors[213] = 'Parameter in run xml unknown';
 $this->apiErrors[214] = 'Unable to store input setting';
-$this->apiErrors[215] = 'Unable to evaluate predictions';
-$this->apiErrors[216] = 'Error thrown by Java Application';
+//$this->apiErrors[215] = 'Unable to evaluate predictions';
+//$this->apiErrors[216] = 'Error thrown by Java Application';
 $this->apiErrors[217] = 'Error processing output data: unknown or inconsistent evaluation measure';
 $this->apiErrors[218] = 'Wrong flow associated with run: this implements a math_function';
 $this->apiErrors[219] = 'Task does not contain field: source_data';
 $this->apiErrors[220] = 'Unable to store uploaded file in database';
+$this->apiErrors[221] = 'Database insertion error, probably due to high server load. ';
 
 // range from 225 - 239: api run
 
@@ -204,6 +205,7 @@ $this->apiErrors[424] = 'Problem opening description xml';
 $this->apiErrors[425] = 'Run does not exists';
 $this->apiErrors[426] = 'Run already processed';
 $this->apiErrors[427] = 'Inconsistent data, evaluations found but no run_evaluated record. Please contact developers';
+$this->apiErrors[428] = 'Database insertion error, probably due to high server load. ';
 
 // for function: openml.data.features.upload
 $this->apiErrors[431] = 'Dataset already processed';
@@ -286,6 +288,7 @@ $this->apiErrors[551] = 'Delete query failed.';
 $this->apiErrors[561] = 'Problem with uploaded trace file.';
 $this->apiErrors[562] = 'Problem validating xml trace file.';
 $this->apiErrors[563] = 'Problem loading xml trace file.';
+$this->apiErrors[564] = 'Database insertion error, probably due to high server load. ';
 
 
 // openml.run.trace (get)

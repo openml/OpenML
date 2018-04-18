@@ -30,7 +30,7 @@ class Api_run extends Api_model {
 
     $this->load->model('File');
 
-    $this->db = $this->Database_singleton->getReadConnection();
+    $this->db = $this->Database_singleton->getWriteConnection();
 
     // Currently default
     $this->weka_engine_id = 1;
@@ -477,7 +477,7 @@ class Api_run extends Api_model {
       $file_record = $this->File->getById($file_id);
 
       $record = array(
-        'source' => $run->rid,
+        'source' => $runId,
         'field' => $key,
         'name' => $value['name'],
         'format' => $file_record->extension,
@@ -490,7 +490,7 @@ class Api_run extends Api_model {
         $this->returnError(212, $this->version);
         return;
       }
-      $this->Run->outputData($run->rid, $did, 'runfile', $key);
+      $this->Run->outputData($runId, $did, 'runfile', $key);
     }
 
     // attach input data
@@ -500,13 +500,16 @@ class Api_run extends Api_model {
       return false;
     }
     $this->db->trans_complete();
-
+	if ($this->db->trans_status() === FALSE) {
+	  $this->returnError(221, $this->version);
+      return;
+    }
 
     $timestamps[] = microtime(true); // profiling 3
     // add to elastic search index.
 
     try {
-      $this->elasticsearch->index('run', $run->rid);
+      $this->elasticsearch->index('run', $runId);
     } catch (Exception $e) {
       // TODO: should log
     }
@@ -586,6 +589,10 @@ class Api_run extends Api_model {
       $this->Trace->insert($iteration);
     }
     $this->db->trans_complete();
+    if ($this->db->trans_status() === FALSE) {
+	  $this->returnError(564, $this->version);
+      return;
+    }
 
     $this->xmlContents('run-trace', $this->version, array('run_id' => $run_id));
   }
@@ -668,9 +675,10 @@ class Api_run extends Api_model {
     $data['evaluation_engine_id'] = $eval_engine_id;
     $data['user_id'] = $this->user_id;
     $data['num_tries'] = $num_tries + 1;
-    $this->Run_evaluated->replace($data);
 
     $this->db->trans_start();
+    $this->Run_evaluated->replace($data);
+	
     foreach($xml->children('oml', true)->{'evaluation'} as $e) {
       $evaluation = xml2assoc($e, true);
 
@@ -700,6 +708,12 @@ class Api_run extends Api_model {
       }
     }
     $this->db->trans_complete();
+    if ($this->db->trans_status() === FALSE) {
+	  $this->returnError(428, $this->version);
+      return;
+    }
+	
+	
     $timestamps[] = microtime(true); // profiling 2
 
     // update elastic search index.

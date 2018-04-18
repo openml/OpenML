@@ -11,7 +11,7 @@
       <xs:element name="flow_id" type="xs:integer"/> <!-- The id of the implementation (algorithm, workflow,...) used to solve the task. This id is returned by the API when you first upload the implementation, or given in the implementation description when you download an existing implementation. -->
       <xs:element name="flow_name" minOccurs="0" type="oml:casual_string1024"/> <!--Added by server. Ignored when uploading a run -->
       <xs:element name="setup_id" minOccurs="0" type="xs:integer"/> <!-- the setup id, will be ignored when uploading a run (i.e., it will be searched based on the parameter settings) -->
-      <xs:element name="setup_string" minOccurs="0" type="xs:string"/> <!-- The CLI string that can invoke the learner with the correct parameter settings. -->
+      <xs:element name="setup_string" minOccurs="0" type="oml:basic_latin1024"/> <!-- The CLI string that can invoke the learner with the correct parameter settings. -->
       <xs:element name="error_message" minOccurs="0" type="oml:basic_latin128"/> <!-- Whenever an error occurs during the run, this can be reported here for further inspection and on line logging purposes. -->
       <xs:element name="run_details" minOccurs="0" type="oml:casual_string1024"/> <!-- Any other information useful for reproducing the run, e.g. exact package versions, hardware info. -->
       <xs:element name="parameter_setting" minOccurs="0" maxOccurs="unbounded" type="oml:parameter_setting"/> <!-- The parameter settings used in this run -->
