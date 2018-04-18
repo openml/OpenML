@@ -1,5 +1,5 @@
 <?php
-class Feature extends Database_write {
+class Feature extends MY_Database_Write_Model {
 	
 	function __construct()
     {
