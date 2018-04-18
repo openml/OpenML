@@ -598,7 +598,7 @@ class ElasticSearch {
             'gamification_visibility' => $d->gamification_visibility
         );
 
-        $uploads = $this->CI->KnowledgePiece->getNumberOfUploadsOfUser($d->id);
+        $uploads = $this->CI->KnowledgePiece->getTotalNumberOfUploadsOfUser($d->id);
         $data_up = 0;
         $flow_up = 0;
         $task_up = 0;
@@ -752,7 +752,7 @@ class ElasticSearch {
         if($d->gamification_visibility=='show'){
             $user['reach'] = $this->CI->Gamification->getReachFromParts($user['likes_received'],$user['downloads_received']);
 
-            $impact_struct = $this->CI->Gamification->getImpact('u',$d->id,"2013-1-1",date("Y-m-d"));
+            $impact_struct = $this->CI->Gamification->getTotalImpact('u',$d->id,"2013-1-1",date("Y-m-d"));
 
             $user['reuse'] = $impact_struct['reuse'];
 

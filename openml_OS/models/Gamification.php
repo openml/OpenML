@@ -168,7 +168,40 @@ class Gamification extends CI_Model{
 
         $result_val = array("reuse"=>0,"reuse_reach"=>0,"recursive_impact"=>0,"impact"=>0,"date"=>$from);
         if($type=='u'){
-            $reuse = $this->KnowledgePiece->getNumberOfReusesOfUploadsOfUser($id,$from,$to);
+            $reuse = $this->KnowledgePiece->getTotalNumberOfReusesOfUploadsOfUser($id,$from,$to);
+            $ld_reuse = $this->KnowledgePiece->getNumberOfLikesAndDownloadsOnReuseOfUploadsOfUser($id,$from,$to);
+        }else{
+            $reuse = $this->KnowledgePiece->getNumberOfReusesOfUpload($type,$id,$from,$to);
+            $ld_reuse = $this->KnowledgePiece->getNumberOfLikesAndDownloadsOnReuseOfUpload($type,$id,$from,$to);
+        }
+
+        if($reuse){
+            foreach($reuse as $r){
+                $result_val['reuse']+=$r->count;
+                $result_val['impact']+=($r->count*$this->scores['impact']['reuse']);
+            }
+            if($ld_reuse){
+                foreach($ld_reuse as $likeordownload){
+                    if($likeordownload->ldt=='d'){
+                        $result_val['reuse_reach']+=($likeordownload->count*$this->scores['reach']['downloads']);
+                        $result_val['impact']+=(($likeordownload->count*$this->scores['reach']['downloads'])*$this->scores['impact']['reach']);
+                    }else if($likeordownload->ldt=='l'){
+                        $result_val['reuse_reach']+=($likeordownload->count*$this->scores['reach']['likes']);
+                        $result_val['impact']+=(($likeordownload->count*$this->scores['reach']['likes'])*$this->scores['impact']['reach']);
+                    }
+                }
+            }
+        }
+
+        return $result_val;
+    }
+
+    // TODO: Optimize further by removing from - to entirely
+    public function getTotalImpact($type,$id,$from,$to){
+
+        $result_val = array("reuse"=>0,"reuse_reach"=>0,"recursive_impact"=>0,"impact"=>0,"date"=>$from);
+        if($type=='u'){
+            $reuse = $this->KnowledgePiece->getTotalNumberOfReusesOfUploadsOfUser($id);
             $ld_reuse = $this->KnowledgePiece->getNumberOfLikesAndDownloadsOnReuseOfUploadsOfUser($id,$from,$to);
         }else{
             $reuse = $this->KnowledgePiece->getNumberOfReusesOfUpload($type,$id,$from,$to);
