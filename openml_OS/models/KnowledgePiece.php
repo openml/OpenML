@@ -277,6 +277,7 @@ class KnowledgePiece extends Database_write{
         return $this->KnowledgePiece->query($sql);
     }
 
+    /** Older version.
     function getNumberOfLikesAndDownloadsOnReuseOfUploadsOfUser($u_id,$from=null,$to=null){
         $datareuse_sql = "SELECT 'd' as ot, 'r' as rt, run.rid as reuse_id, DATE(run.start_time) as date FROM `run`, `task_inputs`, `dataset` WHERE dataset.uploader=".$u_id." AND task_inputs.value=dataset.did AND task_inputs.input='source_data' AND run.task_id=task_inputs.task_id AND dataset.uploader<>run.uploader";
         $flowreuse_sql = "SELECT 'f' as ot, 'r' as rt, run.rid as reuse_id, DATE(run.start_time) as date FROM `implementation`, `run`, `algorithm_setup` WHERE implementation.uploader=".$u_id." AND algorithm_setup.implementation_id=implementation.id AND run.setup=algorithm_setup.sid AND implementation.uploader<>run.uploader";
@@ -315,7 +316,7 @@ class KnowledgePiece extends Database_write{
 
         echo $sql;
         return $this->KnowledgePiece->query($sql);
-    }
+    }**/
 
     //Adapted in same way as above
     function getNumberOfLikesAndDownloadsOnReuseOfUploadsOfUser($u_id,$from=null,$to=null){
