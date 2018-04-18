@@ -1,5 +1,5 @@
 <?php
-class Api_model extends CI_Model {
+class MY_Api_Model extends CI_Model {
   protected $outputFormat = 'xml';
   function __construct() {
     parent::__construct();
