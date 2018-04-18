@@ -1,6 +1,6 @@
 <?php
 /* TODO: SHOULD BE ABSTRACT CLASS. CURRENTLY NOT SUPPORTED BY CI. */
-class Community extends CI_Model {
+class MY_Community_Model extends CI_Model {
   
   protected $table;
   protected $include_deleted_activated;
