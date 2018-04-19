@@ -1,5 +1,5 @@
 <?php
-class Author extends Community {
+class Author extends MY_Community_Model {
 	
 	function __construct()
     {

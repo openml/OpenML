@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-class KnowledgePiece extends Database_write{
+class KnowledgePiece extends MY_Database_Write_Model {
 
     function __construct() {
         parent::__construct();

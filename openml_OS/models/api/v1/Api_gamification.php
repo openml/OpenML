@@ -1,6 +1,6 @@
 <?php
 
-class Api_gamification extends Api_model {
+class Api_gamification extends MY_Api_Model {
 
     protected $version = 'v1';
     

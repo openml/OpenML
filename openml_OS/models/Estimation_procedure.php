@@ -1,5 +1,5 @@
 <?php
-class Estimation_procedure extends Database_read {
+class Estimation_procedure extends MY_Database_Read_Model {
   
   function __construct() {
     parent::__construct();

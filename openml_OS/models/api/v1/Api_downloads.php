@@ -1,6 +1,6 @@
 <?php
 
-class Api_downloads extends Api_model {
+class Api_downloads extends MY_Api_Model {
 
     protected $version = 'v1';
 
