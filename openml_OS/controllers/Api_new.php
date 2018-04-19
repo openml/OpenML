@@ -145,6 +145,7 @@ class Api_new extends CI_Controller {
     // TODO: very important (for future versions of the API)! 
     if ($this->database_connection_error) {
       $this->Api_data->returnError(107, $this->version);
+      return;
     }
     
     $request_type = strtolower($_SERVER['REQUEST_METHOD']);
