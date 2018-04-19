@@ -70,7 +70,7 @@ class Api_new extends CI_Controller {
     loadpage('v1/'.$this->page,false,'pre');
     // before anything, check if we have a database connection
     if (!$this->Database_singleton->connected()) {
-      $this->Api_data->returnError(107, $this->version);
+      $this->Api_data->returnError(107, 'v1');
       return;
     }
 
