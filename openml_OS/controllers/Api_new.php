@@ -66,6 +66,8 @@ class Api_new extends CI_Controller {
     
     
     // ------------- EVERYTHING BELOW SHOULD NOT BE IN CONSTRUCTOR -------------
+    // TODO: This means that the error messages should be stored in a different file! (Not dependend on v1)
+    loadpage('v1/'.$this->page,false,'pre');
     // before anything, check if we have a database connection
     if (!$this->Database_singleton->connected()) {
       $this->Api_data->returnError(107, $this->version);
@@ -122,12 +124,15 @@ class Api_new extends CI_Controller {
   }
 
   public function v1($type) {
+    // TODO: Please note, that the pre.php in pages/v1 is now used 
+    //       for error messages and is globally used (accros api versions)
     $this->bootstrap('1');
   }
 
   private function bootstrap($version) {
     $outputFormats = array('xml','json');
-
+    
+    // TODO: pre.php for version 1 was already loaded
     loadpage('v'.$version.'/'.$this->page,false,'pre');
     $segs = $this->uri->segment_array();
 
