@@ -9,7 +9,9 @@ class Api_new extends CI_Controller {
     $this->controller = 'api_new';
     $this->page = 'xml';
     $this->active = 'learn';
-
+    
+    $this->load->model('Database_singleton');
+    
     //$this->load->model('api/v1/Api_test');
     $this->load->model('api/v1/Api_data');
     $this->load->model('api/v1/Api_votes');
