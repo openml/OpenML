@@ -59,7 +59,7 @@
   <xs:sequence>
     <xs:element name="name" type="oml:casual_string1024"/>  <!-- The name of the parameter -->
     <xs:element name="data_type" minOccurs="0" maxOccurs="1" type="oml:basic_latin128"/> <!-- Data type of the parameter. Should be either integer, numeric, string, vector, matrix, object. -->
-    <xs:element name="default_value" minOccurs="0" maxOccurs="1" type="oml:basic_latin2048"/> <!-- Default value of the parameter. -->
+    <xs:element name="default_value" minOccurs="0" maxOccurs="1" type="oml:basic_latin2048x"/> <!-- Default value of the parameter. -->
     <xs:element name="description" minOccurs="0" maxOccurs="1" type="oml:basic_latin1024"/> <!-- Description of what this parameter does. -->
     <xs:element name="recommendedRange" minOccurs="0" maxOccurs="1" type="oml:basic_latin1024"/> <!-- Describes minimum value, maximun value and/or a recommended range of values. -->
   </xs:sequence>
@@ -111,6 +111,12 @@
     <xs:pattern value="\p{IsBasicLatin}*"/>
     <xs:maxLength value="2048" />
     <xs:minLength value="1" />
+  </xs:restriction>
+<xs:simpleType name="basic_latin2048x"> <!-- TODO: remove when OK -->
+  <xs:restriction base="xs:string">
+    <xs:pattern value="\p{IsBasicLatin}*"/>
+    <xs:maxLength value="2048" />
+    <xs:minLength value="0" />
   </xs:restriction>
 </xs:simpleType>
 </xs:schema>
