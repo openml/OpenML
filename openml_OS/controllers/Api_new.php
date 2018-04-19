@@ -66,8 +66,11 @@ class Api_new extends CI_Controller {
     
     
     // ------------- EVERYTHING BELOW SHOULD NOT BE IN CONSTRUCTOR -------------
-    if (!$this->Database_singleton->connected()) {
-      $this->database_connection_error = true;
+    //               (because of undesired return statement)
+    $this->database_connection_error = true;
+    if ($this->Database_singleton->connected()) {
+      $this->database_connection_error = false;
+    } else {
       return;
     }
 
