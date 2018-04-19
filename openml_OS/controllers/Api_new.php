@@ -129,10 +129,6 @@ class Api_new extends CI_Controller {
     
     loadpage('v'.$version.'/'.$this->page,false,'pre');
     $segs = $this->uri->segment_array();
-    
-    if ($this->database_connection_error) {
-      $this->Api_data->returnError(107, $this->version);
-    }
 
     $controller = array_shift($segs);
     $this->version = array_shift($segs);
@@ -144,6 +140,11 @@ class Api_new extends CI_Controller {
     if (in_array($type,$outputFormats)) {
       $outputFormat = $type;
       $type = array_shift($segs);
+    }
+    
+    // TODO: very important (for future versions of the API)! 
+    if ($this->database_connection_error) {
+      $this->Api_data->returnError(107, $this->version);
     }
     
     $request_type = strtolower($_SERVER['REQUEST_METHOD']);
