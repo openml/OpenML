@@ -134,9 +134,13 @@ class Api_new extends CI_Controller {
       $outputFormat = $type;
       $type = array_shift($segs);
     }
-
+    
+    if (!$this->Database_singleton->connected()) {
+      $this->Api_data->returnError(107, $this->version);
+      return;
+    }
+    
     $request_type = strtolower($_SERVER['REQUEST_METHOD']);
-
     if ($this->authenticated == false && $request_type != 'get') {
       if ($this->provided_hash) {
         $this->Api_data->returnError(103, $this->version);
