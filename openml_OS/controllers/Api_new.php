@@ -63,6 +63,14 @@ class Api_new extends CI_Controller {
     $this->xml_fields_run = $this->config->item('xml_fields_run');
 
     $this->data_controller = $this->config->item('data_controller');
+    
+    
+    // ------------- EVERYTHING BELOW SHOULD NOT BE IN CONSTRUCTOR -------------
+    // before anything, check if we have a database connection
+    if (!$this->Database_singleton->connected()) {
+      $this->Api_data->returnError(107, $this->version);
+      return;
+    }
 
     // some user authentication things. 
     // used the stfu operator as CI throws notice otherwise
@@ -133,11 +141,6 @@ class Api_new extends CI_Controller {
     if (in_array($type,$outputFormats)) {
       $outputFormat = $type;
       $type = array_shift($segs);
-    }
-    
-    if (!$this->Database_singleton->connected()) {
-      $this->Api_data->returnError(107, $this->version);
-      return;
     }
     
     $request_type = strtolower($_SERVER['REQUEST_METHOD']);
