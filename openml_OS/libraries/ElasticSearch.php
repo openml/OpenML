@@ -902,6 +902,7 @@ class ElasticSearch {
             'task_id' => $d->task_id,
             'runs' => $this->checkNumeric($d->runs),
             'visibility' => ((strtotime($d->embargo_end_date) < time()) ? 'public' : 'private'),
+            'embargo_end_date' => $d->embargo_end_date,
             'tasktype' => array(
                 'tt_id' => $d->ttid,
                 'name' => $d->name

@@ -1,5 +1,5 @@
 <?php
-class Task_type extends Database_write {
+class Task_type extends MY_Database_Write_Model {
 	
   function __construct() {
     parent::__construct();

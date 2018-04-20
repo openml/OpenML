@@ -1,20 +1,15 @@
 <?php
-class Api_model extends CI_Model {
-
+class MY_Api_Model extends CI_Model {
   protected $outputFormat = 'xml';
-
   function __construct() {
     parent::__construct();
     $this->load->helper('text');
     $this->legal_tag_entities = array('data','task','flow','setup','run');
-
     $this->openmlGeneralErrorCode = $this->config->item('general_http_error_code');
   }
-
   function xmlEscape($string) {
     return str_replace(array('&', '<', '>', '\'', '"'), array('&amp;', '&lt;', '&gt;', '&apos;', '&quot;'), $string);
   }
-
   // taken from: http://outlandish.com/blog/xml-to-json/
   function xmlToArray($xml, $options = array()) {
     $defaults = array(
@@ -30,7 +25,6 @@ class Api_model extends CI_Model {
     $options = array_merge($defaults, $options);
     $namespaces = $xml->getDocNamespaces();
     $namespaces[''] = null; //add base (empty) namespace
-
     //get attributes from all namespaces
     $attributesArray = array();
     foreach ($namespaces as $prefix => $namespace) {
@@ -45,7 +39,6 @@ class Api_model extends CI_Model {
             $attributesArray[$attributeKey] = (string)$attribute;
         }
     }
-
     //get child nodes from all namespaces
     $tagsArray = array();
     foreach ($namespaces as $prefix => $namespace) {
@@ -54,13 +47,11 @@ class Api_model extends CI_Model {
             //recurse into child nodes
             $childArray = $this->xmlToArray($childXml, $options);
             list($childTagName, $childProperties) = each($childArray);
-
             //replace characters in tag name
             if ($options['keySearch']) $childTagName =
                     str_replace($options['keySearch'], $options['keyReplace'], $childTagName);
             //add namespace prefix, if any
             if ($prefix) $childTagName = $prefix . $options['namespaceSeparator'] . $childTagName;
-
             if (!isset($tagsArray[$childTagName])) {
                 //only entry with this key
                 //test if tags of this type should always be arrays, no matter the element count
@@ -79,33 +70,27 @@ class Api_model extends CI_Model {
             }
         }
     }
-
     //get text content of node
     $textContentArray = array();
     $plainText = trim((string)$xml);
     if ($plainText !== '') $textContentArray[$options['textContent']] = $plainText;
-
     //stick it all together
     $propertiesArray = !$options['autoText'] || $attributesArray || $tagsArray || ($plainText === '')
             ? array_merge($attributesArray, $tagsArray, $textContentArray) : $plainText;
-
     //return node as array
     return array(
         $xml->getName() => $propertiesArray
     );
   }
-
   public function returnError($code, $version, $httpErrorCode = 412, $additionalInfo = null, $emailLog = false, $supress_output = false) {
     $this->Log->api_error('error', $_SERVER['REMOTE_ADDR'], $code, $_SERVER['QUERY_STRING'], $this->load->apiErrors[$code] . (($additionalInfo == null)?'':$additionalInfo) );
     $error['code'] = $code;
     $error['message'] = htmlentities( $this->load->apiErrors[$code] );
     $error['additional'] = htmlentities( $additionalInfo );
-
     if (!$supress_output) {
       http_response_code($httpErrorCode);
       $this->xmlContents('error-message', $version, $error);
     }
-
     if ($emailLog && defined('EMAIL_API_LOG')) {
       $to = EMAIL_API_LOG;
       $subject = 'OpenML API Exception: ' . $code;
@@ -113,10 +98,8 @@ class Api_model extends CI_Model {
       sendEmail($to, $subject, $content,'text');
     }
   }
-
   protected function xmlContents($xmlFile, $version, $source) {
     $view = 'pages/'.$this->controller.'/' . $version . '/' . $this->page.'/'.$xmlFile.'.tpl.php';
-
     if ($this->outputFormat == 'json') {
       $jsonTemplate = 'pages/'.$this->controller.'/' . $version . '/json/'.$xmlFile.'.tpl.php';
       if (file_exists(APPPATH . 'views/' . $jsonTemplate)) { // if we have native json templates
@@ -139,7 +122,6 @@ class Api_model extends CI_Model {
       echo $data;
     }
   }
-
   /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
    * @function entity_tag_untag:
    *    tags or untags an entity (data, flow, task, setup, run)
@@ -161,27 +143,21 @@ class Api_model extends CI_Model {
     // checks if type in {dataset, implementation, run, task, algorithm_setup}
     $taggable = $this->config->item('taggable_entities');
     if(!in_array($type, array_keys($taggable))) {
-
       $this->returnError(470, $this->version);
       return false;
     }
-
     if ($id == false || $tag == false) {
       $this->returnError(471, $this->version);
       return false;
     }
-
     $model_name_entity = ucfirst($type);
     $model_name_tag = ucfirst($taggable[$type]);
     $currentTime = now();
-
     $entity = $this->{$model_name_entity}->getById($id);
     if (!$entity) {
       $this->returnError(472, $this->version);
       return false;
     }
-
-
     if ($do_untag) {
       /* * * * * * * * * * *
        *     U N T A G     *
@@ -191,13 +167,11 @@ class Api_model extends CI_Model {
         $this->returnError(475, $this->version);
         return false;
       }
-
       $is_admin = $this->ion_auth->is_admin($this->user_id);
       if ($tag_record->uploader != $this->user_id && $is_admin == false) {
         $this->returnError(476, $this->version);
         return false;
       }
-
       $this->{$model_name_tag}->delete( array( $id, $tag ) );
     } else {
       /* * * * * * * * * * *
@@ -214,14 +188,12 @@ class Api_model extends CI_Model {
         'uploader' => $this->user_id,
         'date' => $currentTime
       );
-
       $res = $this->{$model_name_tag}->insert($tag_data);
       if ($res == false) {
         $this->returnError(474, $this->version);
         return false;
       }
     }
-
     try {
       //update index
       if ($special_name != 'setup') { // setups can not be indexed
@@ -238,7 +210,6 @@ class Api_model extends CI_Model {
       $this->returnError(105, $this->version, $this->openmlGeneralErrorCode, $e->getMessage(), false, $supress_output);
       return false;
     }
-
     if (!$supress_output) {
       $tags = $this->{$model_name_tag}->getColumnWhere('tag', 'id = ' . $id);
       $this->xmlContents(

@@ -1,5 +1,5 @@
 <?php
-class Workflow extends Database_read {
+class Workflow extends MY_Database_Read_Model {
 	
 	function __construct()
     {

@@ -1,6 +1,6 @@
 <?php
-/* TODO: SHOULD BE ABSTRACT CLASS. CURRENTLY NOT SUPPORTED BY CI. */
-class Community extends CI_Model {
+/* TODO: HACK. THIS CORE CLASS IS NOT AUTOLOADED BUT INCLUDED FROM MY MODEL. */
+class MY_Community_Model extends MY_Model {
   
   protected $table;
   protected $include_deleted_activated;

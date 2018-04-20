@@ -1,6 +1,6 @@
 <?php
 
-class Run_evaluated extends Database_write {
+class Run_evaluated extends MY_Database_Write_Model {
   function __construct() {
     parent::__construct();
     $this->table = 'run_evaluated';

@@ -1,6 +1,6 @@
 <?php
-/* TODO: SHOULD BE ABSTRACT CLASS. CURRENTLY NOT SUPPORTED BY CI. */
-class Database_write extends Database_read {
+/* TODO: HACK. THIS CORE CLASS IS NOT AUTOLOADED BUT INCLUDED FROM MY MODEL. */
+class MY_Database_Write_Model extends MY_Database_Read_Model {
   
   function __construct() {
     parent::__construct();
@@ -56,4 +56,5 @@ class Database_write extends Database_read {
     return $this->db->where( $clause )->delete( $this->table );
   }
 }
+
 ?>

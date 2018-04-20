@@ -1,5 +1,5 @@
 <?php
-class Input_setting extends Database_write {
+class Input_setting extends MY_Database_Write_Model {
 	
 	function __construct()
     {

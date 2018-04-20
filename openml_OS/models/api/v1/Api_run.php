@@ -1,5 +1,5 @@
 <?php
-class Api_run extends Api_model {
+class Api_run extends MY_Api_Model {
 
   protected $version = 'v1';
 
@@ -141,7 +141,7 @@ class Api_run extends Api_model {
       $where_server_error = '';
     }
     // Don't return runs of closed runs, unless the user uploaded them
-    $where_task_closed = ' AND (`t`.`embargo_end_date` < NOW() OR `r`.`uploader` = '.$user_id.')';
+    $where_task_closed = ' AND (`t`.`embargo_end_date` is NULL OR `t`.`embargo_end_date` < NOW() OR `r`.`uploader` = '.$user_id.')';
 
     $where_limit = $limit == false ? '' : ' LIMIT ' . $limit;
     if ($limit != false && $offset != false) {
@@ -678,7 +678,7 @@ class Api_run extends Api_model {
 
     $this->db->trans_start();
     $this->Run_evaluated->replace($data);
-	
+
     foreach($xml->children('oml', true)->{'evaluation'} as $e) {
       $evaluation = xml2assoc($e, true);
 
@@ -712,8 +712,8 @@ class Api_run extends Api_model {
 	  $this->returnError(428, $this->version);
       return;
     }
-	
-	
+
+
     $timestamps[] = microtime(true); // profiling 2
 
     // update elastic search index.

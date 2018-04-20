@@ -1,5 +1,5 @@
 <?php
-class Meta_dataset extends Community {
+class Meta_dataset extends MY_Community_Model {
 	
 	function __construct() {
 		parent::__construct();

@@ -11,7 +11,7 @@
  *
  * @author s092766
  */
-class Badge extends Database_write {
+class Badge extends MY_Database_Write_Model {
 
     function __construct() {
         parent::__construct();

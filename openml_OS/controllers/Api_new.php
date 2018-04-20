@@ -9,7 +9,9 @@ class Api_new extends CI_Controller {
     $this->controller = 'api_new';
     $this->page = 'xml';
     $this->active = 'learn';
-
+    
+    $this->load->model('Database_singleton');
+    
     //$this->load->model('api/v1/Api_test');
     $this->load->model('api/v1/Api_data');
     $this->load->model('api/v1/Api_votes');
@@ -61,6 +63,16 @@ class Api_new extends CI_Controller {
     $this->xml_fields_run = $this->config->item('xml_fields_run');
 
     $this->data_controller = $this->config->item('data_controller');
+    
+    
+    // ------------- EVERYTHING BELOW SHOULD NOT BE IN CONSTRUCTOR -------------
+    //               (because of undesired return statement)
+    $this->database_connection_error = true;
+    if ($this->Database_singleton->connected()) {
+      $this->database_connection_error = false;
+    } else {
+      return;
+    }
 
     // some user authentication things. 
     // used the stfu operator as CI throws notice otherwise
@@ -117,7 +129,7 @@ class Api_new extends CI_Controller {
 
   private function bootstrap($version) {
     $outputFormats = array('xml','json');
-
+    
     loadpage('v'.$version.'/'.$this->page,false,'pre');
     $segs = $this->uri->segment_array();
 
@@ -132,9 +144,14 @@ class Api_new extends CI_Controller {
       $outputFormat = $type;
       $type = array_shift($segs);
     }
-
+    
+    // TODO: very important (for future versions of the API)! 
+    if ($this->database_connection_error) {
+      $this->Api_data->returnError(107, $this->version);
+      return;
+    }
+    
     $request_type = strtolower($_SERVER['REQUEST_METHOD']);
-
     if ($this->authenticated == false && $request_type != 'get') {
       if ($this->provided_hash) {
         $this->Api_data->returnError(103, $this->version);

@@ -1,5 +1,5 @@
 <?php
-class Runfile extends Database_write {
+class Runfile extends MY_Database_Write_Model {
   
   function __construct() {
     parent::__construct();

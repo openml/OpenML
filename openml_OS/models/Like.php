@@ -1,6 +1,6 @@
 <?php
 
-class Like extends Database_write {
+class Like extends MY_Database_Write_Model {
 
     function __construct() {
         parent::__construct();

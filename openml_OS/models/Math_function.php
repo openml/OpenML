@@ -1,5 +1,5 @@
 <?php
-class Math_function extends Database_read {
+class Math_function extends MY_Database_Read_Model {
 	
 	function __construct() {
     parent::__construct();

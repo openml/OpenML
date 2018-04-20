@@ -17,11 +17,10 @@
 
 
     <h2 class="contact-header">Report issues, feature request</h2>
-    <p>OpenML is an open source project on GitHub. If you are familiar with GitHub, please post issues and feature request there:</p>
-    <a href="https://github.com/openml/OpenML/issues"><i class="fa fa-github fa-lg"></i> OpenML project, API</a><br><br>
-    <a href="https://github.com/openml/website/issues"><i class="fa fa-github fa-lg"></i> Website</a><br><br>
-    <a href="https://github.com/openml/openml-r/issues"><i class="fa fa-github fa-lg"></i> R interface</a><br><br>
-    <a href="https://github.com/openml/openml-python/issues"><i class="fa fa-github fa-lg"></i> Python interface</a><br><br>
+    <p>OpenML is an open source project on GitHub. To get help quickly, please <a href='https://docs.openml.org/developers/'>post issues in our GitHub issue trackers</a></p>.
+
+    <h2 class="contact-header">Get involved</h2>
+    <p>Want to help us make machine learning better? <a href='https://docs.openml.org/Contributing/'>Check out how to get involved!</a></p>.
 
     <h2 id="team-core">Our Team</h2>
     <p>OpenML is a community effort, and <a href="https://github.com/openml/OpenML/wiki/How-to-contribute">everybody is welcome to contribute</a>. Below are some of the core contributors, but also check out <a href="https://github.com/openml/">our GitHub page</a>.<br />

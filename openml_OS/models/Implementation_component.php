@@ -1,5 +1,5 @@
 <?php
-class Implementation_component extends Database_write {
+class Implementation_component extends MY_Database_Write_Model {
 	
   function __construct() {
     parent::__construct();

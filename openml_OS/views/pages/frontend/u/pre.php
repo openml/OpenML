@@ -9,7 +9,7 @@ if(false !== strpos($_SERVER['REQUEST_URI'],'/u/')) {
 	$this->user_id = $info[array_search('u',$info)+1];
 	$this->baseurl = $_SERVER['REQUEST_URI'];
 	$this->author = $this->Author->getById($this->user_id);
-	$this->activity_subpages = array('flows','data','runs');
+	$this->activity_subpages = array('flows','data','runs','tasks');
 
 	//get data from ES
 	$this->p = array();

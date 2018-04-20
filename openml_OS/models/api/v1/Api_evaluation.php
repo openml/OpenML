@@ -1,5 +1,5 @@
 <?php
-class Api_evaluation extends Api_model {
+class Api_evaluation extends MY_Api_Model {
 
   protected $version = 'v1';
 

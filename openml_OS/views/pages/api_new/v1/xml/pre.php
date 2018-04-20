@@ -7,6 +7,7 @@ $this->apiErrors[103] = 'Authentication failed';
 $this->apiErrors[104] = 'This is a read-only account, it does not have permission for write operations. ';
 $this->apiErrors[105] = 'An Elastic Search Exception occured. ';
 $this->apiErrors[106] = 'The intended action requires admin rights. ';
+$this->apiErrors[107] = 'Database connection error. Usually due to high server load. Please wait for N seconds and try again. ';
 
 
 // for function: openml.data.description
