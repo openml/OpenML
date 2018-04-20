@@ -120,14 +120,15 @@ class Api_evaluation extends MY_Api_Model {
       if (!$implementation_id) {
         $sql_test =
           'SELECT count(distinct r.rid) as count ' .
-          'FROM run r WHERE 1 ' . // 1 important to make concatenated query work
+          'FROM run r, task_t '.
+          'WHERE r.task_id = t.task_id ' . 
           $where_runs . $where_limit;
         $count = $this->Evaluation->query($sql_test)[0]->count;
       } else {
         $sql_test =
           'SELECT count(distinct r.rid) as count ' .
-          'FROM run r, algorithm_setup s ' .
-          'WHERE r.setup = s.sid ' .
+          'FROM run r, task t, algorithm_setup s ' .
+          'WHERE r.setup = s.sid AND r.task_id = t.task_id ' .
           $where_runs .
           $where_limit ;
         $count = $this->Evaluation->query($sql_test)[0]->count;
