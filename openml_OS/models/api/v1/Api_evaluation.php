@@ -120,7 +120,7 @@ class Api_evaluation extends MY_Api_Model {
       if (!$implementation_id) {
         $sql_test =
           'SELECT count(distinct r.rid) as count ' .
-          'FROM run r, task_t '.
+          'FROM run r, task t '.
           'WHERE r.task_id = t.task_id ' . 
           $where_runs . $where_limit;
         $count = $this->Evaluation->query($sql_test)[0]->count;
