@@ -109,7 +109,7 @@ class Api_evaluation extends MY_Api_Model {
     if($limit != false && $offset != false){
       $where_limit =  ' LIMIT ' . $offset . ',' . $limit;
     }
-    $where_task_closed = ' AND (`r`.`task_id` NOT IN (select task_id from task where embargo_end_date > NOW()) OR `r`.`uploader` = '.$user_id.')';
+    $where_task_closed = ' AND (`t`.`embargo_end_date` is NULL OR `t`.`embargo_end_date` < NOW() OR `r`.`uploader` = '.$user_id.')';
 
     $where_runs = $where_task . $where_setup . $where_uploader . $where_impl . $where_run . $where_tag . $where_task_closed;
 
