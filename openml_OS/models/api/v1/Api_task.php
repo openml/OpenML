@@ -374,7 +374,7 @@ class Api_task extends MY_Api_Model {
     // update elastic search index.
     try {
       // TODO: uncomment when fixed
-      // $this->elasticsearch->index('task', $id);
+      $this->elasticsearch->index('task', $id);
       $this->elasticsearch->index('user', $this->user_id);
     } catch (Exception $e) {
       $additionalMsg = get_class() . '.' . __FUNCTION__ . ':' . $e->getMessage();
