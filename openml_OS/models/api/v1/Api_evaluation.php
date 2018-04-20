@@ -147,14 +147,15 @@ class Api_evaluation extends MY_Api_Model {
     // Solution is to force the index used in the run and evaluation table (or not use ORDER BY at all).
     $sql =
       'SELECT r.rid, r.task_id, r.start_time, s.implementation_id, s.sid, f.name AS `function`, e.value, e.array_data, i.fullName, d.did, d.name ' .
-      'FROM run r force index(PRIMARY), evaluation e force index(PRIMARY), algorithm_setup s, implementation i, dataset d, task_inputs t, math_function f ' .
+      'FROM run r force index(PRIMARY), evaluation e force index(PRIMARY), algorithm_setup s, implementation i, dataset d, task t, task_inputs ti, math_function f ' .
       'WHERE r.setup = s.sid ' .
       'AND e.source = r.rid ' .
       'AND e.function_id = f.id ' .
       'AND s.implementation_id = i.id ' .
       'AND r.task_id = t.task_id ' .
-      'AND t.input = "source_data" ' .
-      'AND t.value = d.did ' . $where_total .
+      'AND r.task_id = ti.task_id ' .
+      'AND ti.input = "source_data" ' .
+      'AND ti.value = d.did ' . $where_total .
     //'ORDER BY r.rid' .
       $where_limit;
     $res = $this->Evaluation->query($sql);
