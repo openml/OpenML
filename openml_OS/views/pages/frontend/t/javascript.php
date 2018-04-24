@@ -144,6 +144,11 @@ client.search({
 	d[0] = [];
 	names[0] = 'frontier';
 
+	var embargo_end_date = null;
+	<?php if(array_key_exists('embargo_end_date', $this->task)){
+		echo 'embargo_end_date = Date.parse("'. str_replace(" ","T",$this->task['embargo_end_date']) .'");';
+	}?>
+
 	for(var i=0;i<data.length;i++){
 		var run = data[i]['_source'];
 		var evals = run['evaluations'];
@@ -166,8 +171,9 @@ client.search({
 			if(d[0].length==0 || (higherIsBetter && e > d[0][d[0].length-1]['y']) || (!higherIsBetter && e < d[0][d[0].length-1]['y'])){
 				d[0].push({x: dat, y: e, f: run['run_flow']['name'], r: run['run_id'], u: run['uploader'], t: getEval(evals,'build_cpu_time')});
 			}
-
-			if(!pairs.has(run['run_flow']['name']+e)){ //check if submission is new
+			console.log(dat+"  "+embargo_end_date);
+			//check if submission is new or submitted during closed phase
+			if(!pairs.has(run['run_flow']['name']+e) || (embargo_end_date !== null && embargo_end_date > dat)){
 				pairs.add(run['run_flow']['name']+e);
 				var l = leaders[map[run['uploader']]-1];
 				l.entries = l.entries+1;
