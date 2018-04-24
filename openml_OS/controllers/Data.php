@@ -9,6 +9,17 @@ class Data extends CI_Controller {
     
     $this->load->Library('ion_auth');
     $this->load->Model('Author');
+    $this->load->Model('Database_singleton');
+    
+    
+    // ------------- EVERYTHING BELOW SHOULD NOT BE IN CONSTRUCTOR -------------
+    //               (because of undesired return statement)
+    $this->database_connection_error = true;
+    if ($this->Database_singleton->connected()) {
+      $this->database_connection_error = false;
+    } else {
+      return;
+    }
     
     // authentication
     $getPostHash = @$this->input->get_post('api_key');
@@ -34,6 +45,10 @@ class Data extends CI_Controller {
   }
   
   private function bootstrap($version) {
+    if ($this->database_connection_error) {
+      die('Database connection error. Usually due to high server load. Please wait N seconds and try again. ');
+    }
+    
     $segs = $this->uri->segment_array();
 
     $controller = array_shift($segs);

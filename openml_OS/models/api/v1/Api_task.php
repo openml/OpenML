@@ -183,29 +183,35 @@ class Api_task extends MY_Api_Model {
 
   private function task_delete($task_id) {
 
-    $task = $this->Task->getById( $task_id );
-    if( $task == false ) {
-      $this->returnError( 452, $this->version );
+    $task = $this->Task->getById($task_id);
+    if ($task == false) {
+      $this->returnError(452, $this->version);
       return;
     }
+    
+    
+    if ($task->creator != $this->user_id and !$this->user_has_admin_rights) {
+      $this->returnError(453, $this->version);
+      return;
+    }
+    
+    $runs = $this->Run->getWhere('task_id = "' . $task->task_id . '"');
 
-    $runs = $this->Run->getWhere( 'task_id = "' . $task->task_id . '"' );
-
-    if( $runs ) {
-      $this->returnError( 454, $this->version );
+    if ($runs) {
+      $this->returnError(454, $this->version);
       return;
     }
 
 
     $result = true;
-    $result = $result && $this->Task_inputs->deleteWhere('task_id = ' . $task->task_id );
+    $result = $result && $this->Task_inputs->deleteWhere('task_id = ' . $task->task_id);
 
-    if( $result ) {
-      $result = $this->Task->delete( $task->task_id );
+    if ($result) {
+      $result = $this->Task->delete($task->task_id);
     }
 
-    if( $result == false ) {
-      $this->returnError( 455, $this->version );
+    if ($result == false) {
+      $this->returnError(455, $this->version);
       return;
     }
 
@@ -374,7 +380,7 @@ class Api_task extends MY_Api_Model {
     // update elastic search index.
     try {
       // TODO: uncomment when fixed
-      // $this->elasticsearch->index('task', $id);
+      $this->elasticsearch->index('task', $id);
       $this->elasticsearch->index('user', $this->user_id);
     } catch (Exception $e) {
       $additionalMsg = get_class() . '.' . __FUNCTION__ . ':' . $e->getMessage();
