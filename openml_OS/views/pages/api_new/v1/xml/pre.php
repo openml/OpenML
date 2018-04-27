@@ -224,6 +224,7 @@ $this->apiErrors[441] = 'estimationprocedure_id not valid';
 $this->apiErrors[450] = 'Please provide API key';
 $this->apiErrors[451] = 'Authentication failed';
 $this->apiErrors[452] = 'Task does not exists';
+$this->apiErrors[453] = 'Task is not owned by you';
 $this->apiErrors[454] = 'Task is executed in some runs. Delete these first';
 $this->apiErrors[455] = 'Deleting task failed.';
 

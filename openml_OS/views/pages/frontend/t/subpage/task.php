@@ -36,19 +36,3 @@
     <a href="https://docs.openml.org/APIs/" class="btn btn-primary btn-raised">OpenML APIs</a>
 
   </div>
-
-      <h2>Discussions</h2>
-      <div class="panel" id="disqus_thread">Loading discussions...</div>
-      <script type="text/javascript">
-          var disqus_shortname = 'openml'; // forum name
-  	var disqus_category_id = '3353607'; // Data category
-  	var disqus_title = '<?php echo $this->task['tasktype']['name']; ?> on <?php echo $this->task['source_data']['name']; ?>'; // Data name
-  	var disqus_url = '<?php echo BASE_URL;?>t/<?php echo $this->task_id; ?>'; // Data url
-
-          /* * * DON'T EDIT BELOW THIS LINE * * */
-          (function() {
-              var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-              dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-              (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-          })();
-      </script>
