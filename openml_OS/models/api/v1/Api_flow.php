@@ -93,10 +93,10 @@ class Api_flow extends MY_Api_Model {
       return;
     }
 
-    $uploader_id = element('uploader', $query_string);
-    $tag = element('tag', $query_string);
-    $limit = element('limit', $query_string);
-    $offset = element('offset', $query_string);
+    $uploader_id = element('uploader', $query_string, null);
+    $tag = element('tag', $query_string, null);
+    $limit = element('limit', $query_string, null);
+    $offset = element('offset', $query_string, null);
     
     if ($offset && !$limit) {
       $this->returnError(503, $this->version);
@@ -110,7 +110,7 @@ class Api_flow extends MY_Api_Model {
       $query->where('t.tag', $tag);
     }
     $query->group_start()->where('`visibility`', 'public')->or_where('i.uploader', $this->user_id)->group_end();
-    if ($uploader_id) {
+    if ($uploader_id !== null) {
       $query->where('i.uploader', $uploader_id);
     }
     if ($limit) {
@@ -123,24 +123,13 @@ class Api_flow extends MY_Api_Model {
 
     # TODO: can remove next statement and replace by original active record
     $implementations_res = $this->Implementation->query($sql);
-    if( $implementations_res == false ) {
-      $this->returnError( 500, $this->version );
+    if($implementations_res == false) {
+      $this->returnError(500, $this->version);
       return;
     }
 
     $this->xmlContents('implementations', $this->version, array('implementations' => $implementations_res));
   }
-
-  // deprecated, will be removed soon
-  /*private function flow_owned() {
-
-    $implementations = $this->Implementation->getColumnWhere( 'id', '`uploader` = "'.$this->user_id.'"' );
-    if( $implementations == false ) {
-      $this->returnError( 312, $this->version );
-      return;
-    }
-    $this->xmlContents( 'implementation-owned', $this->version, array( 'implementations' => $implementations ) );
-  }*/
 
 
   private function flow_exists($name, $external_version) {

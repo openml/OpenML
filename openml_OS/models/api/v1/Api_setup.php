@@ -105,6 +105,7 @@ class Api_setup extends MY_Api_Model {
   }
 
   function setup_list($segs) { 
+    $result_limit = 1000;
     $legal_filters = array('flow', 'setup', 'limit', 'offset', 'tag');
     list($query_string, $illegal_filters) = $this->parse_filters($segs, $legal_filters);
     if (count($illegal_filters) > 0) {
@@ -128,6 +129,14 @@ class Api_setup extends MY_Api_Model {
     $limit = element('limit',$query_string, null);
     $offset = element('offset',$query_string, null);
     $setups = element('setup',$query_string, null); 
+    if ($offset && !$limit) {
+      $this->returnError(675, $this->version);
+      return;
+    }
+    if ($limit && $limit > $result_limit) {
+      $this->returnError(676, $this->version);
+      return;
+    }
     
     // JvR: Two queries, because I really don't know how to do it otherwise. 
     // TODO: improve code to remove 2 queries!
@@ -156,9 +165,8 @@ class Api_setup extends MY_Api_Model {
     
     $setups = array_keys($setup_flows);
     
-    $maxAllowed = 1000;
-    if (count($setups) > $maxAllowed) {
-      $this->returnError(673, $this->version, $this->openmlGeneralErrorCode, 'Allowed: ' . $maxAllowed . ', found:' . count($setups));
+    if (count($setups) > $result_limit) {
+      $this->returnError(673, $this->version, $this->openmlGeneralErrorCode, 'Allowed: ' . $result_limit . ', found:' . count($setups));
       return;
     }
 
