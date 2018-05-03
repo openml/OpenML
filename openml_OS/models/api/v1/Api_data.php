@@ -136,7 +136,7 @@ class Api_data extends MY_Api_Model {
       return;
     }
     
-    $illegal_filter_inputs = $this->check_filter_inputs($query_string, $legal_filters, array('tag', 'data_name'));
+    $illegal_filter_inputs = $this->check_filter_inputs($query_string, $legal_filters, array('tag', 'data_name', 'number_instances', 'number_features', 'number_classes', 'number_missing_values'));
     if (count($illegal_filter_inputs) > 0) {
       $this->returnError(371, $this->version, $this->openmlGeneralErrorCode, 'Filters with illegal values: ' . implode(',', $illegal_filter_inputs));
       return;
