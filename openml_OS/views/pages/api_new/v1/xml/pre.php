@@ -167,7 +167,7 @@ $this->apiErrors[365] = 'Interval start or end illegal';
 $this->apiErrors[370] = 'Illegal filter specified';
 $this->apiErrors[371] = 'Input not safe';
 $this->apiErrors[372] = 'No results';
-$this->apiErrors[473] = 'Can not specify an offset without a limit';
+$this->apiErrors[373] = 'Can not specify an offset without a limit';
 
 // for function: openml.qualities.upload
 $this->apiErrors[381] = 'Something wrong with XML, please check did and evaluation_engine_id';
