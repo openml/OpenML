@@ -99,6 +99,11 @@ class Api_flow extends MY_Api_Model {
     $tag = element('tag', $query_string);
     $limit = element('limit', $query_string);
     $offset = element('offset', $query_string);
+    
+    if ($offset && !$limit) {
+      $this->returnError(503, $this->version);
+      return;
+    }
 
     $query = $this->db->select('`i`.*');
     $query->from('implementation i');
