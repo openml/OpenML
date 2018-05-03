@@ -104,12 +104,8 @@ class Api_setup extends MY_Api_Model {
     }
   }
 
-  function setup_list($segs) {
-    if (count($segs) == 0) {
-      $this->returnError(670, $this->version);
-      return;
-    }
-
+  function setup_list($segs) { 
+    $legal_filters = array('flow', 'setup', 'limit', 'offset', 'tag');
     list($query_string, $illegal_filters) = $this->parse_filters($segs, $legal_filters);
     if (count($illegal_filters) > 0) {
       $this->returnError(671, $this->version, $this->openmlGeneralErrorCode, 'Legal filter operators: ' . implode(',', $legal_filters) .'. Found illegal filter(s): ' . implode(', ', $illegal_filters));
@@ -119,6 +115,11 @@ class Api_setup extends MY_Api_Model {
     $illegal_filter_inputs = $this->check_filter_inputs($query_string, $legal_filters, array('tag'));
     if (count($illegal_filter_inputs)) {
       $this->returnError(672, $this->version, $this->openmlGeneralErrorCode, 'Filters with illegal values: ' . implode(',', $illegal_filter_inputs));
+      return;
+    }
+    
+    if (count($segs) == 0) {
+      $this->returnError(670, $this->version);
       return;
     }
     
