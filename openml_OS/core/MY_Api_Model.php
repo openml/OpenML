@@ -147,7 +147,7 @@ class MY_Api_Model extends CI_Model {
         }
       }
     }
-    return illegal_fields;
+    return $illegal_fields;
   }
   
   /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
