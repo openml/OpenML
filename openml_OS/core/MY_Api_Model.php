@@ -129,11 +129,13 @@ class MY_Api_Model extends CI_Model {
     $filter_values = array();
     $illegal_filters = array();
     for ($i = 0; $i < count($segs); $i += 2) {
+      $filter_name = $segs[$i];
       if (in_array($segs[$i], $legal_filters) == false) {
-        $illegal_filters[] = $segs[$i];
+        $illegal_filters[] = $filter_name;
       } else {
-        // TODO: maybe $segs does not have an index value plus 1 .. 
-        $filter_values[$segs[$i]] = urldecode($segs[$i+1]);
+        if (count($segs) > $i + 1) {
+          $filter_values[$filter_name] = urldecode($segs[$i+1]);
+        }
       }
     }
     return array($filter_values, $illegal_filters);
