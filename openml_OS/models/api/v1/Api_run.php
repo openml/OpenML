@@ -100,7 +100,7 @@ class Api_run extends MY_Api_Model {
     $legal_filters = array('task', 'setup', 'flow', 'uploader', 'run', 'tag', 'limit', 'offset', 'task_type', 'show_errors');
     
     list($query_string, $illegal_filters) = $this->parse_filters($segs, $legal_filters);
-    if (len($illegal_filters) > 0) {
+    if (count($illegal_filters) > 0) {
       $this->returnError(514, $this->version, $this->openmlGeneralErrorCode, 'Legal filter operators: ' . implode(',', $legal_filters) .'. Found illegal filter: ' . $segs[$i]);
       return;
     }

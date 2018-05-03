@@ -131,7 +131,7 @@ class Api_data extends MY_Api_Model {
     $legal_filters = array('tag', 'status', 'limit', 'offset', 'data_name', 'data_version', 'number_instances', 'number_features', 'number_classes', 'number_missing_values');
     
     list($query_string, $illegal_filters) = $this->parse_filters($segs, $legal_filters);
-    if (len($illegal_filters) > 0) {
+    if (count($illegal_filters) > 0) {
       $this->returnError(370, $this->version, $this->openmlGeneralErrorCode, 'Legal filter operators: ' . implode(',', $legal_filters) .'. Found illegal filter: ' . $segs[$i]);
       return;
     }
