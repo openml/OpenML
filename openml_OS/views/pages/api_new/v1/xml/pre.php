@@ -249,7 +249,7 @@ $this->apiErrors[476] = 'Tag is not owned by you';
 
 // openml.task.list
 $this->apiErrors[480] = 'Illegal filter specified';
-$this->apiErrors[481] = 'Input not safe';
+$this->apiErrors[481] = 'Filter input not according to constraints';
 $this->apiErrors[482] = 'No results';
 
 // openml.file.upload

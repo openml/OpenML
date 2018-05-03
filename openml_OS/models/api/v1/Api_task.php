@@ -79,24 +79,10 @@ class Api_task extends MY_Api_Model {
       }
     }
     
-    // checks the input of each filter
-    for($i = 0; $i < count($legal_filters); ++$i) {
-      $filter_name = $legal_filters[$i];
-      $value = element($filter_name, $query_string, null);
-      
-      if (!$legal_filters_check_numeric[$i]) {
-        if(!is_safe($value)) {
-          $this->returnError(481, $this->version, $this->openmlGeneralErrorCode, 'Illegal input: ' . $filter_name);
-          return;
-        }
-      } else {
-        if ($value != false) {
-          if (!is_natural_number($value)) {
-            $this->returnError(481, $this->version, $this->openmlGeneralErrorCode, 'Non (natural) numeric input: ' . $filter_name);
-            return;
-          }
-        }
-      }
+    $illegal_filters = $this->check_filter_inputs($query_string, $legal_filters, array('type', 'tag', 'data_tag', 'status'));
+    if (count($illegal_filters)) {
+      $this->returnError(481, $this->version, $this->openmlGeneralErrorCode, 'Filters with illegal values: ' . implode(',', $illegal_filters));
+      return;
     }
     
     $type = element('type', $query_string);
