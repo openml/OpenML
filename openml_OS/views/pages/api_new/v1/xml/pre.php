@@ -260,6 +260,7 @@ $this->apiErrors[492] = 'File register error';
 // openml.flows
 $this->apiErrors[500] = 'No results';
 $this->apiErrors[501] = 'Illegal filter operation';
+$this->apiErrors[502] = 'Illegal filter value';
 
 // openml.runs.list
 $this->apiErrors[510] = 'Please provide at least task, flow or setup, uploader or run, to filter results. ';

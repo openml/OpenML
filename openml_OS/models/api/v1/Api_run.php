@@ -123,7 +123,7 @@ class Api_run extends MY_Api_Model {
       return;
     }
 
-    if (!(is_safe($task_id) && is_safe($setup_id) && is_safe($task_type_id) && is_safe($implementation_id) && is_safe($uploader_id) && is_safe($run_id) && is_safe($tag) && is_safe($limit) && is_safe($offset))) {
+    if (!(is_natural_number($task_id) && is_natural_number($setup_id) && is_natural_number($task_type_id) && is_natural_number($implementation_id) && is_natural_number($uploader_id) && is_natural_number($run_id) && is_safe($tag) && is_natural_number($limit) && is_natural_number($offset))) {
       $this->returnError(511, $this->version );
       return;
     }

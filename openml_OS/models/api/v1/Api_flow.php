@@ -94,6 +94,11 @@ class Api_flow extends MY_Api_Model {
     $limit = element('limit', $query_string);
     $offset = element('offset', $query_string);
 
+    if (!(uploader_id($uploader_id) && is_safe($tag) && is_natural_number($limit) && is_natural_number($offset))) {
+      $this->returnError(502, $this->version);
+      return;
+    }
+
     $query = $this->db->select('`i`.*');
     $query->from('implementation i');
     if ($tag) {

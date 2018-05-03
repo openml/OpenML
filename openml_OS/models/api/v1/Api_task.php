@@ -89,7 +89,7 @@ class Api_task extends MY_Api_Model {
     $nr_class = element('number_classes',$query_string);
     $nr_miss = element('number_missing_values',$query_string);
 
-    if (!(is_safe($tag) && is_safe($data_tag) && is_safe($status) && is_safe($type) && is_safe($limit) && is_safe($offset) && is_safe($data_id) && is_safe($data_name) && is_safe($nr_insts) && is_safe($nr_feats) && is_safe($nr_class) && is_safe($nr_miss))) {
+    if (!(is_safe($tag) && is_safe($data_tag) && is_safe($status) && is_safe($type) && is_natural_number($limit) && is_natural_number($offset) && is_natural_number($data_id) && is_safe($data_name) && is_natural_number($nr_insts) && is_natural_number($nr_feats) && is_natural_number($nr_class) && is_natural_number($nr_miss))) {
       $this->returnError(481, $this->version );
       return;
     }
