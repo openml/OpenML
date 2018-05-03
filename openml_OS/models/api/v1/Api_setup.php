@@ -119,47 +119,18 @@ class Api_setup extends MY_Api_Model {
         return;
       }
     }
-
+    
+    $illegal_filter_inputs = $this->check_filter_inputs($query_string, $legal_filters, array('tag'));
+    if (count($illegal_filter_inputs)) {
+      $this->returnError(672, $this->version, $this->openmlGeneralErrorCode, 'Filters with illegal values: ' . implode(',', $illegal_filter_inputs));
+      return;
+    }
+    
     $flows = element('flow',$query_string, null);
     $tag = element('tag',$query_string, null);
     $limit = element('limit',$query_string, null);
     $offset = element('offset',$query_string, null);
     $setups = element('setup',$query_string, null); 
-    
-    if ($flows !== null) {
-      if (strlen($flows) == 0 || !is_cs_natural_numbers($flows)) {
-        $this->returnError(672, $this->version, $this->openmlGeneralErrorCode, 'Non-numeric input: flow');
-        return;
-      }
-    }
-    
-    if ($setups !== null) {
-      if (strlen($setups) == 0 || !is_cs_natural_numbers($setups)) {
-        $this->returnError(672, $this->version, $this->openmlGeneralErrorCode, 'Non-numeric input: setup');
-        return;
-      }
-    }
-    
-    if ($limit !== null) {
-      if (strlen($limit) == 0 || !is_numeric($limit)) {
-        $this->returnError(672, $this->version, $this->openmlGeneralErrorCode, 'Non-numeric input: limit');
-        return;
-      }
-    }
-    
-    if ($offset !== null) {
-      if (strlen($offset) == 0 || !is_numeric($offset)) {
-        $this->returnError(672, $this->version, $this->openmlGeneralErrorCode, 'Non-numeric input: offset');
-        return;
-      }
-    }
-    
-    if ($tag !== null) {
-      if (len($tag) == 0 || !is_safe($tag)) {
-        $this->returnError(672, $this->version, $this->openmlGeneralErrorCode, 'Illegal input: tag');
-        return;
-      }
-    }
     
     // JvR: Two queries, because I really don't know how to do it otherwise. 
     // TODO: improve code to remove 2 queries!

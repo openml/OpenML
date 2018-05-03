@@ -98,13 +98,17 @@ class Api_run extends MY_Api_Model {
 
   private function run_list($segs, $user_id) {
     $legal_filters = array('task', 'setup', 'flow', 'uploader', 'run', 'tag', 'limit', 'offset', 'task_type', 'show_errors');
-    $query_string = array();
-    for ($i = 0; $i < count($segs); $i += 2) {
-      $query_string[$segs[$i]] = urldecode($segs[$i+1]);
-      if (in_array($segs[$i], $legal_filters) == false) {
-        $this->returnError(514, $this->version, $this->openmlGeneralErrorCode, 'Legal filter operators: ' . implode(',', $legal_filters) .'. Found illegal filter: ' . $segs[$i]);
-        return;
-      }
+    
+    list($query_string, $illegal_filters) = $this->parse_filters($segs, $legal_filters);
+    if (len($illegal_filters) > 0) {
+      $this->returnError(514, $this->version, $this->openmlGeneralErrorCode, 'Legal filter operators: ' . implode(',', $legal_filters) .'. Found illegal filter: ' . $segs[$i]);
+      return;
+    }
+    
+    $illegal_filter_inputs = $this->check_filter_inputs($query_string, $legal_filters, array('tag', 'show_errors'));
+    if (count($illegal_filter_inputs) > 0) {
+      $this->returnError(511, $this->version, $this->openmlGeneralErrorCode, 'Filters with illegal values: ' . implode(',', $illegal_filter_inputs));
+      return;
     }
 
     $task_id = element('task', $query_string);
@@ -117,14 +121,9 @@ class Api_run extends MY_Api_Model {
     $limit = element('limit',$query_string);
     $offset = element('offset',$query_string);
     $show_errors = element('show_errors',$query_string);
-
+    
     if ($task_id == false && $task_type_id == false && $setup_id == false && $implementation_id == false && $uploader_id == false && $run_id == false && $tag == false && $limit == false) {
-      $this->returnError( 510, $this->version );
-      return;
-    }
-
-    if (!(is_natural_number($task_id) && is_natural_number($setup_id) && is_natural_number($task_type_id) && is_natural_number($implementation_id) && is_natural_number($uploader_id) && is_natural_number($run_id) && is_safe($tag) && is_natural_number($limit) && is_natural_number($offset))) {
-      $this->returnError(511, $this->version );
+      $this->returnError(510, $this->version);
       return;
     }
 

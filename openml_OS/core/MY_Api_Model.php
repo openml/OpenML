@@ -123,6 +123,22 @@ class MY_Api_Model extends CI_Model {
     }
   }
   
+  protected function parse_filters($segs, $legal_filters) {
+    // function used in listing functions. Obtains a list of uri segments (e.g., limit/50/offset/100),
+    // and turns these into a key value dict. Also identifies illegal filters 
+    $filter_values = array();
+    $illegal_filters = array();
+    for ($i = 0; $i < count($segs); $i += 2) {
+      if (in_array($segs[$i], $legal_filters) == false) {
+        $illegal_filters[] = $segs[$i];
+      } else {
+        // TODO: maybe $segs does not have an index value plus 1 .. 
+        $filter_values[$segs[$i]] = urldecode($segs[$i+1]);
+      }
+    }
+    return array($filter_values, $illegal_filters);
+  }
+  
   protected function check_filter_inputs($filter_value, $legal_filters, $allowed_string_values) {
     // checks for the listing functions the filter inputs. 
     // filter_value is a dict mapping from filter name to value; legal_filters is a list of all filters; 

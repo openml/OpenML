@@ -77,6 +77,12 @@ class Api_evaluation extends MY_Api_Model {
         return;
       }
     }
+    
+    $illegal_filter_inputs = $this->check_filter_inputs($query_string, $legal_filters, array('tag', 'function'));
+    if (count($illegal_filter_inputs) > 0) {
+      $this->returnError(541, $this->version, $this->openmlGeneralErrorCode, 'Filters with illegal values: ' . implode(',', $illegal_filter_inputs));
+      return;
+    }
 
     $task_id = element('task', $query_string);
     $setup_id = element('setup',$query_string);
@@ -90,11 +96,6 @@ class Api_evaluation extends MY_Api_Model {
 
     if ($task_id == false && $setup_id == false && $implementation_id == false && $uploader_id == false && $run_id == false && $tag == false && $limit == false && $function_name == false) {
       $this->returnError( 540, $this->version );
-      return;
-    }
-
-    if (!(is_natural_number($task_id) && is_natural_number($setup_id) && is_natural_number($implementation_id) && is_natural_number($uploader_id) && is_natural_number($run_id) && is_safe($function_name) && is_safe($tag) && is_natural_number($limit) && is_natural_number($offset))) {
-      $this->returnError(541, $this->version );
       return;
     }
 

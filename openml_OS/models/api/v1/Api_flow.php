@@ -88,16 +88,17 @@ class Api_flow extends MY_Api_Model {
         return;
       }
     }
+    
+    $illegal_filter_inputs = $this->check_filter_inputs($query_string, $legal_filters, array('tag'));
+    if (count($illegal_filter_inputs) > 0) {
+      $this->returnError(502, $this->version, $this->openmlGeneralErrorCode, 'Filters with illegal values: ' . implode(',', $illegal_filter_inputs));
+      return;
+    }
 
     $uploader_id = element('uploader', $query_string);
     $tag = element('tag', $query_string);
     $limit = element('limit', $query_string);
     $offset = element('offset', $query_string);
-
-    if (!(uploader_id($uploader_id) && is_safe($tag) && is_natural_number($limit) && is_natural_number($offset))) {
-      $this->returnError(502, $this->version);
-      return;
-    }
 
     $query = $this->db->select('`i`.*');
     $query->from('implementation i');

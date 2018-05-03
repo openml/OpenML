@@ -129,14 +129,19 @@ class Api_data extends MY_Api_Model {
 
   private function data_list($segs) {
     $legal_filters = array('tag', 'status', 'limit', 'offset', 'data_name', 'data_version', 'number_instances', 'number_features', 'number_classes', 'number_missing_values');
-    $query_string = array();
-    for ($i = 0; $i < count($segs); $i += 2) {
-      $query_string[$segs[$i]] = urldecode($segs[$i+1]);
-      if (in_array($segs[$i], $legal_filters) == false) {
-        $this->returnError(370, $this->version, $this->openmlGeneralErrorCode, 'Legal filter operators: ' . implode(',', $legal_filters) .'. Found illegal filter: ' . $segs[$i]);
-        return;
-      }
+    
+    list($query_string, $illegal_filters) = $this->parse_filters($segs, $legal_filters);
+    if (len($illegal_filters) > 0) {
+      $this->returnError(370, $this->version, $this->openmlGeneralErrorCode, 'Legal filter operators: ' . implode(',', $legal_filters) .'. Found illegal filter: ' . $segs[$i]);
+      return;
     }
+    
+    $illegal_filter_inputs = $this->check_filter_inputs($query_string, $legal_filters, array('tag', 'data_name'));
+    if (count($illegal_filter_inputs) > 0) {
+      $this->returnError(371, $this->version, $this->openmlGeneralErrorCode, 'Filters with illegal values: ' . implode(',', $illegal_filter_inputs));
+      return;
+    }
+    
     $tag = element('tag',$query_string);
     $name = element('data_name',$query_string);
     $version = element('data_version',$query_string);
@@ -147,11 +152,6 @@ class Api_data extends MY_Api_Model {
     $nr_feats = element('number_features',$query_string);
     $nr_class = element('number_classes',$query_string);
     $nr_miss = element('number_missing_values',$query_string);
-
-    if (!(is_safe($tag) && is_safe($version) && is_natural_number($limit) && is_natural_number($offset) && is_natural_number($nr_insts) && is_natural_number($nr_feats) && is_natural_number($nr_class) && is_natural_number($nr_miss))) {
-      $this->returnError(371, $this->version);
-      return;
-    }
 
     $where_tag = $tag == false ? '' : ' AND `did` IN (select id from dataset_tag where tag="' . $tag . '") ';
     $where_name = $name == false ? '' : ' AND `name` = "' . $name . '"';
