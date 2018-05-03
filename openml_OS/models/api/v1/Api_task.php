@@ -68,6 +68,8 @@ class Api_task extends MY_Api_Model {
 
   private function task_list($segs, $user_id) {
     $legal_filters = array('type', 'tag', 'data_tag', 'status', 'limit', 'offset', 'data_id', 'data_name', 'number_instances', 'number_features', 'number_classes', 'number_missing_values');
+    $legal_filters_check_numeric = array(false, false, false, false, true, true, true, true, true, true, true, true);
+    
     $query_string = array();
     for ($i = 0; $i < count($segs); $i += 2) {
       $query_string[$segs[$i]] = urldecode($segs[$i+1]);
@@ -76,23 +78,40 @@ class Api_task extends MY_Api_Model {
         return;
       }
     }
-    $type = element('type',$query_string);
-    $tag = element('tag',$query_string);
-    $data_tag = element('data_tag',$query_string);
-    $status = element('status',$query_string);
-    $limit = element('limit',$query_string);
-    $offset = element('offset',$query_string);
-    $data_id = element('data_id',$query_string);
-    $data_name = element('data_name',$query_string);
-    $nr_insts = element('number_instances',$query_string);
-    $nr_feats = element('number_features',$query_string);
-    $nr_class = element('number_classes',$query_string);
-    $nr_miss = element('number_missing_values',$query_string);
-
-    if (!(is_safe($tag) && is_safe($data_tag) && is_safe($status) && is_safe($type) && is_natural_number($limit) && is_natural_number($offset) && is_natural_number($data_id) && is_safe($data_name) && is_natural_number($nr_insts) && is_natural_number($nr_feats) && is_natural_number($nr_class) && is_natural_number($nr_miss))) {
-      $this->returnError(481, $this->version );
-      return;
+    
+    // checks the input of each filter
+    for($i = 0; $i < count($legal_filters); ++$i) {
+      $filter_name = $legal_filters[$i];
+      $value = element('type', $query_string, null);
+      
+      if (!$legal_filters_check_numeric[$i]) {
+        if(!is_safe($value) {
+          $this->returnError(481, $this->version, 'Illegal input: ' . $filter_name);
+          return;
+        }
+      } else {
+        if ($value != false) {
+          if (!is_natural_number($value)) {
+            $this->returnError(481, $this->version, 'Non (natural) numeric input: ' . $filter_name);
+            return;
+          }
+        }
+      }
     }
+    
+    $type = element('type', $query_string);
+    $tag = element('tag', $query_string);
+    $data_tag = element('data_tag', $query_string);
+    $status = element('status', $query_string);
+    $limit = element('limit', $query_string);
+    $offset = element('offset', $query_string);
+    $data_id = element('data_id', $query_string);
+    $data_name = element('data_name', $query_string);
+    $nr_insts = element('number_instances', $query_string);
+    $nr_feats = element('number_features', $query_string);
+    $nr_class = element('number_classes', $query_string);
+    $nr_miss = element('number_missing_values', $query_string);
+    
 
     $where_type = $type == false ? '' : 'AND `t`.`ttid` = "'.$type.'" ';
     $where_tag = $tag == false ? '' : ' AND `t`.`task_id` IN (select id from task_tag where tag="' . $tag . '") ';
