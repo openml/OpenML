@@ -140,7 +140,7 @@ class MY_Api_Model extends CI_Model {
           $illegal_fields[] = $filter_name;
         }
       } else {
-        if ($value != false) {
+        if ($value !== null) {
           if (strlen($value) == 0 || !is_natural_number($value)) {
             $illegal_fields[] = $filter_name;
           }
