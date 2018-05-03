@@ -69,13 +69,10 @@ class Api_evaluation extends MY_Api_Model {
 
   private function evaluation_list($segs, $user_id) {
     $legal_filters = array('task', 'setup', 'flow', 'uploader', 'run', 'tag', 'limit', 'offset', 'function');
-    $query_string = array();
-    for ($i = 0; $i < count($segs); $i += 2) {
-      $query_string[$segs[$i]] = urldecode($segs[$i+1]);
-      if (in_array($segs[$i], $legal_filters) == false) {
-        $this->returnError(544, $this->version, $this->openmlGeneralErrorCode, 'Legal filter operators: ' . implode(',', $legal_filters) .'. Found illegal filter: ' . $segs[$i]);
-        return;
-      }
+    list($query_string, $illegal_filters) = $this->parse_filters($segs, $legal_filters);
+    if (count($illegal_filters) > 0) {
+      $this->returnError(544, $this->version, $this->openmlGeneralErrorCode, 'Legal filter operators: ' . implode(',', $legal_filters) .'. Found illegal filter(s): ' . implode(', ', $illegal_filters));
+      return;
     }
     
     $illegal_filter_inputs = $this->check_filter_inputs($query_string, $legal_filters, array('tag', 'function'));

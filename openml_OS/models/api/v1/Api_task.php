@@ -68,15 +68,11 @@ class Api_task extends MY_Api_Model {
 
   private function task_list($segs, $user_id) {
     $legal_filters = array('type', 'tag', 'data_tag', 'status', 'limit', 'offset', 'data_id', 'data_name', 'number_instances', 'number_features', 'number_classes', 'number_missing_values');
-    $legal_filters_check_numeric = array(false, false, false, false, true, true, true, true, true, true, true, true);
     
-    $query_string = array();
-    for ($i = 0; $i < count($segs); $i += 2) {
-      $query_string[$segs[$i]] = urldecode($segs[$i+1]);
-      if (in_array($segs[$i], $legal_filters) == false) {
-        $this->returnError(480, $this->version, $this->openmlGeneralErrorCode, 'Legal filter operators: ' . implode(',', $legal_filters) .'. Found illegal filter: ' . $segs[$i]);
-        return;
-      }
+    list($query_string, $illegal_filters) = $this->parse_filters($segs, $legal_filters);
+    if (count($illegal_filters) > 0) {
+      $this->returnError(480, $this->version, $this->openmlGeneralErrorCode, 'Legal filter operators: ' . implode(',', $legal_filters) .'. Found illegal filter(s): ' . implode(', ', $illegal_filters));
+      return;
     }
     
     $illegal_filter_inputs = $this->check_filter_inputs($query_string, $legal_filters, array('type', 'tag', 'data_tag', 'status'));

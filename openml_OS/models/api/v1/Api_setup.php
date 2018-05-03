@@ -110,14 +110,10 @@ class Api_setup extends MY_Api_Model {
       return;
     }
 
-    $legal_filters = array('flow', 'setup', 'limit', 'offset', 'tag');
-    $query_string = array();
-    for ($i = 0; $i < count($segs); $i += 2) {
-      $query_string[$segs[$i]] = (count($segs) > $i + 1) ? urldecode($segs[$i+1]) : ""; // empty string in else to force an error later on. 
-      if (in_array($segs[$i], $legal_filters) == false) {
-        $this->returnError(671, $this->version, $this->openmlGeneralErrorCode, 'Legal filter operators: ' . implode(',', $legal_filters) .'. Found illegal filter: ' . $segs[$i]);
-        return;
-      }
+    list($query_string, $illegal_filters) = $this->parse_filters($segs, $legal_filters);
+    if (count($illegal_filters) > 0) {
+      $this->returnError(671, $this->version, $this->openmlGeneralErrorCode, 'Legal filter operators: ' . implode(',', $legal_filters) .'. Found illegal filter(s): ' . implode(', ', $illegal_filters));
+      return;
     }
     
     $illegal_filter_inputs = $this->check_filter_inputs($query_string, $legal_filters, array('tag'));

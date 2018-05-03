@@ -261,7 +261,7 @@ $this->apiErrors[492] = 'File register error';
 $this->apiErrors[500] = 'No results';
 $this->apiErrors[501] = 'Illegal filter operation';
 $this->apiErrors[502] = 'Illegal filter value';
-$this->apiErrors[503] = 'Can not specify a offset without a limit';
+$this->apiErrors[503] = 'Can not specify an offset without a limit';
 
 // openml.runs.list
 $this->apiErrors[510] = 'Please provide at least task, flow or setup, uploader or run, to filter results. ';
