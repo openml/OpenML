@@ -85,7 +85,7 @@ class Api_task extends MY_Api_Model {
       $value = element('type', $query_string, null);
       
       if (!$legal_filters_check_numeric[$i]) {
-        if(!is_safe($value) {
+        if(!is_safe($value)) {
           $this->returnError(481, $this->version, 'Illegal input: ' . $filter_name);
           return;
         }
