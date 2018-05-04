@@ -393,7 +393,7 @@ class Api_run extends MY_Api_Model {
       if ($extension == 'arff') {
         $arffCheck = ARFFcheck($_FILES[$key]['tmp_name'], 1000);
         if ($arffCheck !== true) {
-          $this->returnError(209, $this->version, $this->openmlGeneralErrorCode, 'Arff error in predictions file: ' . $arffCheck);
+          $this->returnError(209, $this->version, $this->openmlGeneralErrorCode, 'Arff error in ' . $key . ' file: ' . $arffCheck);
           return;
         }
       }
@@ -401,7 +401,7 @@ class Api_run extends MY_Api_Model {
       if ($extension == 'xml') {
         $xmlCheck = simplexml_load_file($_FILES[$key]['tmp_name']);
         if($xmlCheck === false) {
-          $this->returnError(209, $this->version, $this->openmlGeneralErrorCode, 'XML error in predictions file: ' . $xmlCheck);
+          $this->returnError(209, $this->version, $this->openmlGeneralErrorCode, 'XML error in ' . $key . ' file: ' . $xmlCheck);
           return;
         }
       }
