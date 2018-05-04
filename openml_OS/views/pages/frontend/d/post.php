@@ -86,6 +86,9 @@ else{
   );
   if( $_FILES['dataset']['error'] == 0 ) {
       $post_data['dataset'] = '@' . $_FILES['dataset']['tmp_name'];
+  } else {
+    $this->responsetype = 'alert alert-danger';
+    $this->response = 'Dataset upload error: ' . $_FILES['dataset']['error'];
   }
   //if data file didn't change, §insert the old url
   //if(!$this->input->post('url') && (!file_exists($_FILES['dataset']['tmp_name']) || !is_uploaded_file($_FILES['dataset']['tmp_name']))) {
@@ -117,10 +120,8 @@ else{
     }
   } else{
     $this->responsetype = 'alert alert-danger';
-    $this->response = 'Could not upload data. Please fill in all required (red) fields.';
+    $this->response = 'Could not upload data. Please fill in all required (red) fields. Avoid non-standard characters.';
   }
-
-
 
 
 }

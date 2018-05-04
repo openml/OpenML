@@ -122,6 +122,52 @@ class MY_Api_Model extends CI_Model {
       echo $data;
     }
   }
+  
+  protected function parse_filters($segs, $legal_filters) {
+    // function used in listing functions. Obtains a list of uri segments (e.g., limit/50/offset/100),
+    // and turns these into a key value dict. Also identifies illegal filters 
+    $filter_values = array();
+    $illegal_filters = array();
+    for ($i = 0; $i < count($segs); $i += 2) {
+      $filter_name = $segs[$i];
+      if (in_array($segs[$i], $legal_filters) == false) {
+        $illegal_filters[] = $filter_name;
+      } else {
+        if (count($segs) > $i + 1) {
+          $filter_values[$filter_name] = urldecode($segs[$i+1]);
+        }
+      }
+    }
+    return array($filter_values, $illegal_filters);
+  }
+  
+  protected function check_filter_inputs($filter_value, $legal_filters, $allowed_string_values) {
+    // checks for the listing functions the filter inputs. 
+    // filter_value is a dict mapping from filter name to value; legal_filters is a list of all filters; 
+    // for all filters it is assumed that the values should be a natural number. allowed_string_values
+    // is a list of filter names where a (safe) string value is allowed.
+    // checks the input of each filter on the constraints. Returns a list of filters with illegal values
+    
+    $illegal_fields = array();
+    for($i = 0; $i < count($legal_filters); ++$i) {
+      $filter_name = $legal_filters[$i];
+      $value = element($filter_name, $filter_value, null);
+      
+      if (in_array($filter_name, $allowed_string_values)) {
+        if(!is_safe($value)) {
+          $illegal_fields[] = $filter_name;
+        }
+      } else {
+        if ($value !== null) {
+          if (strlen($value) == 0 || !is_natural_number($value)) {
+            $illegal_fields[] = $filter_name;
+          }
+        }
+      }
+    }
+    return $illegal_fields;
+  }
+  
   /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
    * @function entity_tag_untag:
    *    tags or untags an entity (data, flow, task, setup, run)

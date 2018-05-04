@@ -129,42 +129,48 @@ class Api_data extends MY_Api_Model {
 
   private function data_list($segs) {
     $legal_filters = array('tag', 'status', 'limit', 'offset', 'data_name', 'data_version', 'number_instances', 'number_features', 'number_classes', 'number_missing_values');
-    $query_string = array();
-    for ($i = 0; $i < count($segs); $i += 2) {
-      $query_string[$segs[$i]] = urldecode($segs[$i+1]);
-      if (in_array($segs[$i], $legal_filters) == false) {
-        $this->returnError(370, $this->version, $this->openmlGeneralErrorCode, 'Legal filter operators: ' . implode(',', $legal_filters) .'. Found illegal filter: ' . $segs[$i]);
-        return;
-      }
+    
+    list($query_string, $illegal_filters) = $this->parse_filters($segs, $legal_filters);
+    if (count($illegal_filters) > 0) {
+      $this->returnError(370, $this->version, $this->openmlGeneralErrorCode, 'Legal filter operators: ' . implode(',', $legal_filters) .'. Found illegal filter(s): ' . implode(', ', $illegal_filters));
+      return;
     }
-    $tag = element('tag',$query_string);
-    $name = element('data_name',$query_string);
-    $version = element('data_version',$query_string);
-    $status = element('status',$query_string);
-    $limit = element('limit',$query_string);
-    $offset = element('offset',$query_string);
-    $nr_insts = element('number_instances',$query_string);
-    $nr_feats = element('number_features',$query_string);
-    $nr_class = element('number_classes',$query_string);
-    $nr_miss = element('number_missing_values',$query_string);
-
-    if (!(is_safe($tag) && is_safe($version) && is_safe($limit) && is_safe($offset) && is_safe($nr_insts) && is_safe($nr_feats) && is_safe($nr_class) && is_safe($nr_miss))) {
-      $this->returnError(371, $this->version);
+    
+    $illegal_filter_inputs = $this->check_filter_inputs($query_string, $legal_filters, array('tag', 'data_name', 'number_instances', 'number_features', 'number_classes', 'number_missing_values'));
+    if (count($illegal_filter_inputs) > 0) {
+      $this->returnError(371, $this->version, $this->openmlGeneralErrorCode, 'Filters with illegal values: ' . implode(',', $illegal_filter_inputs));
+      return;
+    }
+    
+    $tag = element('tag', $query_string, null);
+    $name = element('data_name', $query_string, null);
+    $version = element('data_version', $query_string, null);
+    $status = element('status', $query_string, null);
+    $limit = element('limit', $query_string, null);
+    $offset = element('offset', $query_string, null);
+    $nr_insts = element('number_instances', $query_string, null);
+    $nr_feats = element('number_features', $query_string, null);
+    $nr_class = element('number_classes', $query_string, null);
+    $nr_miss = element('number_missing_values', $query_string, null);
+    
+    if ($offset && !$limit) {
+      $this->returnError(373, $this->version);
       return;
     }
 
-    $where_tag = $tag == false ? '' : ' AND `did` IN (select id from dataset_tag where tag="' . $tag . '") ';
-    $where_name = $name == false ? '' : ' AND `name` = "' . $name . '"';
-    $where_version = $version == false ? '' : ' AND `version` = "' . $version . '" ';
-    $where_insts = $nr_insts == false ? '' : ' AND `did` IN (select data from data_quality dq where quality="NumberOfInstances" and value ' . (strpos($nr_insts, '..') !== false ? 'BETWEEN ' . str_replace('..',' AND ',$nr_insts) : '= '. $nr_insts) . ') ';
-    $where_feats = $nr_feats == false ? '' : ' AND `did` IN (select data from data_quality dq where quality="NumberOfFeatures" and value ' . (strpos($nr_feats, '..') !== false ? 'BETWEEN ' . str_replace('..',' AND ',$nr_feats) : '= '. $nr_feats) . ') ';
-    $where_class = $nr_class == false ? '' : ' AND `did` IN (select data from data_quality dq where quality="NumberOfClasses" and value ' . (strpos($nr_class, '..') !== false ? 'BETWEEN ' . str_replace('..',' AND ',$nr_class) : '= '. $nr_class) . ') ';
-    $where_miss = $nr_miss == false ? '' : ' AND `did` IN (select data from data_quality dq where quality="NumberOfMissingValues" and value ' . (strpos($nr_miss, '..') !== false ? 'BETWEEN ' . str_replace('..',' AND ',$nr_miss) : '= '. $nr_miss) . ') ';
+    $where_tag = $tag === null ? '' : ' AND `did` IN (select id from dataset_tag where tag="' . $tag . '") ';
+    $where_name = $name === null ? '' : ' AND `name` = "' . $name . '"';
+    $where_version = $version === null ? '' : ' AND `version` = "' . $version . '" ';
+    $where_insts = $nr_insts === null ? '' : ' AND `did` IN (select data from data_quality dq where quality="NumberOfInstances" and value ' . (strpos($nr_insts, '..') !== false ? 'BETWEEN ' . str_replace('..',' AND ',$nr_insts) : '= '. $nr_insts) . ') ';
+    $where_feats = $nr_feats === null ? '' : ' AND `did` IN (select data from data_quality dq where quality="NumberOfFeatures" and value ' . (strpos($nr_feats, '..') !== false ? 'BETWEEN ' . str_replace('..',' AND ',$nr_feats) : '= '. $nr_feats) . ') ';
+    $where_class = $nr_class === null ? '' : ' AND `did` IN (select data from data_quality dq where quality="NumberOfClasses" and value ' . (strpos($nr_class, '..') !== false ? 'BETWEEN ' . str_replace('..',' AND ',$nr_class) : '= '. $nr_class) . ') ';
+    $where_miss = $nr_miss === null ? '' : ' AND `did` IN (select data from data_quality dq where quality="NumberOfMissingValues" and value ' . (strpos($nr_miss, '..') !== false ? 'BETWEEN ' . str_replace('..',' AND ',$nr_miss) : '= '. $nr_miss) . ') ';
     // by default, only return active datasets
-    $where_status = $status == false ? ' AND status = "active" ' : ($status != "all" ? ' AND status = "'. $status . '" ' : '');
+    $where_status = $status === null ? ' AND status = "active" ' : ($status != "all" ? ' AND status = "'. $status . '" ' : '');
     $where_total = $where_tag . $where_name . $where_version . $where_insts . $where_feats . $where_class . $where_miss . $where_status;
-    $where_limit = $limit == false ? '' : ' LIMIT ' . $limit;
-    if($limit != false && $offset != false){
+    
+    $where_limit = $limit === null ? '' : ' LIMIT ' . $limit;
+    if($limit && $offset){
       $where_limit =  ' LIMIT ' . $offset . ',' . $limit;
     }
 

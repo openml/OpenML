@@ -68,45 +68,53 @@ class Api_evaluation extends MY_Api_Model {
 
 
   private function evaluation_list($segs, $user_id) {
+    $result_limit = 10000;
     $legal_filters = array('task', 'setup', 'flow', 'uploader', 'run', 'tag', 'limit', 'offset', 'function');
-    $query_string = array();
-    for ($i = 0; $i < count($segs); $i += 2) {
-      $query_string[$segs[$i]] = urldecode($segs[$i+1]);
-      if (in_array($segs[$i], $legal_filters) == false) {
-        $this->returnError(544, $this->version, $this->openmlGeneralErrorCode, 'Legal filter operators: ' . implode(',', $legal_filters) .'. Found illegal filter: ' . $segs[$i]);
-        return;
-      }
+    list($query_string, $illegal_filters) = $this->parse_filters($segs, $legal_filters);
+    if (count($illegal_filters) > 0) {
+      $this->returnError(544, $this->version, $this->openmlGeneralErrorCode, 'Legal filter operators: ' . implode(',', $legal_filters) .'. Found illegal filter(s): ' . implode(', ', $illegal_filters));
+      return;
     }
-
-    $task_id = element('task', $query_string);
-    $setup_id = element('setup',$query_string);
-    $implementation_id = element('flow',$query_string);
-    $uploader_id = element('uploader',$query_string);
-    $run_id = element('run',$query_string);
-    $function_name = element('function',$query_string);
-    $tag = element('tag',$query_string);
-    $limit = element('limit',$query_string);
-    $offset = element('offset',$query_string);
-
-    if ($task_id == false && $setup_id == false && $implementation_id == false && $uploader_id == false && $run_id == false && $tag == false && $limit == false && $function_name == false) {
-      $this->returnError( 540, $this->version );
+    
+    $illegal_filter_inputs = $this->check_filter_inputs($query_string, $legal_filters, array('tag', 'function'));
+    if (count($illegal_filter_inputs) > 0) {
+      $this->returnError(541, $this->version, $this->openmlGeneralErrorCode, 'Filters with illegal values: ' . implode(',', $illegal_filter_inputs));
       return;
     }
 
-    if (!(is_safe($task_id) && is_safe($setup_id) && is_safe($implementation_id) && is_safe($uploader_id) && is_safe($run_id) && is_safe($function_name) && is_safe($tag) && is_safe($limit) && is_safe($offset))) {
-      $this->returnError(541, $this->version );
+    $task_id = element('task', $query_string, null);
+    $setup_id = element('setup',$query_string, null);
+    $implementation_id = element('flow',$query_string, null);
+    $uploader_id = element('uploader',$query_string, null);
+    $run_id = element('run',$query_string, null);
+    $function_name = element('function',$query_string, null);
+    $tag = element('tag',$query_string, null);
+    $limit = element('limit',$query_string, null);
+    $offset = element('offset',$query_string, null);
+    
+    if ($offset && !$limit) {
+      $this->returnError(545, $this->version);
+      return;
+    }
+    if ($limit && $limit > $result_limit) {
+      $this->returnError(546, $this->version);
       return;
     }
 
-    $where_task = $task_id == false ? '' : ' AND `r`.`task_id` IN (' . $task_id . ') ';
-    $where_setup = $setup_id == false ? '' : ' AND `r`.`setup` IN (' . $setup_id . ') ';
-    $where_uploader = $uploader_id == false ? '' : ' AND `r`.`uploader` IN (' . $uploader_id . ') ';
-    $where_impl = $implementation_id == false ? '' : ' AND `s`.`implementation_id` IN (' . $implementation_id . ') ';
-    $where_run = $run_id == false ? '' : ' AND `r`.`rid` IN (' . $run_id . ') ';
-    $where_function = $function_name == false ? '' : ' AND `f`.`name` = "' . $function_name . '" ';
-    $where_tag = $tag == false ? '' : ' AND `r`.`rid` IN (select id from run_tag where tag="' . $tag . '") ';
-    $where_limit = $limit == false ? '' : ' LIMIT ' . $limit;
-    if($limit != false && $offset != false){
+    if ($task_id === null && $setup_id === null && $implementation_id === null && $uploader_id === null && $run_id === null && $tag === null && $limit === null && $function_name === null) {
+      $this->returnError(540, $this->version);
+      return;
+    }
+
+    $where_task = $task_id === null ? '' : ' AND `r`.`task_id` IN (' . $task_id . ') ';
+    $where_setup = $setup_id === null ? '' : ' AND `r`.`setup` IN (' . $setup_id . ') ';
+    $where_uploader = $uploader_id === null ? '' : ' AND `r`.`uploader` IN (' . $uploader_id . ') ';
+    $where_impl = $implementation_id === null ? '' : ' AND `s`.`implementation_id` IN (' . $implementation_id . ') ';
+    $where_run = $run_id === null ? '' : ' AND `r`.`rid` IN (' . $run_id . ') ';
+    $where_function = $function_name === null ? '' : ' AND `f`.`name` = "' . $function_name . '" ';
+    $where_tag = $tag === null ? '' : ' AND `r`.`rid` IN (select id from run_tag where tag="' . $tag . '") ';
+    $where_limit = $limit === null ? '' : ' LIMIT ' . $limit;
+    if ($limit && $offset) {
       $where_limit =  ' LIMIT ' . $offset . ',' . $limit;
     }
     $where_task_closed = ' AND (`t`.`embargo_end_date` is NULL OR `t`.`embargo_end_date` < NOW() OR `r`.`uploader` = '.$user_id.')';
@@ -114,7 +122,7 @@ class Api_evaluation extends MY_Api_Model {
     $where_runs = $where_task . $where_setup . $where_uploader . $where_impl . $where_run . $where_tag . $where_task_closed;
 
     //pre-test, should be quick??
-    if($limit == false || (!$offset && $limit > 10000) || ($offset && $limit-$offset > 10000)) { // skip pre-test if less than 10000 are requested by definition
+    if($limit == false) { // skip pre-test if less than 10000 are requested by definition
       $count = 0;
       //shortcuts
       if (!$implementation_id) {
@@ -133,8 +141,8 @@ class Api_evaluation extends MY_Api_Model {
           $where_limit ;
         $count = $this->Evaluation->query($sql_test)[0]->count;
       }
-      if ($count > 10000) {
-        $this->returnError(543, $this->version, $this->openmlGeneralErrorCode, 'Size of result set: ' . $count . ' runs; max size: 10000. Please use limit and offset. ');
+      if ($count > $result_limit) {
+        $this->returnError(543, $this->version, $this->openmlGeneralErrorCode, 'Size of result set: ' . $count . ' runs; max size: ' . $result_limit . '. Please use limit and offset. ');
         return;
       }
     }

@@ -167,6 +167,7 @@ $this->apiErrors[365] = 'Interval start or end illegal';
 $this->apiErrors[370] = 'Illegal filter specified';
 $this->apiErrors[371] = 'Input not safe';
 $this->apiErrors[372] = 'No results';
+$this->apiErrors[373] = 'Can not specify an offset without a limit';
 
 // for function: openml.qualities.upload
 $this->apiErrors[381] = 'Something wrong with XML, please check did and evaluation_engine_id';
@@ -249,8 +250,9 @@ $this->apiErrors[476] = 'Tag is not owned by you';
 
 // openml.task.list
 $this->apiErrors[480] = 'Illegal filter specified';
-$this->apiErrors[481] = 'Input not safe';
+$this->apiErrors[481] = 'Filter input not according to constraints';
 $this->apiErrors[482] = 'No results';
+$this->apiErrors[483] = 'Can not specify an offset without a limit';
 
 // openml.file.upload
 $this->apiErrors[490] = 'Authentication failed';
@@ -260,6 +262,8 @@ $this->apiErrors[492] = 'File register error';
 // openml.flows
 $this->apiErrors[500] = 'No results';
 $this->apiErrors[501] = 'Illegal filter operation';
+$this->apiErrors[502] = 'Illegal filter value';
+$this->apiErrors[503] = 'Can not specify an offset without a limit';
 
 // openml.runs.list
 $this->apiErrors[510] = 'Please provide at least task, flow or setup, uploader or run, to filter results. ';
@@ -267,6 +271,8 @@ $this->apiErrors[511] = 'Input not safe';
 $this->apiErrors[512] = 'No results';
 $this->apiErrors[513] = 'Too many results';
 $this->apiErrors[514] = 'Illegal filter specified';
+$this->apiErrors[515] = 'Can not specify offset without limit';
+$this->apiErrors[516] = 'Requested result limit too high. ';
 
 // openml.estimationprocedure.list
 $this->apiErrors[520] = 'No results';
@@ -277,6 +283,8 @@ $this->apiErrors[541] = 'Input not safe';
 $this->apiErrors[542] = 'No results';
 $this->apiErrors[543] = 'Too many results';
 $this->apiErrors[544] = 'Illegal filter specified';
+$this->apiErrors[545] = 'Can not specify offset without limit';
+$this->apiErrors[546] = 'Requested result limit too high. ';
 
 // openml.evaluations.request
 $this->apiErrors[545] = 'No unevaluated runs according to the criteria';
@@ -355,6 +363,8 @@ $this->apiErrors[671] = 'Illegal filter. ';
 $this->apiErrors[672] = 'Illegal filter input. ';
 $this->apiErrors[673] = 'Result set too big. Please use one of the filters or the limit option. ';
 $this->apiErrors[674] = 'No results, please check the filter. ';
+$this->apiErrors[675] = 'Can not specify offset without limit';
+$this->apiErrors[676] = 'Requested result limit too high. ';
 
 // openml.data.unprocessed
 $this->apiErrors[681] = 'No unprocessed datasets. ';

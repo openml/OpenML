@@ -97,44 +97,53 @@ class Api_run extends MY_Api_Model {
 
 
   private function run_list($segs, $user_id) {
+    $result_limit = 10000;
     $legal_filters = array('task', 'setup', 'flow', 'uploader', 'run', 'tag', 'limit', 'offset', 'task_type', 'show_errors');
-    $query_string = array();
-    for ($i = 0; $i < count($segs); $i += 2) {
-      $query_string[$segs[$i]] = urldecode($segs[$i+1]);
-      if (in_array($segs[$i], $legal_filters) == false) {
-        $this->returnError(514, $this->version, $this->openmlGeneralErrorCode, 'Legal filter operators: ' . implode(',', $legal_filters) .'. Found illegal filter: ' . $segs[$i]);
-        return;
-      }
+    
+    list($query_string, $illegal_filters) = $this->parse_filters($segs, $legal_filters);
+    if (count($illegal_filters) > 0) {
+      $this->returnError(514, $this->version, $this->openmlGeneralErrorCode, 'Legal filter operators: ' . implode(',', $legal_filters) .'. Found illegal filter(s): ' . implode(', ', $illegal_filters));
+      return;
     }
-
-    $task_id = element('task', $query_string);
-    $task_type_id = element('task_type', $query_string);
-    $setup_id = element('setup',$query_string);
-    $implementation_id = element('flow',$query_string);
-    $uploader_id = element('uploader',$query_string);
-    $run_id = element('run',$query_string);
-    $tag = element('tag',$query_string);
-    $limit = element('limit',$query_string);
-    $offset = element('offset',$query_string);
-    $show_errors = element('show_errors',$query_string);
-
-    if ($task_id == false && $task_type_id == false && $setup_id == false && $implementation_id == false && $uploader_id == false && $run_id == false && $tag == false && $limit == false) {
-      $this->returnError( 510, $this->version );
+    
+    $illegal_filter_inputs = $this->check_filter_inputs($query_string, $legal_filters, array('tag', 'show_errors'));
+    if (count($illegal_filter_inputs) > 0) {
+      $this->returnError(511, $this->version, $this->openmlGeneralErrorCode, 'Filters with illegal values: ' . implode(',', $illegal_filter_inputs));
       return;
     }
 
-    if (!(is_safe($task_id) && is_safe($setup_id) && is_safe($task_type_id) && is_safe($implementation_id) && is_safe($uploader_id) && is_safe($run_id) && is_safe($tag) && is_safe($limit) && is_safe($offset))) {
-      $this->returnError(511, $this->version );
+    $task_id = element('task', $query_string, null);
+    $task_type_id = element('task_type', $query_string, null);
+    $setup_id = element('setup',$query_string, null);
+    $implementation_id = element('flow',$query_string, null);
+    $uploader_id = element('uploader',$query_string, null);
+    $run_id = element('run',$query_string, null);
+    $tag = element('tag',$query_string, null);
+    $limit = element('limit',$query_string, null);
+    $offset = element('offset',$query_string, null);
+    $show_errors = element('show_errors',$query_string, null);
+    
+    if ($offset && !$limit) {
+      $this->returnError(515, $this->version);
+      return;
+    }
+    if ($limit && $limit > $result_limit) {
+      $this->returnError(516, $this->version);
+      return;
+    }
+    
+    if ($task_id === null && $task_type_id === null && $setup_id === null && $implementation_id === null && $uploader_id === null && $run_id === null && $tag === null && $limit === null) {
+      $this->returnError(510, $this->version);
       return;
     }
 
-    $where_task = $task_id == false ? '' : ' AND `r`.`task_id` IN (' . $task_id . ') ';
-    $where_task_type = $task_type_id == false ? '' : ' AND `t`.`ttid` IN (' . $task_type_id . ') ';
-    $where_setup = $setup_id == false ? '' : ' AND `r`.`setup` IN (' . $setup_id . ') ';
-    $where_uploader = $uploader_id == false ? '' : ' AND `r`.`uploader` IN (' . $uploader_id . ') ';
-    $where_impl = $implementation_id == false ? '' : ' AND `i`.`id` IN (' . $implementation_id . ') ';
-    $where_run = $run_id == false ? '' : ' AND `r`.`rid` IN (' . $run_id . ') ';
-    $where_tag = $tag == false ? '' : ' AND `r`.`rid` IN (select id from run_tag where tag="' . $tag . '") ';
+    $where_task = $task_id === null ? '' : ' AND `r`.`task_id` IN (' . $task_id . ') ';
+    $where_task_type = $task_type_id === null ? '' : ' AND `t`.`ttid` IN (' . $task_type_id . ') ';
+    $where_setup = $setup_id === null ? '' : ' AND `r`.`setup` IN (' . $setup_id . ') ';
+    $where_uploader = $uploader_id === null ? '' : ' AND `r`.`uploader` IN (' . $uploader_id . ') ';
+    $where_impl = $implementation_id === null ? '' : ' AND `i`.`id` IN (' . $implementation_id . ') ';
+    $where_run = $run_id === null ? '' : ' AND `r`.`rid` IN (' . $run_id . ') ';
+    $where_tag = $tag === null ? '' : ' AND `r`.`rid` IN (select id from run_tag where tag="' . $tag . '") ';
     // TODO: runs with errors are always removed?
     $where_server_error = ' AND `e`.`error` IS NULL ';
     if (strtolower($show_errors) == 'true') {
@@ -143,8 +152,8 @@ class Api_run extends MY_Api_Model {
     // Don't return runs of closed runs, unless the user uploaded them
     $where_task_closed = ' AND (`t`.`embargo_end_date` is NULL OR `t`.`embargo_end_date` < NOW() OR `r`.`uploader` = '.$user_id.')';
 
-    $where_limit = $limit == false ? '' : ' LIMIT ' . $limit;
-    if ($limit != false && $offset != false) {
+    $where_limit = $limit === null ? '' : ' LIMIT ' . $limit;
+    if ($limit && $offset) {
       $where_limit =  ' LIMIT ' . $offset . ', ' . $limit;
     }
 
@@ -170,8 +179,8 @@ class Api_run extends MY_Api_Model {
       return;
     }
 
-    if (count($res) > 10000) {
-      $this->returnError(513, $this->version, $this->openmlGeneralErrorCode, 'Size of result set: ' . count($res) . '; max size: 10000. ');
+    if (count($res) > $result_limit) {
+      $this->returnError(513, $this->version, $this->openmlGeneralErrorCode, 'Size of result set: ' . count($res) . '; max size: ' . $result_limit);
       return;
     }
 
@@ -384,7 +393,7 @@ class Api_run extends MY_Api_Model {
       if ($extension == 'arff') {
         $arffCheck = ARFFcheck($_FILES[$key]['tmp_name'], 1000);
         if ($arffCheck !== true) {
-          $this->returnError(209, $this->version, $this->openmlGeneralErrorCode, 'Arff error in predictions file: ' . $arffCheck);
+          $this->returnError(209, $this->version, $this->openmlGeneralErrorCode, 'Arff error in ' . $key . ' file: ' . $arffCheck);
           return;
         }
       }
@@ -392,7 +401,7 @@ class Api_run extends MY_Api_Model {
       if ($extension == 'xml') {
         $xmlCheck = simplexml_load_file($_FILES[$key]['tmp_name']);
         if($xmlCheck === false) {
-          $this->returnError(209, $this->version, $this->openmlGeneralErrorCode, 'XML error in predictions file: ' . $xmlCheck);
+          $this->returnError(209, $this->version, $this->openmlGeneralErrorCode, 'XML error in ' . $key . ' file: ' . $xmlCheck);
           return;
         }
       }
