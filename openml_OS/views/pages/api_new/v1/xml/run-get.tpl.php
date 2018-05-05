@@ -18,6 +18,7 @@
     <oml:parameter_setting>
       <oml:name><?php echo $parameter->name;?></oml:name>
       <oml:value><?php echo htmlspecialchars($parameter->value);?></oml:value>
+      <oml:component><?php echo $parameter->implementation_id;?></oml:component>
     </oml:parameter_setting>
   <?php endforeach; ?>
   <?php if(is_array($source->tags)) foreach( $source->tags as $tag ): ?>

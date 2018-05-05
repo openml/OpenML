@@ -204,7 +204,7 @@ class Api_run extends MY_Api_Model {
     $run->outputData = $this->Run->getOutputData( $run->rid );
     $run->setup = $this->Algorithm_setup->getById( $run->setup );
     $run->tags = $this->Run_tag->getColumnWhere( 'tag', 'id = ' . $run->rid );
-    $run->inputSetting = $this->Input_setting->query('SELECT i.name, s.value from input i, input_setting s where i.id=s.input_id and setup = ' . $run->setup->sid );
+    $run->inputSetting = $this->Input_setting->query('SELECT i.name, i.implementation_id, s.value from input i, input_setting s where i.id=s.input_id and setup = ' . $run->setup->sid );
     $run->task_type = $this->Task->query('SELECT tt.name from task t, task_type tt where t.ttid=tt.ttid and t.task_id = ' . $run->task_id )[0]->name;
     $user = $this->Author->getById($run->uploader);
     $run->user_name = $user->first_name . ' ' . $user->last_name;
