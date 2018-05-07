@@ -280,7 +280,7 @@ class Api_setup extends MY_Api_Model {
         $setup_flows[$key] = $valie->implementation_id;
       }
       
-      
+      // TODO: two-stage query, not ideal please fix! 
       $per_setup = $this->_setup_ids_to_parameter_values($setups);
       
       $this->xmlContents('setup-list', $this->version, array('setups' => $per_setup, 'setup_flows' => $setup_flows));
