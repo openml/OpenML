@@ -278,7 +278,7 @@ class Api_setup extends MY_Api_Model {
       
       $setup_flows = array();
       foreach ($setups as $key => $value) {
-        $setup_flows[$key] = $valie->implementation_id;
+        $setup_flows[$key] = $value->implementation_id;
       }
       
       // TODO: two-stage query, not ideal please fix! 
