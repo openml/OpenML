@@ -51,12 +51,12 @@ class Api_setup extends MY_Api_Model {
     }
 
     if (count($segments) == 1 && $segments[0] == 'exists' && $request_type == 'post') {
-      $this->setup_exists();
+      $this->setup_exists(false);
       return;
     }
 
     if (count($segments) == 1 && $segments[0] == 'partial' && $request_type == 'post') {
-      $this->setup_partial();
+      $this->setup_partial(true);
       return;
     }
 
