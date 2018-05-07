@@ -77,7 +77,7 @@ class Algorithm_setup extends MY_Database_Write_Model {
 
     if(count($result) > 0) {
       return $result;
-    } elseif($create === false) {
+    } else {
       return false;
     }
   }
