@@ -276,7 +276,7 @@ class Api_setup extends MY_Api_Model {
       }
       
       $setup_flows = array();
-      for ($setups as $key => $value) {
+      foreach ($setups as $key => $value) {
         $setup_flows[$key] = $valie->implementation_id;
       }
       
