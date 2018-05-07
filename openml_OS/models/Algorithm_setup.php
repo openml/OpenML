@@ -35,7 +35,7 @@ class Algorithm_setup extends MY_Database_Write_Model {
   function getSetupId($implementation, $parameters, $create, $setup_string = null) {
     $result = $this->searchSetup($implementation, $parameters, false);
   
-    if(count($result) > 0) {
+    if($result !== false) {
       return $result[0]->sid;
     } elseif($create === false) {
       return false;
