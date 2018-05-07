@@ -271,8 +271,9 @@ class Api_setup extends MY_Api_Model {
       
       // ===== SETUP PARTIAL =====
       
-      if ($setupIds == false) {
+      if ($setups == false) {
         $this->returnError(587, $this->version);
+        return;
       }
       
       $setup_flows = array();
@@ -281,7 +282,7 @@ class Api_setup extends MY_Api_Model {
       }
       
       // TODO: two-stage query, not ideal please fix! 
-      $per_setup = $this->_setup_ids_to_parameter_values($setups);
+      $per_setup = $this->_setup_ids_to_parameter_values(array_keys($setups));
       
       $this->xmlContents('setup-list', $this->version, array('setups' => $per_setup, 'setup_flows' => $setup_flows));
     }
