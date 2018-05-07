@@ -263,10 +263,10 @@ class Api_setup extends MY_Api_Model {
     
       $result = array('exists' => 'false', 'id' => -1);
       if ($setups != false) {
-        $result = array('exists' => 'true', 'id' => $setupId);
+        $result = array('exists' => 'true', 'id' => $setups[0]->sid);
       }
       
-      $this->xmlContents('setup-exists', $this->version, $setups[0]->sid);
+      $this->xmlContents('setup-exists', $this->version, $result);
     } else {
       
       // ===== SETUP PARTIAL =====
