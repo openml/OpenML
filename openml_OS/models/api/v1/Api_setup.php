@@ -56,7 +56,7 @@ class Api_setup extends MY_Api_Model {
     }
 
     if (count($segments) == 1 && $segments[0] == 'partial' && $request_type == 'post') {
-      $this->setup_partial(true);
+      $this->setup_exists(true); // re-uses setup exists .. but has different output (please synchronize)
       return;
     }
 
