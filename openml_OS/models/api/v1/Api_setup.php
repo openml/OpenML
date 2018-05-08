@@ -51,16 +51,12 @@ class Api_setup extends MY_Api_Model {
     }
 
     if (count($segments) == 1 && $segments[0] == 'exists' && $request_type == 'post') {
-      $this->setup_exists();
+      $this->setup_exists(false);
       return;
     }
 
-    if (count($segments) >= 1 && count($segments) <= 2 && $segments[0] == 'count' && in_array($request_type, $getpost)) {
-      if (count($segments) == 2) {
-        $this->setup_count($segments[1]);
-      } else {
-        $this->setup_count();
-      }
+    if (count($segments) == 1 && $segments[0] == 'partial' && $request_type == 'post') {
+      $this->setup_exists(true); // re-uses setup exists .. but has different output (please synchronize)
       return;
     }
 
@@ -103,7 +99,31 @@ class Api_setup extends MY_Api_Model {
       $this->xmlContents('setup-parameters', $this->version, array('parameters' => $this->parameters, 'setup' => $setup));
     }
   }
+  
+  private function _setup_ids_to_parameter_values($setups) {
+    // query fails for classifiers without parameters. is fixed further on.
+    $this->db->select('input.*, input_setting.*, algorithm_setup.implementation_id AS flow_id')->from('input_setting');
+    $this->db->join('input', 'input_setting.input_id = input.id', 'inner');
+    $this->db->join('algorithm_setup', 'algorithm_setup.sid = input_setting.setup', 'inner');
+    $this->db->join('setup_tag', 'input_setting.setup = setup_tag.id', 'left');
+    $this->db->where_in('algorithm_setup.sid', $setups);
 
+    $query = $this->db->get();
+    $parameters = $query->result();
+
+    $per_setup = array();
+    // initialize the array
+    foreach ($setups as $setup) {
+      $per_setup[$setup] = array();
+    }
+    // now fill with parameters
+    foreach ($parameters as $parameter) {
+      $per_setup[$parameter->setup][] = $parameter;
+    }
+    
+    return $per_setup;
+  }
+  
   function setup_list($segs) { 
     $result_limit = 1000;
     $legal_filters = array('flow', 'setup', 'limit', 'offset', 'tag');
@@ -169,41 +189,13 @@ class Api_setup extends MY_Api_Model {
       $this->returnError(673, $this->version, $this->openmlGeneralErrorCode, 'Allowed: ' . $result_limit . ', found:' . count($setups));
       return;
     }
-
-    // query fails for classifiers without parameters. is fixed further on.
-    $this->db->select('input.*, input_setting.*, algorithm_setup.implementation_id AS flow_id')->from('input_setting');
-    $this->db->join('input', 'input_setting.input_id = input.id', 'inner');
-    $this->db->join('algorithm_setup', 'algorithm_setup.sid = input_setting.setup', 'inner');
-    $this->db->join('setup_tag', 'input_setting.setup = setup_tag.id', 'left');
-    $this->db->where_in('algorithm_setup.sid', $setups);
-
-    $query = $this->db->get();
-    $parameters = $query->result();
-
-    $per_setup = array();
-    // initialize the array
-    foreach ($setups as $setup) {
-      $per_setup[$setup] = array();
-    }
-    // now fill with parameters
-    foreach ($parameters as $parameter) {
-      $per_setup[$parameter->setup][] = $parameter;
-    }
+    
+    $per_setup = $this->_setup_ids_to_parameter_values($setups);
+    
     $this->xmlContents('setup-list', $this->version, array('setups' => $per_setup, 'setup_flows' => $setup_flows));
   }
 
-  function setup_count($tags = null) {
-    $result = $this->Algorithm_setup->setup_runs($tags, $tags);
-
-    if ($result == false) {
-      $this->returnError(661, $this->version);
-      return;
-    }
-
-    $this->xmlContents('setup-count', $this->version, array('setups' => $result));
-  }
-
-  private function setup_exists() {
+  private function setup_exists($partial) {
     $description = isset($_FILES['description']) ? $_FILES['description'] : false;
     $uploadError = '';
     if(!check_uploaded_file($description,false,$uploadError)) {
@@ -239,6 +231,7 @@ class Api_setup extends MY_Api_Model {
       $this->returnError(584, $this->version);
       return;
     }
+    
     // makes sure that the implementation is not a math_function
     if(in_array($implementation->{'implements'}, $this->supportedMetrics)) {
       $this->returnError(585, $this->version);
@@ -246,7 +239,7 @@ class Api_setup extends MY_Api_Model {
     }
 
     $parameters = array();
-    foreach( $parameter_objects as $p ) {
+    foreach($parameter_objects as $p) {
       // since 'component' is an optional XML field, we add a default option
       $component = property_exists($p, 'component') ? $p->component : $implementation->id;
 
@@ -259,14 +252,40 @@ class Api_setup extends MY_Api_Model {
 
       $parameters[$input_id->id] = $p->value . '';
     }
-    // search setup ... // TODO: do something about the new parameters. Are still retrieved by ID, does not work with Weka plugin.
-    $setupId = $this->Algorithm_setup->getSetupId($implementation, $parameters, false);
-
-    $result = array('exists' => 'false', 'id' => -1);
-    if($setupId) {
-      $result = array('exists' => 'true', 'id' => $setupId);
+    
+    $setups = $this->Algorithm_setup->searchSetup($implementation, $parameters, $partial); 
+    
+    // ===== THIS FUNCTION CONTAINS BOTH SETUP EXISTS AND SETUP PARTIAL =====
+    // TODO: merge them in a later stage 
+    if (!$partial) {
+      
+      // ===== SETUP EXISTS =====
+    
+      $result = array('exists' => 'false', 'id' => -1);
+      if ($setups != false) {
+        $result = array('exists' => 'true', 'id' => $setups[0]->sid);
+      }
+      
+      $this->xmlContents('setup-exists', $this->version, $result);
+    } else {
+      
+      // ===== SETUP PARTIAL =====
+      
+      if ($setups == false) {
+        $this->returnError(587, $this->version);
+        return;
+      }
+      
+      $setup_flows = array();
+      foreach ($setups as $value) {
+        $setup_flows[$value->sid] = $value->implementation_id;
+      }
+      
+      // TODO: two-stage query, not ideal please fix! 
+      $per_setup = $this->_setup_ids_to_parameter_values(array_keys($setup_flows));
+      
+      $this->xmlContents('setup-list', $this->version, array('setups' => $per_setup, 'setup_flows' => $setup_flows));
     }
-    $this->xmlContents('setup-exists', $this->version, $result);
   }
 
   private function setup_delete($setup_id) {

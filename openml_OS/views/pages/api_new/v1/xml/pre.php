@@ -311,6 +311,7 @@ $this->apiErrors[583] = 'Error reading the XML document. ';
 $this->apiErrors[584] = 'Unknown flow. ';
 $this->apiErrors[585] = 'Wrong flow associated with run: this implements a math_function. ';
 $this->apiErrors[586] = 'Parameter in run xml unknown. ';
+$this->apiErrors[587] = 'Partial setup did not match any setups. ';
 
 // openml.study.list
 $this->apiErrors[590] = 'No studies available. ';

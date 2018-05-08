@@ -75,7 +75,7 @@ class Api_task extends MY_Api_Model {
       return;
     }
     
-    $illegal_filter_inputs = $this->check_filter_inputs($query_string, $legal_filters, array('type', 'tag', 'data_tag', 'status', 'number_instances', 'number_features', 'number_classes', 'number_missing_values'));
+    $illegal_filter_inputs = $this->check_filter_inputs($query_string, $legal_filters, array('type', 'tag', 'data_tag', 'status', 'data_name', 'number_instances', 'number_features', 'number_classes', 'number_missing_values'));
     if (count($illegal_filter_inputs) > 0) {
       $this->returnError(481, $this->version, $this->openmlGeneralErrorCode, 'Filters with illegal values: ' . implode(',', $illegal_filter_inputs));
       return;
