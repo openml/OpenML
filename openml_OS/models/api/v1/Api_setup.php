@@ -253,7 +253,13 @@ class Api_setup extends MY_Api_Model {
       $parameters[$input_id->id] = $p->value . '';
     }
     
-    $setups = $this->Algorithm_setup->searchSetup($implementation, $parameters, $partial); 
+    try {
+      $setups = $this->Algorithm_setup->searchSetup($implementation, $parameters, $partial); 
+    } catch(Exception $e) {
+      $this->returnError(588, $this->version);
+      return;
+    }
+    
     
     // ===== THIS FUNCTION CONTAINS BOTH SETUP EXISTS AND SETUP PARTIAL =====
     // TODO: merge them in a later stage 

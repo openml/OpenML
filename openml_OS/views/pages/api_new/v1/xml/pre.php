@@ -79,7 +79,7 @@ $this->apiErrors[211] = 'Dataset not in databse';
 $this->apiErrors[212] = 'Unable to store uploaded file to file system';
 $this->apiErrors[213] = 'Parameter in run xml unknown';
 $this->apiErrors[214] = 'Unable to store input setting';
-//$this->apiErrors[215] = 'Unable to evaluate predictions';
+$this->apiErrors[215] = 'Database error. Setup search query failed';
 //$this->apiErrors[216] = 'Error thrown by Java Application';
 $this->apiErrors[217] = 'Error processing output data: unknown or inconsistent evaluation measure';
 $this->apiErrors[218] = 'Wrong flow associated with run: this implements a math_function';
@@ -312,6 +312,7 @@ $this->apiErrors[584] = 'Unknown flow. ';
 $this->apiErrors[585] = 'Wrong flow associated with run: this implements a math_function. ';
 $this->apiErrors[586] = 'Parameter in run xml unknown. ';
 $this->apiErrors[587] = 'Partial setup did not match any setups. ';
+$this->apiErrors[588] = 'Database error: search setups query failed. ';
 
 // openml.study.list
 $this->apiErrors[590] = 'No studies available. ';

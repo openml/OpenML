@@ -73,8 +73,12 @@ class Algorithm_setup extends MY_Database_Write_Model {
               ' LIMIT 0,1;';
     }
 
-    $result = $this->db->query($sql)->result();
-
+    $sql = $this->db->query($sql);
+    if ($sql === false) {
+      throw new Exception($this->db->_error_number() . ': ' . $this->db->_error_message());
+    }
+    
+    $result = $sql->result();
     if(count($result) > 0) {
       return $result;
     } else {
