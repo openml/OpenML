@@ -76,7 +76,7 @@ class Algorithm_setup extends MY_Database_Write_Model {
     $sql = $this->db->query($sql);
     if ($sql === false) {
       $error = $this->db->error();
-      throw new Exception($error[0] . ': ' . $error[1]);
+      throw new Exception($error['code'] . ': ' . $error['message']);
     }
     
     $result = $sql->result();
