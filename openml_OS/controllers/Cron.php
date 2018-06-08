@@ -108,11 +108,11 @@ class Cron extends CI_Controller {
       if ($this->$modelname->get() === false) {
         $sql = file_get_contents('data/sql/' . $m);
         
-        echo 'inserting ' . $modelname . ', with ' . strlen($sql) . ' characters... ' + "\n";
+        echo 'inserting ' . $modelname . ', with ' . strlen($sql) . ' characters... ' . "\n";
         // might need to adapt this, because not all models are supposed to write
         $result = $this->$modelname->query($sql);
       } else {
-        echo 'skipping ' . $modelname . ', as it is not empty... ' + "\n";
+        echo 'skipping ' . $modelname . ', as it is not empty... ' . "\n";
       }
     }
   }
