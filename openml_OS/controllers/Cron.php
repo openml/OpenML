@@ -113,8 +113,7 @@ class Cron extends CI_Controller {
         $result = $this->$modelname->query($sql);
         
         if ($result === false) {
-          $error = $this->db->error();
-          echo 'failure: ' . $error['message'] . "\n";
+          echo 'failure: ' . $this->$modelname->mysqlErrorMessage() . "\n";
         }
       } else {
         echo 'skipping ' . $modelname . ', as it is not empty... ' . "\n";
