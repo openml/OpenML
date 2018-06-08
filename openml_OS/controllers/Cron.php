@@ -100,7 +100,7 @@ class Cron extends CI_Controller {
         array_unshift($models, $name);
       }
     }
-    array_unique($models);
+    $models = array_unique($models);
 
     foreach ($models as $m) {
       $modelname = ucfirst(substr($m, 0, strpos($m, '.')));
@@ -111,6 +111,11 @@ class Cron extends CI_Controller {
         echo 'inserting ' . $modelname . ', with ' . strlen($sql) . ' characters... ' . "\n";
         // might need to adapt this, because not all models are supposed to write
         $result = $this->$modelname->query($sql);
+        
+        if ($result === false) {
+          $error = $this->db->error();
+          echo 'failure: ' . $error['message'] . "\n";
+        }
       } else {
         echo 'skipping ' . $modelname . ', as it is not empty... ' . "\n";
       }
