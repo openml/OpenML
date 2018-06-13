@@ -92,7 +92,7 @@ class Cron extends CI_Controller {
   function install_database() {
     // note that this one does not come from DATA folder, as they are stored in github
     $models = directory_map('data/sql/', 1);
-    $manipulated_order = array('implementation.sql', 'algorithm_setup.sql', 'dataset.sql', 'study.sql', 'groups.sql', 'users.sql');
+    $manipulated_order = array('file.sql', 'implementation.sql', 'algorithm_setup.sql', 'dataset.sql', 'study.sql', 'groups.sql', 'users.sql');
 
     // moves elements of $manipulated_order to the start of the models array
     foreach (array_reverse($manipulated_order) as $name) {
@@ -100,7 +100,7 @@ class Cron extends CI_Controller {
         array_unshift($models, $name);
       }
     }
-    array_unique($models);
+    $models = array_unique($models);
 
     foreach ($models as $m) {
       $modelname = ucfirst(substr($m, 0, strpos($m, '.')));
@@ -108,11 +108,15 @@ class Cron extends CI_Controller {
       if ($this->$modelname->get() === false) {
         $sql = file_get_contents('data/sql/' . $m);
         
-        echo 'inserting ' . $modelname . ', with ' . strlen($sql) . ' characters... ' + "\n";
+        echo 'inserting ' . $modelname . ', with ' . strlen($sql) . ' characters... ' . "\n";
         // might need to adapt this, because not all models are supposed to write
         $result = $this->$modelname->query($sql);
+        
+        if ($result === false) {
+          echo 'failure: ' . $this->$modelname->mysqlErrorMessage() . "\n";
+        }
       } else {
-        echo 'skipping ' . $modelname . ', as it is not empty... ' + "\n";
+        echo 'skipping ' . $modelname . ', as it is not empty... ' . "\n";
       }
     }
   }

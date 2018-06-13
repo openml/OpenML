@@ -72,5 +72,13 @@ class MY_Community_Model extends MY_Model {
   function update( $id, $data ) {
     return $this->db->where( '`id` = ' . $id )->update( $this->table, $data );
   }
+  
+  function mysqlErrorNo() {
+    return $this->db->error()['code'];
+  }
+  
+  function mysqlErrorMessage() {
+    return $this->db->error()['message'];
+  }
 }
 ?>

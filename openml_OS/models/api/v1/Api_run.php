@@ -423,8 +423,15 @@ class Api_run extends MY_Api_Model {
 
       $parameters[$input_id->id] = $p->value . '';
     }
+    
     // search setup ... // TODO: do something about the new parameters. Are still retrieved by ID, does not work with Weka plugin.
-    $setupId = $this->Algorithm_setup->getSetupId($implementation, $parameters, true, $setup_string);
+    try {
+      $setupId = $this->Algorithm_setup->getSetupId($implementation, $parameters, true, $setup_string);
+    } catch(Exception $e) {
+      $this->returnError(215, $this->version);
+      return;
+    }
+    
     if( $setupId === false ) {
       $this->returnError(214, $this->version);
       return;

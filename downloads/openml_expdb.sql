@@ -3,9 +3,9 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Aug 02, 2017 at 07:09 PM
--- Server version: 5.7.19-0ubuntu0.16.04.1-log
--- PHP Version: 7.0.18-0ubuntu0.16.04.1
+-- Generation Time: Jun 04, 2018 at 04:12 AM
+-- Server version: 5.7.22-0ubuntu0.16.04.1-log
+-- PHP Version: 7.0.30-0ubuntu0.16.04.1
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -433,9 +433,9 @@ CREATE TABLE `implementation_tag` (
 
 CREATE TABLE `input` (
   `id` int(10) NOT NULL,
-  `fullName` varchar(128) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `fullName` varchar(1024) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `implementation_id` int(16) NOT NULL,
-  `name` varchar(128) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
+  `name` varchar(512) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
   `description` text CHARACTER SET utf8 COLLATE utf8_bin,
   `dataType` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
   `defaultValue` text CHARACTER SET utf8 COLLATE utf8_bin,
@@ -464,7 +464,7 @@ CREATE TABLE `input_setting` (
   `setup` int(10) UNSIGNED NOT NULL DEFAULT '0',
   `input` varchar(128) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '',
   `input_id` int(10) NOT NULL,
-  `value` varchar(1024) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL
+  `value` varchar(2048) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
@@ -592,7 +592,6 @@ CREATE TABLE `run_evaluated` (
   `error` text,
   `warning` text,
   `num_tries` int(8) NOT NULL DEFAULT '1'
-
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -879,7 +878,8 @@ ALTER TABLE `data_quality_interval`
 ALTER TABLE `dataset`
   ADD PRIMARY KEY (`did`),
   ADD UNIQUE KEY `nameID` (`name`,`did`,`version`,`version_label`),
-  ADD KEY `name` (`name`);
+  ADD KEY `name` (`name`),
+  ADD KEY `file_id` (`file_id`);
 
 --
 -- Indexes for table `dataset_tag`
@@ -977,7 +977,8 @@ ALTER TABLE `implementation`
 -- Indexes for table `implementation_component`
 --
 ALTER TABLE `implementation_component`
-  ADD PRIMARY KEY (`parent`,`child`);
+  ADD PRIMARY KEY (`parent`,`child`),
+  ADD KEY `child` (`child`);
 
 --
 -- Indexes for table `implementation_tag`
@@ -1282,6 +1283,12 @@ ALTER TABLE `data_quality_interval`
   ADD CONSTRAINT `data_quality_interval_ibfk_4` FOREIGN KEY (`data`,`evaluation_engine_id`) REFERENCES `data_processed` (`did`, `evaluation_engine_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
+-- Constraints for table `dataset`
+--
+ALTER TABLE `dataset`
+  ADD CONSTRAINT `dataset_ibfk_1` FOREIGN KEY (`file_id`) REFERENCES `openml`.`file` (`id`);
+
+--
 -- Constraints for table `dataset_tag`
 --
 ALTER TABLE `dataset_tag`
@@ -1323,6 +1330,13 @@ ALTER TABLE `feature_quality`
   ADD CONSTRAINT `feature_quality_ibfk_3` FOREIGN KEY (`evaluation_engine_id`) REFERENCES `evaluation_engine` (`id`) ON UPDATE CASCADE,
   ADD CONSTRAINT `feature_quality_ibfk_4` FOREIGN KEY (`data`,`evaluation_engine_id`) REFERENCES `data_processed` (`did`, `evaluation_engine_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `feature_quality_ibfk_5` FOREIGN KEY (`data`,`feature_index`) REFERENCES `data_feature` (`did`, `index`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `implementation_component`
+--
+ALTER TABLE `implementation_component`
+  ADD CONSTRAINT `implementation_component_ibfk_1` FOREIGN KEY (`parent`) REFERENCES `implementation` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `implementation_component_ibfk_2` FOREIGN KEY (`child`) REFERENCES `implementation` (`id`);
 
 --
 -- Constraints for table `implementation_tag`
