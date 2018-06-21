@@ -664,7 +664,7 @@ class Api_data extends MY_Api_Model {
       return;
     }
 
-    if($dataset->visibility != 'public' and $dataset->uploader != $this->user_id ) {
+    if($dataset->visibility != 'public' and $dataset->uploader != $this->user_id  && !$this->user_has_admin_rights) {
       $this->returnError( 361, $this->version ); // Add special error code for this case?
       return;
     }
