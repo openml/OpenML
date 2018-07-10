@@ -35,9 +35,9 @@
                   <img class="circle" src="img/fanova.png" alt="icon">
               </div>
               <div class="row-content">
-                  <h4 class="list-group-item-heading">OpenML in practice</h4>
+                  <h4 class="list-group-item-heading"><a href="https://www.youtube.com/watch?v=mS4vL7_rSWQ" target="_blank">OpenML in practice</a></h4>
                   <p class="list-group-item-text"><a href="https://www.youtube.com/watch?v=mS4vL7_rSWQ" target="_blank">Hyperparameter Importance Across Datasets on Youtube</a></p>
-                  <p class="list-group-item-text">A two minute video demonstrating how OpenML can be used for Automated Machine Learning.</a></p>
+                  <p class="list-group-item-text"><a href="https://www.youtube.com/watch?v=mS4vL7_rSWQ" target="_blank">A two minute video demonstrating how OpenML can be used for Automated Machine Learning.</a></p>
               </div>
           </div>
         </div>
