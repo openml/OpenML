@@ -32,28 +32,27 @@
         <div class="item active">
           <div class="list-group-item">
               <div class="row-picture">
+                  <img class="circle" src="img/fanova.png" alt="icon">
+              </div>
+              <div class="row-content">
+                  <h4 class="list-group-item-heading">OpenML in practice</h4>
+                  <p class="list-group-item-text"><a href="https://www.youtube.com/watch?v=mS4vL7_rSWQ" target="_blank">Hyperparameter Importance Across Datasets on Youtube</a></p>
+                  <p class="list-group-item-text">A two minute video demonstrating how OpenML can be used for Automated Machine Learning.</a></p>
+              </div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="list-group-item">
+              <div class="row-picture">
                   <img class="circle" src="img/colordots.png" alt="icon">
               </div>
               <div class="row-content">
                   <h4 class="list-group-item-heading"><div id="colorchange"><span>H</span><span>A</span><span>C</span><span>K</span><span>A</span><span>T</span><span>H</span><span>O</span><span>N</span></div></h4>
                   <p class="list-group-item-text">Bring your own data, bring your own algorithms, or build cool new features.</p>
-                  <p class="list-group-item-text">Next location: Early April, Porto, Portugal</a></p>
+                  <p class="list-group-item-text">Next location: 17-21 September 2018, Paris, France</a></p>
               </div>
           </div>
         </div>
-        <!--
-        <div class="item">
-          <div class="list-group-item">
-              <div class="row-picture">
-                  <img class="circle" src="img/COSEAL_small.png" alt="icon">
-              </div>
-              <div class="row-content">
-                  <h4 class="list-group-item-heading">Algorithm Selection Competition</h4>
-                  <p class="list-group-item-text">Use your favorite OpenML tool to participate in the (external) <a href="http://www.coseal.net/open-algorithm-selection-challenge-2017-oasc/">Open Algorithm Selection Competition 2017</a>. Deadline is <b>August 27, 2017</b>.</p>
-              </div>
-          </div>
-        </div>
-      -->
         <div class="item">
           <div class="list-group-item">
               <div class="row-picture">
