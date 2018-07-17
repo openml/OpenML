@@ -877,7 +877,7 @@ ALTER TABLE `data_quality_interval`
 --
 ALTER TABLE `dataset`
   ADD PRIMARY KEY (`did`),
-  ADD UNIQUE KEY `nameID` (`name`,`did`,`version`,`version_label`),
+  ADD UNIQUE KEY `nameID` (`name`,`version`),
   ADD KEY `name` (`name`),
   ADD KEY `file_id` (`file_id`);
 
