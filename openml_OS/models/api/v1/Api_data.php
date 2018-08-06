@@ -611,16 +611,27 @@ class Api_data extends MY_Api_Model {
         return;
       }
       
-      if ($feature->data_type == 'nominal') {
+      // check the nominal value property
+      if (property_exists($feature, 'nominal_values')) {
+        
+        if ($feature->data_type != 'nominal') {
+          // only allowed for nominal values
+          $this->db->trans_rollback();
+          $this->returnError(439, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature->name);
+          return;
+        }
+        
+        // check if json is valid, throw error otherwise
         json_decode($feature->nominal_values);
         if (json_last_error()) {
           $this->db->trans_rollback();
           $this->returnError(438, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature->name);
           return;
         }
-      } elseif ($feature->nominal_values != null) {
+      } elseif ($feature->data_type == 'nominal') {
+        // required for nominal values.. missing so throw error
         $this->db->trans_rollback();
-        $this->returnError(439, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature->name);
+        $this->returnError(438, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature->name);
         return;
       }
 
