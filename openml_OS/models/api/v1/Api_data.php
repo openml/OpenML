@@ -603,12 +603,14 @@ class Api_data extends MY_Api_Model {
         $feature->is_ignore = 'true';
       }
       
-      // check class distributions field
-      json_decode($feature->ClassDistribution);
-      if (json_last_error()) {
-        $this->db->trans_rollback();
-        $this->returnError(437, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature->name);
-        return;
+      if (property_exists($feature, 'ClassDistribution')) {
+        // check class distributions field
+        json_decode($feature->ClassDistribution);
+        if (json_last_error()) {
+          $this->db->trans_rollback();
+          $this->returnError(437, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature->name);
+          return;
+        }
       }
       
       // check the nominal value property
