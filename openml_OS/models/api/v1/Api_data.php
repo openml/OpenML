@@ -618,7 +618,7 @@ class Api_data extends MY_Api_Model {
           $this->returnError(438, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature->name);
           return;
         }
-      } elseif ($feature->data_type != null) {
+      } elseif ($feature->nominal_values != null) {
         $this->db->trans_rollback();
         $this->returnError(439, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature->name);
         return;
