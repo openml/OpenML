@@ -19,7 +19,7 @@ class Api_data extends MY_Api_Model {
     $this->load->model('Study_tag');
 
     $this->load->helper('file_upload');
-    $this->db = $this->Database_singleton->getReadConnection();
+    $this->db = $this->Database_singleton->getWriteConnection();
 
     $this->legal_formats = array('arff', 'sparse_arff');
   }
