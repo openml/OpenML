@@ -604,14 +604,16 @@ class Api_data extends MY_Api_Model {
       }
       
       // check class distributions field
-      if (!json_decode($feature->ClassDistribution)) {
+      json_decode($feature->ClassDistribution);
+      if (json_last_error()) {
         $this->db->trans_rollback();
         $this->returnError(437, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature->name);
         return;
       }
       
       if ($feature->data_type == 'nominal') {
-        if (!json_decode($feature->nominal_values)) {
+        json_decode($feature->nominal_values);
+        if (json_last_error()) {
           $this->db->trans_rollback();
           $this->returnError(438, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature->name);
           return;
