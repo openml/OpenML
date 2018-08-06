@@ -105,7 +105,7 @@ CREATE TABLE `data_feature` (
   `evaluation_engine_id` int(16) NOT NULL,
   `name` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `data_type` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
-  `nominal_values` text COLLATE utf8_unicode_ci,
+  `nominal_values` mediumtext COLLATE utf8_unicode_ci,
   `is_target` enum('true','false') CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT 'false',
   `is_row_identifier` enum('true','false') CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT 'false',
   `is_ignore` enum('true','false') CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT 'false',
