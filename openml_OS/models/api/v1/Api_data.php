@@ -611,7 +611,7 @@ class Api_data extends MY_Api_Model {
       }
       
       if ($feature->data_type == 'nominal') {
-        if (!json_decode($feature->data_type)) {
+        if (!json_decode($feature->nominal_values)) {
           $this->db->trans_rollback();
           $this->returnError(438, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature->name);
           return;
