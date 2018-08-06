@@ -605,16 +605,19 @@ class Api_data extends MY_Api_Model {
       
       // check class distributions field
       if (!json_decode($feature->ClassDistribution)) {
+        $this->db->trans_rollback();
         $this->returnError(437, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature->name);
         return;
       }
       
       if ($feature->data_type == 'nominal') {
         if (!json_decode($feature->data_type)) {
+          $this->db->trans_rollback();
           $this->returnError(438, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature->name);
           return;
         }
       } elseif ($feature->data_type != null) {
+        $this->db->trans_rollback();
         $this->returnError(439, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature->name);
         return;
       }
