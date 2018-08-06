@@ -586,14 +586,14 @@ class Api_data extends MY_Api_Model {
     }
 
     foreach($xml->children('oml', true)->{'feature'} as $q) {
-      $feature = xml2object( $q, true );
+      $feature = xml2object($q, true);
       $feature->did = $did;
       $feature->evaluation_engine_id = $eval_id;
 
       // add special features
       if(in_array($feature->name,$targets)) {
         $feature->is_target = 'true';
-      } else {//this is needed because the Java feature extractor still chooses a target when there isn't any
+      } else { //this is needed because the Java feature extractor still chooses a target when there isn't any
         $feature->is_target = 'false';
       }
       if(in_array($feature->name,$rowids)) {
@@ -601,6 +601,22 @@ class Api_data extends MY_Api_Model {
       }
       if(in_array($feature->name,$ignores)) {
         $feature->is_ignore = 'true';
+      }
+      
+      // check class distributions field
+      if (!json_decode($feature->ClassDistribution)) {
+        $this->returnError(437, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature->name);
+        return;
+      }
+      
+      if ($feature->data_type == 'nominal') {
+        if (!json_decode($feature->data_type)) {
+          $this->returnError(438, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature->name);
+          return;
+        }
+      } elseif ($feature->data_type != null) {
+        $this->returnError(439, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature->name);
+        return;
       }
 
       //actual insert
