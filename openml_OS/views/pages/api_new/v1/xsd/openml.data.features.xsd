@@ -13,7 +13,7 @@
       <xs:element name="index" type="xs:integer"/>
       <xs:element name="name" type="oml:basic_latin64"/> <!-- The name of the quality that is set -->
       <xs:element name="data_type" type="oml:basic_latin64"/> <!-- The value of the quality --> 
-      <xs:element minOccurs="0" name="nominal_values" type="oml:basic_latin4096"/>
+      <xs:element minOccurs="0" name="nominal_values" type="oml:basic_latin16384"/>
       <xs:element minOccurs="0" name="is_target" type="xs:boolean"/>
       <xs:element minOccurs="0" name="is_ignore" type="xs:boolean"/>
       <xs:element minOccurs="0" name="is_row_identifier" type="xs:boolean"/>
@@ -28,7 +28,7 @@
       <xs:element minOccurs="0" name="MinimumValue" type="xs:double"/>
       <xs:element minOccurs="0" name="MeanValue" type="xs:double"/>
       <xs:element minOccurs="0" name="StandardDeviation" type="xs:double"/>
-      <xs:element minOccurs="0" name="ClassDistribution" type="oml:basic_latin4096"/>
+      <xs:element minOccurs="0" name="ClassDistribution" type="oml:basic_latin16384"/>
     </xs:sequence>
   </xs:complexType>
   <xs:simpleType name="basic_latin64">
@@ -45,10 +45,10 @@
       <xs:minLength value="1" />
     </xs:restriction>
   </xs:simpleType>
-  <xs:simpleType name="basic_latin4096">
+  <xs:simpleType name="basic_latin16384">
     <xs:restriction base="xs:string">
       <xs:pattern value="\p{IsBasicLatin}*"/>
-      <xs:maxLength value="4096" />
+      <xs:maxLength value="16384" />
       <xs:minLength value="1" />
     </xs:restriction>
   </xs:simpleType>
