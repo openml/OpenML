@@ -19,7 +19,7 @@ class Api_data extends MY_Api_Model {
     $this->load->model('Study_tag');
 
     $this->load->helper('file_upload');
-    $this->db = $this->Database_singleton->getReadConnection();
+    $this->db = $this->Database_singleton->getWriteConnection();
 
     $this->legal_formats = array('arff', 'sparse_arff');
   }
@@ -586,14 +586,14 @@ class Api_data extends MY_Api_Model {
     }
 
     foreach($xml->children('oml', true)->{'feature'} as $q) {
-      $feature = xml2object( $q, true );
+      $feature = xml2object($q, true);
       $feature->did = $did;
       $feature->evaluation_engine_id = $eval_id;
 
       // add special features
       if(in_array($feature->name,$targets)) {
         $feature->is_target = 'true';
-      } else {//this is needed because the Java feature extractor still chooses a target when there isn't any
+      } else { //this is needed because the Java feature extractor still chooses a target when there isn't any
         $feature->is_target = 'false';
       }
       if(in_array($feature->name,$rowids)) {
@@ -601,6 +601,40 @@ class Api_data extends MY_Api_Model {
       }
       if(in_array($feature->name,$ignores)) {
         $feature->is_ignore = 'true';
+      }
+      
+      if (property_exists($feature, 'ClassDistribution')) {
+        // check class distributions field
+        json_decode($feature->ClassDistribution);
+        if (json_last_error()) {
+          $this->db->trans_rollback();
+          $this->returnError(437, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature->name);
+          return;
+        }
+      }
+      
+      // check the nominal value property
+      if (property_exists($feature, 'nominal_values')) {
+        
+        if ($feature->data_type != 'nominal') {
+          // only allowed for nominal values
+          $this->db->trans_rollback();
+          $this->returnError(439, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature->name);
+          return;
+        }
+        
+        // check if json is valid, throw error otherwise
+        json_decode($feature->nominal_values);
+        if (json_last_error()) {
+          $this->db->trans_rollback();
+          $this->returnError(438, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature->name);
+          return;
+        }
+      } elseif ($feature->data_type == 'nominal') {
+        // required for nominal values.. missing so throw error
+        $this->db->trans_rollback();
+        $this->returnError(438, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature->name);
+        return;
       }
 
       //actual insert

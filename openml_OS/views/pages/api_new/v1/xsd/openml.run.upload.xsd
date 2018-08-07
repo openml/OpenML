@@ -24,7 +24,7 @@
     <xs:sequence>
       <xs:element name="name" type="oml:casual_string1024"/> <!-- The name of the parameter that is set -->
       <xs:element name="value" type="oml:basic_latin2048"/> <!-- The value used for this parameter -->
-      <xs:element name="component" minOccurs="0" maxOccurs="1" type="oml:casual_string1024"/> <!-- If the parameter belongs to a subcomponent of an implementation, the implementation name of that component. This name must match a component of the implementation that is stated above (in 'implementation_id'). -->
+      <xs:element name="component" minOccurs="0" maxOccurs="1" type="xs:integer"/> <!-- If the parameter belongs to a subcomponent of an implementation, the flow id of that component. This name must match the id of a component of the implementation that is stated above (in 'implementation_id'). -->
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="data">
