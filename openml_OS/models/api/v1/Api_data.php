@@ -251,10 +251,16 @@ class Api_data extends MY_Api_Model {
     foreach( $this->xml_fields_dataset['csv'] as $field ) {
       $dataset->{$field} = getcsv( $dataset->{$field} );
     }
-
-    # TMP hack for testing
-    $studies = $this->Study_tag->getStudyIdsFromEntity('dataset', $dataset->did);
-    $dataset->studies = $studies != false ? $studies : array();
+    
+    $data_processed = $this->Data_processed->getById(array($data_id, $this->config->item('default_evaluation_engine_id')));
+    $relevant_fields = array('processing_date', 'error', 'warning');
+    foreach ($relevant_fields as $field) {
+      if ($data_processed !== false) {
+        $dataset->{$field} = $data_processed->{$field};
+      } else {
+        $dataset->{$field} = null;
+      }
+    }
 
     $this->xmlContents( 'data-get', $this->version, $dataset );
   }
@@ -481,7 +487,7 @@ class Api_data extends MY_Api_Model {
       return;
     }
 
-    $data_processed = $this->Data_processed->getById(array($data_id, 1));
+    $data_processed = $this->Data_processed->getById(array($data_id, $this->config->item('default_evaluation_engine_id')));
 
     if ($data_processed == false) {
       $this->returnError(273, $this->version);

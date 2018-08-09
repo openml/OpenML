@@ -22,5 +22,8 @@
   <?php if ($original_data_url != null): ?><oml:original_data_url><?php echo htmlspecialchars($original_data_url); ?></oml:original_data_url><?php endif; ?>
   <?php if ($paper_url != null): ?><oml:paper_url><?php echo htmlspecialchars($paper_url); ?></oml:paper_url><?php endif; ?>
   <oml:status><?php echo htmlspecialchars($status); ?></oml:status>
+  <?php if ($processing_date != null): ?><oml:processing_date><?php echo htmlspecialchars($processing_date); ?></oml:processing_date><?php endif; ?>
+  <?php if ($error != null): ?><oml:error><?php echo htmlspecialchars($error); ?></oml:error><?php endif; ?>
+  <?php if ($warning != null): ?><oml:warning><?php echo htmlspecialchars($warning); ?></oml:warning><?php endif; ?>
   <oml:md5_checksum><?php echo htmlspecialchars($md5_checksum); ?></oml:md5_checksum>
 </oml:data_set_description>
