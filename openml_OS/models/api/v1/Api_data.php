@@ -494,14 +494,13 @@ class Api_data extends MY_Api_Model {
       return;
     }
 
-    // TODO: think of better policy
-    //if ($data_processed->error) {
-    //  $this->returnError(274, $this->version);
-    //  return;
-    //}
-
     $dataset->features = $this->Data_feature->getWhere('did = "' . $dataset->did . '"');
-
+    
+    if ($data_processed->error && $dataset->features === false) {
+      $this->returnError(274, $this->version);
+      return;
+    }
+    
     if ($dataset->features === false) {
       $this->returnError(272, $this->version);
       return;
