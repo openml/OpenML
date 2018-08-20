@@ -716,11 +716,6 @@ class Api_data extends MY_Api_Model {
       return;
     }
 
-    if($data_processed->error) {
-      $this->returnError(364, $this->version, $this->openmlGeneralErrorCode, $data_processed->error);
-      return;
-    }
-
     $interval_start = false; // $this->input->get( 'interval_start' );
     $interval_end   = false; // $this->input->get( 'interval_end' );
     $interval_size  = false; // $this->input->get( 'interval_size' );
@@ -739,6 +734,11 @@ class Api_data extends MY_Api_Model {
       $dataset->qualities = $this->Data_quality_interval->getWhere( 'data = "' . $dataset->did . '" ' . $interval_constraints . ' AND evaluation_engine_id = ' . evaluation_engine_id );
     } else {
       $dataset->qualities = $this->Data_quality->getWhere('data = "' . $dataset->did . '" AND evaluation_engine_id = ' . $evaluation_engine_id);
+    }
+    
+    if($data_processed->error && $dataset->qualities === false) {
+      $this->returnError(364, $this->version, $this->openmlGeneralErrorCode, $data_processed->error);
+      return;
     }
 
     if( $dataset->qualities === false ) {
