@@ -36,6 +36,9 @@
     <xs:element name="paper_url" minOccurs="0" type="xs:anyURI"/> <!-- Link to a paper describing the dataset -->
     <xs:element name="update_comment" minOccurs="0" type="oml:basic_latin128"/> <!-- When the dataset is updated, add an explanation here. -->
     <xs:element name="status" minOccurs="0" type="oml:system_string64"/> <!-- Whether the dataset is active. Ignored on upload time. -->
+    <xs:element name="processing_date" minOccurs="0" type="oml:casual_string64"/> <!-- Date of processing. Ignored on upload time. -->
+    <xs:element name="error" minOccurs="0" type="oml:casual_string1024"/> <!-- Errors discovered while processing the dataset. Ignored on upload time. -->
+    <xs:element name="warning" minOccurs="0" type="oml:casual_string1024"/> <!-- Warnings while processing the dataset. Ignored on upload time. -->
     <xs:element name="md5_checksum" minOccurs="0" type="oml:system_string64"/> <!-- MD5 checksum to check if the dataset is downloaded without corruption. -->
   </xs:sequence>
 </xs:complexType>
