@@ -217,7 +217,7 @@ $this->apiErrors[434] = 'Could not find dataset';
 $this->apiErrors[435] = 'Feature upload failed';
 $this->apiErrors[436] = 'Something wrong with XML, check did and evaluation engine id';
 $this->apiErrors[437] = 'Class Distribution not valid json';
-$this->apiErrors[438] = 'Nominal feature is not accompanied with valid json';
+$this->apiErrors[438] = 'Nominal feature is not accompanied with valid json (this can only be tolerated if an error message is also registered)';
 $this->apiErrors[439] = 'Non-Nominal feature obtained json string';
 
 // for function: openml.estimationprocedure.get
