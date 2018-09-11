@@ -787,7 +787,8 @@ CREATE TABLE `task_type_inout` (
 --
 
 CREATE TABLE `trace` (
-  `run_id` bigint(20) NOT NULL,
+  `run_id` int(10) UNSIGNED NOT NULL,
+  `evaluation_engine_id` int(16) NOT NULL DEFAULT '1',
   `repeat` int(11) NOT NULL,
   `fold` int(11) NOT NULL,
   `iteration` int(11) NOT NULL,
@@ -1148,7 +1149,8 @@ ALTER TABLE `task_type_inout`
 -- Indexes for table `trace`
 --
 ALTER TABLE `trace`
-  ADD PRIMARY KEY (`run_id`,`repeat`,`fold`,`iteration`);
+  ADD PRIMARY KEY (`run_id`,`evaluation_engine_id`,`repeat`,`fold`,`iteration`),
+  ADD KEY `run_id` (`run_id`,`evaluation_engine_id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -1399,6 +1401,12 @@ ALTER TABLE `study_tag`
 --
 ALTER TABLE `task_tag`
   ADD CONSTRAINT `fk_task_tag` FOREIGN KEY (`id`) REFERENCES `task` (`task_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `trace`
+-- 
+ALTER TABLE `fk_trace` 
+  ADD FOREIGN KEY (`run_id`, `evaluation_engine_id`) REFERENCES `run_evaluated`(`run_id`, `evaluation_engine_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
