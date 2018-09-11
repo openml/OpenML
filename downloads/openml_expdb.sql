@@ -1405,8 +1405,8 @@ ALTER TABLE `task_tag`
 --
 -- Constraints for table `trace`
 -- 
-ALTER TABLE `fk_trace` 
-  ADD FOREIGN KEY (`run_id`, `evaluation_engine_id`) REFERENCES `run_evaluated`(`run_id`, `evaluation_engine_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `trace` 
+  ADD  CONSTRAINT `fk_trace` FOREIGN KEY (`run_id`, `evaluation_engine_id`) REFERENCES `run_evaluated`(`run_id`, `evaluation_engine_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
