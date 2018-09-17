@@ -176,12 +176,13 @@ class Api_data extends MY_Api_Model {
     }
 
     // can be removed if noone needs it. Subsumed by the status filter
+    $status_variable = 'IFNULL(`s`.`status`, \'' . $this->config->item('default_dataset_status') . '\')';
     $active = element('active',$query_string);
     if ($active == 'true') {
-      $where_total .= ' AND status = "active" ';
+      $where_total .= ' AND ' . $status_variable . ' = "active" ';
     }
-
-    $sql = 'SELECT d.*, IFNULL(`s`.`status`, \'' . $this->config->item('default_dataset_status') . '\') AS `status` '.
+    
+    $sql = 'SELECT d.*, ' . $status_variable . ' AS `status` '.
            'FROM dataset d ' . 
            'LEFT JOIN (SELECT `did`, MAX(`status`) AS `status` FROM `dataset_status` GROUP BY `did`) s ON d.did = s.did ' .
            'WHERE (visibility = "public" or uploader='.$this->user_id.') '. $where_total . $where_limit;
