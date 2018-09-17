@@ -263,10 +263,10 @@ class Api_data extends MY_Api_Model {
       }
     }
     
-    $dataset->processed = $this->config->item('default_dataset_status');
-    $data_processed = $this->Dataset_status->getWhereSingle('did =' . $data_id, 'status_date DESC');
-    if ($data_processed != false) {
-      $dataset->processed = $data_processed->status;
+    $dataset->status = $this->config->item('default_dataset_status');
+    $data_status = $this->Dataset_status->getWhereSingle('did =' . $data_id, 'status_date DESC');
+    if ($data_status != false) {
+      $dataset->status = $data_status->status;
     }
 
     $this->xmlContents( 'data-get', $this->version, $dataset );
