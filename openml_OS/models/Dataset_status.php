@@ -1,5 +1,5 @@
 <?php
-class Data_status extends MY_Database_Write_Model {
+class Dataset_status extends MY_Database_Write_Model {
 
   function __construct() {
     parent::__construct();
