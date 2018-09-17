@@ -167,7 +167,8 @@ class Api_data extends MY_Api_Model {
     $where_class = $nr_class === null ? '' : ' AND `did` IN (select data from data_quality dq where quality="NumberOfClasses" and value ' . (strpos($nr_class, '..') !== false ? 'BETWEEN ' . str_replace('..',' AND ',$nr_class) : '= '. $nr_class) . ') ';
     $where_miss = $nr_miss === null ? '' : ' AND `did` IN (select data from data_quality dq where quality="NumberOfMissingValues" and value ' . (strpos($nr_miss, '..') !== false ? 'BETWEEN ' . str_replace('..',' AND ',$nr_miss) : '= '. $nr_miss) . ') ';
     // by default, only return active datasets
-    $where_status = $status === null ? ' AND status = "active" ' : ($status != "all" ? ' AND status = "'. $status . '" ' : '');
+    $status_variable = 'IFNULL(`s`.`status`, \'' . $this->config->item('default_dataset_status') . '\')';
+    $where_status = $status === null ? ' AND ' . $status_variable . ' = "active" ' : ($status != "all" ? ' AND ' . $status_variable . ' = "'. $status . '" ' : '');
     $where_total = $where_tag . $where_name . $where_version . $where_insts . $where_feats . $where_class . $where_miss . $where_status;
     
     $where_limit = $limit === null ? '' : ' LIMIT ' . $limit;
@@ -176,7 +177,6 @@ class Api_data extends MY_Api_Model {
     }
 
     // can be removed if noone needs it. Subsumed by the status filter
-    $status_variable = 'IFNULL(`s`.`status`, \'' . $this->config->item('default_dataset_status') . '\')';
     $active = element('active',$query_string);
     if ($active == 'true') {
       $where_total .= ' AND ' . $status_variable . ' = "active" ';
