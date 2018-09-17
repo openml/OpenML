@@ -9,6 +9,7 @@ class Api_data extends MY_Api_Model {
     // load models
     $this->load->model('Data_processed');
     $this->load->model('Dataset');
+    $this->load->model('Dataset_status');
     $this->load->model('Dataset_tag');
     $this->load->model('Data_feature');
     $this->load->model('Data_quality');
