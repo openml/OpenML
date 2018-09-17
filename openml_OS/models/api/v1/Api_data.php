@@ -167,8 +167,8 @@ class Api_data extends MY_Api_Model {
     $where_class = $nr_class === null ? '' : ' AND `did` IN (select data from data_quality dq where quality="NumberOfClasses" and value ' . (strpos($nr_class, '..') !== false ? 'BETWEEN ' . str_replace('..',' AND ',$nr_class) : '= '. $nr_class) . ') ';
     $where_miss = $nr_miss === null ? '' : ' AND `did` IN (select data from data_quality dq where quality="NumberOfMissingValues" and value ' . (strpos($nr_miss, '..') !== false ? 'BETWEEN ' . str_replace('..',' AND ',$nr_miss) : '= '. $nr_miss) . ') ';
     // by default, only return active datasets
-    $status_variable = 'IFNULL(`s`.`status`, \'' . $this->config->item('default_dataset_status') . '\')';
-    $where_status = $status === null ? ' AND ' . $status_variable . ' = "active" ' : ($status != "all" ? ' AND ' . $status_variable . ' = "'. $status . '" ' : '');
+    $status_sql_variable = 'IFNULL(`s`.`status`, \'' . $this->config->item('default_dataset_status') . '\')';
+    $where_status = $status === null ? ' AND ' . $status_sql_variable . ' = "active" ' : ($status != "all" ? ' AND ' . $status_sql_variable . ' = "'. $status . '" ' : '');
     $where_total = $where_tag . $where_name . $where_version . $where_insts . $where_feats . $where_class . $where_miss . $where_status;
     
     $where_limit = $limit === null ? '' : ' LIMIT ' . $limit;
@@ -176,7 +176,7 @@ class Api_data extends MY_Api_Model {
       $where_limit =  ' LIMIT ' . $offset . ',' . $limit;
     }
     
-    $sql = 'SELECT d.*, ' . $status_variable . ' AS `status` '.
+    $sql = 'SELECT d.*, ' . $status_sql_variable . ' AS `status` '.
            'FROM dataset d ' . 
            'LEFT JOIN (SELECT `did`, MAX(`status`) AS `status` FROM `dataset_status` GROUP BY `did`) s ON d.did = s.did ' .
            'WHERE (visibility = "public" or uploader='.$this->user_id.') '. $where_total . $where_limit;
