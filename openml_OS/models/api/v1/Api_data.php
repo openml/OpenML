@@ -175,12 +175,6 @@ class Api_data extends MY_Api_Model {
     if($limit && $offset){
       $where_limit =  ' LIMIT ' . $offset . ',' . $limit;
     }
-
-    // can be removed if noone needs it. Subsumed by the status filter
-    $active = element('active',$query_string);
-    if ($active == 'true') {
-      $where_total .= ' AND ' . $status_variable . ' = "active" ';
-    }
     
     $sql = 'SELECT d.*, ' . $status_variable . ' AS `status` '.
            'FROM dataset d ' . 
