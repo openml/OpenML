@@ -183,7 +183,7 @@ class Api_data extends MY_Api_Model {
 
     $sql = 'SELECT d.*, IFNULL(' . $this->config->item('default_dataset_status') . ', MAX(s.dataset_status)) '.
            'FROM dataset d ' . 
-           'LEFT JOIN dataset_status s ON d.did = s.did ' .
+           'LEFT JOIN (SELECT `did`, MAX(`status`) FROM `dataset_status` GROUP BY `did`) s ON d.did = s.did ' .
            'WHERE (visibility = "public" or uploader='.$this->user_id.') '. $where_total . $where_limit;
     
     $datasets_res = $this->Dataset->query($sql);
