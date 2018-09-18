@@ -482,6 +482,8 @@ class Api_data extends MY_Api_Model {
   }
   
   private function status_update($data_id, $status) {
+    // in_preparation is not a legal status to change to
+    $legal_status = array('active', 'deactivated');
     if (!in_array($status, $legal_status)) {
       $this->returnError(691, $this->version);
       return;
@@ -492,9 +494,6 @@ class Api_data extends MY_Api_Model {
       $this->returnError(692, $this->version);
       return;
     }
-    
-    // in_preparation is not a legal status to change to
-    $legal_status = array('active', 'deactivated');
 
     if ($dataset->uploader != $this->user_id and !$this->user_has_admin_rights) {
       $this->returnError(693, $this->version);
