@@ -300,6 +300,13 @@ class Api_task extends MY_Api_Model {
         $this->returnError(619, $this->version, $this->openmlGeneralErrorCode, 'problematic input: ' . $name);
         return;
       }
+      // hard constraint. If it is mapped to a dataset, the dataset should be active. TODO: review conditions
+      if ($name == 'source_data' /*|| (trim($constraints['select']) == 'did' && trim($constraints['from'] == 'dataset'))*/) {
+        $status_record = $this->Dataset_status->getSingleWhere('did = ' . $input_value, '`status` DESC');
+        if (!$status_record || $status_record->status != 'active') {
+          $this->returnError(623, $this->version, $this->openmlGeneralErrorCode, 'problematic input: ' . $name);
+        }
+      }
       
       // is_json lives in text_helper
       $type_check_mappings = array('numeric' => 'is_numeric', 'json' => 'is_json', 'string' => 'is_string');

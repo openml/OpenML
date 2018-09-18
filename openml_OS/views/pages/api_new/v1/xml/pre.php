@@ -345,6 +345,7 @@ $this->apiErrors[619] = 'Could not decode task inputs constraints json. Please c
 $this->apiErrors[620] = 'Could not find data_type field or the correct function. Please contact developers.';
 $this->apiErrors[621] = 'Task data type not in the right format.';
 $this->apiErrors[622] = 'Input value does not match allowed values in foreign column.';
+$this->apiErrors[623] = 'Tasks can only be created upon active datasets.';
 
 // openml.data.feature.quality
 $this->apiErrors[631] = 'Please provide data_id';
