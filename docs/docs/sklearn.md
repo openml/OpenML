@@ -21,4 +21,4 @@ Key features:
 * Upload your runs for collaboration or publishing  
 * Query, download and reuse all shared runs  
 
-For many more details and examples, see the [Python-guide](Python tutorial).
+For many more details and examples, see the [Python tutorial](Python-guide).
