@@ -517,7 +517,8 @@ class Api_data extends MY_Api_Model {
     
     if (
         ($old_status == $in_preparation && $status == 'active') ||
-        ($old_status == $in_preparation && $status == 'deactivated')
+        ($old_status == $in_preparation && $status == 'deactivated') ||
+        ($old_status == 'active' && $status == 'deactivated')
        ) {
       $this->Dataset_status->insert($record);
     } elseif ($old_status == 'deactivated' && $status == 'active') {
