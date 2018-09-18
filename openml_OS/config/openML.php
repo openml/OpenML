@@ -27,5 +27,5 @@ $config['process_data_offset'] = '30 minutes';
 $config['process_run_tries'] = 3;
 $config['process_run_offset'] = '30 minutes';
 
-
+$config['default_dataset_status'] = 'in_preparation';
 ?>

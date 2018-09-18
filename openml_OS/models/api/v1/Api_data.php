@@ -9,6 +9,7 @@ class Api_data extends MY_Api_Model {
     // load models
     $this->load->model('Data_processed');
     $this->load->model('Dataset');
+    $this->load->model('Dataset_status');
     $this->load->model('Dataset_tag');
     $this->load->model('Data_feature');
     $this->load->model('Data_quality');
@@ -158,29 +159,28 @@ class Api_data extends MY_Api_Model {
       return;
     }
 
-    $where_tag = $tag === null ? '' : ' AND `did` IN (select id from dataset_tag where tag="' . $tag . '") ';
+    $where_tag = $tag === null ? '' : ' AND `d`.`did` IN (select id from dataset_tag where tag="' . $tag . '") ';
     $where_name = $name === null ? '' : ' AND `name` = "' . $name . '"';
     $where_version = $version === null ? '' : ' AND `version` = "' . $version . '" ';
-    $where_insts = $nr_insts === null ? '' : ' AND `did` IN (select data from data_quality dq where quality="NumberOfInstances" and value ' . (strpos($nr_insts, '..') !== false ? 'BETWEEN ' . str_replace('..',' AND ',$nr_insts) : '= '. $nr_insts) . ') ';
-    $where_feats = $nr_feats === null ? '' : ' AND `did` IN (select data from data_quality dq where quality="NumberOfFeatures" and value ' . (strpos($nr_feats, '..') !== false ? 'BETWEEN ' . str_replace('..',' AND ',$nr_feats) : '= '. $nr_feats) . ') ';
-    $where_class = $nr_class === null ? '' : ' AND `did` IN (select data from data_quality dq where quality="NumberOfClasses" and value ' . (strpos($nr_class, '..') !== false ? 'BETWEEN ' . str_replace('..',' AND ',$nr_class) : '= '. $nr_class) . ') ';
-    $where_miss = $nr_miss === null ? '' : ' AND `did` IN (select data from data_quality dq where quality="NumberOfMissingValues" and value ' . (strpos($nr_miss, '..') !== false ? 'BETWEEN ' . str_replace('..',' AND ',$nr_miss) : '= '. $nr_miss) . ') ';
+    $where_insts = $nr_insts === null ? '' : ' AND `d`.`did` IN (select data from data_quality dq where quality="NumberOfInstances" and value ' . (strpos($nr_insts, '..') !== false ? 'BETWEEN ' . str_replace('..',' AND ',$nr_insts) : '= '. $nr_insts) . ') ';
+    $where_feats = $nr_feats === null ? '' : ' AND `d`.`did` IN (select data from data_quality dq where quality="NumberOfFeatures" and value ' . (strpos($nr_feats, '..') !== false ? 'BETWEEN ' . str_replace('..',' AND ',$nr_feats) : '= '. $nr_feats) . ') ';
+    $where_class = $nr_class === null ? '' : ' AND `d`.`did` IN (select data from data_quality dq where quality="NumberOfClasses" and value ' . (strpos($nr_class, '..') !== false ? 'BETWEEN ' . str_replace('..',' AND ',$nr_class) : '= '. $nr_class) . ') ';
+    $where_miss = $nr_miss === null ? '' : ' AND `d`.`did` IN (select data from data_quality dq where quality="NumberOfMissingValues" and value ' . (strpos($nr_miss, '..') !== false ? 'BETWEEN ' . str_replace('..',' AND ',$nr_miss) : '= '. $nr_miss) . ') ';
     // by default, only return active datasets
-    $where_status = $status === null ? ' AND status = "active" ' : ($status != "all" ? ' AND status = "'. $status . '" ' : '');
+    $status_sql_variable = 'IFNULL(`s`.`status`, \'' . $this->config->item('default_dataset_status') . '\')';
+    $where_status = $status === null ? ' AND ' . $status_sql_variable . ' = "active" ' : ($status != "all" ? ' AND ' . $status_sql_variable . ' = "'. $status . '" ' : '');
     $where_total = $where_tag . $where_name . $where_version . $where_insts . $where_feats . $where_class . $where_miss . $where_status;
     
     $where_limit = $limit === null ? '' : ' LIMIT ' . $limit;
     if($limit && $offset){
       $where_limit =  ' LIMIT ' . $offset . ',' . $limit;
     }
-
-    // can be removed if noone needs it. Subsumed by the status filter
-    $active = element('active',$query_string);
-    if ($active == 'true') {
-      $where_total .= ' AND status = "active" ';
-    }
-
-    $sql = 'select * from dataset where (visibility = "public" or uploader='.$this->user_id.') '. $where_total . $where_limit;
+    
+    $sql = 'SELECT d.*, ' . $status_sql_variable . ' AS `status` '.
+           'FROM dataset d ' . 
+           'LEFT JOIN (SELECT `did`, MAX(`status`) AS `status` FROM `dataset_status` GROUP BY `did`) s ON d.did = s.did ' .
+           'WHERE (visibility = "public" or uploader='.$this->user_id.') '. $where_total . $where_limit;
+    
     $datasets_res = $this->Dataset->query($sql);
     if( is_array( $datasets_res ) == false || count( $datasets_res ) == 0 ) {
       $this->returnError( 372, $this->version );
@@ -260,6 +260,12 @@ class Api_data extends MY_Api_Model {
       } else {
         $dataset->{$field} = null;
       }
+    }
+    
+    $dataset->status = $this->config->item('default_dataset_status');
+    $data_status = $this->Dataset_status->getWhereSingle('did =' . $data_id, 'status_date DESC');
+    if ($data_status != false) {
+      $dataset->status = $data_status->status;
     }
 
     $this->xmlContents( 'data-get', $this->version, $dataset );

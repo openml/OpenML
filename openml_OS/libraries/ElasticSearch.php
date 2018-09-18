@@ -1746,8 +1746,8 @@ class ElasticSearch {
 
         $params['index'] = 'openml';
         $params['type'] = 'data';
-
-        $datasets = $this->db->query('select d.*, count(rid) as runs, GROUP_CONCAT(dp.error) as error_message from dataset d left join task_inputs t on (t.value=d.did and t.input="source_data") left join run r on (r.task_id=t.task_id) left join data_processed dp on (d.did=dp.did)' . ($id ? ' where d.did=' . $id : '') . ' group by d.did');
+        $status_sql_variable = 'IFNULL(`s`.`status`, \'' . $this->CI->config->item('default_dataset_status') . '\')';
+        $datasets = $this->db->query('select d.*, ' . $status_sql_variable . ' AS `status`, count(rid) as runs, GROUP_CONCAT(dp.error) as error_message from dataset d left join (SELECT `did`, MAX(`status`) AS `status` FROM `dataset_status` GROUP BY `did`) s ON s.did = d.did left join task_inputs t on (t.value=d.did and t.input="source_data") left join run r on (r.task_id=t.task_id) left join data_processed dp on (d.did=dp.did)' . ($id ? ' where d.did=' . $id : '') . ' group by d.did');
 
         if ($id and ! $datasets)
             return 'Error: data set ' . $id . ' is unknown';
@@ -1798,7 +1798,8 @@ class ElasticSearch {
             $datasets = null;
             $params['body'] = array();
             $valid_ids = array();
-            $datasets = $this->db->query('select d.*, count(rid) as runs, GROUP_CONCAT(dp.error) as error_message from dataset d left join task_inputs t on (t.value=d.did and t.input="source_data") left join run r on (r.task_id=t.task_id) left join data_processed dp on (d.did=dp.did) where d.did>=' . $did . ' and d.did<' . ($did + $incr) . ' group by d.did');
+            $status_sql_variable = 'IFNULL(`s`.`status`, \'' . $this->CI->config->item('default_dataset_status') . '\')';
+            $datasets = $this->db->query('select d.*, ' . $status_sql_variable . 'AS `status`, count(rid) as runs, GROUP_CONCAT(dp.error) as error_message from dataset d left join (SELECT `did`, MAX(`status`) AS `status` FROM `dataset_status` GROUP BY `did`) s ON d.did = s.did left join task_inputs t on (t.value=d.did and t.input="source_data") left join run r on (r.task_id=t.task_id) left join data_processed dp on (d.did=dp.did) where d.did>=' . $did . ' and d.did<' . ($did + $incr) . ' group by d.did');
             if($datasets){
               foreach ($datasets as $d) {
                 try {
