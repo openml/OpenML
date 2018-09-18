@@ -32,18 +32,6 @@
         <div class="item active">
           <div class="list-group-item">
               <div class="row-picture">
-                  <img class="circle" src="img/fanova.png" alt="icon">
-              </div>
-              <div class="row-content">
-                  <h4 class="list-group-item-heading"><a href="https://www.youtube.com/watch?v=mS4vL7_rSWQ" target="_blank">OpenML in practice</a></h4>
-                  <p class="list-group-item-text"><a href="https://www.youtube.com/watch?v=mS4vL7_rSWQ" target="_blank">Hyperparameter Importance Across Datasets on Youtube</a></p>
-                  <p class="list-group-item-text"><a href="https://www.youtube.com/watch?v=mS4vL7_rSWQ" target="_blank">A two minute video demonstrating how OpenML can be used for Automated Machine Learning.</a></p>
-              </div>
-          </div>
-        </div>
-        <div class="item">
-          <div class="list-group-item">
-              <div class="row-picture">
                   <img class="circle" src="img/colordots.png" alt="icon">
               </div>
               <div class="row-content">
@@ -61,6 +49,18 @@
               <div class="row-content">
                   <h4 class="list-group-item-heading">OpenML on Open Science Radio</h4>
                   <p class="list-group-item-text"><a href="http://www.openscienceradio.de/2016/10/28/osr059-openml-en/">Check out the podcast.</a></p>
+              </div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="list-group-item">
+              <div class="row-picture">
+                  <img class="circle" src="img/fanova.png" alt="icon">
+              </div>
+              <div class="row-content">
+                  <h4 class="list-group-item-heading"><a href="https://www.youtube.com/watch?v=mS4vL7_rSWQ" target="_blank">OpenML in practice</a></h4>
+                  <p class="list-group-item-text"><a href="https://www.youtube.com/watch?v=mS4vL7_rSWQ" target="_blank">Hyperparameter Importance Across Datasets on Youtube</a></p>
+                  <p class="list-group-item-text"><a href="https://www.youtube.com/watch?v=mS4vL7_rSWQ" target="_blank">A two minute video demonstrating how OpenML can be used for Automated Machine Learning.</a></p>
               </div>
           </div>
         </div>

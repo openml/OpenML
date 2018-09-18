@@ -25,6 +25,7 @@ class Cron extends CI_Controller {
     $this->load->model('Algorithm_setup');
     $this->load->model('File');
     $this->load->model('Data_quality');
+    $this->load->model('Dataset_status');
     $this->load->model('Implementation');
     $this->load->model('Math_function');
     $this->load->model('Schedule');
