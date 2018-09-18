@@ -523,8 +523,14 @@ class Api_data extends MY_Api_Model {
       $this->Dataset_status->insert($record);
     } elseif ($old_status == 'deactivated' && $status == 'active') {
       $this->Dataset_status->delete(array($data_id, 'deactivated'));
-      $result = $this->Dataset_status->insert($record);
       
+      // see if the dataset is still active
+      $status_record = $this->Dataset_status->getWhereSingle('did = ' . $data_id, 'status DESC');
+      
+      $result = true;
+      if (!$status_record || $status_record->status != 'active') {
+        $result = $this->Dataset_status->insert($record);
+      }
       if (!$result) {
         $this->returnError(695, $this->version);
         return;
