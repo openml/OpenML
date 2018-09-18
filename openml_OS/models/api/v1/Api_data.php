@@ -120,6 +120,11 @@ class Api_data extends MY_Api_Model {
       return;
     }
 
+    if (count($segments) == 2 && $segments[0] == 'status' && $segments[1] == 'update') {
+      $this->status_update($this->input->post('data_id'), $this->input->post('status'));
+      return;
+    }
+
     if (count($segments) == 1 && $segments[0] == 'untag' && $request_type == 'post') {
       $this->entity_tag_untag('dataset', $this->input->post('data_id'), $this->input->post('tag'), true, 'data');
       return;
@@ -475,7 +480,55 @@ class Api_data extends MY_Api_Model {
     // create
     $this->xmlContents('data-upload', $this->version, array('id' => $id));
   }
+  
+  private function status_update($data_id, $status) {
+    if (!in_array($status, $legal_status)) {
+      $this->returnError(691, $this->version);
+      return;
+    }
+    
+    $dataset = $this->Dataset->getById($data_id);
+    if ($dataset == false) {
+      $this->returnError(692, $this->version);
+      return;
+    }
+    
+    // in_preparation is not a legal status to change to
+    $legal_status = array('active', 'deactivated');
 
+    if ($dataset->uploader != $this->user_id and !$this->user_has_admin_rights) {
+      $this->returnError(693, $this->version);
+      return;
+    }
+    
+    $status_record = $this->Dataset_status->getWhereSingle('did = ' . $data_id, 'status DESC');
+    $in_preparation = $this->config->item('default_dataset_status');
+    if ($status_record == false) {
+      $old_status = $in_preparation;
+    } else {
+      $old_status = $status_record->status;
+    }
+    
+    $record = array(
+      'did' => $data_id,
+      'status' => $status, 
+      'status_date' => now(),
+      'user_id' => $this->user_id
+    );
+    
+    if (
+        ($old_status == $in_preparation && $status == 'active') ||
+        ($old_status == $in_preparation && $status == 'deactivated')
+       ) {
+      $this->Dataset_status->insert($record);
+    } elseif ($old_status == 'deactivated' && $status == 'active') {
+      $this->Dataset_status->delete(array('did' => $data_id, 'status' => 'deactivated'));
+      $this->Dataset_status->insert($record);
+    } else {
+      $this->returnError(694, $this->version);
+      return;
+    }
+  }
 
   private function data_features($data_id) {
     if($data_id == false) {

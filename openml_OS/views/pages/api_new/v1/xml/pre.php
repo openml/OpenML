@@ -379,6 +379,11 @@ $this->apiErrors[686] = 'Please specify the features the evaluation engine wants
 $this->apiErrors[687] = 'No unprocessed datasets according to the given set of meta-features. ';
 $this->apiErrors[688] = 'Requesting unknown qualities. ';
 
+// openml.data.status.update
+$this->apiErrors[691] = 'Illegal status';
+$this->apiErrors[692] = 'Dataset does not exists';
+$this->apiErrors[693] = 'Dataset is not owned by you';
+$this->apiErrors[694] = 'Illegal status transition';
 
 // openml.votes.list
 $this->apiErrors[701] = 'List failed';
