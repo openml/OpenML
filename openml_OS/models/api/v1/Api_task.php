@@ -303,7 +303,7 @@ class Api_task extends MY_Api_Model {
       }
       // hard constraint. If it is mapped to a dataset, the dataset should be active. TODO: review conditions
       if ($name == 'source_data' /*|| (trim($constraints['select']) == 'did' && trim($constraints['from'] == 'dataset'))*/) {
-        $status_record = $this->Dataset_status->getSingleWhere('did = ' . $input_value, '`status` DESC');
+        $status_record = $this->Dataset_status->getWhereSingle('did = ' . $input_value, '`status` DESC');
         if (!$status_record || $status_record->status != 'active') {
           $this->returnError(623, $this->version, $this->openmlGeneralErrorCode, 'problematic input: ' . $name);
         }
