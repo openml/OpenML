@@ -40,11 +40,11 @@
           },
           "200" : {
             "description" : "A dataset description",
-            "schema" : {
-              "$ref" : "#/definitions/Data"
-            },
             "examples" : {
               "application/json" : "{\n  \"data_set_description\": {\n    \"id\": \"1\",\n    \"name\": \"anneal\",\n    \"version\": \"2\",\n    \"description\": \"...\",\n    \"format\": \"ARFF\",\n    \"upload_date\": \"2014-04-06 23:19:20\",\n    \"licence\": \"Public\",\n    \"url\": \"https://www.openml.org/data/download/1/dataset_1_anneal.arff\",\n    \"file_id\": \"1\",\n    \"default_target_attribute\": \"class\",\n    \"version_label\": \"2\",\n    \"tag\": [\n      \"study_1\",\n      \"uci\"\n    ],\n    \"visibility\": \"public\",\n    \"original_data_url\": \"https://www.openml.org/d/2\",\n    \"status\": \"active\",\n    \"md5_checksum\": \"d01f6ccd68c88b749b20bbe897de3713\"\n  }\n}"
+            },
+            "schema" : {
+              "$ref" : "#/definitions/Data"
             }
           }
         }
@@ -70,11 +70,16 @@
         "responses" : {
           "200" : {
             "description" : "ID of the deleted dataset",
-            "schema" : {
-              "$ref" : "#/definitions/inline_response_200"
-            },
             "examples" : {
               "application/json" : "{\n  \"data_delete\": {\n    \"id\": \"4328\"\n  }\n}"
+            },
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "data_delete" : {
+                  "$ref" : "#/definitions/inline_response_200_data_delete"
+                }
+              }
             }
           },
           "350" : {
@@ -171,11 +176,16 @@
           },
           "200" : {
             "description" : "Id of the uploaded dataset",
-            "schema" : {
-              "$ref" : "#/definitions/inline_response_200_1"
-            },
             "examples" : {
               "application/json" : "{\n  \"upload_data_set\": {\n    \"id\": \"4328\"\n  }\n}"
+            },
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "upload_data_set" : {
+                  "$ref" : "#/definitions/inline_response_200_1_upload_data_set"
+                }
+              }
             }
           }
         }
@@ -212,6 +222,51 @@
           },
           "384" : {
             "description" : "Dataset not processed yet"
+          }
+        }
+      }
+    },
+    "/data/status/" : {
+      "post" : {
+        "tags" : [ "data" ],
+        "summary" : "Change the status of a dataset",
+        "description" : "Change the status of a dataset, either 'active' or 'deactivated'\n",
+        "consumes" : [ "multipart/form-data" ],
+        "parameters" : [ {
+          "name" : "data_id",
+          "in" : "formData",
+          "description" : "Id of the dataset.",
+          "required" : true,
+          "type" : "number",
+          "format" : "integer"
+        }, {
+          "name" : "status",
+          "in" : "formData",
+          "description" : "The status on which to filter the results, either 'active' or 'deactivated'.",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "api_key",
+          "in" : "formData",
+          "description" : "Api key to authenticate the user",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "691" : {
+            "description" : "Illegal status"
+          },
+          "692" : {
+            "description" : "Dataset does not exists"
+          },
+          "693" : {
+            "description" : "Dataset is not owned by you"
+          },
+          "694" : {
+            "description" : "Illegal status transition"
+          },
+          "695" : {
+            "description" : "Status update failed"
           }
         }
       }
@@ -276,11 +331,11 @@
         "responses" : {
           "200" : {
             "description" : "All the features of the dataset",
-            "schema" : {
-              "$ref" : "#/definitions/DataFeatures"
-            },
             "examples" : {
               "application/json" : "{\n  \"data_features\": {\n    \"feature\": [\n      {\n        \"index\": \"0\",\n        \"name\": \"sepallength\",\n        \"data_type\": \"numeric\",\n        \"is_target\": \"false\",\n        \"is_ignore\": \"false\",\n        \"is_row_identifier\": \"false\"\n      },\n      {\n        \"index\": \"1\",\n        \"name\": \"sepalwidth\",\n        \"data_type\": \"numeric\",\n        \"is_target\": \"false\",\n        \"is_ignore\": \"false\",\n        \"is_row_identifier\": \"false\"\n      },\n      {\n        \"index\": \"2\",\n        \"name\": \"petallength\",\n        \"data_type\": \"numeric\",\n        \"is_target\": \"false\",\n        \"is_ignore\": \"false\",\n        \"is_row_identifier\": \"false\"\n      },\n      {\n        \"index\": \"3\",\n        \"name\": \"petalwidth\",\n        \"data_type\": \"numeric\",\n        \"is_target\": \"false\",\n        \"is_ignore\": \"false\",\n        \"is_row_identifier\": \"false\"\n      },\n      {\n        \"index\": \"4\",\n        \"name\": \"class\",\n        \"data_type\": \"nominal\",\n        \"is_target\": \"true\",\n        \"is_ignore\": \"false\",\n        \"is_row_identifier\": \"false\"\n      }\n    ]\n  }\n}"
+            },
+            "schema" : {
+              "$ref" : "#/definitions/DataFeatures"
             }
           },
           "270" : {
@@ -323,11 +378,11 @@
         "responses" : {
           "200" : {
             "description" : "All the qualities of the dataset",
-            "schema" : {
-              "$ref" : "#/definitions/DataQualities"
-            },
             "examples" : {
               "application/json" : "{\n  \"data_qualities\": {\n    \"quality\": [\n      {\n        \"name\": \"ClassCount\",\n        \"value\": \"3.0\"\n      },\n      {\n        \"name\": \"ClassEntropy\",\n        \"value\": \"1.584962500721156\"\n      },\n      {\n        \"name\": \"NumberOfClasses\",\n        \"value\": \"3\"\n      },\n      {\n        \"name\": \"NumberOfFeatures\",\n        \"value\": \"5\"\n      },\n      {\n        \"name\": \"NumberOfInstances\",\n        \"value\": \"150\"\n      },\n      {\n        \"name\": \"NumberOfInstancesWithMissingValues\",\n        \"value\": \"0\"\n      },\n      {\n        \"name\": \"NumberOfMissingValues\",\n        \"value\": \"0\"\n      },\n      {\n        \"name\": \"NumberOfNumericFeatures\",\n        \"value\": \"4\"\n      },\n      {\n        \"name\": \"NumberOfSymbolicFeatures\",\n        \"value\": \"0\"\n      }\n    ]\n  }\n}"
+            },
+            "schema" : {
+              "$ref" : "#/definitions/DataQualities"
             }
           },
           "360" : {
@@ -366,11 +421,11 @@
         "responses" : {
           "200" : {
             "description" : "A list of datasets",
-            "schema" : {
-              "$ref" : "#/definitions/DataList"
-            },
             "examples" : {
               "application/json" : "{\n  \"data\": {\n    \"dataset\": [\n      {\n        \"did\":\"1\",\n        \"name\":\"anneal\",\n        \"status\":\"active\",\n        \"format\":\"ARFF\",\n        \"quality\":[\n          {\n            \"name\":\"MajorityClassSize\",\n            \"value\":\"684\"\n          },\n          {\n            \"name\":\"MaxNominalAttDistinctValues\",\n            \"value\":\"10.0\"\n          },\n          {\n            \"name\":\"MinorityClassSize\"\n            ,\"value\":\"0\"\n          },\n          {\n            \"name\":\"NumBinaryAtts\",\n            \"value\":\"14.0\"\n          },\n          {\n            \"name\":\"NumberOfClasses\",\n            \"value\":\"6\"\n          },\n          {\n            \"name\":\"NumberOfFeatures\",\n            \"value\":\"39\"\n          },\n          {\n            \"name\":\"NumberOfInstances\",\n            \"value\":\"898\"\n          },\n          {\n            \"name\":\"NumberOfInstancesWithMissingValues\",\n            \"value\":\"0\"\n          },\n          {\n            \"name\":\"NumberOfMissingValues\",\n            \"value\":\"0\"\n          },\n          {\n            \"name\":\"NumberOfNumericFeatures\",\n            \"value\":\"6\"\n          },\n          {\n            \"name\":\"NumberOfSymbolicFeatures\",\n            \"value\":\"32\"\n          }\n        ]\n      }\n    ]\n  }\n}"
+            },
+            "schema" : {
+              "$ref" : "#/definitions/DataList"
             }
           },
           "370" : {
@@ -408,11 +463,11 @@
         "responses" : {
           "200" : {
             "description" : "A list of datasets",
-            "schema" : {
-              "$ref" : "#/definitions/DataList"
-            },
             "examples" : {
               "application/json" : "{\n  \"data\": {\n    \"dataset\": [\n      {\n        \"did\":\"1\",\n        \"name\":\"anneal\",\n        \"status\":\"active\",\n        \"format\":\"ARFF\",\n        \"quality\":[\n          {\n            \"name\":\"MajorityClassSize\",\n            \"value\":\"684\"\n          },\n          {\n            \"name\":\"MaxNominalAttDistinctValues\",\n            \"value\":\"10.0\"\n          },\n          {\n            \"name\":\"MinorityClassSize\"\n            ,\"value\":\"0\"\n          },\n          {\n            \"name\":\"NumBinaryAtts\",\n            \"value\":\"14.0\"\n          },\n          {\n            \"name\":\"NumberOfClasses\",\n            \"value\":\"6\"\n          },\n          {\n            \"name\":\"NumberOfFeatures\",\n            \"value\":\"39\"\n          },\n          {\n            \"name\":\"NumberOfInstances\",\n            \"value\":\"898\"\n          },\n          {\n            \"name\":\"NumberOfInstancesWithMissingValues\",\n            \"value\":\"0\"\n          },\n          {\n            \"name\":\"NumberOfMissingValues\",\n            \"value\":\"0\"\n          },\n          {\n            \"name\":\"NumberOfNumericFeatures\",\n            \"value\":\"6\"\n          },\n          {\n            \"name\":\"NumberOfSymbolicFeatures\",\n            \"value\":\"32\"\n          }\n        ]\n      }\n    ]\n  }\n}"
+            },
+            "schema" : {
+              "$ref" : "#/definitions/DataList"
             }
           },
           "372" : {
@@ -442,11 +497,11 @@
         "responses" : {
           "200" : {
             "description" : "A list of datasets with the given tag",
-            "schema" : {
-              "$ref" : "#/definitions/DataList"
-            },
             "examples" : {
               "application/json" : "{\n  \"data\": {\n    \"dataset\": [\n      {\n        \"did\":\"1\",\n        \"name\":\"anneal\",\n        \"status\":\"active\",\n        \"format\":\"ARFF\",\n        \"quality\":[\n          {\n            \"name\":\"MajorityClassSize\",\n            \"value\":\"684\"\n          },\n          {\n            \"name\":\"MaxNominalAttDistinctValues\",\n            \"value\":\"10.0\"\n          },\n          {\n            \"name\":\"MinorityClassSize\"\n            ,\"value\":\"0\"\n          },\n          {\n            \"name\":\"NumBinaryAtts\",\n            \"value\":\"14.0\"\n          },\n          {\n            \"name\":\"NumberOfClasses\",\n            \"value\":\"6\"\n          },\n          {\n            \"name\":\"NumberOfFeatures\",\n            \"value\":\"39\"\n          },\n          {\n            \"name\":\"NumberOfInstances\",\n            \"value\":\"898\"\n          },\n          {\n            \"name\":\"NumberOfInstancesWithMissingValues\",\n            \"value\":\"0\"\n          },\n          {\n            \"name\":\"NumberOfMissingValues\",\n            \"value\":\"0\"\n          },\n          {\n            \"name\":\"NumberOfNumericFeatures\",\n            \"value\":\"6\"\n          },\n          {\n            \"name\":\"NumberOfSymbolicFeatures\",\n            \"value\":\"32\"\n          }\n        ]\n      }\n    ]\n  }\n}"
+            },
+            "schema" : {
+              "$ref" : "#/definitions/DataList"
             }
           },
           "372" : {
@@ -476,11 +531,11 @@
         "responses" : {
           "200" : {
             "description" : "A list of datasets with the given name",
-            "schema" : {
-              "$ref" : "#/definitions/DataList"
-            },
             "examples" : {
               "application/json" : "{\n  \"data\": {\n    \"dataset\": [\n      {\n        \"did\":\"1\",\n        \"name\":\"anneal\",\n        \"status\":\"active\",\n        \"format\":\"ARFF\",\n        \"quality\":[\n          {\n            \"name\":\"MajorityClassSize\",\n            \"value\":\"684\"\n          },\n          {\n            \"name\":\"MaxNominalAttDistinctValues\",\n            \"value\":\"10.0\"\n          },\n          {\n            \"name\":\"MinorityClassSize\"\n            ,\"value\":\"0\"\n          },\n          {\n            \"name\":\"NumBinaryAtts\",\n            \"value\":\"14.0\"\n          },\n          {\n            \"name\":\"NumberOfClasses\",\n            \"value\":\"6\"\n          },\n          {\n            \"name\":\"NumberOfFeatures\",\n            \"value\":\"39\"\n          },\n          {\n            \"name\":\"NumberOfInstances\",\n            \"value\":\"898\"\n          },\n          {\n            \"name\":\"NumberOfInstancesWithMissingValues\",\n            \"value\":\"0\"\n          },\n          {\n            \"name\":\"NumberOfMissingValues\",\n            \"value\":\"0\"\n          },\n          {\n            \"name\":\"NumberOfNumericFeatures\",\n            \"value\":\"6\"\n          },\n          {\n            \"name\":\"NumberOfSymbolicFeatures\",\n            \"value\":\"32\"\n          }\n        ]\n      }\n    ]\n  }\n}"
+            },
+            "schema" : {
+              "$ref" : "#/definitions/DataList"
             }
           },
           "372" : {
@@ -516,11 +571,11 @@
         "responses" : {
           "200" : {
             "description" : "A list of datasets with the given quality constraints",
-            "schema" : {
-              "$ref" : "#/definitions/DataList"
-            },
             "examples" : {
               "application/json" : "{\n  \"data\": {\n    \"dataset\": [\n      {\n        \"did\":\"1\",\n        \"name\":\"anneal\",\n        \"status\":\"active\",\n        \"format\":\"ARFF\",\n        \"quality\":[\n          {\n            \"name\":\"MajorityClassSize\",\n            \"value\":\"684\"\n          },\n          {\n            \"name\":\"MaxNominalAttDistinctValues\",\n            \"value\":\"10.0\"\n          },\n          {\n            \"name\":\"MinorityClassSize\"\n            ,\"value\":\"0\"\n          },\n          {\n            \"name\":\"NumBinaryAtts\",\n            \"value\":\"14.0\"\n          },\n          {\n            \"name\":\"NumberOfClasses\",\n            \"value\":\"6\"\n          },\n          {\n            \"name\":\"NumberOfFeatures\",\n            \"value\":\"39\"\n          },\n          {\n            \"name\":\"NumberOfInstances\",\n            \"value\":\"898\"\n          },\n          {\n            \"name\":\"NumberOfInstancesWithMissingValues\",\n            \"value\":\"0\"\n          },\n          {\n            \"name\":\"NumberOfMissingValues\",\n            \"value\":\"0\"\n          },\n          {\n            \"name\":\"NumberOfNumericFeatures\",\n            \"value\":\"6\"\n          },\n          {\n            \"name\":\"NumberOfSymbolicFeatures\",\n            \"value\":\"32\"\n          }\n        ]\n      }\n    ]\n  }\n}"
+            },
+            "schema" : {
+              "$ref" : "#/definitions/DataList"
             }
           },
           "372" : {
@@ -550,11 +605,11 @@
         "responses" : {
           "200" : {
             "description" : "A list of datasets with the given status",
-            "schema" : {
-              "$ref" : "#/definitions/DataList"
-            },
             "examples" : {
               "application/json" : "{\n  \"data\": {\n    \"dataset\": [\n      {\n        \"did\":\"1\",\n        \"name\":\"anneal\",\n        \"status\":\"active\",\n        \"format\":\"ARFF\",\n        \"quality\":[\n          {\n            \"name\":\"MajorityClassSize\",\n            \"value\":\"684\"\n          },\n          {\n            \"name\":\"MaxNominalAttDistinctValues\",\n            \"value\":\"10.0\"\n          },\n          {\n            \"name\":\"MinorityClassSize\"\n            ,\"value\":\"0\"\n          },\n          {\n            \"name\":\"NumBinaryAtts\",\n            \"value\":\"14.0\"\n          },\n          {\n            \"name\":\"NumberOfClasses\",\n            \"value\":\"6\"\n          },\n          {\n            \"name\":\"NumberOfFeatures\",\n            \"value\":\"39\"\n          },\n          {\n            \"name\":\"NumberOfInstances\",\n            \"value\":\"898\"\n          },\n          {\n            \"name\":\"NumberOfInstancesWithMissingValues\",\n            \"value\":\"0\"\n          },\n          {\n            \"name\":\"NumberOfMissingValues\",\n            \"value\":\"0\"\n          },\n          {\n            \"name\":\"NumberOfNumericFeatures\",\n            \"value\":\"6\"\n          },\n          {\n            \"name\":\"NumberOfSymbolicFeatures\",\n            \"value\":\"32\"\n          }\n        ]\n      }\n    ]\n  }\n}"
+            },
+            "schema" : {
+              "$ref" : "#/definitions/DataList"
             }
           },
           "372" : {
@@ -584,11 +639,11 @@
         "responses" : {
           "200" : {
             "description" : "A list of datasets with the given task",
-            "schema" : {
-              "$ref" : "#/definitions/DataList"
-            },
             "examples" : {
               "application/json" : "{\n  \"data\": {\n    \"dataset\": [\n      {\n        \"did\":\"1\",\n        \"name\":\"anneal\",\n        \"status\":\"active\",\n        \"format\":\"ARFF\",\n        \"quality\":[\n          {\n            \"name\":\"MajorityClassSize\",\n            \"value\":\"684\"\n          },\n          {\n            \"name\":\"MaxNominalAttDistinctValues\",\n            \"value\":\"10.0\"\n          },\n          {\n            \"name\":\"MinorityClassSize\"\n            ,\"value\":\"0\"\n          },\n          {\n            \"name\":\"NumBinaryAtts\",\n            \"value\":\"14.0\"\n          },\n          {\n            \"name\":\"NumberOfClasses\",\n            \"value\":\"6\"\n          },\n          {\n            \"name\":\"NumberOfFeatures\",\n            \"value\":\"39\"\n          },\n          {\n            \"name\":\"NumberOfInstances\",\n            \"value\":\"898\"\n          },\n          {\n            \"name\":\"NumberOfInstancesWithMissingValues\",\n            \"value\":\"0\"\n          },\n          {\n            \"name\":\"NumberOfMissingValues\",\n            \"value\":\"0\"\n          },\n          {\n            \"name\":\"NumberOfNumericFeatures\",\n            \"value\":\"6\"\n          },\n          {\n            \"name\":\"NumberOfSymbolicFeatures\",\n            \"value\":\"32\"\n          }\n        ]\n      }\n    ]\n  }\n}"
+            },
+            "schema" : {
+              "$ref" : "#/definitions/DataList"
             }
           },
           "372" : {
@@ -626,11 +681,16 @@
         "responses" : {
           "200" : {
             "description" : "The id of the tagged dataset",
-            "schema" : {
-              "$ref" : "#/definitions/inline_response_200_2"
-            },
             "examples" : {
               "application/json" : "{\n  \"data_tag\": {\n    \"id\": \"2\"\n  }\n}"
+            },
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "data_tag" : {
+                  "$ref" : "#/definitions/inline_response_200_2_data_tag"
+                }
+              }
             }
           },
           "470" : {
@@ -679,11 +739,16 @@
         "responses" : {
           "200" : {
             "description" : "The ID of the untagged dataset",
-            "schema" : {
-              "$ref" : "#/definitions/inline_response_200_3"
-            },
             "examples" : {
               "application/json" : "{\n  \"data_untag\": {\n    \"id\": \"2\"\n  }\n}"
+            },
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "data_untag" : {
+                  "$ref" : "#/definitions/inline_response_200_3_data_untag"
+                }
+              }
             }
           },
           "475" : {
@@ -731,9 +796,6 @@
         "responses" : {
           "200" : {
             "description" : "A list of unprocessed datasets",
-            "schema" : {
-              "$ref" : "#/definitions/DataUnprocessed"
-            },
             "examples" : {
               "application/json" : {
                 "data_unprocessed" : {
@@ -746,6 +808,9 @@
                   } ]
                 }
               }
+            },
+            "schema" : {
+              "$ref" : "#/definitions/DataUnprocessed"
             }
           },
           "681" : {
@@ -788,9 +853,6 @@
         "responses" : {
           "200" : {
             "description" : "A list of unprocessed datasets",
-            "schema" : {
-              "$ref" : "#/definitions/DataUnprocessed"
-            },
             "examples" : {
               "application/json" : {
                 "data_unprocessed" : {
@@ -803,6 +865,9 @@
                   } ]
                 }
               }
+            },
+            "schema" : {
+              "$ref" : "#/definitions/DataUnprocessed"
             }
           },
           "686" : {
@@ -845,11 +910,11 @@
           },
           "200" : {
             "description" : "A task description",
-            "schema" : {
-              "$ref" : "#/definitions/Task"
-            },
             "examples" : {
               "application/json" : "{\n  \"task\": {\n    \"task_id\":\"1\",\n    \"task_type\":\"Supervised Classification\",\n    \"input\":[\n      {\n        \"name\":\"source_data\",\n        \"data_set\":{\n          \"data_set_id\":\"1\",\n          \"target_feature\":\"class\"\n        }\n      },\n      {\n        \"name\":\"estimation_procedure\",\n        \"estimation_procedure\":{\n          \"type\":\"crossvalidation\",\n          \"data_splits_url\":\"https://www.openml.org/api_splits/get/1/Task_1_splits.arff\",\n          \"parameter\":[\n            {\n              \"name\":\"number_repeats\",\n              \"value\":\"1\"\n            },\n            {\n              \"name\":\"number_folds\",\n              \"value\":\"10\"\n            },\n            {\n              \"name\":\"percentage\"\n            },\n            {\n              \"name\":\"stratified_sampling\",\n              \"value\":\"true\"\n            }\n          ]\n        }\n      },\n      {\n        \"name\":\"cost_matrix\",\n        \"cost_matrix\":[]\n      },\n      {\n        \"name\":\"evaluation_measures\",\n        \"evaluation_measures\":\n          {\n            \"evaluation_measure\":\"predictive_accuracy\"\n          }\n      }\n    ],\n    \"output\":{\n      \"name\":\"predictions\",\n      \"predictions\":{\n        \"format\":\"ARFF\",\n        \"feature\":[\n          {\n            \"name\":\"repeat\",\n            \"type\":\"integer\"\n          },\n          {\n            \"name\":\"fold\",\n            \"type\":\"integer\"\n          },\n          {\n            \"name\":\"row_id\",\n            \"type\":\"integer\"\n          },\n          {\n            \"name\":\"confidence.classname\",\n            \"type\":\"numeric\"\n          },\n          {\n            \"name\":\"prediction\",\n            \"type\":\"string\"\n          }\n        ]\n      }\n    },\n    \"tag\":[\"basic\",\"study_1\",\"under100k\",\"under1m\"]\n  }\n}"
+            },
+            "schema" : {
+              "$ref" : "#/definitions/Task"
             }
           }
         }
@@ -875,11 +940,16 @@
         "responses" : {
           "200" : {
             "description" : "ID of the deleted task",
-            "schema" : {
-              "$ref" : "#/definitions/inline_response_200_4"
-            },
             "examples" : {
               "application/json" : "{\n  \"task_delete\": {\n    \"id\": \"4328\"\n  }\n}"
+            },
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "task_delete" : {
+                  "$ref" : "#/definitions/inline_response_200_4_task_delete"
+                }
+              }
             }
           },
           "450" : {
@@ -922,11 +992,16 @@
         "responses" : {
           "200" : {
             "description" : "Id of the uploaded task",
-            "schema" : {
-              "$ref" : "#/definitions/inline_response_200_5"
-            },
             "examples" : {
               "application/json" : "{\n  \"upload_task\": {\n    \"id\": \"4328\"\n  }\n}"
+            },
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "upload_task" : {
+                  "$ref" : "#/definitions/inline_response_200_5_upload_task"
+                }
+              }
             }
           },
           "530" : {
@@ -962,11 +1037,11 @@
         "responses" : {
           "200" : {
             "description" : "A list of tasks",
-            "schema" : {
-              "$ref" : "#/definitions/TaskList"
-            },
             "examples" : {
               "application/json" : "{\n  \"task\": {\n    \"task\": [\n      {\n        \"task_id\":\"1\",\n        \"task_type\":\"Supervised Classification\",\n        \"did\":\"1\",\n        \"name\":\"anneal\",\n        \"status\":\"active\",\n        \"format\":\"ARFF\",\n        \"input\":[\n          {\n            \"name\":\"estimation_procedure\",\n            \"value\":\"1\"\n          },\n          {\n            \"name\":\"evaluation_measures\",\n            \"value\":\"predictive_accuracy\"\n          },\n          {\n            \"name\":\"source_data\",\n            \"value\":\"1\"\n          },\n          {\n            \"name\":\"target_feature\",\n            \"value\":\"class\"\n          }\n          ],\n        \"quality\":[\n          {\n            \"name\":\"MajorityClassSize\",\n            \"value\":\"684\"\n          },\n          {\n            \"name\":\"MaxNominalAttDistinctValues\",\n            \"value\":\"10.0\"\n          },\n          {\n            \"name\":\"MinorityClassSize\",\n            \"value\":\"0\"\n          },\n          {\n            \"name\":\"NumBinaryAtts\",\n            \"value\":\"14.0\"\n          },\n          {\n            \"name\":\"NumberOfClasses\",\n            \"value\":\"6\"\n          },\n          {\n            \"name\":\"NumberOfFeatures\",\n            \"value\":\"39\"\n          },\n          {\n            \"name\":\"NumberOfInstances\",\n            \"value\":\"898\"\n          },\n          {\n            \"name\":\"NumberOfInstancesWithMissingValues\",\n            \"value\":\"0\"\n          },\n          {\n            \"name\":\"NumberOfMissingValues\",\n            \"value\":\"0\"\n          },\n          {\n            \"name\":\"NumberOfNumericFeatures\",\n            \"value\":\"6\"\n          },\n          {\n            \"name\":\"NumberOfSymbolicFeatures\",\n            \"value\":\"32\"\n          }\n          ],\n        \"tag\":[\n          \"basic\",\n          \"study_1\",\n          \"study_7\",\n          \"under100k\",\n          \"under1m\"\n        ]\n      }\n    ]\n  }\n}"
+            },
+            "schema" : {
+              "$ref" : "#/definitions/TaskList"
             }
           },
           "default" : {
@@ -1007,11 +1082,11 @@
         "responses" : {
           "200" : {
             "description" : "A list of tasks",
-            "schema" : {
-              "$ref" : "#/definitions/TaskList"
-            },
             "examples" : {
               "application/json" : "{\n  \"task\": {\n    \"task\": [\n      {\n        \"task_id\":\"1\",\n        \"task_type\":\"Supervised Classification\",\n        \"did\":\"1\",\n        \"name\":\"anneal\",\n        \"status\":\"active\",\n        \"format\":\"ARFF\",\n        \"input\":[\n          {\n            \"name\":\"estimation_procedure\",\n            \"value\":\"1\"\n          },\n          {\n            \"name\":\"evaluation_measures\",\n            \"value\":\"predictive_accuracy\"\n          },\n          {\n            \"name\":\"source_data\",\n            \"value\":\"1\"\n          },\n          {\n            \"name\":\"target_feature\",\n            \"value\":\"class\"\n          }\n          ],\n        \"quality\":[\n          {\n            \"name\":\"MajorityClassSize\",\n            \"value\":\"684\"\n          },\n          {\n            \"name\":\"MaxNominalAttDistinctValues\",\n            \"value\":\"10.0\"\n          },\n          {\n            \"name\":\"MinorityClassSize\",\n            \"value\":\"0\"\n          },\n          {\n            \"name\":\"NumBinaryAtts\",\n            \"value\":\"14.0\"\n          },\n          {\n            \"name\":\"NumberOfClasses\",\n            \"value\":\"6\"\n          },\n          {\n            \"name\":\"NumberOfFeatures\",\n            \"value\":\"39\"\n          },\n          {\n            \"name\":\"NumberOfInstances\",\n            \"value\":\"898\"\n          },\n          {\n            \"name\":\"NumberOfInstancesWithMissingValues\",\n            \"value\":\"0\"\n          },\n          {\n            \"name\":\"NumberOfMissingValues\",\n            \"value\":\"0\"\n          },\n          {\n            \"name\":\"NumberOfNumericFeatures\",\n            \"value\":\"6\"\n          },\n          {\n            \"name\":\"NumberOfSymbolicFeatures\",\n            \"value\":\"32\"\n          }\n          ],\n        \"tag\":[\n          \"basic\",\n          \"study_1\",\n          \"study_7\",\n          \"under100k\",\n          \"under1m\"\n        ]\n      }\n    ]\n  }\n}"
+            },
+            "schema" : {
+              "$ref" : "#/definitions/TaskList"
             }
           },
           "default" : {
@@ -1044,11 +1119,11 @@
         "responses" : {
           "200" : {
             "description" : "A list of tasks with the given status",
-            "schema" : {
-              "$ref" : "#/definitions/DataList"
-            },
             "examples" : {
               "application/json" : "{\n  \"data\": {\n    \"dataset\": [\n      {\n        \"did\":\"1\",\n        \"name\":\"anneal\",\n        \"status\":\"active\",\n        \"format\":\"ARFF\",\n        \"quality\":[\n          {\n            \"name\":\"MajorityClassSize\",\n            \"value\":\"684\"\n          },\n          {\n            \"name\":\"MaxNominalAttDistinctValues\",\n            \"value\":\"10.0\"\n          },\n          {\n            \"name\":\"MinorityClassSize\"\n            ,\"value\":\"0\"\n          },\n          {\n            \"name\":\"NumBinaryAtts\",\n            \"value\":\"14.0\"\n          },\n          {\n            \"name\":\"NumberOfClasses\",\n            \"value\":\"6\"\n          },\n          {\n            \"name\":\"NumberOfFeatures\",\n            \"value\":\"39\"\n          },\n          {\n            \"name\":\"NumberOfInstances\",\n            \"value\":\"898\"\n          },\n          {\n            \"name\":\"NumberOfInstancesWithMissingValues\",\n            \"value\":\"0\"\n          },\n          {\n            \"name\":\"NumberOfMissingValues\",\n            \"value\":\"0\"\n          },\n          {\n            \"name\":\"NumberOfNumericFeatures\",\n            \"value\":\"6\"\n          },\n          {\n            \"name\":\"NumberOfSymbolicFeatures\",\n            \"value\":\"32\"\n          }\n        ]\n      }\n    ]\n  }\n}"
+            },
+            "schema" : {
+              "$ref" : "#/definitions/DataList"
             }
           },
           "482" : {
@@ -1079,11 +1154,11 @@
         "responses" : {
           "200" : {
             "description" : "A list of tasks",
-            "schema" : {
-              "$ref" : "#/definitions/TaskList"
-            },
             "examples" : {
               "application/json" : "{\n  \"task\": {\n    \"task\": [\n      {\n        \"task_id\":\"1\",\n        \"task_type\":\"Supervised Classification\",\n        \"did\":\"1\",\n        \"name\":\"anneal\",\n        \"status\":\"active\",\n        \"format\":\"ARFF\",\n        \"input\":[\n          {\n            \"name\":\"estimation_procedure\",\n            \"value\":\"1\"\n          },\n          {\n            \"name\":\"evaluation_measures\",\n            \"value\":\"predictive_accuracy\"\n          },\n          {\n            \"name\":\"source_data\",\n            \"value\":\"1\"\n          },\n          {\n            \"name\":\"target_feature\",\n            \"value\":\"class\"\n          }\n          ],\n        \"quality\":[\n          {\n            \"name\":\"MajorityClassSize\",\n            \"value\":\"684\"\n          },\n          {\n            \"name\":\"MaxNominalAttDistinctValues\",\n            \"value\":\"10.0\"\n          },\n          {\n            \"name\":\"MinorityClassSize\",\n            \"value\":\"0\"\n          },\n          {\n            \"name\":\"NumBinaryAtts\",\n            \"value\":\"14.0\"\n          },\n          {\n            \"name\":\"NumberOfClasses\",\n            \"value\":\"6\"\n          },\n          {\n            \"name\":\"NumberOfFeatures\",\n            \"value\":\"39\"\n          },\n          {\n            \"name\":\"NumberOfInstances\",\n            \"value\":\"898\"\n          },\n          {\n            \"name\":\"NumberOfInstancesWithMissingValues\",\n            \"value\":\"0\"\n          },\n          {\n            \"name\":\"NumberOfMissingValues\",\n            \"value\":\"0\"\n          },\n          {\n            \"name\":\"NumberOfNumericFeatures\",\n            \"value\":\"6\"\n          },\n          {\n            \"name\":\"NumberOfSymbolicFeatures\",\n            \"value\":\"32\"\n          }\n          ],\n        \"tag\":[\n          \"basic\",\n          \"study_1\",\n          \"study_7\",\n          \"under100k\",\n          \"under1m\"\n        ]\n      }\n    ]\n  }\n}"
+            },
+            "schema" : {
+              "$ref" : "#/definitions/TaskList"
             }
           },
           "480" : {
@@ -1116,11 +1191,11 @@
         "responses" : {
           "200" : {
             "description" : "A list of tasks with the given tag",
-            "schema" : {
-              "$ref" : "#/definitions/TaskList"
-            },
             "examples" : {
               "application/json" : "{\n  \"task\": {\n    \"task\": [\n      {\n        \"task_id\":\"1\",\n        \"task_type\":\"Supervised Classification\",\n        \"did\":\"1\",\n        \"name\":\"anneal\",\n        \"status\":\"active\",\n        \"format\":\"ARFF\",\n        \"input\":[\n          {\n            \"name\":\"estimation_procedure\",\n            \"value\":\"1\"\n          },\n          {\n            \"name\":\"evaluation_measures\",\n            \"value\":\"predictive_accuracy\"\n          },\n          {\n            \"name\":\"source_data\",\n            \"value\":\"1\"\n          },\n          {\n            \"name\":\"target_feature\",\n            \"value\":\"class\"\n          }\n          ],\n        \"quality\":[\n          {\n            \"name\":\"MajorityClassSize\",\n            \"value\":\"684\"\n          },\n          {\n            \"name\":\"MaxNominalAttDistinctValues\",\n            \"value\":\"10.0\"\n          },\n          {\n            \"name\":\"MinorityClassSize\",\n            \"value\":\"0\"\n          },\n          {\n            \"name\":\"NumBinaryAtts\",\n            \"value\":\"14.0\"\n          },\n          {\n            \"name\":\"NumberOfClasses\",\n            \"value\":\"6\"\n          },\n          {\n            \"name\":\"NumberOfFeatures\",\n            \"value\":\"39\"\n          },\n          {\n            \"name\":\"NumberOfInstances\",\n            \"value\":\"898\"\n          },\n          {\n            \"name\":\"NumberOfInstancesWithMissingValues\",\n            \"value\":\"0\"\n          },\n          {\n            \"name\":\"NumberOfMissingValues\",\n            \"value\":\"0\"\n          },\n          {\n            \"name\":\"NumberOfNumericFeatures\",\n            \"value\":\"6\"\n          },\n          {\n            \"name\":\"NumberOfSymbolicFeatures\",\n            \"value\":\"32\"\n          }\n          ],\n        \"tag\":[\n          \"basic\",\n          \"study_1\",\n          \"study_7\",\n          \"under100k\",\n          \"under1m\"\n        ]\n      }\n    ]\n  }\n}"
+            },
+            "schema" : {
+              "$ref" : "#/definitions/TaskList"
             }
           },
           "482" : {
@@ -1150,11 +1225,11 @@
         "responses" : {
           "200" : {
             "description" : "A list of tasks where the underlying dataset has the given tag",
-            "schema" : {
-              "$ref" : "#/definitions/TaskList"
-            },
             "examples" : {
               "application/json" : "{\n  \"task\": {\n    \"task\": [\n      {\n        \"task_id\":\"1\",\n        \"task_type\":\"Supervised Classification\",\n        \"did\":\"1\",\n        \"name\":\"anneal\",\n        \"status\":\"active\",\n        \"format\":\"ARFF\",\n        \"input\":[\n          {\n            \"name\":\"estimation_procedure\",\n            \"value\":\"1\"\n          },\n          {\n            \"name\":\"evaluation_measures\",\n            \"value\":\"predictive_accuracy\"\n          },\n          {\n            \"name\":\"source_data\",\n            \"value\":\"1\"\n          },\n          {\n            \"name\":\"target_feature\",\n            \"value\":\"class\"\n          }\n          ],\n        \"quality\":[\n          {\n            \"name\":\"MajorityClassSize\",\n            \"value\":\"684\"\n          },\n          {\n            \"name\":\"MaxNominalAttDistinctValues\",\n            \"value\":\"10.0\"\n          },\n          {\n            \"name\":\"MinorityClassSize\",\n            \"value\":\"0\"\n          },\n          {\n            \"name\":\"NumBinaryAtts\",\n            \"value\":\"14.0\"\n          },\n          {\n            \"name\":\"NumberOfClasses\",\n            \"value\":\"6\"\n          },\n          {\n            \"name\":\"NumberOfFeatures\",\n            \"value\":\"39\"\n          },\n          {\n            \"name\":\"NumberOfInstances\",\n            \"value\":\"898\"\n          },\n          {\n            \"name\":\"NumberOfInstancesWithMissingValues\",\n            \"value\":\"0\"\n          },\n          {\n            \"name\":\"NumberOfMissingValues\",\n            \"value\":\"0\"\n          },\n          {\n            \"name\":\"NumberOfNumericFeatures\",\n            \"value\":\"6\"\n          },\n          {\n            \"name\":\"NumberOfSymbolicFeatures\",\n            \"value\":\"32\"\n          }\n          ],\n        \"tag\":[\n          \"basic\",\n          \"study_1\",\n          \"study_7\",\n          \"under100k\",\n          \"under1m\"\n        ]\n      }\n    ]\n  }\n}"
+            },
+            "schema" : {
+              "$ref" : "#/definitions/TaskList"
             }
           },
           "482" : {
@@ -1184,11 +1259,11 @@
         "responses" : {
           "200" : {
             "description" : "A list of tasks with the given tag",
-            "schema" : {
-              "$ref" : "#/definitions/TaskList"
-            },
             "examples" : {
               "application/json" : "{\n  \"task\": {\n    \"task\": [\n      {\n        \"task_id\":\"1\",\n        \"task_type\":\"Supervised Classification\",\n        \"did\":\"1\",\n        \"name\":\"anneal\",\n        \"status\":\"active\",\n        \"format\":\"ARFF\",\n        \"input\":[\n          {\n            \"name\":\"estimation_procedure\",\n            \"value\":\"1\"\n          },\n          {\n            \"name\":\"evaluation_measures\",\n            \"value\":\"predictive_accuracy\"\n          },\n          {\n            \"name\":\"source_data\",\n            \"value\":\"1\"\n          },\n          {\n            \"name\":\"target_feature\",\n            \"value\":\"class\"\n          }\n          ],\n        \"quality\":[\n          {\n            \"name\":\"MajorityClassSize\",\n            \"value\":\"684\"\n          },\n          {\n            \"name\":\"MaxNominalAttDistinctValues\",\n            \"value\":\"10.0\"\n          },\n          {\n            \"name\":\"MinorityClassSize\",\n            \"value\":\"0\"\n          },\n          {\n            \"name\":\"NumBinaryAtts\",\n            \"value\":\"14.0\"\n          },\n          {\n            \"name\":\"NumberOfClasses\",\n            \"value\":\"6\"\n          },\n          {\n            \"name\":\"NumberOfFeatures\",\n            \"value\":\"39\"\n          },\n          {\n            \"name\":\"NumberOfInstances\",\n            \"value\":\"898\"\n          },\n          {\n            \"name\":\"NumberOfInstancesWithMissingValues\",\n            \"value\":\"0\"\n          },\n          {\n            \"name\":\"NumberOfMissingValues\",\n            \"value\":\"0\"\n          },\n          {\n            \"name\":\"NumberOfNumericFeatures\",\n            \"value\":\"6\"\n          },\n          {\n            \"name\":\"NumberOfSymbolicFeatures\",\n            \"value\":\"32\"\n          }\n          ],\n        \"tag\":[\n          \"basic\",\n          \"study_1\",\n          \"study_7\",\n          \"under100k\",\n          \"under1m\"\n        ]\n      }\n    ]\n  }\n}"
+            },
+            "schema" : {
+              "$ref" : "#/definitions/TaskList"
             }
           },
           "482" : {
@@ -1226,11 +1301,16 @@
         "responses" : {
           "200" : {
             "description" : "The id of the tagged task",
-            "schema" : {
-              "$ref" : "#/definitions/inline_response_200_6"
-            },
             "examples" : {
               "application/json" : "{\n  \"task_tag\": {\n    \"id\": \"2\"\n  }\n}"
+            },
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "task_tag" : {
+                  "$ref" : "#/definitions/inline_response_200_6_task_tag"
+                }
+              }
             }
           },
           "470" : {
@@ -1279,11 +1359,16 @@
         "responses" : {
           "200" : {
             "description" : "A the features of the task",
-            "schema" : {
-              "$ref" : "#/definitions/inline_response_200_7"
-            },
             "examples" : {
               "application/json" : "{\n  \"task_untag\": {\n    \"id\": \"2\"\n  }\n}"
+            },
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "task_untag" : {
+                  "$ref" : "#/definitions/inline_response_200_7_task_untag"
+                }
+              }
             }
           },
           "475" : {
@@ -1326,11 +1411,11 @@
         "responses" : {
           "200" : {
             "description" : "A task type description",
-            "schema" : {
-              "$ref" : "#/definitions/TaskType"
-            },
             "examples" : {
               "application/json" : "{\n  \"task_type\":{\n    \"id\":\"1\",\n    \"name\":\"Supervised Classification\",\n    \"description\":\"In supervised classification, you are given ...\",\n    \"contributor\":[\"Joaquin Vanschoren\",\"Jan van Rijn\",\"Luis Torgo\",\"Bernd Bischl\"],\n    \"date\":\"24-01-2013\",\n    \"input\":[\n      {\n        \"name\":\"source_data\",\n        \"data_set\":\n          {\n            \"data_set_id\":\"[INPUT:source_data]\",\n            \"target_feature\":\"[INPUT:target_feature]\"\n          }\n      },\n      {\n        \"name\":\"estimation_procedure\",\n        \"estimation_procedure\":\n        {\n          \"type\":\"[LOOKUP:estimation_procedure.type]\",\n          \"data_splits_url\":\"splits.arff\",\n          \"parameter\":[\n            {\n              \"name\":\"number_repeats\",\n              \"value\":\"[LOOKUP:estimation_procedure.repeats]\"\n            },\n            {\n              \"name\":\"number_folds\",\n              \"value\":\"[LOOKUP:estimation_procedure.folds]\"\n            },\n            {\n              \"name\":\"percentage\",\n              \"value\":\"[LOOKUP:estimation_procedure.percentage]\"\n            },\n            {\n              \"name\":\"stratified_sampling\",\n              \"value\":\"[LOOKUP:estimation_procedure.stratified_sampling]\"\n            }\n          ]\n        }\n      },\n      {\n        \"name\":\"cost_matrix\",\n        \"cost_matrix\":\"[INPUT:cost_matrix]\"\n      },\n      {\n        \"name\":\"evaluation_measures\",\n        \"evaluation_measures\": {\n          \"evaluation_measure\":\"[INPUT:evaluation_measures]\"\n          }\n      }\n    ],\n    \"output\":{\n      \"name\":\"predictions\",\n      \"predictions\":{\n        \"format\":\"ARFF\",\n        \"feature\":[\n          {\n            \"name\":\"repeat\",\n            \"type\":\"integer\"\n          },\n          {\n            \"name\":\"fold\",\n            \"type\":\"integer\"\n          },\n          {\n            \"name\":\"row_id\",\n            \"type\":\"integer\"\n          },\n          {\n            \"name\":\"confidence.classname\",\n            \"type\":\"numeric\"\n          },\n          {\n            \"name\":\"prediction\",\n            \"type\":\"string\"\n          }\n        ]\n      }\n    }\n  }\n}"
+            },
+            "schema" : {
+              "$ref" : "#/definitions/TaskType"
             }
           },
           "240" : {
@@ -1357,11 +1442,11 @@
         "responses" : {
           "200" : {
             "description" : "A task description",
-            "schema" : {
-              "$ref" : "#/definitions/TaskTypeList"
-            },
             "examples" : {
               "application/json" : "{\n  \"task_types\":{\n    \"task_type\":[\n      {\n        \"id\":\"1\",\n        \"name\":\"Supervised Classification\",\n        \"description\":\"In supervised classification, you are given ...\",\n        \"creator\":\"Joaquin Vanschoren, Jan van Rijn, Luis Torgo, Bernd Bischl\"\n      },\n      {\n        \"id\":\"2\",\n        \"name\":\"Supervised Regression\",\n        \"description\":\"Given a dataset with a numeric target ...\",\n        \"creator\":\"Joaquin Vanschoren, Jan van Rijn, Luis Torgo, Bernd Bischl\"\n      },{}\n    ]\n  }\n}"
+            },
+            "schema" : {
+              "$ref" : "#/definitions/TaskTypeList"
             }
           },
           "default" : {
@@ -1401,11 +1486,11 @@
           },
           "200" : {
             "description" : "A flow description",
-            "schema" : {
-              "$ref" : "#/definitions/Flow"
-            },
             "examples" : {
               "application/json" : "{\n  \"flow\": {\n    \"id\":\"100\",\n    \"uploader\":\"1\",\n    \"name\":\"weka.J48\",\n    \"version\":\"2\",\n    \"external_version\":\"Weka_3.7.5_9117\",\n    \"description\":\"...\",\n    \"upload_date\":\"2014-04-23 18:00:36\",\n    \"language\":\"Java\",\n    \"dependencies\":\"Weka_3.7.5\",\n    \"parameter\": [\n      {\n        \"name\":\"A\",\n        \"data_type\":\"flag\",\n        \"default_value\":[],\n        \"description\":\"Laplace smoothing...\"\n      },\n      {\n        \"name\":\"C\",\n        \"data_type\":\"option\",\n        \"default_value\":\"0.25\",\n        \"description\":\"Set confidence threshold...\"\n      }\n    ]\n  }\n}"
+            },
+            "schema" : {
+              "$ref" : "#/definitions/Flow"
             }
           }
         }
@@ -1431,11 +1516,16 @@
         "responses" : {
           "200" : {
             "description" : "ID of the deleted flow",
-            "schema" : {
-              "$ref" : "#/definitions/inline_response_200_8"
-            },
             "examples" : {
               "application/json" : "{\n  \"flow_delete\": {\n    \"id\": \"4328\"\n  }\n}"
+            },
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "flow_delete" : {
+                  "$ref" : "#/definitions/inline_response_200_8_flow_delete"
+                }
+              }
             }
           },
           "320" : {
@@ -1523,11 +1613,16 @@
           },
           "200" : {
             "description" : "Id of the uploaded flow",
-            "schema" : {
-              "$ref" : "#/definitions/inline_response_200_9"
-            },
             "examples" : {
               "application/json" : "{\n  \"upload_flow\": {\n    \"id\": \"2520\"\n  }\n}"
+            },
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "upload_flow" : {
+                  "$ref" : "#/definitions/inline_response_200_9_upload_flow"
+                }
+              }
             }
           }
         }
@@ -1560,11 +1655,16 @@
         "responses" : {
           "200" : {
             "description" : "A list of flows",
-            "schema" : {
-              "$ref" : "#/definitions/inline_response_200_10"
-            },
             "examples" : {
               "application/json" : "{\n  \"flow_exists\": {\n    \"exists\": \"true\",\n    \"id\": \"65\"\n  }\n}"
+            },
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "flow_exists" : {
+                  "$ref" : "#/definitions/inline_response_200_10_flow_exists"
+                }
+              }
             }
           },
           "330" : {
@@ -1588,11 +1688,11 @@
         "responses" : {
           "200" : {
             "description" : "A list of flows",
-            "schema" : {
-              "$ref" : "#/definitions/FlowList"
-            },
             "examples" : {
               "application/json" : "{\n  \"flows\":\n    {\n      \"flow\":[\n        {\n          \"id\":\"65\",\n          \"full_name\":\"weka.RandomForest(1)\",\n          \"name\":\"weka.RandomForest\",\n          \"version\":\"1\",\n          \"external_version\":\"Weka_3.7.10_9186\",\n          \"uploader\":\"1\"\n        },\n        {\n          \"id\":\"66\",\n          \"full_name\":\"weka.IBk(1)\",\n          \"name\":\"weka.IBk\",\n          \"version\":\"1\",\n          \"external_version\":\"Weka_3.7.10_8034\",\n          \"uploader\":\"1\"\n        },\n        {\n          \"id\":\"67\",\n          \"full_name\":\"weka.BayesNet_K2(1)\",\n          \"name\":\"weka.BayesNet_K2\",\n          \"version\":\"1\",\n          \"external_version\":\"Weka_3.7.10_8034\",\n          \"uploader\":\"1\"\n        }\n      ]\n    }\n  }"
+            },
+            "schema" : {
+              "$ref" : "#/definitions/FlowList"
             }
           },
           "500" : {
@@ -1630,11 +1730,11 @@
         "responses" : {
           "200" : {
             "description" : "A list of flows",
-            "schema" : {
-              "$ref" : "#/definitions/FlowList"
-            },
             "examples" : {
               "application/json" : "{\n  \"flows\":\n    {\n      \"flow\":[\n        {\n          \"id\":\"65\",\n          \"full_name\":\"weka.RandomForest(1)\",\n          \"name\":\"weka.RandomForest\",\n          \"version\":\"1\",\n          \"external_version\":\"Weka_3.7.10_9186\",\n          \"uploader\":\"1\"\n        },\n        {\n          \"id\":\"66\",\n          \"full_name\":\"weka.IBk(1)\",\n          \"name\":\"weka.IBk\",\n          \"version\":\"1\",\n          \"external_version\":\"Weka_3.7.10_8034\",\n          \"uploader\":\"1\"\n        },\n        {\n          \"id\":\"67\",\n          \"full_name\":\"weka.BayesNet_K2(1)\",\n          \"name\":\"weka.BayesNet_K2\",\n          \"version\":\"1\",\n          \"external_version\":\"Weka_3.7.10_8034\",\n          \"uploader\":\"1\"\n        }\n      ]\n    }\n  }"
+            },
+            "schema" : {
+              "$ref" : "#/definitions/FlowList"
             }
           },
           "500" : {
@@ -1664,11 +1764,11 @@
         "responses" : {
           "200" : {
             "description" : "A list of flows with the given tag",
-            "schema" : {
-              "$ref" : "#/definitions/FlowList"
-            },
             "examples" : {
               "application/json" : "{\n  \"flows\":\n    {\n      \"flow\":[\n        {\n          \"id\":\"65\",\n          \"full_name\":\"weka.RandomForest(1)\",\n          \"name\":\"weka.RandomForest\",\n          \"version\":\"1\",\n          \"external_version\":\"Weka_3.7.10_9186\",\n          \"uploader\":\"1\"\n        },\n        {\n          \"id\":\"66\",\n          \"full_name\":\"weka.IBk(1)\",\n          \"name\":\"weka.IBk\",\n          \"version\":\"1\",\n          \"external_version\":\"Weka_3.7.10_8034\",\n          \"uploader\":\"1\"\n        },\n        {\n          \"id\":\"67\",\n          \"full_name\":\"weka.BayesNet_K2(1)\",\n          \"name\":\"weka.BayesNet_K2\",\n          \"version\":\"1\",\n          \"external_version\":\"Weka_3.7.10_8034\",\n          \"uploader\":\"1\"\n        }\n      ]\n    }\n  }"
+            },
+            "schema" : {
+              "$ref" : "#/definitions/FlowList"
             }
           },
           "500" : {
@@ -1692,11 +1792,16 @@
         "responses" : {
           "200" : {
             "description" : "A list of flows",
-            "schema" : {
-              "$ref" : "#/definitions/inline_response_200_11"
-            },
             "examples" : {
               "application/json" : "{\n  \"flow_owned\": {\n    \"id\": [\n      \"111\",\n      \"112\",\n      \"113\",\n      \"114\",\n      \"115\",\n      \"116\",\n      \"117\"\n    ]\n  }\n}"
+            },
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "flow_owned" : {
+                  "$ref" : "#/definitions/inline_response_200_11_flow_owned"
+                }
+              }
             }
           },
           "310" : {
@@ -1740,11 +1845,16 @@
         "responses" : {
           "200" : {
             "description" : "The id of the tagged flow",
-            "schema" : {
-              "$ref" : "#/definitions/inline_response_200_12"
-            },
             "examples" : {
               "application/json" : "{\n  \"flow_tag\": {\n    \"id\": \"2\"\n  }\n}"
+            },
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "flow_tag" : {
+                  "$ref" : "#/definitions/inline_response_200_12_flow_tag"
+                }
+              }
             }
           },
           "470" : {
@@ -1793,11 +1903,16 @@
         "responses" : {
           "200" : {
             "description" : "The id of the untagged flow",
-            "schema" : {
-              "$ref" : "#/definitions/inline_response_200_13"
-            },
             "examples" : {
               "application/json" : "{\n  \"flow_untag\": {\n    \"id\": \"2\"\n  }\n}"
+            },
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "flow_untag" : {
+                  "$ref" : "#/definitions/inline_response_200_13_flow_untag"
+                }
+              }
             }
           },
           "475" : {
@@ -1840,11 +1955,11 @@
         "responses" : {
           "200" : {
             "description" : "A setup description",
-            "schema" : {
-              "$ref" : "#/definitions/Setup"
-            },
             "examples" : {
               "application/json" : "{\n  \"setup_parameters\":{\n    \"flow_id\":\"59\",\n    \"parameter\":[\n      {\n        \"full_name\":\"weka.JRip(1)_F\",\n        \"parameter_name\":\"F\",\n        \"data_type\":\"option\",\n        \"default_value\":\"3\",\n        \"value\":\"3\"\n      },{\n        \"full_name\":\"weka.JRip(1)_N\",\n        \"parameter_name\":\"N\",\n        \"data_type\":\"option\",\n        \"default_value\":\"2.0\",\n        \"value\":\"2.0\"\n      },{\n        \"full_name\":\"weka.JRip(1)_O\",\n        \"parameter_name\":\"O\",\n        \"data_type\":\"option\",\n        \"default_value\":\"2\",\n        \"value\":\"2\"\n      },{\n        \"full_name\":\"weka.JRip(1)_S\",\n        \"parameter_name\":\"S\",\n        \"data_type\":\"option\",\n        \"default_value\":\"1\",\n        \"value\":\"1\"\n      }]\n  }\n}"
+            },
+            "schema" : {
+              "$ref" : "#/definitions/Setup"
             }
           },
           "280" : {
@@ -1878,11 +1993,11 @@
         "responses" : {
           "200" : {
             "description" : "A run description",
-            "schema" : {
-              "$ref" : "#/definitions/Run"
-            },
             "examples" : {
               "application/json" : "{\n  \"run\": {\n    \"run_id\":\"100\",\n    \"uploader\":\"1\",\n    \"uploader_name\":\"Jan van Rijn\",\n    \"task_id\":\"28\",\n    \"task_type\":\"Supervised Classification\",\n    \"task_evaluation_measure\":\"predictive_accuracy\",\n    \"flow_id\":\"67\",\n    \"flow_name\":\"weka.BayesNet_K2(1)\",\n    \"setup_string\":\"weka.classifiers.bayes.BayesNet -- -D -Q weka.classifiers.bayes.net.search.local.K2 -- -P 1 -S BAYES -E weka.classifiers.bayes.net.estimate.SimpleEstimator -- -A 0.5\",\n    \"parameter_setting\": [\n      {\n        \"name\":\"D\",\n        \"value\":\"true\"\n      },\n      {\n        \"name\":\"Q\",\n        \"value\":\"weka.classifiers.bayes.net.search.local.K2\"\n      },\n      {\n        \"name\":\"P\",\n        \"value\":\"1\"\n      },\n      {\n        \"name\":\"S\",\n        \"value\":\"BAYES\"\n      }\n    ],\n    \"input_data\":\n      {\n        \"dataset\":\n          {\n            \"did\":\"28\",\n            \"name\":\"optdigits\",\n            \"url\":\"https:\\/\\/www.openml.org\\/data\\/download\\/28\\/dataset_28_optdigits.arff\"\n          }\n      },\n    \"output_data\":\n      {\n        \"file\": [\n          {\n            \"did\":\"48838\",\n            \"file_id\":\"261\",\n            \"name\":\"description\",\n            \"url\":\"https:\\/\\/www.openml.org\\/data\\/download\\/261\\/weka_generated_run935374685998857626.xml\"\n          },\n          {\n            \"did\":\"48839\",\n            \"file_id\":\"262\",\n            \"name\":\"predictions\",\n            \"url\":\"https:\\/\\/www.openml.org\\/data\\/download\\/262\\/weka_generated_predictions576954524972002741.arff\"\n          }\n        ],\n        \"evaluation\": [\n          {\n            \"name\":\"area_under_roc_curve\",\n            \"flow_id\":\"4\",\n            \"value\":\"0.990288\",\n            \"array_data\":\"[0.99724,0.989212,0.992776,0.994279,0.980578,0.98649,0.99422,0.99727,0.994858,0.976143]\"\n          },\n          {\n            \"name\":\"confusion_matrix\",\n            \"flow_id\":\"10\",\n            \"array_data\":\"[[544,1,0,0,7,0,1,0,0,1],[0,511,21,1,0,1,3,1,5,28],[0,7,511,1,0,1,0,3,23,11],[0,2,2,519,0,3,0,12,16,18],[0,3,0,0,528,0,4,21,6,6],[0,1,0,7,5,488,2,0,4,51],[1,7,0,0,2,0,548,0,0,0],[0,2,0,1,9,1,0,545,4,4],[1,25,2,2,3,6,2,1,503,9],[0,7,0,20,16,5,0,19,9,486]]\"\n          },\n          {\n            \"name\":\"f_measure\",\n            \"flow_id\":\"12\",\n            \"value\":\"0.922723\",\n            \"array_data\":\"[0.989091,0.898857,0.935041,0.92431,0.927944,0.918156,0.980322,0.933219,0.895018,0.826531]\"\n          },\n          {\n            \"name\":\"kappa\",\n            \"flow_id\":\"13\",\n            \"value\":\"0.913601\"\n          }\n        ]\n      }\n  }\n}"
+            },
+            "schema" : {
+              "$ref" : "#/definitions/Run"
             }
           },
           "220" : {
@@ -1914,11 +2029,16 @@
         "responses" : {
           "200" : {
             "description" : "ID of the deleted run",
-            "schema" : {
-              "$ref" : "#/definitions/inline_response_200_14"
-            },
             "examples" : {
               "application/json" : "{\n  \"run_delete\": {\n    \"id\": \"2520\"\n  }\n}"
+            },
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "data_delete" : {
+                  "$ref" : "#/definitions/inline_response_200_14_data_delete"
+                }
+              }
             }
           },
           "390" : {
@@ -1979,11 +2099,16 @@
         "responses" : {
           "200" : {
             "description" : "Id of the uploaded run",
-            "schema" : {
-              "$ref" : "#/definitions/inline_response_200_15"
-            },
             "examples" : {
               "application/json" : "{\n  \"upload_run\": {\n    \"id\": \"2520\"\n  }\n}"
+            },
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "upload_flow" : {
+                  "$ref" : "#/definitions/inline_response_200_15_upload_flow"
+                }
+              }
             }
           },
           "201" : {
@@ -2072,9 +2197,6 @@
         "responses" : {
           "200" : {
             "description" : "A list of runs descriptions",
-            "schema" : {
-              "$ref" : "#/definitions/RunList"
-            },
             "examples" : {
               "application/json" : {
                 "runs" : {
@@ -2105,6 +2227,9 @@
                   } ]
                 }
               }
+            },
+            "schema" : {
+              "$ref" : "#/definitions/RunList"
             }
           },
           "510" : {
@@ -2143,9 +2268,6 @@
         "responses" : {
           "200" : {
             "description" : "A list of runs descriptions",
-            "schema" : {
-              "$ref" : "#/definitions/RunList"
-            },
             "examples" : {
               "application/json" : {
                 "runs" : {
@@ -2176,6 +2298,9 @@
                   } ]
                 }
               }
+            },
+            "schema" : {
+              "$ref" : "#/definitions/RunList"
             }
           },
           "510" : {
@@ -2214,9 +2339,6 @@
         "responses" : {
           "200" : {
             "description" : "A list of runs with the given tag",
-            "schema" : {
-              "$ref" : "#/definitions/RunList"
-            },
             "examples" : {
               "application/json" : {
                 "runs" : {
@@ -2247,6 +2369,9 @@
                   } ]
                 }
               }
+            },
+            "schema" : {
+              "$ref" : "#/definitions/RunList"
             }
           },
           "510" : {
@@ -2285,9 +2410,6 @@
         "responses" : {
           "200" : {
             "description" : "A list of runs descriptions",
-            "schema" : {
-              "$ref" : "#/definitions/RunList"
-            },
             "examples" : {
               "application/json" : {
                 "runs" : {
@@ -2318,6 +2440,9 @@
                   } ]
                 }
               }
+            },
+            "schema" : {
+              "$ref" : "#/definitions/RunList"
             }
           },
           "510" : {
@@ -2356,9 +2481,6 @@
         "responses" : {
           "200" : {
             "description" : "A list of runs descriptions",
-            "schema" : {
-              "$ref" : "#/definitions/RunList"
-            },
             "examples" : {
               "application/json" : {
                 "runs" : {
@@ -2389,6 +2511,9 @@
                   } ]
                 }
               }
+            },
+            "schema" : {
+              "$ref" : "#/definitions/RunList"
             }
           },
           "510" : {
@@ -2427,9 +2552,6 @@
         "responses" : {
           "200" : {
             "description" : "A list of runs descriptions",
-            "schema" : {
-              "$ref" : "#/definitions/RunList"
-            },
             "examples" : {
               "application/json" : {
                 "runs" : {
@@ -2460,6 +2582,9 @@
                   } ]
                 }
               }
+            },
+            "schema" : {
+              "$ref" : "#/definitions/RunList"
             }
           },
           "510" : {
@@ -2498,9 +2623,6 @@
         "responses" : {
           "200" : {
             "description" : "A list of runs descriptions",
-            "schema" : {
-              "$ref" : "#/definitions/RunList"
-            },
             "examples" : {
               "application/json" : {
                 "runs" : {
@@ -2531,6 +2653,9 @@
                   } ]
                 }
               }
+            },
+            "schema" : {
+              "$ref" : "#/definitions/RunList"
             }
           },
           "510" : {
@@ -2577,11 +2702,16 @@
         "responses" : {
           "200" : {
             "description" : "The id of the tagged run",
-            "schema" : {
-              "$ref" : "#/definitions/inline_response_200_16"
-            },
             "examples" : {
               "application/json" : "{\n  \"run_tag\": {\n    \"id\": \"2\"\n  }\n}"
+            },
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "run_tag" : {
+                  "$ref" : "#/definitions/inline_response_200_16_run_tag"
+                }
+              }
             }
           },
           "470" : {
@@ -2630,11 +2760,16 @@
         "responses" : {
           "200" : {
             "description" : "The id of the untagged run",
-            "schema" : {
-              "$ref" : "#/definitions/inline_response_200_17"
-            },
             "examples" : {
               "application/json" : "{\n  \"run_untag\": {\n    \"id\": \"2\"\n  }\n}"
+            },
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "run_untag" : {
+                  "$ref" : "#/definitions/inline_response_200_17_run_untag"
+                }
+              }
             }
           },
           "475" : {
@@ -2677,11 +2812,16 @@
         "responses" : {
           "200" : {
             "description" : "Id of the evaluated run",
-            "schema" : {
-              "$ref" : "#/definitions/inline_response_200_18"
-            },
             "examples" : {
               "application/json" : "{\n  \"run_evaluate\": {\n    \"id\": \"2520\"\n  }\n}"
+            },
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "upload_flow" : {
+                  "$ref" : "#/definitions/inline_response_200_18_upload_flow"
+                }
+              }
             }
           },
           "422" : {
@@ -2717,11 +2857,16 @@
         "responses" : {
           "200" : {
             "description" : "Id of the evaluated run",
-            "schema" : {
-              "$ref" : "#/definitions/inline_response_200_19"
-            },
             "examples" : {
               "application/json" : "{\n  \"run_reset\": {\n    \"id\": \"2520\"\n  }\n}"
+            },
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "run_reset" : {
+                  "$ref" : "#/definitions/inline_response_200_18_upload_flow"
+                }
+              }
             }
           },
           "394" : {
@@ -2758,11 +2903,11 @@
         "responses" : {
           "200" : {
             "description" : "A run trace description",
-            "schema" : {
-              "$ref" : "#/definitions/RunTrace"
-            },
             "examples" : {
               "application/json" : "{\n  \"trace\": {\n    \"run_id\":\"573055\",\n    \"trace_iteration\": {\n        \"repeat\":\"0\",\n        \"fold\":\"0\",\n        \"repeat\":\"0\",\n        \"iteration\":\"0\",\n        \"setup_string\":{\"parameter_minNumObj\": '1',\n                        \"parameter_confidenceFactor\": '0.1'}\n        \"evaluation\":\"94.814815\",\n        \"selected\": \"true\"\n      },\n    \"trace_iteration\": {\n        \"repeat\":\"0\",\n        \"fold\":\"0\",\n        \"repeat\":\"0\",\n        \"iteration\":\"1\",\n        \"setup_string\":{\"parameter_minNumObj\": '1',\n                        \"parameter_confidenceFactor\": '0.25'}\n        \"evaluation\": \"94.074074\",\n        \"selected\": \"true\"\n      }\n  }\n}"
+            },
+            "schema" : {
+              "$ref" : "#/definitions/RunTrace"
             }
           },
           "570" : {
@@ -2798,11 +2943,16 @@
         "responses" : {
           "200" : {
             "description" : "Id of the run with the trace",
-            "schema" : {
-              "$ref" : "#/definitions/inline_response_200_20"
-            },
             "examples" : {
               "application/json" : "{\n  \"run_trace\": {\n    \"id\": \"2520\"\n  }\n}"
+            },
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "upload_flow" : {
+                  "$ref" : "#/definitions/inline_response_200_20_upload_flow"
+                }
+              }
             }
           },
           "561" : {
@@ -2838,9 +2988,6 @@
         "responses" : {
           "200" : {
             "description" : "A list of evaluation descriptions",
-            "schema" : {
-              "$ref" : "#/definitions/EvaluationList"
-            },
             "examples" : {
               "application/json" : {
                 "evaluations" : {
@@ -2871,6 +3018,9 @@
                   } ]
                 }
               }
+            },
+            "schema" : {
+              "$ref" : "#/definitions/EvaluationList"
             }
           },
           "540" : {
@@ -2917,9 +3067,6 @@
         "responses" : {
           "200" : {
             "description" : "A list of evaluations with the given limit/offset",
-            "schema" : {
-              "$ref" : "#/definitions/EvaluationList"
-            },
             "examples" : {
               "application/json" : {
                 "evaluations" : {
@@ -2950,6 +3097,9 @@
                   } ]
                 }
               }
+            },
+            "schema" : {
+              "$ref" : "#/definitions/EvaluationList"
             }
           },
           "540" : {
@@ -2988,9 +3138,6 @@
         "responses" : {
           "200" : {
             "description" : "A list of evaluations with the given tag",
-            "schema" : {
-              "$ref" : "#/definitions/EvaluationList"
-            },
             "examples" : {
               "application/json" : {
                 "evaluations" : {
@@ -3021,6 +3168,9 @@
                   } ]
                 }
               }
+            },
+            "schema" : {
+              "$ref" : "#/definitions/EvaluationList"
             }
           },
           "540" : {
@@ -3059,9 +3209,6 @@
         "responses" : {
           "200" : {
             "description" : "A list of evaluation descriptions",
-            "schema" : {
-              "$ref" : "#/definitions/EvaluationList"
-            },
             "examples" : {
               "application/json" : {
                 "evaluations" : {
@@ -3092,6 +3239,9 @@
                   } ]
                 }
               }
+            },
+            "schema" : {
+              "$ref" : "#/definitions/EvaluationList"
             }
           },
           "540" : {
@@ -3130,9 +3280,6 @@
         "responses" : {
           "200" : {
             "description" : "A list of evaluation descriptions",
-            "schema" : {
-              "$ref" : "#/definitions/EvaluationList"
-            },
             "examples" : {
               "application/json" : {
                 "evaluations" : {
@@ -3163,6 +3310,9 @@
                   } ]
                 }
               }
+            },
+            "schema" : {
+              "$ref" : "#/definitions/EvaluationList"
             }
           },
           "540" : {
@@ -3201,9 +3351,6 @@
         "responses" : {
           "200" : {
             "description" : "A list of evaluations descriptions",
-            "schema" : {
-              "$ref" : "#/definitions/EvaluationList"
-            },
             "examples" : {
               "application/json" : {
                 "evaluations" : {
@@ -3234,6 +3381,9 @@
                   } ]
                 }
               }
+            },
+            "schema" : {
+              "$ref" : "#/definitions/EvaluationList"
             }
           },
           "540" : {
@@ -3272,9 +3422,6 @@
         "responses" : {
           "200" : {
             "description" : "A list of evaluations descriptions",
-            "schema" : {
-              "$ref" : "#/definitions/EvaluationList"
-            },
             "examples" : {
               "application/json" : {
                 "evaluations" : {
@@ -3305,6 +3452,9 @@
                   } ]
                 }
               }
+            },
+            "schema" : {
+              "$ref" : "#/definitions/EvaluationList"
             }
           },
           "540" : {
@@ -3343,9 +3493,6 @@
         "responses" : {
           "200" : {
             "description" : "A list of evaluations descriptions",
-            "schema" : {
-              "$ref" : "#/definitions/EvaluationList"
-            },
             "examples" : {
               "application/json" : {
                 "evaluations" : {
@@ -3376,6 +3523,9 @@
                   } ]
                 }
               }
+            },
+            "schema" : {
+              "$ref" : "#/definitions/EvaluationList"
             }
           },
           "540" : {
@@ -3423,9 +3573,6 @@
           },
           "200" : {
             "description" : "A list of evaluations descriptions",
-            "schema" : {
-              "$ref" : "#/definitions/EvaluationRequest"
-            },
             "examples" : {
               "application/json" : {
                 "evaluation_request" : {
@@ -3438,6 +3585,9 @@
                   } ]
                 }
               }
+            },
+            "schema" : {
+              "$ref" : "#/definitions/EvaluationRequest"
             }
           },
           "545" : {
@@ -3464,11 +3614,11 @@
         "responses" : {
           "200" : {
             "description" : "A list of estimation procedures",
-            "schema" : {
-              "$ref" : "#/definitions/EstimationProcedureList"
-            },
             "examples" : {
               "application/json" : "{\n  \"estimationprocedures\": {\n    \"estimationprocedure\": [\n      {\n         \"id\":\"1\",\n         \"ttid\":\"1\",\n         \"name\":\"10-fold Crossvalidation\",\n         \"type\":\"crossvalidation\",\n         \"repeats\":\"1\",\n         \"folds\":\"10\",\n         \"stratified_sampling\":\"true\"\n      },\n      {\n        \"id\":\"2\",\n        \"ttid\":\"1\",\n        \"name\":\"5 times 2-fold Crossvalidation\",\n        \"type\":\"crossvalidation\",\n        \"repeats\":\"5\",\n        \"folds\":\"2\",\n        \"stratified_sampling\":\"true\"\n      }\n    ]\n  }\n}"
+            },
+            "schema" : {
+              "$ref" : "#/definitions/EstimationProcedureList"
             }
           },
           "500" : {
