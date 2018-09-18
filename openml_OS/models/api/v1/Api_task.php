@@ -9,6 +9,7 @@ class Api_task extends MY_Api_Model {
     $this->load->helper('text');
     
     // load models
+    $this->load->model('Dataset_status');
     $this->load->model('Task');
     $this->load->model('Task_tag');
     $this->load->model('Task_inputs');
