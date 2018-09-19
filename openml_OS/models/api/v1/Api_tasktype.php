@@ -40,10 +40,9 @@ class Api_tasktype extends MY_Api_Model {
       $this->returnError( 240, $this->version );
       return;
     }
-
-    $taskType = $this->Task_type->getById( $task_type_id );
-    $taskTypeIos = $this->Task_type_inout->getByTaskType( $task_type_id, 'order ASC' );
-
+    
+    $taskTypeIos = $this->Task_type_inout->getWhere('io = "input" AND ttid = ' . $task_type_id, 'order ASC' );
+    
     if( $taskType === false ) {
       $this->returnError( 241, $this->version );
       return;
