@@ -42,6 +42,12 @@ class Api_tasktype extends MY_Api_Model {
     }
     
     $taskTypeIos = $this->Task_type_inout->getWhere('io = "input" AND ttid = ' . $task_type_id, 'order ASC');
+    for ($i = 0; $i < count($taskTypeIos); ++$i) {
+      if ($taskTypeIos[$i]->api_constraints) {
+        $taskTypeIos[$i]->api_constraints = json_decode($taskTypeIos[$i]->api_constraints);
+      } 
+    }
+    
     $taskType = $this->Task_type->getById($task_type_id);
     if ($taskType === false) {
       $this->returnError(241, $this->version);
