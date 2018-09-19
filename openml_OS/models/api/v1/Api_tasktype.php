@@ -36,19 +36,19 @@ class Api_tasktype extends MY_Api_Model {
   }
 
   private function tasktype($task_type_id) {
-    if( $task_type_id == false ) {
-      $this->returnError( 240, $this->version );
+    if ($task_type_id == false) {
+      $this->returnError(240, $this->version);
       return;
     }
     
-    $taskTypeIos = $this->Task_type_inout->getWhere('io = "input" AND ttid = ' . $task_type_id, 'order ASC' );
-    
-    if( $taskType === false ) {
-      $this->returnError( 241, $this->version );
+    $taskTypeIos = $this->Task_type_inout->getWhere('io = "input" AND ttid = ' . $task_type_id, 'order ASC');
+    $taskType = $this->Task_type->getById($task_type_id);
+    if ($taskType === false) {
+      $this->returnError(241, $this->version);
       return;
     }
-
-    $this->xmlContents( 'task-types-search', $this->version, array( 'task_type' => $taskType, 'io' => $taskTypeIos ) );
+    
+    $this->xmlContents('task-types-search', $this->version, array( 'task_type' => $taskType, 'io' => $taskTypeIos));
   }
 }
 ?>
