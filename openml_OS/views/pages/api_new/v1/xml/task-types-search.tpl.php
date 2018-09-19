@@ -12,7 +12,7 @@
 	<?php foreach($io as $item): ?>
 		<oml:<?php echo $item->io; ?> name="<?php echo $item->name; ?>">
 		  <?php if ($item->requirement == "required"): ?><oml:requirement><?php echo $item->requirement; ?></oml:requirement><?php endif; ?>
-		  <?php if ($item->api_constraints and property_exists($item->api_constraints, 'data_type')): ?><oml:data_type><?php echo $item->api_constraints['data_type']; ?></oml:data_type><?php endif; ?>
+		  <?php if ($item->api_constraints and property_exists($item->api_constraints, 'data_type')): ?><oml:data_type><?php echo $item->api_constraints->data_type; ?></oml:data_type><?php endif; ?>
 		</oml:<?php echo $item->io; ?>>
 	<?php endforeach; ?>
 </oml:task_type>
