@@ -732,7 +732,7 @@ class Api_data extends MY_Api_Model {
       }
       
         // check the nominal value property
-      if ($feature['nominal_value']) {
+      if (array_key_exists('nominal_value', $feature)) {
         foreach ($feature['nominal_value'] as $value) {
           $data = array(
             'did' => $did, 
