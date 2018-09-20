@@ -719,7 +719,7 @@ class Api_data extends MY_Api_Model {
         foreach ($feature['nominal_value'] as $value) {
           $data = array(
             'did' => $did, 
-            'index' => $feature->index,
+            'index' => $feature['index'],
             'value' => $value
           );
           $result = $this->Data_feature_value->insert($feature);
