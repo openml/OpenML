@@ -718,7 +718,7 @@ class Api_data extends MY_Api_Model {
         
         $feature['nominal_value'] = json_decode($feature['nominal_value']);
         
-      } elseif ($feature->data_type == 'nominal' && !$data_processed_record->error) {
+      } elseif ($feature['data_type'] == 'nominal' && !$data_processed_record->error) {
         // required for nominal values.. missing so throw error
         $this->db->trans_rollback();
         $this->returnError(438, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature->name);
