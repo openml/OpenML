@@ -9,6 +9,7 @@ class Api_task extends MY_Api_Model {
     $this->load->helper('text');
     
     // load models
+    $this->load->model('Dataset_status');
     $this->load->model('Task');
     $this->load->model('Task_tag');
     $this->load->model('Task_inputs');
@@ -67,7 +68,7 @@ class Api_task extends MY_Api_Model {
 
 
   private function task_list($segs, $user_id) {
-    $legal_filters = array('type', 'tag', 'data_tag', 'status', 'limit', 'offset', 'data_id', 'data_name', 'number_instances', 'number_features', 'number_classes', 'number_missing_values');
+    $legal_filters = array('type', 'tag', 'data_tag', 'status', 'limit', 'offset', 'task_id', 'data_id', 'data_name', 'number_instances', 'number_features', 'number_classes', 'number_missing_values');
     
     list($query_string, $illegal_filters) = $this->parse_filters($segs, $legal_filters);
     if (count($illegal_filters) > 0) {
@@ -88,6 +89,7 @@ class Api_task extends MY_Api_Model {
     $limit = element('limit', $query_string, null);
     $offset = element('offset', $query_string, null);
     $data_id = element('data_id', $query_string, null);
+    $task_id = element('task_id', $query_string, null);
     $data_name = element('data_name', $query_string, null);
     $nr_insts = element('number_instances', $query_string, null);
     $nr_feats = element('number_features', $query_string, null);
@@ -102,7 +104,8 @@ class Api_task extends MY_Api_Model {
     $where_type = $type === null ? '' : 'AND `t`.`ttid` = "'.$type.'" ';
     $where_tag = $tag === null ? '' : ' AND `t`.`task_id` IN (select id from task_tag where tag="' . $tag . '") ';
     $where_data_tag = $data_tag === null ? '' : ' AND `d`.`did` IN (select id from dataset_tag where tag="' . $data_tag . '") ';
-    $where_did = $data_id === null ? '' : ' AND `d`.`did` = '. $data_id . ' ';
+    $where_did = $data_id === null ? '' : ' AND `d`.`did` IN ('. $data_id . ') ';
+    $where_task_id = $task_id === null ? '' : ' AND `t`.`task_id` IN ('. $task_id . ') ';
     $where_data_name = $data_name === null ? '' : ' AND `d`.`name` = "'. $data_name . '"';
     $where_insts = $nr_insts === null ? '' : ' AND `d`.`did` IN (select data from data_quality dq where quality="NumberOfInstances" and value ' . (strpos($nr_insts, '..') !== false ? 'BETWEEN ' . str_replace('..',' AND ',$nr_insts) : '= '. $nr_insts) . ') ';
     $where_feats = $nr_feats === null ? '' : ' AND `d`.`did` IN (select data from data_quality dq where quality="NumberOfFeatures" and value ' . (strpos($nr_feats, '..') !== false ? 'BETWEEN ' . str_replace('..',' AND ',$nr_feats) : '= '. $nr_feats) . ') ';
@@ -111,7 +114,7 @@ class Api_task extends MY_Api_Model {
     $status_sql_variable = 'IFNULL(`s`.`status`, \'' . $this->config->item('default_dataset_status') . '\')';
     $where_status = $status === null ? ' AND ' . $status_sql_variable . ' = "active" ' : ($status != "all" ? ' AND ' . $status_sql_variable . ' = "'. $status . '" ' : '');
 
-    $where_total = $where_type . $where_tag . $where_data_tag . $where_status . $where_did . $where_data_name . $where_insts . $where_feats . $where_class . $where_miss;
+    $where_total = $where_type . $where_tag . $where_data_tag . $where_status . $where_task_id . $where_did . $where_data_name . $where_insts . $where_feats . $where_class . $where_miss;
     $where_task_total = $where_type . $where_tag;
 
     $where_limit = $limit === null ? '' : ' LIMIT ' . $limit;
@@ -331,6 +334,14 @@ class Api_task extends MY_Api_Model {
         if (!in_array($input_value, $acceptable_inputs)) {
           $this->returnError(622, $this->version, $this->openmlGeneralErrorCode, 'problematic input: ' . $name);
           return;
+        }
+      }
+      
+      // hard constraint. If it is mapped to a dataset, the dataset should be active. TODO: review conditions
+      if ($name == 'source_data' /*|| (trim($constraints['select']) == 'did' && trim($constraints['from'] == 'dataset'))*/) {
+        $status_record = $this->Dataset_status->getWhereSingle('did = ' . $input_value, '`status` DESC');
+        if (!$status_record || $status_record->status != 'active') {
+          $this->returnError(623, $this->version, $this->openmlGeneralErrorCode, 'problematic input: ' . $name);
         }
       }
       
