@@ -51,7 +51,7 @@ $config['xml_fields_features'] = array(
     'ClassDistribution'
   ),
   'csv' => array(
-    'nominal_values'
+    'nominal_value'
   ),
   'array'   => array(),
   'plain'   => array()
