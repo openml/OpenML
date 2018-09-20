@@ -706,8 +706,6 @@ class Api_data extends MY_Api_Model {
         }
       }
       
-      // check the nominal value property
-      
       if (in_array('nominal_value', $feature)) {
         
         if ($feature['data_type'] != 'nominal') {
@@ -717,7 +715,21 @@ class Api_data extends MY_Api_Model {
           return;
         }
         
-        $feature['nominal_value'] = json_decode($feature['nominal_value']);
+        // check the nominal value property
+        foreach ($feature['nominal_value'] as $value) {
+          $data = array(
+            'did' => $did, 
+            'index' => $feature->index,
+            'value' => $value
+          );
+          $result = $this->Data_feature_value->insert($feature);
+          if (!$result) {
+            $this->db->trans_rollback();
+            $this->returnError(446, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature['name'] . ', value: ' . $value);
+            return;
+          }
+        }
+        
         
       } elseif ($feature['data_type'] == 'nominal' && !$data_processed_record->error) {
         // required for nominal values.. missing so throw error
