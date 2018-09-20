@@ -572,11 +572,13 @@ class Api_data extends MY_Api_Model {
     $dataset->features = $this->Data_feature->getWhere('did = "' . $dataset->did . '"');
     $dataset->features_values = $this->Data_feature_value->getWhere('did = "' . $dataset->did . '"');
     $index_values = array();
-    foreach($dataset->features_values as $val) {
-      if (!array_key_exists($index_values, $val->index)) {
-        $index_values[$val->index] = array();
+    if ($dataset->features_values) {
+      foreach($dataset->features_values as $val) {
+        if (!array_key_exists($index_values, $val->index)) {
+          $index_values[$val->index] = array();
+        }
+        $index_values[$val->index] = $val->value;
       }
-      $index_values[$val->index] = $val->value;
     }
     $dataset->index_values = $index_values;
     
