@@ -722,7 +722,7 @@ class Api_data extends MY_Api_Model {
             'index' => $feature['index'],
             'value' => $value
           );
-          $result = $this->Data_feature_value->insert($feature);
+          $result = $this->Data_feature_value->insert($data);
           if (!$result) {
             $this->db->trans_rollback();
             $this->returnError(446, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature['name'] . ', value: ' . $value);
