@@ -706,7 +706,7 @@ class Api_data extends MY_Api_Model {
         }
       }
       
-      if (in_array('nominal_value', $feature)) {
+      if (array_key_exists('nominal_value', $feature)) {
         
         if ($feature['data_type'] != 'nominal') {
           // only allowed for nominal values
