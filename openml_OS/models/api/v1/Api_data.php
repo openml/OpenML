@@ -679,7 +679,7 @@ class Api_data extends MY_Api_Model {
     foreach($xml->children('oml', true)->{'feature'} as $feature_xml) {
       $feature = all_tags_from_xml(
         $feature_xml->children('oml', true),
-        $this->xml_fields_feature, array());
+        $this->xml_fields_features, array());
       $feature['did'] = $did;
       $feature['evaluation_engine_id'] = $eval_id;
 
