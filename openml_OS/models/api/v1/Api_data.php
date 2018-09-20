@@ -701,7 +701,7 @@ class Api_data extends MY_Api_Model {
         json_decode($feature['ClassDistribution']);
         if (json_last_error()) {
           $this->db->trans_rollback();
-          $this->returnError(437, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature->name);
+          $this->returnError(437, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature['name']);
           return;
         }
       }
@@ -713,7 +713,7 @@ class Api_data extends MY_Api_Model {
         if ($feature['data_type'] != 'nominal') {
           // only allowed for nominal values
           $this->db->trans_rollback();
-          $this->returnError(439, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature->name);
+          $this->returnError(439, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature['name']);
           return;
         }
         
@@ -722,7 +722,7 @@ class Api_data extends MY_Api_Model {
       } elseif ($feature['data_type'] == 'nominal' && !$data_processed_record->error) {
         // required for nominal values.. missing so throw error
         $this->db->trans_rollback();
-        $this->returnError(438, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature->name);
+        $this->returnError(438, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature['name']);
         return;
       }
 
