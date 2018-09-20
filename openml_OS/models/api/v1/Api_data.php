@@ -134,7 +134,7 @@ class Api_data extends MY_Api_Model {
   }
 
   private function data_list($segs) {
-    $legal_filters = array('tag', 'status', 'limit', 'offset', 'data_name', 'data_version', 'number_instances', 'number_features', 'number_classes', 'number_missing_values');
+    $legal_filters = array('tag', 'status', 'limit', 'offset', 'data_id', 'data_name', 'data_version', 'number_instances', 'number_features', 'number_classes', 'number_missing_values');
     
     list($query_string, $illegal_filters) = $this->parse_filters($segs, $legal_filters);
     if (count($illegal_filters) > 0) {
@@ -150,6 +150,7 @@ class Api_data extends MY_Api_Model {
     
     $tag = element('tag', $query_string, null);
     $name = element('data_name', $query_string, null);
+    $data_id = element('data_id', $query_string, null);
     $version = element('data_version', $query_string, null);
     $status = element('status', $query_string, null);
     $limit = element('limit', $query_string, null);
@@ -165,6 +166,7 @@ class Api_data extends MY_Api_Model {
     }
 
     $where_tag = $tag === null ? '' : ' AND `d`.`did` IN (select id from dataset_tag where tag="' . $tag . '") ';
+    $where_did = $data_id === null ? '' : ' AND `d`.`did` IN ('. $data_id . ') ';
     $where_name = $name === null ? '' : ' AND `name` = "' . $name . '"';
     $where_version = $version === null ? '' : ' AND `version` = "' . $version . '" ';
     $where_insts = $nr_insts === null ? '' : ' AND `d`.`did` IN (select data from data_quality dq where quality="NumberOfInstances" and value ' . (strpos($nr_insts, '..') !== false ? 'BETWEEN ' . str_replace('..',' AND ',$nr_insts) : '= '. $nr_insts) . ') ';
@@ -174,7 +176,7 @@ class Api_data extends MY_Api_Model {
     // by default, only return active datasets
     $status_sql_variable = 'IFNULL(`s`.`status`, \'' . $this->config->item('default_dataset_status') . '\')';
     $where_status = $status === null ? ' AND ' . $status_sql_variable . ' = "active" ' : ($status != "all" ? ' AND ' . $status_sql_variable . ' = "'. $status . '" ' : '');
-    $where_total = $where_tag . $where_name . $where_version . $where_insts . $where_feats . $where_class . $where_miss . $where_status;
+    $where_total = $where_tag . $where_did . $where_name . $where_version . $where_insts . $where_feats . $where_class . $where_miss . $where_status;
     
     $where_limit = $limit === null ? '' : ' LIMIT ' . $limit;
     if($limit && $offset){
