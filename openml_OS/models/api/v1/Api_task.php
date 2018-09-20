@@ -105,7 +105,7 @@ class Api_task extends MY_Api_Model {
     $where_tag = $tag === null ? '' : ' AND `t`.`task_id` IN (select id from task_tag where tag="' . $tag . '") ';
     $where_data_tag = $data_tag === null ? '' : ' AND `d`.`did` IN (select id from dataset_tag where tag="' . $data_tag . '") ';
     $where_did = $data_id === null ? '' : ' AND `d`.`did` IN ('. $data_id . ') ';
-    $where_tid = $task_id === null ? '' : ' AND `t`.`task_id` IN ('. $task_id . ') ';
+    $where_task_id = $task_id === null ? '' : ' AND `t`.`task_id` IN ('. $task_id . ') ';
     $where_data_name = $data_name === null ? '' : ' AND `d`.`name` = "'. $data_name . '"';
     $where_insts = $nr_insts === null ? '' : ' AND `d`.`did` IN (select data from data_quality dq where quality="NumberOfInstances" and value ' . (strpos($nr_insts, '..') !== false ? 'BETWEEN ' . str_replace('..',' AND ',$nr_insts) : '= '. $nr_insts) . ') ';
     $where_feats = $nr_feats === null ? '' : ' AND `d`.`did` IN (select data from data_quality dq where quality="NumberOfFeatures" and value ' . (strpos($nr_feats, '..') !== false ? 'BETWEEN ' . str_replace('..',' AND ',$nr_feats) : '= '. $nr_feats) . ') ';
