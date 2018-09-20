@@ -727,7 +727,12 @@ class Api_data extends MY_Api_Model {
       }
 
       //actual insert
-      $this->Data_feature->insert($feature);
+      $result = $this->Data_feature->insert($feature);
+      if (!$result) {
+        $this->db->trans_rollback();
+        $this->returnError(446, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature['name']);
+        return;
+      }
 
       // NOTE: this is commented out because not all datasets have targets, or they can have multiple ones. Targets should also be set more carefully.
       // if no specified attribute is the target, select the last one:
