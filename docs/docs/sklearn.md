@@ -5,7 +5,7 @@ OpenML is readily integrated with scikit-learn through the [Python API](Python-g
 !!! example
     ```python
     from sklearn import ensemble
-    from openml import tasks, flows, Runs
+    from openml import tasks, flows, runs
 
     task = tasks.get_task(3954)
     clf = ensemble.RandomForestClassifier()
