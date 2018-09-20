@@ -577,7 +577,7 @@ class Api_data extends MY_Api_Model {
         if (!array_key_exists($val->index, $index_values)) {
           $index_values[$val->index] = array();
         }
-        $index_values[$val->index] = $val->value;
+        $index_values[$val->index][] = $val->value;
       }
     }
     $dataset->index_values = $index_values;
