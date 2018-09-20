@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Sep 17, 2018 at 10:27 AM
+-- Generation Time: Sep 20, 2018 at 04:58 PM
 -- Server version: 5.7.20
 -- PHP Version: 5.5.38
 
@@ -170,7 +170,6 @@ CREATE TABLE `data_feature` (
   `evaluation_engine_id` int(16) NOT NULL,
   `name` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `data_type` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
-  `nominal_values` mediumtext COLLATE utf8_unicode_ci,
   `is_target` enum('true','false') CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT 'false',
   `is_row_identifier` enum('true','false') CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT 'false',
   `is_ignore` enum('true','false') CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT 'false',
@@ -181,10 +180,10 @@ CREATE TABLE `data_feature` (
   `NumberOfRealValues` int(11) DEFAULT NULL,
   `NumberOfNominalValues` varchar(512) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `NumberOfValues` int(11) NOT NULL,
-  `MaximumValue` int(11) NOT NULL,
-  `MinimumValue` int(11) NOT NULL,
-  `MeanValue` int(11) NOT NULL,
-  `StandardDeviation` int(11) NOT NULL,
+  `MaximumValue` int(11) DEFAULT NULL,
+  `MinimumValue` int(11) DEFAULT NULL,
+  `MeanValue` int(11) DEFAULT NULL,
+  `StandardDeviation` int(11) DEFAULT NULL,
   `ClassDistribution` text CHARACTER SET utf8 COLLATE utf8_bin
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -1467,13 +1466,13 @@ ALTER TABLE `study_tag`
 --
 ALTER TABLE `task_tag`
   ADD CONSTRAINT `fk_task_tag` FOREIGN KEY (`id`) REFERENCES `task` (`task_id`) ON DELETE CASCADE;
-COMMIT;
 
 --
 -- Constraints for table `trace`
--- 
-ALTER TABLE `trace` 
-  ADD  CONSTRAINT `fk_trace` FOREIGN KEY (`run_id`, `evaluation_engine_id`) REFERENCES `run_evaluated`(`run_id`, `evaluation_engine_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+--
+ALTER TABLE `trace`
+  ADD CONSTRAINT `fk_trace` FOREIGN KEY (`run_id`,`evaluation_engine_id`) REFERENCES `run_evaluated` (`run_id`, `evaluation_engine_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
