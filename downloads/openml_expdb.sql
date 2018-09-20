@@ -191,6 +191,18 @@ CREATE TABLE `data_feature` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `data_feature_value`
+--
+
+CREATE TABLE `data_feature_value` (
+  `did` int(10) UNSIGNED NOT NULL,
+  `index` int(10) UNSIGNED NOT NULL,
+  `value` varchar(256) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `data_processed`
 --
 
@@ -882,6 +894,12 @@ ALTER TABLE `data_feature`
   ADD KEY `did` (`did`,`evaluation_engine_id`);
 
 --
+-- Indexes for table `data_feature_value`
+--
+ALTER TABLE `data_feature_value`
+  ADD KEY `did` (`did`,`index`);
+
+--
 -- Indexes for table `data_processed`
 --
 ALTER TABLE `data_processed`
@@ -1312,6 +1330,12 @@ ALTER TABLE `data_feature`
   ADD CONSTRAINT `data_feature_ibfk_1` FOREIGN KEY (`did`) REFERENCES `dataset` (`did`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `data_feature_ibfk_2` FOREIGN KEY (`evaluation_engine_id`) REFERENCES `evaluation_engine` (`id`) ON UPDATE CASCADE,
   ADD CONSTRAINT `data_feature_ibfk_3` FOREIGN KEY (`did`,`evaluation_engine_id`) REFERENCES `data_processed` (`did`, `evaluation_engine_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `data_feature_value`
+--
+ALTER TABLE `data_feature_value`
+  ADD CONSTRAINT `data_feature_value_ibfk_1` FOREIGN KEY (`did`,`index`) REFERENCES `data_feature` (`did`, `index`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `data_processed`

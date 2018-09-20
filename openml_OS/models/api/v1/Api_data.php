@@ -12,6 +12,7 @@ class Api_data extends MY_Api_Model {
     $this->load->model('Dataset_status');
     $this->load->model('Dataset_tag');
     $this->load->model('Data_feature');
+    $this->load->model('Data_feature_value');
     $this->load->model('Data_quality');
     $this->load->model('Feature_quality');
     $this->load->model('Data_quality_interval');
@@ -569,6 +570,15 @@ class Api_data extends MY_Api_Model {
     }
 
     $dataset->features = $this->Data_feature->getWhere('did = "' . $dataset->did . '"');
+    $dataset->features_values = $this->Data_feature_value->getWhere('did = "' . $dataset->did . '"');
+    $index_values = array();
+    foreach($dataset->features_values as $val) {
+      if (!array_key_exists($index_values, $val->index)) {
+        $index_values[$val->index] = array();
+      }
+      $index_values[$val->index] = $val->value;
+    }
+    $dataset->index_values = $index_values;
     
     if ($data_processed->error && $dataset->features === false) {
       $this->returnError(274, $this->version);
@@ -599,7 +609,7 @@ class Api_data extends MY_Api_Model {
 
     // get correct description
     if (isset($_FILES['description']) == false || check_uploaded_file($_FILES['description']) == false) {
-      $this->returnError( 432, $this->version );
+      $this->returnError(432, $this->version);
       return;
     }
 

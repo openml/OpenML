@@ -31,6 +31,32 @@ $config['xml_fields_dataset'] = array(
   'plain'   => array()
 );
 
+$config['xml_fields_features'] = array(
+  'string' => array(
+    'index',
+    'name',
+    'data_type',
+    'is_target',
+    'NumberOfDistinctValues',
+    'NumberOfUniqueValues',
+    'NumberOfMissingValues',
+    'NumberOfIntegerValues',
+    'NumberOfRealValues',
+    'NumberOfNominalValues',
+    'NumberOfValues',
+    'MaximumValue',
+    'MinimumValue',
+    'MeanValue',
+    'StandardDeviation',
+    'ClassDistribution'
+  ),
+  'csv' => array(
+    'nominal_values'
+  ),
+  'array'   => array(),
+  'plain'   => array()
+);
+
 $config['xml_fields_implementation'] = array(
   'string'  => array(
 	  0 => 'name',
