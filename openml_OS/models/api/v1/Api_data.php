@@ -706,22 +706,7 @@ class Api_data extends MY_Api_Model {
         }
       }
       
-      if (array_key_exists('nominal_value', $feature)) {
-        
-        if ($feature['data_type'] != 'nominal') {
-          // only allowed for nominal values
-          $this->db->trans_rollback();
-          $this->returnError(439, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature['name']);
-          return;
-        }
-      } elseif ($feature['data_type'] == 'nominal') {
-        // required for nominal values.. missing so throw error
-        $this->db->trans_rollback();
-        $this->returnError(438, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature['name']);
-        return;
-      }
-
-      //actual insert
+      //actual insert of the feature
       $nominal_values = $feature['nominal_value'];
       unset($feature['nominal_value']);
       $result = $this->Data_feature->insert($feature);
@@ -731,8 +716,8 @@ class Api_data extends MY_Api_Model {
         return;
       }
       
-        // check the nominal value property
       if (array_key_exists('nominal_value', $feature)) {
+        // check the nominal value property
         foreach ($feature['nominal_value'] as $value) {
           $data = array(
             'did' => $did, 
@@ -746,6 +731,18 @@ class Api_data extends MY_Api_Model {
             return;
           }
         }
+        
+        if ($feature['data_type'] != 'nominal') {
+          // only allowed for nominal values
+          $this->db->trans_rollback();
+          $this->returnError(439, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature['name']);
+          return;
+        }
+      } elseif ($feature['data_type'] == 'nominal') {
+        // required for nominal values.. missing so throw error
+        $this->db->trans_rollback();
+        $this->returnError(438, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature['name']);
+        return;
       }
 
       // NOTE: this is commented out because not all datasets have targets, or they can have multiple ones. Targets should also be set more carefully.
