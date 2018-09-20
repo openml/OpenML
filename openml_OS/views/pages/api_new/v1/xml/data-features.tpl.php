@@ -4,7 +4,7 @@
     <oml:index><?php echo $feature->index; ?></oml:index>
     <oml:name><?php echo htmlspecialchars($feature->name); ?></oml:name>
     <oml:data_type><?php echo $feature->data_type; ?></oml:data_type>
-    <?php if (array_has_key($feature->index, $index_values)): foreach($index_values[$feature->index] as $value): ?>
+    <?php if (array_key_exists($feature->index, $index_values)): foreach($index_values[$feature->index] as $value): ?>
       <oml:nominal_value><?php echo htmlspecialchars($value); ?></oml:nominal_value>
     <?php endforeach; endif; ?>
     <oml:is_target><?php echo $feature->is_target; ?></oml:is_target>
