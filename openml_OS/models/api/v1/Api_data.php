@@ -707,8 +707,13 @@ class Api_data extends MY_Api_Model {
       }
       
       //actual insert of the feature
-      $nominal_values = $feature['nominal_value'];
-      unset($feature['nominal_value']);
+      if (array_key_exists('nominal_value', $feature)) {
+        $nominal_values = $feature['nominal_value'];
+        unset($feature['nominal_value']);
+      } else {
+        $nominal_values = false;
+      }
+      
       $result = $this->Data_feature->insert($feature);
       if (!$result) {
         $this->db->trans_rollback();
@@ -716,9 +721,9 @@ class Api_data extends MY_Api_Model {
         return;
       }
       
-      if (array_key_exists('nominal_value', $feature)) {
+      if ($nominal_values) {
         // check the nominal value property
-        foreach ($feature['nominal_value'] as $value) {
+        foreach ($nominal_values as $value) {
           $data = array(
             'did' => $did, 
             'index' => $feature['index'],
