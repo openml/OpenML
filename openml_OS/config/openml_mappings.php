@@ -50,10 +50,8 @@ $config['xml_fields_features'] = array(
     'StandardDeviation',
     'ClassDistribution'
   ),
-  'csv' => array(
-    'nominal_value'
-  ),
-  'array'   => array(),
+  'csv' => array(),
+  'array'   => array('nominal_value'),
   'plain'   => array()
 );
 
