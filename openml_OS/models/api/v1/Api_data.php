@@ -727,6 +727,7 @@ class Api_data extends MY_Api_Model {
       }
 
       //actual insert
+      unset($feature['nominal_value']);
       $result = $this->Data_feature->insert($feature);
       if (!$result) {
         $this->db->trans_rollback();
