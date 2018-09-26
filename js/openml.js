@@ -268,7 +268,7 @@ $(function() {
     is_loading = 1; // note: this will break when the server doesn't respond
     function showFollowing(data) {
       next_data_cache = false;
-      if(!$(data).find("#itempage").is(':empty') && $(data).find("#itempage")[0].childElementCount > 0) {
+      if(!$(data).find("#itempage").is(':empty') && $(data).find("#itempage").length != 0 && $(data).find("#itempage")[0].childElementCount > 0) {
         $(data).find("#itempage").appendTo("#scrollingcontent");
         next_data_url = $(data).find("#itempage").attr("data-next-url");
         if(next_data_url)
