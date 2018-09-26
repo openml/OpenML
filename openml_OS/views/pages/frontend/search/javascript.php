@@ -38,7 +38,7 @@ function updateQuery(type)
 }
 
 function submitSearch() {
-  var omlq = $('#openmlsearch').val().replace('>','gt;').replace('<','lt;');
+  var omlq = $('#openmlsearch').val().replace(/>/g,'gt;').replace(/</g,'lt;');
   $('#openmlsearch').val(encodeURI(omlq));
   $('#searchform').submit();
 }
