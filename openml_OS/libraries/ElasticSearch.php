@@ -1043,7 +1043,7 @@ class ElasticSearch {
             foreach ($tasks as $v) {
               $index[$v->task_id]['task_id'] = $v->task_id;
               $index[$v->task_id]['visibility'] = ((strtotime($v->embargo_end_date) < time()) ? 'public' : 'private');
-              $index[$v->task_id]['tasktype']['name'] = $v->name;
+              $index[$v->task_id]['tasktype']['name'] = $v->ttname;
               $index[$v->task_id]['source_data']['data_id'] = $v->did;
               $index[$v->task_id]['source_data']['name'] = $v->dname;
               $index[$v->task_id]['estimation_procedure']['name'] = $v->epname;
