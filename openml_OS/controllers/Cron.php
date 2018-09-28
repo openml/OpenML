@@ -18,6 +18,7 @@ class Cron extends CI_Controller {
     $this->load->helper('file_upload');
     $this->load->helper('text');
     $this->load->helper('directory');
+    $this->load->helper('arff');
 
     $this->load->library('email');
     $this->email->from( EMAIL_FROM, 'The OpenML Team');
