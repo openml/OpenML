@@ -89,6 +89,30 @@ class Cron extends CI_Controller {
       $this->indexfrom($index, 1);
     }
   }
+  
+  public function arff_parses($file_id) {
+    $file = $this->File->getById($file_id);
+    if ($file === false) {
+      die('File does not exists.');
+    }
+    
+    $ext = strtolower($file->extension);
+    if ($ext != 'arff' && $ext != 'sparse_arff') {
+      die('File does not have an arff extension.');
+    }
+    
+    if ($file->type == 'url') {
+      $result = ARFFcheck($file->location, 100);
+    else {
+      $result = ARFFcheck(DATA_PATH . $file->location, 100);
+    }
+    
+    if ($result === TRUE) {
+      die('Valid arff. ');
+    } else {
+      die($result);
+    }
+  }
 
   function install_database() {
     // note that this one does not come from DATA folder, as they are stored in github
