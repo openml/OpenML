@@ -103,7 +103,7 @@ class Cron extends CI_Controller {
     
     if ($file->type == 'url') {
       $result = ARFFcheck($file->location, 100);
-    else {
+    } else {
       $result = ARFFcheck(DATA_PATH . $file->location, 100);
     }
     
