@@ -18,6 +18,7 @@ class Cron extends CI_Controller {
     $this->load->helper('file_upload');
     $this->load->helper('text');
     $this->load->helper('directory');
+    $this->load->helper('arff');
 
     $this->load->library('email');
     $this->email->from( EMAIL_FROM, 'The OpenML Team');
@@ -87,6 +88,30 @@ class Cron extends CI_Controller {
   public function build_es_indices() {
     foreach($this->es_indices as $index) {
       $this->indexfrom($index, 1);
+    }
+  }
+  
+  public function arff_parses($file_id) {
+    $file = $this->File->getById($file_id);
+    if ($file === false) {
+      die('File does not exists.');
+    }
+    
+    $ext = strtolower($file->extension);
+    if ($ext != 'arff' && $ext != 'sparse_arff') {
+      die('File does not have an arff extension.');
+    }
+    
+    if ($file->type == 'url') {
+      $result = ARFFcheck($file->filepath, 100);
+    } else {
+      $result = ARFFcheck(DATA_PATH . $file->filepath, 100);
+    }
+    
+    if ($result === TRUE) {
+      die('Valid arff. ');
+    } else {
+      die($result);
     }
   }
 

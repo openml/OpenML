@@ -1032,30 +1032,33 @@ class ElasticSearch {
 
     private function fetch_tasks($id = false) {
         $index = array();
-        $tasks = $this->db->query("SELECT t.task_id, t.embargo_end_date, tt.name, i.value AS did, d.name AS dname, ep.name AS epname FROM task_inputs i, task_inputs i2, estimation_procedure ep,
+        $tasks = $this->db->query("SELECT t.task_id, t.embargo_end_date, tt.name as ttname, i.value AS did, d.name AS dname, ep.name AS epname FROM task_inputs i, task_inputs i2, estimation_procedure ep,
           task t, task_type tt, dataset d WHERE t.task_id = i.task_id AND t.task_id = i2.task_id AND i.input = 'source_data' AND i2.input = 'estimation_procedure' AND
           t.ttid = tt.ttid AND d.did = i.value AND ep.id = i2.value" . ($id ? ' and t.task_id=' . $id : ''));
         if ($tasks){
             if($id)
-              $targets = $this->fetch_targets($tasks[0]->did);
+              $targets = $this->fetch_classes($tasks[0]->did);
             else
-              $targets = $this->fetch_targets();
+              $targets = $this->fetch_classes();
             foreach ($tasks as $v) {
-              if(array_key_exists($v->did,$targets)){ //check whether the task is valid (uses an existing dataset)
-                $index[$v->task_id]['task_id'] = $v->task_id;
-                $index[$v->task_id]['visibility'] = ((strtotime($v->embargo_end_date) < time()) ? 'public' : 'private');
-                $index[$v->task_id]['tasktype']['name'] = $v->name;
-                $index[$v->task_id]['source_data']['data_id'] = $v->did;
-                $index[$v->task_id]['source_data']['name'] = $v->dname;
-                $index[$v->task_id]['estimation_procedure']['name'] = $v->epname;
-                $index[$v->task_id]['target_values'] = $targets[$v->did]['target_values'];
+              $index[$v->task_id]['task_id'] = $v->task_id;
+              $index[$v->task_id]['visibility'] = ((strtotime($v->embargo_end_date) < time()) ? 'public' : 'private');
+              $index[$v->task_id]['tasktype']['name'] = $v->ttname;
+              $index[$v->task_id]['source_data']['data_id'] = $v->did;
+              $index[$v->task_id]['source_data']['name'] = $v->dname;
+              $index[$v->task_id]['estimation_procedure']['name'] = $v->epname;
+
+              if($v->ttname == "Supervised Classification"){
+                if(array_key_exists($v->did,$targets)){ //check whether the task is valid (uses an existing dataset)
+                  $index[$v->task_id]['target_values'] = $targets[$v->did]['target_values'];
+                }
               }
             }
           }
         return $index;
     }
 
-    private function fetch_targets($id = false) {
+    private function fetch_classes($id = false) {
         $index = array();
         $data = $this->db->query("SELECT did, data_type, ClassDistribution FROM data_feature WHERE is_target='true'" . ($id ? ' and did=' . $id : ''));
         if ($data)
