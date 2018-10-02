@@ -12,6 +12,7 @@ class Api_data extends MY_Api_Model {
     $this->load->model('Dataset_status');
     $this->load->model('Dataset_tag');
     $this->load->model('Data_feature');
+    $this->load->model('Data_feature_value');
     $this->load->model('Data_quality');
     $this->load->model('Feature_quality');
     $this->load->model('Data_quality_interval');
@@ -569,6 +570,17 @@ class Api_data extends MY_Api_Model {
     }
 
     $dataset->features = $this->Data_feature->getWhere('did = "' . $dataset->did . '"');
+    $dataset->features_values = $this->Data_feature_value->getWhere('did = "' . $dataset->did . '"');
+    $index_values = array();
+    if ($dataset->features_values) {
+      foreach($dataset->features_values as $val) {
+        if (!array_key_exists($val->index, $index_values)) {
+          $index_values[$val->index] = array();
+        }
+        $index_values[$val->index][] = $val->value;
+      }
+    }
+    $dataset->index_values = $index_values;
     
     if ($data_processed->error && $dataset->features === false) {
       $this->returnError(274, $this->version);
@@ -599,7 +611,7 @@ class Api_data extends MY_Api_Model {
 
     // get correct description
     if (isset($_FILES['description']) == false || check_uploaded_file($_FILES['description']) == false) {
-      $this->returnError( 432, $this->version );
+      $this->returnError(432, $this->version);
       return;
     }
 
@@ -642,7 +654,7 @@ class Api_data extends MY_Api_Model {
                   'user_id' => $this->user_id,
                   'processing_date' => now(), 
                   'num_tries' => $num_tries + 1);
-    if($xml->children('oml', true)->{'error'}) {
+    if ($xml->children('oml', true)->{'error'}) {
       $data['error'] = htmlentities($xml->children('oml', true)->{'error'});
     }
 
@@ -664,60 +676,79 @@ class Api_data extends MY_Api_Model {
       $ignores = array();
     }
 
-    foreach($xml->children('oml', true)->{'feature'} as $q) {
-      $feature = xml2object($q, true);
-      $feature->did = $did;
-      $feature->evaluation_engine_id = $eval_id;
+    foreach($xml->children('oml', true)->{'feature'} as $feature_xml) {
+      $feature = all_tags_from_xml(
+        $feature_xml->children('oml', true),
+        $this->xml_fields_features, array());
+      $feature['did'] = $did;
+      $feature['evaluation_engine_id'] = $eval_id;
 
       // add special features
-      if(in_array($feature->name,$targets)) {
-        $feature->is_target = 'true';
+      if (in_array($feature['name'], $targets)) {
+        $feature['is_target'] = 'true';
       } else { //this is needed because the Java feature extractor still chooses a target when there isn't any
-        $feature->is_target = 'false';
+        $feature['is_target'] = 'false';
       }
-      if(in_array($feature->name,$rowids)) {
-        $feature->is_row_identifier = 'true';
+      if (in_array($feature['name'], $rowids)) {
+        $feature['is_row_identifier'] = 'true';
       }
-      if(in_array($feature->name,$ignores)) {
-        $feature->is_ignore = 'true';
+      if (in_array($feature['name'], $ignores)) {
+        $feature['is_ignore'] = 'true';
       }
       
-      if (property_exists($feature, 'ClassDistribution')) {
+      if (in_array('ClassDistribution', $feature)) {
         // check class distributions field
-        json_decode($feature->ClassDistribution);
+        json_decode($feature['ClassDistribution']);
         if (json_last_error()) {
           $this->db->trans_rollback();
-          $this->returnError(437, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature->name);
+          $this->returnError(437, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature['name']);
           return;
         }
       }
       
-      // check the nominal value property
-      if (property_exists($feature, 'nominal_values')) {
-        
-        if ($feature->data_type != 'nominal') {
-          // only allowed for nominal values
-          $this->db->trans_rollback();
-          $this->returnError(439, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature->name);
-          return;
-        }
-        
-        // check if json is valid, throw error otherwise
-        json_decode($feature->nominal_values);
-        if (json_last_error()) {
-          $this->db->trans_rollback();
-          $this->returnError(438, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature->name);
-          return;
-        }
-      } elseif ($feature->data_type == 'nominal' && !$data_processed_record->error) {
-        // required for nominal values.. missing so throw error
+      //actual insert of the feature
+      if (array_key_exists('nominal_value', $feature)) {
+        $nominal_values = $feature['nominal_value'];
+        unset($feature['nominal_value']);
+      } else {
+        $nominal_values = false;
+      }
+      
+      $result = $this->Data_feature->insert($feature);
+      if (!$result) {
         $this->db->trans_rollback();
-        $this->returnError(438, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature->name);
+        $this->returnError(446, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature['name']);
         return;
       }
-
-      //actual insert
-      $this->Data_feature->insert($feature);
+      
+      if ($nominal_values) {
+        // check the nominal value property
+        foreach ($nominal_values as $value) {
+          $data = array(
+            'did' => $did, 
+            'index' => $feature['index'],
+            'value' => $value
+          );
+          $result = $this->Data_feature_value->insert($data);
+          if (!$result) {
+            $this->db->trans_rollback();
+            $this->returnError(446, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature['name'] . ', value: ' . $value);
+            return;
+          }
+        }
+        
+        if ($feature['data_type'] != 'nominal') {
+          // only allowed for nominal values
+          $this->db->trans_rollback();
+          $this->returnError(439, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature['name']);
+          return;
+        }
+      } elseif ($feature['data_type'] == 'nominal') {
+        // required for nominal values.. missing so throw error
+        $this->db->trans_rollback();
+        $this->returnError(438, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature['name']);
+        return;
+      }
 
       // NOTE: this is commented out because not all datasets have targets, or they can have multiple ones. Targets should also be set more carefully.
       // if no specified attribute is the target, select the last one:

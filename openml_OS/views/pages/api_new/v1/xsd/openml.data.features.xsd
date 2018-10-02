@@ -13,7 +13,7 @@
       <xs:element name="index" type="xs:integer"/>
       <xs:element name="name" type="oml:basic_latin64"/> <!-- The name of the quality that is set -->
       <xs:element name="data_type" type="oml:basic_latin64"/> <!-- The value of the quality --> 
-      <xs:element minOccurs="0" name="nominal_values" type="oml:basic_latin524288"/>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="nominal_value" type="oml:basic_latin256"/>
       <xs:element minOccurs="0" name="is_target" type="xs:boolean"/>
       <xs:element minOccurs="0" name="is_ignore" type="xs:boolean"/>
       <xs:element minOccurs="0" name="is_row_identifier" type="xs:boolean"/>
@@ -38,6 +38,13 @@
       <xs:minLength value="1" />
     </xs:restriction>
   </xs:simpleType>
+  <xs:simpleType name="basic_latin256">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="\p{IsBasicLatin}*"/>
+      <xs:maxLength value="256" />
+      <xs:minLength value="1" />
+    </xs:restriction>
+  </xs:simpleType>
   <xs:simpleType name="basic_latin1024">
     <xs:restriction base="xs:string">
       <xs:pattern value="\p{IsBasicLatin}*"/>
@@ -49,13 +56,6 @@
     <xs:restriction base="xs:string">
       <xs:pattern value="\p{IsBasicLatin}*"/>
       <xs:maxLength value="16384" />
-      <xs:minLength value="1" />
-    </xs:restriction>
-  </xs:simpleType>
-  <xs:simpleType name="basic_latin524288">
-    <xs:restriction base="xs:string">
-      <xs:pattern value="\p{IsBasicLatin}*"/>
-      <xs:maxLength value="524288" />
       <xs:minLength value="1" />
     </xs:restriction>
   </xs:simpleType>

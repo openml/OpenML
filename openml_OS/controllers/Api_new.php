@@ -58,6 +58,7 @@ class Api_new extends CI_Controller {
 
     // XML maintainance
     $this->xml_fields_dataset = $this->config->item('xml_fields_dataset');
+    $this->xml_fields_features = $this->config->item('xml_fields_features');
     $this->xml_fields_dataset_update = $this->config->item('xml_fields_dataset_update');
     $this->xml_fields_implementation = $this->config->item('xml_fields_implementation');
     $this->xml_fields_run = $this->config->item('xml_fields_run');

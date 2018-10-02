@@ -217,12 +217,16 @@ $this->apiErrors[434] = 'Could not find dataset';
 $this->apiErrors[435] = 'Feature upload failed';
 $this->apiErrors[436] = 'Something wrong with XML, check did and evaluation engine id';
 $this->apiErrors[437] = 'Class Distribution not valid json';
-$this->apiErrors[438] = 'Nominal feature is not accompanied with valid json (this can only be tolerated if an error message is also registered)';
-$this->apiErrors[439] = 'Non-Nominal feature obtained json string';
+$this->apiErrors[438] = 'Nominal feature is not accompanied with values';
+$this->apiErrors[439] = 'Non-Nominal feature obtained values';
+
+$this->apiErrors[446] = 'Database insert failed';
 
 // for function: openml.estimationprocedure.get
 $this->apiErrors[440] = 'Please provide estimationprocedure_id';
 $this->apiErrors[441] = 'estimationprocedure_id not valid';
+
+// 446 - 449 is for feature upload
 
 // for function: openml.task.delete
 $this->apiErrors[450] = 'Please provide API key';
