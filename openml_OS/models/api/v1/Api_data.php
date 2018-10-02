@@ -120,6 +120,11 @@ class Api_data extends MY_Api_Model {
       return;
     }
 
+    if (count($segments) == 2 && $segments[0] == 'status' && $segments[1] == 'update') {
+      $this->status_update($this->input->post('data_id'), $this->input->post('status'));
+      return;
+    }
+
     if (count($segments) == 1 && $segments[0] == 'untag' && $request_type == 'post') {
       $this->entity_tag_untag('dataset', $this->input->post('data_id'), $this->input->post('tag'), true, 'data');
       return;
@@ -129,7 +134,7 @@ class Api_data extends MY_Api_Model {
   }
 
   private function data_list($segs) {
-    $legal_filters = array('tag', 'status', 'limit', 'offset', 'data_name', 'data_version', 'number_instances', 'number_features', 'number_classes', 'number_missing_values');
+    $legal_filters = array('tag', 'status', 'limit', 'offset', 'data_id', 'data_name', 'data_version', 'number_instances', 'number_features', 'number_classes', 'number_missing_values');
     
     list($query_string, $illegal_filters) = $this->parse_filters($segs, $legal_filters);
     if (count($illegal_filters) > 0) {
@@ -145,6 +150,7 @@ class Api_data extends MY_Api_Model {
     
     $tag = element('tag', $query_string, null);
     $name = element('data_name', $query_string, null);
+    $data_id = element('data_id', $query_string, null);
     $version = element('data_version', $query_string, null);
     $status = element('status', $query_string, null);
     $limit = element('limit', $query_string, null);
@@ -160,6 +166,7 @@ class Api_data extends MY_Api_Model {
     }
 
     $where_tag = $tag === null ? '' : ' AND `d`.`did` IN (select id from dataset_tag where tag="' . $tag . '") ';
+    $where_did = $data_id === null ? '' : ' AND `d`.`did` IN ('. $data_id . ') ';
     $where_name = $name === null ? '' : ' AND `name` = "' . $name . '"';
     $where_version = $version === null ? '' : ' AND `version` = "' . $version . '" ';
     $where_insts = $nr_insts === null ? '' : ' AND `d`.`did` IN (select data from data_quality dq where quality="NumberOfInstances" and value ' . (strpos($nr_insts, '..') !== false ? 'BETWEEN ' . str_replace('..',' AND ',$nr_insts) : '= '. $nr_insts) . ') ';
@@ -169,7 +176,7 @@ class Api_data extends MY_Api_Model {
     // by default, only return active datasets
     $status_sql_variable = 'IFNULL(`s`.`status`, \'' . $this->config->item('default_dataset_status') . '\')';
     $where_status = $status === null ? ' AND ' . $status_sql_variable . ' = "active" ' : ($status != "all" ? ' AND ' . $status_sql_variable . ' = "'. $status . '" ' : '');
-    $where_total = $where_tag . $where_name . $where_version . $where_insts . $where_feats . $where_class . $where_miss . $where_status;
+    $where_total = $where_tag . $where_did . $where_name . $where_version . $where_insts . $where_feats . $where_class . $where_miss . $where_status;
     
     $where_limit = $limit === null ? '' : ' LIMIT ' . $limit;
     if($limit && $offset){
@@ -475,7 +482,68 @@ class Api_data extends MY_Api_Model {
     // create
     $this->xmlContents('data-upload', $this->version, array('id' => $id));
   }
+  
+  private function status_update($data_id, $status) {
+    // in_preparation is not a legal status to change to
+    $legal_status = array('active', 'deactivated');
+    if (!in_array($status, $legal_status)) {
+      $this->returnError(691, $this->version);
+      return;
+    }
+    
+    $dataset = $this->Dataset->getById($data_id);
+    if ($dataset == false) {
+      $this->returnError(692, $this->version);
+      return;
+    }
 
+    if ($dataset->uploader != $this->user_id and !$this->user_has_admin_rights) {
+      $this->returnError(693, $this->version);
+      return;
+    }
+    
+    $status_record = $this->Dataset_status->getWhereSingle('did = ' . $data_id, 'status DESC');
+    $in_preparation = $this->config->item('default_dataset_status');
+    if ($status_record == false) {
+      $old_status = $in_preparation;
+    } else {
+      $old_status = $status_record->status;
+    }
+    
+    $record = array(
+      'did' => $data_id,
+      'status' => $status, 
+      'status_date' => now(),
+      'user_id' => $this->user_id
+    );
+    
+    if (
+        ($old_status == $in_preparation && $status == 'active') ||
+        ($old_status == $in_preparation && $status == 'deactivated') ||
+        ($old_status == 'active' && $status == 'deactivated')
+       ) {
+      $this->Dataset_status->insert($record);
+    } elseif ($old_status == 'deactivated' && $status == 'active') {
+      $this->Dataset_status->delete(array($data_id, 'deactivated'));
+      
+      // see if the dataset is still active
+      $status_record = $this->Dataset_status->getWhereSingle('did = ' . $data_id, 'status DESC');
+      
+      $result = true;
+      if (!$status_record || $status_record->status != 'active') {
+        $result = $this->Dataset_status->insert($record);
+      }
+      if (!$result) {
+        $this->returnError(695, $this->version);
+        return;
+      }
+    } else {
+      $this->returnError(694, $this->version);
+      return;
+    }
+    
+    $this->xmlContents('data-status-update', $this->version, array('did' => $data_id, 'status' => $status));
+  }
 
   private function data_features($data_id) {
     if($data_id == false) {
