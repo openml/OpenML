@@ -90,8 +90,9 @@ class Api_setup extends MY_Api_Model {
       $this->returnError(281, $this->version);
       return;
     } else {
-      $this->db->select('*')->from('input_setting');
+      $this->db->select('`input_setting`.*, `input`.*, `implementation`.`name` AS `flow_name`, `implementation`.`fullName` AS `flow_fullName`')->from('input_setting');
       $this->db->join('input', 'input_setting.input_id = input.id', 'inner');
+      $this->db->join('implementation', 'input.implementation_id = implementation.id', 'inner');
       $this->db->where('setup = "'.$setup->sid.'"');
       $query = $this->db->get();
       $this->parameters = $query->result();
@@ -102,7 +103,7 @@ class Api_setup extends MY_Api_Model {
   
   private function _setup_ids_to_parameter_values($setups) {
     // query fails for classifiers without parameters. is fixed further on.
-    $this->db->select('input.*, input_setting.*, implementation.name AS `flow_name`, implementation.fullName AS `flow_fullName`')->from('input_setting');
+    $this->db->select('input.*, input_setting.*, `implementation`.`name` AS `flow_name`, `implementation`.`fullName` AS `flow_fullName`')->from('input_setting');
     $this->db->join('input', 'input_setting.input_id = input.id', 'inner');
     $this->db->join('implementation', 'input.implementation_id = implementation.id', 'inner');
     $this->db->join('algorithm_setup', 'algorithm_setup.sid = input_setting.setup AND implementation.id = algorithm_setup.implementation_id', 'inner');
