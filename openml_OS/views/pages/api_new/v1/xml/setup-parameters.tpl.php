@@ -6,6 +6,7 @@
 	<oml:parameter>
 		<oml:id><?php echo htmlspecialchars($p->id); ?></oml:id>
 		<oml:flow_id><?php echo htmlspecialchars($p->implementation_id); ?></oml:flow_id>
+		<oml:flow_name><?php echo htmlspecialchars($p->flow_name); ?></oml:flow_name>
 		<oml:full_name><?php echo htmlspecialchars($p->flow_fullName) . '_' . htmlspecialchars($p->name); ?></oml:full_name>
 		<oml:name><?php echo htmlspecialchars($p->name); ?></oml:name>
 		<oml:parameter_name><?php echo htmlspecialchars($p->name); ?></oml:parameter_name> <!-- legacy -->
