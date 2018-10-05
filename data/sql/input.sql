@@ -175,4 +175,4 @@ INSERT INTO `input` (`id`, `implementation_id`, `name`, `description`, `dataType
 (174, 15, '-do-not-check-capabilities', 'If set, classifier capabilities are not checked before classifier is built\n	(use with caution).', 'flag', '', NULL),
 (175, 15, 'num-decimal-places', 'The number of decimal places for the output of numbers in the model (default 2).', 'option', '', NULL),
 (176, 15, 'batch-size', 'The desired batch size for batch prediction  (default 100).', 'option', '', NULL);
-COMMIT;
+
