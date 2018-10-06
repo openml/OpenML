@@ -1545,12 +1545,14 @@ class ElasticSearch {
         }
 
         $new_data['parameters'] = array();
-        $parameters = $this->db->query('select * from input where implementation_id=' . $d->id);
+        $parameters = $this->db->query('select input.*, implementation.fullName from input, implementation where input.implementation_id = implementation.id AND implementation_id=' . $d->id);
         if ($parameters) {
             foreach ($parameters as $p) {
+                // JvR: if we keep relying on the fullname, there should be a central convenience fn that concatenates the full name in an uniform manner. 
+                $parameter_fullname = $p->fullName . '_' . $p->name;
                 $par = array(
                     'name' => $p->name,
-                    'full_name' => $p->fullName,
+                    'full_name' => $parameter_fullname,
                     'description' => $p->description,
                     'default_value' => $p->defaultValue,
                     'recommended_range' => $p->recommendedRange,
