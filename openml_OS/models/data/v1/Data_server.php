@@ -165,16 +165,17 @@ class Data_server extends CI_Model {
   }
 
   private function _header_download($filename, $filesize, $extension, $mime_type) {
+    // formats the download header based on information from the file record
+    // filename and filesize should come from the file record. extension and 
+    // mimetype can be overridden
     header('Content-Description: File Transfer');
     header('Content-Type: ' . ($extension == 'arff' ? 'text/plain' : $mime_type));
     if ($filesize != null) {
        header('Content-Length: ' . $filesize);
     }
     
-    if ($overwritten_filetype) {
-      $filename = pathinfo($filename, PATHINFO_FILENAME) . '.' . $extension;
-    }
-
+    // need to rename file, as extension is potentially overwritten
+    $filename = pathinfo($filename, PATHINFO_FILENAME) . '.' . $extension;
     header('Content-Disposition: attachment; filename='.$filename);
     header('Content-Transfer-Encoding: binary');
     header('Expires: 0');
