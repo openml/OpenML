@@ -1454,42 +1454,6 @@ class ElasticSearch {
         return $new_data;
     }
 
-    public function index_flow($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
-
-        $params['index'] = 'openml';
-        $params['type'] = 'flow';
-
-        $flows = $this->db->query('select i.*, count(rid) as runs from implementation i left join algorithm_setup s on (s.implementation_id=i.id) left join run r on (r.setup=s.sid)' . ($id ? ' where i.id=' . $id : '') . ' group by i.id');
-
-
-        if ($id and ! $flows)
-            return 'Error: flow ' . $id . ' is unknown';
-        elseif (! $flows)
-            return 'Nothing to index';
-        foreach ($flows as $d) {
-            $params['body'][] = array(
-                'index' => array(
-                    '_id' => $d->id
-                )
-            );
-
-            $params['body'][] = $this->build_flow($d);
-        }
-
-        $responses = $this->client->bulk($params);
-
-        if($responses['errors'] == True){
-    foreach ($responses['items'] as $res){
-    if(array_key_exists('error',$res['index'])){
-      $err = $res['index']['error'];
-      return 'ERROR for ID ' . $res['index']['_id'] . ' : Type:' . $err['type'] . ' Reason: ' . $err['reason'] . (array_key_exists('caused_by', $err) ? ' Caused by: ' . $err['caused_by']['reason'] : '');
-      }
-    }
-  }
-
-        return 'Successfully indexed ' . sizeof($responses['items']) . ' out of ' . sizeof($flows) . ' flows.';
-    }
-
     private function build_flow($d) {
         $new_data = array(
             'flow_id' => $d->id,
