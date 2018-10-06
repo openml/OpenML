@@ -37,7 +37,7 @@ class Data_server extends CI_Model {
     if ($file->{'type'} == 'url') {
       header('Location: ' . $file->filepath);
     } else {
-      $this->_header_download($file);
+      $this->_header_download($file->filename_original, $file->filesize, $file->extension, $file->mime_type);
       readfile_chunked(DATA_PATH . $file->filepath);
     }
   }
@@ -118,7 +118,7 @@ class Data_server extends CI_Model {
     }
     echo '"' . implode('","', $features) . "\"\n";
 
-    $this->_header_download($file, 'csv');
+    $this->_header_download($file->filename_original, null, 'csv', 'text/plain');
     for ($i = 0; ($line = fgets($handle)) !== false; ++$i) {
       if (trim($line[0]) == '%') {
         continue;
@@ -164,16 +164,15 @@ class Data_server extends CI_Model {
     $this->load->view('403');
   }
 
-  private function _header_download($file, $overwritten_filetype=null) {
+  private function _header_download($filename, $filesize, $extension, $mime_type) {
     header('Content-Description: File Transfer');
-    header('Content-Type: ' . ($file->extension == 'arff' ? 'text/plain' : $file->mime_type));
-    if ($overwritten_filetype != 'csv') { #content length in database not correct for csv
-       header('Content-Length: ' . $file->filesize);
+    header('Content-Type: ' . ($extension == 'arff' ? 'text/plain' : $mime_type));
+    if ($filesize != null) {
+       header('Content-Length: ' . $filesize);
     }
-
-    $filename = basename($file->filename_original);
+    
     if ($overwritten_filetype) {
-      $filename = pathinfo($filename, PATHINFO_FILENAME) . '.' . $overwritten_filetype;
+      $filename = pathinfo($filename, PATHINFO_FILENAME) . '.' . $extension;
     }
 
     header('Content-Disposition: attachment; filename='.$filename);
@@ -183,7 +182,6 @@ class Data_server extends CI_Model {
     header('Pragma: public');
     header('Connection: keep-alive');
     header('Keep-Alive: timeout=300, max=500');
-    // header('Content-Length: ' . $file->filesize);
   }
 }
 ?>
