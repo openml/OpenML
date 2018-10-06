@@ -1020,10 +1020,12 @@ class ElasticSearch {
 
     private function fetch_setups($id = false) {
         $index = array();
-        $setups = $this->db->query('SELECT s.setup, i.fullName, s.value FROM input_setting s, input i where i.id=s.input_id' . ($id ? ' and s.setup=' . $id : ''));
+        $setups = $this->db->query('SELECT s.setup, f.fullName, i.name, s.value FROM input_setting s, input i, implementation f where i.id=s.input_id AND i.implementation_id = f.id' . ($id ? ' and s.setup=' . $id : ''));
         if ($setups)
             foreach ($setups as $v) {
-                $index[$v->setup][] = array('parameter' => $v->fullName, 'value' => $v->value);
+                // JvR: if we keep relying on the fullname, there should be a central convenience fn that concatenates the full name in an uniform manner. 
+                $parameter_fullname = $v->fullName . '_' . $v->name;
+                $index[$v->setup][] = array('parameter' => $parameter_fullname, 'value' => $v->value);
             }
         elseif($id != false)
           $index[$id] = array();
