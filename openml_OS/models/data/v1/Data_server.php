@@ -116,9 +116,10 @@ class Data_server extends CI_Model {
       $this->_error404();
       return;
     }
-    echo '"' . implode('","', $features) . "\"\n";
-
+    
     $this->_header_download($file->filename_original, null, 'csv', 'text/plain');
+    
+    echo '"' . implode('","', $features) . "\"\n";
     for ($i = 0; ($line = fgets($handle)) !== false; ++$i) {
       if (trim($line[0]) == '%') {
         continue;
