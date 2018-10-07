@@ -106,7 +106,8 @@ class Api_setup extends MY_Api_Model {
     $this->db->select('input.*, input_setting.*, `implementation`.`name` AS `flow_name`, `implementation`.`fullName` AS `flow_fullName`')->from('input_setting');
     $this->db->join('input', 'input_setting.input_id = input.id', 'inner');
     $this->db->join('implementation', 'input.implementation_id = implementation.id', 'inner');
-    $this->db->join('algorithm_setup', 'algorithm_setup.sid = input_setting.setup AND implementation.id = algorithm_setup.implementation_id', 'inner');
+    // note that algorithm setup can not be linked to implementation id, otherwise we will only get parameters of the root classifier
+    $this->db->join('algorithm_setup', 'algorithm_setup.sid = input_setting.setup', 'inner');
     $this->db->join('setup_tag', 'input_setting.setup = setup_tag.id', 'left');
     $this->db->where_in('algorithm_setup.sid', $setups);
 
