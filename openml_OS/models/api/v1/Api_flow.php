@@ -475,7 +475,6 @@ class Api_flow extends MY_Api_Model {
           $children = $entry->children('oml', true);
           $succes = $this->Input->insert(
             array(
-              'fullName' => $implementation['fullName'] . '_' . $children->name,
               'implementation_id' => $flow_id,
               'name' => trim($children->name),
               'defaultValue' => property_exists( $children, 'default_value') ? trim($children->default_value) : null,

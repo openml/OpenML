@@ -1020,10 +1020,12 @@ class ElasticSearch {
 
     private function fetch_setups($id = false) {
         $index = array();
-        $setups = $this->db->query('SELECT s.setup, i.fullName, s.value FROM input_setting s, input i where i.id=s.input_id' . ($id ? ' and s.setup=' . $id : ''));
+        $setups = $this->db->query('SELECT s.setup, f.fullName, i.name, s.value FROM input_setting s, input i, implementation f where i.id=s.input_id AND i.implementation_id = f.id' . ($id ? ' and s.setup=' . $id : ''));
         if ($setups)
             foreach ($setups as $v) {
-                $index[$v->setup][] = array('parameter' => $v->fullName, 'value' => $v->value);
+                // JvR: if we keep relying on the fullname, there should be a central convenience fn that concatenates the full name in an uniform manner. 
+                $parameter_fullname = $v->fullName . '_' . $v->name;
+                $index[$v->setup][] = array('parameter' => $parameter_fullname, 'value' => $v->value);
             }
         elseif($id != false)
           $index[$id] = array();
@@ -1457,7 +1459,7 @@ class ElasticSearch {
         $params['index'] = 'openml';
         $params['type'] = 'flow';
 
-        $flows = $this->db->query('select i.*, count(rid) as runs from implementation i left join algorithm_setup s on (s.implementation_id=i.id) left join run r on (r.setup=s.sid)' . ($id ? ' where i.id=' . $id : '') . ' group by i.id');
+        $flows = $this->db->query('select i.*, count(rid) as runs from implementation i left join algorithm_setup s on (s.implementation_id=i.id) left join run r on (r.setup=s.sid)' . ($id ? ' where i.id=' . $id : '') . ' group by i.id'); 
 
 
         if ($id and ! $flows)
@@ -1543,12 +1545,14 @@ class ElasticSearch {
         }
 
         $new_data['parameters'] = array();
-        $parameters = $this->db->query('select * from input where implementation_id=' . $d->id);
+        $parameters = $this->db->query('select input.*, implementation.fullName from input, implementation where input.implementation_id = implementation.id AND implementation_id=' . $d->id);
         if ($parameters) {
             foreach ($parameters as $p) {
+                // JvR: if we keep relying on the fullname, there should be a central convenience fn that concatenates the full name in an uniform manner. 
+                $parameter_fullname = $p->fullName . '_' . $p->name;
                 $par = array(
                     'name' => $p->name,
-                    'full_name' => $p->fullName,
+                    'full_name' => $parameter_fullname,
                     'description' => $p->description,
                     'default_value' => $p->defaultValue,
                     'recommended_range' => $p->recommendedRange,

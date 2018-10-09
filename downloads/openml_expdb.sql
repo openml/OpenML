@@ -455,7 +455,6 @@ CREATE TABLE `implementation_tag` (
 
 CREATE TABLE `input` (
   `id` int(10) NOT NULL,
-  `fullName` varchar(1024) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `implementation_id` int(16) NOT NULL,
   `name` varchar(512) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
   `description` text CHARACTER SET utf8 COLLATE utf8_bin,
