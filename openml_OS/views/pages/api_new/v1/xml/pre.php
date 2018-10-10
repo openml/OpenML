@@ -390,6 +390,7 @@ $this->apiErrors[692] = 'Dataset does not exists';
 $this->apiErrors[693] = 'Dataset is not owned by you';
 $this->apiErrors[694] = 'Illegal status transition';
 $this->apiErrors[695] = 'Status update failed';
+$this->apiErrors[696] = 'Only admins can activate datasets';
 
 // openml.votes.list
 $this->apiErrors[701] = 'List failed';

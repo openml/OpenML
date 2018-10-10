@@ -503,6 +503,11 @@ class Api_data extends MY_Api_Model {
       return;
     }
     
+    if ($status == 'active' && !$this->user_has_admin_rights) {
+      $this->returnError(696, $this->version);
+      return;
+    }
+    
     $status_record = $this->Dataset_status->getWhereSingle('did = ' . $data_id, 'status DESC');
     $in_preparation = $this->config->item('default_dataset_status');
     if ($status_record == false) {
