@@ -25,7 +25,7 @@ Everything uploaded to OpenML is available to the community. The nightly snapsho
 
 If you want to work on the website locally, you'll also need the schema for the 'private' database with non-public information.
 
-<a href="https://www.openml.org/downloads/openml.sql.gz" class="btn btn-primary"><i class="fa fa-cloud-download fa-lg"></i> Private database schema</a>
+<a href="https://www.openml.org/downloads/openml.sql" class="btn btn-primary"><i class="fa fa-cloud-download fa-lg"></i> Private database schema</a>
 
 ## Legacy Resources
 OpenML is always evolving, but we keep hosting the resources that were used in prior publications so that others may still build on them.
