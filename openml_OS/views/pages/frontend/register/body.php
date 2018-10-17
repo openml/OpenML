@@ -17,7 +17,7 @@
   <div class="col-sm-10">
     <div class="well page" style="position: relative; z-index:1030 !important">
     <h2>Join OpenML</h2>
-    <p style="text-align:right;"><i class="fa fa-warning" style="color:red;"></i> By joining, you agree to the <a href="guide/terms">Honor Code and Terms of Use</a>.</p>
+    <p style="text-align:right;"><i class="fa fa-warning" style="color:red;"></i> By joining, you agree to the <a href="https://docs.openml.org/terms/">Honor Code and Terms of Use</a>.</p>
     <?php echo form_open_multipart("frontend/page/register");?>
     <fieldset>
       <div class="inputs">
