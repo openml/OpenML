@@ -2,7 +2,7 @@
 
 # OpenML :fa-heart: Open Source
 
-OpenML is an open source project, <a href="https://github.com/organizations/openml">hosted on GitHub</a>. We welcome everybody to help improve OpenML, and make it more useful for everyone.
+OpenML is an open source project, <a href="https://github.com/openml">hosted on GitHub</a>. We welcome everybody to help improve OpenML, and make it more useful for everyone.
 
 To integrate your own machine learning tools with OpenML, [check out the available APIs](APIs).
 
