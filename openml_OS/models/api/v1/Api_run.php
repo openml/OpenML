@@ -91,6 +91,11 @@ class Api_run extends MY_Api_Model {
       $this->entity_tag_untag('run', $this->input->post('run_id'), $this->input->post('tag'), true, 'run');
       return;
     }
+    
+    if (count($segments) == 2 && $segments[0] == 'tag' && $segments[1] == 'list') {
+      $this->list_tags('run');
+      return;
+    }
 
     $this->returnError( 100, $this->version );
   }
