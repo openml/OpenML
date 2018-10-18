@@ -127,7 +127,7 @@ class Api_data extends MY_Api_Model {
     }
 
     if (count($segments) == 2 && $segments[0] == 'tag' && $segments[1] == 'list') {
-      $this->list_tags('dataset');
+      $this->list_tags('dataset', 'data');
       return;
     }
 

@@ -93,7 +93,7 @@ class Api_run extends MY_Api_Model {
     }
     
     if (count($segments) == 2 && $segments[0] == 'tag' && $segments[1] == 'list') {
-      $this->list_tags('run');
+      $this->list_tags('run', 'run');
       return;
     }
 

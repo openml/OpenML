@@ -51,7 +51,7 @@ class Api_setup extends MY_Api_Model {
     }
     
     if (count($segments) == 2 && $segments[0] == 'tag' && $segments[1] == 'list') {
-      $this->list_tags('setup');
+      $this->list_tags('algorithm_setup', 'setup');
       return;
     }
 

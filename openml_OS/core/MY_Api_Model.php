@@ -271,7 +271,8 @@ class MY_Api_Model extends CI_Model {
     return true;
   }
   
-  protected function list_tags($type) {
+  protected function list_tags($type, $special_name) {
+    // legacy: special name should be same as type for version 2
     $taggable = $this->config->item('taggable_entities');
     if (!in_array($type, array_keys($taggable))) {
       $this->returnError(1001, $this->version);
@@ -287,7 +288,7 @@ class MY_Api_Model extends CI_Model {
       'entity-tag-list',
       $this->version,
       array(
-        'xml_tag_name' => $type,
+        'xml_tag_name' => $special_name,
         'tags' => $tags)
     );
   }

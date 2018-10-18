@@ -64,7 +64,7 @@ class Api_task extends MY_Api_Model {
     }
     
     if (count($segments) == 2 && $segments[0] == 'tag' && $segments[1] == 'list') {
-      $this->list_tags('task');
+      $this->list_tags('task', 'task');
       return;
     }
 
