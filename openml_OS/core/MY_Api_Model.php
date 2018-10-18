@@ -284,7 +284,7 @@ class MY_Api_Model extends CI_Model {
       return;
     }
     $this->xmlContents(
-      'entity-tag',
+      'entity-tag-list',
       $this->version,
       array(
         'xml_tag_name' => $type,
