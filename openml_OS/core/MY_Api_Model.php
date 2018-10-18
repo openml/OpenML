@@ -186,6 +186,7 @@ class MY_Api_Model extends CI_Model {
    *
    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
   protected function entity_tag_untag($type, $id, $tag, $do_untag, $special_name, $supress_output = false) {
+    // legacy: special name should be same as type for version 2
     // checks if type in {dataset, implementation, run, task, algorithm_setup}
     $taggable = $this->config->item('taggable_entities');
     if(!in_array($type, array_keys($taggable))) {
@@ -268,6 +269,26 @@ class MY_Api_Model extends CI_Model {
       );
     }
     return true;
+  }
+  
+  protected function list_tags($type) {
+    $taggable = $this->config->item('taggable_entities');
+    if (!in_array($type, array_keys($taggable))) {
+      $this->returnError(1001, $this->version);
+      return;
+    }
+    $tags = $this->{$model_name_tag}->getDistinct('name');
+    if ($tags === false) {
+      $this->returnError(1002, $this->version);
+      return;
+    }
+    $this->xmlContents(
+      'entity-tag',
+      $this->version,
+      array(
+        'xml_tag_name' => $type,
+        'tags' => $tags)
+    );
   }
 }
 ?>

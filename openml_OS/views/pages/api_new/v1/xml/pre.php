@@ -450,4 +450,8 @@ $this->apiErrors[903] = 'Invalid type';
 //openml.badges
 $this->apiErrors[950] = 'No such badge';
 
+// openml.tags.list_tags (in MY_API_Model.py)
+$this->apiErrors[1001] = 'Not a taggable item (this should never happen)';
+$this->apiErrors[1002] = 'No tags available';
+
 ?>

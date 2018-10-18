@@ -121,13 +121,18 @@ class Api_data extends MY_Api_Model {
       return;
     }
 
-    if (count($segments) == 2 && $segments[0] == 'status' && $segments[1] == 'update') {
-      $this->status_update($this->input->post('data_id'), $this->input->post('status'));
+    if (count($segments) == 1 && $segments[0] == 'untag' && $request_type == 'post') {
+      $this->entity_tag_untag('dataset', $this->input->post('data_id'), $this->input->post('tag'), true, 'data');
       return;
     }
 
-    if (count($segments) == 1 && $segments[0] == 'untag' && $request_type == 'post') {
-      $this->entity_tag_untag('dataset', $this->input->post('data_id'), $this->input->post('tag'), true, 'data');
+    if (count($segments) == 2 && $segments[0] == 'tag' && $segments[1] == 'list') {
+      $this->list_tags('dataset');
+      return;
+    }
+
+    if (count($segments) == 2 && $segments[0] == 'status' && $segments[1] == 'update') {
+      $this->status_update($this->input->post('data_id'), $this->input->post('status'));
       return;
     }
 
