@@ -293,10 +293,6 @@ $this->apiErrors[544] = 'Illegal filter specified';
 $this->apiErrors[545] = 'Can not specify offset without limit';
 $this->apiErrors[546] = 'Requested result limit too high. ';
 
-// openml.evaluations.request
-$this->apiErrors[545] = 'No unevaluated runs according to the criteria';
-$this->apiErrors[546] = 'Illegal filter';
-
 // openml.flow.forcedelete
 $this->apiErrors[550] = 'Admin rights are required.';
 $this->apiErrors[551] = 'Delete query failed.';
@@ -453,5 +449,10 @@ $this->apiErrors[950] = 'No such badge';
 // openml.tags.list_tags (in MY_API_Model.py)
 $this->apiErrors[1001] = 'Not a taggable item (this should never happen)';
 $this->apiErrors[1002] = 'No tags available';
+
+// openml.evaluations.request
+$this->apiErrors[1011] = 'Illegal filter';
+$this->apiErrors[1012] = 'Input does not comply to constraints';
+$this->apiErrors[1013] = 'No unevaluated runs according to the criteria';
 
 ?>
