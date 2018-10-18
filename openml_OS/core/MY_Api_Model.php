@@ -277,6 +277,7 @@ class MY_Api_Model extends CI_Model {
       $this->returnError(1001, $this->version);
       return;
     }
+    $model_name_tag = ucfirst($taggable[$type]);
     $tags = $this->{$model_name_tag}->getDistinct('name');
     if ($tags === false) {
       $this->returnError(1002, $this->version);
