@@ -300,7 +300,7 @@ class Api_data extends MY_Api_Model {
       return;
     }
     
-    $result = $result && $this->Data_processed->deleteWhere('`did` = "' . $dataset->did . '" ');
+    $result = $this->Data_processed->deleteWhere('`did` = "' . $dataset->did . '" ');
 
     if ($result == false) {
       $this->returnError(1023, $this->version);
@@ -337,12 +337,10 @@ class Api_data extends MY_Api_Model {
       //}
     }
 
-    $result = $this->Dataset->delete( $dataset->did );
-    $this->Data_feature->deleteWhere('did =' . $dataset->did);
-    $this->Data_quality->deleteWhere('data =' . $dataset->did);
+    $result = $this->Dataset->delete($dataset->did);
 
-    if( $result == false ) {
-      $this->returnError( 355, $this->version );
+    if ($result == false) {
+      $this->returnError(355, $this->version);
       return;
     }
 

@@ -282,7 +282,7 @@ class Api_run extends MY_Api_Model {
       return;
     }
     
-    $result = $result && $this->Run_evaluated->deleteWhere('`run_id` = "' . $run->rid . '" ');
+    $result = $this->Run_evaluated->deleteWhere('`run_id` = "' . $run->rid . '" ');
 
     if( $result == false ) {
       $this->returnError(394, $this->version);
