@@ -70,7 +70,7 @@ class Api_data extends MY_Api_Model {
     }
 
     if (count($segments) == 2 && $segments[0] == 'reset' && is_numeric($segments[1]) && $request_type == 'post') {
-      $this->data_delete($segments[1]);
+      $this->data_reset($segments[1]);
       return;
     }
 
