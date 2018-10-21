@@ -455,4 +455,9 @@ $this->apiErrors[1011] = 'Illegal filter';
 $this->apiErrors[1012] = 'Input does not comply to constraints';
 $this->apiErrors[1013] = 'No unevaluated runs according to the criteria';
 
+// for function: openml.data.reset
+$this->apiErrors[1021] = 'Dataset does not exists';
+$this->apiErrors[1022] = 'Dataset is not owned by you';
+$this->apiErrors[1023] = 'Resetting dataset failed.';
+
 ?>

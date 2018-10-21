@@ -69,6 +69,11 @@ class Api_data extends MY_Api_Model {
       return;
     }
 
+    if (count($segments) == 2 && $segments[0] == 'reset' && is_numeric($segments[1]) && $request_type == 'post') {
+      $this->data_delete($segments[1]);
+      return;
+    }
+
     if (count($segments) == 0 && $request_type == 'post') {
       $this->data_upload();
       return;
@@ -109,7 +114,6 @@ class Api_data extends MY_Api_Model {
       $this->feature_qualities($segments[2], $segments[3]);
       return;
     }
-
 
     if (count($segments) == 1 && $segments[0] == 'qualities' && $request_type == 'post') {
       $this->data_qualities_upload($segments[0]);
@@ -282,6 +286,27 @@ class Api_data extends MY_Api_Model {
     }
 
     $this->xmlContents( 'data-get', $this->version, $dataset );
+  }
+  
+  private function data_reset($data_id) {
+    $dataset = $this->Dataset->getById($data_id);
+    if ($dataset == false) {
+      $this->returnError(1021, $this->version);
+      return;
+    }
+
+    if($dataset->uploader != $this->user_id and !$this->user_has_admin_rights) {
+      $this->returnError(1022, $this->version);
+      return;
+    }
+    
+    $result = $result && $this->Data_processed->deleteWhere('`did` = "' . $dataset->did . '" ');
+
+    if ($result == false) {
+      $this->returnError(1023, $this->version);
+      return;
+    }
+    $this->xmlContents('data-reset', $this->version, array('dataset' => $dataset));
   }
 
   private function data_delete($data_id) {
