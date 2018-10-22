@@ -27,7 +27,7 @@ if(false !== strpos($_SERVER['REQUEST_URI'],'/a/evaluation-measures') or
 
 	// Get data from ES
 	$this->p = array();
-	$this->p['index'] = 'openml';
+	$this->p['index'] = 'measure';
 	$this->p['type'] = 'measure';
 	$this->p['id'] = $this->id;
 	try{

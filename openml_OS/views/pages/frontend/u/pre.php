@@ -13,7 +13,7 @@ if(false !== strpos($_SERVER['REQUEST_URI'],'/u/')) {
 
 	//get data from ES
 	$this->p = array();
-	$this->p['index'] = 'openml';
+	$this->p['index'] = 'user';
 	$this->p['type'] = 'user';
 	$this->p['id'] = $this->user_id;
 	try{

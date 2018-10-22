@@ -2,12 +2,12 @@
 
     //get data from ES
     $this->p = array();
-    $this->p['index'] = 'openml';
+    $this->p['index'] = 'data';
     $this->p['type'] = 'data';
     $this->p['id'] = $this->id;
 
     $this->down = array();
-    $this->down['index'] = 'openml';
+    $this->down['index'] = 'downvote';
     $this->down['type'] = 'downvote';
     $json = '{
                 "query": {
@@ -22,7 +22,7 @@
     $this->down['body'] = $json;
     if ($this->ion_auth->logged_in()) {
         $this->l = array();
-        $this->l['index'] = 'openml';
+        $this->l['index'] = 'like';
         $this->l['type'] = 'like';
         $json = '{
                     "query": {
@@ -62,7 +62,7 @@
 
     //get other versions -> do in javascript?
     $this->p2 = array();
-    $this->p2['index'] = 'openml';
+    $this->p2['index'] = 'data';
     $this->p2['type'] = 'data';
     $this->p2['body']['_source'] = array("data_id", "version", "version_label");
     $this->p2['body']['query']['term']['exact_name'] = $this->data['name'];
@@ -75,7 +75,7 @@
 
     //get tasks
     $this->p3 = array();
-    $this->p3['index'] = 'openml';
+    $this->p3['index'] = 'task';
     $this->p3['type'] = 'task';
     $this->p3['body']['query']['term']['source_data.data_id'] = $this->id;
     $this->p3['body']['sort'] = array('tasktype.tt_id' => array ('order' => 'asc'), 'runs' => array ('order' => 'desc'));
@@ -88,7 +88,7 @@
 
     //get properties - needed for the descriptions
     $this->p4 = array();
-    $this->p4['index'] = 'openml';
+    $this->p4['index'] = 'measure';
     $this->p4['type'] = 'measure';
     $this->p4['body']['size'] = 1000;
     $this->p4['body']['query']['bool']['must']['match_all'] = (object)[];
@@ -106,7 +106,7 @@
 
     //get measures
     $this->p4 = array();
-    $this->p4['index'] = 'openml';
+    $this->p4['index'] = 'measure';
     $this->p4['type'] = 'measure';
     $this->p4['body']['size'] = 1000;
     $this->p4['body']['query']['bool']['must']['match_all'] = (object)[];

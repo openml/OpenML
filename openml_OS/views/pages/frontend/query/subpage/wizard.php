@@ -6,7 +6,7 @@ $(function() {
   minLength: 0,
   source: function(request, fresponse) {
     client.suggest({
-    index: 'openml',
+    index: 'data',
     type: 'data',
     body: {
      mysuggester: {
@@ -50,7 +50,7 @@ $(function() {
   minLength: 0,
   source: function(request, fresponse) {
     client.suggest({
-    index: 'openml',
+    index: 'flow',
     type: 'flow',
     body: {
      mysuggester: {
@@ -104,7 +104,7 @@ $(function() {
     <select class="form-control input-small selectpicker" name="tasktype" id="ttDropDown">
       <option value="">Any task type</option>
       <?php
-        $taskparams['index'] = 'openml';
+        $taskparams['index'] = 'task_type';
         $taskparams['type']  = 'task_type';
         $taskparams['body']['query']['match_all'] = array();
         $searchclient = $this->searchclient->search($taskparams);

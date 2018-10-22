@@ -11,15 +11,13 @@
 		"source": "https://github.com/bcit-ci/CodeIgniter"
 	},
 	"require": {
-		"php": ">=5.2.4"
+		"php": ">=5.2.4",
+		"elasticsearch/elasticsearch": "~6.0"
 	},
 	"suggest": {
 		"paragonie/random_compat": "Provides better randomness in PHP 5.x"
 	},
 	"require-dev": {
 		"mikey179/vfsStream": "1.1.*"
-	},
-	"require": {
-    "elasticsearch/elasticsearch": "~1.0"
-  }
+	}
 }
