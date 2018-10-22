@@ -215,7 +215,7 @@
 		<h3><div id="runcount">0</div> Runs</h3>
     <a class="btn btn-default pull-right" href="search?q=+run_flow.flow_id%3A<?php echo $this->id; ?>&type=run"><i class="fa fa-fw fa-list"></i> List all runs</a>
 	    <?php
-	      $taskparams['index'] = 'openml';
+	      $taskparams['index'] = 'task_type';
 	      $taskparams['type']  = 'task_type';
 	      $taskparams['body']['query']['match_all'] = (object)[];
 	      $this->alltasks = $this->searchclient->search($taskparams)['hits']['hits'];

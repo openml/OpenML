@@ -23,7 +23,7 @@
       </div>
 			<?php if($this->task['runs'] > 1000){ ?>
 			<div class="alert alert-info">
-  		<strong>Note:</strong> Chart is limited to the 1000 best flows, and the 1000 best runs for each flow.
+  		<strong>Note:</strong> Chart is limited to the 100 best flows, and the 100 best runs for each flow.
 			</div>
 			<?php } ?>
       <div class="col-xs-12 panel">

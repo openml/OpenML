@@ -53,7 +53,7 @@ if (session_status() === PHP_SESSION_NONE){session_start();}
         <link rel="stylesheet" href="css/jquery-ui.css" type="text/css"/>
         <link rel="stylesheet" href="css/bootstrap-select.css">
         <link rel="stylesheet" href="css/perfect-scrollbar.min.css">
-        <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
       	<link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300,500,700' rel='stylesheet' type='text/css'>
         <link href="https://fonts.googleapis.com/css?family=RobotoDraft:400,500,700,400italic" rel="stylesheet" type="text/css">
         <link rel="stylesheet" href="css/gamification.css"/>

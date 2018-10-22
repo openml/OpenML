@@ -4,7 +4,7 @@ window.onresize = function(event) {
 
 (function(){
   function update(){
-    client.search({ index: 'openml', body: { aggs: { count_by_type: { terms: { field: '_type' } } } } }, function (error, response) {
+    client.search({ index: '_all', body: { size: 0, aggs: { count_by_type: { terms: { field: '_type' } } } } }, function (error, response) {
       var r = response.aggregations.count_by_type.buckets;
       var res = new Array();
       for (i = 0; i < r.length; i++) {
@@ -20,5 +20,5 @@ window.onresize = function(event) {
   }
   update();
   //Run the update function once every 5 seconds
-  setInterval(update, 500000);
+  setInterval(update, 5000);
 })();

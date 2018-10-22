@@ -159,12 +159,12 @@ if(false !== strpos($_SERVER['REQUEST_URI'],'/r/')) { // DETAIL
 
    //get data from ES
    $this->p = array();
-   $this->p['index'] = 'openml';
+   $this->p['index'] = 'run';
    $this->p['type'] = 'run';
    $this->p['id'] = $this->run_id;
 
     $this->down = array();
-    $this->down['index'] = 'openml';
+    $this->down['index'] = 'downvote';
     $this->down['type'] = 'downvote';
     $json = '{
                 "query": {
@@ -179,7 +179,7 @@ if(false !== strpos($_SERVER['REQUEST_URI'],'/r/')) { // DETAIL
     $this->down['body'] = $json;
     if ($this->ion_auth->logged_in()) {
         $this->l = array();
-        $this->l['index'] = 'openml';
+        $this->l['index'] = 'like';
         $this->l['type'] = 'like';
         $json = '{
                     "query": {
@@ -201,6 +201,7 @@ if(false !== strpos($_SERVER['REQUEST_URI'],'/r/')) { // DETAIL
           $this->activeuserlike = $this->searchclient->search($this->l)['hits']['hits'];
         }
 
+     $this->p['index'] = 'flow';
      $this->p['type'] = 'flow';
      $this->p['id'] = $this->run['run_flow']['flow_id'];
      $this->flow = $this->searchclient->get($this->p)['_source'];

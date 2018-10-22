@@ -1,6 +1,6 @@
 <?php
   $p = array();
-  $p['index'] = 'openml';
+  $p['index'] = 'measure';
   $p['type'] = 'measure';
   $fs = array('NumberOfInstances' => 'Number of instances','NumberOfFeatures' => 'Number of features','NumberOfMissingValues' => 'Number of missing values','NumberOfClasses' => 'Number of classes','DefaultAccuracy' => 'Default accuracy');
   foreach($fs as $f => $v){
