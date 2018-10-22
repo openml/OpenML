@@ -109,6 +109,7 @@ $this->apiErrors[271] = 'Unknown dataset';
 $this->apiErrors[272] = 'No features found';
 $this->apiErrors[273] = 'Dataset not processed yet';
 $this->apiErrors[274] = 'No features found. Additionally, dataset processed with error';
+$this->apiErrors[275] = 'You have no right to view this item. ';
 
 // for function: openml.setup.parameters
 $this->apiErrors[280] = 'Please provide setup_id';

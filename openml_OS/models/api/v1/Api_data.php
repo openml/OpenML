@@ -581,13 +581,13 @@ class Api_data extends MY_Api_Model {
 
   private function data_features($data_id) {
     $dataset = $this->Dataset->getById($data_id);
-    if($dataset === false) {
+    if ($dataset === false) {
       $this->returnError(271, $this->version);
       return;
     }
 
-    if($dataset->visibility != 'public' && $dataset->uploader != $this->user_id) {
-      $this->returnError(271, $this->version); // Add special error code for this case?
+    if ($dataset->visibility != 'public' && !($dataset->uploader == $this->user_id || $this->user_has_admin_rights)) {
+      $this->returnError(275, $this->version); // Add special error code for this case?
       return;
     }
 
