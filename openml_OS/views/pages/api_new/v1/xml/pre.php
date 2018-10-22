@@ -105,7 +105,6 @@ $this->apiErrors[251] = 'Please provide password';
 $this->apiErrors[252] = 'Authentication failed';
 
 // for function: openml.data.features
-$this->apiErrors[270] = 'Please provide data_id';
 $this->apiErrors[271] = 'Unknown dataset';
 $this->apiErrors[272] = 'No features found';
 $this->apiErrors[273] = 'Dataset not processed yet';

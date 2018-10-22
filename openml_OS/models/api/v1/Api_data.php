@@ -580,12 +580,8 @@ class Api_data extends MY_Api_Model {
   }
 
   private function data_features($data_id) {
-    if($data_id == false) {
-      $this->returnError(270, $this->version);
-      return;
-    }
     $dataset = $this->Dataset->getById($data_id);
-    if( $dataset === false ) {
+    if($dataset === false) {
       $this->returnError(271, $this->version);
       return;
     }
