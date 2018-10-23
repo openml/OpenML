@@ -982,9 +982,7 @@ class ElasticSearch {
 
     private function fetch_tasks($id = false) {
         $index = array();
-        $tasks = $this->db->query("SELECT t.task_id, t.embargo_end_date, tt.name as ttname, i.value AS did, d.name AS dname, ep.name AS epname FROM task_inputs i, task_inputs i2, estimation_procedure ep,
-          task t, task_type tt, dataset d WHERE t.task_id = i.task_id AND t.task_id = i2.task_id AND i.input = 'source_data' AND i2.input = 'estimation_procedure' AND
-          t.ttid = tt.ttid AND d.did = i.value AND ep.id = i2.value" . ($id ? ' and t.task_id=' . $id : ''));
+	$tasks = $this->db->query("SELECT t.task_id, t.embargo_end_date, tt.name as ttname, i.value AS did, d.name AS dname, ep.name AS epname FROM task_inputs i, task_type tt, dataset d, task t LEFT JOIN task_inputs i2 on (t.task_id = i2.task_id AND i2.input = 'estimation_procedure') LEFT JOIN estimation_procedure ep on ep.id = i2.value WHERE t.task_id = i.task_id AND i.input = 'source_data' AND t.ttid = tt.ttid AND d.did = i.value" . ($id ? ' and t.task_id=' . $id : ''));
         if ($tasks){
             if($id)
               $targets = $this->fetch_classes($tasks[0]->did);
@@ -1214,7 +1212,7 @@ class ElasticSearch {
         }
         while ($rid < $runmax) {
           if ($verbosity) {
-            echo str_pad($rid, 10, ' ', STR_PAD_RIGHT);
+            echo str_pad($rid, 9, ' ', STR_PAD_RIGHT);
           }
           set_time_limit(6000);
           $runs = null;
@@ -1243,7 +1241,7 @@ class ElasticSearch {
               $responses = $this->client->bulk($params);
               $submitted += sizeof($responses['items']);
               if ($verbosity) {
-                echo "-  completed ".str_pad($submitted, 9, ' ', STR_PAD_RIGHT);
+                #echo "-  completed ".str_pad($submitted, 9, ' ', STR_PAD_RIGHT);
                 echo "\033[31D";
               }
            }
