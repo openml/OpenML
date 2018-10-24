@@ -20,5 +20,5 @@ window.onresize = function(event) {
   }
   update();
   //Run the update function once every 5 seconds
-  setInterval(update, 500000);
+  setInterval(update, 5000);
 })();

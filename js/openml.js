@@ -1,5 +1,6 @@
 var es_config = {};
 es_config['host'] = ES_URL;
+es_config['requestTimeout'] = 100000;
 var client = new $.es.Client(es_config);
 
 client.ping({
@@ -193,7 +194,7 @@ $(function() {
       },
       source: function(request, fresponse) {
         client.search({
-          index: 'openml',
+          index: '_all',
           body: {
             suggest: {
               mysuggester: {

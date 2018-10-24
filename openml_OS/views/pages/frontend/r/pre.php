@@ -201,6 +201,7 @@ if(false !== strpos($_SERVER['REQUEST_URI'],'/r/')) { // DETAIL
           $this->activeuserlike = $this->searchclient->search($this->l)['hits']['hits'];
         }
 
+     $this->p['index'] = 'flow';
      $this->p['type'] = 'flow';
      $this->p['id'] = $this->run['run_flow']['flow_id'];
      $this->flow = $this->searchclient->get($this->p)['_source'];

@@ -114,7 +114,7 @@ options2 = {
         };
 
 client.search({
-  index: 'openml',
+  index: 'run',
   type: 'run',
   size: '5000',
 	body: {
@@ -171,7 +171,6 @@ client.search({
 			if(d[0].length==0 || (higherIsBetter && e > d[0][d[0].length-1]['y']) || (!higherIsBetter && e < d[0][d[0].length-1]['y'])){
 				d[0].push({x: dat, y: e, f: run['run_flow']['name'], r: run['run_id'], u: run['uploader'], t: getEval(evals,'build_cpu_time')});
 			}
-			console.log(dat+"  "+embargo_end_date);
 			//check if submission is new or submitted during closed phase
 			if(!pairs.has(run['run_flow']['name']+e) || (embargo_end_date !== null && embargo_end_date > dat)){
 				pairs.add(run['run_flow']['name']+e);
@@ -252,7 +251,7 @@ function leaderboard(data){
 function showData(){
 	updateTableHeader();
 	client.search({
-	  index: 'openml',
+	  index: 'run',
 	  type: 'run',
 	  size: 0,
 	  body: {
@@ -270,7 +269,7 @@ function showData(){
 					'flows' : {
 							terms : {
 								field : "run_flow.flow_id",
-								size: 1000
+								size: 100
 							},
 							aggs : {
 									'top_score': {
@@ -289,7 +288,7 @@ function showData(){
 										      }
 										    }
 										    ],
-												size: 1000
+												size: 100
 											}
 									}
 							}
