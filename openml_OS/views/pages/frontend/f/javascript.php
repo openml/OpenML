@@ -203,7 +203,7 @@ function buildTable(dataSet) {
 
 function showData(){
   client.search({
-    index: 'openml',
+    index: 'run',
     type: 'run',
     size: '10000',
     body: {

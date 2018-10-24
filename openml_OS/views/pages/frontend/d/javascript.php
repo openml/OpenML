@@ -3,7 +3,7 @@
 
 //get data from ES for visualizations
 $this->p = array();
-$this->p['index'] = 'openml';
+$this->p['index'] = 'data';
 $this->p['type'] = 'data';
 $this->p['id'] = $this->id;
 

@@ -154,7 +154,7 @@ options2 = {
         };
 
 client.search({
-  index: 'openml',
+  index: 'run',
   type: 'run',
   size: '100000',
   body: {
@@ -394,7 +394,7 @@ sorts = {};
 sorts['evaluations.'+evaluation_measure] = 'desc';
 
 client.search({
-  index: 'openml',
+  index: 'run',
   type: 'run',
   size: '100000',
   body: {
