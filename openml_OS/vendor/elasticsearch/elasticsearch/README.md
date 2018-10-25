@@ -6,7 +6,7 @@ elasticsearch-php
 
 Official low-level client for Elasticsearch. Its goal is to provide common ground for all Elasticsearch-related code in PHP; because of this it tries to be opinion-free and very extendable.
 
-To maintain consistency across all the low-level clients (Ruby, Python, etc), clients accept simple associative arrays as parameters.  All parameters, from the URI to the document body, are defined in the associative array.
+To maintain consistency across all the low-level clients (Ruby, Python, etc.), clients accept simple associative arrays as parameters.  All parameters, from the URI to the document body, are defined in the associative array.
 
 
 Features
@@ -18,37 +18,43 @@ Features
  - Load balancing (with pluggable selection strategy) across all available nodes. Defaults to round-robin
  - Pluggable connection pools to offer different connection strategies
  - Generalized, pluggable architecture - most components can be replaced with your own custom class if specialized behavior is required
- - Option to use asyncronous future, which enables parallel execution of curl requests to multiple nodes
+ - Option to use asynchronous future, which enables parallel execution of curl requests to multiple nodes
+ 
+ 
+**Note:** If you want to use X-Pack API, you need to install an optional extension [elasticsearch/xpack](https://github.com/elastic/elasticsearch-x-pack-php). 
+
 
 Version Matrix
 --------------
 
 | Elasticsearch Version | Elasticsearch-PHP Branch |
 | --------------------- | ------------------------ |
-| >= 5.0                | dev-master               |
+| >= 6.0                | 6.0                      |
+| >= 5.0, < 6.0         | 5.0                      |
 | >= 2.0, < 5.0         | 1.0 or 2.0               |
 | >= 1.0, < 2.0         | 1.0 or 2.0               |
 | <= 0.90.x             | 0.4                      |
 
- - If you are using Elasticsearch 5.0+ (master, alpha, beta), use Elasticsearch-PHP dev-master.  A 5.x branch will be cut when Elasticsearch 5.0 GA is released
+ - If you are using Elasticsearch 6.0+ , use Elasticsearch-PHP 6.0 branch.
+ - If you are using Elasticsearch 5.x , use Elasticsearch-PHP 5.0 branch.
  - If you are using Elasticsearch 1.x or 2.x, prefer using the Elasticsearch-PHP 2.0 branch.  The 1.0 branch is compatible however.
  - If you are using a version older than 1.0, you must install the `0.4` Elasticsearch-PHP branch. Since ES 0.90.x and below is now EOL, the corresponding `0.4` branch will not receive any more development or bugfixes.  Please upgrade.
- - You should never use Elasticsearch-PHP Master branch, as it tracks Elasticearch master and may contain incomplete features or breaks in backwards compat.  Only use ES-PHP master if you are developing against ES master for some reason.
+ - You should never use Elasticsearch-PHP Master branch, as it tracks Elasticsearch master and may contain incomplete features or breaks in backwards compatibility. Only use ES-PHP master if you are developing against ES master for some reason.
 
 Documentation
 --------------
-[Full documentation can be found here.](http://www.elasticsearch.org/guide/en/elasticsearch/client/php-api/2.0/index.html)  Docs are stored within the repo under /docs/, so if you see a typo or problem, please submit a PR to fix it!
+[Full documentation can be found here.](http://www.elasticsearch.org/guide/en/elasticsearch/client/php-api/5.0/index.html)  Docs are stored within the repo under /docs/, so if you see a typo or problem, please submit a PR to fix it!
 
 Installation via Composer
 -------------------------
 The recommended method to install _Elasticsearch-PHP_ is through [Composer](http://getcomposer.org).
 
-1. Add ``elasticsearch/elasticsearch`` as a dependency in your project's ``composer.json`` file (change version to suit your version of Elasticsearch):
+1. Add `elasticsearch/elasticsearch` as a dependency in your project's `composer.json` file (change version to suit your version of Elasticsearch):
 
     ```json
         {
             "require": {
-                "elasticsearch/elasticsearch": "~2.0"
+                "elasticsearch/elasticsearch": "~6.0"
             }
         }
     ```
@@ -62,12 +68,12 @@ The recommended method to install _Elasticsearch-PHP_ is through [Composer](http
 3. Install your dependencies:
 
     ```bash
-        php composer.phar install --no-dev
+        php composer.phar install
     ```
 
 4. Require Composer's autoloader
 
-    Composer also prepares an autoload file that's capable of autoloading all of the classes in any of the libraries that it downloads. To use it, just add the following line to your code's bootstrap process:
+    Composer also prepares an autoload file that's capable of autoloading all the classes in any of the libraries that it downloads. To use it, just add the following line to your code's bootstrap process:
 
     ```php
         <?php
@@ -80,19 +86,17 @@ The recommended method to install _Elasticsearch-PHP_ is through [Composer](http
     ```
 You can find out more on how to install Composer, configure autoloading, and other best-practices for defining dependencies at [getcomposer.org](http://getcomposer.org).
 
-You'll notice that the installation command specified `--no-dev`.  This prevents Composer from installing the various testing and development dependencies.  For average users, there is no need to install the test suite (which also includes the complete source code of Elasticsearch).  If you wish to contribute to development, just omit the `--no-dev` flag to be able to run tests.
-
 PHP Version Requirement
 ----
-Version 2.0 of this library requires at least PHP version 5.4.0 to function.  If you are on an older version of PHP, it is recommended
-that you upgrade, as PHP 5.3 is official EOL.  Elasticsearch-PHP v0.4.x and v1.x are compatible with PHP 5.3.9+, but will
-eventually stop being supported.
+Version 6.0 of this library requires at least PHP version 7.0.0 to function.  In addition, it requires the native JSON
+extension to be version 1.3.7 or higher.
 
-| PHP Version | Elasticsearch-PHP Branch |
+| Elasticsearch-PHP Branch | PHP Version |
 | ----------- | ------------------------ |
-| >= 5.6.6    | Dev-Master              |
-| >= 5.4.0    | 2.0                      |
-| >= 5.3.9    | 0.4, 1.0                 |
+| 6.0         | >= 7.0.0                 |
+| 5.0         | >= 5.6.6                 |
+| 2.0         | >= 5.4.0                 |
+| 0.4, 1.0    | >= 5.3.9                 |
 
 
 Quickstart
@@ -149,7 +153,7 @@ $response = $client->get($params);
 print_r($response);
 ```
 
-The response contains some metadata (index, type, etc) as well as a `_source` field...this is the original document
+The response contains some metadata (index, type, etc.) as well as a `_source` field...this is the original document
 that you sent to Elasticsearch.
 
 ```php
@@ -202,7 +206,7 @@ $response = $client->search($params);
 print_r($response);
 ```
 
-The response is a little different from the previous responses.  We see some metadata (`took`, `timed_out`, etc) and
+The response is a little different from the previous responses.  We see some metadata (`took`, `timed_out`, etc.) and
 an array named `hits`.  This represents your search results.  Inside of `hits` is another array named `hits`, which contains
 individual search results:
 
@@ -320,14 +324,34 @@ Array
 )
 ```
 
+Unit Testing using Mock a Elastic Client
+========================================
+```php
+use GuzzleHttp\Ring\Client\MockHandler;
+use Elasticsearch\ClientBuilder;
 
+// The connection class requires 'body' to be a file stream handle
+// Depending on what kind of request you do, you may need to set more values here
+$handler = new MockHandler([
+  'status' => 200,
+  'transfer_stats' => [
+     'total_time' => 100
+  ],
+  'body' => fopen('somefile.json')
+]);
+$builder = ClientBuilder::create();
+$builder->setHosts(['somehost']);
+$builder->setHandler($handler);
+$client = $builder->build();
+// Do a request and you'll get back the 'body' response above
+```
 
 Wrap up
 =======
 
-That was just a crash-course overview of the client and it's syntax.  If you are familiar with elasticsearch, you'll notice that the methods are named just like REST endpoints.
+That was just a crash-course overview of the client and its syntax.  If you are familiar with Elasticsearch, you'll notice that the methods are named just like REST endpoints.
 
-You'll also notice that the client is configured in a manner that facilitates easy discovery via the IDE.  All core actions are available under the `$client` object (indexing, searching, getting, etc).  Index and cluster management are located under the `$client->indices()` and `$client->cluster()` objects, respectively.
+You'll also notice that the client is configured in a manner that facilitates easy discovery via the IDE.  All core actions are available under the `$client` object (indexing, searching, getting, etc.).  Index and cluster management are located under the `$client->indices()` and `$client->cluster()` objects, respectively.
 
 Check out the rest of the [Documentation](http://www.elasticsearch.org/guide/en/elasticsearch/client/php-api/current/index.html) to see how the entire client works.
 

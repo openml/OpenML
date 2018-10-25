@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Elasticsearch\Tests\Serializers;
 
 use Elasticsearch\Serializers\ArrayToJSONSerializer;
@@ -10,7 +12,7 @@ use Mockery as m;
  * Class ArrayToJSONSerializerTest
  * @package Elasticsearch\Tests\Serializers
  */
-class ArrayToJSONSerializerTest extends PHPUnit_Framework_TestCase
+class ArrayToJSONSerializerTest extends \PHPUnit\Framework\TestCase
 {
     public function tearDown()
     {
@@ -20,12 +22,12 @@ class ArrayToJSONSerializerTest extends PHPUnit_Framework_TestCase
     public function testSerializeArray()
     {
         $serializer = new ArrayToJSONSerializer();
-        $body = array('value' => 'field');
+        $body = ['value' => 'field'];
 
         $ret = $serializer->serialize($body);
 
         $body = json_encode($body, JSON_PRESERVE_ZERO_FRACTION);
-        $this->assertEquals($body, $ret);
+        $this->assertSame($body, $ret);
     }
 
     public function testSerializeString()
@@ -35,7 +37,7 @@ class ArrayToJSONSerializerTest extends PHPUnit_Framework_TestCase
 
         $ret = $serializer->serialize($body);
 
-        $this->assertEquals($body, $ret);
+        $this->assertSame($body, $ret);
     }
 
     public function testDeserializeJSON()
@@ -43,9 +45,9 @@ class ArrayToJSONSerializerTest extends PHPUnit_Framework_TestCase
         $serializer = new ArrayToJSONSerializer();
         $body = '{"field":"value"}';
 
-        $ret = $serializer->deserialize($body, array());
+        $ret = $serializer->deserialize($body, []);
 
         $body = json_decode($body, true);
-        $this->assertEquals($body, $ret);
+        $this->assertSame($body, $ret);
     }
 }
