@@ -13,7 +13,7 @@
        <option value="">Task type</option>
 	    <?php
         $p = array();
-        $p['index'] = 'openml';
+        $p['index'] = 'task_type';
         $p['type'] = 'task_type';
 	      $p['body']['query']['match_all'] = (object)[];
         $results = $this->searchclient->search($p);

@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Elasticsearch\Tests\ConnectionPool\Selectors;
 
 use Elasticsearch;
+use Elasticsearch\Connections\ConnectionInterface;
 
 /**
  * Class SnifferTest
@@ -14,7 +17,7 @@ use Elasticsearch;
  * @license    http://www.apache.org/licenses/LICENSE-2.0 Apache2
  * @link       http://elasticsearch.org
  */
-class RoundRobinSelectorTest extends \PHPUnit_Framework_TestCase
+class RoundRobinSelectorTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Add Ten connections, select 15 to verify round robin
@@ -27,56 +30,74 @@ class RoundRobinSelectorTest extends \PHPUnit_Framework_TestCase
     {
         $roundRobin = new Elasticsearch\ConnectionPool\Selectors\RoundRobinSelector();
 
-        $mockConnections = array();
-        foreach (range(0, 10) as $index) {
-            $mockConnections[$index] = $this->getMockBuilder('\Elasticsearch\Connections\CurlMultiConnection')
+        $mockConnections = [];
+        foreach (range(0, 9) as $index) {
+            $mockConnections[$index] = $this->getMockBuilder(ConnectionInterface::class)
                 ->disableOriginalConstructor()
                 ->getMock();
         }
 
-        foreach (range(0, 15) as $index) {
-            $retConnection = $roundRobin->select($mockConnections);
+        // select ten
+        $this->assertSame($mockConnections[0], $roundRobin->select($mockConnections));
+        $this->assertSame($mockConnections[1], $roundRobin->select($mockConnections));
+        $this->assertSame($mockConnections[2], $roundRobin->select($mockConnections));
+        $this->assertSame($mockConnections[3], $roundRobin->select($mockConnections));
+        $this->assertSame($mockConnections[4], $roundRobin->select($mockConnections));
+        $this->assertSame($mockConnections[5], $roundRobin->select($mockConnections));
+        $this->assertSame($mockConnections[6], $roundRobin->select($mockConnections));
+        $this->assertSame($mockConnections[7], $roundRobin->select($mockConnections));
+        $this->assertSame($mockConnections[8], $roundRobin->select($mockConnections));
+        $this->assertSame($mockConnections[9], $roundRobin->select($mockConnections));
 
-            $nextIndex = ($index % 10) + 1;
-            $this->assertEquals($mockConnections[$nextIndex], $retConnection);
-        }
+        // select five - should start from the first one (index: 0)
+        $this->assertSame($mockConnections[0], $roundRobin->select($mockConnections));
+        $this->assertSame($mockConnections[1], $roundRobin->select($mockConnections));
+        $this->assertSame($mockConnections[2], $roundRobin->select($mockConnections));
+        $this->assertSame($mockConnections[3], $roundRobin->select($mockConnections));
+        $this->assertSame($mockConnections[4], $roundRobin->select($mockConnections));
     }
 
     /**
-     * Add Ten connections, select five, remove thre, test another 10 to check
+     * Add Ten connections, select five, remove three, test another 10 to check
      * that the round-robining works after removing connections
      *
      * @covers \Elasticsearch\ConnectionPool\Selectors\RoundRobinSelector::select
      *
      * @return void
      */
-    public function testAddTenConnectionsestFiveTRemoveThree()
+    public function testAddTenConnectionsTestFiveRemoveThreeTestTen()
     {
         $roundRobin = new Elasticsearch\ConnectionPool\Selectors\RoundRobinSelector();
 
-        $mockConnections = array();
-        foreach (range(0, 10) as $index) {
-            $mockConnections[$index] = $this->getMockBuilder('\Elasticsearch\Connections\CurlMultiConnection')
+        $mockConnections = [];
+        foreach (range(0, 9) as $index) {
+            $mockConnections[$index] = $this->getMockBuilder(ConnectionInterface::class)
                 ->disableOriginalConstructor()
                 ->getMock();
         }
 
-        foreach (range(0, 4) as $index) {
-            $retConnection = $roundRobin->select($mockConnections);
+        // select five
+        $this->assertSame($mockConnections[0], $roundRobin->select($mockConnections));
+        $this->assertSame($mockConnections[1], $roundRobin->select($mockConnections));
+        $this->assertSame($mockConnections[2], $roundRobin->select($mockConnections));
+        $this->assertSame($mockConnections[3], $roundRobin->select($mockConnections));
+        $this->assertSame($mockConnections[4], $roundRobin->select($mockConnections));
 
-            $nextIndex = ($index % (count($mockConnections)-1)) + 1;
-            $this->assertEquals($mockConnections[$nextIndex], $retConnection);
-        }
-
+        // remove three
         unset($mockConnections[8]);
         unset($mockConnections[9]);
         unset($mockConnections[10]);
 
-        foreach (range(5, 15) as $index) {
-            $retConnection = $roundRobin->select($mockConnections);
-
-            $nextIndex = ($index % (count($mockConnections)-1)) + 1;
-            $this->assertEquals($mockConnections[$nextIndex], $retConnection);
-        }
+        // select ten after removal
+        $this->assertSame($mockConnections[5], $roundRobin->select($mockConnections));
+        $this->assertSame($mockConnections[6], $roundRobin->select($mockConnections));
+        $this->assertSame($mockConnections[7], $roundRobin->select($mockConnections));
+        $this->assertSame($mockConnections[0], $roundRobin->select($mockConnections));
+        $this->assertSame($mockConnections[1], $roundRobin->select($mockConnections));
+        $this->assertSame($mockConnections[2], $roundRobin->select($mockConnections));
+        $this->assertSame($mockConnections[3], $roundRobin->select($mockConnections));
+        $this->assertSame($mockConnections[4], $roundRobin->select($mockConnections));
+        $this->assertSame($mockConnections[5], $roundRobin->select($mockConnections));
+        $this->assertSame($mockConnections[6], $roundRobin->select($mockConnections));
     }
 }

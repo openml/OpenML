@@ -54,6 +54,7 @@ class MY_Database_Read_Model extends MY_Model {
   }
   
   function getColumn($column, $orderby = null, $limit = null, $offset = null) {
+    $this->db->select($column);
     $data = $this->get($orderby, $limit, $offset);
     if ($data == false) return false;
     $res = array();

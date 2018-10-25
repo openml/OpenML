@@ -40,10 +40,17 @@ class Api_evaluation extends MY_Api_Model {
     for ($i = 0; $i < count($segs); $i += 2) {
       $query_string[$segs[$i]] = urldecode($segs[$i+1]);
       if (in_array($segs[$i], $legal_filters) == false) {
-        $this->returnError(546, $this->version, $this->openmlGeneralErrorCode, 'Legal filter operators: ' . implode(',', $legal_filters) .'. Found illegal filter: ' . $segs[$i]);
+        $this->returnError(1011, $this->version, $this->openmlGeneralErrorCode, 'Legal filter operators: ' . implode(',', $legal_filters) .'. Found illegal filter: ' . $segs[$i]);
         return;
       }
     }
+    
+    $illegal_filter_inputs = $this->check_filter_inputs($query_string, $legal_filters, array('tag'));
+    if (count($illegal_filter_inputs) > 0) {
+      $this->returnError(1012, $this->version, $this->openmlGeneralErrorCode, 'Filters with illegal values: ' . implode(',', $illegal_filter_inputs));
+      return;
+    }
+    
     $ttid = element('ttid', $query_string, false);
     $tag = element('tag',$query_string, false);
     $uploader = element('uploader',$query_string, false);
@@ -51,16 +58,11 @@ class Api_evaluation extends MY_Api_Model {
     if ($task != false) {
       $task = explode(',', $task);
     }
-    
-    if ($ttid && !is_cs_natural_numbers($ttid)) {
-      $this->returnError(547, $this->version);
-      return;
-    }
     $ttids = explode(',', $ttid);
 
     $res = $this->Run_evaluated->getUnevaluatedRun($evaluation_engine_id, $order, $ttids, $task, $tag, $uploader);
     if ($res == false) {
-      $this->returnError(545, $this->version);
+      $this->returnError(1013, $this->version);
       return;
     }
     $this->xmlContents('evaluations-request', $this->version, array('res' => $res));

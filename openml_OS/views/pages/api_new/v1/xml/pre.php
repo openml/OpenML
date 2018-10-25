@@ -105,11 +105,11 @@ $this->apiErrors[251] = 'Please provide password';
 $this->apiErrors[252] = 'Authentication failed';
 
 // for function: openml.data.features
-$this->apiErrors[270] = 'Please provide data_id';
 $this->apiErrors[271] = 'Unknown dataset';
 $this->apiErrors[272] = 'No features found';
 $this->apiErrors[273] = 'Dataset not processed yet';
 $this->apiErrors[274] = 'No features found. Additionally, dataset processed with error';
+$this->apiErrors[275] = 'You have no right to view this item. ';
 
 // for function: openml.setup.parameters
 $this->apiErrors[280] = 'Please provide setup_id';
@@ -293,10 +293,6 @@ $this->apiErrors[544] = 'Illegal filter specified';
 $this->apiErrors[545] = 'Can not specify offset without limit';
 $this->apiErrors[546] = 'Requested result limit too high. ';
 
-// openml.evaluations.request
-$this->apiErrors[545] = 'No unevaluated runs according to the criteria';
-$this->apiErrors[546] = 'Illegal filter';
-
 // openml.flow.forcedelete
 $this->apiErrors[550] = 'Admin rights are required.';
 $this->apiErrors[551] = 'Delete query failed.';
@@ -390,6 +386,7 @@ $this->apiErrors[692] = 'Dataset does not exists';
 $this->apiErrors[693] = 'Dataset is not owned by you';
 $this->apiErrors[694] = 'Illegal status transition';
 $this->apiErrors[695] = 'Status update failed';
+$this->apiErrors[696] = 'Only admins can activate datasets';
 
 // openml.votes.list
 $this->apiErrors[701] = 'List failed';
@@ -448,5 +445,19 @@ $this->apiErrors[903] = 'Invalid type';
 
 //openml.badges
 $this->apiErrors[950] = 'No such badge';
+
+// openml.tags.list_tags (in MY_API_Model.py)
+$this->apiErrors[1001] = 'Not a taggable item (this should never happen)';
+$this->apiErrors[1002] = 'No tags available';
+
+// openml.evaluations.request
+$this->apiErrors[1011] = 'Illegal filter';
+$this->apiErrors[1012] = 'Input does not comply to constraints';
+$this->apiErrors[1013] = 'No unevaluated runs according to the criteria';
+
+// for function: openml.data.reset
+$this->apiErrors[1021] = 'Dataset does not exists';
+$this->apiErrors[1022] = 'Dataset is not owned by you';
+$this->apiErrors[1023] = 'Resetting dataset failed.';
 
 ?>

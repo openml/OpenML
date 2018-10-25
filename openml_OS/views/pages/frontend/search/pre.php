@@ -223,9 +223,11 @@ if(count($jsonfilters)>1)
 	$fjson = '['.$fjson.']';
 $sjson = '['.implode(",",$jsonshould).'], "minimum_should_match" : 1 ';
 
-$params['index'] = 'openml';
-if($this->filtertype)
+$params['index'] = '_all';
+if($this->filtertype){
+  $params['index'] = $this->filtertype;
   $params['type'] = $this->filtertype;
+}  
 $params['body']  = '{'.
     ($this->table ? '"_source" : ["data_id","name","version","runs","qualities"],' : '').
    '"from" : '. ($this->from ? $this->from : 0) .',
@@ -245,7 +247,7 @@ $params['body']  = '{'.
         }
     }
 }';
-// print_r($params);
+//print_r($params);
 
 // prepare query for result counts over all types (will be loaded using JS)
 $this->alltypes = $params;
@@ -256,7 +258,7 @@ $time_start = microtime_float();
 // launch query
 try {
 	$this->results = $this->searchclient->search($params);
-  // print_r($this->results);
+        //print_r($this->results);
 } catch (Exception $e) {
 	$this->results = array();
 	$this->results['hits'] = array();

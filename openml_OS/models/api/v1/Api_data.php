@@ -69,6 +69,11 @@ class Api_data extends MY_Api_Model {
       return;
     }
 
+    if (count($segments) == 2 && $segments[0] == 'reset' && is_numeric($segments[1]) && $request_type == 'post') {
+      $this->data_reset($segments[1]);
+      return;
+    }
+
     if (count($segments) == 0 && $request_type == 'post') {
       $this->data_upload();
       return;
@@ -110,7 +115,6 @@ class Api_data extends MY_Api_Model {
       return;
     }
 
-
     if (count($segments) == 1 && $segments[0] == 'qualities' && $request_type == 'post') {
       $this->data_qualities_upload($segments[0]);
       return;
@@ -121,13 +125,18 @@ class Api_data extends MY_Api_Model {
       return;
     }
 
-    if (count($segments) == 2 && $segments[0] == 'status' && $segments[1] == 'update') {
-      $this->status_update($this->input->post('data_id'), $this->input->post('status'));
+    if (count($segments) == 1 && $segments[0] == 'untag' && $request_type == 'post') {
+      $this->entity_tag_untag('dataset', $this->input->post('data_id'), $this->input->post('tag'), true, 'data');
       return;
     }
 
-    if (count($segments) == 1 && $segments[0] == 'untag' && $request_type == 'post') {
-      $this->entity_tag_untag('dataset', $this->input->post('data_id'), $this->input->post('tag'), true, 'data');
+    if (count($segments) == 2 && $segments[0] == 'tag' && $segments[1] == 'list') {
+      $this->list_tags('dataset', 'data');
+      return;
+    }
+
+    if (count($segments) == 2 && $segments[0] == 'status' && $segments[1] == 'update') {
+      $this->status_update($this->input->post('data_id'), $this->input->post('status'));
       return;
     }
 
@@ -278,6 +287,27 @@ class Api_data extends MY_Api_Model {
 
     $this->xmlContents( 'data-get', $this->version, $dataset );
   }
+  
+  private function data_reset($data_id) {
+    $dataset = $this->Dataset->getById($data_id);
+    if ($dataset == false) {
+      $this->returnError(1021, $this->version);
+      return;
+    }
+
+    if($dataset->uploader != $this->user_id and !$this->user_has_admin_rights) {
+      $this->returnError(1022, $this->version);
+      return;
+    }
+    
+    $result = $this->Data_processed->deleteWhere('`did` = "' . $dataset->did . '" ');
+
+    if ($result == false) {
+      $this->returnError(1023, $this->version);
+      return;
+    }
+    $this->xmlContents('data-reset', $this->version, array('dataset' => $dataset));
+  }
 
   private function data_delete($data_id) {
 
@@ -307,12 +337,10 @@ class Api_data extends MY_Api_Model {
       //}
     }
 
-    $result = $this->Dataset->delete( $dataset->did );
-    $this->Data_feature->deleteWhere('did =' . $dataset->did);
-    $this->Data_quality->deleteWhere('data =' . $dataset->did);
+    $result = $this->Dataset->delete($dataset->did);
 
-    if( $result == false ) {
-      $this->returnError( 355, $this->version );
+    if ($result == false) {
+      $this->returnError(355, $this->version);
       return;
     }
 
@@ -503,6 +531,11 @@ class Api_data extends MY_Api_Model {
       return;
     }
     
+    if ($status == 'active' && !$this->user_has_admin_rights) {
+      $this->returnError(696, $this->version);
+      return;
+    }
+    
     $status_record = $this->Dataset_status->getWhereSingle('did = ' . $data_id, 'status DESC');
     $in_preparation = $this->config->item('default_dataset_status');
     if ($status_record == false) {
@@ -547,18 +580,14 @@ class Api_data extends MY_Api_Model {
   }
 
   private function data_features($data_id) {
-    if($data_id == false) {
-      $this->returnError(270, $this->version);
-      return;
-    }
     $dataset = $this->Dataset->getById($data_id);
-    if( $dataset === false ) {
+    if ($dataset === false) {
       $this->returnError(271, $this->version);
       return;
     }
 
-    if($dataset->visibility != 'public' && $dataset->uploader != $this->user_id) {
-      $this->returnError(271, $this->version); // Add special error code for this case?
+    if ($dataset->visibility != 'public' && !($dataset->uploader == $this->user_id || $this->user_has_admin_rights)) {
+      $this->returnError(275, $this->version); // Add special error code for this case?
       return;
     }
 

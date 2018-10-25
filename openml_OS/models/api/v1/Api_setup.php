@@ -49,6 +49,11 @@ class Api_setup extends MY_Api_Model {
       $this->entity_tag_untag('algorithm_setup', $this->input->post('setup_id'), $this->input->post('tag'), true, 'setup');
       return;
     }
+    
+    if (count($segments) == 2 && $segments[0] == 'tag' && $segments[1] == 'list') {
+      $this->list_tags('algorithm_setup', 'setup');
+      return;
+    }
 
     if (count($segments) == 1 && $segments[0] == 'exists' && $request_type == 'post') {
       $this->setup_exists(false);

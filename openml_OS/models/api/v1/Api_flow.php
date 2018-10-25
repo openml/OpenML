@@ -74,6 +74,11 @@ class Api_flow extends MY_Api_Model {
       return;
     }
 
+    if (count($segments) == 2 && $segments[0] == 'tag' && $segments[1] == 'list') {
+      $this->list_tags('implementation', 'flow');
+      return;
+    }
+
     $this->returnError( 100, $this->version );
   }
 

@@ -4,15 +4,19 @@ namespace Elasticsearch;
 
 use Elasticsearch\Common\Exceptions\BadMethodCallException;
 use Elasticsearch\Common\Exceptions\InvalidArgumentException;
+use Elasticsearch\Common\Exceptions\NoNodesAvailableException;
+use Elasticsearch\Common\Exceptions\BadRequest400Exception;
 use Elasticsearch\Common\Exceptions\Missing404Exception;
 use Elasticsearch\Common\Exceptions\TransportException;
 use Elasticsearch\Endpoints\AbstractEndpoint;
+use Elasticsearch\Namespaces\AbstractNamespace;
 use Elasticsearch\Namespaces\CatNamespace;
 use Elasticsearch\Namespaces\ClusterNamespace;
 use Elasticsearch\Namespaces\IndicesNamespace;
 use Elasticsearch\Namespaces\IngestNamespace;
 use Elasticsearch\Namespaces\NamespaceBuilderInterface;
 use Elasticsearch\Namespaces\NodesNamespace;
+use Elasticsearch\Namespaces\RemoteNamespace;
 use Elasticsearch\Namespaces\SnapshotNamespace;
 use Elasticsearch\Namespaces\BooleanRequestWrapper;
 use Elasticsearch\Namespaces\TasksNamespace;
@@ -73,6 +77,11 @@ class Client
      */
     protected $tasks;
 
+    /**
+     * @var RemoteNamespace
+     */
+    protected $remote;
+
     /** @var  callback */
     protected $endpoints;
 
@@ -97,6 +106,7 @@ class Client
         $this->cat       = new CatNamespace($transport, $endpoint);
         $this->ingest    = new IngestNamespace($transport, $endpoint);
         $this->tasks     = new TasksNamespace($transport, $endpoint);
+        $this->remote    = new RemoteNamespace($transport, $endpoint);
         $this->registeredNamespaces = $registeredNamespaces;
     }
 
@@ -135,6 +145,8 @@ class Client
         } catch (Missing404Exception $exception) {
             return false;
         } catch (TransportException $exception) {
+            return false;
+        } catch (NoNodesAvailableException $exception) {
             return false;
         }
 
@@ -248,6 +260,66 @@ class Client
         $endpoint->setID($id)
                  ->setIndex($index)
                  ->setType($type);
+        $endpoint->setParams($params);
+
+        return $this->performRequest($endpoint);
+    }
+
+    /**
+     *
+     * $params['_source'] = (list) True or false to return the _source field or not, or a list of fields to return
+     *        ['_source_exclude'] = (array) A list of fields to exclude from the returned _source field
+     *        ['_source_include'] = (array) A list of fields to extract and return from the _source field
+     *        ['allow_no_indices'] = (bool) Whether to ignore if a wildcard indices expression resolves into no concrete indices. (This includes `_all` string or when no indices have been specified)
+     *        ['analyze_wildcard'] = (bool) Specify whether wildcard and prefix queries should be analyzed (default: false)
+     *        ['analyzer'] = (string) The analyzer to use for the query string
+     *        ['conflicts'] = (enum) What to do when the delete-by-query hits version conflicts?
+     *        ['default_operator'] = (enum) The default operator for query string query (AND or OR)
+     *        ['df'] = (string) The field to use as default where no field prefix is given in the query string
+     *        ['expand_wildcards'] = (enum) Whether to expand wildcard expression to concrete indices that are open, closed or both.
+     *        ['from'] = (number) Starting offset (default: 0)
+     *        ['ignore_unavailable'] = (bool) Whether specified concrete indices should be ignored when unavailable (missing or closed)
+     *        ['lenient'] = (bool) Specify whether format-based query failures (such as providing text to a numeric field) should be ignored
+     *        ['preference'] = (string) Specify the node or shard the operation should be performed on (default: random)
+     *        ['q'] = (string) Query in the Lucene query string syntax
+     *        ['refresh'] = (bool) Should the effected indexes be refreshed?
+     *        ['request_cache'] = (bool) Specify if request cache should be used for this request or not, defaults to index level setting
+     *        ['requests_per_second'] = (number) The throttle for this request in sub-requests per second. -1 means no throttle.
+     *        ['routing'] = (array) A comma-separated list of specific routing values
+     *        ['scroll'] = (number) Specify how long a consistent view of the index should be maintained for scrolled search
+     *        ['scroll_size'] = (number) Size on the scroll request powering the update_by_query
+     *        ['search_timeout'] = (number) Explicit timeout for each search request. Defaults to no timeout.
+     *        ['search_type'] = (enum) Search operation type
+     *        ['size'] = (number) Number of hits to return (default: 10)
+     *        ['slices'] = (integer) The number of slices this task should be divided into. Defaults to 1 meaning the task isn't sliced into subtasks.
+     *        ['sort'] = (array) A comma-separated list of <field>:<direction> pairs
+     *        ['stats'] = (array) Specific 'tag' of the request for logging and statistical purposes
+     *        ['terminate_after'] = (number) The maximum number of documents to collect for each shard, upon reaching which the query execution will terminate early.
+     *        ['timeout'] = (number) Time each individual bulk request should wait for shards that are unavailable.
+     *        ['version'] = (bool) Specify whether to return document version as part of a hit
+     *        ['wait_for_active_shards'] = (string) Sets the number of shard copies that must be active before proceeding with the delete by query operation. Defaults to 1, meaning the primary shard only. Set to `all` for all shard copies, otherwise set to any non-negative value less than or equal to the total number of copies for the shard (number of replicas + 1)
+     *        ['wait_for_completion'] = (bool) Should the request should block until the delete-by-query is complete.
+     *
+     * @param array $params
+     *
+     * @return array
+     */
+    public function deleteByQuery($params = array())
+    {
+        $index = $this->extractArgument($params, 'index');
+
+        $type = $this->extractArgument($params, 'type');
+
+        $body = $this->extractArgument($params, 'body');
+
+        /** @var callback $endpointBuilder */
+        $endpointBuilder = $this->endpoints;
+
+        /** @var \Elasticsearch\Endpoints\DeleteByQuery $endpoint */
+        $endpoint = $endpointBuilder('DeleteByQuery');
+        $endpoint->setIndex($index)
+                ->setType($type)
+                ->setBody($body);
         $endpoint->setParams($params);
 
         return $this->performRequest($endpoint);
@@ -575,6 +647,36 @@ class Client
     }
 
     /**
+     * $params['index']       = (list) A comma-separated list of index names to use as default
+     *        ['type']        = (list) A comma-separated list of document types to use as default
+     *        ['search_type'] = (enum) Search operation type
+     *        ['body']        = (array|string) The request definitions (metadata-search request definition pairs), separated by newlines
+     *        ['max_concurrent_searches'] = (number) Controls the maximum number of concurrent searches the multi search api will execute
+     *
+     * @param $params array Associative array of parameters
+     *
+     * @return array
+     */
+    public function msearchTemplate($params = array())
+    {
+        $index = $this->extractArgument($params, 'index');
+        $type = $this->extractArgument($params, 'type');
+        $body = $this->extractArgument($params, 'body');
+
+        /** @var callback $endpointBuilder */
+        $endpointBuilder = $this->endpoints;
+
+        /** @var \Elasticsearch\Endpoints\MsearchTemplate $endpoint */
+        $endpoint = $endpointBuilder('MsearchTemplate');
+        $endpoint->setIndex($index)
+            ->setType($type)
+            ->setBody($body);
+        $endpoint->setParams($params);
+
+        return $this->performRequest($endpoint);
+    }
+
+    /**
      * $params['index']        = (string) The name of the index (Required)
      *        ['type']         = (string) The type of the document (Required)
      *        ['id']           = (string) Specific document ID (when the POST method is used)
@@ -823,6 +925,7 @@ class Client
      *        ['suggest_size']             = (number) How many suggestions to return in response
      *        ['suggest_text']             = (text) The source text for which the suggestions should be returned
      *        ['timeout']                  = (time) Explicit operation timeout
+     *        ['terminate_after']          = (number) The maximum number of documents to collect for each shard, upon reaching which the query execution will terminate early.
      *        ['version']                  = (boolean) Specify whether to return document version as part of a hit
      *        ['body']                     = (array|string) The search definition using the Query DSL
      *
@@ -920,6 +1023,7 @@ class Client
     {
         $scrollID = $this->extractArgument($params, 'scroll_id');
         $body = $this->extractArgument($params, 'body');
+        $scroll = $this->extractArgument($params, 'scroll');
 
         /** @var callback $endpointBuilder */
         $endpointBuilder = $this->endpoints;
@@ -927,6 +1031,7 @@ class Client
         /** @var \Elasticsearch\Endpoints\Scroll $endpoint */
         $endpoint = $endpointBuilder('Scroll');
         $endpoint->setScrollID($scrollID)
+                 ->setScroll($scroll)
                  ->setBody($body);
         $endpoint->setParams($params);
 
@@ -950,11 +1055,10 @@ class Client
         /** @var callback $endpointBuilder */
         $endpointBuilder = $this->endpoints;
 
-        /** @var \Elasticsearch\Endpoints\Scroll $endpoint */
-        $endpoint = $endpointBuilder('Scroll');
+        /** @var \Elasticsearch\Endpoints\ClearScroll $endpoint */
+        $endpoint = $endpointBuilder('ClearScroll');
         $endpoint->setScrollID($scrollID)
-                 ->setBody($body)
-                 ->setClearScroll(true);
+                 ->setBody($body);
         $endpoint->setParams($params);
 
         return $this->performRequest($endpoint);
@@ -999,6 +1103,98 @@ class Client
                  ->setIndex($index)
                  ->setType($type)
                  ->setBody($body);
+        $endpoint->setParams($params);
+
+        return $this->performRequest($endpoint);
+    }
+
+    /**
+     * $params['index']                    = (list) A comma-separated list of index names to search; use `_all` or
+     * empty string to perform the operation on all indices (Required)
+     *        ['type']                     = (list) A comma-separated list of document types to search; leave empty to
+     * perform the operation on all types
+     *        ['analyzer']                 = (string) The analyzer to use for the query string
+     *        ['analyze_wildcard']         = (boolean) Specify whether wildcard and prefix queries should be analyzed
+     * (default: false)
+     *        ['default_operator']         = (enum) The default operator for query string query (AND or OR) (AND,OR)
+     * (default: OR)
+     *        ['df']                       = (string) The field to use as default where no field prefix is given in the
+     * query string
+     *        ['explain']                  = (boolean) Specify whether to return detailed information about score
+     * computation as part of a hit
+     *        ['fields']                   = (list) A comma-separated list of fields to return as part of a hit
+     *        ['fielddata_fields']         = (list) A comma-separated list of fields to return as the field data
+     * representation of a field for each hit
+     *        ['from']                     = (number) Starting offset (default: 0)
+     *        ['ignore_unavailable']       = (boolean) Whether specified concrete indices should be ignored when
+     * unavailable (missing or closed)
+     *        ['allow_no_indices']         = (boolean) Whether to ignore if a wildcard indices expression resolves into
+     * no concrete indices. (This includes `_all` string or when no indices have been specified)
+     *        ['conflicts']                = (enum) What to do when the reindex hits version conflicts? (abort,proceed)
+     * (default: abort)
+     *        ['expand_wildcards']         = (enum) Whether to expand wildcard expression to concrete indices that are
+     * open, closed or both. (open,closed,none,all) (default: open)
+     *        ['lenient']                  = (boolean) Specify whether format-based query failures (such as providing
+     * text to a numeric field) should be ignored
+     *        ['lowercase_expanded_terms'] = (boolean) Specify whether query terms should be lowercased
+     *        ['preference']               = (string) Specify the node or shard the operation should be performed on
+     * (default: random)
+     *        ['q']                        = (string) Query in the Lucene query string syntax
+     *        ['routing']                  = (list) A comma-separated list of specific routing values
+     *        ['scroll']                   = (duration) Specify how long a consistent view of the index should be
+     * maintained for scrolled search
+     *        ['search_type']              = (enum) Search operation type (query_then_fetch,dfs_query_then_fetch)
+     *        ['search_timeout']           = (time) Explicit timeout for each search request. Defaults to no timeout.
+     *        ['size']                     = (number) Number of hits to return (default: 10)
+     *        ['sort']                     = (list) A comma-separated list of <field>:<direction> pairs
+     *        ['_source']                  = (list) True or false to return the _source field or not, or a list of
+     * fields to return
+     *        ['_source_exclude']          = (list) A list of fields to exclude from the returned _source field
+     *        ['_source_include']          = (list) A list of fields to extract and return from the _source field
+     *        ['terminate_after']          = (number) The maximum number of documents to collect for each shard, upon
+     * reaching which the query execution will terminate early.
+     *        ['stats']                    = (list) Specific 'tag' of the request for logging and statistical purposes
+     *        ['suggest_field']            = (string) Specify which field to use for suggestions
+     *        ['suggest_mode']             = (enum) Specify suggest mode (missing,popular,always) (default: missing)
+     *        ['suggest_size']             = (number) How many suggestions to return in response
+     *        ['suggest_text']             = (text) The source text for which the suggestions should be returned
+     *        ['timeout']                  = (time) Time each individual bulk request should wait for shards that are
+     * unavailable. (default: 1m)
+     *        ['track_scores']             = (boolean) Whether to calculate and return scores even if they are not used
+     * for sorting
+     *        ['version']                  = (boolean) Specify whether to return document version as part of a hit
+     *        ['version_type']             = (boolean) Should the document increment the version number (internal) on
+     * hit or not (reindex)
+     *        ['request_cache']            = (boolean) Specify if request cache should be used for this request or not,
+     * defaults to index level setting
+     *        ['refresh']                  = (boolean) Should the effected indexes be refreshed?
+     *        ['consistency']              = (enum) Explicit write consistency setting for the operation
+     * (one,quorum,all)
+     *        ['scroll_size']              = (integer) Size on the scroll request powering the update_by_query
+     *        ['wait_for_completion']      = (boolean) Should the request should block until the reindex is complete.
+     * (default: false)
+     *        ['body']                     = The search definition using the Query DSL
+     *
+     * @param array $params
+     *
+     * @return array
+     */
+    public function updateByQuery($params = array())
+    {
+        $index = $this->extractArgument($params, 'index');
+
+        $body = $this->extractArgument($params, 'body');
+
+        $type = $this->extractArgument($params, 'type');
+
+        /** @var callback $endpointBuilder */
+        $endpointBuilder = $this->endpoints;
+
+        /** @var \Elasticsearch\Endpoints\UpdateByQuery $endpoint */
+        $endpoint = $endpointBuilder('UpdateByQuery');
+        $endpoint->setIndex($index)
+            ->setType($type)
+            ->setBody($body);
         $endpoint->setParams($params);
 
         return $this->performRequest($endpoint);
@@ -1074,7 +1270,6 @@ class Client
         /** @var \Elasticsearch\Endpoints\Script\Put $endpoint */
         $endpoint = $endpointBuilder('Script\Put');
         $endpoint->setID($id)
-                 ->setLang($lang)
                  ->setBody($body);
         $endpoint->setParams($params);
 
@@ -1126,30 +1321,6 @@ class Client
     }
 
     /**
-     * $params['id']   = (string) The search template ID (Required)
-     *
-     * @param $params array Associative array of parameters
-     *
-     * @return array
-     */
-    public function putTemplate($params)
-    {
-        $id   = $this->extractArgument($params, 'id');
-        $body = $this->extractArgument($params, 'body');
-
-        /** @var callback $endpointBuilder */
-        $endpointBuilder = $this->endpoints;
-
-        /** @var \Elasticsearch\Endpoints\Template\Put $endpoint */
-        $endpoint = $endpointBuilder('Template\Put');
-        $endpoint->setID($id)
-            ->setBody($body)
-            ->setParams($params);
-
-        return $this->performRequest($endpoint);
-    }
-
-    /**
      * $params['index']              = (list) A comma-separated list of indices to restrict the results
      *        ['fields']             = (list) A comma-separated list of fields for to get field statistics for (min value, max value, and more)
      *        ['level']              = (enum) Defines if field stats should be returned on a per index level or on a cluster wide level
@@ -1171,6 +1342,33 @@ class Client
 
         /** @var \Elasticsearch\Endpoints\FieldStats $endpoint */
         $endpoint = $endpointBuilder('FieldStats');
+        $endpoint->setIndex($index)
+            ->setBody($body)
+            ->setParams($params);
+
+        return $this->performRequest($endpoint);
+    }
+
+    /**
+     * $params['index']              = (list) A comma-separated list of indices to restrict the results
+     *        ['ignore_unavailable'] = (bool) Whether specified concrete indices should be ignored when unavailable (missing or closed)
+     *        ['allow_no_indices']   = (bool) Whether to ignore if a wildcard indices expression resolves into no concrete indices. (This includes `_all` string or when no indices have been specified)
+     *        ['expand_wildcards']   = (enum) Whether to expand wildcard expression to concrete indices that are open, closed or both.
+     *
+     * @param $params array Associative array of parameters
+     *
+     * @return array
+     */
+    public function fieldCaps($params = array())
+    {
+        $index = $this->extractArgument($params, 'index');
+        $body = $this->extractArgument($params, 'body');
+
+        /** @var callback $endpointBuilder */
+        $endpointBuilder = $this->endpoints;
+
+        /** @var \Elasticsearch\Endpoints\FieldCaps $endpoint */
+        $endpoint = $endpointBuilder('FieldCaps');
         $endpoint->setIndex($index)
             ->setBody($body)
             ->setParams($params);
@@ -1273,6 +1471,16 @@ class Client
     }
 
     /**
+     * Operate on the Remote namespace of commands
+     *
+     * @return RemoteNamespace
+     */
+    public function remote()
+    {
+        return $this->remote;
+    }
+
+    /**
      * Catchall for registered namespaces
      *
      * @param $name
@@ -1300,7 +1508,7 @@ class Client
             $params = (array) $params;
         }
 
-        if (isset($params[$arg]) === true) {
+        if (array_key_exists($arg, $params) === true) {
             $val = $params[$arg];
             unset($params[$arg]);
 
@@ -1331,7 +1539,7 @@ class Client
 
     /**
      * @param $endpoint AbstractEndpoint
-     * 
+     *
      * @throws \Exception
      * @return array
      */

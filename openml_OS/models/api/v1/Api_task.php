@@ -62,6 +62,11 @@ class Api_task extends MY_Api_Model {
       $this->entity_tag_untag('task', $this->input->post('task_id'), $this->input->post('tag'), true, 'task');
       return;
     }
+    
+    if (count($segments) == 2 && $segments[0] == 'tag' && $segments[1] == 'list') {
+      $this->list_tags('task', 'task');
+      return;
+    }
 
     $this->returnError(100, $this->version);
   }

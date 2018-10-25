@@ -1,24 +1,25 @@
 <?php
 
-namespace Elasticsearch\Endpoints\Template;
+namespace Elasticsearch\Endpoints;
 
-use Elasticsearch\Endpoints\AbstractEndpoint;
+use Elasticsearch\Common\Exceptions\InvalidArgumentException;
 use Elasticsearch\Common\Exceptions;
 
 /**
- * Class Put
+ * Class FieldCaps
  *
  * @category Elasticsearch
- * @package  Elasticsearch\Endpoints\Template
+ * @package  Elasticsearch\Endpoints
  * @author   Zachary Tong <zach@elastic.co>
  * @license  http://www.apache.org/licenses/LICENSE-2.0 Apache2
  * @link     http://elastic.co
  */
-class Put extends AbstractEndpoint
+class FieldCaps extends AbstractEndpoint
 {
     /**
      * @param array $body
      *
+     * @throws \Elasticsearch\Common\Exceptions\InvalidArgumentException
      * @return $this
      */
     public function setBody($body)
@@ -28,26 +29,21 @@ class Put extends AbstractEndpoint
         }
 
         $this->body = $body;
-
         return $this;
     }
 
     /**
-     * @throws \Elasticsearch\Common\Exceptions\RuntimeException
      * @return string
      */
     public function getURI()
     {
-        if (isset($this->id) !== true) {
-            throw new Exceptions\RuntimeException(
-                'id is required for Put'
-            );
+        $index = $this->index;
+
+        if (isset($index) === true) {
+            return "/$index/_field_caps";
+        } else {
+            return "/_field_caps";
         }
-
-        $templateId = $this->id;
-        $uri  = "/_search/template/$templateId";
-
-        return $uri;
     }
 
     /**
@@ -55,7 +51,12 @@ class Put extends AbstractEndpoint
      */
     public function getParamWhitelist()
     {
-        return array();
+        return array(
+            'fields',
+            'ignore_unavailable',
+            'allow_no_indices',
+            'expand_wildcards'
+        );
     }
 
     /**
@@ -63,6 +64,6 @@ class Put extends AbstractEndpoint
      */
     public function getMethod()
     {
-        return 'PUT';
+        return 'GET';
     }
 }

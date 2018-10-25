@@ -91,6 +91,11 @@ class Api_run extends MY_Api_Model {
       $this->entity_tag_untag('run', $this->input->post('run_id'), $this->input->post('tag'), true, 'run');
       return;
     }
+    
+    if (count($segments) == 2 && $segments[0] == 'tag' && $segments[1] == 'list') {
+      $this->list_tags('run', 'run');
+      return;
+    }
 
     $this->returnError( 100, $this->version );
   }
@@ -276,13 +281,8 @@ class Api_run extends MY_Api_Model {
       $this->returnError(413, $this->version);
       return;
     }
-
-    $result = true;
-    $result = $result && $this->Trace->deleteWhere('`run_id` = "' . $run->rid . '" ');
-    $result = $result && $this->Evaluation->deleteWhere('`source` = "' .  $run->rid. '" ');
-    $result = $result && $this->Evaluation_fold->deleteWhere('`source` = "' . $run->rid . '" ');
-    $result = $result && $this->Evaluation_sample->deleteWhere('`source` = "' . $run->rid . '" ');
-    $result = $result && $this->Run_evaluated->deleteWhere('`run_id` = "' . $run->rid . '" ');
+    
+    $result = $this->Run_evaluated->deleteWhere('`run_id` = "' . $run->rid . '" ');
 
     if( $result == false ) {
       $this->returnError(394, $this->version);

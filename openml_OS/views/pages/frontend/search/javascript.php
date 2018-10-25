@@ -163,7 +163,7 @@ function removeFilters()
       },
       source: function(request, fresponse) {
         client.search({
-          index: 'openml',
+          index: 'user',
           type: 'user',
           body: {
               suggest: {
