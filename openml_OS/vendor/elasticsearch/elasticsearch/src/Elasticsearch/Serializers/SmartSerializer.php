@@ -2,6 +2,7 @@
 
 namespace Elasticsearch\Serializers;
 
+use Elasticsearch\Common\Exceptions;
 use Elasticsearch\Common\Exceptions\Serializer\JsonErrorException;
 
 /**
@@ -28,6 +29,9 @@ class SmartSerializer implements SerializerInterface
             return $data;
         } else {
             $data = json_encode($data, JSON_PRESERVE_ZERO_FRACTION);
+            if ($data === false) {
+                throw new Exceptions\RuntimeException("Failed to JSON encode: ".json_last_error());
+            }
             if ($data === '[]') {
                 return '{}';
             } else {

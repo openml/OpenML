@@ -71,6 +71,9 @@ class ClientBuilder
     /** @var array */
     private $hosts;
 
+    /** @var array */
+    private $connectionParams;
+
     /** @var  int */
     private $retries;
 
@@ -92,6 +95,36 @@ class ClientBuilder
     public static function create()
     {
         return new static();
+    }
+
+    /**
+     * Can supply first parm to Client::__construct() when invoking manually or with dependency injection
+     * @return this->ransport
+     *
+     */
+    public function getTransport()
+    {
+        return $this->transport;
+    }
+
+    /**
+     * Can supply second parm to Client::__construct() when invoking manually or with dependency injection
+     * @return this->endpoint
+     *
+     */
+    public function getEndpoint()
+    {
+        return $this->endpoint;
+    }
+
+    /**
+     * Can supply third parm to Client::__construct() when invoking manually or with dependency injection
+     * @return this->registeredNamespacesBuilders
+     *
+     */
+    public function getRegisteredNamespacesBuilders()
+    {
+        return $this->registeredNamespacesBuilders;
     }
 
     /**
@@ -129,8 +162,8 @@ class ClientBuilder
     }
 
     /**
-     * @param array $singleParams
      * @param array $multiParams
+     * @param array $singleParams
      * @throws \RuntimeException
      * @return callable
      */
@@ -181,6 +214,7 @@ class ClientBuilder
 
     /**
      * @param $path string
+     * @param int $level
      * @return \Monolog\Logger\Logger
      */
     public static function defaultLogger($path, $level = Logger::WARNING)
@@ -273,6 +307,10 @@ class ClientBuilder
      */
     public function setLogger($logger)
     {
+        if (!$logger instanceof LoggerInterface) {
+            throw new InvalidArgumentException('$logger must implement \Psr\Log\LoggerInterface!');
+        }
+
         $this->logger = $logger;
 
         return $this;
@@ -284,6 +322,10 @@ class ClientBuilder
      */
     public function setTracer($tracer)
     {
+        if (!$tracer instanceof LoggerInterface) {
+            throw new InvalidArgumentException('$tracer must implement \Psr\Log\LoggerInterface!');
+        }
+
         $this->tracer = $tracer;
 
         return $this;
@@ -308,6 +350,17 @@ class ClientBuilder
     public function setHosts($hosts)
     {
         $this->hosts = $hosts;
+
+        return $this;
+    }
+
+    /**
+     * @param array $params
+     * @return $this
+     */
+    public function setConnectionParams(array $params)
+    {
+        $this->connectionParams = $params;
 
         return $this;
     }
@@ -425,8 +478,27 @@ class ClientBuilder
         }
 
         if (is_null($this->connectionFactory)) {
-            $connectionParams = [];
-            $this->connectionFactory = new ConnectionFactory($this->handler, $connectionParams, $this->serializer, $this->logger, $this->tracer);
+            if (is_null($this->connectionParams)) {
+                $this->connectionParams = [];
+            }
+
+            // Make sure we are setting Content-Type and Accept (unless the user has explicitly
+            // overridden it
+            if (isset($this->connectionParams['client']['headers']) === false) {
+                $this->connectionParams['client']['headers'] = [
+                    'Content-Type' => ['application/json'],
+                    'Accept' => ['application/json']
+                ];
+            } else {
+                if (isset($this->connectionParams['client']['headers']['Content-Type']) === false) {
+                    $this->connectionParams['client']['headers']['Content-Type'] = ['application/json'];
+                }
+                if (isset($this->connectionParams['client']['headers']['Accept']) === false) {
+                    $this->connectionParams['client']['headers']['Accept'] = ['application/json'];
+                }
+            }
+
+            $this->connectionFactory = new ConnectionFactory($this->handler, $this->connectionParams, $this->serializer, $this->logger, $this->tracer);
         }
 
         if (is_null($this->hosts)) {
@@ -446,7 +518,7 @@ class ClientBuilder
 
             $this->endpoint = function ($class) use ($serializer) {
                 $fullPath = '\\Elasticsearch\\Endpoints\\' . $class;
-                if ($class === 'Bulk' || $class === 'Msearch' || $class === 'MPercolate') {
+                if ($class === 'Bulk' || $class === 'Msearch' || $class === 'MsearchTemplate' || $class === 'MPercolate') {
                     return new $fullPath($serializer);
                 } else {
                     return new $fullPath();
@@ -494,13 +566,15 @@ class ClientBuilder
                 $connections,
                 $this->selector,
                 $this->connectionFactory,
-                $this->connectionPoolArgs);
+                $this->connectionPoolArgs
+            );
         } elseif (is_null($this->connectionPool)) {
             $this->connectionPool = new StaticNoPingConnectionPool(
                 $connections,
                 $this->selector,
                 $this->connectionFactory,
-                $this->connectionPoolArgs);
+                $this->connectionPoolArgs
+            );
         }
 
         if (is_null($this->retries)) {
@@ -549,7 +623,7 @@ class ClientBuilder
             if (is_string($host)) {
                 $host = $this->prependMissingScheme($host);
                 $host = $this->extractURIParts($host);
-            } else if (is_array($host)) {
+            } elseif (is_array($host)) {
                 $host = $this->normalizeExtendedHost($host);
             } else {
                 $this->logger->error("Could not parse host: ".print_r($host, true));
@@ -565,7 +639,8 @@ class ClientBuilder
      * @param $host
      * @return array
      */
-    private function normalizeExtendedHost($host) {
+    private function normalizeExtendedHost($host)
+    {
         if (isset($host['host']) === false) {
             $this->logger->error("Required 'host' was not defined in extended format: ".print_r($host, true));
             throw new RuntimeException("Required 'host' was not defined in extended format: ".print_r($host, true));

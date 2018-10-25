@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Elasticsearch\Tests;
 
 use Elasticsearch;
@@ -18,7 +20,7 @@ use Mockery as m;
  * @license    http://www.apache.org/licenses/LICENSE-2.0 Apache2
  * @link       http://elasticsearch.org
  */
-class RegisteredNamespaceTest extends \PHPUnit_Framework_TestCase
+class RegisteredNamespaceTest extends \PHPUnit\Framework\TestCase
 {
     public function tearDown()
     {
@@ -29,7 +31,7 @@ class RegisteredNamespaceTest extends \PHPUnit_Framework_TestCase
     {
         $builder = new FooNamespaceBuilder();
         $client = ClientBuilder::create()->registerNamespace($builder)->build();
-        $this->assertEquals("123", $client->foo()->fooMethod());
+        $this->assertSame("123", $client->foo()->fooMethod());
     }
 
     /**
@@ -39,10 +41,11 @@ class RegisteredNamespaceTest extends \PHPUnit_Framework_TestCase
     {
         $builder = new FooNamespaceBuilder();
         $client = ClientBuilder::create()->registerNamespace($builder)->build();
-        $this->assertEquals("123", $client->bar()->fooMethod());
+        $this->assertSame("123", $client->bar()->fooMethod());
     }
 }
 
+// @codingStandardsIgnoreStart "Each class must be in a file by itself" - not worth the extra work here
 class FooNamespaceBuilder implements Elasticsearch\Namespaces\NamespaceBuilderInterface
 {
     public function getName()
@@ -63,3 +66,4 @@ class FooNamespace
         return "123";
     }
 }
+// @codingStandardsIgnoreEnd
