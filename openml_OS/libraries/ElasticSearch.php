@@ -352,6 +352,7 @@ class ElasticSearch {
     public function delete($type, $id = false) {
         $deleteParams = array();
         $deleteParams['index'] = $type;
+	$deleteParams['type'] = $type; 
         $deleteParams['id'] = $id;
         $response = $this->client->delete($deleteParams);
         return $response;
@@ -1119,21 +1120,25 @@ class ElasticSearch {
     //update task, dataset, flow to make sure that their indexed run counts are up to date? Only needed for sorting on number of runs.
     private function update_runcounts($run) {
         $runparams['index'] = 'run';
+	$runparams['type'] = 'run';
         $runparams['body']['query']['match']['run_task.task_id'] = $run->task_id;
         $result = $this->client->search($runparams);
         $runcount = $this->checkNumeric($result['hits']['total']);
 
         $params['index'] = 'task';
+        $params['type'] = 'task';
         $params['id'] = $run->task_id;
         $params['body'] = array('doc' => array('runs' => $runcount));
         $this->client->update($params);
 
         $runparams = array();
         $runparams['index'] = 'run';
+        $runparams['type'] = 'run';
         $runparams['body']['query']['match']['run_flow.flow_id'] = $run->implementation_id;
         $result = $this->client->search($runparams);
         $runcount = $this->checkNumeric($result['hits']['total']);
 
+        $params['index'] = 'flow';
         $params['type'] = 'flow';
         $params['id'] = $run->implementation_id;
         $params['body'] = array('doc' => array('runs' => $runcount));
