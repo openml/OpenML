@@ -1161,6 +1161,7 @@ class ElasticSearch {
         }
 
         $params['index'] = $type;
+        $params['type'] = $type;
         $params['id'] = $id;
         $params['body'] = array('doc' => array('tags' => $ts));
         $this->client->update($params);
