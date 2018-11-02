@@ -6,10 +6,21 @@ class MY_Api_Model extends CI_Model {
     $this->load->helper('text');
     $this->legal_tag_entities = array('data','task','flow','setup','run');
     $this->openmlGeneralErrorCode = $this->config->item('general_http_error_code');
+    
+    $this->content_folder_modulo = 10000; // DO NOT CHANGE
+    // paths
+    $this->data_folders = array(
+      'dataset'        => 'dataset/api/',
+      'implementation' => 'implementation/',
+      'run'            => 'run_structured/',
+      'misc'           => 'misc/'
+    );
   }
+  
   function xmlEscape($string) {
     return str_replace(array('&', '<', '>', '\'', '"'), array('&amp;', '&lt;', '&gt;', '&apos;', '&quot;'), $string);
   }
+  
   // taken from: http://outlandish.com/blog/xml-to-json/
   function xmlToArray($xml, $options = array()) {
     $defaults = array(
@@ -82,6 +93,7 @@ class MY_Api_Model extends CI_Model {
         $xml->getName() => $propertiesArray
     );
   }
+  
   public function returnError($code, $version, $httpErrorCode = 412, $additionalInfo = null, $emailLog = false, $supress_output = false) {
     $this->Log->api_error('error', $_SERVER['REMOTE_ADDR'], $code, $_SERVER['QUERY_STRING'], $this->load->apiErrors[$code] . (($additionalInfo == null)?'':$additionalInfo) );
     $error['code'] = $code;
@@ -98,6 +110,7 @@ class MY_Api_Model extends CI_Model {
       sendEmail($to, $subject, $content,'text');
     }
   }
+  
   protected function xmlContents($xmlFile, $version, $source) {
     $view = 'pages/'.$this->controller.'/' . $version . '/' . $this->page.'/'.$xmlFile.'.tpl.php';
     if ($this->outputFormat == 'json') {
