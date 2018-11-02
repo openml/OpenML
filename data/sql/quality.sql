@@ -67,6 +67,7 @@ INSERT INTO `quality` (`name`, `type`, `formula`, `description`, `datatype`, `mi
 ('MeanKurtosisOfNumericAtts', 'DataQuality', NULL, 'Mean kurtosis among attributes of the numeric type.', 'double', NULL, NULL, NULL, 9999, 'false', '2017-03-03 14:38:02'),
 ('MeanMeansOfNumericAtts', 'DataQuality', NULL, 'Mean of means among attributes of the numeric type.', 'double', NULL, NULL, NULL, 9999, 'false', '2017-03-03 14:38:02'),
 ('MeanMutualInformation', 'DataQuality', NULL, 'Average mutual information between the nominal attributes and the target attribute.', 'double', 0, NULL, NULL, 9999, 'false', '2017-03-03 14:38:02'),
+('MeanNoiseToSignalRatio', 'DataQuality', NULL, 'An estimate of the amount of irrelevant information in the attributes regarding the class. Equals (MeanAttributeEntropy - MeanMutualInformation) divided by MeanMutualInformation.', 'double', 0, NULL, NULL, 9999, 'false', '2017-03-03 14:38:02'),
 ('MeanNominalAttDistinctValues', 'DataQuality', NULL, 'Average number of distinct values among the attributes of the nominal type.', 'double', 0, NULL, NULL, 9999, 'false', '2017-03-03 14:38:02'),
 ('MeanSkewnessOfNumericAtts', 'DataQuality', NULL, 'Mean skewness among attributes of the numeric type.', 'double', NULL, NULL, NULL, 9999, 'false', '2017-03-03 14:38:02'),
 ('MeanStdDevOfNumericAtts', 'DataQuality', NULL, 'Mean standard deviation of attributes of the numeric type.', 'double', NULL, NULL, NULL, 9999, 'false', '2017-03-03 14:38:02'),
