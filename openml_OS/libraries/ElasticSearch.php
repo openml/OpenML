@@ -187,7 +187,8 @@ class ElasticSearch {
                 'tasktype.tt_id' => array('type' => 'long'),
                 'date' => array(
                     'type' => 'date',
-                    'format' => 'yyyy-MM-dd HH:mm:ss')
+                    'format' => 'yyyy-MM-dd HH:mm:ss'),
+		'runs' => array('type' => 'long')	
             )
         );
 	$this->mappings['task_type'] = array(
@@ -278,10 +279,6 @@ class ElasticSearch {
                     'analyzer' => 'snowball'
                 ),
                 'measure_type' => array(
-                    'type' => 'text',
-                    'fielddata' => true
-                ),
-                'priority' => array(
                     'type' => 'text',
                     'fielddata' => true
                 ),
@@ -847,11 +844,11 @@ class ElasticSearch {
 
         $newdata = array(
             'task_id' => $d->task_id,
-            'runs' => $this->checkNumeric($d->runs),
+            'runs' => (int) $this->checkNumeric($d->runs),
             'visibility' => ((strtotime($d->embargo_end_date) < time()) ? 'public' : 'private'),
             'embargo_end_date' => $d->embargo_end_date,
             'tasktype' => array(
-                'tt_id' => $d->ttid,
+                'tt_id' => (float) $d->ttid,
                 'name' => $d->name
             ),
             'date' => $d->creation_date,
@@ -1794,7 +1791,7 @@ class ElasticSearch {
             'data_id' => $d->did,
             'name' => $d->name,
             'exact_name' => $d->name,
-            'version' => $d->version,
+            'version' => (float) $d->version,
             'version_label' => $d->version_label,
             'description' => $d->description,
             'format' => $d->format,

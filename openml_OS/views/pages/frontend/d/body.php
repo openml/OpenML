@@ -93,7 +93,6 @@
     $this->p4['body']['size'] = 1000;
     $this->p4['body']['query']['bool']['must']['match_all'] = (object)[];
     $this->p4['body']['query']['bool']['filter']['term']['measure_type'] = "data_quality";
-    $this->p4['body']['sort'] = array('priority');
     try {
       $responses = $this->searchclient->search($this->p4);
       $this->dataproperties = array();
@@ -111,7 +110,6 @@
     $this->p4['body']['size'] = 1000;
     $this->p4['body']['query']['bool']['must']['match_all'] = (object)[];
     $this->p4['body']['query']['bool']['filter']['term']['measure_type'] = "evaluation_measure";
-    $this->p4['body']['sort'] = array('priority');
     try {
       $responses = $this->searchclient->search($this->p4);
       $this->allmeasures = array_column($responses['hits']['hits'],'_source');
