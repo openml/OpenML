@@ -295,7 +295,7 @@ class ElasticSearch {
                     'type' => 'text',
                     'fields' => array(
                       'keyword' => array(
-                        'type': 'keyword'
+                        'type' => 'keyword'
                       )
                     )
                 ),
@@ -303,7 +303,7 @@ class ElasticSearch {
                     'type' => 'text',
                     'fields' => array(
                       'keyword' => array(
-                        'type': 'keyword'
+                        'type' => 'keyword'
                       )
                     )
                 ),
