@@ -484,7 +484,7 @@ class Api_run extends MY_Api_Model {
       }
 
       // it is important to put the runs in various directories
-      $subdirectory = floor($runId / $this->content_folder_modulo);
+      $subdirectory = floor($runId / $this->content_folder_modulo) * $this->content_folder_modulo;
       $to_folder = $this->data_folders['run'] . $subdirectory . '/' . $runId . '/';
       $file_id = $this->File->register_uploaded_file($value, $to_folder, $this->user_id, $file_type);
       if(!$file_id) {
