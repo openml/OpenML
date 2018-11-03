@@ -222,20 +222,34 @@ class ElasticSearch {
                         'uploader' => array('type' => 'text'))),
                 'run_id' => array('type' => 'long'),
                 'run_flow.flow_id' => array('type' => 'long'),
-                'run_flow.name'  => array('type' => 'text', 'fielddata' => true),
+                'run_flow.name'  => array(
+                      'type' => 'text',
+                      'fields' => array(
+                        'keyword'  => array(
+                          'type' => 'keyword')
+                        )
+                ),
                 'last_update' => array(
                     'type' => 'date',
                     'format' => 'yyyy-MM-dd HH:mm:ss'
                 ),
                 'uploader' => array(
-                    'type' => 'text',
-                    'analyzer' => 'keyword'
+                      'type' => 'text',
+                      'fields' => array(
+                        'keyword'  => array(
+                          'type' => 'keyword')
+                        )
                 ),
                 'evaluations' => array(
                     'type' => 'nested',
                     'properties' => array(
                         'evaluation_measure' => array('type' => 'text'),
-                        'value' => array('type' => 'text', 'fielddata' => true)
+                        'value' => array('type' => 'text',
+                              'fields' => array(
+                                'keyword'  => array(
+                                  'type' => 'keyword')
+                              )
+                        )
                     )
                 )
             )
@@ -279,11 +293,19 @@ class ElasticSearch {
                 ),
                 'measure_type' => array(
                     'type' => 'text',
-                    'fielddata' => true
+                    'fields': {
+                      'keyword': {
+                        'type': 'keyword'
+                      }
+                    }
                 ),
                 'priority' => array(
                     'type' => 'text',
-                    'fielddata' => true
+                    'fields': {
+                      'keyword': {
+                        'type': 'keyword'
+                      }
+                    }
                 ),
                 'date' => array(
                     'type' => 'date',

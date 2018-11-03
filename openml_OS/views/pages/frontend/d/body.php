@@ -93,7 +93,7 @@
     $this->p4['body']['size'] = 1000;
     $this->p4['body']['query']['bool']['must']['match_all'] = (object)[];
     $this->p4['body']['query']['bool']['filter']['term']['measure_type'] = "data_quality";
-    $this->p4['body']['sort'] = array('priority');
+    $this->p4['body']['sort'] = array('priority.keyword');
     try {
       $responses = $this->searchclient->search($this->p4);
       $this->dataproperties = array();
@@ -111,7 +111,7 @@
     $this->p4['body']['size'] = 1000;
     $this->p4['body']['query']['bool']['must']['match_all'] = (object)[];
     $this->p4['body']['query']['bool']['filter']['term']['measure_type'] = "evaluation_measure";
-    $this->p4['body']['sort'] = array('priority');
+    $this->p4['body']['sort'] = array('priority.keyword');
     try {
       $responses = $this->searchclient->search($this->p4);
       $this->allmeasures = array_column($responses['hits']['hits'],'_source');
@@ -128,7 +128,7 @@
 
     // licences
     $this->licences = array();
-    $this->licences['Public'] = array( "name" => 'Publicly available', "url" => 'https://creativecommons.org/publicdomain/mark/1.0/' );    
+    $this->licences['Public'] = array( "name" => 'Publicly available', "url" => 'https://creativecommons.org/publicdomain/mark/1.0/' );
     $this->licences['CC_BY'] = array( "name" => 'Attribution (CC BY)', "url" => 'http://creativecommons.org/licenses/by/4.0/' );
     $this->licences['CC_BY-SA'] = array( "name" => 'Attribution-ShareAlike (CC BY-SA)', "url" => 'http://creativecommons.org/licenses/by-sa/4.0/' );
     $this->licences['CC_BY-ND'] = array( "name" => 'Attribution-NoDerivs (CC BY-ND)', "url" => 'http://creativecommons.org/licenses/by-nd/4.0/' );
