@@ -307,6 +307,7 @@ class ElasticSearch {
                       )
                     )
                 ),
+                ),
                 'date' => array(
                     'type' => 'date',
                     'format' => 'yyyy-MM-dd HH:mm:ss'),
