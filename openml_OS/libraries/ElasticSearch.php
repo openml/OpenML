@@ -293,19 +293,20 @@ class ElasticSearch {
                 ),
                 'measure_type' => array(
                     'type' => 'text',
-                    'fields': {
-                      'keyword': {
+                    'fields' => array(
+                      'keyword' => array(
                         'type': 'keyword'
-                      }
-                    }
+                      )
+                    )
                 ),
                 'priority' => array(
                     'type' => 'text',
-                    'fields': {
-                      'keyword': {
+                    'fields' => array(
+                      'keyword' => array(
                         'type': 'keyword'
-                      }
-                    }
+                      )
+                    )
+                ),
                 ),
                 'date' => array(
                     'type' => 'date',
