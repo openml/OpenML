@@ -1460,7 +1460,7 @@ class ElasticSearch {
             'flow_id' => $d->id,
             'name' => $d->name,
             'exact_name' => $d->name,
-            'version' => $d->version,
+            'version' => (float) $d->version,
             'external_version' => $d->external_version,
             'licence' => $d->licence,
             'description' => (strlen($d->description) > 0 ? $d->description : 'No description'),
