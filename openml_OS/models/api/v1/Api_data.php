@@ -493,10 +493,12 @@ class Api_data extends MY_Api_Model {
     
     // try to move the file to a new directory. If it fails, the dataset is 
     // still valid, but we probably want to make some mechanism to inform administrators
-    $subdirectory = floor($id / $this->content_folder_modulo) * $this->content_folder_modulo;
-    $to_folder = $this->data_folders['dataset'] . $subdirectory . '/' . $id . '/';
-    $this->File->move_file($file_id, $to_folder);
-
+    if ($file_record->type != 'url') {
+      $subdirectory = floor($id / $this->content_folder_modulo) * $this->content_folder_modulo;
+      $to_folder = $this->data_folders['dataset'] . $subdirectory . '/' . $id . '/';
+      $this->File->move_file($file_id, $to_folder);
+    }
+    
     // try making the ES stuff
     try {
       // update elastic search index.
