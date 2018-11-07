@@ -10,7 +10,7 @@ class MY_Api_Model extends CI_Model {
     $this->content_folder_modulo = 10000; // DO NOT CHANGE
     // paths
     $this->data_folders = array(
-      'dataset'        => 'dataset_structured',
+      'dataset'        => 'dataset_structured/',
       'implementation' => 'implementation/',
       'run'            => 'run_structured/',
       'misc'           => 'misc/'
