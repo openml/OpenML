@@ -78,7 +78,11 @@ class ElasticSearch {
             'properties' => array(
                 'date' => array(
                     'type' => 'date',
-                    'format' => 'yyyy-MM-dd HH:mm:ss'),
+                    'format' => 'yyyy-MM-dd HH:mm:ss',
+		    'fields' => array(
+            		'keyword' => array(
+			   'type' => 'keyword'))
+		),
                 'uploader' => array(
                     'type' => 'text',
                     'analyzer' => 'keyword'
