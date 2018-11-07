@@ -112,7 +112,7 @@ class Api_splits extends CI_Controller {
   function get($task_id) {
     $dir_idx = floor($task_id / $this->content_folder_modulo) * $this->content_folder_modulo;
     $directory = $this->directory . '/' . $dir_idx . '/' . $task_id;
-    mkdir(directory, 755);
+    mkdir($directory, 755);
     
     $filepath = $directory . '/splits.arff';
     if (file_exists($filepath) == false) {
