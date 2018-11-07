@@ -4,7 +4,8 @@ class Api_splits extends CI_Controller {
   function __construct() {
     parent::__construct();
     
-    $this->directory = DATA_PATH . 'splits/';
+    $this->content_folder_modulo = 10000; // DO NOT CHANGE
+    $this->directory = DATA_PATH . '/.cache/tasks/';
     
     if( file_exists( $this->directory ) == false ) {
       mkdir( $this->directory, 0755, true );
@@ -109,7 +110,8 @@ class Api_splits extends CI_Controller {
   }
   
   function get($task_id) {
-    $filepath = $this->directory . '/' . $task_id . '.arff';
+    $subdirectory = floor($task_id / $this->content_folder_modulo) * $this->content_folder_modulo;
+    $filepath = $this->directory . '/' . $subdirectory . '/' . $task_id . '/splits.arff';
     if (file_exists($filepath) == false) {
       $this->generate($task_id, $filepath);
     }

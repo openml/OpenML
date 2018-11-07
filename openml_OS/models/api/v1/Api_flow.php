@@ -187,11 +187,6 @@ class Api_flow extends MY_Api_Model {
       unset($_FILES['binary']);
     }
 
-    //if( $source == false && $binary == false ) {
-    //  $this->returnError( 162, $this->version );
-    //  return;
-    //}
-
     foreach( $_FILES as $key => $file ) {
       if( check_uploaded_file( $file ) == false ) {
         $this->returnError( 160, $this->version );
