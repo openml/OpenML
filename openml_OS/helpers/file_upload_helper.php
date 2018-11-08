@@ -126,43 +126,6 @@ function crop_image( $image_path, $target_width, $target_height ) {
   $ci->image_lib->clear();
 }
 
-/**
- * Checks if a directory exists, and creates it if allowed. 
- **/
-function create_dir( $directory ) {
-  $ci =& get_instance();
-  $creation_rights = $ci->config->item('content_directories_create');
-  $creation_mode = $ci->config->item('content_directories_mode');
-  
-  if(! file_exists( $directory ) ) {
-    if( $creation_rights ) {
-      $res = true;
-      $all_dirs = explode( '/', $directory );
-      $total_path = '/';
-      foreach( $all_dirs as $dir ) {
-        if( $dir != '' ) {
-          $total_path .= $dir . '/';
-          if(! file_exists( $total_path ) ) {
-            $res = $res && mkdir( $total_path, $creation_mode );
-          }
-        }
-      }
-      
-      if($res) {
-        return true;
-      } else {
-        // TODO: log it
-        return false;
-      }
-    } else {
-      return false;
-    }
-  } else {
-    // directory already exists
-    return true;
-  }
-}
-
 function fileRecordToUrl( $file ) {
   return BASE_URL . 'data/download/' . $file->id . '/' . $file->filename_original;
 }

@@ -7,8 +7,7 @@ $config['double_epsilon'] = 0.0001; // TODO: calibrate
 
 $config['community_teaser_length'] = 300;
 
-$config['content_directories_create'] = TRUE;
-$config['content_directories_mode'] = 0777;
+$config['content_directories_mode'] = 0755;
 
 $config['api_session_length'] = '1 hour';
 

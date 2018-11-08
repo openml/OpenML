@@ -221,11 +221,8 @@ class Cron extends CI_Controller {
         $evaluation_keys = array('e.repeat', 'e.fold', 'e.sample', 'e.sample_size', 'm.name');
         $evaluation_column = 'evaluation_sample';
       }
-
-      if (create_dir(DATA_PATH . $this->dir_suffix) == false) {
-        $this->_error_meta_dataset($meta_dataset->id, 'Failed to create data directory. ', $meta_dataset->user_id);
-        return;
-      }
+      
+      mkdir(DATA_PATH . $this->dir_suffix, $this->config->item('content_directories_mode'), true);
 
       $tmp_path = '/tmp/' . rand_string( 20 ) . '.csv';
 

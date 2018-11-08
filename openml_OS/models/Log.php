@@ -8,7 +8,7 @@ class Log extends CI_Model {
     parent::__construct();
     $this->dir = DATA_PATH . 'log/';
     
-    create_dir( $this->dir );
+    mkdir($this->dir, $this->config->item('content_directories_mode'), true);
   }
   
   function cronjob($level, $function, $message) {
