@@ -125,7 +125,7 @@ class Cron extends CI_Controller {
         echo now() . ' Starting with batch ' . $i . ' with ids ' . ($i * $batch_size) . ' - ' . ($batch_size + ($i * $batch_size)) . "..\n";
         foreach ($all_records as $record) {
           if (file_exists(DATA_PATH . $record->filepath) == false) {
-            $missing_files .= $record->id;
+            $missing_files[] = $record->id;
             echo now() . ' Missing file from record with id: ' . $record->id . "\n";
           }
         }
