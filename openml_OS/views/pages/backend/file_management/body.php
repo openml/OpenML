@@ -11,7 +11,7 @@
 
       <div class="tab-pane">
         <ul class="nav nav-tabs" role="tablist">
-          <li class="active"><a href="#missing" role="tab" data-toggle="tab">Missing</a></li>
+          <li class="active"><a href="#missing" role="tab" data-toggle="tab">Missing - Page <?php echo $this->page_nr; ?> (<?php echo $this->page_nr * $this->page_limit; ?> - <?php echo $this->page_nr * $this->page_limit + $this->record_count; ?>)</a></li>
           <li><a href="#size" role="tab" data-toggle="tab">Size</a></li>
         </ul>
 
