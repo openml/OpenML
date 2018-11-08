@@ -7,7 +7,7 @@ class Users extends MY_Community_Model {
     $this->id_column = 'id';
     
     $this->load->model('File');
-    $this->load->helper('image');
+    $this->load->helper('file');
   }
   
   function update_image($user_id, $tmp_file_location) {
