@@ -114,6 +114,21 @@ class Cron extends CI_Controller {
       die($result);
     }
   }
+  
+  function missing_file_report() {
+    $batch_size = 10000;
+    $missing_files = array();
+    for ($i = 0; $i == 0 || $all_records !== false; ++$i) {
+      $all_records = $this->File->getWhere('type != "url"', null, $batch_size, $i * $batch_size);
+      echo 'Starting with batch ' . $i . ' with ids ' . ($i * $batch_size) . ' - ' . ($batch_size + ($i * $batch_size) . "..\n";
+      foreach ($all_records as $record) {
+        if (file_exists(DATA_PATH . $record->filepath) == false) {
+          $missing_files .= $record->id;
+          echo 'Missing file from record with id: ' . $record->id . "\n";
+        }
+      }
+    }
+  }
 
   function install_database() {
     // note that this one does not come from DATA folder, as they are stored in github
