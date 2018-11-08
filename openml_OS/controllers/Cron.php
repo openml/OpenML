@@ -116,20 +116,26 @@ class Cron extends CI_Controller {
   }
   
   function missing_file_report() {
+    $start_time = now();
     $batch_size = 10000;
     $missing_files = array();
     for ($i = 0; $i == 0 || $all_records !== false; ++$i) {
       $all_records = $this->File->getWhere('type != "url"', null, $batch_size, $i * $batch_size);
       if ($all_records) {
-        echo 'Starting with batch ' . $i . ' with ids ' . ($i * $batch_size) . ' - ' . ($batch_size + ($i * $batch_size)) . "..\n";
+        echo now() . ' Starting with batch ' . $i . ' with ids ' . ($i * $batch_size) . ' - ' . ($batch_size + ($i * $batch_size)) . "..\n";
         foreach ($all_records as $record) {
           if (file_exists(DATA_PATH . $record->filepath) == false) {
             $missing_files .= $record->id;
-            echo 'Missing file from record with id: ' . $record->id . "\n";
+            echo now() . ' Missing file from record with id: ' . $record->id . "\n";
           }
         }
       }
     }
+    
+    $to = EMAIL_API_LOG;
+    $subject = 'OpenML Cronjob report - Missing files';
+    $content = 'Start time: ' . $start_time . "\nFinish time: " . now() . "\nServer: " . BASE_URL . "\nMissing files from records with the following ID's: " . implode(', ', $missing_files);
+    sendEmail($to, $subject, $content, 'text');
   }
 
   function install_database() {
