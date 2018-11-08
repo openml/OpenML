@@ -13,7 +13,7 @@ $this->result_count = 0;
 $this->record_count = $this->File->numberOfRecords();
 
 if ($all_records) {
-  $this->record_count = count($all_records);
+  $this->result_count = count($all_records);
 }
 
 $this->missing_columns = array('id', 'creator', 'creation_date', 'filesize', 'filename_original', 'type', 'access_policy');
