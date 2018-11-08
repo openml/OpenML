@@ -7,7 +7,7 @@ class Users extends MY_Community_Model {
     $this->id_column = 'id';
     
     $this->load->model('File');
-    $this->load->helper('file');
+    $this->load->helper('file'); 
     
     $this->content_folder_modulo = 10000;
   }
@@ -15,8 +15,8 @@ class Users extends MY_Community_Model {
   function update_image($user_id, $tmp_file_location) {
     $additional_data = array();
     resize_image_squared($tmp_file_location, $this->config->item('max_avatar_size'));
-    $to_directory = 'userdata_structured/' . $user_id;
     $subdirectory = floor($user_id / $this->content_folder_modulo) * $this->content_folder_modulo;
+    $to_directory = 'userdata_structured/' . $subdirectory . '/' . $user_id . '/';
     $file_id = $this->File->register_uploaded_file($_FILES['image'], $to_directory, $user_id, 'userimage');
     if($file_id) {
       $additional_data['image'] = $this->config->item('data_controller') . '/view/' . $file_id . '/' . $_FILES['image']['name'];
