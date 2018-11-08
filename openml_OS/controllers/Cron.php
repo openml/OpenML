@@ -137,6 +137,29 @@ class Cron extends CI_Controller {
     $content = 'Start time: ' . $start_time . "\nFinish time: " . now() . "\nServer: " . BASE_URL . "\nMissing files from records with the following ID's: " . implode(', ', $missing_files);
     sendEmail($to, $subject, $content, 'text');
   }
+  
+  // temp 
+  function move_run_files($start_index, $end_index) {
+    $this->load->model('Runfile');
+    $results = $this->Runfile->getWhere("source >= " . $start_index . ' AND source < ' . $end_index);
+    $run_path = 'run_structured/';
+    
+    foreach ($results as $result) {
+      $file = $this->File->getById($result->file_id);
+      
+      if (substr($file->file_path, 0, strlen($run_path)) === $run_path) {
+        continue;
+      }
+      $this->content_folder_modulo = 10000;
+      $runId = $result->source;
+      $subdirectory = floor($runId / $this->content_folder_modulo) * $this->content_folder_modulo;
+      $to_folder = DATA_PATH . '/' . $run_path . '/' . $subdirectory . '/' . $runId . '/';
+      $success = move_file($file->id, $to_folder);
+      if (!$success) {
+        echo now() . ' failure for file ' . $result->field . ' from run id ' . $runId . "..\n";
+      }
+    }
+  }
 
   function install_database() {
     // note that this one does not come from DATA folder, as they are stored in github
