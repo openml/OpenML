@@ -9,6 +9,7 @@ if ($this->input->get('page')) {
 
 $all_records = $this->File->getWhere('type != "url"', null, $this->page_limit, $this->page_nr * $this->page_limit);
 $all_files = array();
+$this->record_count = count($all_records);
 
 $this->missing_columns = array('id', 'creator', 'creation_date', 'filesize', 'filename_original', 'type', 'access_policy');
 $this->missing_items = array();
