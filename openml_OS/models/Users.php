@@ -20,7 +20,7 @@ class Users extends MY_Community_Model {
     $file_id = $this->File->register_uploaded_file($_FILES['image'], $to_directory, $user_id, 'userimage');
     if($file_id) {
       $additional_data['image'] = $this->config->item('data_controller') . '/view/' . $file_id . '/' . $_FILES['image']['name'];
-	    $update = $this->ion_auth->update($user_id, $additional_data['image']);
+	    $update = $this->ion_auth->update($user_id, $additional_data);
 	    return $update;
     } else {
       return false;
