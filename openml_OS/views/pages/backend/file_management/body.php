@@ -1,5 +1,5 @@
 <?php
-  $text = 'Page ' . $this->page_nr . ' (' . $this->page_nr * $this->page_limit . ' - ' . $this->page_nr * $this->page_limit + $this->result_count . ' / ' . $this->record_count . ')'; 
+  $text = 'Page ' . $this->page_nr . ' (' . ($this->page_nr * $this->page_limit) . ' - ' . (($this->page_nr * $this->page_limit) + $this->result_count) . ' / ' . $this->record_count . ')'; 
 ?>
 <div class="container-fluid topborder endless guidecontainer openmlsectioninfo">
   <div class="col-xs-12 col-md-10 col-md-offset-1 guidesection" id="mainpanel">
