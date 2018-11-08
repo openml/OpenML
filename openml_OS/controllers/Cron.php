@@ -147,14 +147,14 @@ class Cron extends CI_Controller {
     foreach ($results as $result) {
       $file = $this->File->getById($result->file_id);
       
-      if (substr($file->file_path, 0, strlen($run_path)) === $run_path) {
+      if (substr($file->filepath, 0, strlen($run_path)) === $run_path) {
         continue;
       }
       $this->content_folder_modulo = 10000;
       $runId = $result->source;
       $subdirectory = floor($runId / $this->content_folder_modulo) * $this->content_folder_modulo;
       $to_folder = DATA_PATH . '/' . $run_path . '/' . $subdirectory . '/' . $runId . '/';
-      $success = move_file($file->id, $to_folder);
+      $success = $this->File->move_file($file->id, $to_folder);
       if (!$success) {
         echo now() . ' failure for file ' . $result->field . ' from run id ' . $runId . "..\n";
       }
