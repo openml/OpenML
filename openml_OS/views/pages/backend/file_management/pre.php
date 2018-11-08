@@ -4,12 +4,12 @@ $this->directories = directory_map(APPPATH.'views/pages/backend', 1);
 $sql = 'SELECT * FROM file; ';
 
 $this->page_limit = 100000;
-$this->page = 0;
+$this->page_nr = 0;
 if ($this->input->get('page')) {
-	$this->sort = safe($this->input->get('page'));
+	$this->page_nr = safe($this->input->get('page'));
 }
 
-$all_records = $this->File->getWhere('type != "url"', null, $this->page_limit, $this->page * $this->page_limit);
+$all_records = $this->File->getWhere('type != "url"', null, $this->page_limit, $this->page_nr * $this->page_limit);
 $all_files = array();
 
 $this->missing_columns = array( 'id', 'creator', 'creation_date', 'filesize', 'filename_original', 'type', 'access_policy' );
