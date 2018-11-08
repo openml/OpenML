@@ -1,7 +1,7 @@
 <?php
 $this->directories = directory_map(APPPATH.'views/pages/backend', 1);
 
-$this->page_limit = 100000;
+$this->page_limit = 100;
 $this->page_nr = 0;
 if ($this->input->get('page')) {
 	$this->page_nr = safe($this->input->get('page'));
