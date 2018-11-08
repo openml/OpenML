@@ -120,11 +120,13 @@ class Cron extends CI_Controller {
     $missing_files = array();
     for ($i = 0; $i == 0 || $all_records !== false; ++$i) {
       $all_records = $this->File->getWhere('type != "url"', null, $batch_size, $i * $batch_size);
-      echo 'Starting with batch ' . $i . ' with ids ' . ($i * $batch_size) . ' - ' . ($batch_size + ($i * $batch_size)) . "..\n";
-      foreach ($all_records as $record) {
-        if (file_exists(DATA_PATH . $record->filepath) == false) {
-          $missing_files .= $record->id;
-          echo 'Missing file from record with id: ' . $record->id . "\n";
+      if ($all_records) {
+        echo 'Starting with batch ' . $i . ' with ids ' . ($i * $batch_size) . ' - ' . ($batch_size + ($i * $batch_size)) . "..\n";
+        foreach ($all_records as $record) {
+          if (file_exists(DATA_PATH . $record->filepath) == false) {
+            $missing_files .= $record->id;
+            echo 'Missing file from record with id: ' . $record->id . "\n";
+          }
         }
       }
     }
