@@ -9,7 +9,8 @@ if ($this->input->get('page')) {
 
 $all_records = $this->File->getWhere('type != "url"', null, $this->page_limit, $this->page_nr * $this->page_limit);
 $all_files = array();
-$this->record_count = 0;
+$this->result_count = 0;
+$this->record_count = $this->File->numberOfRecords();
 
 if ($all_records) {
   $this->record_count = count($all_records);
