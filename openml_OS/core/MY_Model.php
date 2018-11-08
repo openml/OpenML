@@ -7,9 +7,9 @@ class MY_Model extends CI_Model {
   }
 }
 
-require_once('MY_Community_Model.php');
 require_once('MY_Database_Read_Model.php');
 require_once('MY_Database_Write_Model.php');
+require_once('MY_Community_Model.php');
 require_once('MY_Tag_Model.php');
 require_once('MY_Api_Model.php');
 
