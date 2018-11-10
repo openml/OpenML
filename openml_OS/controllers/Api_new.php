@@ -40,14 +40,6 @@ class Api_new extends CI_Controller {
     // helper
     $this->load->helper('api');
 
-    // paths
-    $this->data_folders = array(
-      'dataset'        => 'dataset/api/',
-      'implementation' => 'implementation/',
-      'run'            => 'run/',
-      'misc'           => 'misc/'
-    );
-
     $this->load->Library('session');
     $this->load->Library('ion_auth');
     $this->load->library('elasticSearch');

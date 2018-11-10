@@ -425,8 +425,9 @@ class Api_data extends MY_Api_Model {
         $this->returnError(145, $this->version, $this->openmlGeneralErrorCode, 'Arff error in dataset file: ' . $uploadedFileCheck);
         return;
       }
-
-      $file_id = $this->File->register_uploaded_file($_FILES['dataset'], $this->data_folders['dataset'], $this->user_id, 'dataset', $access_control);
+      
+      $to_folder = $this->data_folders['dataset'];
+      $file_id = $this->File->register_uploaded_file($_FILES['dataset'], $to_folder, $this->user_id, 'dataset', $access_control);
       if ($file_id === false) {
         $this->returnError(132, $this->version);
         return;
@@ -468,6 +469,7 @@ class Api_data extends MY_Api_Model {
       'isOriginal' => 'true',
       'file_id' => $file_id
     );
+    
     // extract all other necessary info from the XML description
     $dataset = all_tags_from_xml(
       $xml->children('oml', true),
@@ -488,7 +490,15 @@ class Api_data extends MY_Api_Model {
       $this->returnError(134, $this->version);
       return;
     }
-
+    
+    // try to move the file to a new directory. If it fails, the dataset is 
+    // still valid, but we probably want to make some mechanism to inform administrators
+    if ($file_record->type != 'url') {
+      $subdirectory = floor($id / $this->content_folder_modulo) * $this->content_folder_modulo;
+      $to_folder = $this->data_folders['dataset'] . '/' . $subdirectory . '/' . $id . '/';
+      $this->File->move_file($file_id, $to_folder);
+    }
+    
     // try making the ES stuff
     try {
       // update elastic search index.

@@ -78,7 +78,11 @@ class ElasticSearch {
             'properties' => array(
                 'date' => array(
                     'type' => 'date',
-                    'format' => 'yyyy-MM-dd HH:mm:ss'),
+                    'format' => 'yyyy-MM-dd HH:mm:ss',
+		    'fields' => array(
+            		'keyword' => array(
+			   'type' => 'keyword'))
+		),
                 'uploader' => array(
                     'type' => 'text',
                     'analyzer' => 'keyword'
@@ -187,7 +191,8 @@ class ElasticSearch {
                 'tasktype.tt_id' => array('type' => 'long'),
                 'date' => array(
                     'type' => 'date',
-                    'format' => 'yyyy-MM-dd HH:mm:ss')
+                    'format' => 'yyyy-MM-dd HH:mm:ss'),
+		'runs' => array('type' => 'long')	
             )
         );
 	$this->mappings['task_type'] = array(
@@ -281,10 +286,6 @@ class ElasticSearch {
                     'type' => 'text',
                     'fielddata' => true
                 ),
-                'priority' => array(
-                    'type' => 'text',
-                    'fielddata' => true
-                ),
                 'date' => array(
                     'type' => 'date',
                     'format' => 'yyyy-MM-dd HH:mm:ss'),
@@ -352,6 +353,7 @@ class ElasticSearch {
     public function delete($type, $id = false) {
         $deleteParams = array();
         $deleteParams['index'] = $type;
+	$deleteParams['type'] = $type;
         $deleteParams['id'] = $id;
         $response = $this->client->delete($deleteParams);
         return $response;
@@ -846,11 +848,11 @@ class ElasticSearch {
 
         $newdata = array(
             'task_id' => $d->task_id,
-            'runs' => $this->checkNumeric($d->runs),
+            'runs' => (int) $this->checkNumeric($d->runs),
             'visibility' => ((strtotime($d->embargo_end_date) < time()) ? 'public' : 'private'),
             'embargo_end_date' => $d->embargo_end_date,
             'tasktype' => array(
-                'tt_id' => $d->ttid,
+                'tt_id' => (float) $d->ttid,
                 'name' => $d->name
             ),
             'date' => $d->creation_date,
@@ -969,7 +971,7 @@ class ElasticSearch {
         $setups = $this->db->query('SELECT s.setup, f.fullName, i.name, s.value FROM input_setting s, input i, implementation f where i.id=s.input_id AND i.implementation_id = f.id' . ($id ? ' and s.setup=' . $id : ''));
         if ($setups)
             foreach ($setups as $v) {
-                // JvR: if we keep relying on the fullname, there should be a central convenience fn that concatenates the full name in an uniform manner. 
+                // JvR: if we keep relying on the fullname, there should be a central convenience fn that concatenates the full name in an uniform manner.
                 $parameter_fullname = $v->fullName . '_' . $v->name;
                 $index[$v->setup][] = array('parameter' => $parameter_fullname, 'value' => $v->value);
             }
@@ -1119,21 +1121,25 @@ class ElasticSearch {
     //update task, dataset, flow to make sure that their indexed run counts are up to date? Only needed for sorting on number of runs.
     private function update_runcounts($run) {
         $runparams['index'] = 'run';
+	$runparams['type'] = 'run';
         $runparams['body']['query']['match']['run_task.task_id'] = $run->task_id;
         $result = $this->client->search($runparams);
         $runcount = $this->checkNumeric($result['hits']['total']);
 
         $params['index'] = 'task';
+        $params['type'] = 'task';
         $params['id'] = $run->task_id;
         $params['body'] = array('doc' => array('runs' => $runcount));
         $this->client->update($params);
 
         $runparams = array();
         $runparams['index'] = 'run';
+        $runparams['type'] = 'run';
         $runparams['body']['query']['match']['run_flow.flow_id'] = $run->implementation_id;
         $result = $this->client->search($runparams);
         $runcount = $this->checkNumeric($result['hits']['total']);
 
+        $params['index'] = 'flow';
         $params['type'] = 'flow';
         $params['id'] = $run->implementation_id;
         $params['body'] = array('doc' => array('runs' => $runcount));
@@ -1161,6 +1167,7 @@ class ElasticSearch {
         }
 
         $params['index'] = $type;
+        $params['type'] = $type;
         $params['id'] = $id;
         $params['body'] = array('doc' => array('tags' => $ts));
         $this->client->update($params);
@@ -1168,8 +1175,8 @@ class ElasticSearch {
 
     private function index_single_run($id) {
 
-	$params['index'] = 'run';
-	$params['type'] = 'run';
+        $params['index'] = 'run';
+        $params['type'] = 'run';
         $params['id'] = $id;
 
         $run = $this->db->query('SELECT rid, uploader, setup, implementation_id, task_id, start_time FROM run r, algorithm_setup s where s.sid=r.setup and rid=' . $id);
@@ -1185,7 +1192,7 @@ class ElasticSearch {
         $responses = $this->client->index($params);
         $this->update_runcounts($run[0]);
 
-        return 'Successfully indexed ' . sizeof($responses['_id']) . ' run(s).';
+        return 'Successfully indexed run '. $id;
     }
 
     public function index_run($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
@@ -1396,7 +1403,7 @@ class ElasticSearch {
 
         $params['index'] = 'flow';
         $params['type'] = 'flow';
-        $flows = $this->db->query('select i.*, count(rid) as runs from implementation i left join algorithm_setup s on (s.implementation_id=i.id) left join run r on (r.setup=s.sid)' . ($id ? ' where i.id=' . $id : '') . ' group by i.id'); 
+        $flows = $this->db->query('select i.*, count(rid) as runs from implementation i left join algorithm_setup s on (s.implementation_id=i.id) left join run r on (r.setup=s.sid)' . ($id ? ' where i.id=' . $id : '') . ' group by i.id');
 
 
         if ($id and ! $flows)
@@ -1485,7 +1492,7 @@ class ElasticSearch {
         $parameters = $this->db->query('select input.*, implementation.fullName from input, implementation where input.implementation_id = implementation.id AND implementation_id=' . $d->id);
         if ($parameters) {
             foreach ($parameters as $p) {
-                // JvR: if we keep relying on the fullname, there should be a central convenience fn that concatenates the full name in an uniform manner. 
+                // JvR: if we keep relying on the fullname, there should be a central convenience fn that concatenates the full name in an uniform manner.
                 $parameter_fullname = $p->fullName . '_' . $p->name;
                 $par = array(
                     'name' => $p->name,
@@ -1712,13 +1719,13 @@ class ElasticSearch {
           return 'ERROR: Type:' . $err['type'] . ' Reason: ' . $err['reason'] . (array_key_exists('caused_by', $err) ? ' Caused by: ' . $err['caused_by']['reason'] : '');
         }
 
-        return 'Successfully indexed ' . sizeof($responses['items']) . ' out of ' . sizeof($datasets) . ' datasets.';
+        return 'Successfully indexed dataset '.$id;
     }
 
     public function index_data($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
         if ($id)
             return $this->index_single_dataset($id);
-	
+
         $params['index'] = 'data';
         $params['type'] = 'data';
         $datamaxquery = $this->db->query('SELECT max(did) as maxdata from dataset');
@@ -1788,7 +1795,7 @@ class ElasticSearch {
             'data_id' => $d->did,
             'name' => $d->name,
             'exact_name' => $d->name,
-            'version' => $d->version,
+            'version' => (float) $d->version,
             'version_label' => $d->version_label,
             'description' => $d->description,
             'format' => $d->format,

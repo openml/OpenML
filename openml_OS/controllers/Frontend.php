@@ -29,6 +29,7 @@ class Frontend extends CI_Controller {
 
     $this->load->model('Meta_dataset');
     $this->load->model('Author');
+    $this->load->model('Users');
 
     $this->load->helper('table');
     $this->load->helper('tasksearch');

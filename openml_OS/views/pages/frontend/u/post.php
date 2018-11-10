@@ -33,17 +33,13 @@ $this->form_validation->set_rules('password_confirm', 'Password Confirmation', '
 if ($this->form_validation->run() == true) {
 
 
-	$user = clean_array( $_POST, array( 'first_name', 'last_name', 'affiliation', 'country', 'bio', 'gamification_visibility', 'image' ) );
+	$user_data = clean_array($_POST, array( 'first_name', 'last_name', 'affiliation', 'country', 'bio', 'gamification_visibility', 'image'));
+  $user_id = $this->ion_auth->user()->row()->id;
+  if (check_uploaded_file($_FILES['image'])) {
+    $this->Users->update_image($user_id, $_FILES['image']['tmp_name']);
+  }
 
-	if( check_uploaded_file( $_FILES['image'] ) ) {
-		resize_image_squared($_FILES['image']['tmp_name'], $this->config->item('max_avatar_size') );
-		$file_id = $this->File->register_uploaded_file($_FILES['image'], 'userdata/', $this->ion_auth->user()->row()->id, 'userimage');
-		if($file_id) {
-			$user['image'] = $this->data_controller . 'view/' . $file_id . '/' . $_FILES['image']['name'];
-		}
-	}
-
-	if( $this->input->post('password') != false ) {
+	if($this->input->post('password') != false) {
 		$identity = $this->session->userdata($this->config->item('identity', 'ion_auth'));
 
 		$change = $this->ion_auth->change_password($identity, $this->input->post('password_old'), $this->input->post('password'));
@@ -55,7 +51,7 @@ if ($this->form_validation->run() == true) {
 	}
 
 
-	$update = $this->ion_auth->update($this->ion_auth->user()->row()->id,$user);
+	$update = $this->ion_auth->update($this->ion_auth->user()->row()->id,$user_data);
 
 	if($update) {
 		//$this->session->set_flashdata('message', $this->ion_auth->messages());

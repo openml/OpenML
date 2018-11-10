@@ -15,7 +15,7 @@ class File extends MY_Community_Model {
       return false;
     }
     
-    create_dir( DATA_PATH . $to_folder );
+    mkdir(DATA_PATH . $to_folder, $this->config->item('content_directories_mode'), true);
     $newName = getAvailableName( DATA_PATH . $to_folder, $file['name'] );
     
     if( move_uploaded_file( $file['tmp_name'], DATA_PATH . $to_folder . $newName ) === false ) {
@@ -75,7 +75,6 @@ class File extends MY_Community_Model {
       'access_policy' => $access_policy
     );
     return $this->insert($file_record);
-    
   }
   
   function register_created_file($folder, $file, $creator_id, $type, $mime_type, $access_policy = 'public') {
@@ -97,6 +96,39 @@ class File extends MY_Community_Model {
       'access_policy' => $access_policy
     );
     return $this->insert($file_record);
+  }
+  
+  function move_file($file_id, $to_folder) {
+    // moves a registered file by copying it to another folder, updating the
+    // database record, and removing the old record (to prevent losing a file
+    // on failure). Note that this function requires the to_folder not have a 
+    // file with this name already. 
+    $record = $this->getById($file_id);
+    if ($record === false) {
+      return false;
+    }
+    $file_path_old = $record->filepath;
+    $file_path_new = $to_folder . '/' . $record->filename_original;
+    if (file_exists(DATA_PATH . $file_path_new )) {
+      return false;
+    }
+    
+    mkdir(DATA_PATH . $to_folder, $this->config->item('content_directories_mode'), true);
+    $cp_result = copy(DATA_PATH . $file_path_old, DATA_PATH . $file_path_new);
+    if ($cp_result === false) {
+      return false;
+    }
+    
+    $db_result = $this->File->update($file_id, array('filepath' => $file_path_new));
+    if ($db_result === false) {
+      // problem! try to remove the new copy
+      unlink(DATA_PATH . $file_path_new);
+      return false;
+    } else {
+      // all OK. try to remove the old copy
+      unlink(DATA_PATH . $file_path_old);
+      return true;
+    }
   }
   
   function delete_file($id) {

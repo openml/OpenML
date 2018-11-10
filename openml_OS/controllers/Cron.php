@@ -137,6 +137,29 @@ class Cron extends CI_Controller {
     $content = 'Start time: ' . $start_time . "\nFinish time: " . now() . "\nServer: " . BASE_URL . "\nMissing files from records with the following ID's: " . implode(', ', $missing_files);
     sendEmail($to, $subject, $content, 'text');
   }
+  
+  // temp 
+  function move_run_files($start_index, $end_index) {
+    $this->load->model('Runfile');
+    $results = $this->Runfile->getWhere("source >= " . $start_index . ' AND source < ' . $end_index);
+    $run_path = 'run_structured/';
+    
+    foreach ($results as $result) {
+      $file = $this->File->getById($result->file_id);
+      
+      if (substr($file->filepath, 0, strlen($run_path)) === $run_path) {
+        continue;
+      }
+      $this->content_folder_modulo = 10000;
+      $runId = $result->source;
+      $subdirectory = floor($runId / $this->content_folder_modulo) * $this->content_folder_modulo;
+      $to_folder = $run_path . '/' . $subdirectory . '/' . $runId . '/';
+      $success = $this->File->move_file($file->id, $to_folder);
+      if (!$success) {
+        echo now() . ' failure for file ' . $result->field . ' from run id ' . $runId . "..\n";
+      }
+    }
+  }
 
   function install_database() {
     // note that this one does not come from DATA folder, as they are stored in github
@@ -198,11 +221,8 @@ class Cron extends CI_Controller {
         $evaluation_keys = array('e.repeat', 'e.fold', 'e.sample', 'e.sample_size', 'm.name');
         $evaluation_column = 'evaluation_sample';
       }
-
-      if (create_dir(DATA_PATH . $this->dir_suffix) == false) {
-        $this->_error_meta_dataset($meta_dataset->id, 'Failed to create data directory. ', $meta_dataset->user_id);
-        return;
-      }
+      
+      mkdir(DATA_PATH . $this->dir_suffix, $this->config->item('content_directories_mode'), true);
 
       $tmp_path = '/tmp/' . rand_string( 20 ) . '.csv';
 
