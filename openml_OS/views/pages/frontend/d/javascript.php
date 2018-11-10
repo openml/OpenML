@@ -28,7 +28,7 @@ if (!empty($this->data['features'])){
 
 		if($r['type'] == "numeric"){
 			$newGraph = '$(\'#feat'.$r['index'].'\').highcharts({chart:{type:\'boxplot\',inverted:true,backgroundColor:null},exporting:false,credits:false,title: null,legend:{enabled: false},tooltip:false,xAxis:{title:null,labels:{enabled:false},tickLength:0},yAxis:{title:null,labels:{style:{fontSize:\'8px\'}}},series: [{data: [['.$r['min'].','.($r['mean']-$r['stdev']).','.$r['mean'].','.($r['mean']+$r['stdev']).','.$r['max'].']]}]});';
-		} else if (count($r['distr'])>0 ) {
+		} else if ($r['type'] == "nominal" and count($r['distr'])>0 ) {
 			$distro = $r['distr'];
       $this->featvalues = $distro[0];
 
