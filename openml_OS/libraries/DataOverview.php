@@ -26,6 +26,7 @@ class DataOverview {
     $variables['columns'] = $columns;
     $variables['items'] = $items;
     $variables['api_delete_function'] = $api_delete_function;
+    $variables['counter'] = 0;
 
     return $this->CI->load->view('library_templates/data_overview_static', $variables, true);
   }
