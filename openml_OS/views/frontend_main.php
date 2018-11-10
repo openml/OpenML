@@ -273,7 +273,7 @@ if (session_status() === PHP_SESSION_NONE){session_start();}
 
 
           <div class="searchbarcontainer">
-          <div class="searchbar" id="mainmenu" <?php if($section == "OpenML" or $section == "Guide" or $ch == "new"){echo 'style="display:none"';}?>>
+          <div class="searchbar" id="mainmenu" <?php if($section == "OpenML" or $section == "Guide" or $ch == "new" or $ch == "backend"){echo 'style="display:none"';}?>>
             <div class="sidebar-overlay">
             <div class="nav pull-left">
               <a class="navbar-brand menubutton"><i class="fa fa-bars fa-lg"></i></a>
