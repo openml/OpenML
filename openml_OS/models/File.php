@@ -14,8 +14,9 @@ class File extends MY_Community_Model {
     if($md5_hash === false) {
       return false;
     }
-    
-    mkdir(DATA_PATH . $to_folder, $this->config->item('content_directories_mode'), true);
+    if (!file_exists(DATA_PATH . $to_folder)) {
+      mkdir(DATA_PATH . $to_folder, $this->config->item('content_directories_mode'), true);
+    }
     $newName = getAvailableName( DATA_PATH . $to_folder, $file['name'] );
     
     if( move_uploaded_file( $file['tmp_name'], DATA_PATH . $to_folder . $newName ) === false ) {
@@ -112,8 +113,9 @@ class File extends MY_Community_Model {
     if (file_exists(DATA_PATH . $file_path_new )) {
       return false;
     }
-    
-    mkdir(DATA_PATH . $to_folder, $this->config->item('content_directories_mode'), true);
+    if (!file_exists(DATA_PATH . $to_folder)) {
+      mkdir(DATA_PATH . $to_folder, $this->config->item('content_directories_mode'), true);
+    }
     $cp_result = copy(DATA_PATH . $file_path_old, DATA_PATH . $file_path_new);
     if ($cp_result === false) {
       return false;

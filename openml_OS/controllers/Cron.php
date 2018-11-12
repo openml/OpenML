@@ -222,7 +222,9 @@ class Cron extends CI_Controller {
         $evaluation_column = 'evaluation_sample';
       }
       
-      mkdir(DATA_PATH . $this->dir_suffix, $this->config->item('content_directories_mode'), true);
+      if (file_exists(DATA_PATH . $this->dir_suffix) == false) {
+        mkdir(DATA_PATH . $this->dir_suffix, $this->config->item('content_directories_mode'), true);
+      }
 
       $tmp_path = '/tmp/' . rand_string( 20 ) . '.csv';
 
