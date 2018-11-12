@@ -1,5 +1,5 @@
 <?php
-// deprecated, pleas don't use.
+// deprecated, please don't use.
 class Author extends MY_Community_Model {
 	
 	function __construct()
