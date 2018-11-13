@@ -7,10 +7,6 @@ class Api_splits extends CI_Controller {
     $this->content_folder_modulo = 10000; // DO NOT CHANGE
     $this->directory = DATA_PATH . '/.cache/tasks/';
     
-    if( file_exists( $this->directory ) == false ) {
-      mkdir( $this->directory, 0755, true );
-    }
-    
     $this->load->model('Dataset');
     $this->load->model('Task');
     $this->load->model('Task_inputs');
@@ -112,9 +108,6 @@ class Api_splits extends CI_Controller {
   function get($task_id) {
     $dir_idx = floor($task_id / $this->content_folder_modulo) * $this->content_folder_modulo;
     $directory = $this->directory . '/' . $dir_idx . '/' . $task_id;
-    if (!file_exists($directory)) {
-      mkdir($directory, 0755, true);
-    }
     
     $filepath = $directory . '/splits.arff';
     if (file_exists($filepath) == false) {
@@ -142,8 +135,14 @@ class Api_splits extends CI_Controller {
       $command .= '-test "' . $values['custom_testset'] . '" ';
     }
     
-    if ($filepath)
+    if (!file_exists(dirname($filepath))) {
+      mkdir(dirname($filepath), 0755, true);
+    }
+    
+    if ($filepath) {
       $command .= ' -o ' . $filepath;
+    }
+    
     //if( $md5 ) $command .= ' -m';
     $this->Log->cmd('API Splits::get(' . $task_id . ')', $command);
     

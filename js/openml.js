@@ -161,7 +161,7 @@ $(function() {
   });
 
   // automatically show/hide the menu depending on the page width
-  if($('#sectiontitle').html() == 'OpenML' || $('#sectiontitle').html() == 'Guide'){
+  if($('#sectiontitle').html() == 'OpenML' || $('#sectiontitle').html() == 'Guide' || $('#sectiontitle').html() == 'Backend'){
     $('#mainmenu').css("display","none");
   } else if($('#wrap').width()>992){
     $('#mainmenu').css("display","block");
