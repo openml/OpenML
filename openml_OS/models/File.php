@@ -113,6 +113,9 @@ class File extends MY_Community_Model {
     if (file_exists(DATA_PATH . $file_path_new )) {
       return false;
     }
+    if (!file_exists(DATA_PATH . $file_path_old)) {
+      return false;
+    }
     if (!file_exists(DATA_PATH . $to_folder)) {
       mkdir(DATA_PATH . $to_folder, $this->config->item('content_directories_mode'), true);
     }
