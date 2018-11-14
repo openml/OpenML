@@ -23,5 +23,5 @@ INSERT INTO `estimation_procedure` (`id`, `ttid`, `name`, `type`, `repeats`, `fo
 (22, 7, 'Leave one out', 'leaveoneout', 1, NULL, NULL, 'false', 'false', '2014-12-31 23:00:00'),
 (23, 1, '100 times 10-fold Crossvalidation', 'crossvalidation', 100, 10, NULL, 'true', 'false', '2015-09-02 14:18:37'),
 (24, 2, 'Custom 10-fold Crossvalidation', 'customholdout', 1, 10, NULL, 'false', 'true', '2015-09-20 20:44:44'),
-(25, 1, '4-fold Crossvalidation', 'crossvalidation', 1, 4, NULL, 'true', 'false', '2016-03-15 15:32:10'),
-(26, 9, 'Interleaved Test then Train (Batch)', 'testthentrain', NULL, NULL, NULL, NULL, 'false', '2016-12-27 12:09:37');
+(25, 1, '4-fold Crossvalidation', 'crossvalidation', 1, 4, NULL, 'true', 'false', '2016-03-15 15:32:10');
+
