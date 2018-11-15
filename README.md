@@ -1,6 +1,4 @@
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
-[![Stories in Ready](https://badge.waffle.io/openml/OpenML.png?label=ready&title=Ready)](https://waffle.io/openml/OpenML)
-[![Stories in In Progress](https://badge.waffle.io/openml/OpenML.png?label=in%20progress&title=In%20Progress)](https://waffle.io/openml/OpenML)
 
 OpenML: Open Machine Learning
 =============================
