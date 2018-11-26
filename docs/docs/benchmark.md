@@ -84,7 +84,7 @@ which contains all tasks and also holds all benchmarking results obtained on the
     print('Data set: %s; Accuracy: %0.2f' % (task.get_dataset().name,score.mean()))
     run.publish() # publish the experiment on OpenML (optional)
     print('URL for run: %s/run/%d' %(openml.config.server,run.run_id))
-    ```
+  ```
 
 !!! Java (with WEKA)
   ``` java
