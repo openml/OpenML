@@ -7,7 +7,7 @@ more interpretable, and allows more standardized analysis of algorithms under di
 Benchmarking suites make benchmarking a whole lot easier:
 - all datasets are uniformly formatted in standardized data formats
 - they can be easily downloaded programmatically through [APIs and client libraries](APIs)
-- they come with machine-readable [(eta-information](https://www.openml.org/search?type=measure&q=+measure_type%3Adata_quality), such as the occurrence of missing values, to train algorithms correctly
+- they come with machine-readable [meta-information](https://www.openml.org/search?type=measure&q=+measure_type%3Adata_quality), such as the occurrence of missing values, to train algorithms correctly
 - standardized train-test splits are provided to make results more comparable
 - previous benchmarks (run by others) can be easily downloaded and reused
 - new benchmarking results can be shared in a reproducible way through the [APIs](APIs)
