@@ -17,8 +17,8 @@ Below are detailed instructions for common use cases, as well as code examples. 
 
 ### Listing the benchmark suites
 For now, these are explicitly listed below. We will add them to the OpenML search engine soon.
-Each benchmarking suite points to an OpenML study with the exact list of datasets and tasks.
-TODO: List all studies with type=suite /study/list/type/suite (future work)
+Each benchmarking suite points to an OpenML study with the exact list of datasets and tasks.  
+**TODO: List all studies with type=suite /study/list/type/suite (future work)**  
 
 
 ### Fetching the datasets
@@ -117,11 +117,11 @@ which contains all tasks and also holds all benchmarking results obtained on the
   }
 ```
 
-### Retrieving all runs on a benchmarking suites:
-**TODO: Add API call for listing all runs of a study /study/name/<studyname>**
-**TODO: Add Python code for listing all runs of a study**
-**TODO: Add R code for listing all runs of a study**
-**TODO: Add Java code for listing all runs of a study**
+### Retrieving all runs on a benchmarking suites:  
+**TODO: Add API call for listing all runs of a study /study/name/<studyname>**    
+**TODO: Add Python code for listing all runs of a study**  
+**TODO: Add R code for listing all runs of a study**  
+**TODO: Add Java code for listing all runs of a study**  
 
 
 ## Creating new benchmark suites
