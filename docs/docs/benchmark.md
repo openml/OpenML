@@ -6,8 +6,8 @@ more interpretable, and allows more standardized analysis of algorithms under di
 
 Benchmarking suites make benchmarking a whole lot easier:
 - all datasets are uniformly formatted in standardized data formats
-- they can be easily downloaded programmatically through [APIs](APIs and client libraries)
-- they come with machine-readable [https://www.openml.org/search?type=measure&q=+measure_type%3Adata_quality](meta-information), such as the occurrence of missing values, to train algorithms correctly
+- they can be easily downloaded programmatically through [APIs and client libraries](APIs)
+- they come with machine-readable [(eta-information](https://www.openml.org/search?type=measure&q=+measure_type%3Adata_quality), such as the occurrence of missing values, to train algorithms correctly
 - standardized train-test splits are provided to make results more comparable
 - previous benchmarks (run by others) can be easily downloaded and reused
 - new benchmarking results can be shared in a reproducible way through the [APIs](APIs)
@@ -63,7 +63,7 @@ In R, the data is returned as an R dataframe:
 ### Running and sharing benchmarks
 The code below demonstrates how OpenML benchmarking suites can be conveniently imported for benchmarking using the Python, Java and R APIs.
 
-The OpenML-CC18 tasks are downloaded through the [https://www.openml.org/s/99](study with the same name)</a>,
+The OpenML-CC18 tasks are downloaded through the [study with the same name](https://www.openml.org/s/99),
 which contains all tasks and also holds all benchmarking results obtained on them. The code also shows how to access the raw data set (although this is not needed to train a model), fit a simple classifier on the defined data splits, and finally publish runs on the OpenML server.
 
 !!! Python (with scikit-learn)
@@ -125,15 +125,15 @@ which contains all tasks and also holds all benchmarking results obtained on the
 
 
 ## Creating new benchmark suites
-You can [https://www.openml.org/new/data](upload more datasets) to OpenML, and create new benchmark suites out of them,
+You can [upload more datasets](https://www.openml.org/new/data) to OpenML, and create new benchmark suites out of them,
 e.g., for regression and time-series data
 
 This is done by:
-* [https://www.openml.org/new/study](Creating a new study) with the name of the benchmark as the alias.
+* [Creating a new study](https://www.openml.org/new/study) with the name of the benchmark as the alias.
 * Adding new tasks to the study by _tagging_ them with the name of the benchmark.
 
 Step-by-steps:
-- [https://www.openml.org/new/study](Creating a new study) with name and description
+- [Creating a new study](https://www.openml.org/new/study) with name and description
 - Make the study private to avoid that other people add tasks **TODO: explain how**
 - Indicate that this study is a benchmark suite by setting the "suite" flag  **TODO: explain how**
 - Find the study tag study_X **TODO: explain how**
@@ -147,9 +147,9 @@ Step-by-steps:
 ## List of benchmarking suites
 
 ### OpenML-CC18
-The [https://www.openml.org/s/99](OpenML-CC18) suite contains all OpenML datasets from mid-2018 that satisfy a large set of clear requirements for thorough yet practical benchmarking. It includes datasets frequently used in benchmarks published over the last years, so it can be used as a drop-in replacement for many benchmarking setups.
+The [OpenML-CC18](https://www.openml.org/s/99) suite contains all OpenML datasets from mid-2018 that satisfy a large set of clear requirements for thorough yet practical benchmarking. It includes datasets frequently used in benchmarks published over the last years, so it can be used as a drop-in replacement for many benchmarking setups.
 
-[https://www.openml.org/search?q=tags.tag%3Astudy_99&type=data&table=1&size=73](List of datasets and properties)
+[List of datasets and properties](https://www.openml.org/search?q=tags.tag%3Astudy_99&type=data&table=1&size=73)
 
 The suite is defined as the set of all verified OpenML datasets that satisfy the following requirements:  
 * the number of observations are between 500 and 100000 to focus on medium-sized datasets, that are not too small and not too big,
@@ -170,9 +170,9 @@ We excluded datasets which:
 * are sparse data (e.g., text mining data sets)
 
 ### OpenML100  
-The [https://www.openml.org/s/14](OpenML100) was a predecessor of the OpenML-CC18, consisting of [https://www.openml.org/search?q=tags.tag%3AOpenML100&type=data&table=1&size=100](100 classification datasets)</a>. We recommend that you use the [https://www.openml.org/s/99](OpenML-CC18) instead, because the OpenML100 suffers from some teething issues in the design of benchmark suites. For instance, it contains several datasets that are too easy to model with today's machine learning algorithms, as well as datasets that represent time series analysis problems. These do not invalidate benchmarks run on the OpenML100, but may obfuscate the interpretation of results. The 'OpenML-CC18' handle is also more descriptive and allows easier versioning.
+The [OpenML100](https://www.openml.org/s/14) was a predecessor of the OpenML-CC18, consisting of [100 classification datasets](https://www.openml.org/search?q=tags.tag%3AOpenML100&type=data&table=1&size=100)</a>. We recommend that you use the **OpenML-CC18** instead, because the OpenML100 suffers from some teething issues in the design of benchmark suites. For instance, it contains several datasets that are too easy to model with today's machine learning algorithms, as well as datasets that represent time series analysis problems. These do not invalidate benchmarks run on the OpenML100, but may obfuscate the interpretation of results. The 'OpenML-CC18' handle is also more descriptive and allows easier versioning.
 
-[https://www.openml.org/search?q=tags.tag%3Astudy_14&type=data&table=1&size=100](List of datasets and properties)
+[List of datasets and properties](https://www.openml.org/search?q=tags.tag%3Astudy_14&type=data&table=1&size=100)
 
 
 For reference, the OpenML100 included datasets satisfying the following requirements:  
