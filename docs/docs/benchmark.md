@@ -11,10 +11,10 @@ This significantly simplifies and standardizes benchmarking by:
 - sharing of benchmarking results in a reproducible way through the [APIs](APIs)
 
 ## Using OpenML Benchmark Suites
-Below are detailed instructions for common use cases, as well as code examples. These illustrations are done using the reference 'OpenML-CC18' benchmark suite, but you can simply replace this with any other benchmark suite. In all examples, OpenML does not only return the datasets, but also the train-test splits and (for predictive tasks) the target feature. These are enveloped as _tasks_ in OpenML. Hence, you will usually receive a list of tasks in which you can find the data itself. 
+Below are detailed instructions for common use cases, as well as code examples. These illustrations are done using the reference 'OpenML-CC18' benchmark suite, but you can simply replace this with any other benchmark suite. In all examples, OpenML does not only return the datasets, but also the train-test splits and (for predictive tasks) the target feature. These are enveloped as _tasks_ in OpenML. Hence, you will usually receive a list of tasks in which you can find the data itself.
 
 ### Listing and viewing the benchmark suites online
-For now, these are explictly listed below. We will add them to the OpenML search engine soon.
+For now, these are explicitly listed below. We will add them to the OpenML search engine soon.
 Each benchmarking suite points to an OpenML study with the exact list of datasets and tasks.
 
 Via the REST API:
@@ -44,7 +44,7 @@ In Java, the data is returned as a WEKA Instances object:
     Task t = openml.taskGet(taskId); // download the OpenML task
     Instances d = InstancesHelper.getDatasetFromTask(openml, t); // obtain the dataset
   ```
- 
+
 In R, the data is returned as an R dataframe:
 !!! R (with mlr)
   ``` r
@@ -58,11 +58,11 @@ In R, the data is returned as an R dataframe:
 ### Running and sharing benchmarks
 The code below demonstrates how OpenML benchmarking suites can be conveniently imported for benchmarking using the Python, Java and R APIs.
 
-The OpenML100 tasks are downloaded through the <a href="https://www.openml.org/s/14" target="_blank">study with the same name</a>,
+The OpenML100 tasks are downloaded through the [https://www.openml.org/s/14](study with the same name)</a>,
 which contains the 100 tasks and also holds all benchmarking results obtained on them. The code also shows how to access the raw data set (although this is not needed to train a model),
 fit a simple classifier on the defined data splits, and finally publish runs on the OpenML server.
 
-!!! Python (with scikit-learn) 
+!!! Python (with scikit-learn)
   ``` python
   import openml
   import sklearn
@@ -115,15 +115,13 @@ fit a simple classifier on the defined data splits, and finally publish runs on 
 
 ### Retrieving all runs on a benchmarking suites:
 - API call /study/name/<studyname> --> list of run ids
-  
+
 ## Creating new benchmark suites
 The set of datasets on OpenML.org can <a href="https://www.openml.org/new/data">easily be extended</a>, and additional OpenML benchmark suites,
 e.g., for regression and time-series data, can easily be created by defining sets of datasets according to specific needs.
 This is done by:
-<ul>
-<li><a href="new/study">Creating a new study</a> with the name of the benchmark as the alias.</li>
-<li>Adding new tasks to the study by <i>tagging</i> them with the name of the benchmark.</li>
-</ul>
+* [https://www.openml.org/new/study](Creating a new study) with the name of the benchmark as the alias.
+* Adding new tasks to the study by _tagging_ them with the name of the benchmark.
 
 Detailed steps:
 - Create a new study with name and description
@@ -135,7 +133,7 @@ Detailed steps:
     - User IDs (who can extend study with that tag)
     - Beginning/end dates (only stuff tagged within those dates are part of the study)
 - You do not have to tag any runs with study_X, these will be linked automatically
-  
+
 ### Changing a benchmark suite
 - If the study is private, only the owner can do that
 - You can create a new suite with a similar set of tasks if you want
@@ -144,23 +142,23 @@ Detailed steps:
 ## Existing suites
 
 ### OpenML-CC18
-https://www.openml.org/s/99
+The [https://www.openml.org/s/99](OpenML-CC18)
+
 
 ### OpenML100  
-https://www.openml.org/s/14
+The [https://www.openml.org/s/14](OpenML100) was a predecessor of the OpenML-CC18, consisting of [https://www.openml.org/search?q=tags.tag%3AOpenML100&type=data&table=1&size=100](100 classification datasets)</a>. We recommend that you use the [https://www.openml.org/s/99](OpenML-CC18) instead, because the OpenML100 suffers from some teething issues in the design of benchmark suites. For instance, it contains several datasets that are too easy to model with today's machine learning algorithms, as well as datasets that represent time series analysis problems. These do not invalidate benchmarks run on the OpenML100, but may obfuscate the interpretation of results. The 'OpenML-CC18' handle is also more descriptive and allows easier versioning.
 
-The OpenML100 was a predecessor of the OpenML-CC18, consisting of <a href="https://www.openml.org/search?q=tags.tag%3AOpenML100&type=data&table=1&size=100" target="_blank">100 classification datasets</a>. We recommend that you use the OpenML-CC18 instead, because the OpenML100 suffers from some teething issues in the design of benchmark suites. For instance, it contains several datasets that are too easy to model with today's machine learning algorithms, as well as datasets that represent time series analysis problems. These do not invalidate benchmarks run on the OpenML100, but may obfuscate the interpretation of results. The 'OpenML-CC18' handle is also more descriptive and allows easier versioning.
+For reference, the OpenML100 included datasets satisfying the following requirements:  
 
-For reference, the OpenML100 included datasets satisfying the following requirements:
-<ul><li>the number of observations are between 500 and 100000 to focus on medium-sized datasets, that are not too small for proper training and not too big for practical experimentation,
-</li><li>the number of features does not exceed 5000 features to keep the runtime of algorithms low
-</li><li>the target attribute has at least two classes
-</li><li>the ratio of the minority class and the majority class is above 0.05 to eliminate highly imbalanced datasets that would obfuscate a clear analysis.
-</li></ul>
+* the number of observations are between 500 and 100000 to focus on medium-sized datasets, that are not too small for proper training and not too big for practical experimentation
+* the number of features does not exceed 5000 features to keep the runtime of algorithms low
+* the target attribute has at least two classes
+* he ratio of the minority class and the majority class is above 0.05 to eliminate highly imbalanced datasets that would obfuscate a clear analysis
 
-It excluded datasets which:
-<ul><li>cannot be randomized via a 10-fold cross-validation due to grouped samples,
-</li><li>have an unknown origin or no clearly defined task,
-</li><li>are variants of other datasets (e.g. binarized regression tasks),
-</li><li>include sparse data (e.g., text mining data sets).
-</li></ul>
+
+It excluded datasets which:  
+
+* cannot be randomized via a 10-fold cross-validation due to grouped samples
+* have an unknown origin or no clearly defined task
+* are variants of other datasets (e.g. binarized regression tasks)
+* include sparse data (e.g., text mining data sets)
