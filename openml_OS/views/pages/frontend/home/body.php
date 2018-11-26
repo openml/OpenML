@@ -116,9 +116,9 @@
   <div class="covertext">As machine learning is enhancing our ability to understand nature and build a better future,
     it is crucial that we make it transparent and easily accessible to everyone in research, education and industry.
     The Open Machine Learning project is an inclusive movement to build an open, organized, online ecosystem for machine learning.
-    We build <a class="coverlink" href="https://www.openml.org/guide/api">open source tools</a> to discover (and share)
+    We build <a class="coverlink" href="https://docs.openml.org/APIs/">open source tools</a> to discover (and share)
     <a class="coverlink" href="https://www.openml.org/search?type=data">open data from any domain</a>,
-    easily draw them into your <a class="coverlink" href="https://www.openml.org/guide/integrations">favourite machine learning environments</a>,
+    easily draw them into your <a class="coverlink" href="https://docs.openml.org/sklearn/">favourite machine learning environments</a>,
     quickly build models alongside (and together with) thousands of other data scientists, analyse your results against the state
     of the art, and even get automatic advice on how to build better models. Stand on the shoulders of giants and make the world a better place.
   <br><br>
@@ -139,7 +139,7 @@
         data to algorithms and people, so you can build on the state of the art and learn to teach machines to learn better.
       </div>
       <div class="covertext">
-        <a class="coverlink" href="guide/bootcamp">Learn more</a>
+        <a class="coverlink" href="https://docs.openml.org/">Learn more</a>
       </div>
     </div>
     <div class="col-sm-8 col-md-6 coverflow">
@@ -159,7 +159,7 @@
         Easily search thousands of datasets and import them directly into your code or toolboxes, or quickly find similar datasets together with the best machine learning approaches.
       </div>
       <div class="covertext">
-        <a class="coverlink" href="guide/bootcamp">Learn more</a>
+        <a class="coverlink" href="https://docs.openml.org/">Learn more</a>
       </div>
     </div>
 </div>
@@ -176,7 +176,7 @@
 
     </div>
     <div class="covertext">
-      <a class="coverlink" href="guide/bootcamp">Learn more</a>
+      <a class="coverlink" href="https://docs.openml.org/">Learn more</a>
     </div>
   </div>
 
@@ -202,8 +202,8 @@
         with the Python, R, Java, and C++ APIs, or program against the REST API.
       </div>
       <div class="covertext">
-        <a class="coverlink" href="guide/api">OpenML APIs ></a><br>
-        <a class="coverlink" href="guide/integrations">OpenML integrations ></a>
+        <a class="coverlink" href="https://docs.openml.org/APIs/">OpenML APIs ></a><br>
+        <a class="coverlink" href="https://docs.openml.org/sklearn/">OpenML integrations ></a>
       </div>
     </div>
 </div>
@@ -218,7 +218,7 @@
       Wherever possible, we extract clear descriptions of machine learning workflows and models.
     </div>
     <div class="covertext">
-      <a class="coverlink" href="guide/bootcamp">Learn more</a>
+      <a class="coverlink" href="https://docs.openml.org/">Learn more</a>
     </div>
   </div>
 
