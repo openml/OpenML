@@ -30,7 +30,7 @@ Via the REST API, a list of all tasks and dataset IDs is returned
   https://www.openml.org/api/v1/study/name/OpenML-CC18
   ```
 
-In Python, the data is returned as X, y numpy arrays:
+In Python, the data is returned as X, y numpy arrays:  
 !!! Python
   ``` python
   import openml
@@ -40,7 +40,7 @@ In Python, the data is returned as X, y numpy arrays:
     X, y = task.get_X_and_y() # get the data
   ```
 
-In Java, the data is returned as a WEKA Instances object:
+In Java, the data is returned as a WEKA Instances object:  
 !!! Java
   ``` java
   OpenmlConnector openml = new OpenmlConnector();
@@ -50,7 +50,7 @@ In Java, the data is returned as a WEKA Instances object:
     Instances d = InstancesHelper.getDatasetFromTask(openml, t); // obtain the dataset
   ```
 
-In R, the data is returned as an R dataframe:
+In R, the data is returned as an R dataframe:  
 !!! R (with mlr)
   ``` r
   library(OpenML)
