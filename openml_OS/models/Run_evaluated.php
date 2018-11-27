@@ -35,7 +35,9 @@ class Run_evaluated extends MY_Database_Write_Model {
     $limit_count = $num_requests;
     $this->db->limit($limit_count);
     
-    // Reverse order if needed (slower query)
+    // Reverse order and random order make this query rather slow. Therefore, 
+    // api calls that request this should only be executed with care (e.g., by
+    // obtaining large batches using the num_requests param)
     if ($order == 'reverse') {
       $this->db->order_by('`r`.`rid` DESC');
     } elseif($order == 'random') {
