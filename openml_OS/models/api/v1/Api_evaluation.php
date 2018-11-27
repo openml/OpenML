@@ -22,19 +22,20 @@ class Api_evaluation extends MY_Api_Model {
     }
 
     $order_values = array('random', 'reverse', 'normal');
-    if (count($segments) >= 3 && $segments[0] == 'request' && is_numeric($segments[1]) && in_array($segments[2], $order_values)) {
+    if (count($segments) >= 4 && $segments[0] == 'request' && is_numeric($segments[1]) && in_array($segments[2], $order_values) && is_numeric($segment[3])) {
       array_shift($segments); // removes 'request'
       $eval_id = array_shift($segments);
       $order = array_shift($segments);
+      $num_requests = array_shift($segments);
 
-      $this->evaluation_request($eval_id, $order, $segments);
+      $this->evaluation_request($eval_id, $order, $num_requests, $segments);
       return;
     }
 
     $this->returnError(100, $this->version);
   }
 
-  private function evaluation_request($evaluation_engine_id, $order, $segs) {
+  private function evaluation_request($evaluation_engine_id, $order,  $num_requests, $segs) {
     if (!$this->user_has_admin_rights) {
       $this->returnError(106, $this->version);
       return;
@@ -66,7 +67,7 @@ class Api_evaluation extends MY_Api_Model {
     if ($ttid != false) {
       $ttid = explode(',', $ttid);
     }
-    $res = $this->Run_evaluated->getUnevaluatedRun($evaluation_engine_id, $order, $ttid, $task, $tag, $uploader);
+    $res = $this->Run_evaluated->getUnevaluatedRun($evaluation_engine_id, $order, $num_requests, $ttid, $task, $tag, $uploader);
     if ($res == false) {
       $this->returnError(1013, $this->version);
       return;
