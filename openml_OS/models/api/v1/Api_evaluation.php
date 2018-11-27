@@ -22,7 +22,7 @@ class Api_evaluation extends MY_Api_Model {
     }
 
     $order_values = array('random', 'reverse', 'normal');
-    if (count($segments) >= 4 && $segments[0] == 'request' && is_numeric($segments[1]) && in_array($segments[2], $order_values) && is_numeric($segment[3])) {
+    if (count($segments) >= 4 && $segments[0] == 'request' && is_numeric($segments[1]) && in_array($segments[2], $order_values) && is_numeric($segments[3])) {
       array_shift($segments); // removes 'request'
       $eval_id = array_shift($segments);
       $order = array_shift($segments);
