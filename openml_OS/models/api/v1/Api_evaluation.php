@@ -35,6 +35,11 @@ class Api_evaluation extends MY_Api_Model {
   }
 
   private function evaluation_request($evaluation_engine_id, $order, $segs) {
+    if (!$this->user_has_admin_rights) {
+      $this->returnError(106, $this->version);
+      return;
+    }
+    
     $legal_filters = array('ttid', 'task', 'tag', 'uploader');
     $query_string = array();
     for ($i = 0; $i < count($segs); $i += 2) {
