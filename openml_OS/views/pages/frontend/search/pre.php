@@ -154,10 +154,6 @@ if(startsWith($this->sort,'qualities.NumberOf')){
   }
   $this->curr_sort .= substr($this->sort,18);
 }
-
-if($this->sort=='date'){
-	$this->sort = $this->sort . '.keyword';
-}
 $attrs = $_GET;
 unset($attrs['from']);
 $this->rel_uri = "search?".http_build_query($attrs);
@@ -230,7 +226,7 @@ $params['index'] = '_all';
 if($this->filtertype){
   $params['index'] = $this->filtertype;
   $params['type'] = $this->filtertype;
-}  
+}
 $params['body']  = '{'.
     ($this->table ? '"_source" : ["data_id","name","version","runs","qualities"],' : '').
    '"from" : '. ($this->from ? $this->from : 0) .',
