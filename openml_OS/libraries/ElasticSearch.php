@@ -88,7 +88,7 @@ class ElasticSearch {
                     'analyzer' => 'keyword'
                 ),
                 'exact_name' => array(
-                    'type' => 'text'
+                    'type' => 'keyword'
                 ),
                 'tags' => array(
                     'type' => 'nested',
@@ -122,7 +122,7 @@ class ElasticSearch {
                     'format' => 'yyyy-MM-dd HH:mm:ss'
                 ),
                 'exact_name' => array(
-                    'type' => 'text',
+                    'type' => 'keyword',
                 ),
                 'tags' => array(
                     'type' => 'nested',
@@ -192,7 +192,7 @@ class ElasticSearch {
                 'date' => array(
                     'type' => 'date',
                     'format' => 'yyyy-MM-dd HH:mm:ss'),
-		'runs' => array('type' => 'long')	
+		'runs' => array('type' => 'long')
             )
         );
 	$this->mappings['task_type'] = array(

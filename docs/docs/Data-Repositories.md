@@ -13,6 +13,8 @@ Machine learning dataset repositories (mostly already in OpenML)
   - LIBSVM: http://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/
   - AutoWEKA datasets: http://www.cs.ubc.ca/labs/beta/Projects/autoweka/datasets/
   - skData package: https://github.com/jaberg/skdata/tree/master/skdata
+  - Rdatasets: http://vincentarelbundock.github.io/Rdatasets/datasets.html
+  - DataBrewer: https://github.com/rmax/databrewer
 
 Time series data:
 

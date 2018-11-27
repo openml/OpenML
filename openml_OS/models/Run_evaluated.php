@@ -7,7 +7,7 @@ class Run_evaluated extends MY_Database_Write_Model {
     $this->id_column = array('run_id', 'evaluation_engine_id');
   }
 
-  function getUnevaluatedRun($evaluation_engine_id, $order, $ttids = false, $task_ids = false, $tag = false, $uploader = false) {
+  function getUnevaluatedRun($evaluation_engine_id, $order, $num_requests, $ttids = false, $task_ids = false, $tag = false, $uploader = false) {
     $this->db->from('`run` `r`');
     
     if ($ttids != false) {
@@ -30,34 +30,27 @@ class Run_evaluated extends MY_Database_Write_Model {
     
     $this->db->join('`run_evaluated` `e`', '`r`.`rid` = `e`.`run_id` AND `e`.`evaluation_engine_id` = ' . $evaluation_engine_id, 'left');
     
-    $this->db->where('(e.run_id IS NULL OR (e.error IS NOT NULL AND e.num_tries < ' . $this->config->item('process_run_tries') . ' AND e.evaluation_date < "' . now_offset('-' . $this->config->item('process_run_offset')) . '"))');
+    $this->db->where('(`e`.`run_id` IS NULL OR (`e`.`error` IS NOT NULL AND `e`.`num_tries` < ' . $this->config->item('process_run_tries') . ' AND `e`.`evaluation_date` < "' . now_offset('-' . $this->config->item('process_run_offset')) . '"))');
     
-    // When random results are needed, to avoid that multiple evaluators evaluate the same run,
-    // get 2000 unordered results and randomly select one (or more) of them.
-    // This is much faster than randomizing the results in the query.
-    $randomcount = 200;
-    if ($order == 'random') {
-      $this->db->limit($randomcount);
-    } else {
-      $this->db->limit('1');
-    }
+    $limit_count = $num_requests;
+    $this->db->limit($limit_count);
     
-    // Reverse order if needed (slower query)
+    // Reverse order and random order make this query rather slow. Therefore, 
+    // api calls that request this should only be executed with care (e.g., by
+    // obtaining large batches using the num_requests param)
     if ($order == 'reverse') {
-      $this->db->order_by('r.rid DESC');
+      $this->db->order_by('`r`.`rid` DESC');
+    } elseif($order == 'random') {
+      $this->db->order_by('RAND()');
     }
 
     // This always returns one result. Can easily be adapted to return multiple
     // results for batch processing
     $data = $this->db->select('r.*')->get();
-    if ($data && $data->num_rows() > 0){
-      if ($order == 'random'){
-        $result = $data->result();
-        return array($result[array_rand($result)]);
-      } else {
-        return $data->result();
-      }
+    if ($data && $data->num_rows() > 0) {
+      return $data->result();
     }
+    return false;
   }
 }
 ?>

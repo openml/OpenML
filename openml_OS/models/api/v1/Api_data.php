@@ -1073,7 +1073,11 @@ class Api_data extends MY_Api_Model {
   }
 
   private function data_unprocessed($evaluation_engine_id, $order) {
-
+    if (!$this->user_has_admin_rights) {
+      $this->returnError(106, $this->version);
+      return;
+    }
+    
     $this->db->select('d.*')->from('dataset d');
     $this->db->join('data_processed p', 'd.did = p.did AND evaluation_engine_id = ' . $evaluation_engine_id, 'left');
     $this->db->where('(p.did IS NULL OR (p.error IS NOT NULL AND p.num_tries < ' . $this->config->item('process_data_tries') . ' AND p.processing_date < "' . now_offset('-' . $this->config->item('process_data_offset')) . '"))');
@@ -1109,6 +1113,11 @@ class Api_data extends MY_Api_Model {
   }
 
   private function dataqualities_unprocessed($evaluation_engine_id, $order, $feature_attributes = false, $priorityTag = null) {
+    if (!$this->user_has_admin_rights) {
+      $this->returnError(106, $this->version);
+      return;
+    }
+    
     $requiredMetafeatures = explode(',', $this->input->get_post('qualities')); // TODO: remove get
     if (count($requiredMetafeatures) < 2) {
       $this->returnError(686, $this->version);

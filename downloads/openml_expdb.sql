@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.7.9
+-- version 4.8.3
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Sep 20, 2018 at 04:58 PM
--- Server version: 5.7.20
--- PHP Version: 5.5.38
+-- Generation Time: Nov 14, 2018 at 03:24 AM
+-- Server version: 5.7.24
+-- PHP Version: 7.2.11
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -85,25 +85,12 @@ CREATE TABLE `awarded_badges` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `bibliographical_reference`
---
-
-CREATE TABLE `bibliographical_reference` (
-  `id` int(10) NOT NULL,
-  `implementation_id` int(16) NOT NULL,
-  `citation` text NOT NULL,
-  `url` varchar(128) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `dataset`
 --
 
 CREATE TABLE `dataset` (
   `did` int(10) UNSIGNED NOT NULL,
-  `uploader` int(10) DEFAULT NULL,
+  `uploader` mediumint(8) UNSIGNED DEFAULT NULL,
   `source` int(10) UNSIGNED DEFAULT NULL,
   `name` varchar(128) COLLATE utf8_unicode_ci NOT NULL,
   `version` varchar(64) COLLATE utf8_unicode_ci NOT NULL,
@@ -154,7 +141,7 @@ CREATE TABLE `dataset_status` (
 CREATE TABLE `dataset_tag` (
   `id` int(10) UNSIGNED NOT NULL,
   `tag` varchar(255) NOT NULL,
-  `uploader` int(10) NOT NULL,
+  `uploader` mediumint(8) UNSIGNED NOT NULL,
   `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -400,7 +387,7 @@ CREATE TABLE `feature_quality` (
 CREATE TABLE `implementation` (
   `id` int(16) NOT NULL,
   `fullName` varchar(1024) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
-  `uploader` int(10) DEFAULT NULL,
+  `uploader` mediumint(8) UNSIGNED DEFAULT NULL,
   `name` varchar(1024) COLLATE utf8_unicode_ci NOT NULL,
   `custom_name` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL,
   `class_name` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -443,7 +430,7 @@ CREATE TABLE `implementation_component` (
 CREATE TABLE `implementation_tag` (
   `id` int(10) NOT NULL,
   `tag` varchar(255) NOT NULL,
-  `uploader` int(10) NOT NULL,
+  `uploader` mediumint(8) UNSIGNED NOT NULL,
   `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -590,7 +577,7 @@ CREATE TABLE `quality` (
 
 CREATE TABLE `run` (
   `rid` int(10) UNSIGNED NOT NULL,
-  `uploader` int(10) DEFAULT NULL,
+  `uploader` mediumint(8) UNSIGNED DEFAULT NULL,
   `setup` int(10) UNSIGNED NOT NULL DEFAULT '0',
   `task_id` int(10) DEFAULT NULL,
   `start_time` datetime DEFAULT NULL,
@@ -639,7 +626,7 @@ CREATE TABLE `run_evaluated` (
 CREATE TABLE `run_tag` (
   `id` int(10) UNSIGNED NOT NULL,
   `tag` varchar(255) NOT NULL,
-  `uploader` int(10) NOT NULL,
+  `uploader` mediumint(8) UNSIGNED NOT NULL,
   `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -683,7 +670,7 @@ CREATE TABLE `setup_differences` (
 CREATE TABLE `setup_tag` (
   `id` int(10) UNSIGNED NOT NULL,
   `tag` varchar(255) NOT NULL,
-  `uploader` int(10) NOT NULL,
+  `uploader` mediumint(8) UNSIGNED NOT NULL,
   `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -700,7 +687,7 @@ CREATE TABLE `study` (
   `description` text COLLATE utf8_bin NOT NULL,
   `visibility` varchar(64) COLLATE utf8_bin NOT NULL DEFAULT 'public',
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `creator` bigint(20) NOT NULL
+  `creator` mediumint(8) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 -- --------------------------------------------------------
@@ -726,7 +713,7 @@ CREATE TABLE `study_tag` (
 CREATE TABLE `task` (
   `task_id` int(10) NOT NULL,
   `ttid` int(10) NOT NULL,
-  `creator` int(10) DEFAULT NULL,
+  `creator` mediumint(8) UNSIGNED DEFAULT NULL,
   `creation_date` datetime DEFAULT NULL,
   `embargo_end_date` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -763,7 +750,7 @@ CREATE TABLE `task_io_types` (
 CREATE TABLE `task_tag` (
   `id` int(10) NOT NULL,
   `tag` varchar(255) NOT NULL,
-  `uploader` int(10) NOT NULL,
+  `uploader` mediumint(8) UNSIGNED NOT NULL,
   `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -856,19 +843,14 @@ ALTER TABLE `awarded_badges`
   ADD UNIQUE KEY `badge_id` (`badge_id`,`user_id`,`aid`);
 
 --
--- Indexes for table `bibliographical_reference`
---
-ALTER TABLE `bibliographical_reference`
-  ADD PRIMARY KEY (`id`);
-
---
 -- Indexes for table `dataset`
 --
 ALTER TABLE `dataset`
   ADD PRIMARY KEY (`did`),
   ADD UNIQUE KEY `nameID` (`name`,`version`),
   ADD KEY `name` (`name`),
-  ADD KEY `file_id` (`file_id`);
+  ADD KEY `file_id` (`file_id`),
+  ADD KEY `uploader` (`uploader`);
 
 --
 -- Indexes for table `dataset_status`
@@ -881,7 +863,8 @@ ALTER TABLE `dataset_status`
 -- Indexes for table `dataset_tag`
 --
 ALTER TABLE `dataset_tag`
-  ADD PRIMARY KEY (`id`,`tag`);
+  ADD PRIMARY KEY (`id`,`tag`),
+  ADD KEY `uploader` (`uploader`);
 
 --
 -- Indexes for table `data_feature`
@@ -948,7 +931,8 @@ ALTER TABLE `downvote_reasons`
 -- Indexes for table `estimation_procedure`
 --
 ALTER TABLE `estimation_procedure`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `ttid` (`ttid`);
 
 --
 -- Indexes for table `estimation_procedure_type`
@@ -1019,7 +1003,8 @@ ALTER TABLE `implementation_component`
 -- Indexes for table `implementation_tag`
 --
 ALTER TABLE `implementation_tag`
-  ADD PRIMARY KEY (`id`,`tag`);
+  ADD PRIMARY KEY (`id`,`tag`),
+  ADD KEY `uploader` (`uploader`);
 
 --
 -- Indexes for table `input`
@@ -1084,14 +1069,16 @@ ALTER TABLE `run`
   ADD KEY `setuptask` (`setup`,`task_id`),
   ADD KEY `taskuser` (`task_id`,`uploader`),
   ADD KEY `setupuser` (`setup`,`uploader`),
-  ADD KEY `taskusertime` (`task_id`,`uploader`,`start_time`);
+  ADD KEY `taskusertime` (`task_id`,`uploader`,`start_time`),
+  ADD KEY `uploader` (`uploader`);
 
 --
 -- Indexes for table `runfile`
 --
 ALTER TABLE `runfile`
   ADD PRIMARY KEY (`source`,`field`),
-  ADD UNIQUE KEY `source` (`source`,`field`);
+  ADD UNIQUE KEY `source` (`source`,`field`),
+  ADD KEY `runfile_ibfk_2` (`file_id`);
 
 --
 -- Indexes for table `run_evaluated`
@@ -1105,7 +1092,8 @@ ALTER TABLE `run_evaluated`
 -- Indexes for table `run_tag`
 --
 ALTER TABLE `run_tag`
-  ADD PRIMARY KEY (`id`,`tag`);
+  ADD PRIMARY KEY (`id`,`tag`),
+  ADD KEY `uploader` (`uploader`);
 
 --
 -- Indexes for table `schedule`
@@ -1126,7 +1114,8 @@ ALTER TABLE `setup_differences`
 -- Indexes for table `setup_tag`
 --
 ALTER TABLE `setup_tag`
-  ADD PRIMARY KEY (`id`,`tag`);
+  ADD PRIMARY KEY (`id`,`tag`),
+  ADD KEY `uploader` (`uploader`);
 
 --
 -- Indexes for table `study`
@@ -1134,7 +1123,8 @@ ALTER TABLE `setup_tag`
 ALTER TABLE `study`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `id` (`id`,`creator`),
-  ADD UNIQUE KEY `alias` (`alias`);
+  ADD UNIQUE KEY `alias` (`alias`),
+  ADD KEY `creator` (`creator`);
 
 --
 -- Indexes for table `study_tag`
@@ -1146,7 +1136,9 @@ ALTER TABLE `study_tag`
 -- Indexes for table `task`
 --
 ALTER TABLE `task`
-  ADD PRIMARY KEY (`task_id`);
+  ADD PRIMARY KEY (`task_id`),
+  ADD KEY `creator` (`creator`),
+  ADD KEY `ttid` (`ttid`);
 
 --
 -- Indexes for table `task_inputs`
@@ -1165,7 +1157,8 @@ ALTER TABLE `task_io_types`
 -- Indexes for table `task_tag`
 --
 ALTER TABLE `task_tag`
-  ADD PRIMARY KEY (`id`,`tag`);
+  ADD PRIMARY KEY (`id`,`tag`),
+  ADD KEY `uploader` (`uploader`);
 
 --
 -- Indexes for table `task_type`
@@ -1201,12 +1194,6 @@ ALTER TABLE `algorithm_setup`
 --
 ALTER TABLE `awarded_badges`
   MODIFY `aid` int(16) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `bibliographical_reference`
---
-ALTER TABLE `bibliographical_reference`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `dataset`
@@ -1306,7 +1293,8 @@ ALTER TABLE `algorithm_setup`
 -- Constraints for table `dataset`
 --
 ALTER TABLE `dataset`
-  ADD CONSTRAINT `dataset_ibfk_1` FOREIGN KEY (`file_id`) REFERENCES `openml`.`file` (`id`);
+  ADD CONSTRAINT `dataset_ibfk_1` FOREIGN KEY (`file_id`) REFERENCES `openml`.`file` (`id`),
+  ADD CONSTRAINT `dataset_ibfk_2` FOREIGN KEY (`uploader`) REFERENCES `openml`.`users` (`id`);
 
 --
 -- Constraints for table `dataset_status`
@@ -1319,6 +1307,7 @@ ALTER TABLE `dataset_status`
 -- Constraints for table `dataset_tag`
 --
 ALTER TABLE `dataset_tag`
+  ADD CONSTRAINT `dataset_tag_ibfk_1` FOREIGN KEY (`uploader`) REFERENCES `openml`.`users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_dataset_tag` FOREIGN KEY (`id`) REFERENCES `dataset` (`did`) ON DELETE CASCADE;
 
 --
@@ -1361,6 +1350,12 @@ ALTER TABLE `data_quality_interval`
   ADD CONSTRAINT `data_quality_interval_ibfk_4` FOREIGN KEY (`data`,`evaluation_engine_id`) REFERENCES `data_processed` (`did`, `evaluation_engine_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
+-- Constraints for table `estimation_procedure`
+--
+ALTER TABLE `estimation_procedure`
+  ADD CONSTRAINT `estimation_procedure_ibfk_1` FOREIGN KEY (`ttid`) REFERENCES `task_type` (`ttid`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Constraints for table `evaluation`
 --
 ALTER TABLE `evaluation`
@@ -1398,6 +1393,12 @@ ALTER TABLE `feature_quality`
   ADD CONSTRAINT `feature_quality_ibfk_5` FOREIGN KEY (`data`,`feature_index`) REFERENCES `data_feature` (`did`, `index`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
+-- Constraints for table `implementation`
+--
+ALTER TABLE `implementation`
+  ADD CONSTRAINT `implementation_ibfk_1` FOREIGN KEY (`uploader`) REFERENCES `openml`.`users` (`id`);
+
+--
 -- Constraints for table `implementation_component`
 --
 ALTER TABLE `implementation_component`
@@ -1408,7 +1409,8 @@ ALTER TABLE `implementation_component`
 -- Constraints for table `implementation_tag`
 --
 ALTER TABLE `implementation_tag`
-  ADD CONSTRAINT `fk_implementation_tag` FOREIGN KEY (`id`) REFERENCES `implementation` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `fk_implementation_tag` FOREIGN KEY (`id`) REFERENCES `implementation` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `implementation_tag_ibfk_1` FOREIGN KEY (`uploader`) REFERENCES `openml`.`users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `input`
@@ -1427,13 +1429,16 @@ ALTER TABLE `input_setting`
 -- Constraints for table `run`
 --
 ALTER TABLE `run`
-  ADD CONSTRAINT `fk_setup_setup_id` FOREIGN KEY (`setup`) REFERENCES `algorithm_setup` (`sid`);
+  ADD CONSTRAINT `fk_setup_setup_id` FOREIGN KEY (`setup`) REFERENCES `algorithm_setup` (`sid`),
+  ADD CONSTRAINT `run_ibfk_1` FOREIGN KEY (`task_id`) REFERENCES `task` (`task_id`),
+  ADD CONSTRAINT `run_ibfk_2` FOREIGN KEY (`uploader`) REFERENCES `openml`.`users` (`id`);
 
 --
 -- Constraints for table `runfile`
 --
 ALTER TABLE `runfile`
-  ADD CONSTRAINT `runfile_ibfk_1` FOREIGN KEY (`source`) REFERENCES `run` (`rid`) ON DELETE CASCADE;
+  ADD CONSTRAINT `runfile_ibfk_1` FOREIGN KEY (`source`) REFERENCES `run` (`rid`) ON DELETE CASCADE,
+  ADD CONSTRAINT `runfile_ibfk_2` FOREIGN KEY (`file_id`) REFERENCES `openml`.`file` (`id`);
 
 --
 -- Constraints for table `run_evaluated`
@@ -1446,13 +1451,21 @@ ALTER TABLE `run_evaluated`
 -- Constraints for table `run_tag`
 --
 ALTER TABLE `run_tag`
-  ADD CONSTRAINT `fk_run_tag` FOREIGN KEY (`id`) REFERENCES `run` (`rid`) ON DELETE CASCADE;
+  ADD CONSTRAINT `fk_run_tag` FOREIGN KEY (`id`) REFERENCES `run` (`rid`) ON DELETE CASCADE,
+  ADD CONSTRAINT `run_tag_ibfk_1` FOREIGN KEY (`uploader`) REFERENCES `openml`.`users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `setup_tag`
 --
 ALTER TABLE `setup_tag`
-  ADD CONSTRAINT `fk_setup_id` FOREIGN KEY (`id`) REFERENCES `algorithm_setup` (`sid`);
+  ADD CONSTRAINT `fk_setup_id` FOREIGN KEY (`id`) REFERENCES `algorithm_setup` (`sid`),
+  ADD CONSTRAINT `setup_tag_ibfk_1` FOREIGN KEY (`uploader`) REFERENCES `openml`.`users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `study`
+--
+ALTER TABLE `study`
+  ADD CONSTRAINT `study_ibfk_1` FOREIGN KEY (`creator`) REFERENCES `openml`.`users` (`id`);
 
 --
 -- Constraints for table `study_tag`
@@ -1461,10 +1474,30 @@ ALTER TABLE `study_tag`
   ADD CONSTRAINT `fk_study_tag` FOREIGN KEY (`study_id`) REFERENCES `study` (`id`) ON DELETE CASCADE;
 
 --
+-- Constraints for table `task`
+--
+ALTER TABLE `task`
+  ADD CONSTRAINT `task_ibfk_1` FOREIGN KEY (`creator`) REFERENCES `openml`.`users` (`id`),
+  ADD CONSTRAINT `task_ibfk_2` FOREIGN KEY (`ttid`) REFERENCES `task_type` (`ttid`);
+
+--
+-- Constraints for table `task_inputs`
+--
+ALTER TABLE `task_inputs`
+  ADD CONSTRAINT `task_inputs_ibfk_1` FOREIGN KEY (`task_id`) REFERENCES `task` (`task_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Constraints for table `task_tag`
 --
 ALTER TABLE `task_tag`
-  ADD CONSTRAINT `fk_task_tag` FOREIGN KEY (`id`) REFERENCES `task` (`task_id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `fk_task_tag` FOREIGN KEY (`id`) REFERENCES `task` (`task_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `task_tag_ibfk_1` FOREIGN KEY (`uploader`) REFERENCES `openml`.`users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `task_type_inout`
+--
+ALTER TABLE `task_type_inout`
+  ADD CONSTRAINT `task_type_inout_ibfk_1` FOREIGN KEY (`ttid`) REFERENCES `task_type` (`ttid`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `trace`
