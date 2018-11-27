@@ -58,9 +58,10 @@ class Api_evaluation extends MY_Api_Model {
     if ($task != false) {
       $task = explode(',', $task);
     }
-    $ttids = explode(',', $ttid);
-
-    $res = $this->Run_evaluated->getUnevaluatedRun($evaluation_engine_id, $order, $ttids, $task, $tag, $uploader);
+    if ($ttid != false) {
+      $ttid = explode(',', $ttid);
+    }
+    $res = $this->Run_evaluated->getUnevaluatedRun($evaluation_engine_id, $order, $ttid, $task, $tag, $uploader);
     if ($res == false) {
       $this->returnError(1013, $this->version);
       return;
