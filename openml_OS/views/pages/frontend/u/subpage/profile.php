@@ -14,7 +14,7 @@
             <?php echo form_input($this->password_confirm);?>
             <?php echo form_input($this->first_name);?>
             <?php echo form_input($this->last_name);?>
-            <?php echo form_input($this->affiliation);?>
+            <?php echo form_input($this->company);?>
             <?php echo form_input($this->country);?>
             <?php echo form_textarea($this->bio);?>
             <?php echo form_label('Do you want OpenML to show you your activity and impact (altmetrics)?', 'gamification_setting_label'); ?><br>
