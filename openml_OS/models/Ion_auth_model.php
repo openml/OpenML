@@ -338,7 +338,10 @@ class Ion_auth_model extends CI_Model
 		else
 		{
 			// Handle legacy SHA1 @TODO to delete in later revision
-			return $this->_password_verify_sha1_legacy($identity, $password, $hash_password_db);
+			// return $this->_password_verify_sha1_legacy($identity, $password, $hash_password_db);
+			
+			// JvR: We used to store passwords as MD5 hashes (shame on us..) This is a migration effort.
+			return $this->_password_verify_unsalted_md5_legacy($identity, $password, $hash_password_db);
 		}
 	}
 
@@ -2757,7 +2760,7 @@ class Ion_auth_model extends CI_Model
 				return FALSE;
 			}
 
-			$hashed_password = md5($password . $salt_db->salt);
+			$hashed_password = sha1($password . $salt_db->salt);
 		}
 		else
 		{
@@ -2772,7 +2775,7 @@ class Ion_auth_model extends CI_Model
 
 			$salt = substr($hashed_password_db, 0, $salt_length);
 
-			$hashed_password =  $salt . substr(md5($salt . $password), 0, -$salt_length);
+			$hashed_password =  $salt . substr(sha1($salt . $password), 0, -$salt_length);
 		}
 
 		// Now we can compare them
@@ -2799,4 +2802,47 @@ class Ion_auth_model extends CI_Model
 			return FALSE;
 		}
 	}
+	
+	/**
+	 * Handle legacy md5 password
+	 * Custom code by JvR.
+	 * 
+	 * @TODO to be removed in later version
+	 *
+	 * @param string	$identity
+	 * @param string	$password
+	 * @param string	$hashed_password_db
+	 *
+	 * @return bool
+	 **/
+	protected function _password_verify_unsalted_md5_legacy($identity, $password, $hashed_password_db)
+	{
+		$this->trigger_events('pre_md5_password_migration');
+		$hashed_password =  md5($password);
+		
+		// Now we can compare them
+		if($hashed_password === $hashed_password_db)
+		{
+			// Password is good, migrate it to latest
+			$result = $this->_set_password_db($identity, $password);
+
+			if ($result)
+			{
+				$this->trigger_events(['post_md5_password_migration', 'post_md5_password_migration_successful']);
+			}
+			else
+			{
+				$this->trigger_events(['post_md5_password_migration', 'post_md5_password_migration_unsuccessful']);
+			}
+
+			return $result;
+		}
+		else
+		{
+			// Password mismatch, we cannot migrate...
+			$this->trigger_events(['post_md5_password_migration', 'post_md5_password_migration_unsuccessful']);
+			return FALSE;
+		}
+	}
 }
+
