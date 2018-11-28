@@ -13,9 +13,9 @@ if ($this->form_validation->run() == true)
   $user_data = array(
     'first_name' => $this->input->post('first_name',TRUE),
     'last_name'  => $this->input->post('last_name',TRUE),
-    'affiliation'=> $this->input->post('affiliation',TRUE),
+    'company'    => $this->input->post('company',TRUE),
     'country'    => $this->input->post('country',TRUE),
-    'bio'    	 => $this->input->post('bio',TRUE),
+    'bio'    	   => $this->input->post('bio',TRUE),
     'external_source' => null,
     'external_id' => null,
     'session_hash' => md5(rand())

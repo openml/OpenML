@@ -509,7 +509,7 @@ class ElasticSearch {
 
         $params['index'] = 'user';
         $params['type'] = 'user';
-        $users = $this->userdb->query('select id, first_name, last_name, email, affiliation, country, bio, image, created_on, gamification_visibility from users where active="1"' . ($id ? ' and id=' . $id : ''));
+        $users = $this->userdb->query('select id, first_name, last_name, email, company, country, bio, image, created_on, gamification_visibility from users where active="1"' . ($id ? ' and id=' . $id : ''));
 
         if ($id and ! $users)
             return 'Error: user ' . $id . ' is unknown';
@@ -535,7 +535,7 @@ class ElasticSearch {
             'first_name' => $d->first_name,
             'last_name' => $d->last_name,
             'email' => $d->email,
-            'affiliation' => $d->affiliation,
+            'company' => $d->company,
             'country' => $d->country,
             'bio' => $d->bio,
             'image' => $d->image,

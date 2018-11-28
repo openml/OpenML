@@ -26,7 +26,7 @@
         <?php echo form_input($this->password_confirm);?>
         <?php echo form_input($this->first_name);?>
         <?php echo form_input($this->last_name);?>
-        <?php echo form_input($this->affiliation);?>
+        <?php echo form_input($this->company);?>
         <?php echo form_input($this->country);?>
         <?php echo form_input($this->bio);?>
         <input type="text" readonly="" class="form-control floating-label" placeholder="Upload picture...">

@@ -12,7 +12,7 @@
         <h1 class="username"><?php echo $this->userinfo['first_name'] . ' ' . $this->userinfo['last_name']; ?></h1>
         <div class="userbio"><?php echo $this->userinfo['bio']; ?></div>
         <div class="userdetails">
-            <?php if ($this->userinfo['affiliation']) echo '<i class="fa fa-fw fa-institution"></i> ' . $this->userinfo['affiliation']; ?>
+            <?php if ($this->userinfo['company']) echo '<i class="fa fa-fw fa-institution"></i> ' . $this->userinfo['company']; ?>
             <?php if ($this->userinfo['country']) echo '<i class="fa fa-fw fa-map-marker"></i> ' . $this->userinfo['country']; ?>
             <i class="fa fa-fw fa-clock-o"></i> Joined <?php echo substr($this->userinfo['date'],0,10); ?>
         </div>
