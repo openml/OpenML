@@ -69,6 +69,7 @@ else{
 	$this->terms = htmlspecialchars(safe($this->input->get('q')), ENT_QUOTES);
   $this->terms = str_replace('lt;','<',$this->terms);
   $this->terms = str_replace('gt;','>',$this->terms);
+  $this->terms = str_replace('&','',$this->terms);
   $this->terms = explode('/',$this->terms)[0];
 }
 
