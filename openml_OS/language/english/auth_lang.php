@@ -54,10 +54,11 @@ $lang['deactivate_validation_user_id_label'] = 'user ID';
 
 // Create User
 $lang['create_user_heading']                           = 'Create User';
-$lang['create_user_subheading']                        = 'Please enter the users information below.';
+$lang['create_user_subheading']                        = 'Please enter the user\'s information below.';
 $lang['create_user_fname_label']                       = 'First Name:';
 $lang['create_user_lname_label']                       = 'Last Name:';
 $lang['create_user_company_label']                     = 'Company Name:';
+$lang['create_user_identity_label']                    = 'Identity:';
 $lang['create_user_email_label']                       = 'Email:';
 $lang['create_user_phone_label']                       = 'Phone:';
 $lang['create_user_password_label']                    = 'Password:';
@@ -65,17 +66,16 @@ $lang['create_user_password_confirm_label']            = 'Confirm Password:';
 $lang['create_user_submit_btn']                        = 'Create User';
 $lang['create_user_validation_fname_label']            = 'First Name';
 $lang['create_user_validation_lname_label']            = 'Last Name';
+$lang['create_user_validation_identity_label']         = 'Identity';
 $lang['create_user_validation_email_label']            = 'Email Address';
-$lang['create_user_validation_phone1_label']           = 'First Part of Phone';
-$lang['create_user_validation_phone2_label']           = 'Second Part of Phone';
-$lang['create_user_validation_phone3_label']           = 'Third Part of Phone';
+$lang['create_user_validation_phone_label']            = 'Phone';
 $lang['create_user_validation_company_label']          = 'Company Name';
 $lang['create_user_validation_password_label']         = 'Password';
 $lang['create_user_validation_password_confirm_label'] = 'Password Confirmation';
 
 // Edit User
 $lang['edit_user_heading']                           = 'Edit User';
-$lang['edit_user_subheading']                        = 'Please enter the users information below.';
+$lang['edit_user_subheading']                        = 'Please enter the user\'s information below.';
 $lang['edit_user_fname_label']                       = 'First Name:';
 $lang['edit_user_lname_label']                       = 'Last Name:';
 $lang['edit_user_company_label']                     = 'Company Name:';
@@ -88,9 +88,7 @@ $lang['edit_user_submit_btn']                        = 'Save User';
 $lang['edit_user_validation_fname_label']            = 'First Name';
 $lang['edit_user_validation_lname_label']            = 'Last Name';
 $lang['edit_user_validation_email_label']            = 'Email Address';
-$lang['edit_user_validation_phone1_label']           = 'First Part of Phone';
-$lang['edit_user_validation_phone2_label']           = 'Second Part of Phone';
-$lang['edit_user_validation_phone3_label']           = 'Third Part of Phone';
+$lang['edit_user_validation_phone_label']            = 'Phone';
 $lang['edit_user_validation_company_label']          = 'Company Name';
 $lang['edit_user_validation_groups_label']           = 'Groups';
 $lang['edit_user_validation_password_label']         = 'Password';
@@ -133,9 +131,10 @@ $lang['forgot_password_subheading']              = 'Please enter your %s so we c
 $lang['forgot_password_email_label']             = '%s:';
 $lang['forgot_password_submit_btn']              = 'Submit';
 $lang['forgot_password_validation_email_label']  = 'Email Address';
-$lang['forgot_password_username_identity_label'] = 'Username';
+$lang['forgot_password_identity_label'] = 'Identity';
 $lang['forgot_password_email_identity_label']    = 'Email';
 $lang['forgot_password_email_not_found']         = 'No record of that email address.';
+$lang['forgot_password_identity_not_found']         = 'No record of that username.';
 
 // Reset Password
 $lang['reset_password_heading']                               = 'Change Password';
