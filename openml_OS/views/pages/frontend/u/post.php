@@ -33,7 +33,7 @@ $this->form_validation->set_rules('password_confirm', 'Password Confirmation', '
 if ($this->form_validation->run() == true) {
 
 
-	$user_data = clean_array($_POST, array( 'first_name', 'last_name', 'affiliation', 'country', 'bio', 'gamification_visibility', 'image'));
+	$user_data = clean_array($_POST, array( 'first_name', 'last_name', 'company', 'country', 'bio', 'gamification_visibility', 'image'));
   $user_id = $this->ion_auth->user()->row()->id;
   if (check_uploaded_file($_FILES['image'])) {
     $this->Users->update_image($user_id, $_FILES['image']['tmp_name']);

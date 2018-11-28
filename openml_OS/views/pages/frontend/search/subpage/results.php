@@ -246,7 +246,7 @@ if( $this->results != false and $this->results['hits']['total'] > 0){ ?>
 		   		<a href="u/<?php echo $r['_id']; ?>"><?php echo $rs['first_name'].' '.$rs['last_name']; ?></a>
 					<div class="teaser"><?php echo $rs['bio']; ?> </div>
 				  <div class="runStats statLine">
-						<?php if($rs['affiliation']) echo '<i class="fa fa-fw fa-institution"></i>'.$rs['affiliation'];?>
+						<?php if($rs['company']) echo '<i class="fa fa-fw fa-institution"></i>'.$rs['company'];?>
 						<?php if($rs['country']) echo '<i class="fa fa-fw fa-map-marker"></i>'.$rs['country'];?>
 						<i class="fa fa-fw fa-clock-o"></i>Joined <?php echo substr($rs['date'],0,10); ?>
 				</div>
