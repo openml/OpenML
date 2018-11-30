@@ -195,7 +195,7 @@ if (session_status() === PHP_SESSION_NONE){session_start();}
           <ul class="dropdown-menu">
               <li><a href="u/<?php echo $this->user->id;?>"><?php echo user_display_text(); ?></a></li>
               <li class="divider"></li>
-              <li><a href="frontend/logout">Sign off</a></li>
+              <li><a href="auth/logout">Sign off</a></li>
           </ul>
         </div>
 

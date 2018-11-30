@@ -34,7 +34,7 @@ class Auth extends CI_Controller
 		}
 		else
 		{
-			redirect(BASE_URL, 'refresh');
+			redirect('home', 'refresh');
 		}
 	}
 

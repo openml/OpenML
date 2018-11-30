@@ -102,12 +102,6 @@ class Frontend extends CI_Controller {
     $this->load->view('404');
   }
 
-  public function logout() {
-    $logout = $this->ion_auth->logout();
-    $this->session->set_flashdata('message', $this->ion_auth->messages());
-    redirect('home');
-  }
-
   public function result_output() {
     $filetype  = $this->input->post('type');
     $filename  = preg_replace("/[^a-zA-Z0-9.-_]+/", "", $this->input->post('name') );
