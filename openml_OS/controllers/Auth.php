@@ -216,7 +216,7 @@ class Auth extends CI_Controller
 
 			// set any errors and display the form
 			$this->data['message'] = (validation_errors()) ? validation_errors() : $this->session->flashdata('message');
-			$this->_render_page('auth' . DIRECTORY_SEPARATOR . 'forgot_password', $this->data);
+			$this->_render_page_old('auth' . DIRECTORY_SEPARATOR . 'forgot_password', $this->data);
 		}
 		else
 		{
