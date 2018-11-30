@@ -853,7 +853,7 @@ class Auth extends CI_Controller
 
 		$viewdata = (empty($data)) ? $this->data : $data;
 
-		$view_html = $this->load->view($view, $viewdata, true);
+		$page_html = $this->load->view($view, $viewdata, true);
 		
 		$this->message = $this->session->flashdata('message', $this->ion_auth->messages());
 		
