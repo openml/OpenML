@@ -260,7 +260,11 @@ if (session_status() === PHP_SESSION_NONE){session_start();}
                     JavaScript is required to properly view the contents of this page!
                 </div>
             </noscript>
-            <?php if($this->input->post('warningmessage')!==false and strlen($this->input->post('warningmessage')) > 0){
+            <?php if (!isset($this->message)) {
+                    $this->message = false;
+                  }
+            
+                  if($this->input->post('warningmessage')!==false and strlen($this->input->post('warningmessage')) > 0){
                     $this->message = $this->input->post('warningmessage');
                   }
                   if($this->message!==false and strlen($this->message) > 0): ?>
