@@ -93,7 +93,8 @@ class Frontend extends CI_Controller {
     } elseif(false !== strpos($_SERVER['REQUEST_URI'],'/output')){
 	    $this->load->view('output_main');
     } else {
-	    $this->load->view('frontend_main');
+      $body = loadpage($indicator);
+	    $this->load->view('frontend_main', array('body' => $body));
     }
   }
 

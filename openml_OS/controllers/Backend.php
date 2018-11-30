@@ -64,7 +64,8 @@ class Backend extends CI_Controller {
     }
     if($_POST) loadpage($indicator,TRUE,'post');
 
-	  $this->load->view('frontend_main'); // frontend main will do fine for now.
+    $body = loadpage($indicator);
+	  $this->load->view('frontend_main', array('body' => $body)); // frontend main for now
   }
 
   public function error404() {

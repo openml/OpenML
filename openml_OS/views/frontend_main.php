@@ -314,7 +314,7 @@ if (session_status() === PHP_SESSION_NONE){session_start();}
           </div>
         </div>
 
-        <?php echo body(); ?>
+        <?php echo $body; ?>
 
 
         </div>
