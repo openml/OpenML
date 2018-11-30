@@ -120,7 +120,7 @@ if (session_status() === PHP_SESSION_NONE){session_start();}
 
     $this->section = $section;
     $this->materialcolor = $materialcolor;
-    $this->user = $this->ion_auth->user()->row();
+    $this->user = false; // $this->ion_auth->user()->row();
     $this->image = array(
     	'name' => 'image',
     	'id' => 'image',
