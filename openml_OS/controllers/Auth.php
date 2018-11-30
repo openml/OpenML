@@ -198,7 +198,7 @@ class Auth extends CI_Controller
 	/**
 	 * Forgot password
 	 */
-	/*public function forgot_password()
+	public function forgot_password()
 	{
 		$this->data['title'] = $this->lang->line('forgot_password_heading');
 		
@@ -271,7 +271,7 @@ class Auth extends CI_Controller
 				redirect("auth/forgot_password", 'refresh');
 			}
 		}
-	}*/
+	}
 
 	/**
 	 * Reset password - final step for forgotten password
