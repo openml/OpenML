@@ -315,7 +315,11 @@ if (session_status() === PHP_SESSION_NONE){session_start();}
 
 
         </div>
-
+        <?php
+          if (isset($js_includes)) {
+            echo $js_includes;
+          }
+        ?>
 
     </body>
 </html>

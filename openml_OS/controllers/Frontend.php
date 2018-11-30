@@ -98,6 +98,7 @@ class Frontend extends CI_Controller {
     } elseif(false !== strpos($_SERVER['REQUEST_URI'],'/output')){
 	    $this->load->view('output_main');
     } else {
+      $js_includes = o('js_includes');
       $body = loadpage($indicator);
 	    $this->load->view('frontend_main', array('body' => $body));
     }
