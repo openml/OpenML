@@ -136,55 +136,13 @@ if (session_status() === PHP_SESSION_NONE){session_start();}
               </div>
               <a class="navbar-brand" id="section-brand" href="home">OpenML</a>
               </div>
-            <a class="openmlsoc openmlsocicon col-xs-2 hidden-sm hidden-md hidden-lg pull-left searchicon" onclick="showsearch()"><i class="fa fa-search fa-2x"></i></a>
-
-       
-
-      <?php if($section != 'Guide') { ?>
-      <div class="hidden-xs col-sm-6 col-md-6" id="menusearchframe">
-      <form class="navbar-form" method="get" id="searchform" action="search">
-        <input type="text" class="form-control col-lg-8" id="openmlsearch" name="q" placeholder="Search" onfocus="this.placeholder = 'Search datasets, flows, tasks, people,... (leave empty to see all)'" value="<?php if( isset( $this->terms ) ) echo htmlentities($this->terms); ?>" />
-        <input type="hidden" name="type" value="<?php if(array_key_exists("type",$_GET)) echo htmlspecialchars(safe($_GET["type"]), ENT_QUOTES);
-        elseif(false !== strpos($_SERVER['REQUEST_URI'],'/d')) echo 'data';
-        elseif(false !== strpos($_SERVER['REQUEST_URI'],'/t')) echo 'task';
-        elseif(false !== strpos($_SERVER['REQUEST_URI'],'/f')) echo 'flow';
-        elseif(false !== strpos($_SERVER['REQUEST_URI'],'/r')) echo 'run';
-        elseif(false !== strpos($_SERVER['REQUEST_URI'],'/a')) echo 'measure';
-          ?>">
-      <!-- <button class="btn btn-primary btn-small" type="submit" style="height: 30px; vertical-align:top; font-size: 8pt;"><i class="fa fa-search fa-lg"></i></button>-->
-      </form>
-       </div>
-     <?php } ?>
 
 
                     <!--/.nav-collapse -->
             </div>
         </div>
 
-        <?php
-          o('login');
-        ?>
 
-        <div id="wrap">
-            <div class="alertbox col-md-12">
-            <!-- USER MESSAGE -->
-            <noscript>
-                <div class="alert alert-dismissible alert-error">
-                  <button type="button" class="close" data-dismiss="alert">×</button>
-                    JavaScript is required to properly view the contents of this page!
-                </div>
-            </noscript>
-            <?php 
-                  if($this->input->post('warningmessage')!==false and strlen($this->input->post('warningmessage')) > 0){
-                    $this->message = $this->input->post('warningmessage');
-                  }
-                  if($this->message!==false and strlen($this->message) > 0): ?>
-            <div class="alert alert-dismissible alert-warning">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-                <?php echo $this->message; ?>
-            </div>
-            <?php endif; ?>
-          </div>
 
 
           <div class="searchbarcontainer">
