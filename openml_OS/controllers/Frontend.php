@@ -46,7 +46,7 @@ class Frontend extends CI_Controller {
     $this->data_controller = $this->config->item('data_controller');
     
     if ($this->ion_auth->logged_in()) {
-      $this->user = $this->ion_auth->user();
+      $this->user = $this->ion_auth->user()->row();
     }
 
     $this->page = 'home'; // default value
