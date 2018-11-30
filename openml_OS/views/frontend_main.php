@@ -50,7 +50,12 @@ if (session_status() === PHP_SESSION_NONE){session_start();}
               <li class="panel mainchapter">
                 <a data-toggle="collapse" data-parent="#topaccordeon" data-target="#mainlist"> <b>Explore</b></a>
                 <ul class="sidenav nav collapse in" id="mainlist">
-                  
+                  <!--
+                  <?php if (!$this->ion_auth->logged_in()){ ?>
+                      <li <?php echo ($section == '' ?  'class="topactive"' : '');?>><a href="register" class="icongrayish"><i class="fa fa-fw fa-lg fa-child"></i> Join OpenML</a></li>
+                  <?php } else { ?>
+                      <li <?php echo ($section == '' ?  'class="topactive"' : '');?>><a href="u/<?php echo $this->user->id; ?>"><img src="<?php echo htmlentities( authorImage( $this->user->image ) ); ?>" width="25" height="25" class="img-circle" alt="<?php echo $this->user->first_name . ' ' . $this->user->last_name; ?>" /> <?php echo user_display_text(); ?></a></li>
+                  <?php } ?> -->
                       
                 </ul>
               </li>
