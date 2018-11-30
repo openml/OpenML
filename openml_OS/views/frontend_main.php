@@ -16,8 +16,117 @@ if (session_status() === PHP_SESSION_NONE){session_start();}
 
 <html class="no-js" lang="en" xmlns:og="http://ogp.me/ns#">
     <!--<![endif]-->
+
+
     <body>
-  
+  <?php
+      $req = array_slice($url, 1);
+      if(sizeof($url)>2){
+        $id=$url[2];
+        if($url[1] == 'OpenML'){
+          $ch = $url[2];
+          $req = array_slice($url, 2);
+            if(sizeof($url)>3){
+                $id=$url[3];
+            }
+        }
+      }
+      if($ch == "")
+        $ch = "home";
+      $ch = explode('?',$ch)[0];
+      $reqall = implode('/',$req);
+      $req = explode('?',implode('/',$req))[0];
+      if(strpos($ch, 'search') === 0){
+        if(isset($this->filtertype) and $this->filtertype){
+            $section = str_replace('_',' ',ucfirst($this->filtertype));
+            if($section=='User')
+              $section = 'People';
+            $href = "search?type=".$this->filtertype;
+          }
+        else{
+          $section = 'Search';
+          $materialcolor = "blue";
+        }
+      }
+      if($ch=='r' or $section=='Run'){
+            $section = 'Run';
+            $href = 'search?type=run';
+            $materialcolor = "red";
+          }
+      elseif($ch=='d' or $section=='Data'){
+            $section = 'Data';
+            $href = 'search?type=data';
+            $materialcolor = "green";
+          }
+      elseif($ch=='f' or $section=='Flow'){
+            $section = 'Flow';
+            $href = 'search?type=flow';
+            $materialcolor = "blue";
+          }
+      elseif($ch=='t' or $section=='Task'){
+            $section = 'Task';
+            $href = 'search?type=task';
+            $materialcolor = "orange";
+          }
+      elseif($ch=='tt' or $section=='Task type'){
+            $section = 'Task type';
+            $href = 'search?type=tasktype';
+            $materialcolor = "deep-orange";
+          }
+      elseif($ch=='u' or $section=='People'){
+            $section = 'People';
+            $href = 'search?type=user';
+            $materialcolor = "light-blue";
+          }
+      elseif($ch=='a' or $section=='Measure'){
+            $section = 'Measure';
+            $href = $ch;
+            $materialcolor = "blue-grey";
+          }
+      elseif($ch=='s' or $section=='Study'){
+            $section = 'Study';
+            $href = 'search?type=study';
+            $materialcolor = "deep-purple";
+          }
+      elseif(substr( $ch, 0, 5 ) === "guide"){
+            $section = 'Guide';
+            $href = $ch;
+            $materialcolor = "green";
+          }
+      elseif(substr( $ch, 0, 4 ) === "cite"){
+            $section = 'Citing';
+            $href = $ch;
+            $materialcolor = "red";
+          }
+      elseif(substr( $ch, 0, 7 ) === "contact"){
+            $section = 'Contact';
+            $href = $ch;
+            $materialcolor = "green";
+          }
+      elseif($ch=='backend'){
+            $section = 'Backend';
+            $href = $ch;
+            $materialcolor = "red";
+          }
+      elseif($ch=='query'){
+            $section = 'Query';
+            $href = $ch;
+            $materialcolor = "blue";
+          }
+      elseif($ch=='register' or $ch=='profile' or $ch=='frontend' or $ch=='login'){
+            $section = 'OpenML';
+            $href = $ch;
+          }
+
+    $this->section = $section;
+    $this->materialcolor = $materialcolor;
+    $this->user = $this->ion_auth->user()->row();
+    $this->image = array(
+    	'name' => 'image',
+    	'id' => 'image',
+    	'type' => 'file',
+    );
+  ?>
         <div id="sectiontitle"><?php echo $section;?></div>
         <div class="navbar navbar-static-top navbar-fixed-top navbar-material-<?php echo $materialcolor;?>" id="openmlheader" style="margin-bottom: 0px;">
             <div class="navbar-inner">
