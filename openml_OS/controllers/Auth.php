@@ -855,7 +855,7 @@ class Auth extends CI_Controller
 
 		$page_html = $this->load->view($view, $viewdata, true);
 		
-		$this->message = $this->session->set_flashdata('message', $this->ion_auth->messages());
+		$this->message = $this->session->flashdata('message', $this->ion_auth->messages());
 		
 		$this->load->view('frontend_main', array('body' => $page_html), $returnhtml);
 
