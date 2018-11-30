@@ -840,32 +840,6 @@ class Auth extends CI_Controller
 		}
 			return FALSE;
 	}
-
-	/**
-	 * @param string     $view
-	 * @param array|null $data
-	 * @param bool       $returnhtml
-	 *
-	 * @return mixed
-	 */
-	public function _render_page_old($view, $data = NULL, $returnhtml = FALSE)//I think this makes more sense
-	{
-
-		$viewdata = (empty($data)) ? $this->data : $data;
-
-		$page_html = $this->load->view($view, $viewdata, false);
-		
-		//$this->message = $this->session->flashdata('message', $this->ion_auth->messages());
-		
-		//$this->load->view('frontend_main', array('body' => $page_html), $returnhtml);
-
-		// This will return html on 3rd argument being true
-		if ($returnhtml)
-		{
-			return $view_html;
-		}
-	}
-	
 	
 	/**
 	 * @param string     $view
@@ -879,11 +853,11 @@ class Auth extends CI_Controller
 
 		$viewdata = (empty($data)) ? $this->data : $data;
 
-		$page_html = $this->load->view($view, $viewdata, true);
+		$view_html = $this->load->view($view, $viewdata, $returnhtml);
 		
-		$this->message = $this->session->flashdata('message', $this->ion_auth->messages());
+		//$this->message = $this->session->flashdata('message', $this->ion_auth->messages());
 		
-		$this->load->view('frontend_main', array('body' => $page_html), $returnhtml);
+		//$this->load->view('frontend_main', array('body' => $page_html), $returnhtml);
 
 		// This will return html on 3rd argument being true
 		if ($returnhtml)
