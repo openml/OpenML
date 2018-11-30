@@ -309,7 +309,7 @@ class Auth extends CI_Controller
 				$this->data['code'] = $code;
 
 				// render
-				$this->_render_page('auth' . DIRECTORY_SEPARATOR . 'reset_password', $this->data);
+				$this->_render_page_old('auth' . DIRECTORY_SEPARATOR . 'reset_password', $this->data);
 			}
 			else
 			{
@@ -848,7 +848,7 @@ class Auth extends CI_Controller
 	 *
 	 * @return mixed
 	 */
-	public function _render_page($view, $data = NULL, $returnhtml = FALSE)//I think this makes more sense
+	public function _render_page_old($view, $data = NULL, $returnhtml = FALSE)//I think this makes more sense
 	{
 
 		$viewdata = (empty($data)) ? $this->data : $data;
@@ -858,6 +858,31 @@ class Auth extends CI_Controller
 		//$this->message = $this->session->flashdata('message', $this->ion_auth->messages());
 		
 		//$this->load->view('frontend_main', array('body' => $page_html), $returnhtml);
+
+		// This will return html on 3rd argument being true
+		if ($returnhtml)
+		{
+			return $view_html;
+		}
+	}
+	
+	/**
+	 * @param string     $view
+	 * @param array|null $data
+	 * @param bool       $returnhtml
+	 *
+	 * @return mixed
+	 */
+	public function _render_page($view, $data = NULL, $returnhtml = FALSE)//I think this makes more sense
+	{
+
+		$viewdata = (empty($data)) ? $this->data : $data;
+
+		$page_html = $this->load->view($view, $viewdata, $returnhtml);
+		
+		$this->message = $this->session->flashdata('message', $this->ion_auth->messages());
+		
+		$this->load->view('frontend_main', array('body' => $page_html), $returnhtml);
 
 		// This will return html on 3rd argument being true
 		if ($returnhtml)
