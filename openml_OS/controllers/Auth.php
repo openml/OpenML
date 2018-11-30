@@ -22,7 +22,7 @@ class Auth extends CI_Controller
 	}
 
 	/**
-	 * Redirect if needed, otherwise display the user list
+	 * Redirect if needed, otherwise move to main
 	 */
 	public function index()
 	{
@@ -32,26 +32,9 @@ class Auth extends CI_Controller
 			// redirect them to the login page
 			redirect('auth/login', 'refresh');
 		}
-		else if (!$this->ion_auth->is_admin()) // remove this elseif if you want to enable this for non-admins
-		{
-			// redirect them to the home page because they must be an administrator to view this
-			show_error('You must be an administrator to view this page.');
-		}
 		else
 		{
-			$this->data['title'] = $this->lang->line('index_heading');
-			
-			// set the flash data error message if there is one
-			$this->data['message'] = (validation_errors()) ? validation_errors() : $this->session->flashdata('message');
-
-			//list the users
-			$this->data['users'] = $this->ion_auth->users()->result();
-			foreach ($this->data['users'] as $k => $user)
-			{
-				$this->data['users'][$k]->groups = $this->ion_auth->get_users_groups($user->id)->result();
-			}
-
-			$this->_render_page('auth' . DIRECTORY_SEPARATOR . 'index', $this->data);
+			redirect('auth/login', 'refresh');
 		}
 	}
 
