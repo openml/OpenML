@@ -19,6 +19,80 @@ if (session_status() === PHP_SESSION_NONE){session_start();}
 
     
     <body>
+  
+        <div id="sectiontitle"><?php echo $section;?></div>
+        <div class="navbar navbar-static-top navbar-fixed-top navbar-material-<?php echo $materialcolor;?>" id="openmlheader" style="margin-bottom: 0px;">
+            <div class="navbar-inner">
+              <div class="col-xs-6 col-sm-3 col-md-3">
+              <div class="nav pull-left">
+                <a class="navbar-brand menubutton"><i class="fa fa-bars fa-lg"></i></a>
+              </div>
+              <a class="navbar-brand" id="section-brand" href="home">OpenML</a>
+              </div>
+            <a class="openmlsoc openmlsocicon col-xs-2 hidden-sm hidden-md hidden-lg pull-left searchicon" onclick="showsearch()"><i class="fa fa-search fa-2x"></i></a>
+
+       <div class="menuicons">
+			<?php if ($this->ion_auth->logged_in()) {
+        $authimg = "img/community/misc/anonymousMan.png";
+         if ($this->user){ $authimg = htmlentities( authorImage( $this->user->image ) );}
+        ?>
+        <div class="nav pull-right openmlsocicons">
+          <a href="#" class="dropdown-toggle openmlsoc openmlsocicon" data-toggle="dropdown" style="padding-top:12px;">
+            <img src="<?php echo $authimg; ?>" width="35" height="35" class="img-circle" alt="<?php echo $this->user->first_name . ' ' . $this->user->last_name; ?>" /></a>
+          <ul class="dropdown-menu">
+              <li><a href="u/<?php echo $this->user->id;?>"><?php echo user_display_text(); ?></a></li>
+              <li class="divider"></li>
+              <li><a href="auth/logout">Sign off</a></li>
+          </ul>
+        </div>
+
+  			<div class="nav pull-right openmlsocicons">
+  			  <a href="#" class="dropdown-toggle openmlsoc openmlsocicon" data-toggle="dropdown"><i class="fa fa-plus fa-2x"></i></a>
+  			  <ul class="dropdown-menu newmenu">
+  			    <li><a href="new/data" class="icongreen"><i class="fa fa-fw fa-lg fa-database"></i> New data</a></li>
+  		            <li class="divider"></li>
+  			    <li><a href="new/task" class="iconyellow"><i class="fa fa-fw fa-lg fa-trophy"></i> New task</a></li>
+  		            <li class="divider"></li>
+  			    <!--<li><a href="new/flow" class="iconblue"><i class="fa fa-fw fa-lg fa-cogs"></i> New flow</a></li>
+  		            <li class="divider"></li>-->
+  			    <!--<li><a href="new/run" class="iconred"><i class="fa fa-fw fa-lg fa-star"></i> New run</a></li>
+                  <li class="divider"></li>-->
+            <li><a href="new/study" class="iconpurple"><i class="fa fa-fw fa-lg fa-flask"></i> New study</a></li>
+  			  </ul>
+  			</div>
+        <div class="nav pull-right openmlsocicons">
+          <a href="https://docs.openml.org" class="openmlsoc openmlsocicon"><i class="fa fa-leanpub fa-2x"></i></a>
+        </div>
+        <script>var logged_in = true;</script>
+			<?php } else { ?>
+        <script>var logged_in = false;</script>
+			<div class="nav pull-right openmlsocicons">
+                  <a href="https://docs.openml.org" class="btn btn-material-<?php echo $materialcolor;?>">Help</a>
+                  <a class="btn btn-material-<?php echo $materialcolor;?>" data-toggle="modal" data-target="#login-dialog">Sign in</a>
+      </div>
+			<?php } ?>
+      </div>
+
+      <?php if($section != 'Guide') { ?>
+      <div class="hidden-xs col-sm-6 col-md-6" id="menusearchframe">
+      <form class="navbar-form" method="get" id="searchform" action="search">
+        <input type="text" class="form-control col-lg-8" id="openmlsearch" name="q" placeholder="Search" onfocus="this.placeholder = 'Search datasets, flows, tasks, people,... (leave empty to see all)'" value="<?php if( isset( $this->terms ) ) echo htmlentities($this->terms); ?>" />
+        <input type="hidden" name="type" value="<?php if(array_key_exists("type",$_GET)) echo htmlspecialchars(safe($_GET["type"]), ENT_QUOTES);
+        elseif(false !== strpos($_SERVER['REQUEST_URI'],'/d')) echo 'data';
+        elseif(false !== strpos($_SERVER['REQUEST_URI'],'/t')) echo 'task';
+        elseif(false !== strpos($_SERVER['REQUEST_URI'],'/f')) echo 'flow';
+        elseif(false !== strpos($_SERVER['REQUEST_URI'],'/r')) echo 'run';
+        elseif(false !== strpos($_SERVER['REQUEST_URI'],'/a')) echo 'measure';
+          ?>">
+      <!-- <button class="btn btn-primary btn-small" type="submit" style="height: 30px; vertical-align:top; font-size: 8pt;"><i class="fa fa-search fa-lg"></i></button>-->
+      </form>
+       </div>
+     <?php } ?>
+
+
+                    <!--/.nav-collapse -->
+            </div>
+        </div>
 
         <?php
           o('login');
