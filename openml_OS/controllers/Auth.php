@@ -58,7 +58,7 @@ class Auth extends CI_Controller
 	/**
 	 * Log the user in
 	 */
-	/*public function login()
+	public function login()
 	{
 		$this->data['title'] = $this->lang->line('login_heading');
 
@@ -108,12 +108,12 @@ class Auth extends CI_Controller
 
 			$this->_render_page('auth' . DIRECTORY_SEPARATOR . 'login', $this->data);
 		}
-	}*/
+	}
 
 	/**
 	 * Log the user out
 	 */
-	/*public function logout()
+	public function logout()
 	{
 		$this->data['title'] = "Logout";
 
@@ -123,7 +123,7 @@ class Auth extends CI_Controller
 		// redirect them to the login page
 		$this->session->set_flashdata('message', $this->ion_auth->messages());
 		redirect('auth/login', 'refresh');
-	}*/
+	}
 
 	/**
 	 * Change password
