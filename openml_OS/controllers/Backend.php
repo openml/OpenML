@@ -35,7 +35,11 @@ class Backend extends CI_Controller {
     $this->controller = strtolower(get_class ($this));
     $this->query_string = $this->uri->uri_to_assoc(2);
     $this->data_controller = $this->config->item('data_controller');
-
+    
+    if ($this->ion_auth->logged_in()) {
+      $this->user = $this->ion_auth->user();
+    }
+    
     $this->page = 'home'; // default value
 
     // login is mandatory
