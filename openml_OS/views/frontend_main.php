@@ -248,7 +248,7 @@ if (session_status() === PHP_SESSION_NONE){session_start();}
         </div>
 
         <?php
-          loadpage('login', true, 'body');
+          o('login');
         ?>
 
         <div id="wrap">
