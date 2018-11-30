@@ -17,116 +17,55 @@ if (session_status() === PHP_SESSION_NONE){session_start();}
 <html class="no-js" lang="en" xmlns:og="http://ogp.me/ns#">
     <!--<![endif]-->
 
-    
-    <body>
-  <?php
-      $req = array_slice($url, 1);
-      if(sizeof($url)>2){
-        $id=$url[2];
-        if($url[1] == 'OpenML'){
-          $ch = $url[2];
-          $req = array_slice($url, 2);
-            if(sizeof($url)>3){
-                $id=$url[3];
+    <head>
+        <base href="<?php echo BASE_URL; ?>" />
+        <?php
+            $section = "OpenML";
+            $materialcolor = "yellow";
+            $href = "";
+            $url = explode('/', $_SERVER['REQUEST_URI']);
+            $ch = $url[1];
+            if($ch=='guide'){
+              echo '<meta http-equiv="refresh" content="0; url=https://docs.openml.org">';
             }
-        }
-      }
-      if($ch == "")
-        $ch = "home";
-      $ch = explode('?',$ch)[0];
-      $reqall = implode('/',$req);
-      $req = explode('?',implode('/',$req))[0];
-      if(strpos($ch, 'search') === 0){
-        if(isset($this->filtertype) and $this->filtertype){
-            $section = str_replace('_',' ',ucfirst($this->filtertype));
-            if($section=='User')
-              $section = 'People';
-            $href = "search?type=".$this->filtertype;
-          }
-        else{
-          $section = 'Search';
-          $materialcolor = "blue";
-        }
-      }
-      if($ch=='r' or $section=='Run'){
-            $section = 'Run';
-            $href = 'search?type=run';
-            $materialcolor = "red";
-          }
-      elseif($ch=='d' or $section=='Data'){
-            $section = 'Data';
-            $href = 'search?type=data';
-            $materialcolor = "green";
-          }
-      elseif($ch=='f' or $section=='Flow'){
-            $section = 'Flow';
-            $href = 'search?type=flow';
-            $materialcolor = "blue";
-          }
-      elseif($ch=='t' or $section=='Task'){
-            $section = 'Task';
-            $href = 'search?type=task';
-            $materialcolor = "orange";
-          }
-      elseif($ch=='tt' or $section=='Task type'){
-            $section = 'Task type';
-            $href = 'search?type=tasktype';
-            $materialcolor = "deep-orange";
-          }
-      elseif($ch=='u' or $section=='People'){
-            $section = 'People';
-            $href = 'search?type=user';
-            $materialcolor = "light-blue";
-          }
-      elseif($ch=='a' or $section=='Measure'){
-            $section = 'Measure';
-            $href = $ch;
-            $materialcolor = "blue-grey";
-          }
-      elseif($ch=='s' or $section=='Study'){
-            $section = 'Study';
-            $href = 'search?type=study';
-            $materialcolor = "deep-purple";
-          }
-      elseif(substr( $ch, 0, 5 ) === "guide"){
-            $section = 'Guide';
-            $href = $ch;
-            $materialcolor = "green";
-          }
-      elseif(substr( $ch, 0, 4 ) === "cite"){
-            $section = 'Citing';
-            $href = $ch;
-            $materialcolor = "red";
-          }
-      elseif(substr( $ch, 0, 7 ) === "contact"){
-            $section = 'Contact';
-            $href = $ch;
-            $materialcolor = "green";
-          }
-      elseif($ch=='backend'){
-            $section = 'Backend';
-            $href = $ch;
-            $materialcolor = "red";
-          }
-      elseif($ch=='query'){
-            $section = 'Query';
-            $href = $ch;
-            $materialcolor = "blue";
-          }
-      elseif($ch=='register' or $ch=='profile' or $ch=='frontend' or $ch=='login'){
-            $section = 'OpenML';
-            $href = $ch;
-          }
+        ?>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width">
+        <title>OpenML</title>
+        <meta name="description" content="OpenML: exploring machine learning better, together. An open science platform for machine learning.">
+	      <link href="https://www.openml.org/img/expdblogo2.png" rel="image_src" />
+        <meta name="author" content="Joaquin Vanschoren">
+        <meta property="og:title" content="OpenML"/>
+        <meta property="og:url" content="https://www.openml.org"/>
+        <meta property="og:image" content="https://www.openml.org/img/expdblogo2.png"/>
+        <meta property="og:site_name" content="OpenML: exploring machine learning better, together."/>
+        <meta property="og:description" content="OpenML: exploring machine learning better, together. An open science platform for machine learning."/>
+        <meta property="og:type" content="Science"/>
+        <meta name="viewport" content="width=device-width">
+        <link rel="shortcut icon" href="img/favicon.ico">
 
-    $this->section = $section;
-    $this->materialcolor = $materialcolor;
-    $this->user = $this->ion_auth->user()->row();
-    $this->image = array(
-    	'name' => 'image',
-    	'id' => 'image',
-    	'type' => 'file',
-    );
-  ?>
+        <link rel="stylesheet" href="css/pygments-manni.css">
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <link rel="stylesheet" href="css/material.min.css">
+        <link rel="stylesheet" href="css/expdb.css">
+        <link rel="stylesheet" href="css/prettify.css">
+        <link rel="stylesheet" href="css/jquery-ui.css" type="text/css"/>
+        <link rel="stylesheet" href="css/bootstrap-select.css">
+        <link rel="stylesheet" href="css/perfect-scrollbar.min.css">
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+      	<link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300,500,700' rel='stylesheet' type='text/css'>
+        <link href="https://fonts.googleapis.com/css?family=RobotoDraft:400,500,700,400italic" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="css/gamification.css"/>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+        <?php if( isset( $this->load_css ) ): foreach( $this->load_css as $j ): ?>
+        <link rel="stylesheet" href="<?php echo $j; ?>"/>
+        <?php endforeach; endif;?>
+
+        <?php $this->endjs = ""; ?>
+    </head>
+    <body>
+  
         <div id="sectiontitle"><?php echo $section;?></div>
         <div class="navbar navbar-static-top navbar-fixed-top navbar-material-<?php echo $materialcolor;?>" id="openmlheader" style="margin-bottom: 0px;">
             <div class="navbar-inner">
