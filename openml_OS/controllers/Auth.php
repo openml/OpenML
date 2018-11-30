@@ -34,7 +34,7 @@ class Auth extends CI_Controller
 		}
 		else
 		{
-			redirect('auth/login', 'refresh');
+			redirect('', 'refresh');
 		}
 	}
 
