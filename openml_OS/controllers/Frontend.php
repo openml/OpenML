@@ -100,7 +100,7 @@ class Frontend extends CI_Controller {
     } else {
       $js_includes = o('js_includes', true);
       $body = loadpage($indicator);
-	    $this->load->view('frontend_main', array('body' => $body));
+	    $this->load->view('frontend_main', array('body' => $body, 'js_includes' => $js_includes));
     }
   }
 
