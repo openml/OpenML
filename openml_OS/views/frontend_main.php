@@ -138,47 +138,7 @@ if (session_status() === PHP_SESSION_NONE){session_start();}
               </div>
             <a class="openmlsoc openmlsocicon col-xs-2 hidden-sm hidden-md hidden-lg pull-left searchicon" onclick="showsearch()"><i class="fa fa-search fa-2x"></i></a>
 
-       <div class="menuicons">
-			<?php if ($this->ion_auth->logged_in()) {
-        $authimg = "img/community/misc/anonymousMan.png";
-         if ($this->user){ $authimg = htmlentities( authorImage( $this->user->image ) );}
-        ?>
-        <div class="nav pull-right openmlsocicons">
-          <a href="#" class="dropdown-toggle openmlsoc openmlsocicon" data-toggle="dropdown" style="padding-top:12px;">
-            <img src="<?php echo $authimg; ?>" width="35" height="35" class="img-circle" alt="<?php echo $this->user->first_name . ' ' . $this->user->last_name; ?>" /></a>
-          <ul class="dropdown-menu">
-              <li><a href="u/<?php echo $this->user->id;?>"><?php echo user_display_text(); ?></a></li>
-              <li class="divider"></li>
-              <li><a href="auth/logout">Sign off</a></li>
-          </ul>
-        </div>
-
-  			<div class="nav pull-right openmlsocicons">
-  			  <a href="#" class="dropdown-toggle openmlsoc openmlsocicon" data-toggle="dropdown"><i class="fa fa-plus fa-2x"></i></a>
-  			  <ul class="dropdown-menu newmenu">
-  			    <li><a href="new/data" class="icongreen"><i class="fa fa-fw fa-lg fa-database"></i> New data</a></li>
-  		            <li class="divider"></li>
-  			    <li><a href="new/task" class="iconyellow"><i class="fa fa-fw fa-lg fa-trophy"></i> New task</a></li>
-  		            <li class="divider"></li>
-  			    <!--<li><a href="new/flow" class="iconblue"><i class="fa fa-fw fa-lg fa-cogs"></i> New flow</a></li>
-  		            <li class="divider"></li>-->
-  			    <!--<li><a href="new/run" class="iconred"><i class="fa fa-fw fa-lg fa-star"></i> New run</a></li>
-                  <li class="divider"></li>-->
-            <li><a href="new/study" class="iconpurple"><i class="fa fa-fw fa-lg fa-flask"></i> New study</a></li>
-  			  </ul>
-  			</div>
-        <div class="nav pull-right openmlsocicons">
-          <a href="https://docs.openml.org" class="openmlsoc openmlsocicon"><i class="fa fa-leanpub fa-2x"></i></a>
-        </div>
-        <script>var logged_in = true;</script>
-			<?php } else { ?>
-        <script>var logged_in = false;</script>
-			<div class="nav pull-right openmlsocicons">
-                  <a href="https://docs.openml.org" class="btn btn-material-<?php echo $materialcolor;?>">Help</a>
-                  <a class="btn btn-material-<?php echo $materialcolor;?>" data-toggle="modal" data-target="#login-dialog">Sign in</a>
-      </div>
-			<?php } ?>
-      </div>
+       
 
       <?php if($section != 'Guide') { ?>
       <div class="hidden-xs col-sm-6 col-md-6" id="menusearchframe">
