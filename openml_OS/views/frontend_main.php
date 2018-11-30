@@ -1,7 +1,3 @@
-<?php
-if (session_status() === PHP_SESSION_NONE){session_start();}
-?>
-
 <!doctype html>
 <!--[if lt IE 7]>
 <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en">
