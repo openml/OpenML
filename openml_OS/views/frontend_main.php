@@ -159,7 +159,7 @@ if (session_status() === PHP_SESSION_NONE){session_start();}
             $href = $ch;
             $materialcolor = "blue";
           }
-      elseif($ch=='register' or $ch=='profile' or $ch=='frontend' or $ch=='login' or $ch=='password_forgot'){
+      elseif($ch=='register' or $ch=='profile' or $ch=='frontend' or $ch=='login'){
             $section = 'OpenML';
             $href = $ch;
           }

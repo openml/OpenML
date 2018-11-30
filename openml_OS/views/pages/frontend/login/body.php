@@ -17,7 +17,7 @@
           <div class="form-group">
             <input class='btn btn-primary' type="submit" name="submitlogin" value="Sign in"  />
             <a href="register" class="btn pull-right">No account? Join OpenML</a>
-            <a href="password_forgot" class="btn pull-right">Forgot password</a>
+            <a href="auth/forgot_password" class="btn pull-right">Forgot password</a>
           </div>
         </fieldset>
     </form>
