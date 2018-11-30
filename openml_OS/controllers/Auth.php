@@ -24,7 +24,7 @@ class Auth extends CI_Controller
 	/**
 	 * Redirect if needed, otherwise display the user list
 	 */
-	/*public function index()
+	public function index()
 	{
 
 		if (!$this->ion_auth->logged_in())
@@ -53,7 +53,7 @@ class Auth extends CI_Controller
 
 			$this->_render_page('auth' . DIRECTORY_SEPARATOR . 'index', $this->data);
 		}
-	}*/
+	}
 
 	/**
 	 * Log the user in
