@@ -66,8 +66,6 @@ $frontend_pages = array(
   'login',
   'meta_dataset',
   'new',
-  'password_forgot',
-  'password_reset',
   'preview',
   'profile',
   'profile_activate',
