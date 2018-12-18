@@ -15,6 +15,9 @@ Benchmarking suites make benchmarking a whole lot easier:
 ## Using OpenML Benchmark Suites
 Below are detailed instructions for common use cases, as well as code examples. These illustrations use the reference 'OpenML-CC18' benchmark suite, but you can replace this with any other benchmark suite. In all examples, OpenML does not only return the datasets, but also the train-test splits and (for predictive tasks) the target feature. These are enveloped as _tasks_ in OpenML. Hence, you will usually receive a list of tasks in which you can find the data itself.
 
+**Additional resources:**  
+Additional scripts and notebooks can be found in the associated [GitHub repo](https://github.com/openml/benchmark-suites)
+
 ### Listing the benchmark suites
 For now, these are explicitly listed below. We will add them to the OpenML search engine soon.
 Each benchmarking suite points to an OpenML study with the exact list of datasets and tasks.  
@@ -49,6 +52,7 @@ In Java, the data is returned as a WEKA Instances object:
     Task t = openml.taskGet(taskId); // download the OpenML task
     Instances d = InstancesHelper.getDatasetFromTask(openml, t); // obtain the dataset
   ```
+The Java implementation automatically uploads results to the server.  
 
 In R, the data is returned as an R dataframe:  
 !!! R (with mlr)
