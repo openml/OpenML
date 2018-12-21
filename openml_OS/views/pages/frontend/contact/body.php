@@ -31,7 +31,7 @@
     			</div>
     <?php }}?>
 
-    <h2 id="team-core">Key contributors</h2>
+    <h2 id="team-core" style="padding-top:100px">Key contributors</h2>
     <p>OpenML is a community effort, and <a href="https://docs.openml.org/Contributing/">everybody is welcome to contribute</a>.
        We are tremendously grateful to our key contributors who markedly improved the project for the benefit of all.<br />
        Also check out <a href="https://github.com/openml/">our GitHub page</a> for our other active contributors.</p>
@@ -46,7 +46,7 @@
           </div>
     <?php }}?>
 
-    <h2 id="terms-data">Get involved</h2>
+    <h2 id="terms-data" style="padding-top:100px">Get involved</h2>
     <i class="fa fa-heart" style="color:red;"></i> We always <a href='https://github.com/openml/OpenML/wiki/How-to-contribute'>love to welcome new contributors.
       Come and help us change the world!</a>.
 
