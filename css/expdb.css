@@ -189,7 +189,6 @@
 
 .head{
   margin-top: 40px;
-  height: 190px;
   text-align: center;
   overflow: hidden;
 }
@@ -931,8 +930,7 @@ select{
   background-color: #ffffff;
   height: 100%;
   min-height: 1000px;
-  width: 100%;
-  margin-left: 0px;
+  padding-bottom: 100px;
 }
 
 .guidechapter{
@@ -1071,6 +1069,7 @@ select{
   margin-bottom: 10px;
   margin-top: 10px;
   line-height: 48px;
+  clear: both;
 }
 
 .openmlsectioninfo h1{
