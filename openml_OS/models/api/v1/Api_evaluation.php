@@ -168,7 +168,7 @@ class Api_evaluation extends MY_Api_Model {
       $group_by = 'GROUP BY r.rid, e.function_id, e.evaluation_engine_id';
     } else {
       $eval_table = 'evaluation';
-      $columns = 'e.value, e.array_data, NULL AS values';
+      $columns = 'e.value, e.array_data, NULL AS `values`';
       $group_by = '';
     }
 
