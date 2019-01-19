@@ -103,6 +103,7 @@ class Api_evaluation extends MY_Api_Model {
     $per_fold = element('per_fold', $query_string, null);
     if ($per_fold != 'true' && $per_fold != null) {
       $this->returnError(547, $this->version, $this->openmlGeneralErrorCode, 'Filters with illegal values: ' . implode(',', $illegal_filter_inputs));
+      return;
     }
     
     if ($offset && !$limit) {
@@ -164,7 +165,7 @@ class Api_evaluation extends MY_Api_Model {
     
     if ($per_fold === 'true') { // note that due to the rest interface, all arguments come in as string
       $eval_table = 'evaluation_fold';
-      $columns = 'NULL as value, NULL as array_data, "[" + GROUP_CONCAT(e.value) + "]" AS `values`';
+      $columns = 'NULL as value, NULL as array_data, CONCAT("[", GROUP_CONCAT(e.value), "]") AS `values`';
       $group_by = 'GROUP BY r.rid, e.function_id, e.evaluation_engine_id';
     } else {
       $eval_table = 'evaluation';
