@@ -78,28 +78,32 @@ class Api_evaluation extends MY_Api_Model {
 
   private function evaluation_list($segs, $user_id) {
     $result_limit = 10000;
-    $legal_filters = array('task', 'setup', 'flow', 'uploader', 'run', 'tag', 'limit', 'offset', 'function');
+    $legal_filters = array('task', 'setup', 'flow', 'uploader', 'run', 'tag', 'limit', 'offset', 'function', 'per_fold');
     list($query_string, $illegal_filters) = $this->parse_filters($segs, $legal_filters);
     if (count($illegal_filters) > 0) {
       $this->returnError(544, $this->version, $this->openmlGeneralErrorCode, 'Legal filter operators: ' . implode(',', $legal_filters) .'. Found illegal filter(s): ' . implode(', ', $illegal_filters));
       return;
     }
     
-    $illegal_filter_inputs = $this->check_filter_inputs($query_string, $legal_filters, array('tag', 'function'));
+    $illegal_filter_inputs = $this->check_filter_inputs($query_string, $legal_filters, array('tag', 'function', 'per_fold'));
     if (count($illegal_filter_inputs) > 0) {
       $this->returnError(541, $this->version, $this->openmlGeneralErrorCode, 'Filters with illegal values: ' . implode(',', $illegal_filter_inputs));
       return;
     }
 
     $task_id = element('task', $query_string, null);
-    $setup_id = element('setup',$query_string, null);
-    $implementation_id = element('flow',$query_string, null);
-    $uploader_id = element('uploader',$query_string, null);
-    $run_id = element('run',$query_string, null);
-    $function_name = element('function',$query_string, null);
-    $tag = element('tag',$query_string, null);
-    $limit = element('limit',$query_string, null);
-    $offset = element('offset',$query_string, null);
+    $setup_id = element('setup', $query_string, null);
+    $implementation_id = element('flow', $query_string, null);
+    $uploader_id = element('uploader', $query_string, null);
+    $run_id = element('run', $query_string, null);
+    $function_name = element('function', $query_string, null);
+    $tag = element('tag', $query_string, null);
+    $limit = element('limit', $query_string, null);
+    $offset = element('offset', $query_string, null);
+    $per_fold = element('per_fold', $query_string, null);
+    if ($per_fold != 'true') {
+      $this->returnError(547, $this->version, $this->openmlGeneralErrorCode, 'Filters with illegal values: ' . implode(',', $illegal_filter_inputs));
+    }
     
     if ($offset && !$limit) {
       $this->returnError(545, $this->version);
@@ -157,14 +161,23 @@ class Api_evaluation extends MY_Api_Model {
     }
 
     $where_total = $where_runs . $where_function;
-
+    
+    if ($per_fold === 'true') { // note that due to the rest interface, all arguments come in as string
+      $eval_table = 'evaluation_fold';
+      $columns = 'NULL as value, NULL as array_data, "[" + GROUP_CONCAT(e.value) + "]" AS `values`';
+      $group_by = 'GROUP BY r.rid, e.function_id, e.evaluation_engine_id';
+    } else {
+      $eval_table = 'evaluation';
+      $columns = 'e.value, e.array_data, NULL AS values';
+      $group_by = '';
+    }
 
     // Note: the ORDER BY makes this query super slow because all data needs to be loaded. The query optimizer does not use the index correctly to avoid this.
     // It seems to be related to the inclusion of the math_function table (it causes MySQL to use filesort).
     // Solution is to force the index used in the run and evaluation table (or not use ORDER BY at all).
     $sql =
-      'SELECT r.rid, r.task_id, r.start_time, s.implementation_id, s.sid, f.name AS `function`, e.value, e.array_data, i.fullName, d.did, d.name ' .
-      'FROM run r force index(PRIMARY), evaluation e force index(PRIMARY), algorithm_setup s, implementation i, dataset d, task t, task_inputs ti, math_function f ' .
+      'SELECT r.rid, r.task_id, r.start_time, s.implementation_id, s.sid, f.name AS `function`, i.fullName, d.did, d.name, e.evaluation_engine_id ' . $columns . ' ' .
+      'FROM run r force index(PRIMARY), ' . $eval_table . ' e force index(PRIMARY), algorithm_setup s, implementation i, dataset d, task t, task_inputs ti, math_function f ' .
       'WHERE r.setup = s.sid ' .
       'AND e.source = r.rid ' .
       'AND e.function_id = f.id ' .
@@ -172,8 +185,9 @@ class Api_evaluation extends MY_Api_Model {
       'AND r.task_id = t.task_id ' .
       'AND r.task_id = ti.task_id ' .
       'AND ti.input = "source_data" ' .
-      'AND ti.value = d.did ' . $where_total .
+      'AND ti.value = d.did ' . $where_total . 
     //'ORDER BY r.rid' .
+      $group_by . ' ' . 
       $where_limit;
     $res = $this->Evaluation->query($sql);
 

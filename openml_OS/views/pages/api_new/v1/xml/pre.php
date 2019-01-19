@@ -292,6 +292,7 @@ $this->apiErrors[543] = 'Too many results';
 $this->apiErrors[544] = 'Illegal filter specified';
 $this->apiErrors[545] = 'Can not specify offset without limit';
 $this->apiErrors[546] = 'Requested result limit too high. ';
+$this->apiErrors[547] = 'Per fold can only be set to value "true" (remove suffix to get aggregated results). ';
 
 // openml.flow.forcedelete
 $this->apiErrors[550] = 'Admin rights are required.';
