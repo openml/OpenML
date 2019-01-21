@@ -101,7 +101,7 @@ class Api_evaluation extends MY_Api_Model {
     $limit = element('limit', $query_string, null);
     $offset = element('offset', $query_string, null);
     $per_fold = element('per_fold', $query_string, null);
-    if ($per_fold != 'true' && $per_fold != null) {
+    if ($per_fold != 'true' && $per_fold != 'false' && $per_fold != null) {
       $this->returnError(547, $this->version, $this->openmlGeneralErrorCode, 'Filters with illegal values: ' . implode(',', $illegal_filter_inputs));
       return;
     }
