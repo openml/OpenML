@@ -132,8 +132,9 @@ class Api_evaluation extends MY_Api_Model {
       $where_limit =  ' LIMIT ' . $offset . ',' . $limit;
     }
     $where_task_closed = ' AND (`t`.`embargo_end_date` is NULL OR `t`.`embargo_end_date` < NOW() OR `r`.`uploader` = '.$user_id.')';
-
+    
     $where_runs = $where_task . $where_setup . $where_uploader . $where_impl . $where_run . $where_tag . $where_task_closed;
+    $where_total = $where_runs . $where_function;
 
     //pre-test, should be quick??
     if($limit == false) { // skip pre-test if less than 10000 are requested by definition
@@ -160,10 +161,14 @@ class Api_evaluation extends MY_Api_Model {
         return;
       }
     }
-
-    $where_total = $where_runs . $where_function;
+    // more pre-test. in case of a per-fold query, ensure at least some constraints
+    if ($per_fold === 'true' && !($task_id || $uploader_id || $setup_id || $run_id || $implementation_id)) { // per_fold is string
+      // TODO: this query is a monster. find a more natural way to deal with it
+      $this->returnError(548, $this->version, $this->openmlGeneralErrorCode);
+      return;
+    }
     
-    if ($per_fold === 'true') { // note that due to the rest interface, all arguments come in as string
+    if ($per_fold === 'true') { // note that due to the rest interface, all per_fold argument comes in as string (as all other arguments)
       $eval_table = 'evaluation_fold';
       $columns = 'NULL as value, NULL as array_data, CONCAT("[", GROUP_CONCAT(e.value), "]") AS `values`';
       $group_by = 'GROUP BY r.rid, e.function_id, e.evaluation_engine_id';
@@ -176,6 +181,7 @@ class Api_evaluation extends MY_Api_Model {
     // Note: the ORDER BY makes this query super slow because all data needs to be loaded. The query optimizer does not use the index correctly to avoid this.
     // It seems to be related to the inclusion of the math_function table (it causes MySQL to use filesort).
     // Solution is to force the index used in the run and evaluation table (or not use ORDER BY at all).
+    // TODO: remove dependency on task_inputs and dataset table
     $sql =
       'SELECT r.rid, r.task_id, r.start_time, s.implementation_id, s.sid, f.name AS `function`, i.fullName, d.did, d.name, e.evaluation_engine_id, ' . $columns . ' ' .
       'FROM run r, ' . $eval_table . ' e, algorithm_setup s, implementation i, dataset d, task t, task_inputs ti, math_function f ' .
