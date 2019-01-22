@@ -105,6 +105,7 @@ class Api_evaluation extends MY_Api_Model {
       $this->returnError(547, $this->version, $this->openmlGeneralErrorCode, 'Filters with illegal values: ' . implode(',', $illegal_filter_inputs));
       return;
     }
+    $per_fold = ('per_fold' === 'true') ? true : false; // cast to boolean. we only accept lowercase entrees
     
     if ($offset && !$limit) {
       $this->returnError(545, $this->version);
@@ -137,7 +138,7 @@ class Api_evaluation extends MY_Api_Model {
     $where_total = $where_runs . $where_function;
 
     //pre-test, should be quick??
-    if($limit == false) { // skip pre-test if less than 10000 are requested by definition
+    if($limit == false || $per_fold) { // skip pre-test if less than 10000 are requested by definition
       $count = 0;
       //shortcuts
       if (!$implementation_id) {
@@ -157,18 +158,18 @@ class Api_evaluation extends MY_Api_Model {
         $count = $this->Evaluation->query($sql_test)[0]->count;
       }
       if ($count > $result_limit) {
-        $this->returnError(543, $this->version, $this->openmlGeneralErrorCode, 'Size of result set: ' . $count . ' runs; max size: ' . $result_limit . '. Please use limit and offset. ');
-        return;
+        if (!$per_fold) {
+          $this->returnError(543, $this->version, $this->openmlGeneralErrorCode, 'Size of result set: ' . $count . ' runs; max size: ' . $result_limit);
+          return;
+        } else {
+          // TODO: This must be extremely vague for the user. Will not scale as OpenML grows.
+          $this->returnError(548, $this->version, $this->openmlGeneralErrorCode, 'Number of inspected run records: ' . $count . ' runs; max: ' . $result_limit);
+          return;
+        }
       }
     }
-    // more pre-test. in case of a per-fold query, ensure at least some constraints
-    if ($per_fold === 'true' && !($task_id || $uploader_id || $setup_id || $run_id || $implementation_id)) { // per_fold is string
-      // TODO: this query is a monster. find a more natural way to deal with it
-      $this->returnError(548, $this->version, $this->openmlGeneralErrorCode);
-      return;
-    }
     
-    if ($per_fold === 'true') { // note that due to the rest interface, all per_fold argument comes in as string (as all other arguments)
+    if ($per_fold) {
       $eval_table = 'evaluation_fold';
       $columns = 'NULL as value, NULL as array_data, CONCAT("[", GROUP_CONCAT(e.value), "]") AS `values`';
       $group_by = 'GROUP BY r.rid, e.function_id, e.evaluation_engine_id';
