@@ -105,7 +105,7 @@ class Api_evaluation extends MY_Api_Model {
       $this->returnError(547, $this->version, $this->openmlGeneralErrorCode, 'Filters with illegal values: ' . implode(',', $illegal_filter_inputs));
       return;
     }
-    $per_fold = ('per_fold' === 'true') ? true : false; // cast to boolean. we only accept lowercase entrees
+    $per_fold = ($per_fold === 'true') ? true : false; // cast to boolean. we only accept lowercase entrees
     
     if ($offset && !$limit) {
       $this->returnError(545, $this->version);
@@ -146,15 +146,14 @@ class Api_evaluation extends MY_Api_Model {
           'SELECT count(distinct r.rid) as count ' .
           'FROM run r, task t '.
           'WHERE r.task_id = t.task_id ' . 
-          $where_runs . $where_limit;
+          $where_runs;
         $count = $this->Evaluation->query($sql_test)[0]->count;
       } else {
         $sql_test =
           'SELECT count(distinct r.rid) as count ' .
           'FROM run r, task t, algorithm_setup s ' .
           'WHERE r.setup = s.sid AND r.task_id = t.task_id ' .
-          $where_runs .
-          $where_limit ;
+          $where_runs;
         $count = $this->Evaluation->query($sql_test)[0]->count;
       }
       if ($count > $result_limit) {
