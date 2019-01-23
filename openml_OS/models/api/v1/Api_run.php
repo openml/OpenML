@@ -346,22 +346,6 @@ class Api_run extends MY_Api_Model {
     $output_data = array_key_exists('output_data', $run_xml) ? $run_xml['output_data'] : array();
     $tags = array_key_exists('tag', $run_xml) ? str_getcsv ($run_xml['tag']) : array();
 
-    $supported_evaluation_measures = $this->Math_function->getColumnWhere('name', '`functionType` = "EvaluationFunction"');
-
-    // the user can specify his own metrics. here we check whether these exists in the database.
-    if($output_data != false && array_key_exists('evaluation', $output_data)) {
-      // php does not have a set data structure, use hashmap instead
-      $used_evaluation_measures = array();
-      foreach($output_data->children('oml',true)->{'evaluation'} as $eval) {
-        $used_evaluation_measures[''.$eval->name] = true;
-      }
-      $used_evaluation_measures = array_keys($used_evaluation_measures);
-      $unknown_measures = array_diff($used_evaluation_measures, $supported_evaluation_measures);
-      if (count($unknown_measures) > 0) {
-        $this->returnError(217, $this->version,$this->openmlGeneralErrorCode,'Measure(s): ' . implode(',', $unknown_measures));
-        return;
-      }
-    }
     $predictionsUrl   = false;
 
     // fetch implementation
@@ -382,12 +366,12 @@ class Api_run extends MY_Api_Model {
       $extension = getExtension($_FILES[$key]['name']);
 
       if (/*in_array($extension,$this->config->item('allowed_extensions')) == false ||*/ $extension == false) {
-        $this->returnError(206, $this->version, $this->openmlGeneralErrorCode, 'Invalid extension for file "'.$key.'". Original filename: ' . $_FILES[$key]['name']);
+        $this->returnError(206, $this->version, $this->openmlGeneralErrorCode, 'Invalid extension for file "' . $key . '". Original filename: ' . $_FILES[$key]['name']);
         return;
       }
 
       if (!check_uploaded_file($_FILES[$key], false, $message)) {
-        $this->returnError(207, $this->version, $this->openmlGeneralErrorCode, 'Upload problem with file "'.$key.'": ' . $message);
+        $this->returnError(207, $this->version, $this->openmlGeneralErrorCode, 'Upload problem with file "' . $key . '": ' . $message);
         return;
       }
 
@@ -462,6 +446,12 @@ class Api_run extends MY_Api_Model {
       $this->returnError(221, $this->version);
       return;
     }
+    // get data quality
+    $num_instances_record = $this->Data_quality->getById(array($task['source_data'], 'NumberOfInstances', $this->weka_engine_id));
+    if ($num_instances_record === false) {
+      $this->returnError(208, $this->version);
+      return;
+    }
     // check if estimation procedure record associated to task exists
     $ep_record = $this->Estimation_procedure->getById($task['estimation_procedure']);
     if ($ep_record === false) {
@@ -469,11 +459,37 @@ class Api_run extends MY_Api_Model {
       return;
     }
     
-    // check whether user calculated measures are actually legal
-    if (array_key_exists('evaluation', $output_data)) {
-      // check
+    $supported_evaluation_measures = $this->Math_function->getColumnWhere('name', '`functionType` = "EvaluationFunction"');
+    // the user can specify his own metrics. here we check whether these exists in the database.
+    if($output_data != false && array_key_exists('evaluation', $output_data)) {
+      // php does not have a set data structure, use hashmap instead
+      $used_evaluation_measures = array();
+      $illegal_measures = array();
+      foreach($output_data->children('oml',true)->{'evaluation'} as $eval) {
+        // record the evaluation measures that were used
+        $used_evaluation_measures[''.$eval->name] = true;
+        // check whether it was a legal measure w.r.t. the estimation procedure
+        // first add null values, in case a propoerty doesn't exist
+        if (!property_exists($eval, 'repeat')) { $eval->repeat = null; }
+        if (!property_exists($eval, 'fold')) { $eval->fold = null; }
+        if (!property_exists($eval, 'sample')) { $eval->sample = null; }
+        $num_inst = $num_instances_record->value;
+        if (!$this->Estimation_procedure->check_legal($ep_record, $num_inst, $eval->repeat, $eval->fold, $eval->sample)) {
+          $illegal_measures[] = $this->Estimation_procedure->eval_measure_to_string($eval->name, $eval->repeat, $eval->fold, $eval->sample);
+        }
+      }
+      $used_evaluation_measures = array_keys($used_evaluation_measures);
+      $unknown_measures = array_diff($used_evaluation_measures, $supported_evaluation_measures);
+      if (count($unknown_measures) > 0) {
+        $this->returnError(217, $this->version, $this->openmlGeneralErrorCode, 'Measure(s): ' . implode(', ', $unknown_measures));
+        return;
+      }
+      if (count($illegal_measures) > 0) {
+        $this->returnError(216, $this->version, $this->openmlGeneralErrorCode, 'Measure(s): ' . implode(', ', $illegal_measures));
+        return;
+      }
     }
-
+    
     // now create a run
     $runData = array(
       'uploader' => $this->user_id,

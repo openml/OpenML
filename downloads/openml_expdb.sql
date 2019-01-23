@@ -283,7 +283,7 @@ CREATE TABLE `estimation_procedure` (
   `id` int(8) NOT NULL,
   `ttid` int(11) NOT NULL,
   `name` varchar(128) NOT NULL,
-  `type` enum('crossvalidation','leaveoneout','holdout','bootstrapping','subsampling','learningcurve','testthentrain','holdoutunlabeled','customholdout','testontrainingdata') NOT NULL,
+  `type` enum('crossvalidation','leaveoneout','holdout','bootstrapping','subsampling','testthentrain','holdoutunlabeled','customholdout','testontrainingdata') NOT NULL,
   `repeats` int(8) DEFAULT NULL,
   `folds` int(8) DEFAULT NULL,
   `samples` enum('false','true') NOT NULL DEFAULT 'false',

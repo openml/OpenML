@@ -69,7 +69,7 @@ class Task extends MY_Database_Write_Model {
     return $this->query( $sql );
   }
   
-  // @deprecated, source of errors
+  // @deprecated, source of errors. REMOVE ASAP
   function create_batch( $ttid, $task_batch ) {
     $result = array();
     $to_insert = array();
@@ -91,7 +91,7 @@ class Task extends MY_Database_Write_Model {
           $numInstances = $this->Data_quality->getFeature( $task['source_data'], 'NumberOfInstances' );
           $estimation_procedure = $this->Estimation_procedure->getById( $task['estimation_procedure'] );
           $numSamples = $this->Estimation_procedure->number_of_samples(
-            $this->Estimation_procedure->trainingset_size( $numInstances, $estimation_procedure->folds ) 
+            $this->Estimation_procedure->trainingset_size($numInstances, $estimation_procedure)
           );
           $to_insert[] = array( 'task_id' => $task_id, 'input' => 'number_samples', 'value' => $numSamples );
         }
