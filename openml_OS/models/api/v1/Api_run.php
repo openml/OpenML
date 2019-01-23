@@ -465,17 +465,18 @@ class Api_run extends MY_Api_Model {
       // php does not have a set data structure, use hashmap instead
       $used_evaluation_measures = array();
       $illegal_measures = array();
-      foreach($output_data->children('oml',true)->{'evaluation'} as $eval) {
+      foreach($output_data->children('oml',true)->{'evaluation'} as $e) {
         // record the evaluation measures that were used
-        $used_evaluation_measures[''.$eval->name] = true;
+        $eval = xml2assoc($e, true);
+        $used_evaluation_measures[''.$eval['name']] = true;
         // check whether it was a legal measure w.r.t. the estimation procedure
         // first add null values, in case a propoerty doesn't exist
-        $repeat_nr = property_exists($eval, 'repeat') ? $eval->repeat[0] : null;
-        $fold_nr = property_exists($eval, 'fold') ? $eval->fold[0] : null;
-        $sample_nr = property_exists($eval, 'sample') ? $eval->sample[0] : null;
+        $repeat_nr = array_has_property('repeat', $eval) ? $eval['repeat'] : null;
+        $fold_nr = array_has_property('fold', $eval) ? $eval['fold'] : null;
+        $sample_nr = array_has_property('sample', $eval) ? $eval['sample'] : null;
         $num_inst = $num_instances_record->value;
         if (!$this->Estimation_procedure->check_legal($ep_record, $num_inst, $repeat_nr, $fold_nr, $sample_nr)) {
-          $illegal_measures[] = $this->Estimation_procedure->eval_measure_to_string($eval->name, $eval->repeat, $eval->fold, $eval->sample);
+          $illegal_measures[] = $this->Estimation_procedure->eval_measure_to_string($eval->name, $repeat_nr, $fold_nr, $sample_nr);
         }
       }
       $used_evaluation_measures = array_keys($used_evaluation_measures);
