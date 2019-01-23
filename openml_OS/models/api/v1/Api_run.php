@@ -694,7 +694,7 @@ class Api_run extends MY_Api_Model {
       return;
     }
     
-    $task = $this->Task_inputs->getTaskValuesAssoc($task_id);
+    $task = $this->Task_inputs->getTaskValuesAssoc($runRecord->task_id);
     if (!array_key_exists('source_data', $task)) {
       $this->returnError(429, $this->version);
       return;
