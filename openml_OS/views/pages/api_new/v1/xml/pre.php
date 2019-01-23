@@ -84,8 +84,11 @@ $this->apiErrors[215] = 'Database error. Setup search query failed';
 $this->apiErrors[217] = 'Error processing output data: unknown or inconsistent evaluation measure';
 $this->apiErrors[218] = 'Wrong flow associated with run: this implements a math_function';
 $this->apiErrors[219] = 'Task does not contain field: source_data';
-$this->apiErrors[220] = 'Unable to store uploaded file in database';
-$this->apiErrors[221] = 'Database insertion error, probably due to high server load. ';
+$this->apiErrors[220] = 'Task does not contain field: estimation_procedure';
+$this->apiErrors[221] = 'Could not find associated source data record';
+$this->apiErrors[222] = 'Could not find associated estimation procedure record';
+$this->apiErrors[223] = 'Unable to store uploaded file in database';
+$this->apiErrors[224] = 'Database insertion error, probably due to high server load. ';
 
 // range from 225 - 239: api run
 

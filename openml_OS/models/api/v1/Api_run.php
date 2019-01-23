@@ -22,6 +22,7 @@ class Api_run extends MY_Api_Model {
     $this->load->model('Implementation');
     $this->load->model('Trace');
 
+    $this->load->model('Estimation_procedure');
     $this->load->model('Evaluation');
     $this->load->model('Evaluation_fold');
     $this->load->model('Evaluation_sample');
@@ -447,11 +448,31 @@ class Api_run extends MY_Api_Model {
     }
 
     $task = $this->Task_inputs->getTaskValuesAssoc($task_id);
-    if (array_key_exists('source_data', $task) == false) {
+    if (!array_key_exists('source_data', $task)) {
       $this->returnError(219, $this->version);
       return;
     }
-
+    if (!array_key_exists('estimation_procedure', $task)) {
+      $this->returnError(220, $this->version);
+      return;
+    }
+    // check if dataset record associated to task exists
+    $dataset_record = $this->Dataset->getById($task['source_data']);
+    if ($dataset_record === false) {
+      $this->returnError(221, $this->version);
+      return;
+    }
+    // check if estimation procedure record associated to task exists
+    $ep_record = $this->Estimation_procedure->getById($task['estimation_procedure']);
+    if ($ep_record === false) {
+      $this->returnError(222, $this->version);
+      return;
+    }
+    
+    // check whether user calculated measures are actually legal
+    if (array_key_exists('evaluation', $output_data)) {
+      // check
+    }
 
     // now create a run
     $runData = array(
@@ -488,7 +509,7 @@ class Api_run extends MY_Api_Model {
       $to_folder = $this->data_folders['run'] . '/' . $subdirectory . '/' . $runId . '/';
       $file_id = $this->File->register_uploaded_file($value, $to_folder, $this->user_id, $file_type);
       if(!$file_id) {
-        $this->returnError(220, $this->version);
+        $this->returnError(223, $this->version);
         return;
       }
       $file_record = $this->File->getById($file_id);
@@ -510,7 +531,7 @@ class Api_run extends MY_Api_Model {
       $this->Run->outputData($runId, $did, 'runfile', $key);
     }
 
-    // attach input data
+    // attach input data TODO: JvR: this is legacy and implicit with the task. Remove?
     $inputData = $this->Run->inputData($runId, $task['source_data'], 'dataset'); // Based on the query, it has been garantueed that the dataset id exists.
     if($inputData === false) {
       $errorCode = 211;
@@ -518,7 +539,7 @@ class Api_run extends MY_Api_Model {
     }
     $this->db->trans_complete();
 	if ($this->db->trans_status() === FALSE) {
-	  $this->returnError(221, $this->version);
+	  $this->returnError(224, $this->version);
       return;
     }
 
