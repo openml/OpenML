@@ -471,9 +471,9 @@ class Api_run extends MY_Api_Model {
         $used_evaluation_measures[''.$eval['name']] = true;
         // check whether it was a legal measure w.r.t. the estimation procedure
         // first add null values, in case a propoerty doesn't exist
-        $repeat_nr = array_has_property('repeat', $eval) ? $eval['repeat'] : null;
-        $fold_nr = array_has_property('fold', $eval) ? $eval['fold'] : null;
-        $sample_nr = array_has_property('sample', $eval) ? $eval['sample'] : null;
+        $repeat_nr = array_key_exists('repeat', $eval) ? $eval['repeat'] : null;
+        $fold_nr = array_key_exists('fold', $eval) ? $eval['fold'] : null;
+        $sample_nr = array_key_exists('sample', $eval) ? $eval['sample'] : null;
         $num_inst = $num_instances_record->value;
         if (!$this->Estimation_procedure->check_legal($ep_record, $num_inst, $repeat_nr, $fold_nr, $sample_nr)) {
           $illegal_measures[] = $this->Estimation_procedure->eval_measure_to_string($eval->name, $repeat_nr, $fold_nr, $sample_nr);
