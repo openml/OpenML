@@ -286,6 +286,7 @@ CREATE TABLE `estimation_procedure` (
   `type` enum('crossvalidation','leaveoneout','holdout','bootstrapping','subsampling','learningcurve','testthentrain','holdoutunlabeled','customholdout','testontrainingdata') NOT NULL,
   `repeats` int(8) DEFAULT NULL,
   `folds` int(8) DEFAULT NULL,
+  `samples` enum('false','true') NOT NULL DEFAULT 'false',
   `percentage` int(8) DEFAULT NULL,
   `stratified_sampling` enum('true','false') DEFAULT NULL,
   `custom_testset` enum('true','false') NOT NULL DEFAULT 'false',
