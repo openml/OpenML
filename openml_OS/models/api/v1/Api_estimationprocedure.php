@@ -29,13 +29,13 @@ class Api_estimationprocedure extends MY_Api_Model {
 
   private function estimationprocedure($id) {
     if( $id == false ) {
-      $this->returnError( 440, $this->version );
+      $this->returnError( 730, $this->version );
       return;
     }
 
     $ep = $this->Estimation_procedure->getById( $id );
     if( $ep == false ) {
-      $this->returnError( 441, $this->version );
+      $this->returnError( 731, $this->version );
       return;
     }
     $this->xmlContents( 'estimationprocedure-get', $this->version, array( 'ep' => $ep ) );

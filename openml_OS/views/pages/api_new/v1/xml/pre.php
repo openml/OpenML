@@ -72,7 +72,7 @@ $this->apiErrors[204] = 'Unknown task';
 $this->apiErrors[205] = 'Unknown flow';
 $this->apiErrors[206] = 'Invalid file type uploaded';
 $this->apiErrors[207] = 'File upload failed';
-$this->apiErrors[208] = 'Dataset misses meta-feature (from default eval engine): NumberOfInstances';
+$this->apiErrors[208] = 'Associated dataset does not have quality (default evaluation engine): NumberOfInstances';
 $this->apiErrors[209] = 'Error parsing uploaded file. ';
 $this->apiErrors[210] = 'Unable to store run';
 $this->apiErrors[211] = 'Dataset not in databse';
@@ -211,28 +211,26 @@ $this->apiErrors[425] = 'Run does not exists';
 $this->apiErrors[426] = 'Run already processed';
 $this->apiErrors[427] = 'Inconsistent data, evaluations found but no run_evaluated record. Please contact developers';
 $this->apiErrors[428] = 'Database insertion error, probably due to high server load. ';
+$this->apiErrors[429] = 'Task does not contain field: source_data';
+$this->apiErrors[430] = 'Task does not contain field: estimation_procedure';
+$this->apiErrors[431] = 'Could not find associated source data record';
+$this->apiErrors[432] = 'Could not find associated estimation procedure record';
+$this->apiErrors[433] = 'Associated dataset does not have quality (default evaluation engine): NumberOfInstances';
+$this->apiErrors[434] = 'Illegal combination of evaluation measure attributes (repeat, fold, sample)';
 
 // for function: openml.data.features.upload
-$this->apiErrors[431] = 'Dataset already processed';
-$this->apiErrors[432] = 'Please provide description xml';
-$this->apiErrors[433] = 'Problem validating uploaded description file';
-$this->apiErrors[434] = 'Could not find dataset';
-$this->apiErrors[435] = 'Feature upload failed';
-$this->apiErrors[436] = 'Something wrong with XML, check did and evaluation engine id';
-$this->apiErrors[437] = 'Class Distribution not valid json';
-$this->apiErrors[438] = 'Nominal feature is not accompanied with values';
-$this->apiErrors[439] = 'Non-Nominal feature obtained values';
-
-$this->apiErrors[446] = 'Database insert failed';
-
-// for function: openml.estimationprocedure.get
-$this->apiErrors[440] = 'Please provide estimationprocedure_id';
-$this->apiErrors[441] = 'estimationprocedure_id not valid';
-
-// 446 - 449 is for feature upload
+$this->apiErrors[441] = 'Dataset already processed';
+$this->apiErrors[442] = 'Please provide description xml';
+$this->apiErrors[443] = 'Problem validating uploaded description file';
+$this->apiErrors[444] = 'Could not find dataset';
+$this->apiErrors[445] = 'Feature upload failed';
+$this->apiErrors[446] = 'Something wrong with XML, check did and evaluation engine id';
+$this->apiErrors[447] = 'Class Distribution not valid json';
+$this->apiErrors[448] = 'Nominal feature is not accompanied with values';
+$this->apiErrors[449] = 'Non-Nominal feature obtained values';
+$this->apiErrors[450] = 'Database insert failed';
 
 // for function: openml.task.delete
-$this->apiErrors[450] = 'Please provide API key';
 $this->apiErrors[451] = 'Authentication failed';
 $this->apiErrors[452] = 'Task does not exists';
 $this->apiErrors[453] = 'Task is not owned by you';
@@ -416,6 +414,13 @@ $this->apiErrors[721] = 'Unauthorized deletion';
 
 // openml.votes.do
 $this->apiErrors[722] = 'Unauthorized vote';
+
+// TODO: Make the gamification errors adjacent. (Now we kind of hijacked 
+// 730-800 for normal features)
+
+// for function: openml.estimationprocedure.get
+$this->apiErrors[730] = 'Please provide estimationprocedure_id';
+$this->apiErrors[731] = 'estimationprocedure_id not valid';
 
 // openml.votes.list
 $this->apiErrors[801] = 'List failed';

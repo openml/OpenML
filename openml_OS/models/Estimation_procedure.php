@@ -78,7 +78,7 @@ class Estimation_procedure extends MY_Database_Read_Model {
       if ($ep_record->samples != 'true') {
         return false;
       }
-      $total_samples = number_of_samples(trainingset_size($dataset_size, $ep_record));
+      $total_samples = $this->number_of_samples($this->trainingset_size($dataset_size, $ep_record));
       if ($sample_nr >= $total_samples) {
         return false;
       }

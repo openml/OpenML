@@ -693,8 +693,35 @@ class Api_run extends MY_Api_Model {
       $this->returnError(425, $this->version);
       return;
     }
-
-
+    
+    $task = $this->Task_inputs->getTaskValuesAssoc($task_id);
+    if (!array_key_exists('source_data', $task)) {
+      $this->returnError(429, $this->version);
+      return;
+    }
+    if (!array_key_exists('estimation_procedure', $task)) {
+      $this->returnError(430, $this->version);
+      return;
+    }
+    // check if dataset record associated to task exists
+    $dataset_record = $this->Dataset->getById($task['source_data']);
+    if ($dataset_record === false) {
+      $this->returnError(431, $this->version);
+      return;
+    }
+    // get data quality
+    $num_instances_record = $this->Data_quality->getById(array($task['source_data'], 'NumberOfInstances', $this->weka_engine_id));
+    if ($num_instances_record === false) {
+      $this->returnError(433, $this->version);
+      return;
+    }
+    // check if estimation procedure record associated to task exists
+    $ep_record = $this->Estimation_procedure->getById($task['estimation_procedure']);
+    if ($ep_record === false) {
+      $this->returnError(432, $this->version);
+      return;
+    }
+    
     $math_functions = $this->Math_function->getAssociativeArray('name', 'id', 'functionType = "EvaluationFunction"');
 
     $evaluation_record = $this->Run_evaluated->getById(array($run_id, $eval_engine_id));
@@ -730,6 +757,23 @@ class Api_run extends MY_Api_Model {
     $data['evaluation_engine_id'] = $eval_engine_id;
     $data['user_id'] = $this->user_id;
     $data['num_tries'] = $num_tries + 1;
+    
+    // pre-check
+    $illegal_measures = array();
+    foreach($xml->children('oml', true)->{'evaluation'} as $e) {
+      $eval = xml2assoc($e, true);
+      $repeat_nr = array_key_exists('repeat', $eval) ? $eval['repeat'] : null;
+      $fold_nr = array_key_exists('fold', $eval) ? $eval['fold'] : null;
+      $sample_nr = array_key_exists('sample', $eval) ? $eval['sample'] : null;
+      $num_inst = $num_instances_record->value;
+      if (!$this->Estimation_procedure->check_legal($ep_record, $num_inst, $repeat_nr, $fold_nr, $sample_nr)) {
+        $illegal_measures[] = $this->Estimation_procedure->eval_measure_to_string($eval['name'], $repeat_nr, $fold_nr, $sample_nr);
+      }
+    }
+    if (count($illegal_measures) > 0) {
+      $this->returnError(434, $this->version, $this->openmlGeneralErrorCode, 'Measure(s): ' . implode(', ', $illegal_measures));
+      return;
+    }
 
     $this->db->trans_start();
     $this->Run_evaluated->replace($data);
