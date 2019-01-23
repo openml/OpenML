@@ -468,7 +468,7 @@ class Api_run extends MY_Api_Model {
       foreach($output_data->children('oml',true)->{'evaluation'} as $e) {
         // record the evaluation measures that were used
         $eval = xml2assoc($e, true);
-        $used_evaluation_measures[''.$eval['name']] = true;
+        $used_evaluation_measures[$eval['name']] = true;
         // check whether it was a legal measure w.r.t. the estimation procedure
         // first add null values, in case a propoerty doesn't exist
         $repeat_nr = array_key_exists('repeat', $eval) ? $eval['repeat'] : null;
@@ -476,7 +476,7 @@ class Api_run extends MY_Api_Model {
         $sample_nr = array_key_exists('sample', $eval) ? $eval['sample'] : null;
         $num_inst = $num_instances_record->value;
         if (!$this->Estimation_procedure->check_legal($ep_record, $num_inst, $repeat_nr, $fold_nr, $sample_nr)) {
-          $illegal_measures[] = $this->Estimation_procedure->eval_measure_to_string($eval->name, $repeat_nr, $fold_nr, $sample_nr);
+          $illegal_measures[] = $this->Estimation_procedure->eval_measure_to_string($eval['name'], $repeat_nr, $fold_nr, $sample_nr);
         }
       }
       $used_evaluation_measures = array_keys($used_evaluation_measures);
