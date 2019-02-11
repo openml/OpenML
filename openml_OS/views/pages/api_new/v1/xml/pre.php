@@ -464,6 +464,7 @@ $this->apiErrors[1002] = 'No tags available';
 $this->apiErrors[1011] = 'Illegal filter';
 $this->apiErrors[1012] = 'Input does not comply to constraints';
 $this->apiErrors[1013] = 'No unevaluated runs according to the criteria';
+$this->apiErrors[1014] = 'No value specified for filter';
 
 // for function: openml.data.reset
 $this->apiErrors[1021] = 'Dataset does not exists';

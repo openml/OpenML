@@ -44,10 +44,15 @@ class Api_evaluation extends MY_Api_Model {
     $legal_filters = array('ttid', 'task', 'tag', 'uploader', 'setup');
     $query_string = array();
     for ($i = 0; $i < count($segs); $i += 2) {
-      $query_string[$segs[$i]] = urldecode($segs[$i+1]);
       if (in_array($segs[$i], $legal_filters) == false) {
         $this->returnError(1011, $this->version, $this->openmlGeneralErrorCode, 'Legal filter operators: ' . implode(',', $legal_filters) .'. Found illegal filter: ' . $segs[$i]);
         return;
+      }
+      if ($i + 1 < count($segs)) {
+        $query_string[$segs[$i]] = urldecode($segs[$i+1]);  
+      } else {
+        $this->returnError(1014, $this->version, $this->openmlGeneralErrorCode, 'Filter: ' . $segs[$i]);
+        return;  
       }
     }
     
