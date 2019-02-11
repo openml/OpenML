@@ -7,7 +7,7 @@ class Run_evaluated extends MY_Database_Write_Model {
     $this->id_column = array('run_id', 'evaluation_engine_id');
   }
 
-  function getUnevaluatedRun($evaluation_engine_id, $order, $num_requests, $ttids = false, $task_ids = false, $tag = false, $uploader = false) {
+  function getUnevaluatedRun($evaluation_engine_id, $order, $num_requests, $ttids = false, $task_ids = false, $tag = false, $uploader_ids = false, $setup_ids = false) {
     $this->db->from('`run` `r`');
     
     if ($ttids != false) {
@@ -20,8 +20,12 @@ class Run_evaluated extends MY_Database_Write_Model {
       $this->db->where('`rt`.`tag` = "'.$tag.'"');
     }
     
-    if ($uploader != false) {
-      $this->db->where('`r`.`uploader` = "'.$uploader.'"');
+    if ($uploader_ids != false) {
+      $this->db->where_in('`r`.`uploader`', $uploader_ids);
+    }
+    
+    if ($setup_ids != false) {
+      $this->db->where_in('`r`.`setup`', $setup_ids);
     }
     
     if ($task_ids != false) {

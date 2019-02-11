@@ -41,7 +41,7 @@ class Api_evaluation extends MY_Api_Model {
       return;
     }
     
-    $legal_filters = array('ttid', 'task', 'tag', 'uploader');
+    $legal_filters = array('ttid', 'task', 'tag', 'uploader', 'setup');
     $query_string = array();
     for ($i = 0; $i < count($segs); $i += 2) {
       $query_string[$segs[$i]] = urldecode($segs[$i+1]);
@@ -58,16 +58,24 @@ class Api_evaluation extends MY_Api_Model {
     }
     
     $ttid = element('ttid', $query_string, false);
-    $tag = element('tag',$query_string, false);
-    $uploader = element('uploader',$query_string, false);
-    $task = element('task',$query_string, false);
+    $tag = element('tag', $query_string, false);
+    $uploader = element('uploader', $query_string, false);
+    $task = element('task', $query_string, false);
+    $setup = element('setup', $query_string, false);
+    
     if ($task != false) {
       $task = explode(',', $task);
     }
     if ($ttid != false) {
       $ttid = explode(',', $ttid);
     }
-    $res = $this->Run_evaluated->getUnevaluatedRun($evaluation_engine_id, $order, $num_requests, $ttid, $task, $tag, $uploader);
+    if ($uploader != false) {
+      $uploader = explode(',', $uploader);
+    }
+    if ($setup != false) {
+      $setup = explode(',', $setup);
+    }
+    $res = $this->Run_evaluated->getUnevaluatedRun($evaluation_engine_id, $order, $num_requests, $ttid, $task, $tag, $uploader, $setup);
     if ($res == false) {
       $this->returnError(1013, $this->version);
       return;
