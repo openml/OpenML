@@ -687,6 +687,27 @@ class Api_run extends MY_Api_Model {
 
     $run_id = (string) $xml->children('oml', true)->{'run_id'};
     $eval_engine_id = '' . $xml->children('oml', true)->{'evaluation_engine_id'};
+      
+    // initiate run_evaluated record 
+    $data = array(
+        'evaluation_date' => now(),
+        'run_id' => $run_id,
+        'evaluation_engine_id' => $eval_engine_id,
+        'user_id' => $this->user_id,
+        'num_tries' => $num_tries + 1,
+    );
+    if (isset($xml->children('oml', true)->{'error'})) {
+      $data['error'] = '' . $xml->children('oml', true)->{'error'};
+    }
+    if (isset( $xml->children('oml', true)->{'warning'})) {
+      $data['warning'] = '' . $xml->children('oml', true)->{'warning'};
+    }
+    
+    $evaluation_record = $this->Run_evaluated->getById(array($run_id, $eval_engine_id));
+    $num_tries = 0;
+    if ($evaluation_record) {
+      $num_tries = $evaluation_record->num_tries;
+    }
 
     $runRecord = $this->Run->getById($run_id);
     if($runRecord == false) {
@@ -696,35 +717,53 @@ class Api_run extends MY_Api_Model {
     
     $task = $this->Task_inputs->getTaskValuesAssoc($runRecord->task_id);
     if (!array_key_exists('source_data', $task)) {
-      $this->returnError(429, $this->version);
+      // also add error in database
+      $error_code = 429;
+      $data['error'] = $this->load->apiErrors[$error_code];
+      $this->Run_evaluated->replace($data);
+      $this->returnError($error_code, $this->version);
       return;
     }
     if (!array_key_exists('estimation_procedure', $task)) {
-      $this->returnError(430, $this->version);
+      // also add error in database
+      $error_code = 430;
+      $data['error'] = $this->load->apiErrors[$error_code];
+      $this->Run_evaluated->replace($data);
+      $this->returnError($error_code, $this->version);
       return;
     }
     // check if dataset record associated to task exists
     $dataset_record = $this->Dataset->getById($task['source_data']);
     if ($dataset_record === false) {
-      $this->returnError(431, $this->version);
+      // also add error in database
+      $error_code = 431;
+      $data['error'] = $this->load->apiErrors[$error_code];
+      $this->Run_evaluated->replace($data);
+      $this->returnError($error_code, $this->version);
       return;
     }
     // get data quality
     $num_instances_record = $this->Data_quality->getById(array($task['source_data'], 'NumberOfInstances', $this->weka_engine_id));
     if ($num_instances_record === false) {
-      $this->returnError(433, $this->version);
+      // also add error in database
+      $error_code = 433;
+      $data['error'] = $this->load->apiErrors[$error_code];
+      $this->Run_evaluated->replace($data);
+      $this->returnError($error_code, $this->version);
       return;
     }
     // check if estimation procedure record associated to task exists
     $ep_record = $this->Estimation_procedure->getById($task['estimation_procedure']);
     if ($ep_record === false) {
-      $this->returnError(432, $this->version);
+      // also add error in database
+      $error_code = 432;
+      $data['error'] = $this->load->apiErrors[$error_code];
+      $this->Run_evaluated->replace($data);
+      $this->returnError($error_code, $this->version);
       return;
     }
     
     $math_functions = $this->Math_function->getAssociativeArray('name', 'id', 'functionType = "EvaluationFunction"');
-
-    $evaluation_record = $this->Run_evaluated->getById(array($run_id, $eval_engine_id));
     $evaluations_stored = $this->Evaluation->getWhere('source = "' . $run_id . '" AND evaluation_engine_id = "' . $eval_engine_id . '"');
 
     if($evaluation_record && $evaluation_record->error == null) {
@@ -733,30 +772,15 @@ class Api_run extends MY_Api_Model {
     }
 
     if ($evaluations_stored && !$evaluation_record) {
-      $this->returnError(427, $this->version);
+      // also add error in database
+      $error_code = 427;
+      $data['error'] = $this->load->apiErrors[$error_code];
+      $this->Run_evaluated->replace($data);
+      $this->returnError($error_code, $this->version);
       return;
     }
 
-    $num_tries = 0;
-    if ($evaluation_record) {
-      $num_tries = $evaluation_record->num_tries;
-    }
-
     $timestamps[] = microtime(true); // profiling 1
-
-    $data = array('evaluation_date' => now());
-    if (isset($xml->children('oml', true)->{'error'})) {
-      $data['error'] = '' . $xml->children('oml', true)->{'error'};
-    }
-    if (isset( $xml->children('oml', true)->{'warning'})) {
-      $data['warning'] = '' . $xml->children('oml', true)->{'warning'};
-    }
-
-    // TODO: the new way to go.
-    $data['run_id'] = $run_id;
-    $data['evaluation_engine_id'] = $eval_engine_id;
-    $data['user_id'] = $this->user_id;
-    $data['num_tries'] = $num_tries + 1;
     
     // pre-check
     $illegal_measures = array();
