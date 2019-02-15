@@ -41,20 +41,20 @@ class Api_study extends MY_Api_Model {
       }
     }
 
-    $this->returnError( 100, $this->version );
+    $this->returnError(100, $this->version);
   }
 
   private function study_delete($study_id) {
 
-    $study = $this->Study->getById( $study_id );
-    if( $study == false ) {
-      $this->returnError( 592, $this->version );
+    $study = $this->Study->getById($study_id);
+    if ($study == false) {
+      $this->returnError(592, $this->version);
       return;
     }
 
-    $result = $this->Study->delete( $study_id );
-    if( $result == false ) {
-      $this->returnError( 593, $this->version );
+    $result = $this->Study->delete($study_id);
+    if ($result == false) {
+      $this->returnError(593, $this->version);
       return;
     }
 
@@ -66,7 +66,7 @@ class Api_study extends MY_Api_Model {
       return;
     }
 
-    $this->xmlContents( 'study-delete', $this->version, array( 'study' => $study ) );
+    $this->xmlContents('study-delete', $this->version, array('study' => $study));
   }
 
 
@@ -74,14 +74,14 @@ class Api_study extends MY_Api_Model {
     $studies = $this->Study->getWhere('visibility = "public" or creator = ' . $this->user_id);
 
     if (count($studies) == 0) {
-      $this->returnError(590, $this->version );
+      $this->returnError(590, $this->version);
       return;
     }
 
     $this->xmlContents('study-list', $this->version, array('studies' => $studies));
   }
 
-  private function study_by_id($study_id,$knowledge_type) {
+  private function study_by_id($study_id, $knowledge_type) {
     $study = $this->Study->getById($study_id);
 
     if ($study == false) {
@@ -89,10 +89,10 @@ class Api_study extends MY_Api_Model {
       return;
     }
 
-    $this->_study_get($study,$knowledge_type);
+    $this->_legacy_study_get($study, $knowledge_type);
   }
 
-  private function study_by_alias($study_alias,$knowledge_type) {
+  private function study_by_alias($study_alias, $knowledge_type) {
     $study = $this->Study->getWhereSingle('alias = "' . $study_alias . '"');
 
     if ($study == false) {
@@ -100,10 +100,11 @@ class Api_study extends MY_Api_Model {
       return;
     }
 
-    $this->_study_get($study,$knowledge_type);
+    $this->_legacy_study_get($study, $knowledge_type);
   }
-
-  private function _study_get($study,$knowledge_type) {
+  
+  // TODO: remove ASAP
+  private function _legacy_study_get($study, $knowledge_type) {
     $valid_knowlegde_types = array('runs', 'flows', 'setups', 'data', 'tasks', NULL);
     if (!in_array($knowledge_type, $valid_knowlegde_types)) {
       $this->returnError(600, $this->version);
@@ -160,4 +161,6 @@ class Api_study extends MY_Api_Model {
     $this->xmlContents('study-get', $this->version, $template_values);
   }
 }
+
 ?>
+

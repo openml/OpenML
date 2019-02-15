@@ -3,6 +3,7 @@
   <?php if ($study->alias != null): ?>
     <oml:alias><?php echo $study->alias; ?></oml:alias>
   <?php endif; ?>
+  <oml:main_knowledge_type><?php echo $study->main_knowledge_type; ?></oml:main_knowledge_type>
   <oml:name><?php echo $study->name; ?></oml:name>
   <oml:description><?php echo $study->description; ?></oml:description>
   <oml:creation_date><?php echo $study->created; ?></oml:creation_date>

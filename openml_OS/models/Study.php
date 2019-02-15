@@ -9,7 +9,7 @@ class Study extends MY_Database_Write_Model {
     $this->load->model('Study_tag');
   }
 
-  function create($name, $alias, $description, $creator) {
+  function legacy_create($name, $alias, $description, $creator) {
     // insert
     $schedule_data = array(
       'name' => $name, 
