@@ -118,7 +118,7 @@ class Api_study extends MY_Api_Model {
       'creator' => $this->user_id,
       'legacy' => 'n', 
     );
-    $study_id = $this->insert($schedule_data);
+    $study_id = $this->Study->insert($schedule_data);
     
     $this->_link_entities($study_id, $link_entities);
     
