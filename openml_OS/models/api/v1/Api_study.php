@@ -75,21 +75,20 @@ class Api_study extends MY_Api_Model {
       $xml = simplexml_load_file($description['tmp_name']);
     }
     
-    $main_knowledge_type = $xml->children('oml', true)->{'main_knowledge_type'};
     $study = all_tags_from_xml($xml->children('oml', true), $this->xml_fields_study);
     
-    if (!in_array($main_knowledge_type, $legal_knowledge_types)) {
+    if (!in_array($study['main_knowledge_type'], $legal_knowledge_types)) {
       $this->returnError(1033, $this->version);
       return;
     }
     $link_entities = $this->_get_linked_entities_from_xml($xml, $legal_knowledge_types);
-    $errors = array_diff(array_keys($link_entities), array($main_knowledge_type));
+    $errors = array_diff(array_keys($link_entities), array($study['main_knowledge_type']));
     if (count($errors) > 0) {
       $this->returnError(1034, $this->version, 'Illegal knowledge_type(s): ' . implode(', ', $errors));
       return;
     }
     if ($benchmark_suite) {
-      if ($main_knowledge_type != 'run') {
+      if ($study['main_knowledge_type'] != 'run') {
         $this->returnError(1035, $this->version);
         return;
       }
@@ -107,6 +106,18 @@ class Api_study extends MY_Api_Model {
     }
     
     $this->db->trans_start();
+    
+    $schedule_data = array(
+      'alias' => $study['alias'], 
+      'main_knowledge_type' => $study['main_knowledge_type'],
+      'benchmark_suite' => array_key_exists('benchmark_suite', $study) ? $study['benchmark_suite'] : null,
+      'name' => $study['name'], 
+      'description' => array_key_exists('description', $study) ? $study['description'] : null,
+      'visibility' => 'public',
+      'creation_date' => now(),
+      'creator' => $this->user_id,
+      'legacy' => 'n', 
+    );
     
     $study_id = $this->Study->insert($schedule_data);
     
@@ -293,7 +304,7 @@ class Api_study extends MY_Api_Model {
     $model = ucfirst($study->main_knowledge_type) . '_study';
     $id_name = $study->main_knowledge_type . '_id';
     
-    foreach ($link_entities[$study->main_knowlegde_type] as $id) {
+    foreach ($link_entities[$study->main_knowlegde_type]->children('oml', true)->{$study->main_knowlegde_type} as $tag) {
       $data = array(
         'study_id' => $study_id,
         $id_name => $id,
