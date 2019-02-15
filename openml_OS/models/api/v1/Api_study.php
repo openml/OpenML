@@ -81,7 +81,7 @@ class Api_study extends MY_Api_Model {
       $this->returnError(1033, $this->version);
       return;
     }
-    $link_entities = $this->_get_linked_entities_from_xml($xml);
+    $link_entities = $this->_get_linked_entities_from_xml($xml, $legal_knowledge_types);
     $errors = keys($link_entities) - array($main_knowledge_type);
     if (count($errors) > 0) {
       $this->returnError(1034, $this->version, 'Illegal knowledge_type(s): ' . implode(', ', $errors));
@@ -284,7 +284,7 @@ class Api_study extends MY_Api_Model {
     $this->xmlContents('study-get', $this->version, $template_values);
   }
   
-  private function _get_linked_entities_from_xml($xml) {
+  private function _get_linked_entities_from_xml($xml, $legal_knowledge_types) {
     $linked_entities = array();
     foreach ($legal_knowledge_types as $lkt) {
       $outer_tag = $lkt . 's';
