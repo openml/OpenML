@@ -106,10 +106,18 @@ class Api_study extends MY_Api_Model {
       }
     }
     
+    if (array_key_exists('alias', $study)) {
+      $res = $this->Study->getWhereSingle('alias = "' . $study['alias']  . '"');
+      if ($res) {
+        $this->returnError(1038, $this->version);
+        return;
+      }
+    }
+    
     $this->db->trans_start();
     
     $schedule_data = array(
-      'alias' => $study['alias'], 
+      'alias' => array_key_exists('alias', $study) ? $study['alias'] : null, 
       'main_knowledge_type' => $study['main_knowledge_type'],
       'benchmark_suite' => array_key_exists('benchmark_suite', $study) ? $study['benchmark_suite'] : null,
       'name' => $study['name'], 
@@ -125,7 +133,7 @@ class Api_study extends MY_Api_Model {
     $this->_link_entities($study_id, $link_entities);
     
 	  if ($this->db->trans_status() === FALSE) {
-	    $this->returnError(1038, $this->version);
+	    $this->returnError(1039, $this->version);
       return;
     }
   }

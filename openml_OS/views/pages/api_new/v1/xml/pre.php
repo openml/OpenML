@@ -479,6 +479,7 @@ $this->apiErrors[1034] = 'can only link entities of the type main_knowledge_type
 $this->apiErrors[1035] = 'Can only register benchmark suite if main knowledge type is run';
 $this->apiErrors[1036] = 'Referred benchmark suite not found';
 $this->apiErrors[1037] = 'Referred benchmark suite should have main knowledge type task';
-$this->apiErrors[1038] = 'Database insertion problem';
+$this->apiErrors[1038] = 'Study alias not unique';
+$this->apiErrors[1039] = 'Database insertion problem';
 
 ?>
