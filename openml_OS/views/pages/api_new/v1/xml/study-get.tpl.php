@@ -6,7 +6,7 @@
   <oml:main_knowledge_type><?php echo $study->main_knowledge_type; ?></oml:main_knowledge_type>
   <oml:name><?php echo $study->name; ?></oml:name>
   <oml:description><?php echo $study->description; ?></oml:description>
-  <oml:creation_date><?php echo $study->created; ?></oml:creation_date>
+  <oml:creation_date><?php echo dateXml($study->creation_date); ?></oml:creation_date>
   <oml:creator><?php echo $study->creator; ?></oml:creator>
   <?php foreach($tags as $tag): ?>
   <oml:tag>
