@@ -76,6 +76,7 @@ class Api_study extends MY_Api_Model {
     }
     
     $main_knowledge_type = $xml->children('oml', true)->{'main_knowledge_type'};
+    $benchmark_suite = $xml->children('oml', true)->{'benchmark_suite'};
     if (!in_array($main_knowledge_type, $legal_knowledge_types)) {
       $this->returnError(1033, $this->version);
       return;
@@ -92,7 +93,7 @@ class Api_study extends MY_Api_Model {
     $schedule_data = array(
       'alias' => $xml->children('oml', true)->{'alias'}, 
       'main_knowledge_type' => $main_knowledge_type,
-      'benchmark_suite' => $xml->children('oml', true)->{'benchmark_suite'},
+      'benchmark_suite' => $benchmark_suite,
       'name' => $xml->children('oml', true)->{'name'}, 
       'description' => $xml->children('oml', true)->{'description'}, 
       'visibility' => 'public',
@@ -230,7 +231,7 @@ class Api_study extends MY_Api_Model {
   }
   
   private function _study_get($study, $knowledge_type) {
-  $valid_knowlegde_types = array('runs', 'flows', 'setups', 'data', 'tasks', NULL);
+    $valid_knowlegde_types = array('runs', 'flows', 'setups', 'data', 'tasks', NULL);
     if (!in_array($knowledge_type, $valid_knowlegde_types)) {
       $this->returnError(600, $this->version);
       return;
@@ -272,7 +273,7 @@ class Api_study extends MY_Api_Model {
       $outer_tag = $lkt . 's';
       $inner_tag = $lkt . '_id';
       if ($xml->children('oml', true)->{$outer_tag}) {
-        $linked_entities[$lkt] $xml->children('oml', true)->{$outer_tag}->{$inner_tag};
+        $linked_entities[$lkt] = $xml->children('oml', true)->{$outer_tag}->{$inner_tag};
       }
     }
     return $linked_entities;
