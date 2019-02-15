@@ -15,7 +15,13 @@ class Study extends MY_Database_Write_Model {
       'name' => $name, 
       'alias' => $alias, 
       'description' => $description, 
-      'creator' => $creator);
+      'main_knowledge_type' => 'run',
+      'benchmark_suite' => null,
+      'visibility' => 'public',
+      'legacy' => 'y', 
+      'creation_date' => now(),
+      'creator' => $creator
+    );
     $study_id = $this->insert($schedule_data);
     
     $tag_data = array(
@@ -36,6 +42,7 @@ class Study extends MY_Database_Write_Model {
 
     return $study_id;
   }
-
+  
 }
 ?>
+

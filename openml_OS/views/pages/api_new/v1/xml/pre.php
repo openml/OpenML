@@ -471,4 +471,11 @@ $this->apiErrors[1021] = 'Dataset does not exists';
 $this->apiErrors[1022] = 'Dataset is not owned by you';
 $this->apiErrors[1023] = 'Resetting dataset failed.';
 
+// for function: openml.study.upload
+$this->apiErrors[1031] = 'No description file uploaded';
+$this->apiErrors[1032] = 'Description file does not correspond to XSD schema';
+$this->apiErrors[1034] = 'Illegal main knowledge type.';
+$this->apiErrors[1034] = 'can only link entities of the type main_knowledge_type';
+$this->apiErrors[1035] = 'Database insertion problem';
+
 ?>

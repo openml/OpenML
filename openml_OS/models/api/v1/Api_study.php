@@ -7,6 +7,8 @@ class Api_study extends MY_Api_Model {
     parent::__construct();
 
     $this->load->model('Study');
+    
+    $this->db = $this->Database_singleton->getWriteConnection();
   }
 
   function bootstrap($format, $segments, $request_type, $user_id) {
@@ -42,6 +44,66 @@ class Api_study extends MY_Api_Model {
     }
 
     $this->returnError(100, $this->version);
+  }
+  
+  
+  private function study_create() {
+    $xsdFile = xsd('openml.study.upload', $this->controller, $this->version);
+
+    $legal_knowledge_types = array(
+      'task',
+      'run'
+    );
+    
+    if (isset($_FILES['description'])) {
+      $uploadError = '';
+      $xmlErrors = '';
+      if (check_uploaded_file($_FILES['description'], false, $uploadError) == false) {
+        $this->returnError(1031, $this->version, $this->openmlGeneralErrorCode, $uploadError);
+      }
+      // get description from file upload
+      $description = $_FILES['description'];
+
+      if (validateXml($description['tmp_name'], $xsdFile, $xmlErrors) == false) {
+        $this->returnError(1032, $this->version, $this->openmlGeneralErrorCode, $xmlErrors);
+        return;
+      }
+      $xml = simplexml_load_file($description['tmp_name']);
+    }
+    
+    $main_knowledge_type = $xml->children('oml', true)->{'main_knowledge_type'};
+    if (!in_array($main_knowledge_type, $legal_knowledge_types)) {
+      $this->returnError(1033, $this->version);
+      return;
+    }
+    $link_entities = $this->_get_linked_entities_from_xml($xml);
+    $errors = keys($link_entities) - array($main_knowledge_type);
+    if (count($errors) > 0) {
+      $this->returnError(1034, $this->version, 'Illegal knowledge_type(s): ' . implode(', ', $errors));
+      return;
+    }
+    
+    $this->db->trans_start();
+    
+    $schedule_data = array(
+      'alias' => $xml->children('oml', true)->{'alias'}, 
+      'main_knowledge_type' => $main_knowledge_type,
+      'benchmark_suite' => $xml->children('oml', true)->{'benchmark_suite'},
+      'name' => $xml->children('oml', true)->{'name'}, 
+      'description' => $xml->children('oml', true)->{'description'}, 
+      'visibility' => 'public',
+      'creation_date' => now(),
+      'creator' => $this->user_id,
+      'legacy' => 'n', 
+    );
+    $study_id = $this->insert($schedule_data);
+    
+    $this->_link_entities($study_id, $link_entities);
+    
+	  if ($this->db->trans_status() === FALSE) {
+	    $this->returnError(1035, $this->version);
+      return;
+    }
   }
 
   private function study_delete($study_id) {
@@ -159,6 +221,36 @@ class Api_study extends MY_Api_Model {
     );
 
     $this->xmlContents('study-get', $this->version, $template_values);
+  }
+  
+  private function _get_linked_entities_from_xml($xml) {
+    $linked_entities = array();
+    foreach ($legal_knowledge_types as $lkt) {
+      $outer_tag = $lkt . 's';
+      $inner_tag = $lkt . '_id';
+      if ($xml->children('oml', true)->{$outer_tag}) {
+        $linked_entities[$lkt] $xml->children('oml', true)->{$outer_tag}->{$inner_tag};
+      }
+    }
+    return $linked_entities;
+  }
+  
+  private function _link_entities($study_id, $link_entities) {
+    // study_id is int, link_entities is array mapping from knowledge type to
+    // array of integer ids
+    $study = $this->Study->get_by_id($study_id);
+    $model = ucfirst($study->main_knowledge_type) . '_study';
+    $id_name = $study->main_knowledge_type . '_id';
+    
+    foreach ($link_entities[$study->main_knowlegde_type] as $id) {
+      $data = array(
+        'study_id' => $study_id,
+        $id_name => $id,
+        'uploader' => $uploader_id,
+        'date' => now(),
+      );
+      $this->{$model}->insert_ignore($data);
+    }
   }
 }
 
