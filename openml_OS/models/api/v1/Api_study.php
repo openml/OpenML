@@ -87,13 +87,14 @@ class Api_study extends MY_Api_Model {
       $this->returnError(1034, $this->version, 'Illegal knowledge_type(s): ' . implode(', ', $errors));
       return;
     }
-    if ($benchmark_suite) {
+    
+    if (array_key_exists('benchmark_suite', $study)) {
       if ($study['main_knowledge_type'] != 'run') {
         $this->returnError(1035, $this->version);
         return;
       }
       
-      $benchmark_suite = $this->Study->get_by_id($benchmark_suite);
+      $benchmark_suite = $this->Study->get_by_id($study['benchmark_suite']);
       if (!$benchmark_suite) {
         $this->returnError(1036, $this->version);
         return;
