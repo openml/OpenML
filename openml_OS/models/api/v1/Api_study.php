@@ -76,7 +76,8 @@ class Api_study extends MY_Api_Model {
     }
     
     $main_knowledge_type = $xml->children('oml', true)->{'main_knowledge_type'};
-    $benchmark_suite = $xml->children('oml', true)->{'benchmark_suite'};
+    $study = all_tags_from_xml($xml->children('oml', true), $this->xml_fields_study);
+    
     if (!in_array($main_knowledge_type, $legal_knowledge_types)) {
       $this->returnError(1033, $this->version);
       return;
@@ -107,17 +108,6 @@ class Api_study extends MY_Api_Model {
     
     $this->db->trans_start();
     
-    $schedule_data = array(
-      'alias' => $xml->children('oml', true)->{'alias'}, 
-      'main_knowledge_type' => $main_knowledge_type,
-      'benchmark_suite' => $benchmark_suite,
-      'name' => $xml->children('oml', true)->{'name'}, 
-      'description' => $xml->children('oml', true)->{'description'}, 
-      'visibility' => 'public',
-      'creation_date' => now(),
-      'creator' => $this->user_id,
-      'legacy' => 'n', 
-    );
     $study_id = $this->Study->insert($schedule_data);
     
     $this->_link_entities($study_id, $link_entities);
