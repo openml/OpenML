@@ -476,6 +476,9 @@ $this->apiErrors[1031] = 'No description file uploaded';
 $this->apiErrors[1032] = 'Description file does not correspond to XSD schema';
 $this->apiErrors[1034] = 'Illegal main knowledge type.';
 $this->apiErrors[1034] = 'can only link entities of the type main_knowledge_type';
-$this->apiErrors[1035] = 'Database insertion problem';
+$this->apiErrors[1035] = 'Can only register benchmark suite if main knowledge type is run';
+$this->apiErrors[1036] = 'Referred benchmark suite not found';
+$this->apiErrors[1037] = 'Referred benchmark suite should have main knowledge type task';
+$this->apiErrors[1038] = 'Database insertion problem';
 
 ?>

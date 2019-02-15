@@ -87,6 +87,23 @@ class Api_study extends MY_Api_Model {
       $this->returnError(1034, $this->version, 'Illegal knowledge_type(s): ' . implode(', ', $errors));
       return;
     }
+    if ($benchmark_suite) {
+      if ($main_knowledge_type != 'run') {
+        $this->returnError(1035, $this->version);
+        return;
+      }
+      
+      $benchmark_suite = $this->Study->get_by_id($benchmark_suite);
+      if (!$benchmark_suite) {
+        $this->returnError(1036, $this->version);
+        return;
+      }
+      
+      if ($benchmark_suite->main_knowledge_type != 'task') {
+        $this->returnError(1037, $this->version);
+        return;
+      }
+    }
     
     $this->db->trans_start();
     
@@ -106,7 +123,7 @@ class Api_study extends MY_Api_Model {
     $this->_link_entities($study_id, $link_entities);
     
 	  if ($this->db->trans_status() === FALSE) {
-	    $this->returnError(1035, $this->version);
+	    $this->returnError(1038, $this->version);
       return;
     }
   }
