@@ -29,7 +29,7 @@
 
 <xs:simpleType name="knowledge_type">
   <xs:restriction base="xs:string">
-    <xs:pattern value="(run|flow)" />
+    <xs:pattern value="(run|task)" />
   </xs:restriction>
 </xs:simpleType>
 <xs:simpleType name="system_string32"> <!-- Subset on xs:string. Highly restricted form of string. URL-friendly -->
