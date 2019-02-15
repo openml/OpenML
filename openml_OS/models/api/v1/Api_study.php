@@ -21,13 +21,17 @@ class Api_study extends MY_Api_Model {
       $this->study_list($segments);
       return;
     }
-
-
+    
+    if (count($segments) == 0) {
+      $this->study_create();
+      return;
+    }
+    
     if (count($segments) == 1 && is_numeric($segments[0]) && $request_type == 'delete') {
       $this->study_delete($segments[0]);
       return;
     }
-
+    
     if (count($segments) == 1 || count($segments) == 2) {
       $type = null;
       if (count($segments) == 2) {
@@ -161,8 +165,10 @@ class Api_study extends MY_Api_Model {
       $this->returnError(601, $this->version);
       return;
     }
-
-    $this->_legacy_study_get($study, $knowledge_type);
+    
+    if ($study->legacy == 'y') {
+      $this->_legacy_study_get($study, $knowledge_type);
+    }
   }
   
   // TODO: remove ASAP
@@ -210,6 +216,43 @@ class Api_study extends MY_Api_Model {
       $runs = $this->Study_tag->getRunIdsFromStudy($study->id);
     }
 
+    $template_values = array(
+      'study' => $study,
+      'tags' => $tags,
+      'data' => $data,
+      'tasks' => $tasks,
+      'flows' => $flows,
+      'setups' => $setups,
+      'runs' => $runs
+    );
+
+    $this->xmlContents('study-get', $this->version, $template_values);
+  }
+  
+  private function _study_get($study, $knowledge_type) {
+  $valid_knowlegde_types = array('runs', 'flows', 'setups', 'data', 'tasks', NULL);
+    if (!in_array($knowledge_type, $valid_knowlegde_types)) {
+      $this->returnError(600, $this->version);
+      return;
+    }
+
+    if ($study->creator != $this->user_id && $study->visibility != 'public') {
+      $this->returnError(602, $this->version);
+      return;
+    }
+
+    $tags = $this->Study_tag->getWhere('study_id = ' . $study->id);
+    if ($tags == false) {
+      $this->returnError(603, $this->version);
+      return;
+    }
+
+    $data = null;
+    $tasks = null;
+    $flows = null;
+    $setups = null;
+    $runs = null;
+    
     $template_values = array(
       'study' => $study,
       'tags' => $tags,
