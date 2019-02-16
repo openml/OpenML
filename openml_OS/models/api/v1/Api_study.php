@@ -309,7 +309,7 @@ class Api_study extends MY_Api_Model {
   private function _link_entities($study_id, $link_entities) {
     // study_id is int, link_entities is array mapping from knowledge type to
     // array of integer ids
-    $study = $this->Study->get_by_id($study_id);
+    $study = $this->Study->getById($study_id);
     $model = ucfirst($study->main_knowledge_type) . '_study';
     $id_name = $study->main_knowledge_type . '_id';
     
