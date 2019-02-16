@@ -307,7 +307,7 @@ class Api_study extends MY_Api_Model {
   private function _legacy_study_get($study, $knowledge_type) {
     $valid_knowledge_types = array('runs', 'flows', 'setups', 'data', 'tasks', NULL);
     if (!in_array($knowledge_type, $valid_knowledge_types)) {
-      $this->returnError(600, $this->version);
+      $this->returnError(600, $this->version, $this->openmlGeneralErrorCode, 'Got: ' . $knowledge_type);
       return;
     }
 
@@ -364,7 +364,7 @@ class Api_study extends MY_Api_Model {
   private function _study_get($study, $knowledge_type) {
     $valid_knowledge_types = array('runs', 'flows', 'setups', 'data', 'tasks', NULL);
     if (!in_array($knowledge_type, $valid_knowledge_types)) {
-      $this->returnError(600, $this->version);
+      $this->returnError(600, $this->version, $this->openmlGeneralErrorCode, 'Got: ' . $knowledge_type);
       return;
     }
 
