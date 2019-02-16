@@ -130,12 +130,17 @@ class Api_study extends MY_Api_Model {
     
     $study_id = $this->Study->insert($schedule_data);
     
-    $this->_link_entities($study_id, $link_entities);
+    $res = $this->_link_entities($study_id, $link_entities);
     
-	  if ($this->db->trans_status() === FALSE) {
-	    $this->returnError(1039, $this->version);
+    if ($res === false || $this->db->trans_status() === false)
+    {
+      $this->db->trans_rollback();
+      $this->returnError(1039, $this->version);
       return;
     }
+    $this->db->trans_commit();
+    $this->xmlContents('study-upload', $this->version, array('study_id' => $study_id));
+    
   }
 
   private function study_delete($study_id) {
@@ -310,6 +315,9 @@ class Api_study extends MY_Api_Model {
     // study_id is int, link_entities is array mapping from knowledge type to
     // array of integer ids
     $study = $this->Study->getById($study_id);
+    if ($study == false) {
+      return false;
+    }
     $model = ucfirst($study->main_knowledge_type) . '_study';
     $id_name = $study->main_knowledge_type . '_id';
     
@@ -322,6 +330,7 @@ class Api_study extends MY_Api_Model {
       );
       $this->{$model}->insert_ignore($data);
     }
+    return true;
   }
 }
 
