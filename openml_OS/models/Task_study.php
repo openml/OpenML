@@ -16,6 +16,19 @@ class Task_study extends MY_Tag_Model {
     $data = $this->db->get();
     if ($data) {
       return $data->result();
+      
+      $task_ids = array();
+      $data_ids = array();
+      
+      foreach ($result as $entry) {
+        $task_ids[] = $entry->task_id;
+        $data_ids[] = $entry->data_id;
+      }
+      
+      return array(
+        'data' => $data_ids,
+        'tasks' => $task_ids,
+      );
     }
     return false;
   }

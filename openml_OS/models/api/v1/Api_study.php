@@ -281,12 +281,6 @@ class Api_study extends MY_Api_Model {
       $this->returnError(602, $this->version);
       return;
     }
-
-    $data = null;
-    $tasks = null;
-    $flows = null;
-    $setups = null;
-    $runs = null;
     
     if ($study->main_knowledge_type == 'run') {
       $res = $this->Run_study->get_entities($study->id);
@@ -296,6 +290,12 @@ class Api_study extends MY_Api_Model {
       $this->returnError(604, $this->version);
       return;
     }
+    
+    $data = array_key_exists('data', $res) ? $res['data'] : null;
+    $tasks = array_key_exists('tasks', $res) ? $res['tasks'] : null;
+    $flows = array_key_exists('flows', $res) ? $res['flows'] : null;
+    $setups = array_key_exists('setups', $res) ? $res['setups'] : null;
+    $runs = array_key_exists('runs', $res) ? $res['runs'] : null;
     
     $template_values = array(
       'study' => $study,

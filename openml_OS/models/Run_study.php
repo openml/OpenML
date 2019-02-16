@@ -19,7 +19,29 @@ class Run_study extends MY_Tag_Model {
     $this->db->select($select)->from($from)->join('task_inputs t', 'r.task_id = t.task_id AND t.input = "source_data"', 'left')->where($conditions);
     $data = $this->db->get();
     if ($data) {
-      return $data->result();
+      $result = $data->result();
+      
+      $task_ids = array();
+      $data_ids = array();
+      $flow_ids = array();
+      $setup_ids = array();
+      $run_ids = array();
+      
+      foreach ($result as $entry) {
+        $task_ids[] = $entry->task_id;
+        $data_ids[] = $entry->data_id;
+        $flow_ids[] = $entry->flow_id;
+        $setup_ids[] = $entry->setup_id;
+        $run_ids[] = $entry->run_id;
+      }
+      
+      return array(
+        'data' => $data_ids,
+        'tasks' => $task_ids,
+        'flows' => $flow_ids,
+        'setups' => $setup_ids,
+        'runs' => $run_ids,
+      );
     }
     return false;
   }
