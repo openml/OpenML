@@ -189,7 +189,7 @@ class Api_study extends MY_Api_Model {
     }
     
     $link_entities = array(
-      $study->main_knowledge_type => explode(',', $entity_ids);
+      $study->main_knowledge_type => explode(',', $entity_ids)
     );
     
     if ($attach) {
