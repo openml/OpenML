@@ -273,11 +273,13 @@ class Api_study extends MY_Api_Model {
       $this->returnError(602, $this->version);
       return;
     }
-
-    $tags = $this->Study_tag->getWhere('study_id = ' . $study->id);
-    if ($tags == false) {
-      $this->returnError(603, $this->version);
-      return;
+    
+    if ($study->legacy == 'y') {
+      $tags = $this->Study_tag->getWhere('study_id = ' . $study->id);
+      if ($tags == false) {
+        $this->returnError(603, $this->version);
+        return;
+      }
     }
 
     $data = null;
