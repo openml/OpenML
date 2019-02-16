@@ -165,7 +165,7 @@ class Api_study extends MY_Api_Model {
     $this->xmlContents('study-upload', $this->version, array('study_id' => $study_id));
   }
   
-  private function study_uttach_detach($study_id, $attach) {
+  private function study_attach_detach($study_id, $attach) {
     $study = $this->Study->getById($study_id);
     if ($study === false) {
       $this->returnError(1041, $this->version);
