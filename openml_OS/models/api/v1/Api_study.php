@@ -299,7 +299,6 @@ class Api_study extends MY_Api_Model {
     
     $template_values = array(
       'study' => $study,
-      'tags' => $tags,
       'data' => $data,
       'tasks' => $tasks,
       'flows' => $flows,
