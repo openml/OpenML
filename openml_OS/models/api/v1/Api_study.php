@@ -206,8 +206,8 @@ class Api_study extends MY_Api_Model {
   
   // TODO: remove ASAP
   private function _legacy_study_get($study, $knowledge_type) {
-    $valid_knowlegde_types = array('runs', 'flows', 'setups', 'data', 'tasks', NULL);
-    if (!in_array($knowledge_type, $valid_knowlegde_types)) {
+    $valid_knowledge_types = array('runs', 'flows', 'setups', 'data', 'tasks', NULL);
+    if (!in_array($knowledge_type, $valid_knowledge_types)) {
       $this->returnError(600, $this->version);
       return;
     }
@@ -263,8 +263,8 @@ class Api_study extends MY_Api_Model {
   }
   
   private function _study_get($study, $knowledge_type) {
-    $valid_knowlegde_types = array('runs', 'flows', 'setups', 'data', 'tasks', NULL);
-    if (!in_array($knowledge_type, $valid_knowlegde_types)) {
+    $valid_knowledge_types = array('runs', 'flows', 'setups', 'data', 'tasks', NULL);
+    if (!in_array($knowledge_type, $valid_knowledge_types)) {
       $this->returnError(600, $this->version);
       return;
     }
@@ -321,7 +321,7 @@ class Api_study extends MY_Api_Model {
     $model = ucfirst($study->main_knowledge_type) . '_study';
     $id_name = $study->main_knowledge_type . '_id';
     
-    foreach ($link_entities[$study->main_knowlegde_type]->children('oml', true)->{$study->main_knowlegde_type} as $tag) {
+    foreach ($link_entities[$study->main_knowledge_type]->children('oml', true)->{$study->main_knowledge_type} as $tag) {
       $data = array(
         'study_id' => $study_id,
         $id_name => $id,
