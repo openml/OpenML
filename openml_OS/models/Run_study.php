@@ -16,7 +16,7 @@ class Run_study extends MY_Tag_Model {
       't.task_id' => 't.task_id',
       
     );
-    $this->db->select($select)->from($from)->join('task_values t', 'r.task_id = t.task_id AND t.input = "source_data"', 'left')->where($conditions);
+    $this->db->select($select)->from($from)->join('task_inputs t', 'r.task_id = t.task_id AND t.input = "source_data"', 'left')->where($conditions);
     return $this->db->get();
   }
 }
