@@ -34,6 +34,16 @@ class Api_study extends MY_Api_Model {
       return;
     }
     
+    if (count($segments) == 2 && is_numeric($segments[0]) && $segments[1] == 'attach' && $request_type == 'post') {
+      $this->study_attach_detach($segments[0], true);
+      return;
+    }
+    
+    if (count($segments) == 2 && is_numeric($segments[0]) && $segments[1] == 'detach' && $request_type == 'post') {
+      $this->study_attach_detach($segments[0], false);
+      return;
+    }
+    
     if (count($segments) == 1 || count($segments) == 2) {
       $type = null;
       if (count($segments) == 2) {
@@ -47,16 +57,6 @@ class Api_study extends MY_Api_Model {
         $this->study_by_alias($segments[0], $type);
         return;
       }
-    }
-    
-    if (count($segments) == 2 && is_numeric($segments[0]) && $segments[1] == 'attach' && $request_type == 'post') {
-      $this->study_attach_detach($segments[0], true);
-      return;
-    }
-    
-    if (count($segments) == 2 && is_numeric($segments[0]) && $segments[1] == 'detach' && $request_type == 'post') {
-      $this->study_attach_detach($segments[0], false);
-      return;
     }
 
     $this->returnError(100, $this->version);
