@@ -132,7 +132,7 @@ class Api_study extends MY_Api_Model {
     
     $study_id = $this->Study->insert($schedule_data);
     
-    $res = $this->_link_entities($study_id, $link_entities);
+    $res = $this->_link_entities($study_id, $this->user_id, $link_entities);
     
     if ($res === false || $this->db->trans_status() === false)
     {
@@ -322,7 +322,7 @@ class Api_study extends MY_Api_Model {
     return $linked_entities;
   }
   
-  private function _link_entities($study_id, $link_entities) {
+  private function _link_entities($study_id, $uploader_id, $link_entities) {
     // study_id is int, link_entities is array mapping from knowledge type to
     // array of integer ids
     $study = $this->Study->getById($study_id);
@@ -332,7 +332,7 @@ class Api_study extends MY_Api_Model {
     $model = ucfirst($study->main_knowledge_type) . '_study';
     $id_name = $study->main_knowledge_type . '_id';
     
-    foreach ($link_entities[$study->main_knowledge_type]->children('oml', true)->{$study->main_knowledge_type} as $tag) {
+    foreach ($link_entities[$study->main_knowledge_type] as $id) {
       $data = array(
         'study_id' => $study_id,
         $id_name => $id,
