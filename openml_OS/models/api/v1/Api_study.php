@@ -152,7 +152,14 @@ class Api_study extends MY_Api_Model {
       $this->returnError(592, $this->version);
       return;
     }
-
+    
+    if ($study->creator != $this->user_id and !$this->user_has_admin_rights) {
+      $this->returnError(594, $this->version);
+      return;
+    }
+    
+    $this->Run_study->deleteWhere('study_id = ' . $study->id);
+    $this->Task_study->deleteWhere('study_id = ' . $study->id);
     $result = $this->Study->delete($study_id);
     if ($result == false) {
       $this->returnError(593, $this->version);
