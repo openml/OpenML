@@ -484,4 +484,12 @@ $this->apiErrors[1037] = 'Referred benchmark suite should have main knowledge ty
 $this->apiErrors[1038] = 'Study alias not unique';
 $this->apiErrors[1039] = 'Database insertion problem';
 
+// for function: openml.study.attach/detach
+$this->apiErrors[1041] = 'Could not find study';
+$this->apiErrors[1042] = 'Can not attach/detach to legacy studies';
+$this->apiErrors[1043] = 'Please provide post field: ids';
+$this->apiErrors[1044] = 'Please ensure that post field ids contains a list of natural numbers';
+$this->apiErrors[1045] = 'Problem attaching entities. Please ensure to only attach entities that exist';
+$this->apiErrors[1046] = 'Problem detaching entities.';
+
 ?>

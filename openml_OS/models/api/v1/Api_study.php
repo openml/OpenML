@@ -48,10 +48,19 @@ class Api_study extends MY_Api_Model {
         return;
       }
     }
+    
+    if (count($segments) == 2 && is_numeric($segments[0]) && $segments[1] == 'attach' && $request_type == 'post') {
+      $this->study_attach_detach($segments[0], true);
+      return;
+    }
+    
+    if (count($segments) == 2 && is_numeric($segments[0]) && $segments[1] == 'detach' && $request_type == 'post') {
+      $this->study_attach_detach($segments[0], false);
+      return;
+    }
 
     $this->returnError(100, $this->version);
   }
-  
   
   private function study_create() {
     $xsdFile = xsd('openml.study.upload', $this->controller, $this->version);
@@ -154,7 +163,70 @@ class Api_study extends MY_Api_Model {
     }
     
     $this->xmlContents('study-upload', $this->version, array('study_id' => $study_id));
+  }
+  
+  private function study_uttach_detach($study_id, $attach) {
+    $study = $this->Study->getById($study_id);
+    if ($study === false) {
+      $this->returnError(1041, $this->version);
+      return;
+    }
     
+    if ($study->legacy == 'y') {
+      $this->returnError(1042, $this->version);
+      return;
+    }
+    
+    $entity_ids = $this->input->post('ids');
+    if ($entity_ids === false) {
+      $this->returnError(1043, $this->version);
+      return;
+    }
+    
+    if (!is_cs_natural_numbers($entity_ids)) {
+      $this->returnError(1044, $this->version);
+      return;
+    }
+    
+    $link_entities = array(
+      $study->main_knowledge_type => explode(',', $entity_ids);
+    );
+    
+    if ($attach) {
+      $this->db->trans_start();
+      $res = $this->_link_entities($study_id, $this->user_id, $link_entities);
+      if ($res === false || $this->db->trans_status() === false)
+      {
+        $this->db->trans_rollback();
+        $this->returnError(1045, $this->version);
+        return;
+      }
+      $this->db->trans_commit();
+    } else {
+      $model = ucfirst($study->main_knowledge_type) . '_study';
+      $id_name = $study->main_knowledge_type . '_id';
+      $result = $this->{$model}->deleteWhere('study_id = ' . $study_id . ' and ' . $id_name . ' IN (' . $entity_ids . ')');
+      
+      if ($result === false) {
+        $this->returnError(1046, $this->version);
+        return;
+      }
+    }
+    
+    if ($study->main_knowledge_type == 'run') {
+      $res = $this->Run_study->get_entities($study->id)['runs'];
+    } else if ($study->main_knowledge_type == 'task') {
+      $res = $this->Task_study->get_entities($study->id)['tasks'];
+    }
+    
+    $template_vars = array(
+      'id' => $study->id,
+      'main_knowledge_type' => $study->main_knowledge_type,
+      'function_type' => $attach ? 'attach' : 'detach',
+      'count' => count($res),
+    );
+    
+    $this->xmlContents('study-attach-detach', $this->version, $template_vars);
   }
 
   private function study_delete($study_id) {
