@@ -145,7 +145,7 @@ class Api_study extends MY_Api_Model {
     // try making the ES stuff
     try {
       // update elastic search index.
-      $this->elasticsearch->index('study', $study_id);
+      $this->elasticsearch->index('study', $study->id);
 
       // update counters
       $this->elasticsearch->index('user', $this->user_id);
