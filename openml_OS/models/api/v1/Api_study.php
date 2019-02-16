@@ -141,6 +141,18 @@ class Api_study extends MY_Api_Model {
       return;
     }
     $this->db->trans_commit();
+    
+    // try making the ES stuff
+    try {
+      // update elastic search index.
+      $this->elasticsearch->index('study', $study_id);
+
+      // update counters
+      $this->elasticsearch->index('user', $this->user_id);
+    } catch (Exception $e) {
+      // TODO: should log
+    }
+    
     $this->xmlContents('study-upload', $this->version, array('study_id' => $study_id));
     
   }
