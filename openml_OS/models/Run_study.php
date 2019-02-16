@@ -7,7 +7,7 @@ class Run_study extends MY_Tag_Model {
   }
   
   function get_entities($study_id) {
-    $select = 't.task_id, s.sid AS setup_id, i.implementation_id AS flow_id, value as data_id';
+    $select = 't.task_id, s.sid AS setup_id, s.implementation_id AS flow_id, value as data_id';
     $from = 'run_study rs, algorithm_setup s, run r';
     $conditions = '`rs`.`study_id` = ' . $study_id . ' ' .
       'AND `rs`.`run_id` = `r`.`rid` ' .
