@@ -36,11 +36,11 @@ class Run_study extends MY_Tag_Model {
       }
       
       return array(
-        'data' => $data_ids,
-        'tasks' => $task_ids,
-        'flows' => $flow_ids,
-        'setups' => $setup_ids,
-        'runs' => $run_ids,
+        'data' => array_unique($data_ids),
+        'tasks' => array_unique($task_ids),
+        'flows' => array_unique($flow_ids),
+        'setups' => array_unique($setup_ids),
+        'runs' => array_unique($run_ids),
       );
     }
     return false;

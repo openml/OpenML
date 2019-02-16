@@ -15,7 +15,7 @@ class Task_study extends MY_Tag_Model {
     $this->db->select($select)->from($from)->join('task_inputs t', 'ts.task_id = t.task_id AND t.input = "source_data"', 'left')->where($conditions);
     $data = $this->db->get();
     if ($data) {
-      return $data->result();
+      $result = $data->result();
       
       $task_ids = array();
       $data_ids = array();
@@ -26,8 +26,8 @@ class Task_study extends MY_Tag_Model {
       }
       
       return array(
-        'data' => $data_ids,
-        'tasks' => $task_ids,
+        'data' => array_unique($data_ids),
+        'tasks' => array_unique($task_ids),
       );
     }
     return false;
