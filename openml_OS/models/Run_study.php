@@ -17,7 +17,11 @@ class Run_study extends MY_Tag_Model {
       
     );
     $this->db->select($select)->from($from)->join('task_inputs t', 'r.task_id = t.task_id AND t.input = "source_data"', 'left')->where($conditions);
-    return $this->db->get();
+    $data = $this->db->get();
+    if ($data) {
+      return $data->result();
+    }
+    return false;
   }
 }
 ?>
