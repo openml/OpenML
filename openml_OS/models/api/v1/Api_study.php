@@ -6,7 +6,9 @@ class Api_study extends MY_Api_Model {
   function __construct() {
     parent::__construct();
 
+    $this->load->model('Run_study');
     $this->load->model('Study');
+    $this->load->model('Task_study');
     
     $this->db = $this->Database_singleton->getWriteConnection();
   }
@@ -188,7 +190,11 @@ class Api_study extends MY_Api_Model {
       return;
     }
 
-    $this->_legacy_study_get($study, $knowledge_type);
+    if ($study->legacy == 'y') {
+      $this->_legacy_study_get($study, $knowledge_type);
+    } else {
+      $this->_study_get($study, $knowledge_type);
+    }
   }
 
   private function study_by_alias($study_alias, $knowledge_type) {
@@ -201,6 +207,8 @@ class Api_study extends MY_Api_Model {
     
     if ($study->legacy == 'y') {
       $this->_legacy_study_get($study, $knowledge_type);
+    } else {
+      $this->_study_get($study, $knowledge_type);
     }
   }
   
@@ -273,20 +281,21 @@ class Api_study extends MY_Api_Model {
       $this->returnError(602, $this->version);
       return;
     }
-    
-    if ($study->legacy == 'y') {
-      $tags = $this->Study_tag->getWhere('study_id = ' . $study->id);
-      if ($tags == false) {
-        $this->returnError(603, $this->version);
-        return;
-      }
-    }
 
     $data = null;
     $tasks = null;
     $flows = null;
     $setups = null;
     $runs = null;
+    
+    if ($study->main_knowledge_type == 'run') {
+      $res = $this->Run_study->get_entities($study->id);
+    } else if ($study->main_knowledge_type == 'task') {
+      $res = $this->Task_study->get_entities($study->id);
+    } else {
+      $this->returnError(604, $this->version);
+      return;
+    }
     
     $template_values = array(
       'study' => $study,

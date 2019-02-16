@@ -333,6 +333,7 @@ $this->apiErrors[600] = 'Api function invoked wrong. Unknown knowledge type. ';
 $this->apiErrors[601] = 'Study does not exists. ';
 $this->apiErrors[602] = 'Study not visible for you. ';
 $this->apiErrors[603] = 'Study does not contain any associated tags (should have at least one). ';
+$this->apiErrors[604] = 'Illegal main knowledge type for study (please contact support team). ';
 
 // openml.task.upload (continued)
 
