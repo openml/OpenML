@@ -308,7 +308,8 @@ $this->apiErrors[564] = 'Database insertion error, probably due to high server l
 
 
 // openml.run.trace (get)
-$this->apiErrors[570] = 'No successful trace associated with this run.';
+$this->apiErrors[571] = 'Run not found.';
+$this->apiErrors[572] = 'No successful trace associated with this run.';
 
 // openml.setup.exists
 $this->apiErrors[581] = 'Problem with uploading the description file. ';
