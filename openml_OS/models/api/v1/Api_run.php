@@ -692,6 +692,13 @@ class Api_run extends MY_Api_Model {
 
     $run_id = (string) $xml->children('oml', true)->{'run_id'};
     $eval_engine_id = '' . $xml->children('oml', true)->{'evaluation_engine_id'};
+    
+    // obtain evaluation record, if exists
+    $evaluation_record = $this->Run_evaluated->getById(array($run_id, $eval_engine_id));
+    $num_tries = 0;
+    if ($evaluation_record) {
+      $num_tries = $evaluation_record->num_tries;
+    }
       
     // initiate run_evaluated record 
     $data = array(
@@ -706,12 +713,6 @@ class Api_run extends MY_Api_Model {
     }
     if (isset( $xml->children('oml', true)->{'warning'})) {
       $data['warning'] = '' . $xml->children('oml', true)->{'warning'};
-    }
-    
-    $evaluation_record = $this->Run_evaluated->getById(array($run_id, $eval_engine_id));
-    $num_tries = 0;
-    if ($evaluation_record) {
-      $num_tries = $evaluation_record->num_tries;
     }
 
     $runRecord = $this->Run->getById($run_id);
