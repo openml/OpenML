@@ -325,7 +325,7 @@ $this->apiErrors[590] = 'No studies available. ';
 
 // openml.study.delete
 $this->apiErrors[591] = 'Authentication failed';
-$this->apiErrors[592] = 'Study does not exists';
+$this->apiErrors[592] = 'Study does not exist';
 $this->apiErrors[593] = 'Deleting study failed';
 
 // openml.study.get
