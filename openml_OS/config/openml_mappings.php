@@ -85,7 +85,7 @@ $config['xml_fields_run'] = array(
 );
 
 $config['xml_fields_study'] = array(
-  'string' => array('alias', 'main_knowledge_type', 'benchmark_suite', 'name', 'description'),
+  'string' => array('alias', 'main_entity_type', 'benchmark_suite', 'name', 'description'),
   'csv' => array(),
   'array' => array('data', 'tasks', 'flows', 'setups', 'runs'),
   'plain' => array()

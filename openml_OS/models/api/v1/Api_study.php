@@ -65,7 +65,7 @@ class Api_study extends MY_Api_Model {
   private function study_create() {
     $xsdFile = xsd('openml.study.upload', $this->controller, $this->version);
 
-    $legal_knowledge_types = array(
+    $legal_entity_types = array(
       'task',
       'run'
     );
@@ -88,19 +88,19 @@ class Api_study extends MY_Api_Model {
     
     $study = all_tags_from_xml($xml->children('oml', true), $this->xml_fields_study);
     
-    if (!in_array($study['main_knowledge_type'], $legal_knowledge_types)) {
+    if (!in_array($study['main_entity_type'], $legal_entity_types)) {
       $this->returnError(1033, $this->version);
       return;
     }
-    $link_entities = $this->_get_linked_entities_from_xml($xml, $legal_knowledge_types);
-    $errors = array_diff(array_keys($link_entities), array($study['main_knowledge_type']));
+    $link_entities = $this->_get_linked_entities_from_xml($xml, $legal_entity_types);
+    $errors = array_diff(array_keys($link_entities), array($study['main_entity_type']));
     if (count($errors) > 0) {
-      $this->returnError(1034, $this->version, 'Illegal knowledge_type(s): ' . implode(', ', $errors));
+      $this->returnError(1034, $this->version, 'Illegal entity_type(s): ' . implode(', ', $errors));
       return;
     }
     
     if (array_key_exists('benchmark_suite', $study)) {
-      if ($study['main_knowledge_type'] != 'run') {
+      if ($study['main_entity_type'] != 'run') {
         $this->returnError(1035, $this->version);
         return;
       }
@@ -111,7 +111,7 @@ class Api_study extends MY_Api_Model {
         return;
       }
       
-      if ($benchmark_suite->main_knowledge_type != 'task') {
+      if ($benchmark_suite->main_entity_type != 'task') {
         $this->returnError(1037, $this->version);
         return;
       }
@@ -129,7 +129,7 @@ class Api_study extends MY_Api_Model {
     
     $schedule_data = array(
       'alias' => array_key_exists('alias', $study) ? $study['alias'] : null, 
-      'main_knowledge_type' => $study['main_knowledge_type'],
+      'main_entity_type' => $study['main_entity_type'],
       'benchmark_suite' => array_key_exists('benchmark_suite', $study) ? $study['benchmark_suite'] : null,
       'name' => $study['name'], 
       'description' => array_key_exists('description', $study) ? $study['description'] : null,
@@ -189,7 +189,7 @@ class Api_study extends MY_Api_Model {
     }
     
     $link_entities = array(
-      $study->main_knowledge_type => explode(',', $entity_ids)
+      $study->main_entity_type => explode(',', $entity_ids)
     );
     
     if ($attach) {
@@ -203,8 +203,8 @@ class Api_study extends MY_Api_Model {
       }
       $this->db->trans_commit();
     } else {
-      $model = ucfirst($study->main_knowledge_type) . '_study';
-      $id_name = $study->main_knowledge_type . '_id';
+      $model = ucfirst($study->main_entity_type) . '_study';
+      $id_name = $study->main_entity_type . '_id';
       $result = $this->{$model}->deleteWhere('study_id = ' . $study_id . ' and ' . $id_name . ' IN (' . $entity_ids . ')');
       
       if ($result === false) {
@@ -213,15 +213,15 @@ class Api_study extends MY_Api_Model {
       }
     }
     
-    if ($study->main_knowledge_type == 'run') {
+    if ($study->main_entity_type == 'run') {
       $res = $this->Run_study->get_entities($study->id)['runs'];
-    } else if ($study->main_knowledge_type == 'task') {
+    } else if ($study->main_entity_type == 'task') {
       $res = $this->Task_study->get_entities($study->id)['tasks'];
     }
     
     $template_vars = array(
       'id' => $study->id,
-      'main_knowledge_type' => $study->main_knowledge_type,
+      'main_entity_type' => $study->main_entity_type,
       'function_type' => $attach ? 'attach' : 'detach',
       'count' => count($res),
     );
@@ -273,7 +273,7 @@ class Api_study extends MY_Api_Model {
     $this->xmlContents('study-list', $this->version, array('studies' => $studies));
   }
 
-  private function study_by_id($study_id, $knowledge_type) {
+  private function study_by_id($study_id, $entity_type) {
     $study = $this->Study->getById($study_id);
 
     if ($study == false) {
@@ -282,13 +282,13 @@ class Api_study extends MY_Api_Model {
     }
 
     if ($study->legacy == 'y') {
-      $this->_legacy_study_get($study, $knowledge_type);
+      $this->_legacy_study_get($study, $entity_type);
     } else {
-      $this->_study_get($study, $knowledge_type);
+      $this->_study_get($study, $entity_type);
     }
   }
 
-  private function study_by_alias($study_alias, $knowledge_type) {
+  private function study_by_alias($study_alias, $entity_type) {
     $study = $this->Study->getWhereSingle('alias = "' . $study_alias . '"');
 
     if ($study == false) {
@@ -297,17 +297,17 @@ class Api_study extends MY_Api_Model {
     }
     
     if ($study->legacy == 'y') {
-      $this->_legacy_study_get($study, $knowledge_type);
+      $this->_legacy_study_get($study, $entity_type);
     } else {
-      $this->_study_get($study, $knowledge_type);
+      $this->_study_get($study, $entity_type);
     }
   }
   
   // TODO: remove ASAP
-  private function _legacy_study_get($study, $knowledge_type) {
-    $valid_knowledge_types = array('runs', 'flows', 'setups', 'data', 'tasks', NULL);
-    if (!in_array($knowledge_type, $valid_knowledge_types)) {
-      $this->returnError(600, $this->version, $this->openmlGeneralErrorCode, 'Got: ' . $knowledge_type);
+  private function _legacy_study_get($study, $entity_type) {
+    $valid_entity_types = array('runs', 'flows', 'setups', 'data', 'tasks', NULL);
+    if (!in_array($entity_type, $valid_entity_types)) {
+      $this->returnError(600, $this->version, $this->openmlGeneralErrorCode, 'Got: ' . $entity_type);
       return;
     }
 
@@ -328,23 +328,23 @@ class Api_study extends MY_Api_Model {
     $setups = null;
     $runs = null;
 
-    if ($knowledge_type == null || $knowledge_type == 'data') {
+    if ($entity_type == null || $entity_type == 'data') {
       $data = $this->Study_tag->getDataIdsFromStudy($study->id);
     }
 
-    if ($knowledge_type == null || $knowledge_type == 'tasks') {
+    if ($entity_type == null || $entity_type == 'tasks') {
       $tasks = $this->Study_tag->getTaskIdsFromStudy($study->id);
     }
 
-    if ($knowledge_type == null || $knowledge_type == 'flows') {
+    if ($entity_type == null || $entity_type == 'flows') {
       $flows = $this->Study_tag->getFlowIdsFromStudy($study->id);
     }
 
-    if ($knowledge_type == null || $knowledge_type == 'setups') {
+    if ($entity_type == null || $entity_type == 'setups') {
       $setups = $this->Study_tag->getSetupIdsFromStudy($study->id);
     }
 
-    if ($knowledge_type == null || $knowledge_type == 'runs') {
+    if ($entity_type == null || $entity_type == 'runs') {
       $runs = $this->Study_tag->getRunIdsFromStudy($study->id);
     }
 
@@ -361,10 +361,10 @@ class Api_study extends MY_Api_Model {
     $this->xmlContents('study-get', $this->version, $template_values);
   }
   
-  private function _study_get($study, $knowledge_type) {
-    $valid_knowledge_types = array('runs', 'flows', 'setups', 'data', 'tasks', NULL);
-    if (!in_array($knowledge_type, $valid_knowledge_types)) {
-      $this->returnError(600, $this->version, $this->openmlGeneralErrorCode, 'Got: ' . $knowledge_type);
+  private function _study_get($study, $entity_type) {
+    $valid_entity_types = array('runs', 'flows', 'setups', 'data', 'tasks', NULL);
+    if (!in_array($entity_type, $valid_entity_types)) {
+      $this->returnError(600, $this->version, $this->openmlGeneralErrorCode, 'Got: ' . $entity_type);
       return;
     }
 
@@ -373,9 +373,9 @@ class Api_study extends MY_Api_Model {
       return;
     }
     
-    if ($study->main_knowledge_type == 'run') {
+    if ($study->main_entity_type == 'run') {
       $res = $this->Run_study->get_entities($study->id);
-    } else if ($study->main_knowledge_type == 'task') {
+    } else if ($study->main_entity_type == 'task') {
       $res = $this->Task_study->get_entities($study->id);
     } else {
       $this->returnError(604, $this->version);
@@ -401,9 +401,9 @@ class Api_study extends MY_Api_Model {
     $this->xmlContents('study-get', $this->version, $template_values);
   }
   
-  private function _get_linked_entities_from_xml($xml, $legal_knowledge_types) {
+  private function _get_linked_entities_from_xml($xml, $legal_entity_types) {
     $linked_entities = array();
-    foreach ($legal_knowledge_types as $lkt) {
+    foreach ($legal_entity_types as $lkt) {
       $outer_tag = $lkt . 's';
       $inner_tag = $lkt . '_id';
       if ($xml->children('oml', true)->{$outer_tag}) {
@@ -414,16 +414,16 @@ class Api_study extends MY_Api_Model {
   }
   
   private function _link_entities($study_id, $uploader_id, $link_entities) {
-    // study_id is int, link_entities is array mapping from knowledge type to
+    // study_id is int, link_entities is array mapping from entity type to
     // array of integer ids
     $study = $this->Study->getById($study_id);
     if ($study == false) {
       return false;
     }
-    $model = ucfirst($study->main_knowledge_type) . '_study';
-    $id_name = $study->main_knowledge_type . '_id';
+    $model = ucfirst($study->main_entity_type) . '_study';
+    $id_name = $study->main_entity_type . '_id';
     
-    foreach ($link_entities[$study->main_knowledge_type] as $id) {
+    foreach ($link_entities[$study->main_entity_type] as $id) {
       $data = array(
         'study_id' => $study_id,
         $id_name => $id,
