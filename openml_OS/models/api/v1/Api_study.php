@@ -292,7 +292,7 @@ class Api_study extends MY_Api_Model {
       $whereClause .= ' AND creator = ' . $uploader;
     }
     if ($main_entity_type) {
-      $whereClause .= ' AND main_entity_type = ' . $main_entity_type;
+      $whereClause .= ' AND main_entity_type = "' . $main_entity_type . '"';
     }
     $studies = $this->Study->getWhere($whereClause, null, $limit, $offset);
 
