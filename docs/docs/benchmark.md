@@ -28,41 +28,41 @@ Each benchmarking suite points to an OpenML study with the exact list of dataset
 You can fetch and iterate through the benchmark datasets with a few lines of code. See the code examples below.
 
 Via the REST API, a list of all tasks and dataset IDs is returned
-!!! REST
-  ``` REST
-  https://www.openml.org/api/v1/study/name/OpenML-CC18
-  ```
+!!! example
+    ``` REST
+    https://www.openml.org/api/v1/study/name/OpenML-CC18
+    ```
 
 In Python, the data is returned as X, y numpy arrays:  
-!!! Python
-  ``` python
-  import openml
-  benchmark_suite = openml.study.get_study('OpenML-CC18','tasks') # obtain the benchmark suite
-  for task_id in benchmark_suite.tasks: # iterate over all tasks
-    task = openml.tasks.get_task(task_id) # download the OpenML task
-    X, y = task.get_X_and_y() # get the data
-  ```
+!!! example
+    ``` python
+    import openml
+    benchmark_suite = openml.study.get_study('OpenML-CC18','tasks') # obtain the benchmark suite
+    for task_id in benchmark_suite.tasks: # iterate over all tasks
+      task = openml.tasks.get_task(task_id) # download the OpenML task
+      X, y = task.get_X_and_y() # get the data
+    ```
 
 In Java, the data is returned as a WEKA Instances object:  
-!!! Java
-  ``` java
-  OpenmlConnector openml = new OpenmlConnector();
-  Study benchmarksuite = openml.studyGet("OpenML-CC18", "tasks");
-  for (Integer taskId : benchmarksuite.getTasks()) { // iterate over all tasks
-    Task t = openml.taskGet(taskId); // download the OpenML task
-    Instances d = InstancesHelper.getDatasetFromTask(openml, t); // obtain the dataset
-  ```
+!!! example
+    ``` java
+    OpenmlConnector openml = new OpenmlConnector();
+    Study benchmarksuite = openml.studyGet("OpenML-CC18", "tasks");
+    for (Integer taskId : benchmarksuite.getTasks()) { // iterate over all tasks
+      Task t = openml.taskGet(taskId); // download the OpenML task
+      Instances d = InstancesHelper.getDatasetFromTask(openml, t); // obtain the dataset
+    ```
 The Java implementation automatically uploads results to the server.  
 
 In R, the data is returned as an R dataframe:  
-!!! R (with mlr)
-  ``` r
-  library(OpenML)
-  task.ids = getOMLStudy('OpenML-CC18')$tasks$task.id # obtain the list of suggested tasks
-  for (task.id in task.ids) { # iterate over all tasks
-    task = getOMLTask(task.id) # download single OML task
-    data = as.data.frame(task) # obtain raw data set
-  ```
+!!! example
+    ``` r
+    library(OpenML)
+    task.ids = getOMLStudy('OpenML-CC18')$tasks$task.id # obtain the list of suggested tasks
+    for (task.id in task.ids) { # iterate over all tasks
+      task = getOMLTask(task.id) # download single OML task
+      data = as.data.frame(task) # obtain raw data set
+    ```
 
 ### Running and sharing benchmarks
 The code below demonstrates how OpenML benchmarking suites can be conveniently imported for benchmarking using the Python, Java and R APIs.
@@ -70,56 +70,56 @@ The code below demonstrates how OpenML benchmarking suites can be conveniently i
 The OpenML-CC18 tasks are downloaded through the [study with the same name](https://www.openml.org/s/99),
 which contains all tasks and also holds all benchmarking results obtained on them. The code also shows how to access the raw data set (although this is not needed to train a model), fit a simple classifier on the defined data splits, and finally publish runs on the OpenML server.
 
-!!! Python (with scikit-learn)
-  ``` python
-  import openml
-  import sklearn
-  benchmark_suite = openml.study.get_study('OpenML-CC18','tasks') # obtain the benchmark suite
-  # build a sklearn classifier
-  clf = sklearn.pipeline.make_pipeline(sklearn.preprocessing.Imputer(),
-                                       sklearn.tree.DecisionTreeClassifier())
-  for task_id in benchmark_suite.tasks: # iterate over all tasks
-    task = openml.tasks.get_task(task_id) # download the OpenML task
-    X, y = task.get_X_and_y() # get the data (not used in this example)
-    openml.config.apikey = 'FILL_IN_OPENML_API_KEY' # set the OpenML Api Key
-    # run classifier on splits (requires API key)
-    run = openml.runs.run_model_on_task(task,clf)
-    score = run.get_metric_score(sklearn.metrics.accuracy_score) # print accuracy score
-    print('Data set: %s; Accuracy: %0.2f' % (task.get_dataset().name,score.mean()))
-    run.publish() # publish the experiment on OpenML (optional)
-    print('URL for run: %s/run/%d' %(openml.config.server,run.run_id))
-  ```
+!!! example
+    ``` python
+    import openml
+    import sklearn
+    benchmark_suite = openml.study.get_study('OpenML-CC18','tasks') # obtain the benchmark suite
+    # build a sklearn classifier
+    clf = sklearn.pipeline.make_pipeline(sklearn.preprocessing.Imputer(),
+                                         sklearn.tree.DecisionTreeClassifier())
+    for task_id in benchmark_suite.tasks: # iterate over all tasks
+      task = openml.tasks.get_task(task_id) # download the OpenML task
+      X, y = task.get_X_and_y() # get the data (not used in this example)
+      openml.config.apikey = 'FILL_IN_OPENML_API_KEY' # set the OpenML Api Key
+      # run classifier on splits (requires API key)
+      run = openml.runs.run_model_on_task(task,clf)
+      score = run.get_metric_score(sklearn.metrics.accuracy_score) # print accuracy score
+      print('Data set: %s; Accuracy: %0.2f' % (task.get_dataset().name,score.mean()))
+      run.publish() # publish the experiment on OpenML (optional)
+      print('URL for run: %s/run/%d' %(openml.config.server,run.run_id))
+    ```
 
 !!! Java (with WEKA)
-  ``` java
-  public static void runTasksAndUpload() throws Exception {
-    OpenmlConnector openml = new OpenmlConnector();
-    // obtain the benchmark suite
-    Study benchmarksuite = openml.studyGet("OpenML-CC18", "tasks");
-    Classifier tree = new REPTree(); // build a Weka classifier
-    for (Integer taskId : benchmarksuite.getTasks()) { // iterate over all tasks
-      Task t = openml.taskGet(taskId); // download the OpenML task
-      Instances d = InstancesHelper.getDatasetFromTask(openml, t); // obtain the dataset
-      openml.setApiKey("FILL_IN_OPENML_API_KEY");
-      int runId = RunOpenmlJob.executeTask(openml, new WekaConfig(), taskId, tree);
-      Run run = openml.runGet(runId);   // retrieve the uploaded run
+    ``` example
+    public static void runTasksAndUpload() throws Exception {
+      OpenmlConnector openml = new OpenmlConnector();
+      // obtain the benchmark suite
+      Study benchmarksuite = openml.studyGet("OpenML-CC18", "tasks");
+      Classifier tree = new REPTree(); // build a Weka classifier
+      for (Integer taskId : benchmarksuite.getTasks()) { // iterate over all tasks
+        Task t = openml.taskGet(taskId); // download the OpenML task
+        Instances d = InstancesHelper.getDatasetFromTask(openml, t); // obtain the dataset
+        openml.setApiKey("FILL_IN_OPENML_API_KEY");
+        int runId = RunOpenmlJob.executeTask(openml, new WekaConfig(), taskId, tree);
+        Run run = openml.runGet(runId);   // retrieve the uploaded run
+      }
     }
-  }
-  ```
+    ```
 
 !!! R (with mlr)
-  ``` r
-  library(OpenML)
-  lrn = makeLearner('classif.rpart') # construct a simple CART classifier
-  task.ids = getOMLStudy('OpenML-CC18')$tasks$task.id # obtain the list of suggested tasks
-  for (task.id in task.ids) { # iterate over all tasks
-    task = getOMLTask(task.id) # download single OML task
-    data = as.data.frame(task) # obtain raw data set
-    run = runTaskMlr(task, learner = lrn) # run constructed learner
-    setOMLConfig(apikey = 'FILL_IN_OPENML_API_KEY')
-    upload = uploadOMLRun(run) # upload and tag the run
-  }
-```
+    ``` example
+    library(OpenML)
+    lrn = makeLearner('classif.rpart') # construct a simple CART classifier
+    task.ids = getOMLStudy('OpenML-CC18')$tasks$task.id # obtain the list of suggested tasks
+    for (task.id in task.ids) { # iterate over all tasks
+      task = getOMLTask(task.id) # download single OML task
+      data = as.data.frame(task) # obtain raw data set
+      run = runTaskMlr(task, learner = lrn) # run constructed learner
+      setOMLConfig(apikey = 'FILL_IN_OPENML_API_KEY')
+      upload = uploadOMLRun(run) # upload and tag the run
+    }
+  ```
 
 ### Retrieving all runs on a benchmarking suites:  
 **TODO: Add API call for listing all runs of a study /study/name/<studyname>**    
