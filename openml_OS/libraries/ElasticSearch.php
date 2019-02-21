@@ -761,7 +761,7 @@ class ElasticSearch {
             'name' => $d->name,
             'alias' => $d->alias,
             'description' => $d->description,
-            'date' => $d->created,
+            'date' => $d->creation_date,
             'uploader_id' => $d->creator,
             'uploader' => array_key_exists($d->creator, $this->user_names) ? $this->user_names[$d->creator] : 'Unknown',
             'visibility' => $d->visibility,
