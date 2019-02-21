@@ -36,6 +36,7 @@ Via the REST API, a list of all tasks and dataset IDs is returned
 In Python, the data is returned as X, y numpy arrays:  
 ??? note "Python example"  
     ```python
+    
     import openml
     benchmark_suite = openml.study.get_study('OpenML-CC18','tasks') # obtain the benchmark suite
     for task_id in benchmark_suite.tasks: # iterate over all tasks
@@ -46,6 +47,7 @@ In Python, the data is returned as X, y numpy arrays:
 In Java, the data is returned as a WEKA Instances object:  
 ??? note "Java example"  
     ```java
+    
     OpenmlConnector openml = new OpenmlConnector();
     Study benchmarksuite = openml.studyGet("OpenML-CC18", "tasks");
     for (Integer taskId : benchmarksuite.getTasks()) { // iterate over all tasks
@@ -58,6 +60,7 @@ The Java implementation automatically uploads results to the server.
 In R, the data is returned as an R dataframe:  
 ??? note "R example"  
     ```r
+    
     library(OpenML)
     task.ids = getOMLStudy('OpenML-CC18')$tasks$task.id # obtain the list of suggested tasks
     for (task.id in task.ids) { # iterate over all tasks
@@ -73,6 +76,7 @@ which contains all tasks and also holds all benchmarking results obtained on the
 
 ??? note "Python example"  
     ```python
+    
     import openml
     import sklearn
     benchmark_suite = openml.study.get_study('OpenML-CC18','tasks') # obtain the benchmark suite
@@ -93,6 +97,7 @@ which contains all tasks and also holds all benchmarking results obtained on the
 
 ??? note "Java example"   
     ```java
+    
     public static void runTasksAndUpload() throws Exception {
       OpenmlConnector openml = new OpenmlConnector();
       // obtain the benchmark suite
@@ -110,6 +115,7 @@ which contains all tasks and also holds all benchmarking results obtained on the
 
 ??? note "R example"  
     ```r
+    
     library(OpenML)
     lrn = makeLearner('classif.rpart') # construct a simple CART classifier
     task.ids = getOMLStudy('OpenML-CC18')$tasks$task.id # obtain the list of suggested tasks
