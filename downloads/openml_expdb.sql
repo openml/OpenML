@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 14, 2018 at 03:24 AM
+-- Generation Time: Feb 21, 2019 at 10:14 AM
 -- Server version: 5.7.24
 -- PHP Version: 7.2.11
 
@@ -621,6 +621,19 @@ CREATE TABLE `run_evaluated` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `run_study`
+--
+
+CREATE TABLE `run_study` (
+  `study_id` int(10) NOT NULL,
+  `run_id` int(10) UNSIGNED NOT NULL,
+  `uploader` mediumint(8) UNSIGNED NOT NULL,
+  `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `run_tag`
 --
 
@@ -683,12 +696,15 @@ CREATE TABLE `setup_tag` (
 
 CREATE TABLE `study` (
   `id` int(10) NOT NULL,
-  `alias` varchar(32) COLLATE utf8_bin NOT NULL,
-  `name` text COLLATE utf8_bin NOT NULL,
+  `alias` varchar(32) COLLATE utf8_bin DEFAULT NULL,
+  `main_entity_type` enum('run','task') COLLATE utf8_bin NOT NULL DEFAULT 'run',
+  `benchmark_suite` int(10) DEFAULT NULL,
+  `name` varchar(256) COLLATE utf8_bin NOT NULL,
   `description` text COLLATE utf8_bin NOT NULL,
   `visibility` varchar(64) COLLATE utf8_bin NOT NULL DEFAULT 'public',
-  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `creator` mediumint(8) UNSIGNED NOT NULL
+  `creation_date` datetime NOT NULL,
+  `creator` mediumint(8) UNSIGNED NOT NULL,
+  `legacy` enum('y','n') COLLATE utf8_bin NOT NULL DEFAULT 'y'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 -- --------------------------------------------------------
@@ -741,6 +757,19 @@ CREATE TABLE `task_io_types` (
   `name` varchar(64) NOT NULL,
   `description` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `task_study`
+--
+
+CREATE TABLE `task_study` (
+  `study_id` int(10) NOT NULL,
+  `task_id` int(10) NOT NULL,
+  `uploader` mediumint(8) UNSIGNED NOT NULL,
+  `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -1090,6 +1119,14 @@ ALTER TABLE `run_evaluated`
   ADD KEY `run_id` (`run_id`);
 
 --
+-- Indexes for table `run_study`
+--
+ALTER TABLE `run_study`
+  ADD KEY `run_id` (`run_id`),
+  ADD KEY `study_id` (`study_id`),
+  ADD KEY `uploader` (`uploader`);
+
+--
 -- Indexes for table `run_tag`
 --
 ALTER TABLE `run_tag`
@@ -1125,7 +1162,8 @@ ALTER TABLE `study`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `id` (`id`,`creator`),
   ADD UNIQUE KEY `alias` (`alias`),
-  ADD KEY `creator` (`creator`);
+  ADD KEY `creator` (`creator`),
+  ADD KEY `benchmark_suite` (`benchmark_suite`);
 
 --
 -- Indexes for table `study_tag`
@@ -1153,6 +1191,14 @@ ALTER TABLE `task_inputs`
 --
 ALTER TABLE `task_io_types`
   ADD PRIMARY KEY (`name`);
+
+--
+-- Indexes for table `task_study`
+--
+ALTER TABLE `task_study`
+  ADD KEY `task_id` (`task_id`),
+  ADD KEY `study_id` (`study_id`),
+  ADD KEY `uploader` (`uploader`);
 
 --
 -- Indexes for table `task_tag`
@@ -1449,6 +1495,14 @@ ALTER TABLE `run_evaluated`
   ADD CONSTRAINT `run_evaluated_ibfk_2` FOREIGN KEY (`evaluation_engine_id`) REFERENCES `evaluation_engine` (`id`);
 
 --
+-- Constraints for table `run_study`
+--
+ALTER TABLE `run_study`
+  ADD CONSTRAINT `run_study_ibfk_1` FOREIGN KEY (`run_id`) REFERENCES `run` (`rid`),
+  ADD CONSTRAINT `run_study_ibfk_2` FOREIGN KEY (`study_id`) REFERENCES `study` (`id`),
+  ADD CONSTRAINT `run_study_ibfk_3` FOREIGN KEY (`uploader`) REFERENCES `openml`.`users` (`id`);
+
+--
 -- Constraints for table `run_tag`
 --
 ALTER TABLE `run_tag`
@@ -1466,7 +1520,8 @@ ALTER TABLE `setup_tag`
 -- Constraints for table `study`
 --
 ALTER TABLE `study`
-  ADD CONSTRAINT `study_ibfk_1` FOREIGN KEY (`creator`) REFERENCES `openml`.`users` (`id`);
+  ADD CONSTRAINT `study_ibfk_1` FOREIGN KEY (`creator`) REFERENCES `openml`.`users` (`id`),
+  ADD CONSTRAINT `study_ibfk_2` FOREIGN KEY (`benchmark_suite`) REFERENCES `study` (`id`);
 
 --
 -- Constraints for table `study_tag`
@@ -1486,6 +1541,14 @@ ALTER TABLE `task`
 --
 ALTER TABLE `task_inputs`
   ADD CONSTRAINT `task_inputs_ibfk_1` FOREIGN KEY (`task_id`) REFERENCES `task` (`task_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `task_study`
+--
+ALTER TABLE `task_study`
+  ADD CONSTRAINT `task_study_ibfk_1` FOREIGN KEY (`study_id`) REFERENCES `study` (`id`),
+  ADD CONSTRAINT `task_study_ibfk_2` FOREIGN KEY (`task_id`) REFERENCES `task` (`task_id`),
+  ADD CONSTRAINT `task_study_ibfk_3` FOREIGN KEY (`uploader`) REFERENCES `openml`.`users` (`id`);
 
 --
 -- Constraints for table `task_tag`
