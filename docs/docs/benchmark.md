@@ -108,7 +108,7 @@ which contains all tasks and also holds all benchmarking results obtained on the
     }
     ```
 
-!!! note "R example"  
+??? note "R example"  
     ```r
     library(OpenML)
     lrn = makeLearner('classif.rpart') # construct a simple CART classifier
