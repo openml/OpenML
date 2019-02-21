@@ -29,7 +29,7 @@ $this->apiErrors[138] = 'Authentication failed';
 $this->apiErrors[139] = 'Combination name / version already exists';
 $this->apiErrors[140] = 'Both dataset file and dataset url provided. Please provide only one';
 $this->apiErrors[141] = 'Neither dataset file or dataset url are provided';
-$this->apiErrors[142] = 'Error in processing arff file. Can be a syntax error, or the specified target feature does not exists';
+$this->apiErrors[142] = 'Error in processing arff file. Can be a syntax error, or the specified target feature does not exist';
 $this->apiErrors[143] = 'Suggested target feature not legal ';
 $this->apiErrors[144] = 'Unable to update dataset ';
 $this->apiErrors[145] = 'Error parsing dataset ARFF file';
@@ -135,7 +135,7 @@ $this->apiErrors[312] = 'No flows owned by this used';
 // for function: openml.flow.delete
 $this->apiErrors[320] = 'Please provide API key';
 $this->apiErrors[321] = 'Authentication failed';
-$this->apiErrors[322] = 'flow does not exists';
+$this->apiErrors[322] = 'flow does not exist';
 $this->apiErrors[323] = 'flow is not owned by you';
 $this->apiErrors[324] = 'flow is in use by other content (runs). Can not be deleted';
 $this->apiErrors[328] = 'flow is in use by other content (it is a subflow). Can not be deleted';
@@ -153,7 +153,7 @@ $this->apiErrors[341] = 'No jobs available.';
 // for function: openml.data.delete
 $this->apiErrors[350] = 'Please provide API key';
 $this->apiErrors[351] = 'Authentication failed';
-$this->apiErrors[352] = 'Dataset does not exists';
+$this->apiErrors[352] = 'Dataset does not exist';
 $this->apiErrors[353] = 'Dataset is not owned by you';
 $this->apiErrors[354] = 'Dataset is in use by other content. Can not be deleted';
 $this->apiErrors[355] = 'Deleting dataset failed.';
@@ -179,26 +179,26 @@ $this->apiErrors[383] = 'Problem validating uploaded description file';
 $this->apiErrors[384] = 'Dataset not processed yet. ';
 $this->apiErrors[385] = 'No new qualities. ';
 $this->apiErrors[386] = 'Quality inconsistent';
-$this->apiErrors[387] = 'Quality does not exists';
+$this->apiErrors[387] = 'Quality does not exist';
 $this->apiErrors[388] = 'No new qualities';
 $this->apiErrors[389] = 'Quality upload failed';
 
 // for function: openml.run.delete
 $this->apiErrors[391] = 'Authentication failed';
-$this->apiErrors[392] = 'Run does not exists';
+$this->apiErrors[392] = 'Run does not exist';
 $this->apiErrors[393] = 'Run is not owned by you';
 $this->apiErrors[394] = 'Deleting run failed.';
 $this->apiErrors[400] = 'Please provide API key';
 
 // for function: openml.setup.delete
 $this->apiErrors[401] = 'Authentication failed';
-$this->apiErrors[402] = 'Setup does not exists';
+$this->apiErrors[402] = 'Setup does not exist';
 $this->apiErrors[404] = 'Setup is in use by other content (runs, schedules, etc). Can not be deleted';
 $this->apiErrors[405] = 'Deleting setup failed.';
 
 // for function: openml.run.reset
 $this->apiErrors[411] = 'Authentication failed';
-$this->apiErrors[412] = 'Run does not exists';
+$this->apiErrors[412] = 'Run does not exist';
 $this->apiErrors[413] = 'Run is not owned by you';
 $this->apiErrors[414] = 'Resetting run failed.';
 
@@ -207,7 +207,7 @@ $this->apiErrors[421] = 'Authentication failed';
 $this->apiErrors[422] = 'Upload problem description XML';
 $this->apiErrors[423] = 'Problem validating uploaded description file';
 $this->apiErrors[424] = 'Problem opening description xml';
-$this->apiErrors[425] = 'Run does not exists';
+$this->apiErrors[425] = 'Run does not exist';
 $this->apiErrors[426] = 'Run already processed';
 $this->apiErrors[427] = 'Inconsistent data, evaluations found but no run_evaluated record. Please contact developers';
 $this->apiErrors[428] = 'Database insertion error, probably due to high server load. ';
@@ -232,7 +232,7 @@ $this->apiErrors[450] = 'Database insert failed';
 
 // for function: openml.task.delete
 $this->apiErrors[451] = 'Authentication failed';
-$this->apiErrors[452] = 'Task does not exists';
+$this->apiErrors[452] = 'Task does not exist';
 $this->apiErrors[453] = 'Task is not owned by you';
 $this->apiErrors[454] = 'Task is executed in some runs. Delete these first';
 $this->apiErrors[455] = 'Deleting task failed.';
@@ -326,13 +326,13 @@ $this->apiErrors[590] = 'No studies available. ';
 
 // openml.study.delete
 $this->apiErrors[591] = 'Authentication failed';
-$this->apiErrors[592] = 'Study does not exists';
+$this->apiErrors[592] = 'Study does not exist';
 $this->apiErrors[593] = 'Deleting study failed';
 $this->apiErrors[594] = 'Study not owned by this user';
 
 // openml.study.get
 $this->apiErrors[600] = 'Api function invoked wrong. Unknown knowledge type. ';
-$this->apiErrors[601] = 'Study does not exists. ';
+$this->apiErrors[601] = 'Study does not exist. ';
 $this->apiErrors[602] = 'Study not visible for you. ';
 $this->apiErrors[603] = 'Study does not contain any associated tags (should have at least one). ';
 $this->apiErrors[604] = 'Illegal main knowledge type for study (please contact support team). ';
@@ -388,7 +388,7 @@ $this->apiErrors[688] = 'Requesting unknown qualities. ';
 
 // openml.data.status.update
 $this->apiErrors[691] = 'Illegal status';
-$this->apiErrors[692] = 'Dataset does not exists';
+$this->apiErrors[692] = 'Dataset does not exist';
 $this->apiErrors[693] = 'Dataset is not owned by you';
 $this->apiErrors[694] = 'Illegal status transition';
 $this->apiErrors[695] = 'Status update failed';
@@ -470,7 +470,7 @@ $this->apiErrors[1013] = 'No unevaluated runs according to the criteria';
 $this->apiErrors[1014] = 'No value specified for filter';
 
 // for function: openml.data.reset
-$this->apiErrors[1021] = 'Dataset does not exists';
+$this->apiErrors[1021] = 'Dataset does not exist';
 $this->apiErrors[1022] = 'Dataset is not owned by you';
 $this->apiErrors[1023] = 'Resetting dataset failed.';
 
