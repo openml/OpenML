@@ -28,13 +28,13 @@ Each benchmarking suite points to an OpenML study with the exact list of dataset
 You can fetch and iterate through the benchmark datasets with a few lines of code. See the code examples below.
 
 Via the REST API, a list of all tasks and dataset IDs is returned
-!!! example
-    ```REST
+!!! note "REST"
+    ``` 
     https://www.openml.org/api/v1/study/name/OpenML-CC18
     ```
 
 In Python, the data is returned as X, y numpy arrays:  
-!!! example
+!!! note "Python"
     ```python
     import openml
     benchmark_suite = openml.study.get_study('OpenML-CC18','tasks') # obtain the benchmark suite
@@ -44,7 +44,7 @@ In Python, the data is returned as X, y numpy arrays:
     ```
 
 In Java, the data is returned as a WEKA Instances object:  
-!!! example
+!!! note "Java"
     ```java
     OpenmlConnector openml = new OpenmlConnector();
     Study benchmarksuite = openml.studyGet("OpenML-CC18", "tasks");
@@ -55,7 +55,7 @@ In Java, the data is returned as a WEKA Instances object:
 The Java implementation automatically uploads results to the server.  
 
 In R, the data is returned as an R dataframe:  
-!!! example
+!!! note "R"
     ```r
     library(OpenML)
     task.ids = getOMLStudy('OpenML-CC18')$tasks$task.id # obtain the list of suggested tasks
@@ -70,7 +70,7 @@ The code below demonstrates how OpenML benchmarking suites can be conveniently i
 The OpenML-CC18 tasks are downloaded through the [study with the same name](https://www.openml.org/s/99),
 which contains all tasks and also holds all benchmarking results obtained on them. The code also shows how to access the raw data set (although this is not needed to train a model), fit a simple classifier on the defined data splits, and finally publish runs on the OpenML server.
 
-!!! example
+!!! note "Python"
     ```python
     import openml
     import sklearn
@@ -90,7 +90,7 @@ which contains all tasks and also holds all benchmarking results obtained on the
       print('URL for run: %s/run/%d' %(openml.config.server,run.run_id))
     ```
 
-!!! example
+!!! note "Java"
     ```java
     public static void runTasksAndUpload() throws Exception {
       OpenmlConnector openml = new OpenmlConnector();
@@ -107,7 +107,7 @@ which contains all tasks and also holds all benchmarking results obtained on the
     }
     ```
 
-!!! example
+!!! note "R"
     ```r
     library(OpenML)
     lrn = makeLearner('classif.rpart') # construct a simple CART classifier
