@@ -1498,8 +1498,8 @@ ALTER TABLE `run_evaluated`
 -- Constraints for table `run_study`
 --
 ALTER TABLE `run_study`
-  ADD CONSTRAINT `run_study_ibfk_1` FOREIGN KEY (`run_id`) REFERENCES `run` (`rid`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `run_study_ibfk_2` FOREIGN KEY (`study_id`) REFERENCES `study` (`id`),
+  ADD CONSTRAINT `run_study_ibfk_1` FOREIGN KEY (`run_id`) REFERENCES `run` (`rid`),
+  ADD CONSTRAINT `run_study_ibfk_2` FOREIGN KEY (`study_id`) REFERENCES `study` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `run_study_ibfk_3` FOREIGN KEY (`uploader`) REFERENCES `openml`.`users` (`id`);
 
 --
