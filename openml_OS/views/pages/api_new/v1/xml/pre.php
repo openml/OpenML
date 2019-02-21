@@ -477,11 +477,11 @@ $this->apiErrors[1023] = 'Resetting dataset failed.';
 // for function: openml.study.upload
 $this->apiErrors[1031] = 'No description file uploaded';
 $this->apiErrors[1032] = 'Description file does not correspond to XSD schema';
-$this->apiErrors[1033] = 'Illegal main knowledge type.';
-$this->apiErrors[1034] = 'can only link entities of the type main_knowledge_type';
-$this->apiErrors[1035] = 'Can only register benchmark suite if main knowledge type is run';
+$this->apiErrors[1033] = 'Illegal main entity type.';
+$this->apiErrors[1034] = 'can only link entities of the type main_entity_type';
+$this->apiErrors[1035] = 'Can only register benchmark suite if main entity type is run';
 $this->apiErrors[1036] = 'Referred benchmark suite not found';
-$this->apiErrors[1037] = 'Referred benchmark suite should have main knowledge type task';
+$this->apiErrors[1037] = 'Referred benchmark suite should have main entity type task';
 $this->apiErrors[1038] = 'Study alias not unique';
 $this->apiErrors[1039] = 'Database insertion problem';
 
