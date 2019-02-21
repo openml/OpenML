@@ -28,34 +28,35 @@ Each benchmarking suite points to an OpenML study with the exact list of dataset
 You can fetch and iterate through the benchmark datasets with a few lines of code. See the code examples below.
 
 Via the REST API, a list of all tasks and dataset IDs is returned
-!!! note "REST"
+!!! note "REST"  
     ``` 
     https://www.openml.org/api/v1/study/name/OpenML-CC18
     ```
 
 In Python, the data is returned as X, y numpy arrays:  
-!!! note "Python"
+??? note "Python example"  
     ```python
     import openml
     benchmark_suite = openml.study.get_study('OpenML-CC18','tasks') # obtain the benchmark suite
     for task_id in benchmark_suite.tasks: # iterate over all tasks
-      task = openml.tasks.get_task(task_id) # download the OpenML task
-      X, y = task.get_X_and_y() # get the data
+        task = openml.tasks.get_task(task_id) # download the OpenML task
+        X, y = task.get_X_and_y() # get the data
     ```
 
 In Java, the data is returned as a WEKA Instances object:  
-!!! note "Java"
+??? note "Java example"  
     ```java
     OpenmlConnector openml = new OpenmlConnector();
     Study benchmarksuite = openml.studyGet("OpenML-CC18", "tasks");
     for (Integer taskId : benchmarksuite.getTasks()) { // iterate over all tasks
-      Task t = openml.taskGet(taskId); // download the OpenML task
-      Instances d = InstancesHelper.getDatasetFromTask(openml, t); // obtain the dataset
+        Task t = openml.taskGet(taskId); // download the OpenML task
+        Instances d = InstancesHelper.getDatasetFromTask(openml, t); // obtain the dataset
+    }
     ```
 The Java implementation automatically uploads results to the server.  
 
 In R, the data is returned as an R dataframe:  
-!!! note "R"
+??? note "R example"  
     ```r
     library(OpenML)
     task.ids = getOMLStudy('OpenML-CC18')$tasks$task.id # obtain the list of suggested tasks
@@ -70,7 +71,7 @@ The code below demonstrates how OpenML benchmarking suites can be conveniently i
 The OpenML-CC18 tasks are downloaded through the [study with the same name](https://www.openml.org/s/99),
 which contains all tasks and also holds all benchmarking results obtained on them. The code also shows how to access the raw data set (although this is not needed to train a model), fit a simple classifier on the defined data splits, and finally publish runs on the OpenML server.
 
-!!! note "Python"
+??? note "Python example"  
     ```python
     import openml
     import sklearn
@@ -90,7 +91,7 @@ which contains all tasks and also holds all benchmarking results obtained on the
       print('URL for run: %s/run/%d' %(openml.config.server,run.run_id))
     ```
 
-!!! note "Java"
+??? note "Java example"   
     ```java
     public static void runTasksAndUpload() throws Exception {
       OpenmlConnector openml = new OpenmlConnector();
@@ -107,7 +108,7 @@ which contains all tasks and also holds all benchmarking results obtained on the
     }
     ```
 
-!!! note "R"
+!!! note "R example"  
     ```r
     library(OpenML)
     lrn = makeLearner('classif.rpart') # construct a simple CART classifier
