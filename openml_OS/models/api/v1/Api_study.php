@@ -280,7 +280,7 @@ class Api_study extends MY_Api_Model {
     $uploader = element('uploader', $query_string, null);
     $limit = element('limit', $query_string, null);
     $offset = element('offset', $query_string, null);
-    $main_knowledge_type = element('main_knowledge_type', $query_string, null);
+    $main_entity_type = element('main_entity_type', $query_string, null);
     
     if ($offset && !$limit) {
       $this->returnError(593, $this->version);
@@ -290,6 +290,9 @@ class Api_study extends MY_Api_Model {
     $whereClause = '(visibility = "public" or creator = ' . $this->user_id . ')';
     if ($uploader) {
       $whereClause .= ' AND creator = ' . $uploader;
+    }
+    if ($main_entity_type) {
+      $whereClause .= ' AND main_entity_type = ' . $main_entity_type;
     }
     $studies = $this->Study->getWhere($whereClause, null, $limit, $offset);
 
