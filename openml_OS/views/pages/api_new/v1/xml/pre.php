@@ -308,7 +308,8 @@ $this->apiErrors[564] = 'Database insertion error, probably due to high server l
 
 
 // openml.run.trace (get)
-$this->apiErrors[570] = 'No successful trace associated with this run.';
+$this->apiErrors[571] = 'Run not found.';
+$this->apiErrors[572] = 'No successful trace associated with this run.';
 
 // openml.setup.exists
 $this->apiErrors[581] = 'Problem with uploading the description file. ';
@@ -327,12 +328,14 @@ $this->apiErrors[590] = 'No studies available. ';
 $this->apiErrors[591] = 'Authentication failed';
 $this->apiErrors[592] = 'Study does not exists';
 $this->apiErrors[593] = 'Deleting study failed';
+$this->apiErrors[594] = 'Study not owned by this user';
 
 // openml.study.get
 $this->apiErrors[600] = 'Api function invoked wrong. Unknown knowledge type. ';
 $this->apiErrors[601] = 'Study does not exists. ';
 $this->apiErrors[602] = 'Study not visible for you. ';
 $this->apiErrors[603] = 'Study does not contain any associated tags (should have at least one). ';
+$this->apiErrors[604] = 'Illegal main knowledge type for study (please contact support team). ';
 
 // openml.task.upload (continued)
 
@@ -470,5 +473,24 @@ $this->apiErrors[1014] = 'No value specified for filter';
 $this->apiErrors[1021] = 'Dataset does not exists';
 $this->apiErrors[1022] = 'Dataset is not owned by you';
 $this->apiErrors[1023] = 'Resetting dataset failed.';
+
+// for function: openml.study.upload
+$this->apiErrors[1031] = 'No description file uploaded';
+$this->apiErrors[1032] = 'Description file does not correspond to XSD schema';
+$this->apiErrors[1034] = 'Illegal main knowledge type.';
+$this->apiErrors[1034] = 'can only link entities of the type main_knowledge_type';
+$this->apiErrors[1035] = 'Can only register benchmark suite if main knowledge type is run';
+$this->apiErrors[1036] = 'Referred benchmark suite not found';
+$this->apiErrors[1037] = 'Referred benchmark suite should have main knowledge type task';
+$this->apiErrors[1038] = 'Study alias not unique';
+$this->apiErrors[1039] = 'Database insertion problem';
+
+// for function: openml.study.attach/detach
+$this->apiErrors[1041] = 'Could not find study';
+$this->apiErrors[1042] = 'Can not attach/detach to legacy studies';
+$this->apiErrors[1043] = 'Please provide post field: ids';
+$this->apiErrors[1044] = 'Please ensure that post field ids contains a list of natural numbers';
+$this->apiErrors[1045] = 'Problem attaching entities. Please ensure to only attach entities that exist';
+$this->apiErrors[1046] = 'Problem detaching entities.';
 
 ?>

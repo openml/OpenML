@@ -84,6 +84,13 @@ $config['xml_fields_run'] = array(
   'plain'   => array('output_data')
 );
 
+$config['xml_fields_study'] = array(
+  'string' => array('alias', 'main_entity_type', 'benchmark_suite', 'name', 'description'),
+  'csv' => array(),
+  'array' => array('data', 'tasks', 'flows', 'setups', 'runs'),
+  'plain' => array()
+);
+
 // qualities to show in, e.g., task list
 $config['basic_qualities'] = array(
   "NumberOfInstances", "NumberOfFeatures", "NumberOfClasses", "NumberOfMissingValues",

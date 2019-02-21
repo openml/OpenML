@@ -555,8 +555,8 @@ class Api_run extends MY_Api_Model {
       return false;
     }
     $this->db->trans_complete();
-	if ($this->db->trans_status() === FALSE) {
-	  $this->returnError(224, $this->version);
+    if ($this->db->trans_status() === FALSE) {
+      $this->returnError(224, $this->version);
       return;
     }
 
@@ -595,10 +595,15 @@ class Api_run extends MY_Api_Model {
   }
 
   private function run_trace($run_id) {
+    $run = $this->Run->getById($run_id);
+    if ($run === false) {
+      $this->returnError(571, $this->version);
+      return;
+    }
+    
     $trace = $this->Trace->getWhere('run_id = ' . $run_id, 'repeat ASC, fold ASC, iteration ASC');
-
     if ($trace === false) {
-      $this->returnError(570,$this->version);
+      $this->returnError(572, $this->version);
       return;
     }
 
@@ -645,7 +650,7 @@ class Api_run extends MY_Api_Model {
     }
     $this->db->trans_complete();
     if ($this->db->trans_status() === FALSE) {
-	  $this->returnError(564, $this->version);
+      $this->returnError(564, $this->version);
       return;
     }
 
@@ -833,7 +838,7 @@ class Api_run extends MY_Api_Model {
     }
     $this->db->trans_complete();
     if ($this->db->trans_status() === FALSE) {
-	  $this->returnError(428, $this->version);
+      $this->returnError(428, $this->version);
       return;
     }
 
