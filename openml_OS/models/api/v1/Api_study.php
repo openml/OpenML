@@ -262,7 +262,7 @@ class Api_study extends MY_Api_Model {
   }
 
 
-  private function study_list() {
+  private function study_list($segs) {
     $legal_filters = array('limit', 'offset', 'main_entity_type', 'uploader');
     
     list($query_string, $illegal_filters) = $this->parse_filters($segs, $legal_filters);
