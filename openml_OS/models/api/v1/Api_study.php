@@ -18,7 +18,7 @@ class Api_study extends MY_Api_Model {
 
     $getpost = array('get','post');
 
-    if (count($segments) == 1 && $segments[0] == 'list') {
+    if (count($segments) > 0 && $segments[0] == 'list') {
       array_shift($segments);
       $this->study_list($segments);
       return;
@@ -263,10 +263,38 @@ class Api_study extends MY_Api_Model {
 
 
   private function study_list() {
-    $studies = $this->Study->getWhere('visibility = "public" or creator = ' . $this->user_id);
+    $legal_filters = array('limit', 'offset', 'main_entity_type', 'uploader');
+    
+    list($query_string, $illegal_filters) = $this->parse_filters($segs, $legal_filters);
+    if (count($illegal_filters) > 0) {
+      $this->returnError(591, $this->version, $this->openmlGeneralErrorCode, 'Legal filter operators: ' . implode(',', $legal_filters) .'. Found illegal filter(s): ' . implode(', ', $illegal_filters));
+      return;
+    }
+    
+    $illegal_filter_inputs = $this->check_filter_inputs($query_string, $legal_filters, array('main_entity_type'));
+    if (count($illegal_filter_inputs) > 0) {
+      $this->returnError(592, $this->version, $this->openmlGeneralErrorCode, 'Filters with illegal values: ' . implode(',', $illegal_filter_inputs));
+      return;
+    }
+    
+    $uploader = element('uploader', $query_string, null);
+    $limit = element('limit', $query_string, null);
+    $offset = element('offset', $query_string, null);
+    $main_knowledge_type = element('main_knowledge_type', $query_string, null);
+    
+    if ($offset && !$limit) {
+      $this->returnError(593, $this->version);
+      return;
+    }
+    
+    $whereClause = '(visibility = "public" or creator = ' . $this->user_id . ')';
+    if ($uploader) {
+      $whereClause .= ' AND creator = ' . $uploader;
+    }
+    $studies = $this->Study->getWhere($whereClause, null, $limit, $offset);
 
     if (count($studies) == 0) {
-      $this->returnError(590, $this->version);
+      $this->returnError(594, $this->version);
       return;
     }
 

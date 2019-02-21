@@ -322,7 +322,10 @@ $this->apiErrors[587] = 'Partial setup did not match any setups. ';
 $this->apiErrors[588] = 'Database error: search setups query failed. ';
 
 // openml.study.list
-$this->apiErrors[590] = 'No studies available. ';
+$this->apiErrors[591] = 'Illegal filter. ';
+$this->apiErrors[592] = 'Illegal filter input. ';
+$this->apiErrors[593] = 'Can only set an offset if limit is also specified. ';
+$this->apiErrors[594] = 'No studies according to the specified criteria. ';
 
 // openml.study.delete
 $this->apiErrors[591] = 'Authentication failed';
