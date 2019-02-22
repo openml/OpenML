@@ -291,9 +291,9 @@ class Api_study extends MY_Api_Model {
       return;
     }
     
-    //$this->Run_study->deleteWhere('study_id = ' . $study->id);
-    //$this->Task_study->deleteWhere('study_id = ' . $study->id);
-    $result = $this->Study->update($study_id);
+    $this->Run_study->deleteWhere('study_id = ' . $study->id);
+    $this->Task_study->deleteWhere('study_id = ' . $study->id);
+    $result = $this->Study->delete($study_id);
     if ($result == false) {
       $this->returnError(593, $this->version);
       return;
