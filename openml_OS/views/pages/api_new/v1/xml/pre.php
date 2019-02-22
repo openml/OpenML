@@ -332,6 +332,7 @@ $this->apiErrors[591] = 'Authentication failed';
 $this->apiErrors[592] = 'Study does not exist';
 $this->apiErrors[593] = 'Deleting study failed';
 $this->apiErrors[594] = 'Study not owned by this user';
+$this->apiErrors[595] = 'Can only delete studies based on runs or studies in preparation';
 
 // openml.study.get
 $this->apiErrors[600] = 'Api function invoked wrong. Unknown knowledge type. ';

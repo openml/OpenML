@@ -34,6 +34,11 @@ class Api_study extends MY_Api_Model {
       return;
     }
     
+    if (count($segments) == 1 && is_numeric($segments[0]) && $request_type == 'delete') {
+      $this->study_delete($segments[0]);
+      return;
+    }
+    
     if (count($segments) == 2 && is_numeric($segments[0]) && $segments[1] == 'attach' && $request_type == 'post') {
       $this->study_attach_detach($segments[0], true);
       return;
@@ -267,6 +272,43 @@ class Api_study extends MY_Api_Model {
     
     $this->xmlContents('study-attach-detach', $this->version, $template_vars);
   }
+  
+  private function study_delete($study_id) {
+
+    $study = $this->Study->getById($study_id);
+    if ($study == false) {
+      $this->returnError(592, $this->version);
+      return;
+    }
+    
+    if ($study->creator != $this->user_id and !$this->user_has_admin_rights) {
+      $this->returnError(594, $this->version);
+      return;
+    }
+    
+    if ($study->main_entity_type != 'run' && $study->status != 'in_preparation') {
+      $this->returnError(595, $this->version);
+      return;
+    }
+    
+    //$this->Run_study->deleteWhere('study_id = ' . $study->id);
+    //$this->Task_study->deleteWhere('study_id = ' . $study->id);
+    $result = $this->Study->update($study_id);
+    if ($result == false) {
+      $this->returnError(593, $this->version);
+      return;
+    }
+
+    try {
+      $this->elasticsearch->delete('study', $study_id);
+    } catch (Exception $e) {
+      $additionalMsg = get_class() . '.' . __FUNCTION__ . ':' . $e->getMessage();
+      $this->returnError(105, $this->version, $this->openmlGeneralErrorCode, $additionalMsg);
+      return;
+    }
+
+    $this->xmlContents('study-delete', $this->version, array('study' => $study));
+  }
 
   private function study_list($segs) {
     $legal_filters = array('limit', 'offset', 'main_entity_type', 'uploader', 'status');
@@ -441,7 +483,7 @@ class Api_study extends MY_Api_Model {
       'flows' => $flows,
       'setups' => $setups,
       'runs' => $runs
-    );
+    ); 
 
     $this->xmlContents('study-get', $this->version, $template_values);
   }
@@ -475,7 +517,7 @@ class Api_study extends MY_Api_Model {
         'uploader' => $uploader_id,
         'date' => now(),
       );
-      $this->{$model}->insert_ignore($data);
+      $this->{$model}->insert($data);
     }
     return true;
   }
