@@ -702,6 +702,7 @@ CREATE TABLE `study` (
   `name` varchar(256) COLLATE utf8_bin NOT NULL,
   `description` text COLLATE utf8_bin NOT NULL,
   `visibility` varchar(64) COLLATE utf8_bin NOT NULL DEFAULT 'public',
+  `status` enum('in_preparation','active','deactivated') COLLATE utf8_bin NOT NULL DEFAULT 'in_preparation',
   `creation_date` datetime NOT NULL,
   `creator` mediumint(8) UNSIGNED NOT NULL,
   `legacy` enum('y','n') COLLATE utf8_bin NOT NULL DEFAULT 'y'
