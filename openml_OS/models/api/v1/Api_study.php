@@ -5,11 +5,9 @@ class Api_study extends MY_Api_Model {
 
   function __construct() {
     parent::__construct();
-
     $this->load->model('Run_study');
     $this->load->model('Study');
     $this->load->model('Task_study');
-    
     $this->db = $this->Database_singleton->getWriteConnection();
   }
 
@@ -524,4 +522,3 @@ class Api_study extends MY_Api_Model {
 }
 
 ?>
-
