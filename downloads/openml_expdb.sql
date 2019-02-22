@@ -702,6 +702,7 @@ CREATE TABLE `study` (
   `name` varchar(256) COLLATE utf8_bin NOT NULL,
   `description` text COLLATE utf8_bin NOT NULL,
   `visibility` varchar(64) COLLATE utf8_bin NOT NULL DEFAULT 'public',
+  `status` enum('in_preparation','active','deactivated') COLLATE utf8_bin NOT NULL DEFAULT 'in_preparation',
   `creation_date` datetime NOT NULL,
   `creator` mediumint(8) UNSIGNED NOT NULL,
   `legacy` enum('y','n') COLLATE utf8_bin NOT NULL DEFAULT 'y'
@@ -1499,7 +1500,7 @@ ALTER TABLE `run_evaluated`
 --
 ALTER TABLE `run_study`
   ADD CONSTRAINT `run_study_ibfk_1` FOREIGN KEY (`run_id`) REFERENCES `run` (`rid`),
-  ADD CONSTRAINT `run_study_ibfk_2` FOREIGN KEY (`study_id`) REFERENCES `study` (`id`),
+  ADD CONSTRAINT `run_study_ibfk_2` FOREIGN KEY (`study_id`) REFERENCES `study` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `run_study_ibfk_3` FOREIGN KEY (`uploader`) REFERENCES `openml`.`users` (`id`);
 
 --
@@ -1546,7 +1547,7 @@ ALTER TABLE `task_inputs`
 -- Constraints for table `task_study`
 --
 ALTER TABLE `task_study`
-  ADD CONSTRAINT `task_study_ibfk_1` FOREIGN KEY (`study_id`) REFERENCES `study` (`id`),
+  ADD CONSTRAINT `task_study_ibfk_1` FOREIGN KEY (`study_id`) REFERENCES `study` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `task_study_ibfk_2` FOREIGN KEY (`task_id`) REFERENCES `task` (`task_id`),
   ADD CONSTRAINT `task_study_ibfk_3` FOREIGN KEY (`uploader`) REFERENCES `openml`.`users` (`id`);
 

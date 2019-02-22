@@ -18,7 +18,7 @@ class Api_study extends MY_Api_Model {
 
     $getpost = array('get','post');
 
-    if (count($segments) == 1 && $segments[0] == 'list') {
+    if (count($segments) > 0 && $segments[0] == 'list') {
       array_shift($segments);
       $this->study_list($segments);
       return;
@@ -29,8 +29,8 @@ class Api_study extends MY_Api_Model {
       return;
     }
     
-    if (count($segments) == 1 && is_numeric($segments[0]) && $request_type == 'delete') {
-      $this->study_delete($segments[0]);
+    if (count($segments) == 2 && $segments[0] == 'status' && $segments[1] == 'update') {
+      $this->status_update($this->input->post('study_id'), $this->input->post('status'));
       return;
     }
     
@@ -165,6 +165,40 @@ class Api_study extends MY_Api_Model {
     $this->xmlContents('study-upload', $this->version, array('study_id' => $study_id));
   }
   
+  private function status_update($study_id, $status) {
+    // in_preparation is not a legal status to change to
+    $legal_status = array('active', 'deactivated');
+    if (!in_array($status, $legal_status)) {
+      $this->returnError(1051, $this->version);
+      return;
+    }
+    
+    $study = $this->Study->getById($study_id);
+    if ($study == false) {
+      $this->returnError(1052, $this->version);
+      return;
+    }
+
+    if ($study->creator != $this->user_id and !$this->user_has_admin_rights) {
+      $this->returnError(1053, $this->version);
+      return;
+    }
+    
+    $result = $this->Study->update($study_id, array('status' => $status));
+    if ($result === false) {
+      $this->returnError(1054, $this->version);
+      return;
+    }
+    // get updated study
+    $study = $this->Study->getById($study_id);
+    $template_vars = array(
+      'id' => $study->id,
+      'status' => $study->status
+    );
+    
+    $this->xmlContents('study-status-update', $this->version, $template_vars);
+  }
+  
   private function study_attach_detach($study_id, $attach) {
     $study = $this->Study->getById($study_id);
     if ($study === false) {
@@ -185,6 +219,11 @@ class Api_study extends MY_Api_Model {
     
     if (!is_cs_natural_numbers($entity_ids)) {
       $this->returnError(1044, $this->version);
+      return;
+    }
+    
+    if (!$study->status == 'in_preparation') {
+      $this->returnError(1047, $this->version);
       return;
     }
     
@@ -229,44 +268,50 @@ class Api_study extends MY_Api_Model {
     $this->xmlContents('study-attach-detach', $this->version, $template_vars);
   }
 
-  private function study_delete($study_id) {
-
-    $study = $this->Study->getById($study_id);
-    if ($study == false) {
-      $this->returnError(592, $this->version);
+  private function study_list($segs) {
+    $legal_filters = array('limit', 'offset', 'main_entity_type', 'uploader', 'status');
+    
+    list($query_string, $illegal_filters) = $this->parse_filters($segs, $legal_filters);
+    if (count($illegal_filters) > 0) {
+      $this->returnError(591, $this->version, $this->openmlGeneralErrorCode, 'Legal filter operators: ' . implode(',', $legal_filters) .'. Found illegal filter(s): ' . implode(', ', $illegal_filters));
       return;
     }
     
-    if ($study->creator != $this->user_id and !$this->user_has_admin_rights) {
-      $this->returnError(594, $this->version);
+    $illegal_filter_inputs = $this->check_filter_inputs($query_string, $legal_filters, array('main_entity_type', 'status'));
+    if (count($illegal_filter_inputs) > 0) {
+      $this->returnError(592, $this->version, $this->openmlGeneralErrorCode, 'Filters with illegal values: ' . implode(',', $illegal_filter_inputs));
       return;
     }
     
-    $this->Run_study->deleteWhere('study_id = ' . $study->id);
-    $this->Task_study->deleteWhere('study_id = ' . $study->id);
-    $result = $this->Study->delete($study_id);
-    if ($result == false) {
+    $uploader = element('uploader', $query_string, null);
+    $limit = element('limit', $query_string, null);
+    $offset = element('offset', $query_string, null);
+    $status = element('status', $query_string, null);
+    $main_entity_type = element('main_entity_type', $query_string, null);
+    
+    if ($offset && !$limit) {
       $this->returnError(593, $this->version);
       return;
     }
-
-    try {
-      $this->elasticsearch->delete('study', $study_id);
-    } catch (Exception $e) {
-      $additionalMsg = get_class() . '.' . __FUNCTION__ . ':' . $e->getMessage();
-      $this->returnError(105, $this->version, $this->openmlGeneralErrorCode, $additionalMsg);
-      return;
+    
+    $whereClause = '(visibility = "public" or creator = ' . $this->user_id . ')';
+    if ($uploader) {
+      $whereClause .= ' AND creator = ' . $uploader;
     }
-
-    $this->xmlContents('study-delete', $this->version, array('study' => $study));
-  }
-
-
-  private function study_list() {
-    $studies = $this->Study->getWhere('visibility = "public" or creator = ' . $this->user_id);
+    if ($main_entity_type) {
+      $whereClause .= ' AND main_entity_type = "' . $main_entity_type . '"';
+    }
+    if ($status) {
+      if ($status != 'all') {
+        $whereClause .= ' AND status = "' . $status . '"';
+      }
+    } else {
+      $whereClause .= ' AND status = "active"';
+    }
+    $studies = $this->Study->getWhere($whereClause, null, $limit, $offset);
 
     if (count($studies) == 0) {
-      $this->returnError(590, $this->version);
+      $this->returnError(594, $this->version);
       return;
     }
 
