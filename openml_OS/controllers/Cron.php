@@ -40,7 +40,7 @@ class Cron extends CI_Controller {
 
     $this->dir_suffix = 'dataset/cron/';
 
-    $this->es_indices = array('downvote', 'task_type', 'study', 'data', 'task', 'download', 'user', 'like', 'measure', 'flow', 'task_type', 'run');
+    $this->es_indices = array('downvote', 'study', 'data', 'task', 'download', 'user', 'like', 'measure', 'flow', 'task_type', 'run');
   }
 
   // indexes a single es item, unless $id = false
@@ -164,7 +164,7 @@ class Cron extends CI_Controller {
   function install_database() {
     // note that this one does not come from DATA folder, as they are stored in github
     $models = directory_map('data/sql/', 1);
-    $manipulated_order = array('file.sql', 'implementation.sql', 'algorithm_setup.sql', 'dataset.sql', 'study.sql', 'groups.sql', 'users.sql');
+    $manipulated_order = array('file.sql', 'implementation.sql', 'algorithm_setup.sql', 'dataset.sql', 'task_type.sql', 'study.sql', 'groups.sql', 'users.sql');
 
     // moves elements of $manipulated_order to the start of the models array
     foreach (array_reverse($manipulated_order) as $name) {
