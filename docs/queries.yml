@@ -1,0 +1,7 @@
+- evaluation_sample
+  query: "SELECT COUNT(*) AS `count` FROM run r, task t, evaluation_sample e WHERE r.task_id = t.task_id AND e.source = r.rid AND t.ttid <> 3;"
+  expected_column: "count"
+  expected_result: 0
+  inspection: "SELECT r.rid, re.evaluation_date FROM run r, run_evaluated re, task t, evaluation_sample e WHERE r.task_id = t.task_id AND r.rid = re.run_id AND e.source = r.rid AND t.ttid <> 3;"
+  fix: "DELETE FROM run_evaluated WHERE run_id IN (SELECT DISTINCT(`source`) FROM evaluation_sample);"
+

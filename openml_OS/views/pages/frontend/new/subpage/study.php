@@ -1,7 +1,7 @@
 <form method="post" action="" enctype="multipart/form-data">
 
 <div class="panel">
-	<h1><a href="d"><i class="fa fa-flask"></i></a> Create study</h1>
+	<h1><a href="s"><i class="fa fa-flask"></i></a> Create study</h1>
       <div id="responseDatasetTxt" class="<?php echo $this->responsetype; ?>"><?php echo $this->response; ?></div>
 		  <div class="form-group has-error">
 		    <label class="control-label" for="title">Title</label>

@@ -650,14 +650,14 @@ class Api_data extends MY_Api_Model {
 
     // get correct description
     if (isset($_FILES['description']) == false || check_uploaded_file($_FILES['description']) == false) {
-      $this->returnError(432, $this->version);
+      $this->returnError(442, $this->version);
       return;
     }
 
     // get description from string upload
     $description = $_FILES['description'];
     if (validateXml($description['tmp_name'], xsd('openml.data.features', $this->controller, $this->version), $xmlErrors) == false) {
-      $this->returnError(433, $this->version, $this->openmlGeneralErrorCode, $xmlErrors);
+      $this->returnError(443, $this->version, $this->openmlGeneralErrorCode, $xmlErrors);
       return;
     }
 
@@ -666,19 +666,19 @@ class Api_data extends MY_Api_Model {
     $eval_id = ''.$xml->children('oml', true)->{'evaluation_engine_id'};
 
     if (!is_numeric($did) || !is_numeric($eval_id) || $did <= 0 || $eval_id <= 0) {
-      $this->returnError( 436, $this->version );
+      $this->returnError(446, $this->version);
       return;
     }
 
     $dataset = $this->Dataset->getById($did);
     if ($dataset == false) {
-      $this->returnError(434, $this->version);
+      $this->returnError(444, $this->version);
       return;
     }
     
     $data_processed_record = $this->Data_processed->getById(array($did, $eval_id));
     if ($data_processed_record && $data_processed_record->error == null) {
-      $this->returnError(431, $this->version);
+      $this->returnError(441, $this->version);
       return;
     }
     
@@ -702,7 +702,7 @@ class Api_data extends MY_Api_Model {
     # replace is delete then insert again
     $success = $this->Data_processed->replace($data);
     if (!$success) {  
-      $this->returnError(435, $this->version, $this->openmlGeneralErrorCode, 'Failed to create data processed record. ');
+      $this->returnError(445, $this->version, $this->openmlGeneralErrorCode, 'Failed to create data processed record. ');
       return;
     }
     //$current_index = -1;
@@ -740,7 +740,7 @@ class Api_data extends MY_Api_Model {
         json_decode($feature['ClassDistribution']);
         if (json_last_error()) {
           $this->db->trans_rollback();
-          $this->returnError(437, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature['name']);
+          $this->returnError(447, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature['name']);
           return;
         }
       }
@@ -756,7 +756,7 @@ class Api_data extends MY_Api_Model {
       $result = $this->Data_feature->insert($feature);
       if (!$result) {
         $this->db->trans_rollback();
-        $this->returnError(446, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature['name']);
+        $this->returnError(450, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature['name']);
         return;
       }
       
@@ -771,7 +771,7 @@ class Api_data extends MY_Api_Model {
           $result = $this->Data_feature_value->insert($data);
           if (!$result) {
             $this->db->trans_rollback();
-            $this->returnError(446, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature['name'] . ', value: ' . $value);
+            $this->returnError(450, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature['name'] . ', value: ' . $value);
             return;
           }
         }
@@ -779,13 +779,13 @@ class Api_data extends MY_Api_Model {
         if ($feature['data_type'] != 'nominal') {
           // only allowed for nominal values
           $this->db->trans_rollback();
-          $this->returnError(439, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature['name']);
+          $this->returnError(449, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature['name']);
           return;
         }
       } elseif ($feature['data_type'] == 'nominal') {
         // required for nominal values.. missing so throw error
         $this->db->trans_rollback();
-        $this->returnError(438, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature['name']);
+        $this->returnError(448, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature['name']);
         return;
       }
 
@@ -801,7 +801,7 @@ class Api_data extends MY_Api_Model {
     if ($success) {
       $this->xmlContents('data-features-upload', $this->version, array('did' => $dataset->did));
     } else {
-      $this->returnError(435, $this->version);
+      $this->returnError(445, $this->version);
       return;
     }
   }
@@ -1073,7 +1073,11 @@ class Api_data extends MY_Api_Model {
   }
 
   private function data_unprocessed($evaluation_engine_id, $order) {
-
+    if (!$this->user_has_admin_rights) {
+      $this->returnError(106, $this->version);
+      return;
+    }
+    
     $this->db->select('d.*')->from('dataset d');
     $this->db->join('data_processed p', 'd.did = p.did AND evaluation_engine_id = ' . $evaluation_engine_id, 'left');
     $this->db->where('(p.did IS NULL OR (p.error IS NOT NULL AND p.num_tries < ' . $this->config->item('process_data_tries') . ' AND p.processing_date < "' . now_offset('-' . $this->config->item('process_data_offset')) . '"))');
@@ -1109,6 +1113,11 @@ class Api_data extends MY_Api_Model {
   }
 
   private function dataqualities_unprocessed($evaluation_engine_id, $order, $feature_attributes = false, $priorityTag = null) {
+    if (!$this->user_has_admin_rights) {
+      $this->returnError(106, $this->version);
+      return;
+    }
+    
     $requiredMetafeatures = explode(',', $this->input->get_post('qualities')); // TODO: remove get
     if (count($requiredMetafeatures) < 2) {
       $this->returnError(686, $this->version);

@@ -48,12 +48,13 @@ class Api_new extends CI_Controller {
     $this->groups_upload_rights = array(1,2); // must be part of this group to upload stuff
     $this->groups_admin = array(1); // must be part of this group to do really important stuff
 
-    // XML maintainance
+    // XML maintainance. TODO: remove and place in appropriate models
     $this->xml_fields_dataset = $this->config->item('xml_fields_dataset');
     $this->xml_fields_features = $this->config->item('xml_fields_features');
     $this->xml_fields_dataset_update = $this->config->item('xml_fields_dataset_update');
     $this->xml_fields_implementation = $this->config->item('xml_fields_implementation');
     $this->xml_fields_run = $this->config->item('xml_fields_run');
+    $this->xml_fields_study = $this->config->item('xml_fields_study');
 
     $this->data_controller = $this->config->item('data_controller');
     

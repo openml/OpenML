@@ -88,7 +88,7 @@ class ElasticSearch {
                     'analyzer' => 'keyword'
                 ),
                 'exact_name' => array(
-                    'type' => 'text'
+                    'type' => 'keyword'
                 ),
                 'tags' => array(
                     'type' => 'nested',
@@ -122,7 +122,7 @@ class ElasticSearch {
                     'format' => 'yyyy-MM-dd HH:mm:ss'
                 ),
                 'exact_name' => array(
-                    'type' => 'text',
+                    'type' => 'keyword',
                 ),
                 'tags' => array(
                     'type' => 'nested',
@@ -192,7 +192,7 @@ class ElasticSearch {
                 'date' => array(
                     'type' => 'date',
                     'format' => 'yyyy-MM-dd HH:mm:ss'),
-		'runs' => array('type' => 'long')	
+		'runs' => array('type' => 'long')
             )
         );
 	$this->mappings['task_type'] = array(
@@ -509,7 +509,7 @@ class ElasticSearch {
 
         $params['index'] = 'user';
         $params['type'] = 'user';
-        $users = $this->userdb->query('select id, first_name, last_name, email, affiliation, country, bio, image, created_on, gamification_visibility from users where active="1"' . ($id ? ' and id=' . $id : ''));
+        $users = $this->userdb->query('select id, first_name, last_name, email, company, country, bio, image, created_on, gamification_visibility from users where active="1"' . ($id ? ' and id=' . $id : ''));
 
         if ($id and ! $users)
             return 'Error: user ' . $id . ' is unknown';
@@ -535,7 +535,7 @@ class ElasticSearch {
             'first_name' => $d->first_name,
             'last_name' => $d->last_name,
             'email' => $d->email,
-            'affiliation' => $d->affiliation,
+            'company' => $d->company,
             'country' => $d->country,
             'bio' => $d->bio,
             'image' => $d->image,
@@ -761,7 +761,7 @@ class ElasticSearch {
             'name' => $d->name,
             'alias' => $d->alias,
             'description' => $d->description,
-            'date' => $d->created,
+            'date' => $d->creation_date,
             'uploader_id' => $d->creator,
             'uploader' => array_key_exists($d->creator, $this->user_names) ? $this->user_names[$d->creator] : 'Unknown',
             'visibility' => $d->visibility,

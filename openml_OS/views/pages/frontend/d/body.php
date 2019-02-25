@@ -65,7 +65,7 @@
     $this->p2['index'] = 'data';
     $this->p2['type'] = 'data';
     $this->p2['body']['_source'] = array("data_id", "version", "version_label");
-    $this->p2['body']['query']['term']['exact_name'] = $this->data['name'];
+    $this->p2['body']['query']['term']['exact_name.keyword'] = $this->data['name'];
     $this->p2['body']['sort'] = 'version';
     try{
       $this->versions = array_column($this->searchclient->search($this->p2)['hits']['hits'],'_source');
@@ -126,7 +126,7 @@
 
     // licences
     $this->licences = array();
-    $this->licences['Public'] = array( "name" => 'Publicly available', "url" => 'https://creativecommons.org/publicdomain/mark/1.0/' );    
+    $this->licences['Public'] = array( "name" => 'Publicly available', "url" => 'https://creativecommons.org/publicdomain/mark/1.0/' );
     $this->licences['CC_BY'] = array( "name" => 'Attribution (CC BY)', "url" => 'http://creativecommons.org/licenses/by/4.0/' );
     $this->licences['CC_BY-SA'] = array( "name" => 'Attribution-ShareAlike (CC BY-SA)', "url" => 'http://creativecommons.org/licenses/by-sa/4.0/' );
     $this->licences['CC_BY-ND'] = array( "name" => 'Attribution-NoDerivs (CC BY-ND)', "url" => 'http://creativecommons.org/licenses/by-nd/4.0/' );

@@ -5,17 +5,22 @@ class Study extends MY_Database_Write_Model {
     parent::__construct();
     $this->table = 'study';
     $this->id_column = 'id';
-    
     $this->load->model('Study_tag');
   }
 
-  function create($name, $alias, $description, $creator) {
+  function legacy_create($name, $alias, $description, $creator) {
     // insert
     $schedule_data = array(
       'name' => $name, 
       'alias' => $alias, 
       'description' => $description, 
-      'creator' => $creator);
+      'main_knowledge_type' => 'run',
+      'benchmark_suite' => null,
+      'visibility' => 'public',
+      'legacy' => 'y', 
+      'creation_date' => now(),
+      'creator' => $creator
+    );
     $study_id = $this->insert($schedule_data);
     
     $tag_data = array(
@@ -36,6 +41,6 @@ class Study extends MY_Database_Write_Model {
 
     return $study_id;
   }
-
+  
 }
 ?>
