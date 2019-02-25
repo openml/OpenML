@@ -313,13 +313,13 @@ class Api_study extends MY_Api_Model {
     
     list($query_string, $illegal_filters) = $this->parse_filters($segs, $legal_filters);
     if (count($illegal_filters) > 0) {
-      $this->returnError(591, $this->version, $this->openmlGeneralErrorCode, 'Legal filter operators: ' . implode(',', $legal_filters) .'. Found illegal filter(s): ' . implode(', ', $illegal_filters));
+      $this->returnError(596, $this->version, $this->openmlGeneralErrorCode, 'Legal filter operators: ' . implode(',', $legal_filters) .'. Found illegal filter(s): ' . implode(', ', $illegal_filters));
       return;
     }
     
     $illegal_filter_inputs = $this->check_filter_inputs($query_string, $legal_filters, array('main_entity_type', 'status'));
     if (count($illegal_filter_inputs) > 0) {
-      $this->returnError(592, $this->version, $this->openmlGeneralErrorCode, 'Filters with illegal values: ' . implode(',', $illegal_filter_inputs));
+      $this->returnError(597, $this->version, $this->openmlGeneralErrorCode, 'Filters with illegal values: ' . implode(',', $illegal_filter_inputs));
       return;
     }
     
@@ -330,7 +330,7 @@ class Api_study extends MY_Api_Model {
     $main_entity_type = element('main_entity_type', $query_string, null);
     
     if ($offset && !$limit) {
-      $this->returnError(593, $this->version);
+      $this->returnError(598, $this->version);
       return;
     }
     
@@ -351,7 +351,7 @@ class Api_study extends MY_Api_Model {
     $studies = $this->Study->getWhere($whereClause, null, $limit, $offset);
 
     if (!$studies) {
-      $this->returnError(594, $this->version);
+      $this->returnError(599, $this->version);
       return;
     }
 
