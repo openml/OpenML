@@ -40,7 +40,7 @@ class Cron extends CI_Controller {
 
     $this->dir_suffix = 'dataset/cron/';
 
-    $this->es_indices = array('downvote', 'study', 'data', 'task', 'download', 'user', 'like', 'measure', 'flow', 'task_type', 'run');
+    $this->es_indices = array('downvote', 'task_type', 'study', 'data', 'task', 'download', 'user', 'like', 'measure', 'flow', 'task_type', 'run');
   }
 
   // indexes a single es item, unless $id = false
