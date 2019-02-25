@@ -309,7 +309,7 @@ class Api_study extends MY_Api_Model {
   }
 
   private function study_list($segs) {
-    $legal_filters = array('limit', 'offset', 'main_entity_type', 'uploader', 'status');
+    $legal_filters = array('limit', 'offset', 'main_entity_type', 'uploader', 'status', 'benchmark_suite');
     
     list($query_string, $illegal_filters) = $this->parse_filters($segs, $legal_filters);
     if (count($illegal_filters) > 0) {
@@ -328,6 +328,7 @@ class Api_study extends MY_Api_Model {
     $offset = element('offset', $query_string, null);
     $status = element('status', $query_string, null);
     $main_entity_type = element('main_entity_type', $query_string, null);
+    $benchmark_suite = element('benchmark_suite', $query_string, null);
     
     if ($offset && !$limit) {
       $this->returnError(598, $this->version);
@@ -340,6 +341,9 @@ class Api_study extends MY_Api_Model {
     }
     if ($main_entity_type) {
       $whereClause .= ' AND main_entity_type = "' . $main_entity_type . '"';
+    }
+    if ($benchmark_suite) {
+      $whereClause .= ' AND benchmark_suite = "' . $benchmark_suite . '"';
     }
     if ($status) {
       if ($status != 'all') {
