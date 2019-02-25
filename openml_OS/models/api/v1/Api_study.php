@@ -350,7 +350,7 @@ class Api_study extends MY_Api_Model {
     }
     $studies = $this->Study->getWhere($whereClause, null, $limit, $offset);
 
-    if (count($studies) == 0) {
+    if (!$studies) {
       $this->returnError(594, $this->version);
       return;
     }
