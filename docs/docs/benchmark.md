@@ -14,19 +14,20 @@ Benchmarking suites make benchmarking a whole lot easier:
 
 ## Terminology: Studies and Benchmark Suites
 OpenML offers the ability to bundle several objects on the server together on a
-single page. With a slight overload of terminology, these are called `studies'.
+single page. With a slight overload of terminology, these are called `studies`.
 OpenML supports two types of studies:
-- benchmark suites: collection of tasks. OpenML automatically organizes all 
-tasks and the correpsonding datasets on a single server page. These are the main
-aim of this article.
-- studies: collection of runs. OpenML automatically organizes all runs and
-corresponding flows, tasks and datasets on a single server page. Studies can be
-defined on top of benchmark suites. In that case, the creator intends to run 
-his algorithms on the tasks defined in a benchmark suite. Additional information
-of how to organize reproducible benchmarks will be provided in a separate page. 
+- collection of tasks. We call these `benchmark suites`. OpenML automatically
+organizes all tasks and the correpsonding datasets on a single server page.
+These are the main aim of this article.
+- collection of runs. We call these `studies`. OpenML automatically organizes
+all runs and corresponding flows, tasks and datasets on a single server page.
+Studies can be defined on top of benchmark suites. In that case, the creator
+intends to run his algorithms on the tasks defined in a benchmark suite.
+Additional information of how to organize reproducible benchmarks will be
+provided in a separate page. 
 
 ## Using OpenML Benchmark Suites
-Below are detailed instructions for common use cases, as well as code examples. These illustrations use the reference 'OpenML-CC18' benchmark suite, but you can replace this with any other benchmark suite. In all examples, OpenML does not only return the datasets, but also the train-test splits and (for predictive tasks) the target feature. These are enveloped as _tasks_ in OpenML. Hence, you will usually receive a list of tasks in which you can find the data itself.
+Below are detailed instructions for common use cases, as well as code examples. These illustrations use the reference 'OpenML-CC18' benchmark suite, but you can replace this with any other benchmark suite. In all examples, OpenML does not only return the tasks and datasets, but also the train-test splits and (for predictive tasks) the target feature. These are enveloped as _tasks_ in OpenML. Hence, you will usually receive a list of tasks in which you can find the data itself.
 
 ### Listing the benchmark suites
 For now, these are explicitly listed below. We will add them to the OpenML search engine soon.
@@ -39,6 +40,9 @@ In Python, the following code returns the studies:
     ```python
     import openml
     
+    # using the main entity type task, only benchmark suites are returned
+    # each benchmark suite has an ID, some also have an alias. These can be
+    # used to obtain the full details. 
     studies = openml.study.list_studies(main_entity_type='task')
     ```
 
@@ -49,7 +53,7 @@ You can fetch and iterate through the benchmark datasets with a few lines of cod
 Via the REST API, a list of all tasks and dataset IDs is returned
 !!! note "REST"
     ``` 
-    https://www.openml.org/api/v1/study/name/OpenML-CC18
+    https://www.openml.org/api/v1/study/OpenML-CC18
     ```
 
 In Python, the data is returned as X, y numpy arrays:
