@@ -1728,8 +1728,8 @@
       },
       "post" : {
         "tags" : [ "run" ],
-        "summary" : "Upload run",
-        "description" : "Uploads a run. Upon success, it returns the run id.\n",
+        "summary" : "Upload run trace",
+        "description" : "Uploads a run trace. Upon success, it returns the run id.\n",
         "consumes" : [ "multipart/form-data" ],
         "parameters" : [ {
           "name" : "id",
@@ -2036,7 +2036,7 @@
           "200" : {
             "description" : "A list of studies",
             "examples" : {
-              "application/json" : "{\n  \"study_list\":{\n    \"study\":[\n      {\n        \"id\":\"1\",\n        \"alias\":\"Study_1\",\n        \"name\":\"A large-scale comparison of classification algorithms\",\n        \"creation_date\":\"2017-07-20 15:51:20\",\n        \"creator\":\"2\"\n      },\n      {\n        \"id\":\"2\",\n        \"alias\":\"Study_2\",\n        \"name\":\"Fast Algorithm Selection using Learning Curves\",\n        \"creation_date\":\"2017-07-20 15:51:20\",\n        \"creator\":\"2\"\n      }\n    ]\n  }\n},"
+              "application/json" : "{\n  \"study_list\":{\n    \"study\":[\n      {\n        \"id\":\"1\",\n        \"alias\":\"Study_1\",\n        \"name\":\"A large-scale comparison of classification algorithms\",\n        \"creation_date\":\"2017-07-20 15:51:20\",\n        \"creator\":\"2\"\n      },\n      {\n        \"id\":\"2\",\n        \"alias\":\"Study_2\",\n        \"name\":\"Fast Algorithm Selection using Learning Curves\",\n        \"creation_date\":\"2017-07-20 15:51:20\",\n        \"creator\":\"2\"\n      }\n    ]\n  }\n}"
             },
             "schema" : {
               "$ref" : "#/definitions/StudyList"

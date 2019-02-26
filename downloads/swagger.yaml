@@ -2343,9 +2343,9 @@ paths:
     post:
       tags:
       - run
-      summary: Upload run
+      summary: Upload run trace
       description: |
-        Uploads a run. Upon success, it returns the run id.
+        Uploads a run trace. Upon success, it returns the run id.
       consumes:
       - multipart/form-data
       parameters:
@@ -2690,7 +2690,7 @@ paths:
                     }
                   ]
                 }
-              },
+              }
           schema:
             $ref: '#/definitions/StudyList'
         412:

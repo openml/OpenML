@@ -5,7 +5,6 @@ class Study extends MY_Database_Write_Model {
     parent::__construct();
     $this->table = 'study';
     $this->id_column = 'id';
-    
     $this->load->model('Study_tag');
   }
 
@@ -45,4 +44,3 @@ class Study extends MY_Database_Write_Model {
   
 }
 ?>
-
