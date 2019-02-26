@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Feb 21, 2019 at 10:14 AM
+-- Generation Time: Feb 26, 2019 at 02:00 PM
 -- Server version: 5.7.24
 -- PHP Version: 7.2.11
 
@@ -1123,6 +1123,7 @@ ALTER TABLE `run_evaluated`
 -- Indexes for table `run_study`
 --
 ALTER TABLE `run_study`
+  ADD PRIMARY KEY (`study_id`,`run_id`),
   ADD KEY `run_id` (`run_id`),
   ADD KEY `study_id` (`study_id`),
   ADD KEY `uploader` (`uploader`);
@@ -1197,6 +1198,7 @@ ALTER TABLE `task_io_types`
 -- Indexes for table `task_study`
 --
 ALTER TABLE `task_study`
+  ADD PRIMARY KEY (`study_id`,`task_id`),
   ADD KEY `task_id` (`task_id`),
   ADD KEY `study_id` (`study_id`),
   ADD KEY `uploader` (`uploader`);
