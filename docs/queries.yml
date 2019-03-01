@@ -1,7 +1,14 @@
-- evaluation_sample
-  query: "SELECT COUNT(*) AS `count` FROM run r, task t, evaluation_sample e WHERE r.task_id = t.task_id AND e.source = r.rid AND t.ttid <> 3;"
-  expected_column: "count"
-  expected_result: 0
-  inspection: "SELECT r.rid, re.evaluation_date FROM run r, run_evaluated re, task t, evaluation_sample e WHERE r.task_id = t.task_id AND r.rid = re.run_id AND e.source = r.rid AND t.ttid <> 3;"
-  fix: "DELETE FROM run_evaluated WHERE run_id IN (SELECT DISTINCT(`source`) FROM evaluation_sample);"
+- consistency_evaluation_sample
+  query_check: "SELECT COUNT(*) AS `count` FROM run r, task t, evaluation_sample e WHERE r.task_id = t.task_id AND e.source = r.rid AND t.ttid <> 3;"
+  query_check_column: "count"
+  query_check_expectation: 0
+  query_inspection: "SELECT r.rid, re.evaluation_date FROM run r, run_evaluated re, task t, evaluation_sample e WHERE r.task_id = t.task_id AND r.rid = re.run_id AND e.source = r.rid AND t.ttid <> 3;"
+  query_fix: "DELETE FROM run_evaluated WHERE run_id IN (SELECT DISTINCT(`source`) FROM evaluation_sample);"
+  description: "Checks whether the only entrees in evaluation_sample table are indeed created by a task with task type 3"
+- count_unevaluated_runs
+  query_check: "SELECT count(*) AS `unevaluated_count` FROM `run` r  LEFT JOIN run_evaluated e ON r.rid = e.run_id WHERE e.run_id IS NULL;"
+  query_check_column: "unevaluated_count"
+  query_check_expectation: 0
+- count_processed_runs_per_day
+  query_check: "SELECT CAST(`evaluation_date` AS DATE) AS `date`, COUNT(*) AS `evaluated` FROM run_evaluated GROUP BY CAST(`evaluation_date` AS DATE) ORDER BY `date` DESC;"
 
