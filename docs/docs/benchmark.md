@@ -45,7 +45,15 @@ In Python, the following code returns the studies:
     # used to obtain the full details. 
     studies = openml.study.list_studies(main_entity_type='task')
     ```
-
+??? note "Java example"
+    ```java
+    OpenmlConnector openml = new OpenmlConnector();
+    Map<String, String> filters = new TreeMap<String, String>();
+		filters.put("status", "all");
+		filters.put("main_entity_type", "task");
+		filters.put("limit", "20");
+		StudyList list = openml.studyList(filters);
+    ```
 
 ### Fetching the datasets
 You can fetch and iterate through the benchmark datasets with a few lines of code. See the code examples below.
@@ -162,8 +170,18 @@ a separate article on reproducible benchmarks.
 
 
 **TODO: Add R code for listing all runs of a study**
-**TODO: Add Java code for listing all runs of a study**
 
+??? note "Java example"
+    ```java
+    OpenmlConnector openml = new OpenmlConnector();
+		Study benchmarkSuite = openml.studyGet("OpenML100", "tasks");
+		
+		Map<String, List<Integer>> filters = new TreeMap<String, List<Integer>>();
+		filters.put("task", Arrays.asList(s.getTasks()));
+		RunList rl = openml.runList(filters, 200, null);
+		
+	  // now use: rl.getRuns() ... 
+    ```
 
 ## Creating new benchmark suites
 The set of datasets on OpenML.org can <a href="https://www.openml.org/new/data">easily be extended</a>, and additional OpenML benchmark suites,
@@ -183,6 +201,15 @@ e.g., for regression and time-series data, can easily be created by defining set
     study = openml.study.create_benchmark_suite(None, "MidSize Suite", "illustrating how to create a benchmark suite", task_ids)
     study_id = study.publish()
     ```
+
+??? note "Java example"
+    ```java
+    OpenmlConnector openml = new OpenmlConnector();
+    // **TODO ...**
+    
+    ```
+
+**TODO: Add R code for listing all runs of a study**
 
 ### Updating a benchmark suite
 - You can add or remove additional tasks to the benchmark suite
@@ -217,6 +244,14 @@ e.g., for regression and time-series data, can easily be created by defining set
     assert(study.tasks == study_prime.tasks)
     assert(study.data == study_prime.data)
     ```
+
+??? note "Java example"
+    ```java
+    OpenmlConnector openml = new OpenmlConnector();
+    // **TODO ...**
+    ```
+
+**TODO: Add R code for listing all runs of a study**
 
 ## List of benchmarking suites
 
