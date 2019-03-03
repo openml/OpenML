@@ -1,10 +1,8 @@
 # Benchmarking suites
 
-OpenML offers <b>benchmarking suites</b>: curated, comprehensive sets of machine learning datasets,
-covering a wide spectrum of domains and statistical properties. This makes benchmarking results more comparable,
-more interpretable, and allows more standardized analysis of algorithms under different conditions.
+Machine learning research depends on objectively interpretable, comparable, and reproducible algorithm benchmarks. OpenML aims to facilitate the creation of curated, comprehensive _suites_ of machine learning tasks, covering precise sets of conditions.
 
-Benchmarking suites make benchmarking a whole lot easier:
+Seamlessly integrated into the OpenML platform, benchmark suites standardize the setup, execution, analysis, and reporting of benchmarks. Moreover, they make benchmarking a whole lot easier:
 - all datasets are uniformly formatted in standardized data formats
 - they can be easily downloaded programmatically through [APIs and client libraries](APIs)
 - they come with machine-readable [meta-information](https://www.openml.org/search?type=measure&q=+measure_type%3Adata_quality), such as the occurrence of missing values, to train algorithms correctly
@@ -12,31 +10,25 @@ Benchmarking suites make benchmarking a whole lot easier:
 - results can be shared in a reproducible way through the [APIs](APIs)
 - results from other users can be easily downloaded and reused
 
-## Terminology: Studies and Benchmark Suites
-OpenML offers the ability to bundle several objects on the server together on a
-single page. With a slight overload of terminology, these are called `studies`.
-OpenML supports two types of studies:
-- collection of tasks. We call these `benchmark suites`. OpenML automatically
-organizes all tasks and the correpsonding datasets on a single server page.
-These are the main aim of this article.
-- collection of runs. We call these `studies`. OpenML automatically organizes
-all runs and corresponding flows, tasks and datasets on a single server page.
-Studies can be defined on top of benchmark suites. In that case, the creator
-intends to run his algorithms on the tasks defined in a benchmark suite.
-Additional information of how to organize reproducible benchmarks will be
+## Using OpenML Benchmark Suites
+Below are walk-through instructions for common use cases, as well as code examples. These illustrations use the reference 'OpenML-CC18' benchmark suite, but you can replace it with any other benchmark suite. Note that a benchmark suite is a set of OpenML `tasks`, which envelop not only a specific dataset, but also the train-test splits and (for predictive tasks) the target feature.
+
+??? note "A note on terminology."
+    Benchmark suites are sets of OpenML tasks that you can create and manage yourself. At the same time, it is often useful to also share the set of experiments (runs) with the ensuing benchmarking results. For legacy reasons, such sets of tasks or runs are called `studies` in the OpenML REST API. In the OpenML bindings (Python, R, Java,...) these are be called either studies or sets.
+    - Sets of tasks. These can be created, edited, downloaded or deleted via the OpenML API. Website forms will be added soon. Also the set of underlying datasets can be easily retrieved via the API. 
+    - Sets of runs. Likewise, these can be created, edited, downloaded or deleted via the OpenML API. On the website, these are currently simply called 'studies'. Also the set of underlying tasks, datasets and flows can be easily retrieved. It is possible to link a set of runs to a benchmark study, aimed to collect future runs on that specific set of tasks. Additional information on these will be
 provided in a separate page. 
 
-## Using OpenML Benchmark Suites
-Below are detailed instructions for common use cases, as well as code examples. These illustrations use the reference 'OpenML-CC18' benchmark suite, but you can replace this with any other benchmark suite. In all examples, OpenML does not only return the tasks and datasets, but also the train-test splits and (for predictive tasks) the target feature. These are enveloped as _tasks_ in OpenML. Hence, you will usually receive a list of tasks in which you can find the data itself.
-
 ### Listing the benchmark suites
-For now, these are explicitly listed below. We will add them to the OpenML search engine soon.
-Each benchmarking suite points to an OpenML study with the exact list of datasets and tasks.
+The current list of benchmark suites is explicitly listed on the bottom of this page. The list of all sets of tasks can also be fetched programmatically. This list includes the suite's ID (and optionally an alias), which can be used to fetch further details.
 
-**TODO: List all studies with type=suite /study/list/main_entity_type/task (future work)**
-
-In Python, the following code returns the studies:
-??? note "Python example"
+Via the REST API, the list is returned in XML or JSON
+??? note "REST (under development)"
+    ``` 
+    https://www.openml.org/api/v1/xml/study/list/main_entity_type/task
+    ```
+  
+??? note "Python example (requires the development version)"
     ```python
     import openml
     
@@ -45,6 +37,7 @@ In Python, the following code returns the studies:
     # used to obtain the full details. 
     studies = openml.study.list_studies(main_entity_type='task')
     ```
+
 ??? note "Java example"
     ```java
     OpenmlConnector openml = new OpenmlConnector();
@@ -54,14 +47,19 @@ In Python, the following code returns the studies:
 		filters.put("limit", "20");
 		StudyList list = openml.studyList(filters);
     ```
-
-### Fetching the datasets
-You can fetch and iterate through the benchmark datasets with a few lines of code. See the code examples below.
-
-Via the REST API, a list of all tasks and dataset IDs is returned
-!!! note "REST"
+    
+??? note "R example"
     ``` 
-    https://www.openml.org/api/v1/study/OpenML-CC18
+    TODO
+    ```
+
+### Fetching details
+Using the ID or alias of a benchmark suite, you can retrieve a description and the full list of tasks and the underlying datasets.
+
+Via the REST API, a list of all tasks and dataset IDs is returned in XML or JSON
+??? note "REST"
+    ``` 
+    https://www.openml.org/api/v1/xml/study/OpenML-CC18
     ```
 
 In Python, the data is returned as X, y numpy arrays:
@@ -84,7 +82,6 @@ In Java, the data is returned as a WEKA Instances object:
         Instances d = InstancesHelper.getDatasetFromTask(openml, t); // obtain the dataset
     }
     ```
-The Java implementation automatically uploads results to the server.
 
 In R, the data is returned as an R dataframe:
 ??? note "R example"
@@ -99,8 +96,7 @@ In R, the data is returned as an R dataframe:
 ### Running and sharing benchmarks
 The code below demonstrates how OpenML benchmarking suites can be conveniently imported for benchmarking using the Python, Java and R APIs.
 
-The OpenML-CC18 tasks are downloaded through the [study with the same name](https://www.openml.org/s/99),
-which contains all tasks and also holds all benchmarking results obtained on them. The code also shows how to access the raw data set (although this is not needed to train a model), fit a simple classifier on the defined data splits, and finally publish runs on the OpenML server.
+First, the list of tasks is downloaded as already illustrated above. Next, a specific algorithm (or pipeline) can be run on each of them. The OpenML API will automatically evaluate the algorithm using the pre-set train-test splits and store the predictions and scores in a run object. This run object can then be immediately published, pushing the results to the OpenML server, so that they can be compared against all others on the same benchmark set. Uploading results requires an OpenML API key, which can be found in your account details after logging into the OpenML website.
 
 ??? note "Python example"
     ```python
@@ -154,23 +150,22 @@ which contains all tasks and also holds all benchmarking results obtained on the
     ```
 
 ### Retrieving runs on a benchmarking suites:
-Once a benchamrk suite has been created, the listing functions can be used to 
+Once a benchmark suite has been created, the listing functions can be used to 
 obtain all results on the benchmark suite. Note that there are several other
-ways to select and bundle runs together in a study. This will be featured in 
+ways to select and bundle runs together. This will be featured in 
 a separate article on reproducible benchmarks. 
 
-**TODO: Add API call for listing all runs of a study /study/name/<studyname>**
-
+??? note "REST (TODO)"
+    ``` 
+    https://www.openml.org/api/v1/xml/run/list/study/OpenML-CC18
+    ```
+    
 ??? note "Python example"
     ```python
     benchmark_suite = openml.study.get_study('OpenML-CC18', 'tasks')
-    
     runs = openml.runs.list_runs(task=benchmark_suite.tasks, limit=1000)
     ```
-
-
-**TODO: Add R code for listing all runs of a study**
-
+    
 ??? note "Java example"
     ```java
     OpenmlConnector openml = new OpenmlConnector();
@@ -182,14 +177,17 @@ a separate article on reproducible benchmarks.
 		
 	  // now use: rl.getRuns() ... 
     ```
+    
+??? note "R example"
+    ``` 
+    TODO
+    ```
 
-## Creating new benchmark suites
-The set of datasets on OpenML.org can <a href="https://www.openml.org/new/data">easily be extended</a>, and additional OpenML benchmark suites,
-e.g., for regression and time-series data, can easily be created by defining sets of datasets according to specific needs.
+### Creating new benchmark suites
+Additional OpenML benchmark suites can be created by defining the precise set of tasks, as well as a textual description. New datasets first need to be <a href="https://www.openml.org/new/data">registered on OpenML</a> and tasks need to be created on them.
 
 ??? note "Python example"
     ```python
-    
     import openml
     
     # find 250 tasks that we are interested in, e.g., the tasks that have between
@@ -205,17 +203,19 @@ e.g., for regression and time-series data, can easily be created by defining set
 ??? note "Java example"
     ```java
     OpenmlConnector openml = new OpenmlConnector();
-    // **TODO ...**
+    // **TODO ...***
+    ```
     
+??? note "R example"
+    ``` 
+    TODO
     ```
 
-**TODO: Add R code for listing all runs of a study**
-
 ### Updating a benchmark suite
-- You can add or remove additional tasks to the benchmark suite
+You can add tasks to a benchmark suite, or remove them.
 
-```python
-    
+??? note "Python example"
+    ```python
     import openml
     
     # find 250 tasks that we are interested in, e.g., the tasks that have between
@@ -250,8 +250,12 @@ e.g., for regression and time-series data, can easily be created by defining set
     OpenmlConnector openml = new OpenmlConnector();
     // **TODO ...**
     ```
+    
+??? note "R example"
+    ``` 
+    TODO
+    ```
 
-**TODO: Add R code for listing all runs of a study**
 
 ## List of benchmarking suites
 
