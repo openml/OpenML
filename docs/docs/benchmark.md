@@ -185,6 +185,8 @@ a separate article on reproducible benchmarks.
 ### Creating new benchmark suites
 Additional OpenML benchmark suites can be created by defining the precise set of tasks, as well as a textual description. New datasets first need to be <a href="https://www.openml.org/new/data">registered on OpenML</a> and tasks need to be created on them.
 
+We have provided [a GitHub repository](https://github.com/openml/benchmark-suites) with additional tools and scripts to build new benchmark studies, e.g. to select all datasets adhering to strict conditions, and to analyse bencharking results.
+
 ??? note "Python example"
     ```python
     import openml
