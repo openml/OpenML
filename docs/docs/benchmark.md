@@ -52,7 +52,7 @@ Via the REST API, the list is returned in XML or JSON
 
 ??? note "Java example"
     ```java
-    public void listBenchmarksuites() {
+    public void listBenchmarksuites() throws Exception {
         OpenmlConnector openml = new OpenmlConnector();
         Map<String, String> filters = new TreeMap<String, String>();
 		filters.put("status", "all");
@@ -89,7 +89,7 @@ In Python, the data is returned as X, y numpy arrays:
 In Java, the data is returned as a WEKA Instances object:
 ??? note "Java example"
     ```java
-    public void downloadDatasets() {
+    public void downloadDatasets() throws Exception {
         OpenmlConnector openml = new OpenmlConnector();
         Study benchmarksuite = openml.studyGet("OpenML-CC18", "tasks");
         for (Integer taskId : benchmarksuite.getTasks()) { // iterate over all tasks
@@ -185,15 +185,15 @@ a separate article on reproducible benchmarks.
     
 ??? note "Java example"
     ```java
-    public void downloadStudy() {
-        OpenmlConnector openml = new OpenmlConnector();
+    
+	public void downloadResultsBenchmarkSuite()  throws Exception {
 		Study benchmarkSuite = openml.studyGet("OpenML100", "tasks");
 		
 		Map<String, List<Integer>> filters = new TreeMap<String, List<Integer>>();
-		filters.put("task", Arrays.asList(s.getTasks()));
+		filters.put("task", Arrays.asList(benchmarkSuite.getTasks()));
 		RunList rl = openml.runList(filters, 200, null);
 		
-	    // now use: rl.getRuns() ... 
+	    assertTrue(rl.getRuns().length > 0); 
     }
     ```
     
@@ -224,7 +224,7 @@ We have provided [a GitHub repository](https://github.com/openml/benchmark-suite
 
 ??? note "Java example"
     ```java
-    public void createStudy() {
+    public void createBenchmarkSuite() throws Exception {
         OpenmlConnector openml = new OpenmlConnector("FILL_IN_OPENML_API_KEY");
         // find 250 tasks that we are interested in, e.g., the tasks that have between
 	    // 100 and 10000 instances and between 4 and 20 attributes
@@ -281,7 +281,7 @@ You can add tasks to a benchmark suite, or remove them.
 
 ??? note "Java example"
     ```java
-    public void createStudy() {
+    public void attachDetachStudy()  throws Exception {
         OpenmlConnector openml = new OpenmlConnector("FILL_IN_OPENML_API_KEY");
         // find 250 tasks that we are interested in, e.g., the tasks that have between
 	    // 100 and 10000 instances and between 4 and 20 attributes
