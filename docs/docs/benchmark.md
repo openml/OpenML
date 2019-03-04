@@ -15,6 +15,19 @@ Benchmark suites are sets of OpenML tasks that you can create and manage yoursel
 * Sets of tasks. These can be created, edited, downloaded or deleted via the OpenML API. Website forms will be added soon. Also the set of underlying datasets can be easily retrieved via the API.  
 * Sets of runs. Likewise, these can be created, edited, downloaded or deleted via the OpenML API. On the website, these are currently simply called 'studies'. Also the set of underlying tasks, datasets and flows can be easily retrieved. It is possible to link a set of runs to a benchmark study, aimed to collect future runs on that specific set of tasks. Additional information on these will be provided in a separate page.
 
+## Packages
+The functionality described in this tutorial relies on several software packages. Firts of all, a working instance of the OpenML API is required. The default endpoint for this is `https://www.openml.org/api/v1/`, but this can change when later versions of the API are released. For the code examples, the following packages are usedL:
+
+Java: 
+* [OpenML ApiConnector](https://mvnrepository.com/artifact/org.openml/apiconnector) (version `1.21.0` and up). This package is responsible for api bindings.
+* [OpenML Weka](https://search.maven.org/search?q=a:openmlweka) (version `0.9.6` and up). This package is responsible for Weka Integration and ARFF support.
+
+Python
+* [OpenML Python](https://pypi.org/project/openml/) (version `0.8.0` and up)
+
+R
+* [OpenML R](https://cran.r-project.org/web/packages/OpenML/index.html) (version `1.8` and up)
+
 ## Using OpenML Benchmark Suites
 Below are walk-through instructions for common use cases, as well as code examples. These illustrations use the reference 'OpenML-CC18' benchmark suite, but you can replace it with any other benchmark suite. Note that a benchmark suite is a set of OpenML `tasks`, which envelop not only a specific dataset, but also the train-test splits and (for predictive tasks) the target feature.
 
@@ -39,12 +52,14 @@ Via the REST API, the list is returned in XML or JSON
 
 ??? note "Java example"
     ```java
-    OpenmlConnector openml = new OpenmlConnector();
-    Map<String, String> filters = new TreeMap<String, String>();
+    public void listBenchmarksuites() {
+        OpenmlConnector openml = new OpenmlConnector();
+        Map<String, String> filters = new TreeMap<String, String>();
 		filters.put("status", "all");
 		filters.put("main_entity_type", "task");
 		filters.put("limit", "20");
 		StudyList list = openml.studyList(filters);
+    }
     ```
     
 ??? note "R example"
@@ -74,11 +89,14 @@ In Python, the data is returned as X, y numpy arrays:
 In Java, the data is returned as a WEKA Instances object:
 ??? note "Java example"
     ```java
-    OpenmlConnector openml = new OpenmlConnector();
-    Study benchmarksuite = openml.studyGet("OpenML-CC18", "tasks");
-    for (Integer taskId : benchmarksuite.getTasks()) { // iterate over all tasks
-        Task t = openml.taskGet(taskId); // download the OpenML task
-        Instances d = InstancesHelper.getDatasetFromTask(openml, t); // obtain the dataset
+    public void downloadDatasets() {
+        OpenmlConnector openml = new OpenmlConnector();
+        Study benchmarksuite = openml.studyGet("OpenML-CC18", "tasks");
+        for (Integer taskId : benchmarksuite.getTasks()) { // iterate over all tasks
+            Task t = openml.taskGet(taskId); // download the OpenML task
+            // note that InstanceHelper is part of the OpenML-weka package
+            Instances d = InstancesHelper.getDatasetFromTask(openml, t); // obtain the dataset
+        }
     }
     ```
 
@@ -167,14 +185,16 @@ a separate article on reproducible benchmarks.
     
 ??? note "Java example"
     ```java
-    OpenmlConnector openml = new OpenmlConnector();
+    public void downloadStudy() {
+        OpenmlConnector openml = new OpenmlConnector();
 		Study benchmarkSuite = openml.studyGet("OpenML100", "tasks");
 		
 		Map<String, List<Integer>> filters = new TreeMap<String, List<Integer>>();
 		filters.put("task", Arrays.asList(s.getTasks()));
 		RunList rl = openml.runList(filters, 200, null);
 		
-	  // now use: rl.getRuns() ... 
+	    // now use: rl.getRuns() ... 
+    }
     ```
     
 ??? note "R example"
@@ -204,7 +224,8 @@ We have provided [a GitHub repository](https://github.com/openml/benchmark-suite
 
 ??? note "Java example"
     ```java
-        OpenmlConnector openml = new OpenmlConnector(API_KEY);
+    public void createStudy() {
+        OpenmlConnector openml = new OpenmlConnector("FILL_IN_OPENML_API_KEY");
         // find 250 tasks that we are interested in, e.g., the tasks that have between
 	    // 100 and 10000 instances and between 4 and 20 attributes
 		Map<String, String> filtersOrig = new TreeMap<String, String>();
@@ -216,6 +237,7 @@ We have provided [a GitHub repository](https://github.com/openml/benchmark-suite
 	    // create the study
 	    Study study = new Study(null, "test", "test", null, tasksOrig.getTaskIds(), null);
 	    int studyId = openml.studyUpload(study);
+    }
     ```
     
 ??? note "R example"
@@ -259,7 +281,8 @@ You can add tasks to a benchmark suite, or remove them.
 
 ??? note "Java example"
     ```java
-        OpenmlConnector openml = new OpenmlConnector();
+    public void createStudy() {
+        OpenmlConnector openml = new OpenmlConnector("FILL_IN_OPENML_API_KEY");
         // find 250 tasks that we are interested in, e.g., the tasks that have between
 	    // 100 and 10000 instances and between 4 and 20 attributes
 		Map<String, String> filtersOrig = new TreeMap<String, String>();
@@ -285,6 +308,7 @@ You can add tasks to a benchmark suite, or remove them.
 	    // download the study
 	    Study studyDownloaded = openml.studyGet(studyId);
 	    assertArrayEquals(tasksOrig.getTaskIds(), studyDownloaded.getTasks());
+    }
     ```
     
 ??? note "R example"
