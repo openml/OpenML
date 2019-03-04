@@ -6,7 +6,7 @@ Seamlessly integrated into the OpenML platform, benchmark suites standardize the
 - all datasets are uniformly formatted in standardized data formats
 - they can be easily downloaded programmatically through [APIs and client libraries](APIs)
 - they come with machine-readable [meta-information](https://www.openml.org/search?type=measure&q=+measure_type%3Adata_quality), such as the occurrence of missing values, to train algorithms correctly
-- standardized train-test splits are provided to make results more comparable
+- standardized train-test splits are provided to ensure that results can be objectively compared
 - results can be shared in a reproducible way through the [APIs](APIs)
 - results from other users can be easily downloaded and reused
 
@@ -102,6 +102,7 @@ First, the list of tasks is downloaded as already illustrated above. Next, a spe
     ```python
     import openml
     import sklearn
+    openml.config.apikey = 'FILL_IN_OPENML_API_KEY' # set the OpenML Api Key
     benchmark_suite = openml.study.get_study('OpenML-CC18','tasks') # obtain the benchmark suite
     # build a sklearn classifier
     clf = sklearn.pipeline.make_pipeline(sklearn.preprocessing.Imputer(),
@@ -109,9 +110,8 @@ First, the list of tasks is downloaded as already illustrated above. Next, a spe
     for task_id in benchmark_suite.tasks: # iterate over all tasks
       task = openml.tasks.get_task(task_id) # download the OpenML task
       X, y = task.get_X_and_y() # get the data (not used in this example)
-      openml.config.apikey = 'FILL_IN_OPENML_API_KEY' # set the OpenML Api Key
       # run classifier on splits (requires API key)
-      run = openml.runs.run_model_on_task(task,clf)
+      run = openml.runs.run_model_on_task(clf, task)
       score = run.get_metric_score(sklearn.metrics.accuracy_score) # print accuracy score
       print('Data set: %s; Accuracy: %0.2f' % (task.get_dataset().name,score.mean()))
       run.publish() # publish the experiment on OpenML (optional)
@@ -122,13 +122,13 @@ First, the list of tasks is downloaded as already illustrated above. Next, a spe
     ```java
     public static void runTasksAndUpload() throws Exception {
       OpenmlConnector openml = new OpenmlConnector();
+      openml.setApiKey("FILL_IN_OPENML_API_KEY");
       // obtain the benchmark suite
       Study benchmarksuite = openml.studyGet("OpenML-CC18", "tasks");
       Classifier tree = new REPTree(); // build a Weka classifier
       for (Integer taskId : benchmarksuite.getTasks()) { // iterate over all tasks
         Task t = openml.taskGet(taskId); // download the OpenML task
         Instances d = InstancesHelper.getDatasetFromTask(openml, t); // obtain the dataset
-        openml.setApiKey("FILL_IN_OPENML_API_KEY");
         int runId = RunOpenmlJob.executeTask(openml, new WekaConfig(), taskId, tree);
         Run run = openml.runGet(runId);   // retrieve the uploaded run
       }
@@ -138,13 +138,13 @@ First, the list of tasks is downloaded as already illustrated above. Next, a spe
 ??? note "R example"
     ```r
     library(OpenML)
+    setOMLConfig(apikey = 'FILL_IN_OPENML_API_KEY')
     lrn = makeLearner('classif.rpart') # construct a simple CART classifier
     task.ids = getOMLStudy('OpenML-CC18')$tasks$task.id # obtain the list of suggested tasks
     for (task.id in task.ids) { # iterate over all tasks
       task = getOMLTask(task.id) # download single OML task
       data = as.data.frame(task) # obtain raw data set
       run = runTaskMlr(task, learner = lrn) # run constructed learner
-      setOMLConfig(apikey = 'FILL_IN_OPENML_API_KEY')
       upload = uploadOMLRun(run) # upload and tag the run
     }
     ```
@@ -196,6 +196,7 @@ Additional OpenML benchmark suites can be created by defining the precise set of
     task_ids = list(tasks.keys())
     
     # create the benchmark suite
+    # the arguments are the alias, name, description, and list of task_ids, respectively.
     study = openml.study.create_benchmark_suite(None, "MidSize Suite", "illustrating how to create a benchmark suite", task_ids)
     study_id = study.publish()
     ```
