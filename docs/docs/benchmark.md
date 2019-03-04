@@ -10,13 +10,13 @@ Seamlessly integrated into the OpenML platform, benchmark suites standardize the
 - results can be shared in a reproducible way through the [APIs](APIs)
 - results from other users can be easily downloaded and reused
 
+## Terminology
+Benchmark suites are sets of OpenML tasks that you can create and manage yourself. At the same time, it is often useful to also share the set of experiments (runs) with the ensuing benchmarking results. For legacy reasons, such sets of tasks or runs are called `studies` in the OpenML REST API. In the OpenML bindings (Python, R, Java,...) these are be called either studies or sets.  
+* Sets of tasks. These can be created, edited, downloaded or deleted via the OpenML API. Website forms will be added soon. Also the set of underlying datasets can be easily retrieved via the API.  
+* Sets of runs. Likewise, these can be created, edited, downloaded or deleted via the OpenML API. On the website, these are currently simply called 'studies'. Also the set of underlying tasks, datasets and flows can be easily retrieved. It is possible to link a set of runs to a benchmark study, aimed to collect future runs on that specific set of tasks. Additional information on these will be provided in a separate page.
+
 ## Using OpenML Benchmark Suites
 Below are walk-through instructions for common use cases, as well as code examples. These illustrations use the reference 'OpenML-CC18' benchmark suite, but you can replace it with any other benchmark suite. Note that a benchmark suite is a set of OpenML `tasks`, which envelop not only a specific dataset, but also the train-test splits and (for predictive tasks) the target feature.
-
-??? note "A note on terminology."
-    Benchmark suites are sets of OpenML tasks that you can create and manage yourself. At the same time, it is often useful to also share the set of experiments (runs) with the ensuing benchmarking results. For legacy reasons, such sets of tasks or runs are called `studies` in the OpenML REST API. In the OpenML bindings (Python, R, Java,...) these are be called either studies or sets.  
-    * Sets of tasks. These can be created, edited, downloaded or deleted via the OpenML API. Website forms will be added soon. Also the set of underlying datasets can be easily retrieved via the API.  
-    * Sets of runs. Likewise, these can be created, edited, downloaded or deleted via the OpenML API. On the website, these are currently simply called 'studies'. Also the set of underlying tasks, datasets and flows can be easily retrieved. It is possible to link a set of runs to a benchmark study, aimed to collect future runs on that specific set of tasks. Additional information on these will be provided in a separate page.
 
 ### Listing the benchmark suites
 The current list of benchmark suites is explicitly listed on the bottom of this page. The list of all sets of tasks can also be fetched programmatically. This list includes the suite's ID (and optionally an alias), which can be used to fetch further details.
@@ -204,8 +204,18 @@ We have provided [a GitHub repository](https://github.com/openml/benchmark-suite
 
 ??? note "Java example"
     ```java
-    OpenmlConnector openml = new OpenmlConnector();
-    // **TODO ...***
+        OpenmlConnector openml = new OpenmlConnector(API_KEY);
+        // find 250 tasks that we are interested in, e.g., the tasks that have between
+	    // 100 and 10000 instances and between 4 and 20 attributes
+		Map<String, String> filtersOrig = new TreeMap<String, String>();
+	    filtersOrig.put("number_instances", "100..10000");
+	    filtersOrig.put("number_features", "4..20");
+	    filtersOrig.put("limit", "250");
+	    Tasks tasksOrig = client_write_test.taskList(filtersOrig);
+	    
+	    // create the study
+	    Study study = new Study(null, "test", "test", null, tasksOrig.getTaskIds(), null);
+	    int studyId = openml.studyUpload(study);
     ```
     
 ??? note "R example"
@@ -249,8 +259,32 @@ You can add tasks to a benchmark suite, or remove them.
 
 ??? note "Java example"
     ```java
-    OpenmlConnector openml = new OpenmlConnector();
-    // **TODO ...**
+        OpenmlConnector openml = new OpenmlConnector();
+        // find 250 tasks that we are interested in, e.g., the tasks that have between
+	    // 100 and 10000 instances and between 4 and 20 attributes
+		Map<String, String> filtersOrig = new TreeMap<String, String>();
+	    filtersOrig.put("number_instances", "100..10000");
+	    filtersOrig.put("number_features", "4..20");
+	    filtersOrig.put("limit", "250");
+	    Tasks tasksOrig = client_write_test.taskList(filtersOrig);
+	    
+	    // create the study
+	    Study study = new Study(null, "test", "test", null, tasksOrig.getTaskIds(), null);
+	    int studyId = openml.studyUpload(study);
+	    
+	    // until the benchmark suite is activated, we can also add some more tasks. Search for the letter dataset:
+	    Map<String, String> filtersAdd = new TreeMap<String, String>();
+	    filtersAdd.put("name", "letter");
+	    filtersAdd.put("limit", "1");
+	    Tasks tasksAdd = openml.taskList(filtersOrig);
+	    openml.studyAttach(studyId, Arrays.asList(tasksAdd.getTaskIds()));
+	    
+	    // or even remove these again
+	    openml.studyDetach(studyId, Arrays.asList(tasksAdd.getTaskIds()));
+	    
+	    // download the study
+	    Study studyDownloaded = openml.studyGet(studyId);
+	    assertArrayEquals(tasksOrig.getTaskIds(), studyDownloaded.getTasks());
     ```
     
 ??? note "R example"
