@@ -119,7 +119,7 @@ class Api_splits extends CI_Controller {
     readfile_chunked($filepath);
   }
   
-  private function generate($task_id, $filepath = false) {
+  private function generate($task_id, $filepath) {
     $task = $this->Task->getById($task_id);
     if ($task === false || in_array($task->ttid, $this->task_types) === false) {
       die('Task not providing datasplits.');
@@ -139,26 +139,35 @@ class Api_splits extends CI_Controller {
       mkdir(dirname($filepath), 0755, true);
     }
     
-    if ($filepath) {
-      $command .= ' -o ' . $filepath;
-    }
+    $command .= ' -o ' . $filepath;
     
     //if( $md5 ) $command .= ' -m';
     $this->Log->cmd('API Splits::get(' . $task_id . ')', $command);
     
-    if (function_enabled('system')) {
+    if (function_enabled('exec')) {
       header('Content-type: text/plain');
       $result_status = 0;
-      $result = system(CMD_PREFIX . $command, $return_status);
+      // note that result does not need to be displayed, this 
+      // is just a generate function
+      $result = array();
+      exec(CMD_PREFIX . $command, $result, $return_status);
       
       if ($return_status != 0 && defined('EMAIL_API_LOG')) {
         $to      = EMAIL_API_LOG;
         $subject = 'OpenML API Split Generation Exception: ' . $result_status;
         $content = 'Time: ' . now() . "\nTask_id:" . $task_id . "\nOutput: " . $result;
         sendEmail($to, $subject, $content, 'text');
+        http_response_code($this->config->item('general_http_error_code'));
+        die('failed to generate arff file. Evaluation Engine result send to EMAIL_API_LOG account.');
+      }
+      
+      if ($return_status != 0) {
+        http_response_code($this->config->item('general_http_error_code'));
+        die('failed to generate arff file. Evaluation Engine result omitted (no EMAIL_API_LOG defined). ');
       }
     } else {
-      die('failed to generate arff file: php "system" function disabled. ');
+      http_response_code($this->config->item('general_http_error_code'));
+      die('failed to generate arff file: php "exec" function disabled. ');
     }
   }
 }
