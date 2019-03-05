@@ -156,7 +156,7 @@ class Api_splits extends CI_Controller {
       if ($return_status != 0 && defined('EMAIL_API_LOG')) {
         $to      = EMAIL_API_LOG;
         $subject = 'OpenML API Split Generation Exception: ' . $result_status;
-        $content = 'Time: ' . now() . "\nTask_id:" . $task_id . "\nOutput: " . $result;
+        $content = 'Time: ' . now() . "\nTask_id:" . $task_id . "\nOutput: " . implode("\n", $result);
         sendEmail($to, $subject, $content, 'text');
         http_response_code($this->config->item('general_http_error_code'));
         die('failed to generate arff file. Evaluation Engine result send to EMAIL_API_LOG account.');
