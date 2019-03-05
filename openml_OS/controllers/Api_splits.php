@@ -20,7 +20,7 @@ class Api_splits extends CI_Controller {
     $this->task_types = array(1, 2, 3, 6, 7);
     $this->challenge_types = array(9);
     $this->evaluation = APPPATH . 'third_party/OpenML/Java/evaluate.jar';
-    $this->config = " -config 'cache_allowed=false;server=".BASE_URL.";api_key=".API_KEY."' ";
+    $this->eval_engine_config = " -config 'cache_allowed=false;server=".BASE_URL.";api_key=".API_KEY."' ";
   }
   
   function different_predictions($run_ids) {
@@ -35,7 +35,7 @@ class Api_splits extends CI_Controller {
     
     $task_id = $runs[0]->task_id;
     
-    $command = 'java -jar ' . $this->evaluation . ' -f "different_predictions" -t ' . $task_id . ' -r ' . $run_ids . $this->config;
+    $command = 'java -jar ' . $this->evaluation . ' -f "different_predictions" -t ' . $task_id . ' -r ' . $run_ids . $this->eval_engine_config;
     
     $this->Log->cmd('API Splits::different_predictions(' . $run_ids . ')', $command);
     
@@ -59,7 +59,7 @@ class Api_splits extends CI_Controller {
     
     $task_id = $runs[0]->task_id;
     
-    $command = 'java -jar ' . $this->evaluation . ' -f "all_wrong" -t ' . $task_id . ' -r ' . $run_ids . $this->config;
+    $command = 'java -jar ' . $this->evaluation . ' -f "all_wrong" -t ' . $task_id . ' -r ' . $run_ids . $this->eval_engine_config;
     
     $this->Log->cmd('API Splits::all_wrong(' . $run_ids . ')', $command);
     
@@ -93,7 +93,7 @@ class Api_splits extends CI_Controller {
       die('Task not valid challenge.');
     }
     
-    $command = 'java -jar ' . $this->evaluation . ' -f "challenge" -t ' . $task_id . ' -mode "' . $testtrain . '" ' . $offset . $size . $this->config;
+    $command = 'java -jar ' . $this->evaluation . ' -f "challenge" -t ' . $task_id . ' -mode "' . $testtrain . '" ' . $offset . $size . $this->eval_engine_config;
     
     $this->Log->cmd('API Splits::challenge(' . $task_id . ', ' . $testtrain . ')', $command);
     
@@ -130,7 +130,7 @@ class Api_splits extends CI_Controller {
     // TODO: very important. sanity check input
     $testset_str = array_key_exists('custom_testset', $values) && is_cs_natural_numbers($values['custom_testset']) ? '-test "' . $values['custom_testset'] . '"' : '';
     
-    $command = 'java -jar ' . $this->evaluation . ' -f "generate_folds" -id ' . $task_id . ' ' . $this->config;
+    $command = 'java -jar ' . $this->evaluation . ' -f "generate_folds" -id ' . $task_id . ' ' . $this->eval_engine_config;
     
     if (array_key_exists('custom_testset', $values)) {
       $command .= '-test "' . $values['custom_testset'] . '" ';
