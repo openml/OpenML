@@ -122,6 +122,7 @@ class Api_splits extends CI_Controller {
   private function generate($task_id, $filepath) {
     $task = $this->Task->getById($task_id);
     if ($task === false || in_array($task->ttid, $this->task_types) === false) {
+      http_response_code($this->config->item('general_http_error_code'));
       die('Task not providing datasplits.');
     }
     $values = $this->Task_inputs->getTaskValuesAssoc($task_id);
