@@ -19,7 +19,7 @@ Benchmark suites are sets of OpenML tasks that you can create and manage yoursel
 The functionality described in this tutorial relies on several software packages. Firts of all, a working instance of the OpenML API is required. The default endpoint for this is `https://www.openml.org/api/v1/`, but this can change when later versions of the API are released. For the code examples, the following packages are usedL:
 
 Java: 
-* [OpenML ApiConnector](https://mvnrepository.com/artifact/org.openml/apiconnector) (version `1.21.0` and up). This package is responsible for api bindings.
+* [OpenML ApiConnector](https://mvnrepository.com/artifact/org.openml/apiconnector) (version `1.0.22` and up). This package is responsible for api bindings.
 * [OpenML Weka](https://search.maven.org/search?q=a:openmlweka) (version `0.9.6` and up). This package is responsible for Weka Integration and ARFF support.
 
 Python
