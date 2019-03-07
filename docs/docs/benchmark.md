@@ -19,7 +19,7 @@ Benchmark suites are sets of OpenML tasks that you can create and manage yoursel
 The functionality described in this tutorial relies on several software packages. Firts of all, a working instance of the OpenML API is required. The default endpoint for this is `https://www.openml.org/api/v1/`, but this can change when later versions of the API are released. For the code examples, the following packages are usedL:
 
 Java: 
-* [OpenML ApiConnector](https://mvnrepository.com/artifact/org.openml/apiconnector) (version `1.21.0` and up). This package is responsible for api bindings.
+* [OpenML ApiConnector](https://mvnrepository.com/artifact/org.openml/apiconnector) (version `1.0.22` and up). This package is responsible for api bindings.
 * [OpenML Weka](https://search.maven.org/search?q=a:openmlweka) (version `0.9.6` and up). This package is responsible for Weka Integration and ARFF support.
 
 Python
@@ -325,6 +325,7 @@ The [OpenML-CC18](https://www.openml.org/s/99) suite contains all OpenML dataset
 [List of datasets and properties](https://www.openml.org/search?q=tags.tag%3Astudy_99&type=data&table=1&size=73)
 
 The suite is defined as the set of all verified OpenML datasets that satisfy the following requirements:
+
 * the number of observations are between 500 and 100000 to focus on medium-sized datasets, that are not too small and not too big,
 * the number of features does not exceed 5000 features to keep the runtime of algorithms low,
 * the target attribute has at least two classes
@@ -332,6 +333,7 @@ The suite is defined as the set of all verified OpenML datasets that satisfy the
 * the ratio of the minority class and the majority class is above 0.05, to eliminate highly imbalanced datasets which require special treatment for both algorithms and evaluation measures.
 
 We excluded datasets which:
+
 * are artificially generated (not to confuse with simulated)
 * cannot be randomized via a 10-fold cross-validation due to grouped samples or because they are time series or data streams
 * are a subset of a larger dataset
