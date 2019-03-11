@@ -11,4 +11,6 @@
   query_check_expectation: 0
 - count_processed_runs_per_day
   query_check: "SELECT CAST(`evaluation_date` AS DATE) AS `date`, COUNT(*) AS `evaluated` FROM run_evaluated GROUP BY CAST(`evaluation_date` AS DATE) ORDER BY `date` DESC;"
+- group_runs_by_error
+  query_check: "SELECT d.did, d.name, count(*) AS error_runs, MAX(r.start_time) AS `last_error` FROM `run_evaluated` e, `run` r, task_inputs i, dataset d WHERE e.run_id = r.rid AND r.task_id = i.task_id AND i.input = "source_data" AND i.value = d.did AND error LIKE "Premature end of Content-Length delimited%" GROUP BY d.did, d.name;"
 
