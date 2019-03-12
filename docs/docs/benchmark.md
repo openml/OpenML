@@ -22,7 +22,7 @@ To use OpenML Benchmark suites, you can use bindings in several programming lang
 
 
 ## Using OpenML Benchmark Suites
-Below are walk-through instructions for common use cases, as well as code examples. These illustrations use the reference 'OpenML-CC18' benchmark suite, but you can replace it with any other benchmark suite. Note that a benchmark suite is a set of OpenML `tasks`, which envelop not only a specific dataset, but also the train-test splits and (for predictive tasks) the target feature.
+Below are walk-through instructions for common use cases, as well as code examples. These illustrations use the reference [OpenML-CC18](https://docs.openml.org/benchmark/#openml-cc18) benchmark suite, but you can replace it with any other benchmark suite. Note that a benchmark suite is a set of OpenML `tasks`, which envelop not only a specific dataset, but also the train-test splits and (for predictive tasks) the target feature.
 
 ??? note "Terminology and current status"
     Benchmark suites are sets of OpenML tasks that you can create and manage yourself. At the same time, it is often useful to also share the set of experiments (runs) with the ensuing benchmarking results. For legacy reasons, such sets of tasks or runs are called `studies` in the OpenML REST API. In the OpenML bindings (Python, R, Java,...) these are called either `sets` or `studies`.
