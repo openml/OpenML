@@ -480,15 +480,8 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#terminology" title="Terminology" class="md-nav__link">
-    Terminology
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#packages" title="Packages" class="md-nav__link">
-    Packages
+  <a href="#software-interfaces" title="Software interfaces" class="md-nav__link">
+    Software interfaces
   </a>
   
 </li>
@@ -1174,15 +1167,8 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#terminology" title="Terminology" class="md-nav__link">
-    Terminology
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#packages" title="Packages" class="md-nav__link">
-    Packages
+  <a href="#software-interfaces" title="Software interfaces" class="md-nav__link">
+    Software interfaces
   </a>
   
 </li>
@@ -1288,29 +1274,26 @@
                 
                 <h1 id="benchmarking-suites">Benchmarking suites<a class="headerlink" href="#benchmarking-suites" title="Permanent link">&para;</a></h1>
 <p>Machine learning research depends on objectively interpretable, comparable, and reproducible algorithm benchmarks. OpenML aims to facilitate the creation of curated, comprehensive <em>suites</em> of machine learning tasks, covering precise sets of conditions.</p>
-<p>Seamlessly integrated into the OpenML platform, benchmark suites standardize the setup, execution, analysis, and reporting of benchmarks. Moreover, they make benchmarking a whole lot easier:
-- all datasets are uniformly formatted in standardized data formats
-- they can be easily downloaded programmatically through <a href="../APIs">APIs and client libraries</a>
-- they come with machine-readable <a href="https://www.openml.org/search?type=measure&amp;q=+measure_type%3Adata_quality">meta-information</a>, such as the occurrence of missing values, to train algorithms correctly
-- standardized train-test splits are provided to ensure that results can be objectively compared
-- results can be shared in a reproducible way through the <a href="../APIs">APIs</a>
-- results from other users can be easily downloaded and reused</p>
-<h2 id="terminology">Terminology<a class="headerlink" href="#terminology" title="Permanent link">&para;</a></h2>
-<p>Benchmark suites are sets of OpenML tasks that you can create and manage yourself. At the same time, it is often useful to also share the set of experiments (runs) with the ensuing benchmarking results. For legacy reasons, such sets of tasks or runs are called <code>studies</code> in the OpenML REST API. In the OpenML bindings (Python, R, Java,...) these are be called either studies or sets.<br />
-* Sets of tasks. These can be created, edited, downloaded or deleted via the OpenML API. Website forms will be added soon. Also the set of underlying datasets can be easily retrieved via the API.<br />
-* Sets of runs. Likewise, these can be created, edited, downloaded or deleted via the OpenML API. On the website, these are currently simply called 'studies'. Also the set of underlying tasks, datasets and flows can be easily retrieved. It is possible to link a set of runs to a benchmark study, aimed to collect future runs on that specific set of tasks. Additional information on these will be provided in a separate page.</p>
-<h2 id="packages">Packages<a class="headerlink" href="#packages" title="Permanent link">&para;</a></h2>
-<p>The functionality described in this tutorial relies on several software packages. Firts of all, a working instance of the OpenML API is required. The default endpoint for this is <code>https://www.openml.org/api/v1/</code>, but this can change when later versions of the API are released. For the code examples, the following packages are usedL:</p>
-<p>Java: 
-* <a href="https://mvnrepository.com/artifact/org.openml/apiconnector">OpenML ApiConnector</a> (version <code>1.0.22</code> and up). This package is responsible for api bindings.
-* <a href="https://search.maven.org/search?q=a:openmlweka">OpenML Weka</a> (version <code>0.9.6</code> and up). This package is responsible for Weka Integration and ARFF support.</p>
-<p>Python
-* <a href="https://pypi.org/project/openml/">OpenML Python</a> (version <code>0.8.0</code> and up)</p>
-<p>R
-* <a href="https://cran.r-project.org/web/packages/OpenML/index.html">OpenML R</a> (version <code>1.8</code> and up)</p>
+<p>Seamlessly integrated into the OpenML platform, benchmark suites standardize the setup, execution, analysis, and reporting of benchmarks. Moreover, they make benchmarking a whole lot easier:</p>
+<ul>
+<li>all datasets are uniformly formatted in standardized data formats</li>
+<li>they can be easily downloaded programmatically through <a href="../APIs">APIs and client libraries</a></li>
+<li>they come with machine-readable <a href="https://www.openml.org/search?type=measure&amp;q=+measure_type%3Adata_quality">meta-information</a>, such as the occurrence of missing values, to train algorithms correctly</li>
+<li>standardized train-test splits are provided to ensure that results can be objectively compared</li>
+<li>results can be shared in a reproducible way through the <a href="../APIs">APIs</a></li>
+<li>results from other users can be easily downloaded and reused</li>
+</ul>
+<h2 id="software-interfaces">Software interfaces<a class="headerlink" href="#software-interfaces" title="Permanent link">&para;</a></h2>
+<p>To use OpenML Benchmark suites, you can use bindings in several programming languages. These all interface with the OpenML REST API. The default endpoint for this is <code>https://www.openml.org/api/v1/</code>, but this can change when later versions of the API are released. To use the code examples below, you only need a recent version of one of the following libraries:</p>
+<ul>
+<li><a href="https://mvnrepository.com/artifact/org.openml/apiconnector">OpenML Java ApiConnector</a> (version <code>1.0.22</code> and up).</li>
+<li><a href="https://search.maven.org/search?q=a:openmlweka">OpenML Weka</a> (version <code>0.9.6</code> and up). This package adds a Weka Integration.</li>
+<li><a href="https://pypi.org/project/openml/">OpenML Python</a> (version <code>0.8.0</code> and up)</li>
+<li><a href="https://cran.r-project.org/web/packages/OpenML/index.html">OpenML R</a> (version <code>1.8</code> and up)</li>
+</ul>
 <h2 id="using-openml-benchmark-suites">Using OpenML Benchmark Suites<a class="headerlink" href="#using-openml-benchmark-suites" title="Permanent link">&para;</a></h2>
 <p>Below are walk-through instructions for common use cases, as well as code examples. These illustrations use the reference 'OpenML-CC18' benchmark suite, but you can replace it with any other benchmark suite. Note that a benchmark suite is a set of OpenML <code>tasks</code>, which envelop not only a specific dataset, but also the train-test splits and (for predictive tasks) the target feature.</p>
-<h3 id="listing-the-benchmark-suites">Listing the benchmark suites<a class="headerlink" href="#listing-the-benchmark-suites" title="Permanent link">&para;</a></h3>
+<details class="note"><summary>Terminology and current status</summary><p>Benchmark suites are sets of OpenML tasks that you can create and manage yourself. At the same time, it is often useful to also share the set of experiments (runs) with the ensuing benchmarking results. For legacy reasons, such sets of tasks or runs are called <code>studies</code> in the OpenML REST API. In the OpenML bindings (Python, R, Java,...) these are called either <code>sets</code> or `studies.</p><p>When benchmarking, you will probably use two types of sets:</p><ul><li>Sets of tasks. These can be created, edited, downloaded or deleted via the OpenML API. Website forms will be added soon. Also the set of underlying datasets can be easily retrieved via the API.</li><li>Sets of runs. Likewise, these can be created, edited, downloaded or deleted via the OpenML API. On the website, these are currently simply called 'studies'. Also the set of underlying tasks, datasets and flows can be easily retrieved. It is possible to link a set of runs to a benchmark study, aimed to collect future runs on that specific set of tasks. Additional information on these will be provided in a separate page.</li></ul></details><h3 id="listing-the-benchmark-suites">Listing the benchmark suites<a class="headerlink" href="#listing-the-benchmark-suites" title="Permanent link">&para;</a></h3>
 <p>The current list of benchmark suites is explicitly listed on the bottom of this page. The list of all sets of tasks can also be fetched programmatically. This list includes the suite's ID (and optionally an alias), which can be used to fetch further details.</p>
 <details class="note"><summary>REST (under development)</summary><div class="highlight"><pre><span></span>https://www.openml.org/api/v1/xml/study/list/main_entity_type/task
 </pre></div>
