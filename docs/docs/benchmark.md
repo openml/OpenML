@@ -3,6 +3,7 @@
 Machine learning research depends on objectively interpretable, comparable, and reproducible algorithm benchmarks. OpenML aims to facilitate the creation of curated, comprehensive _suites_ of machine learning tasks, covering precise sets of conditions.
 
 Seamlessly integrated into the OpenML platform, benchmark suites standardize the setup, execution, analysis, and reporting of benchmarks. Moreover, they make benchmarking a whole lot easier:
+
 - all datasets are uniformly formatted in standardized data formats
 - they can be easily downloaded programmatically through [APIs and client libraries](APIs)
 - they come with machine-readable [meta-information](https://www.openml.org/search?type=measure&q=+measure_type%3Adata_quality), such as the occurrence of missing values, to train algorithms correctly
@@ -10,26 +11,26 @@ Seamlessly integrated into the OpenML platform, benchmark suites standardize the
 - results can be shared in a reproducible way through the [APIs](APIs)
 - results from other users can be easily downloaded and reused
 
-## Terminology
-Benchmark suites are sets of OpenML tasks that you can create and manage yourself. At the same time, it is often useful to also share the set of experiments (runs) with the ensuing benchmarking results. For legacy reasons, such sets of tasks or runs are called `studies` in the OpenML REST API. In the OpenML bindings (Python, R, Java,...) these are be called either studies or sets.  
-* Sets of tasks. These can be created, edited, downloaded or deleted via the OpenML API. Website forms will be added soon. Also the set of underlying datasets can be easily retrieved via the API.  
-* Sets of runs. Likewise, these can be created, edited, downloaded or deleted via the OpenML API. On the website, these are currently simply called 'studies'. Also the set of underlying tasks, datasets and flows can be easily retrieved. It is possible to link a set of runs to a benchmark study, aimed to collect future runs on that specific set of tasks. Additional information on these will be provided in a separate page.
 
-## Packages
-The functionality described in this tutorial relies on several software packages. Firts of all, a working instance of the OpenML API is required. The default endpoint for this is `https://www.openml.org/api/v1/`, but this can change when later versions of the API are released. For the code examples, the following packages are usedL:
-
-Java: 
-* [OpenML ApiConnector](https://mvnrepository.com/artifact/org.openml/apiconnector) (version `1.21.0` and up). This package is responsible for api bindings.
-* [OpenML Weka](https://search.maven.org/search?q=a:openmlweka) (version `0.9.6` and up). This package is responsible for Weka Integration and ARFF support.
-
-Python
+## Software interfaces
+To use OpenML Benchmark suites, you can use bindings in several programming languages. These all interface with the OpenML REST API. The default endpoint for this is `https://www.openml.org/api/v1/`, but this can change when later versions of the API are released. To use the code examples below, you only need a recent version of one of the following libraries:
+  
+* [OpenML Java ApiConnector](https://mvnrepository.com/artifact/org.openml/apiconnector) (version `1.0.22` and up).
+* [OpenML Weka](https://search.maven.org/search?q=a:openmlweka) (version `0.9.6` and up). This package adds a Weka Integration.
 * [OpenML Python](https://pypi.org/project/openml/) (version `0.8.0` and up)
-
-R
 * [OpenML R](https://cran.r-project.org/web/packages/OpenML/index.html) (version `1.8` and up)
+
 
 ## Using OpenML Benchmark Suites
 Below are walk-through instructions for common use cases, as well as code examples. These illustrations use the reference 'OpenML-CC18' benchmark suite, but you can replace it with any other benchmark suite. Note that a benchmark suite is a set of OpenML `tasks`, which envelop not only a specific dataset, but also the train-test splits and (for predictive tasks) the target feature.
+
+??? note "Terminology and current status"
+    Benchmark suites are sets of OpenML tasks that you can create and manage yourself. At the same time, it is often useful to also share the set of experiments (runs) with the ensuing benchmarking results. For legacy reasons, such sets of tasks or runs are called `studies` in the OpenML REST API. In the OpenML bindings (Python, R, Java,...) these are called either `sets` or `studies.
+
+    When benchmarking, you will probably use two types of sets:
+
+    * Sets of tasks. These can be created, edited, downloaded or deleted via the OpenML API. Website forms will be added soon. Also the set of underlying datasets can be easily retrieved via the API.
+    * Sets of runs. Likewise, these can be created, edited, downloaded or deleted via the OpenML API. On the website, these are currently simply called 'studies'. Also the set of underlying tasks, datasets and flows can be easily retrieved. It is possible to link a set of runs to a benchmark study, aimed to collect future runs on that specific set of tasks. Additional information on these will be provided in a separate page.
 
 ### Listing the benchmark suites
 The current list of benchmark suites is explicitly listed on the bottom of this page. The list of all sets of tasks can also be fetched programmatically. This list includes the suite's ID (and optionally an alias), which can be used to fetch further details.
@@ -325,6 +326,7 @@ The [OpenML-CC18](https://www.openml.org/s/99) suite contains all OpenML dataset
 [List of datasets and properties](https://www.openml.org/search?q=tags.tag%3Astudy_99&type=data&table=1&size=73)
 
 The suite is defined as the set of all verified OpenML datasets that satisfy the following requirements:
+
 * the number of observations are between 500 and 100000 to focus on medium-sized datasets, that are not too small and not too big,
 * the number of features does not exceed 5000 features to keep the runtime of algorithms low,
 * the target attribute has at least two classes
@@ -332,6 +334,7 @@ The suite is defined as the set of all verified OpenML datasets that satisfy the
 * the ratio of the minority class and the majority class is above 0.05, to eliminate highly imbalanced datasets which require special treatment for both algorithms and evaluation measures.
 
 We excluded datasets which:
+
 * are artificially generated (not to confuse with simulated)
 * cannot be randomized via a 10-fold cross-validation due to grouped samples or because they are time series or data streams
 * are a subset of a larger dataset
