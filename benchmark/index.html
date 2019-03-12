@@ -1302,7 +1302,7 @@
 <h2 id="packages">Packages<a class="headerlink" href="#packages" title="Permanent link">&para;</a></h2>
 <p>The functionality described in this tutorial relies on several software packages. Firts of all, a working instance of the OpenML API is required. The default endpoint for this is <code>https://www.openml.org/api/v1/</code>, but this can change when later versions of the API are released. For the code examples, the following packages are usedL:</p>
 <p>Java: 
-* <a href="https://mvnrepository.com/artifact/org.openml/apiconnector">OpenML ApiConnector</a> (version <code>1.21.0</code> and up). This package is responsible for api bindings.
+* <a href="https://mvnrepository.com/artifact/org.openml/apiconnector">OpenML ApiConnector</a> (version <code>1.0.22</code> and up). This package is responsible for api bindings.
 * <a href="https://search.maven.org/search?q=a:openmlweka">OpenML Weka</a> (version <code>0.9.6</code> and up). This package is responsible for Weka Integration and ARFF support.</p>
 <p>Python
 * <a href="https://pypi.org/project/openml/">OpenML Python</a> (version <code>0.8.0</code> and up)</p>
@@ -1522,22 +1522,26 @@ a separate article on reproducible benchmarks. </p>
 <h3 id="openml-cc18">OpenML-CC18<a class="headerlink" href="#openml-cc18" title="Permanent link">&para;</a></h3>
 <p>The <a href="https://www.openml.org/s/99">OpenML-CC18</a> suite contains all OpenML datasets from mid-2018 that satisfy a large set of clear requirements for thorough yet practical benchmarking. It includes datasets frequently used in benchmarks published over the last years, so it can be used as a drop-in replacement for many benchmarking setups.</p>
 <p><a href="https://www.openml.org/search?q=tags.tag%3Astudy_99&amp;type=data&amp;table=1&amp;size=73">List of datasets and properties</a></p>
-<p>The suite is defined as the set of all verified OpenML datasets that satisfy the following requirements:
-* the number of observations are between 500 and 100000 to focus on medium-sized datasets, that are not too small and not too big,
-* the number of features does not exceed 5000 features to keep the runtime of algorithms low,
-* the target attribute has at least two classes
-* have classes with less than 20 observations
-* the ratio of the minority class and the majority class is above 0.05, to eliminate highly imbalanced datasets which require special treatment for both algorithms and evaluation measures.</p>
-<p>We excluded datasets which:
-* are artificially generated (not to confuse with simulated)
-* cannot be randomized via a 10-fold cross-validation due to grouped samples or because they are time series or data streams
-* are a subset of a larger dataset
-* have no source or reference available
-* can be perfectly classified by a single attribute or a decision stump
-* allow a decision tree to achieve 100% accuracy on a 10-fold cross-validation task
-* have more than 5000 features after one-hot-encoding categorical features
-* are created by binarization of regression tasks or multiclass classification tasks, or
-* are sparse data (e.g., text mining data sets)</p>
+<p>The suite is defined as the set of all verified OpenML datasets that satisfy the following requirements:</p>
+<ul>
+<li>the number of observations are between 500 and 100000 to focus on medium-sized datasets, that are not too small and not too big,</li>
+<li>the number of features does not exceed 5000 features to keep the runtime of algorithms low,</li>
+<li>the target attribute has at least two classes</li>
+<li>have classes with less than 20 observations</li>
+<li>the ratio of the minority class and the majority class is above 0.05, to eliminate highly imbalanced datasets which require special treatment for both algorithms and evaluation measures.</li>
+</ul>
+<p>We excluded datasets which:</p>
+<ul>
+<li>are artificially generated (not to confuse with simulated)</li>
+<li>cannot be randomized via a 10-fold cross-validation due to grouped samples or because they are time series or data streams</li>
+<li>are a subset of a larger dataset</li>
+<li>have no source or reference available</li>
+<li>can be perfectly classified by a single attribute or a decision stump</li>
+<li>allow a decision tree to achieve 100% accuracy on a 10-fold cross-validation task</li>
+<li>have more than 5000 features after one-hot-encoding categorical features</li>
+<li>are created by binarization of regression tasks or multiclass classification tasks, or</li>
+<li>are sparse data (e.g., text mining data sets)</li>
+</ul>
 <h3 id="openml100">OpenML100<a class="headerlink" href="#openml100" title="Permanent link">&para;</a></h3>
 <p>The <a href="https://www.openml.org/s/14">OpenML100</a> was a predecessor of the OpenML-CC18, consisting of <a href="https://www.openml.org/search?q=tags.tag%3AOpenML100&amp;type=data&amp;table=1&amp;size=100">100 classification datasets</a></a>. We recommend that you use the <strong>OpenML-CC18</strong> instead, because the OpenML100 suffers from some teething issues in the design of benchmark suites. For instance, it contains several datasets that are too easy to model with today's machine learning algorithms, as well as datasets that represent time series analysis problems. These do not invalidate benchmarks run on the OpenML100, but may obfuscate the interpretation of results. The 'OpenML-CC18' handle is also more descriptive and allows easier versioning.
 The OpenML100 was first published in the Arxiv preprint <a href="https://arxiv.org/abs/1708.03731">OpenML Benchmarking Suites and the OpenML100</a>.</p>
