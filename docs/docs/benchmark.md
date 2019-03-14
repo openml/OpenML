@@ -328,7 +328,6 @@ As mentioned above, we host [a GitHub repository](https://github.com/openml/benc
 
 We very much welcome new scripts and notebooks, or improvements to the existing ones, that help others to create benchmark suites and analyse benchmarking results.
 
-
 ## List of benchmarking suites
 
 ### OpenML-CC18
@@ -377,3 +376,7 @@ It excluded datasets which:
 * are variants of other datasets (e.g. binarized regression tasks)
 * include sparse data (e.g., text mining data sets)
 
+
+## Need help?
+
+We are happy to answer to any suggestion or question you may have. For general questions or issues, please open an issue in the [benchmarking issue tracker](https://github.com/openml/benchmark-suites). If the issue lies with one of the language-specific bindings, please post an issue [in the appropriate issue tracker](https://docs.openml.org/developers/).
