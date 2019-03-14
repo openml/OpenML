@@ -317,6 +317,17 @@ You can add tasks to a benchmark suite, or remove them.
     TODO
     ```
 
+## Further code examples and use cases
+
+As mentioned above, we host [a GitHub repository](https://github.com/openml/benchmark-suites) with additional tools and scripts to easily create and use new benchmark studies. It includes:
+
+* A Jupyter Notebook that builds a new benchmark suite with datasets that adhere to strict and complex conditions, as well as automated tests to remove tasks that are too easy for proper benchmarking.
+* A Jupyter Notebook that shows how to pull in the latest state-of-the-art results for any of the benchmark suites
+* A Jupyter Notebook that does a detailed analysis of all results in a benchmark suite, and an example run on the OpenML-CC18. It includes a wide range of plots and rankings to get a deeper insight into the benchmark results.
+* Scripts in Python and R to facilitate common subtasks.
+
+We very much welcome new scripts and notebooks, or improvements to the existing ones, that help others to create benchmark suites and analyse benchmarking results.
+
 
 ## List of benchmarking suites
 
