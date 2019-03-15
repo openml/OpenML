@@ -1323,11 +1323,7 @@
 <p>Below are walk-through instructions for common use cases, as well as code examples. These illustrations use the reference <a href="https://docs.openml.org/benchmark/#openml-cc18">OpenML-CC18</a> benchmark suite, but you can replace it with any other benchmark suite. Note that a benchmark suite is a set of OpenML <code>tasks</code>, which envelop not only a specific dataset, but also the train-test splits and (for predictive tasks) the target feature.</p>
 <details class="note"><summary>Terminology and current status</summary><p>Benchmark suites are sets of OpenML tasks that you can create and manage yourself. At the same time, it is often useful to also share the set of experiments (runs) with the ensuing benchmarking results. For legacy reasons, such sets of tasks or runs are called <code>studies</code> in the OpenML REST API. In the OpenML bindings (Python, R, Java,...) these are called either <code>sets</code> or <code>studies</code>.</p><p>When benchmarking, you will probably use two types of sets:</p><ul><li>Sets of tasks. These can be created, edited, downloaded or deleted via the OpenML API. Website forms will be added soon. Also the set of underlying datasets can be easily retrieved via the API.</li><li>Sets of runs. Likewise, these can be created, edited, downloaded or deleted via the OpenML API. On the website, these are currently simply called 'studies'. Also the set of underlying tasks, datasets and flows can be easily retrieved. It is possible to link a set of runs to a benchmark study, aimed to collect future runs on that specific set of tasks. Additional information on these will be provided in a separate page.</li></ul></details><h3 id="listing-the-benchmark-suites">Listing the benchmark suites<a class="headerlink" href="#listing-the-benchmark-suites" title="Permanent link">&para;</a></h3>
 <p>The current list of benchmark suites is explicitly listed on the bottom of this page. The list of all sets of tasks can also be fetched programmatically. This list includes the suite's ID (and optionally an alias), which can be used to fetch further details.</p>
-<details class="note"><summary>REST (under development)</summary><div class="highlight"><pre><span></span>[https://www.openml.org/api/v1/xml/study/list/main_entity_type/task](https://www.openml.org/api/v1/xml/study/list/main_entity_type/task)
-
-[Check out the API docs](https://www.openml.org/api_docs/#!/study/get_study_list_filters)
-</pre></div>
-</details><details class="note"><summary>Python example (requires the development version)</summary><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">openml</span>
+<details class="note"><summary>REST (under development)</summary><p><a href="https://www.openml.org/api/v1/xml/study/list/main_entity_type/task">https://www.openml.org/api/v1/xml/study/list/main_entity_type/task</a></p><p><a href="https://www.openml.org/api_docs/#!/study/get_study_list_filters">Check out the API docs</a></p></details><details class="note"><summary>Python example (requires the development version)</summary><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">openml</span>
 
 <span class="c1"># using the main entity type task, only benchmark suites are returned</span>
 <span class="c1"># each benchmark suite has an ID, some also have an alias. These can be</span>
@@ -1347,11 +1343,7 @@
 </pre></div>
 </details><h3 id="fetching-details">Fetching details<a class="headerlink" href="#fetching-details" title="Permanent link">&para;</a></h3>
 <p>Using the ID or alias of a benchmark suite, you can retrieve a description and the full list of tasks and the underlying datasets.</p>
-<details class="note"><summary>REST</summary><div class="highlight"><pre><span></span>[https://www.openml.org/api/v1/xml/study/OpenML-CC18](https://www.openml.org/api/v1/xml/study/OpenML-CC18)
-
-[Check out the API docs](https://www.openml.org/api_docs/#!/study/get_study_id)
-</pre></div>
-</details><details class="note"><summary>Python example</summary><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">openml</span>
+<details class="note"><summary>REST</summary><p><a href="https://www.openml.org/api/v1/xml/study/OpenML-CC18">https://www.openml.org/api/v1/xml/study/OpenML-CC18</a></p><p><a href="https://www.openml.org/api_docs/#!/study/get_study_id">Check out the API docs</a></p></details><details class="note"><summary>Python example</summary><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">openml</span>
 <span class="n">benchmark_suite</span> <span class="o">=</span> <span class="n">openml</span><span class="o">.</span><span class="n">study</span><span class="o">.</span><span class="n">get_study</span><span class="p">(</span><span class="s1">&#39;OpenML-CC18&#39;</span><span class="p">,</span><span class="s1">&#39;tasks&#39;</span><span class="p">)</span> <span class="c1"># obtain the benchmark suite</span>
 <span class="k">for</span> <span class="n">task_id</span> <span class="ow">in</span> <span class="n">benchmark_suite</span><span class="o">.</span><span class="n">tasks</span><span class="p">:</span> <span class="c1"># iterate over all tasks</span>
     <span class="n">task</span> <span class="o">=</span> <span class="n">openml</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">get_task</span><span class="p">(</span><span class="n">task_id</span><span class="p">)</span> <span class="c1"># download the OpenML task</span>
@@ -1376,11 +1368,9 @@ task.ids <span class="o">=</span> getOMLStudy<span class="p">(</span><span class
 </details><h3 id="running-and-sharing-benchmarks">Running and sharing benchmarks<a class="headerlink" href="#running-and-sharing-benchmarks" title="Permanent link">&para;</a></h3>
 <p>The code below demonstrates how OpenML benchmarking suites can be conveniently imported for benchmarking using the Python, Java and R APIs.</p>
 <p>First, the list of tasks is downloaded as already illustrated above. Next, a specific algorithm (or pipeline) can be run on each of them. The OpenML API will automatically evaluate the algorithm using the pre-set train-test splits and store the predictions and scores in a run object. This run object can then be immediately published, pushing the results to the OpenML server, so that they can be compared against all others on the same benchmark set. Uploading results requires an OpenML API key, which can be found in your account details after logging into the OpenML website.</p>
-<details class="note"><summary>REST</summary><div class="highlight"><pre><span></span>Requires POST requests:  
-[Attaching a new run to a benchmark_study](https://www.openml.org/api_docs/#!/study/post_study_id_attach)  
-[Detaching a run from benchmark_study](https://www.openml.org/api_docs/#!/study/post_study_id_detach)  
-</pre></div>
-</details><details class="note"><summary>Python example</summary><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">openml</span>
+<details class="note"><summary>REST</summary><p>Requires POST requests:<br />
+<a href="https://www.openml.org/api_docs/#!/study/post_study_id_attach">Attaching a new run to a benchmark_study</a><br />
+<a href="https://www.openml.org/api_docs/#!/study/post_study_id_detach">Detaching a run from benchmark_study</a>  </p></details><details class="note"><summary>Python example</summary><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">openml</span>
 <span class="kn">import</span> <span class="nn">sklearn</span>
 <span class="n">openml</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">apikey</span> <span class="o">=</span> <span class="s1">&#39;FILL_IN_OPENML_API_KEY&#39;</span> <span class="c1"># set the OpenML Api Key</span>
 <span class="n">benchmark_suite</span> <span class="o">=</span> <span class="n">openml</span><span class="o">.</span><span class="n">study</span><span class="o">.</span><span class="n">get_study</span><span class="p">(</span><span class="s1">&#39;OpenML-CC18&#39;</span><span class="p">,</span><span class="s1">&#39;tasks&#39;</span><span class="p">)</span> <span class="c1"># obtain the benchmark suite</span>
@@ -1427,11 +1417,7 @@ task.ids <span class="o">=</span> getOMLStudy<span class="p">(</span><span class
 obtain all results on the benchmark suite. Note that there are several other
 ways to select and bundle runs together. This will be featured in 
 a separate article on reproducible benchmarks. </p>
-<details class="note"><summary>REST (TODO)</summary><div class="highlight"><pre><span></span>[https://www.openml.org/api/v1/xml/run/list/study/OpenML-CC18](https://www.openml.org/api/v1/xml/run/list/study/OpenML-CC18)
-
-[Check out the API docs](https://www.openml.org/api_docs/#!/run/get_run_list_filters)
-</pre></div>
-</details><details class="note"><summary>Python example</summary><div class="highlight"><pre><span></span><span class="n">benchmark_suite</span> <span class="o">=</span> <span class="n">openml</span><span class="o">.</span><span class="n">study</span><span class="o">.</span><span class="n">get_study</span><span class="p">(</span><span class="s1">&#39;OpenML-CC18&#39;</span><span class="p">,</span> <span class="s1">&#39;tasks&#39;</span><span class="p">)</span>
+<details class="note"><summary>REST (TODO)</summary><p><a href="https://www.openml.org/api/v1/xml/run/list/study/OpenML-CC18">https://www.openml.org/api/v1/xml/run/list/study/OpenML-CC18</a></p><p><a href="https://www.openml.org/api_docs/#!/run/get_run_list_filters">Check out the API docs</a></p></details><details class="note"><summary>Python example</summary><div class="highlight"><pre><span></span><span class="n">benchmark_suite</span> <span class="o">=</span> <span class="n">openml</span><span class="o">.</span><span class="n">study</span><span class="o">.</span><span class="n">get_study</span><span class="p">(</span><span class="s1">&#39;OpenML-CC18&#39;</span><span class="p">,</span> <span class="s1">&#39;tasks&#39;</span><span class="p">)</span>
 <span class="n">runs</span> <span class="o">=</span> <span class="n">openml</span><span class="o">.</span><span class="n">runs</span><span class="o">.</span><span class="n">list_runs</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="n">benchmark_suite</span><span class="o">.</span><span class="n">tasks</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
 </pre></div>
 </details><details class="note"><summary>Java example</summary><div class="highlight"><pre><span></span><span class="kd">public</span> <span class="kt">void</span> <span class="nf">downloadResultsBenchmarkSuite</span><span class="o">()</span>  <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
@@ -1449,10 +1435,8 @@ a separate article on reproducible benchmarks. </p>
 </details><h3 id="creating-new-benchmark-suites">Creating new benchmark suites<a class="headerlink" href="#creating-new-benchmark-suites" title="Permanent link">&para;</a></h3>
 <p>Additional OpenML benchmark suites can be created by defining the precise set of tasks, as well as a textual description. New datasets first need to be <a href="https://www.openml.org/new/data">registered on OpenML</a> and tasks need to be created on them.</p>
 <p>We have provided <a href="https://github.com/openml/benchmark-suites">a GitHub repository</a> with additional tools and scripts to build new benchmark studies, e.g. to select all datasets adhering to strict conditions, and to analyse bencharking results.</p>
-<details class="note"><summary>REST</summary><div class="highlight"><pre><span></span>Requires POST requests:  
-[Creating a benchmark suite](https://www.openml.org/api_docs/#!/study/post_study)  
-</pre></div>
-</details><details class="note"><summary>Python example</summary><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">openml</span>
+<details class="note"><summary>REST</summary><p>Requires POST requests:<br />
+<a href="https://www.openml.org/api_docs/#!/study/post_study">Creating a benchmark suite</a>  </p></details><details class="note"><summary>Python example</summary><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">openml</span>
 
 <span class="c1"># find 250 tasks that we are interested in, e.g., the tasks that have between</span>
 <span class="c1"># 100 and 10000 instances and between 4 and 20 attributes</span>
@@ -1483,11 +1467,9 @@ a separate article on reproducible benchmarks. </p>
 </pre></div>
 </details><h3 id="updating-a-benchmark-suite">Updating a benchmark suite<a class="headerlink" href="#updating-a-benchmark-suite" title="Permanent link">&para;</a></h3>
 <p>You can add tasks to a benchmark suite, or remove them.</p>
-<details class="note"><summary>REST</summary><div class="highlight"><pre><span></span>Requires POST requests:  
-[Attaching a new task](https://www.openml.org/api_docs/#!/study/post_study_id_attach)  
-[Detaching a task](https://www.openml.org/api_docs/#!/study/post_study_id_detach)  
-</pre></div>
-</details><details class="note"><summary>Python example</summary><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">openml</span>
+<details class="note"><summary>REST</summary><p>Requires POST requests:<br />
+<a href="https://www.openml.org/api_docs/#!/study/post_study_id_attach">Attaching a new task</a><br />
+<a href="https://www.openml.org/api_docs/#!/study/post_study_id_detach">Detaching a task</a>  </p></details><details class="note"><summary>Python example</summary><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">openml</span>
 
 <span class="c1"># find 250 tasks that we are interested in, e.g., the tasks that have between</span>
 <span class="c1"># 100 and 10000 instances and between 4 and 20 attributes</span>
