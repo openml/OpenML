@@ -38,7 +38,9 @@ The current list of benchmark suites is explicitly listed on the bottom of this 
 Via the REST API, the list is returned in XML or JSON
 ??? note "REST (under development)"
     ``` 
-    https://www.openml.org/api/v1/xml/study/list/main_entity_type/task
+    [https://www.openml.org/api/v1/xml/study/list/main_entity_type/task](https://www.openml.org/api/v1/xml/study/list/main_entity_type/task)
+    
+    [Check out the API docs](https://www.openml.org/api_docs/#!/study/get_study_list_filters)
     ```
   
 ??? note "Python example (requires the development version)"
@@ -74,7 +76,9 @@ Using the ID or alias of a benchmark suite, you can retrieve a description and t
 Via the REST API, a list of all tasks and dataset IDs is returned in XML or JSON
 ??? note "REST"
     ``` 
-    https://www.openml.org/api/v1/xml/study/OpenML-CC18
+    [https://www.openml.org/api/v1/xml/study/OpenML-CC18](https://www.openml.org/api/v1/xml/study/OpenML-CC18)
+    
+    [Check out the API docs](https://www.openml.org/api_docs/#!/study/get_study_id)
     ```
 
 In Python, the data is returned as X, y numpy arrays:
@@ -115,6 +119,13 @@ In R, the data is returned as an R dataframe:
 The code below demonstrates how OpenML benchmarking suites can be conveniently imported for benchmarking using the Python, Java and R APIs.
 
 First, the list of tasks is downloaded as already illustrated above. Next, a specific algorithm (or pipeline) can be run on each of them. The OpenML API will automatically evaluate the algorithm using the pre-set train-test splits and store the predictions and scores in a run object. This run object can then be immediately published, pushing the results to the OpenML server, so that they can be compared against all others on the same benchmark set. Uploading results requires an OpenML API key, which can be found in your account details after logging into the OpenML website.
+
+??? note "REST"
+    ```     
+    Requires POST requests:  
+    [Attaching a new run to a benchmark_study](https://www.openml.org/api_docs/#!/study/post_study_id_attach)  
+    [Detaching a run from benchmark_study](https://www.openml.org/api_docs/#!/study/post_study_id_detach)  
+    ```
 
 ??? note "Python example"
     ```python
@@ -175,7 +186,9 @@ a separate article on reproducible benchmarks.
 
 ??? note "REST (TODO)"
     ``` 
-    https://www.openml.org/api/v1/xml/run/list/study/OpenML-CC18
+    [https://www.openml.org/api/v1/xml/run/list/study/OpenML-CC18](https://www.openml.org/api/v1/xml/run/list/study/OpenML-CC18)
+    
+    [Check out the API docs](https://www.openml.org/api_docs/#!/run/get_run_list_filters)
     ```
     
 ??? note "Python example"
@@ -208,6 +221,12 @@ Additional OpenML benchmark suites can be created by defining the precise set of
 
 We have provided [a GitHub repository](https://github.com/openml/benchmark-suites) with additional tools and scripts to build new benchmark studies, e.g. to select all datasets adhering to strict conditions, and to analyse bencharking results.
 
+??? note "REST"
+    ```     
+    Requires POST requests:  
+    [Creating a benchmark suite](https://www.openml.org/api_docs/#!/study/post_study)  
+    ```
+    
 ??? note "Python example"
     ```python
     import openml
@@ -249,6 +268,13 @@ We have provided [a GitHub repository](https://github.com/openml/benchmark-suite
 ### Updating a benchmark suite
 You can add tasks to a benchmark suite, or remove them.
 
+??? note "REST"
+    ```     
+    Requires POST requests:  
+    [Attaching a new task](https://www.openml.org/api_docs/#!/study/post_study_id_attach)  
+    [Detaching a task](https://www.openml.org/api_docs/#!/study/post_study_id_detach)  
+    ```
+    
 ??? note "Python example"
     ```python
     import openml
