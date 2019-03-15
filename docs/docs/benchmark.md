@@ -355,6 +355,29 @@ We excluded datasets which:
 * are created by binarization of regression tasks or multiclass classification tasks, or
 * are sparse data (e.g., text mining data sets)
 
+??? note "Detailed motivation of these decisions"
+    We chose the CC18 datasets to allow for practical benchmarking based on the characteristics that might be problematic based on our experience, and to avoid common pitfalls that may invalidate benchmark studies:  
+    
+    * We used at least 500 data points to allow performing cross-validation while still having a large-enough test split.
+    * We limited the datasets to 100.000 data points to allow the algorithms to train machine learning models in a reasonable amount of time.
+    * We limited the number of features to 5000 to allow the usage of algorithms which scale unfavourably in the number of features. This limitation, together with the two limitations above aims to allow running all “standard” machine learning algorithms (naive bayes, linear models, support vector machines, tree-based ensemble methods and neural networks) on the benchmark suite.
+    * We required each dataset to have at least two classes to be able to work in a supervised classification setting.
+    * We require each class to have at least 20 observations to be able to perform stratified cross-validation where there is at least one observation from each class in each split. We have found that not having all classes present in all training and test sets can make several machine learning packages fail.
+    * We require a certain balancedness (ratio of minority class to majority class) to prevent cases where only predicting the majority class would be beneficial. This is most likely the restriction which is most debatable, but we found it very helpful to apply a large set of machine learning algorithms across several libraries to the study. We expect that future studies focus more on imbalanced datasets. 
+
+    Furthermore, we aimed to have the dataset collection as general as possible, rule out as few algorithms as possible and have it usable as easily as possible:
+
+    * We strived to remove artificial datasets as they, for example, come from textbooks and it is hard to reliably assess their difficulty. We admit that there is a blurred line between artificial and simulated datasets and do not have a perfect distinction between them (for example, a lot of phenomena can be simulated, but the outcome might be like a simple, artificial dataset). Therefore, we removed datasets if we were in doubt of whether they are simulated or artificial. 
+    * We removed datasets which require grouped sampling because they are time series or data streams which should be treated with special care by machine learning algorithms (i.e., taking the time aspect into account). To be on the safe side, we also removed datasets where each sample constitutes a single data stream.
+    * We removed datasets which are a subset of larger datasets. Allowing subsets would be very subjective as there is no objective choice of a dataset subset size or a subset of the variables or classes. Therefore, creating dataset subsets would open a Pandora’s Box.
+    * We removed datasets which have no source or reference available to potentially learn more about these datasets if we observe unexpected behavior in future studies. In contrast, we would not be able to learn more about the background of a dataset which has no description and publication attached, leaving us with a complete black box.
+    * We removed datasets which can be perfectly classified by a single attribute or a decision stump as they do not allow to meaningfully compare machine learning algorithms (they all achieve 100% accuracy unless the hyperparameters are set in a bogus way).
+    * We removed datasets where a decision tree could achieve 100% accuracy on a 10-fold cross-validation task to remove datasets which can be solved by a simple algorithm which is prone to overfitting training data. We found that this is a good indicator of too easy datasets. Obviously, other datasets will appear easy for several algorithms, and we aim to learn more about the characteristics of such datasets in future studies.
+    * We removed datasets which have more than 5000 features after one-hot-encoding categorical features. One-hot-encoding is the most frequent way to deal with categorical variables across the different machine learning libraries MLR, scikit-learn and WEKA. In order to limit the number of features to 5000 as explained above, we imposed the additional constraint that this should be counted after one-hot-encoding to allow wide applicability of the benchmark suite.
+    * We removed datasets which were created by binarization of regression tasks or multiclass classification task for similar reasons as for forbidding dataset subsets.
+    * We did not include sparse datasets because not all machine learning libraries (i.e., all machine learning models) can handle them gracefully, which is in contrast to our goal which is wide applicability.
+
+
 ### OpenML100  
 The [OpenML100](https://www.openml.org/s/14) was a predecessor of the OpenML-CC18, consisting of [100 classification datasets](https://www.openml.org/search?q=tags.tag%3AOpenML100&type=data&table=1&size=100)</a>. We recommend that you use the **OpenML-CC18** instead, because the OpenML100 suffers from some teething issues in the design of benchmark suites. For instance, it contains several datasets that are too easy to model with today's machine learning algorithms, as well as datasets that represent time series analysis problems. These do not invalidate benchmarks run on the OpenML100, but may obfuscate the interpretation of results. The 'OpenML-CC18' handle is also more descriptive and allows easier versioning.
 The OpenML100 was first published in the Arxiv preprint [OpenML Benchmarking Suites and the OpenML100](https://arxiv.org/abs/1708.03731).
