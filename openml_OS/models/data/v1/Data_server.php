@@ -33,7 +33,7 @@ class Data_server extends CI_Model {
       return;
     }
     
-    if (filesize(DATA_PATH . $file->filepath) != $file->filesize) {
+    if (filesize(DATA_PATH . $file->filepath) != $file->filesize && $file->type != 'url') {
       $this->_email_filesize_error($file);
       $this->_error404();
       return;
@@ -65,7 +65,7 @@ class Data_server extends CI_Model {
       return;
     }
     
-    if (filesize(DATA_PATH . $file->filepath) != $file->filesize) {
+    if (filesize(DATA_PATH . $file->filepath) != $file->filesize && $file->type != 'url') {
       $this->_email_filesize_error($file);
       $this->_error404();
       return;
