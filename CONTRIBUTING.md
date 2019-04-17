@@ -15,7 +15,8 @@ We are currently looking for help with:
 * Frontend / UX / Design of the website 
 * Backend / API 
 * Outreach / making OpenML better known (especially in non-ML-communities, where people have data but no analysis experise)
-* Helping with the interfaces ([Python](https://www.openml.org/#python), [WEKA](https://www.openml.org/#WEKA), [MOA](https://www.openml.org/#plugin_moa), [RapidMiner](https://www.openml.org/#plugin_rm), [Java](https://www.openml.org/#java), [R](https://www.openml.org/#r); find the links to GitHub repos [here](https://github.com/openml/OpenML/wiki))
+* Helping with the APIs ([Python](https://openml.github.io/OpenML/Python-start/), [R](https://openml.github.io/OpenML/R-guide/), [Java](https://openml.github.io/OpenML/Java-guide/) and [.Net](https://openml.github.io/OpenML/NET-API/); find the links to GitHub repos [here](https://github.com/openml/OpenML/wiki))
+* Helping with the integration of machine learning libraries ([WEKA](https://www.openml.org/#WEKA), [MOA](https://www.openml.org/#plugin_moa), [MLR](https://openml.github.io/OpenML/mlr/), find the links to GitHub repos [here](https://github.com/openml/OpenML/wiki))
 * Helping with documenting the interfaces or the API
 * What could we do better to get new users started? Help us to figure out what is difficult to understand about OpenML. If you *are* a new user, you are the perfect person for this!
 
