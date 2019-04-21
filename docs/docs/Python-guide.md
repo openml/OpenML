@@ -6,15 +6,10 @@
     Fallback link for browsers that don't support iframes
   </a> </p>
 </iframe>
-</div>
-
-<javascipt>
+<script type="text/javascript">
 $(function() {
-    console.log( "ready!" );
-});
 var head = $("iframe").contents().find("head");
-var css = '<style type="text/css">' +
-          '#gh-banner{display:none}; ' +
-          '</style>';
-$(head).append(css);
-</javascript>
+$(head).append('<style type="text/css">#gh-banner{display:none};</style>');
+});
+</script>
+</div>
