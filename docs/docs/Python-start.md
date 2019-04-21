@@ -8,7 +8,7 @@
 </iframe>
 <script type="text/javascript">
 window.addEventListener("load", function(){
-  var doc=document.getElementById("python_api_frame").head;
+  var doc=document.getElementById("python_api_frame").contentWindow.document.head;
   doc.appendChild('<style type="text/css">#gh-banner{display:none};</style>');
 });
 </script>
