@@ -332,7 +332,7 @@
         },
         {
             "location": "/APIs/",
-            "text": "OpenML offers a range of APIs to download and upload OpenML datasets, tasks, run algorithms on them, and share the results.\n\n\n REST\n\u00b6\n\n\nThe REST API allows you to talk directly to the OpenML server from any programming environment.\n\n\n\n\nREST Tutorial\n\n\nREST API Reference\n\n\n\n\n Python\n\u00b6\n\n\nDownload datasets into Python scripts, build models using Python machine learning libraries (e.g., \nscikit-learn\n), and share the results online, all in a few lines of code.\n\n\n\n\nPython Tutorial\n\n\nPython API Reference\n\n\nExample Jupyter notebook\n\n\nCheatsheet\n\n\nOnline Demo\n\n\n\n\n R\n\u00b6\n\n\nDownload datasets into R scripts, build models using R machine learning packages (e.g. \nmlr\n), and share the results online, again in a few lines of code.\n\n\n\n\nR Tutorial\n\n\nR API Reference\n\n\nCheatsheet\n\n\nuseR 2017 Tutorial\n\n\n\n\n Java\n\u00b6\n\n\nIf you are building machine learning systems in Java, there is also an API for that.\n\n\n\n\nJava Tutorial\n\n\nJava API Reference\n\n\n\n\n .NET (C#)\n\u00b6\n\n\nThe .NET library is under development, but already contains most of the functions available.\n\n\n\n\n.NET Tutorial\n\n\nGitHub repo\n\n\n\n\nEasy authentication\n\u00b6\n\n\nIn the interest of open science, we allow you to freely download all public resources, also through the APIs (rate limits apply when necessary).\nUploading and sharing new datasets, tasks, flows and runs (or accessing any shared/private resources) is also very easy, and requires only the API key that you can find \nin your profile\n (after logging in).\n\n\nIf you use any of the language-specific APIs, you only need to store this key in a config file and forget about it. For authenticating to the REST API, you can send your api key using Basic Auth, or by adding \n?api_key='your key'\n to your calls. If you are logged into OpenML.org, this will be done automatically.",
+            "text": "OpenML offers a range of APIs to download and upload OpenML datasets, tasks, run algorithms on them, and share the results.\n\n\n REST\n\u00b6\n\n\nThe REST API allows you to talk directly to the OpenML server from any programming environment.\n\n\n\n\nREST Tutorial\n\n\nREST API Reference\n\n\n\n\n Python\n\u00b6\n\n\nDownload datasets into Python scripts, build models using Python machine learning libraries (e.g., \nscikit-learn\n), and share the results online, all in a few lines of code.\n\n\n\n\nGet started\n\n\nUser Guide\n\n\nExamples\n\n\nAPI Reference\n\n\nContributing\n\n\nChangelog\n\n\nOpenML-Python Tutorial\n\n\nCheatsheet\n\n\n\n\n R\n\u00b6\n\n\nDownload datasets into R scripts, build models using R machine learning packages (e.g. \nmlr\n), and share the results online, again in a few lines of code.\n\n\n\n\nR Tutorial\n\n\nR API Reference\n\n\nCheatsheet\n\n\nuseR 2017 Tutorial\n\n\n\n\n Java\n\u00b6\n\n\nIf you are building machine learning systems in Java, there is also an API for that.\n\n\n\n\nJava Tutorial\n\n\nJava API Reference\n\n\n\n\n .NET (C#)\n\u00b6\n\n\nThe .NET library is under development, but already contains most of the functions available.\n\n\n\n\n.NET Tutorial\n\n\nGitHub repo\n\n\n\n\nEasy authentication\n\u00b6\n\n\nIn the interest of open science, we allow you to freely download all public resources, also through the APIs (rate limits apply when necessary).\nUploading and sharing new datasets, tasks, flows and runs (or accessing any shared/private resources) is also very easy, and requires only the API key that you can find \nin your profile\n (after logging in).\n\n\nIf you use any of the language-specific APIs, you only need to store this key in a config file and forget about it. For authenticating to the REST API, you can send your api key using Basic Auth, or by adding \n?api_key='your key'\n to your calls. If you are logged into OpenML.org, this will be done automatically.",
             "title": "OpenML APIs"
         },
         {
@@ -342,7 +342,7 @@
         },
         {
             "location": "/APIs/#python",
-            "text": "Download datasets into Python scripts, build models using Python machine learning libraries (e.g.,  scikit-learn ), and share the results online, all in a few lines of code.   Python Tutorial  Python API Reference  Example Jupyter notebook  Cheatsheet  Online Demo",
+            "text": "Download datasets into Python scripts, build models using Python machine learning libraries (e.g.,  scikit-learn ), and share the results online, all in a few lines of code.   Get started  User Guide  Examples  API Reference  Contributing  Changelog  OpenML-Python Tutorial  Cheatsheet",
             "title": "Python"
         },
         {
@@ -597,18 +597,33 @@
         },
         {
             "location": "/Python-start/",
-            "text": "Fallback link for browsers that don't support iframes",
-            "title": "Start"
+            "text": "Fallback link for browsers that don't support iframes\n  \n \n\n\n\n\n\n\n\n\n$(function() {\n    console.log( \"ready!\" );\n});\nvar head = $(\"iframe\").contents().find(\"head\");\nvar css = '\n' +\n          '#gh-banner{display:none}; ' +\n          '\n';\n$(head).append(css);",
+            "title": "Get started"
         },
         {
             "location": "/Python-guide/",
-            "text": "Fallback link for browsers that don't support iframes",
-            "title": "Tutorial"
+            "text": "Fallback link for browsers that don't support iframes\n  \n \n\n\n\n\n\n\n\n\n$(function() {\n    console.log( \"ready!\" );\n});\nvar head = $(\"iframe\").contents().find(\"head\");\nvar css = '\n' +\n          '#gh-banner{display:none}; ' +\n          '\n';\n$(head).append(css);",
+            "title": "User guide"
+        },
+        {
+            "location": "/Python-examples/",
+            "text": "Fallback link for browsers that don't support iframes\n  \n \n\n\n\n\n\n\n\n\n$(function() {\n    console.log( \"ready!\" );\n});\nvar head = $(\"iframe\").contents().find(\"head\");\nvar css = '\n' +\n          '#gh-banner{display:none}; ' +\n          '\n';\n$(head).append(css);",
+            "title": "Examples"
         },
         {
             "location": "/Python-API/",
-            "text": "Fallback link for browsers that don't support iframes",
+            "text": "Fallback link for browsers that don't support iframes\n  \n \n\n\n\n\n\n\n\n\n$(function() {\n    console.log( \"ready!\" );\n});\nvar head = $(\"iframe\").contents().find(\"head\");\nvar css = '\n' +\n          '#gh-banner{display:none}; ' +\n          '\n';\n$(head).append(css);",
             "title": "API Reference"
+        },
+        {
+            "location": "/Python-contributing/",
+            "text": "Fallback link for browsers that don't support iframes\n  \n \n\n\n\n\n\n\n\n\n$(function() {\n    console.log( \"ready!\" );\n});\nvar head = $(\"iframe\").contents().find(\"head\");\nvar css = '\n' +\n          '#gh-banner{display:none}; ' +\n          '\n';\n$(head).append(css);",
+            "title": "Contributing"
+        },
+        {
+            "location": "/Python-changelog/",
+            "text": "Fallback link for browsers that don't support iframes\n  \n \n\n\n\n\n\n\n\n\n$(function() {\n    console.log( \"ready!\" );\n});\nvar head = $(\"iframe\").contents().find(\"head\");\nvar css = '\n' +\n          '#gh-banner{display:none}; ' +\n          '\n';\n$(head).append(css);",
+            "title": "Changelog"
         },
         {
             "location": "/R-guide/",

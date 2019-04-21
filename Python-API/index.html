@@ -626,8 +626,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../Python-start/" title="Start" class="md-nav__link">
-      Start
+    <a href="../Python-start/" title="Get started" class="md-nav__link">
+      Get started
     </a>
   </li>
 
@@ -638,8 +638,20 @@
 
 
   <li class="md-nav__item">
-    <a href="../Python-guide/" title="Tutorial" class="md-nav__link">
-      Tutorial
+    <a href="../Python-guide/" title="User guide" class="md-nav__link">
+      User guide
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../Python-examples/" title="Examples" class="md-nav__link">
+      Examples
     </a>
   </li>
 
@@ -660,6 +672,30 @@
       API Reference
     </a>
     
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../Python-contributing/" title="Contributing" class="md-nav__link">
+      Contributing
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../Python-changelog/" title="Changelog" class="md-nav__link">
+      Changelog
+    </a>
   </li>
 
         
@@ -1059,6 +1095,17 @@
   </a> </p>
 </iframe>
 </div>
+
+<p><javascipt>
+$(function() {
+    console.log( "ready!" );
+});
+var head = $("iframe").contents().find("head");
+var css = '<style type="text/css">' +
+          '#gh-banner{display:none}; ' +
+          '</style>';
+$(head).append(css);
+</javascript></p>
                 
                   
                 
@@ -1077,7 +1124,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../Python-guide/" title="Tutorial" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../Python-examples/" title="Examples" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -1086,19 +1133,19 @@
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Tutorial
+                Examples
               </span>
             </div>
           </a>
         
         
-          <a href="../R-guide/" title="Tutorial" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../Python-contributing/" title="Contributing" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Tutorial
+                Contributing
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">
