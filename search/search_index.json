@@ -597,32 +597,32 @@
         },
         {
             "location": "/Python-start/",
-            "text": "Fallback link for browsers that don't support iframes\n  \n \n\n\n\n\n\nwindow.addEventListener(\"load\", function(){\n  var doc=document.getElementById(\"python_api_frame\").contentWindow.document.head;\n  doc.appendChild('<style type=\"text/css\">#gh-banner{display:none};</style>');\n});",
+            "text": "Fallback link for browsers that don't support iframes",
             "title": "Get started"
         },
         {
             "location": "/Python-guide/",
-            "text": "Fallback link for browsers that don't support iframes\n  \n \n\n\n\n\n\n$(function() {\nvar head = $(\"iframe\").contents().find(\"head\");\n$(head).append('<style type=\"text/css\">#gh-banner{display:none};</style>');\n});",
+            "text": "Fallback link for browsers that don't support iframes",
             "title": "User guide"
         },
         {
             "location": "/Python-examples/",
-            "text": "Fallback link for browsers that don't support iframes\n  \n \n\n\n\n\n\n$(function() {\nvar head = $(\"iframe\").contents().find(\"head\");\n$(head).append('<style type=\"text/css\">#gh-banner{display:none};</style>');\n});",
+            "text": "Fallback link for browsers that don't support iframes",
             "title": "Examples"
         },
         {
             "location": "/Python-API/",
-            "text": "Fallback link for browsers that don't support iframes\n  \n \n\n\n\n\n\n$(function() {\nvar head = $(\"iframe\").contents().find(\"head\");\n$(head).append('<style type=\"text/css\">#gh-banner{display:none};</style>');\n});",
+            "text": "Fallback link for browsers that don't support iframes",
             "title": "API Reference"
         },
         {
             "location": "/Python-contributing/",
-            "text": "Fallback link for browsers that don't support iframes\n  \n \n\n\n\n\n\n$(function() {\nvar head = $(\"iframe\").contents().find(\"head\");\n$(head).append('<style type=\"text/css\">#gh-banner{display:none};</style>');\n});",
+            "text": "Fallback link for browsers that don't support iframes",
             "title": "Contributing"
         },
         {
             "location": "/Python-changelog/",
-            "text": "Fallback link for browsers that don't support iframes\n  \n \n\n\n\n\n\n$(function() {\nvar head = $(\"iframe\").contents().find(\"head\");\n$(head).append('<style type=\"text/css\">#gh-banner{display:none};</style>');\n});",
+            "text": "Fallback link for browsers that don't support iframes",
             "title": "Changelog"
         },
         {
