@@ -7,3 +7,14 @@
   </a> </p>
 </iframe>
 </div>
+
+<javascipt>
+$(function() {
+    console.log( "ready!" );
+});
+var head = $("iframe").contents().find("head");
+var css = '<style type="text/css">' +
+          '#gh-banner{display:none}; ' +
+          '</style>';
+$(head).append(css);
+</javascript>

@@ -59,9 +59,12 @@ pages:
     - Java:
         - Tutorial: Java-guide.md
     - Python:
-        - Start: Python-start.md
-        - Tutorial: Python-guide.md
+        - Get started: Python-start.md
+        - User guide: Python-guide.md
+        - Examples: Python-examples.md
         - API Reference: Python-API.md
+        - Contributing: Python-contributing.md
+        - Changelog: Python-changelog.md
     - R:
         - Tutorial: R-guide.md
         - API Reference: R-API.md
