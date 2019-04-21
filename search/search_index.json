@@ -597,7 +597,7 @@
         },
         {
             "location": "/Python-start/",
-            "text": "Fallback link for browsers that don't support iframes\n  \n \n\n\n\n\n\nwindow.addEventListener(\"load\", function(){\n  var doc=document.getElementById(\"python_api_frame\").getElementsByTagName('head')[0];\n  doc.appendChild('<style type=\"text/css\">#gh-banner{display:none};</style>');\n});",
+            "text": "Fallback link for browsers that don't support iframes\n  \n \n\n\n\n\n\nwindow.addEventListener(\"load\", function(){\n  var doc=document.getElementById(\"python_api_frame\").head;\n  doc.appendChild('<style type=\"text/css\">#gh-banner{display:none};</style>');\n});",
             "title": "Get started"
         },
         {
