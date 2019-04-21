@@ -597,32 +597,32 @@
         },
         {
             "location": "/Python-start/",
-            "text": "Fallback link for browsers that don't support iframes\n  \n \n\n\n\n\n\n\n\n\n$(function() {\n    console.log( \"ready!\" );\n});\nvar head = $(\"iframe\").contents().find(\"head\");\nvar css = '\n' +\n          '#gh-banner{display:none}; ' +\n          '\n';\n$(head).append(css);",
+            "text": "Fallback link for browsers that don't support iframes\n  \n \n\n\n\n\n\n$(function() {\nvar head = $(\"iframe\").contents().find(\"head\");\n$(head).append('<style type=\"text/css\">#gh-banner{display:none};</style>');\n});",
             "title": "Get started"
         },
         {
             "location": "/Python-guide/",
-            "text": "Fallback link for browsers that don't support iframes\n  \n \n\n\n\n\n\n\n\n\n$(function() {\n    console.log( \"ready!\" );\n});\nvar head = $(\"iframe\").contents().find(\"head\");\nvar css = '\n' +\n          '#gh-banner{display:none}; ' +\n          '\n';\n$(head).append(css);",
+            "text": "Fallback link for browsers that don't support iframes\n  \n \n\n\n\n\n\n$(function() {\nvar head = $(\"iframe\").contents().find(\"head\");\n$(head).append('<style type=\"text/css\">#gh-banner{display:none};</style>');\n});",
             "title": "User guide"
         },
         {
             "location": "/Python-examples/",
-            "text": "Fallback link for browsers that don't support iframes\n  \n \n\n\n\n\n\n\n\n\n$(function() {\n    console.log( \"ready!\" );\n});\nvar head = $(\"iframe\").contents().find(\"head\");\nvar css = '\n' +\n          '#gh-banner{display:none}; ' +\n          '\n';\n$(head).append(css);",
+            "text": "Fallback link for browsers that don't support iframes\n  \n \n\n\n\n\n\n$(function() {\nvar head = $(\"iframe\").contents().find(\"head\");\n$(head).append('<style type=\"text/css\">#gh-banner{display:none};</style>');\n});",
             "title": "Examples"
         },
         {
             "location": "/Python-API/",
-            "text": "Fallback link for browsers that don't support iframes\n  \n \n\n\n\n\n\n\n\n\n$(function() {\n    console.log( \"ready!\" );\n});\nvar head = $(\"iframe\").contents().find(\"head\");\nvar css = '\n' +\n          '#gh-banner{display:none}; ' +\n          '\n';\n$(head).append(css);",
+            "text": "Fallback link for browsers that don't support iframes\n  \n \n\n\n\n\n\n$(function() {\nvar head = $(\"iframe\").contents().find(\"head\");\n$(head).append('<style type=\"text/css\">#gh-banner{display:none};</style>');\n});",
             "title": "API Reference"
         },
         {
             "location": "/Python-contributing/",
-            "text": "Fallback link for browsers that don't support iframes\n  \n \n\n\n\n\n\n\n\n\n$(function() {\n    console.log( \"ready!\" );\n});\nvar head = $(\"iframe\").contents().find(\"head\");\nvar css = '\n' +\n          '#gh-banner{display:none}; ' +\n          '\n';\n$(head).append(css);",
+            "text": "Fallback link for browsers that don't support iframes\n  \n \n\n\n\n\n\n$(function() {\nvar head = $(\"iframe\").contents().find(\"head\");\n$(head).append('<style type=\"text/css\">#gh-banner{display:none};</style>');\n});",
             "title": "Contributing"
         },
         {
             "location": "/Python-changelog/",
-            "text": "Fallback link for browsers that don't support iframes\n  \n \n\n\n\n\n\n\n\n\n$(function() {\n    console.log( \"ready!\" );\n});\nvar head = $(\"iframe\").contents().find(\"head\");\nvar css = '\n' +\n          '#gh-banner{display:none}; ' +\n          '\n';\n$(head).append(css);",
+            "text": "Fallback link for browsers that don't support iframes\n  \n \n\n\n\n\n\n$(function() {\nvar head = $(\"iframe\").contents().find(\"head\");\n$(head).append('<style type=\"text/css\">#gh-banner{display:none};</style>');\n});",
             "title": "Changelog"
         },
         {
