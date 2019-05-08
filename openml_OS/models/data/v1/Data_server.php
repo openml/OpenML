@@ -202,7 +202,7 @@ class Data_server extends CI_Model {
   private function _email_filesize_error($file) {
     $to = EMAIL_API_LOG;
     $subject = 'OpenML File Error. Id: ' . $file->id;
-    $content = 'File record with id' . $file->id . ' (' . $file->type . ') states ' . $file->filesize . ' but PHP filesize states: ' . filesize(DATA_PATH . $file->filepath);
+    $content = 'File record with id ' . $file->id . ' (' . $file->type . ') on ' . BASE_URL . ' states ' . $file->filesize . ' but PHP filesize states: ' . filesize(DATA_PATH . $file->filepath);
     sendEmail($to, $subject, $content,'text');
   }
 }
