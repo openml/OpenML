@@ -91,14 +91,14 @@ class Api_evaluation extends MY_Api_Model {
 
   private function evaluation_list($segs, $user_id) {
     $result_limit = 10000;
-    $legal_filters = array('task', 'setup', 'flow', 'uploader', 'run', 'tag', 'limit', 'offset', 'function', 'per_fold');
+    $legal_filters = array('task', 'setup', 'flow', 'uploader', 'run', 'tag', 'limit', 'offset', 'function', 'per_fold', 'sort');
     list($query_string, $illegal_filters) = $this->parse_filters($segs, $legal_filters);
     if (count($illegal_filters) > 0) {
       $this->returnError(544, $this->version, $this->openmlGeneralErrorCode, 'Legal filter operators: ' . implode(',', $legal_filters) .'. Found illegal filter(s): ' . implode(', ', $illegal_filters));
       return;
     }
     
-    $illegal_filter_inputs = $this->check_filter_inputs($query_string, $legal_filters, array('tag', 'function', 'per_fold'));
+    $illegal_filter_inputs = $this->check_filter_inputs($query_string, $legal_filters, array('tag', 'function', 'per_fold', 'sort'));
     if (count($illegal_filter_inputs) > 0) {
       $this->returnError(541, $this->version, $this->openmlGeneralErrorCode, 'Filters with illegal values: ' . implode(',', $illegal_filter_inputs));
       return;
@@ -114,6 +114,7 @@ class Api_evaluation extends MY_Api_Model {
     $limit = element('limit', $query_string, null);
     $offset = element('offset', $query_string, null);
     $per_fold = element('per_fold', $query_string, null);
+    $sort_results = element('sort', $query_string, null);
     if ($per_fold != 'true' && $per_fold != 'false' && $per_fold != null) {
       $this->returnError(547, $this->version, $this->openmlGeneralErrorCode, 'Filters with illegal values: ' . implode(',', $illegal_filter_inputs));
       return;
@@ -126,6 +127,10 @@ class Api_evaluation extends MY_Api_Model {
     }
     if ($limit && $limit > $result_limit) {
       $this->returnError(546, $this->version);
+      return;
+    }
+    if ($sort_results && !in_array($sort_results, array('asc', 'desc'))) {
+      $this->returnError(549, $this->version);
       return;
     }
 
@@ -141,7 +146,7 @@ class Api_evaluation extends MY_Api_Model {
     $where_run = $run_id === null ? '' : ' AND `r`.`rid` IN (' . $run_id . ') ';
     $where_function = $function_name === null ? '' : ' AND `f`.`name` = "' . $function_name . '" ';
     $where_tag = $tag === null ? '' : ' AND `r`.`rid` IN (select id from run_tag where tag="' . $tag . '") ';
-    $where_limit = $limit === null ? '' : ' LIMIT ' . $limit;
+    $where_limit = $limit === null ? null : ' LIMIT ' . $limit;
     if ($limit && $offset) {
       $where_limit =  ' LIMIT ' . $offset . ',' . $limit;
     }
@@ -181,6 +186,11 @@ class Api_evaluation extends MY_Api_Model {
       }
     }
     
+    $order_by = null;
+    if ($sort_results) {
+      $order_by = 'ORDER BY `e`.`value` ' . $sort_results;
+    }
+    
     if ($per_fold) {
       $eval_table = 'evaluation_fold';
       $columns = 'NULL as value, NULL as array_data, CONCAT("[", GROUP_CONCAT(e.value), "]") AS `values`';
@@ -188,7 +198,7 @@ class Api_evaluation extends MY_Api_Model {
     } else {
       $eval_table = 'evaluation';
       $columns = 'e.value, e.array_data, NULL AS `values`';
-      $group_by = '';
+      $group_by = false;
     }
 
     // Note: the ORDER BY makes this query super slow because all data needs to be loaded. The query optimizer does not use the index correctly to avoid this.
@@ -206,10 +216,18 @@ class Api_evaluation extends MY_Api_Model {
       'AND r.task_id = t.task_id ' .
       'AND r.task_id = ti.task_id ' .
       'AND ti.input = "source_data" ' .
-      'AND ti.value = d.did ' . $where_total . 
-    //'ORDER BY r.rid' .
-      $group_by . ' ' . 
-      $where_limit;
+      'AND ti.value = d.did ' . $where_total;
+    
+    if ($group_by) {
+      $sql .= $group_by;
+    }
+    if ($order_by) {
+      $sql .= $order_by;
+    }
+    if ($where_limit) {
+      $sql .= $where_limit;
+    }
+    
     $res = $this->Evaluation->query($sql);
 
     if ($res == false) {

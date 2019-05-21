@@ -295,6 +295,7 @@ $this->apiErrors[545] = 'Can not specify offset without limit';
 $this->apiErrors[546] = 'Requested result limit too high. ';
 $this->apiErrors[547] = 'Per fold can only be set to value "true" or "false". ';
 $this->apiErrors[548] = 'Per fold queries are experimental and require a fair amount of filters on resulting run records to keep the query fast (use, e.g., flow, setup, task and uploader filter)';
+$this->apiErrors[549] = 'If set, sort should be set to either "asc" or "desc"';
 
 // openml.flow.forcedelete
 $this->apiErrors[550] = 'Admin rights are required.';
