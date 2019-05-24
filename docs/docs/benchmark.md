@@ -3,7 +3,6 @@
 Machine learning research depends on objectively interpretable, comparable, and reproducible algorithm benchmarks. OpenML aims to facilitate the creation of curated, comprehensive _suites_ of machine learning tasks, covering precise sets of conditions.
 
 Seamlessly integrated into the OpenML platform, benchmark suites standardize the setup, execution, analysis, and reporting of benchmarks. Moreover, they make benchmarking a whole lot easier:
-
 - all datasets are uniformly formatted in standardized data formats
 - they can be easily downloaded programmatically through [APIs and client libraries](APIs)
 - they come with machine-readable [meta-information](https://www.openml.org/search?type=measure&q=+measure_type%3Adata_quality), such as the occurrence of missing values, to train algorithms correctly
@@ -32,6 +31,7 @@ Below are walk-through instructions for common use cases, as well as code exampl
     * Sets of tasks. These can be created, edited, downloaded or deleted via the OpenML API. Website forms will be added soon. Also the set of underlying datasets can be easily retrieved via the API.
     * Sets of runs. Likewise, these can be created, edited, downloaded or deleted via the OpenML API. On the website, these are currently simply called 'studies'. Also the set of underlying tasks, datasets and flows can be easily retrieved. It is possible to link a set of runs to a benchmark study, aimed to collect future runs on that specific set of tasks. Additional information on these will be provided in a separate page.
 
+
 ### Listing the benchmark suites
 The current list of benchmark suites is explicitly listed on the bottom of this page. The list of all sets of tasks can also be fetched programmatically. This list includes the suite's ID (and optionally an alias), which can be used to fetch further details.
 
@@ -40,6 +40,7 @@ Via the REST API, the list is returned in XML or JSON
     [https://www.openml.org/api/v1/xml/study/list/main_entity_type/task](https://www.openml.org/api/v1/xml/study/list/main_entity_type/task)
     
     [Check out the API docs](https://www.openml.org/api_docs/#!/study/get_study_list_filters)
+
   
 ??? note "Python example (requires the development version)"
     ```python
@@ -76,6 +77,7 @@ Via the REST API, a list of all tasks and dataset IDs is returned in XML or JSON
     [https://www.openml.org/api/v1/xml/study/OpenML-CC18](https://www.openml.org/api/v1/xml/study/OpenML-CC18)
     
     [Check out the API docs](https://www.openml.org/api_docs/#!/study/get_study_id)
+
 
 In Python, the data is returned as X, y numpy arrays:
 ??? note "Python example"
@@ -120,6 +122,7 @@ First, the list of tasks is downloaded as already illustrated above. Next, a spe
     Requires POST requests:  
     [Attaching a new run to a benchmark_study](https://www.openml.org/api_docs/#!/study/post_study_id_attach)  
     [Detaching a run from benchmark_study](https://www.openml.org/api_docs/#!/study/post_study_id_detach)  
+
 
 ??? note "Python example"
     ```python
@@ -182,6 +185,7 @@ a separate article on reproducible benchmarks.
     [https://www.openml.org/api/v1/xml/run/list/study/OpenML-CC18](https://www.openml.org/api/v1/xml/run/list/study/OpenML-CC18)
     
     [Check out the API docs](https://www.openml.org/api_docs/#!/run/get_run_list_filters)
+
     
 ??? note "Python example"
     ```python
@@ -213,10 +217,12 @@ Additional OpenML benchmark suites can be created by defining the precise set of
 
 We have provided [a GitHub repository](https://github.com/openml/benchmark-suites) with additional tools and scripts to build new benchmark studies, e.g. to select all datasets adhering to strict conditions, and to analyse bencharking results.
 
+
 ??? note "REST"
     Requires POST requests:  
     [Creating a benchmark suite](https://www.openml.org/api_docs/#!/study/post_study)  
-    
+
+
 ??? note "Python example"
     ```python
     import openml
@@ -258,11 +264,13 @@ We have provided [a GitHub repository](https://github.com/openml/benchmark-suite
 ### Updating a benchmark suite
 You can add tasks to a benchmark suite, or remove them.
 
+
 ??? note "REST"
     Requires POST requests:  
     [Attaching a new task](https://www.openml.org/api_docs/#!/study/post_study_id_attach)  
     [Detaching a task](https://www.openml.org/api_docs/#!/study/post_study_id_detach)  
-    
+   
+
 ??? note "Python example"
     ```python
     import openml
@@ -368,6 +376,7 @@ We excluded datasets which:
 * have more than 5000 features after one-hot-encoding categorical features
 * are created by binarization of regression tasks or multiclass classification tasks, or
 * are sparse data (e.g., text mining data sets)
+
 
 ??? note "Detailed motivation of these decisions"
     We chose the CC18 datasets to allow for practical benchmarking based on the characteristics that might be problematic based on our experience, and to avoid common pitfalls that may invalidate benchmark studies:  
