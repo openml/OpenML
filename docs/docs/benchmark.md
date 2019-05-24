@@ -79,14 +79,17 @@ Via the REST API, a list of all tasks and dataset IDs is returned in XML or JSON
     [Check out the API docs](https://www.openml.org/api_docs/#!/study/get_study_id)
 
 
-In Python, the data is returned as X, y numpy arrays:
+In Python, the data is returned as `features, targets` numpy arrays:
+
 ??? note "Python example"
     ```python
     import openml
-    benchmark_suite = openml.study.get_study('OpenML-CC18','tasks') # obtain the benchmark suite
-    for task_id in benchmark_suite.tasks: # iterate over all tasks
-        task = openml.tasks.get_task(task_id) # download the OpenML task
-        X, y = task.get_X_and_y() # get the data
+    
+    benchmark_suite = openml.study.get_study('OpenML-CC18', 'tasks') # obtain the benchmark suite
+    
+    for task_id in benchmark_suite.tasks:  # iterate over all tasks
+        task = openml.tasks.get_task(task_id)  # download the OpenML task
+        features, targets = task.get_X_and_y()  # get the data
     ```
 
 In Java, the data is returned as a WEKA Instances object:
@@ -126,22 +129,25 @@ First, the list of tasks is downloaded as already illustrated above. Next, a spe
 
 ??? note "Python example"
     ```python
+    
     import openml
     import sklearn
-    openml.config.apikey = 'FILL_IN_OPENML_API_KEY' # set the OpenML Api Key
-    benchmark_suite = openml.study.get_study('OpenML-CC18','tasks') # obtain the benchmark suite
-    # build a sklearn classifier
+    
+    openml.config.apikey = 'FILL_IN_OPENML_API_KEY'  # set the OpenML Api Key
+    benchmark_suite = openml.study.get_study('OpenML-CC18','tasks')  # obtain the benchmark suite
+    
+    # build a scikit-learn classifier
     clf = sklearn.pipeline.make_pipeline(sklearn.preprocessing.Imputer(),
                                          sklearn.tree.DecisionTreeClassifier())
-    for task_id in benchmark_suite.tasks: # iterate over all tasks
-      task = openml.tasks.get_task(task_id) # download the OpenML task
-      X, y = task.get_X_and_y() # get the data (not used in this example)
-      # run classifier on splits (requires API key)
-      run = openml.runs.run_model_on_task(clf, task)
-      score = run.get_metric_score(sklearn.metrics.accuracy_score) # print accuracy score
-      print('Data set: %s; Accuracy: %0.2f' % (task.get_dataset().name,score.mean()))
-      run.publish() # publish the experiment on OpenML (optional)
-      print('URL for run: %s/run/%d' %(openml.config.server,run.run_id))
+                                         
+    for task_id in benchmark_suite.tasks:  # iterate over all tasks
+    
+        task = openml.tasks.get_task(task_id)  # download the OpenML task
+        run = openml.runs.run_model_on_task(clf, task)  # run the classifier on the task
+        score = run.get_metric_score(sklearn.metrics.accuracy_score)  # print accuracy score
+        print('Data set: %s; Accuracy: %0.2f' % (task.get_dataset().name,score.mean()))
+        run.publish()  # publish the experiment on OpenML (optional, requires internet and an API key)
+        print('URL for run: %s/run/%d' %(openml.config.server,run.run_id))
     ```
 
 ??? note "Java example"
@@ -234,7 +240,12 @@ We have provided [a GitHub repository](https://github.com/openml/benchmark-suite
     
     # create the benchmark suite
     # the arguments are the alias, name, description, and list of task_ids, respectively.
-    study = openml.study.create_benchmark_suite(None, "MidSize Suite", "illustrating how to create a benchmark suite", task_ids)
+    study = openml.study.create_benchmark_suite( 
+        name="MidSize Suite", 
+        alias=None,
+        description="illustrating how to create a benchmark suite", 
+        task_ids=task_ids,
+    )
     study_id = study.publish()
     ```
 
@@ -281,7 +292,12 @@ You can add tasks to a benchmark suite, or remove them.
     task_ids = list(tasks.keys())
     
     # create the benchmark suite
-    study = openml.study.create_benchmark_suite(None, "MidSize Suite", "illustrating how to create a benchmark suite", task_ids)
+    study = openml.study.create_benchmark_suite( 
+        name="MidSize Suite", 
+        alias=None,
+        description="illustrating how to create a benchmark suite", 
+        task_ids=task_ids,
+    )
     study_id = study.publish()
     
     # download the study from the server, for verification purposes
