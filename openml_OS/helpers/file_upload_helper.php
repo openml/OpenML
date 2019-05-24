@@ -1,19 +1,22 @@
 <?php
 
-function check_uploaded_file( $file, $image_restriction = false, &$message = NULL ) {
-  if( $file == false ) {
+function check_uploaded_file($file, $image_restriction = false, &$message = NULL) {
+  if($file == false) {
     $message = 'File meta-info is missing. ';
     return false;
-  } else if( is_array($file) == false ) {
+  } else if(is_array($file) == false) {
     $message = 'File meta-info is no array. ';
     return false;
-  } else if( $file['error'] > 0 ) { // php error generated
-    $message = 'Upload Error ' . $file['error'] . ': ' . upload_error_message( $file['error'] );
+  } else if($file['size'] == 0) {
+    $message = 'Filesize is 0 bytes, which is not allowed. ';
     return false;
-  } else if( ! file_exists( $file['tmp_name'] ) ) { // file doesn't exist
+  } else if($file['error'] > 0) { // php error generated
+    $message = 'Upload Error ' . $file['error'] . ': ' . upload_error_message($file['error']);
+    return false;
+  } else if(!file_exists($file['tmp_name'])) { // file doesn't exist
     $message = 'File not present at expected location. ';
     return false;
-  } else if( $image_restriction && substr( $file['type'], 0, 5 ) != 'image' ) {
+  } else if($image_restriction && substr($file['type'], 0, 5) != 'image') {
     $message = 'File should be an image; MIME-type does not confirm this. ';
     return false;
   }
