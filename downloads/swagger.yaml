@@ -2473,6 +2473,11 @@ paths:
             570 - No successful trace associated with this run
     post:
       summary: Upload run trace
+      tags:
+      - run
+      summary: Upload run trace
+      description: |
+        Uploads a run trace. Upon success, it returns the run id.
       consumes:
         - multipart/form-data
       description: |
