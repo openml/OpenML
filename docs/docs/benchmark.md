@@ -10,35 +10,37 @@ Seamlessly integrated into the OpenML platform, benchmark suites standardize the
 - results can be shared in a reproducible way through the [APIs](APIs)
 - results from other users can be easily downloaded and reused
 
-## Terminology
-Benchmark suites are sets of OpenML tasks that you can create and manage yourself. At the same time, it is often useful to also share the set of experiments (runs) with the ensuing benchmarking results. For legacy reasons, such sets of tasks or runs are called `studies` in the OpenML REST API. In the OpenML bindings (Python, R, Java,...) these are be called either studies or sets.  
-* Sets of tasks. These can be created, edited, downloaded or deleted via the OpenML API. Website forms will be added soon. Also the set of underlying datasets can be easily retrieved via the API.  
-* Sets of runs. Likewise, these can be created, edited, downloaded or deleted via the OpenML API. On the website, these are currently simply called 'studies'. Also the set of underlying tasks, datasets and flows can be easily retrieved. It is possible to link a set of runs to a benchmark study, aimed to collect future runs on that specific set of tasks. Additional information on these will be provided in a separate page.
 
-## Packages
-The functionality described in this tutorial relies on several software packages. Firts of all, a working instance of the OpenML API is required. The default endpoint for this is `https://www.openml.org/api/v1/`, but this can change when later versions of the API are released. For the code examples, the following packages are usedL:
-
-Java: 
-* [OpenML ApiConnector](https://mvnrepository.com/artifact/org.openml/apiconnector) (version `1.0.22` and up). This package is responsible for api bindings.
-* [OpenML Weka](https://search.maven.org/search?q=a:openmlweka) (version `0.9.6` and up). This package is responsible for Weka Integration and ARFF support.
-
-Python
+## Software interfaces
+To use OpenML Benchmark suites, you can use bindings in several programming languages. These all interface with the OpenML REST API. The default endpoint for this is `https://www.openml.org/api/v1/`, but this can change when later versions of the API are released. To use the code examples below, you only need a recent version of one of the following libraries:
+  
+* [OpenML Java ApiConnector](https://mvnrepository.com/artifact/org.openml/apiconnector) (version `1.0.22` and up).
+* [OpenML Weka](https://search.maven.org/search?q=a:openmlweka) (version `0.9.6` and up). This package adds a Weka Integration.
 * [OpenML Python](https://pypi.org/project/openml/) (version `0.8.0` and up)
-
-R
 * [OpenML R](https://cran.r-project.org/web/packages/OpenML/index.html) (version `1.8` and up)
 
+
 ## Using OpenML Benchmark Suites
-Below are walk-through instructions for common use cases, as well as code examples. These illustrations use the reference 'OpenML-CC18' benchmark suite, but you can replace it with any other benchmark suite. Note that a benchmark suite is a set of OpenML `tasks`, which envelop not only a specific dataset, but also the train-test splits and (for predictive tasks) the target feature.
+Below are walk-through instructions for common use cases, as well as code examples. These illustrations use the reference [OpenML-CC18](https://docs.openml.org/benchmark/#openml-cc18) benchmark suite, but you can replace it with any other benchmark suite. Note that a benchmark suite is a set of OpenML `tasks`, which envelop not only a specific dataset, but also the train-test splits and (for predictive tasks) the target feature.
+
+??? note "Terminology and current status"
+    Benchmark suites are sets of OpenML tasks that you can create and manage yourself. At the same time, it is often useful to also share the set of experiments (runs) with the ensuing benchmarking results. For legacy reasons, such sets of tasks or runs are called `studies` in the OpenML REST API. In the OpenML bindings (Python, R, Java,...) these are called either `sets` or `studies`.
+
+    When benchmarking, you will probably use two types of sets:
+
+    * Sets of tasks. These can be created, edited, downloaded or deleted via the OpenML API. Website forms will be added soon. Also the set of underlying datasets can be easily retrieved via the API.
+    * Sets of runs. Likewise, these can be created, edited, downloaded or deleted via the OpenML API. On the website, these are currently simply called 'studies'. Also the set of underlying tasks, datasets and flows can be easily retrieved. It is possible to link a set of runs to a benchmark study, aimed to collect future runs on that specific set of tasks. Additional information on these will be provided in a separate page.
+
 
 ### Listing the benchmark suites
 The current list of benchmark suites is explicitly listed on the bottom of this page. The list of all sets of tasks can also be fetched programmatically. This list includes the suite's ID (and optionally an alias), which can be used to fetch further details.
 
 Via the REST API, the list is returned in XML or JSON
 ??? note "REST (under development)"
-    ``` 
-    https://www.openml.org/api/v1/xml/study/list/main_entity_type/task
-    ```
+    [https://www.openml.org/api/v1/xml/study/list/main_entity_type/task](https://www.openml.org/api/v1/xml/study/list/main_entity_type/task)
+    
+    [Check out the API docs](https://www.openml.org/api_docs/#!/study/get_study_list_filters)
+
   
 ??? note "Python example (requires the development version)"
     ```python
@@ -72,9 +74,10 @@ Using the ID or alias of a benchmark suite, you can retrieve a description and t
 
 Via the REST API, a list of all tasks and dataset IDs is returned in XML or JSON
 ??? note "REST"
-    ``` 
-    https://www.openml.org/api/v1/xml/study/OpenML-CC18
-    ```
+    [https://www.openml.org/api/v1/xml/study/OpenML-CC18](https://www.openml.org/api/v1/xml/study/OpenML-CC18)
+    
+    [Check out the API docs](https://www.openml.org/api_docs/#!/study/get_study_id)
+
 
 In Python, the data is returned as X, y numpy arrays:
 ??? note "Python example"
@@ -114,6 +117,12 @@ In R, the data is returned as an R dataframe:
 The code below demonstrates how OpenML benchmarking suites can be conveniently imported for benchmarking using the Python, Java and R APIs.
 
 First, the list of tasks is downloaded as already illustrated above. Next, a specific algorithm (or pipeline) can be run on each of them. The OpenML API will automatically evaluate the algorithm using the pre-set train-test splits and store the predictions and scores in a run object. This run object can then be immediately published, pushing the results to the OpenML server, so that they can be compared against all others on the same benchmark set. Uploading results requires an OpenML API key, which can be found in your account details after logging into the OpenML website.
+
+??? note "REST"
+    Requires POST requests:  
+    [Attaching a new run to a benchmark_study](https://www.openml.org/api_docs/#!/study/post_study_id_attach)  
+    [Detaching a run from benchmark_study](https://www.openml.org/api_docs/#!/study/post_study_id_detach)  
+
 
 ??? note "Python example"
     ```python
@@ -173,9 +182,10 @@ ways to select and bundle runs together. This will be featured in
 a separate article on reproducible benchmarks. 
 
 ??? note "REST (TODO)"
-    ``` 
-    https://www.openml.org/api/v1/xml/run/list/study/OpenML-CC18
-    ```
+    [https://www.openml.org/api/v1/xml/run/list/study/OpenML-CC18](https://www.openml.org/api/v1/xml/run/list/study/OpenML-CC18)
+    
+    [Check out the API docs](https://www.openml.org/api_docs/#!/run/get_run_list_filters)
+
     
 ??? note "Python example"
     ```python
@@ -206,6 +216,12 @@ a separate article on reproducible benchmarks.
 Additional OpenML benchmark suites can be created by defining the precise set of tasks, as well as a textual description. New datasets first need to be <a href="https://www.openml.org/new/data">registered on OpenML</a> and tasks need to be created on them.
 
 We have provided [a GitHub repository](https://github.com/openml/benchmark-suites) with additional tools and scripts to build new benchmark studies, e.g. to select all datasets adhering to strict conditions, and to analyse bencharking results.
+
+
+??? note "REST"
+    Requires POST requests:  
+    [Creating a benchmark suite](https://www.openml.org/api_docs/#!/study/post_study)  
+
 
 ??? note "Python example"
     ```python
@@ -247,6 +263,13 @@ We have provided [a GitHub repository](https://github.com/openml/benchmark-suite
 
 ### Updating a benchmark suite
 You can add tasks to a benchmark suite, or remove them.
+
+
+??? note "REST"
+    Requires POST requests:  
+    [Attaching a new task](https://www.openml.org/api_docs/#!/study/post_study_id_attach)  
+    [Detaching a task](https://www.openml.org/api_docs/#!/study/post_study_id_detach)  
+   
 
 ??? note "Python example"
     ```python
@@ -316,6 +339,16 @@ You can add tasks to a benchmark suite, or remove them.
     TODO
     ```
 
+## Further code examples and use cases
+
+As mentioned above, we host [a GitHub repository](https://github.com/openml/benchmark-suites) with additional tools and scripts to easily create and use new benchmark studies. It includes:
+
+* A Jupyter Notebook that builds a new benchmark suite with datasets that adhere to strict and complex conditions, as well as automated tests to remove tasks that are too easy for proper benchmarking.
+* A Jupyter Notebook that shows how to pull in the latest state-of-the-art results for any of the benchmark suites
+* A Jupyter Notebook that does a detailed analysis of all results in a benchmark suite, and an example run on the OpenML-CC18. It includes a wide range of plots and rankings to get a deeper insight into the benchmark results.
+* Scripts in Python and R to facilitate common subtasks.
+
+We very much welcome new scripts and notebooks, or improvements to the existing ones, that help others to create benchmark suites and analyse benchmarking results.
 
 ## List of benchmarking suites
 
@@ -344,6 +377,30 @@ We excluded datasets which:
 * are created by binarization of regression tasks or multiclass classification tasks, or
 * are sparse data (e.g., text mining data sets)
 
+
+??? note "Detailed motivation of these decisions"
+    We chose the CC18 datasets to allow for practical benchmarking based on the characteristics that might be problematic based on our experience, and to avoid common pitfalls that may invalidate benchmark studies:  
+    
+    * We used at least 500 data points to allow performing cross-validation while still having a large-enough test split.
+    * We limited the datasets to 100.000 data points to allow the algorithms to train machine learning models in a reasonable amount of time.
+    * We limited the number of features to 5000 to allow the usage of algorithms which scale unfavourably in the number of features. This limitation, together with the two limitations above aims to allow running all “standard” machine learning algorithms (naive bayes, linear models, support vector machines, tree-based ensemble methods and neural networks) on the benchmark suite.
+    * We required each dataset to have at least two classes to be able to work in a supervised classification setting.
+    * We require each class to have at least 20 observations to be able to perform stratified cross-validation where there is at least one observation from each class in each split. We have found that not having all classes present in all training and test sets can make several machine learning packages fail.
+    * We require a certain balancedness (ratio of minority class to majority class) to prevent cases where only predicting the majority class would be beneficial. This is most likely the restriction which is most debatable, but we found it very helpful to apply a large set of machine learning algorithms across several libraries to the study. We expect that future studies focus more on imbalanced datasets. 
+
+    Furthermore, we aimed to have the dataset collection as general as possible, rule out as few algorithms as possible and have it usable as easily as possible:
+
+    * We strived to remove artificial datasets as they, for example, come from textbooks and it is hard to reliably assess their difficulty. We admit that there is a blurred line between artificial and simulated datasets and do not have a perfect distinction between them (for example, a lot of phenomena can be simulated, but the outcome might be like a simple, artificial dataset). Therefore, we removed datasets if we were in doubt of whether they are simulated or artificial. 
+    * We removed datasets which require grouped sampling because they are time series or data streams which should be treated with special care by machine learning algorithms (i.e., taking the time aspect into account). To be on the safe side, we also removed datasets where each sample constitutes a single data stream.
+    * We removed datasets which are a subset of larger datasets. Allowing subsets would be very subjective as there is no objective choice of a dataset subset size or a subset of the variables or classes. Therefore, creating dataset subsets would open a Pandora’s Box.
+    * We removed datasets which have no source or reference available to potentially learn more about these datasets if we observe unexpected behavior in future studies. In contrast, we would not be able to learn more about the background of a dataset which has no description and publication attached, leaving us with a complete black box.
+    * We removed datasets which can be perfectly classified by a single attribute or a decision stump as they do not allow to meaningfully compare machine learning algorithms (they all achieve 100% accuracy unless the hyperparameters are set in a bogus way).
+    * We removed datasets where a decision tree could achieve 100% accuracy on a 10-fold cross-validation task to remove datasets which can be solved by a simple algorithm which is prone to overfitting training data. We found that this is a good indicator of too easy datasets. Obviously, other datasets will appear easy for several algorithms, and we aim to learn more about the characteristics of such datasets in future studies.
+    * We removed datasets which have more than 5000 features after one-hot-encoding categorical features. One-hot-encoding is the most frequent way to deal with categorical variables across the different machine learning libraries MLR, scikit-learn and WEKA. In order to limit the number of features to 5000 as explained above, we imposed the additional constraint that this should be counted after one-hot-encoding to allow wide applicability of the benchmark suite.
+    * We removed datasets which were created by binarization of regression tasks or multiclass classification task for similar reasons as for forbidding dataset subsets.
+    * We did not include sparse datasets because not all machine learning libraries (i.e., all machine learning models) can handle them gracefully, which is in contrast to our goal which is wide applicability.
+
+
 ### OpenML100  
 The [OpenML100](https://www.openml.org/s/14) was a predecessor of the OpenML-CC18, consisting of [100 classification datasets](https://www.openml.org/search?q=tags.tag%3AOpenML100&type=data&table=1&size=100)</a>. We recommend that you use the **OpenML-CC18** instead, because the OpenML100 suffers from some teething issues in the design of benchmark suites. For instance, it contains several datasets that are too easy to model with today's machine learning algorithms, as well as datasets that represent time series analysis problems. These do not invalidate benchmarks run on the OpenML100, but may obfuscate the interpretation of results. The 'OpenML-CC18' handle is also more descriptive and allows easier versioning.
 The OpenML100 was first published in the Arxiv preprint [OpenML Benchmarking Suites and the OpenML100](https://arxiv.org/abs/1708.03731).
@@ -365,3 +422,7 @@ It excluded datasets which:
 * are variants of other datasets (e.g. binarized regression tasks)
 * include sparse data (e.g., text mining data sets)
 
+
+## Need help?
+
+We are happy to answer to any suggestion or question you may have. For general questions or issues, please open an issue in the [benchmarking issue tracker](https://github.com/openml/benchmark-suites). If the issue lies with one of the language-specific bindings, please post an issue [in the appropriate issue tracker](https://docs.openml.org/developers/).

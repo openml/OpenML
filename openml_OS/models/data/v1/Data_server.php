@@ -32,6 +32,12 @@ class Data_server extends CI_Model {
       $this->_error404();
       return;
     }
+    
+    if (filesize(DATA_PATH . $file->filepath) != $file->filesize && $file->type != 'url') {
+      $this->_email_filesize_error($file);
+      $this->_error404();
+      return;
+    }
 
     // in case of externally linked file, handle alternativelly
     if ($file->{'type'} == 'url') {
@@ -46,6 +52,7 @@ class Data_server extends CI_Model {
     $file = $this->File->getById($id);
     if ($file === false) {
       $this->_error404();
+      return;
     }
 
     if (!$this->_check_rights($file)) {
@@ -54,6 +61,12 @@ class Data_server extends CI_Model {
     }
 
     if (!file_exists(DATA_PATH . $file->filepath) && $file->type != 'url') {
+      $this->_error404();
+      return;
+    }
+    
+    if (filesize(DATA_PATH . $file->filepath) != $file->filesize && $file->type != 'url') {
+      $this->_email_filesize_error($file);
       $this->_error404();
       return;
     }
@@ -184,6 +197,13 @@ class Data_server extends CI_Model {
     header('Pragma: public');
     header('Connection: keep-alive');
     header('Keep-Alive: timeout=300, max=500');
+  }
+  
+  private function _email_filesize_error($file) {
+    $to = EMAIL_API_LOG;
+    $subject = 'OpenML File Error. Id: ' . $file->id;
+    $content = 'File record with id ' . $file->id . ' (' . $file->type . ') on ' . BASE_URL . ' states ' . $file->filesize . ' but PHP filesize states: ' . filesize(DATA_PATH . $file->filepath);
+    sendEmail($to, $subject, $content,'text');
   }
 }
 ?>

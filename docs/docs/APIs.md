@@ -9,11 +9,14 @@ The REST API allows you to talk directly to the OpenML server from any programmi
 ## ![icon](img/python.png) Python
 Download datasets into Python scripts, build models using Python machine learning libraries (e.g., <i>scikit-learn</i>), and share the results online, all in a few lines of code.
 
-* [Python Tutorial](Python-guide)
-* [Python API Reference](Python-API)
-* [Example Jupyter notebook](https://github.com/openml/openml-python/blob/master/examples/OpenML_Tutorial.ipynb)
-* [Cheatsheet](https://github.com/openml/openml-python/blob/cheatsheet/examples/OpenML_Cheat_Sheet.pdf)
-* [Online Demo](https://everware.ysda.yandex.net/hub/oauth_login?repourl=https://github.com/openml/study_example_python)
+* [Get started](Python-start)
+* [User Guide](Python-guide)
+* [Examples](Python-examples)
+* [API Reference](Python-API)
+* [Contributing](Python-contributing)
+* [Changelog](Python-changelog)
+* [OpenML-Python Tutorial](https://openml.github.io/openml-tutorial/)
+* [Cheatsheet](https://openml.github.io/openml-tutorial/slides_pdf/OpenML%20Python%20cheat%20sheet.pdf)
 
 ## ![icon](img/R.png) R
 Download datasets into R scripts, build models using R machine learning packages (e.g. <i>mlr</i>), and share the results online, again in a few lines of code.

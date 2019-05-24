@@ -347,6 +347,7 @@ class Api_task extends MY_Api_Model {
         $status_record = $this->Dataset_status->getWhereSingle('did = ' . $input_value, '`status` DESC');
         if (!$status_record || $status_record->status != 'active') {
           $this->returnError(623, $this->version, $this->openmlGeneralErrorCode, 'problematic input: ' . $name);
+          return;
         }
       }
       

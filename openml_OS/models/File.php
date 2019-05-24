@@ -19,7 +19,11 @@ class File extends MY_Community_Model {
     }
     $newName = getAvailableName( DATA_PATH . $to_folder, $file['name'] );
     
-    if( move_uploaded_file( $file['tmp_name'], DATA_PATH . $to_folder . $newName ) === false ) {
+    if (move_uploaded_file( $file['tmp_name'], DATA_PATH . $to_folder . $newName ) === false) {
+      return false;
+    }
+    $filesize = filesize(DATA_PATH . $to_folder . $newName);
+    if ($filesize == 0) {
       return false;
     }
     
@@ -27,7 +31,7 @@ class File extends MY_Community_Model {
       'creator' => $creator_id,
       'creation_date' => now(),
       'filepath' => $to_folder . $newName,
-      'filesize' => filesize( DATA_PATH . $to_folder . $newName ),
+      'filesize' => $filesize,
       'filename_original' => $file['name'],
       'extension' => pathinfo($file['name'], PATHINFO_EXTENSION),
       'mime_type' => $file['type'],

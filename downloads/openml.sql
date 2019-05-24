@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.5.4.1deb2ubuntu2.1
--- http://www.phpmyadmin.net
+-- version 4.6.6deb5
+-- https://www.phpmyadmin.net/
 --
--- Host: localhost
--- Generation Time: Oct 07, 2018 at 09:50 PM
--- Server version: 5.7.23-0ubuntu0.16.04.1-log
--- PHP Version: 7.0.32-0ubuntu0.16.04.1
+-- Host: localhost:3306
+-- Generation Time: Apr 15, 2019 at 07:47 PM
+-- Server version: 5.7.25-0ubuntu0.18.04.2-log
+-- PHP Version: 7.2.15-0ubuntu0.18.04.2
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -19,8 +19,6 @@ SET time_zone = "+00:00";
 --
 -- Database: `openml`
 --
-CREATE DATABASE IF NOT EXISTS `openml` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
-USE `openml`;
 
 -- --------------------------------------------------------
 
@@ -183,21 +181,6 @@ CREATE TABLE `users_groups` (
   `group_id` mediumint(8) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- --------------------------------------------------------
-
---
--- Table structure for table `vipercharts`
---
-
-CREATE TABLE `vipercharts` (
-  `id` int(10) NOT NULL,
-  `run_id` int(10) NOT NULL,
-  `class` varchar(255) NOT NULL,
-  `viper_id` varchar(255) NOT NULL,
-  `activated` datetime NOT NULL,
-  `inactived` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
 --
 -- Indexes for dumped tables
 --
@@ -249,18 +232,16 @@ ALTER TABLE `thread`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `session_hash` (`session_hash`);
+  ADD UNIQUE KEY `username` (`username`,`email`),
+  ADD UNIQUE KEY `session_hash` (`session_hash`),
+  ADD UNIQUE KEY `activation_selector` (`activation_selector`),
+  ADD UNIQUE KEY `forgotten_password_selector` (`forgotten_password_selector`),
+  ADD UNIQUE KEY `remember_selector` (`remember_selector`);
 
 --
 -- Indexes for table `users_groups`
 --
 ALTER TABLE `users_groups`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `vipercharts`
---
-ALTER TABLE `vipercharts`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -307,11 +288,6 @@ ALTER TABLE `users`
 --
 ALTER TABLE `users_groups`
   MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `vipercharts`
---
-ALTER TABLE `vipercharts`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

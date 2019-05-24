@@ -65,7 +65,7 @@ class Estimation_procedure extends MY_Database_Read_Model {
   
   public function check_legal($ep_record, $dataset_size, $repeat_nr, $fold_nr, $sample_nr) {
     if ($fold_nr) {
-      if ($ep_record->folds == null || $fold_nr >= $ep_record->folds || !$repeat_nr == null) {
+      if ($ep_record->folds == null || $fold_nr >= $ep_record->folds) {
         return false;
       }
     }

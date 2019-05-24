@@ -17,6 +17,7 @@ class Api_estimationprocedure extends MY_Api_Model {
       $this->estimationprocedure_list();
       return;
     }
+    $getpost = array('get', 'post');
 
     if (count($segments) == 1 && is_numeric($segments[0]) && in_array($request_type, $getpost)) {
       $this->estimationprocedure($segments[0]);
