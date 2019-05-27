@@ -15,6 +15,7 @@ Machine learning dataset repositories (mostly already in OpenML)
   - skData package: https://github.com/jaberg/skdata/tree/master/skdata
   - Rdatasets: http://vincentarelbundock.github.io/Rdatasets/datasets.html
   - DataBrewer: https://github.com/rmax/databrewer
+  - liac-arff: https://github.com/renatopp/arff-datasets
 
 Time series data:
 
