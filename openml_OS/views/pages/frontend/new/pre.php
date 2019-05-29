@@ -33,7 +33,7 @@ if ($this->subpage == 'task'){
 
 $this->datasets 			= $this->Dataset->getColumnWhere( 'name', 'isOriginal = "true"', '`name` ASC' );
 $this->datasetIds 			= $this->Dataset->getColumn( 'did', 'did' );
-$this->datasetVersion		= $this->Dataset->getColumnFunction( 'CONCAT(`name`,"(",`version`,")")', '`name` ASC' );
+$this->datasetVersion		= $this->Dataset->getColumnFunctionWhere( 'CONCAT(`name`,"(",`version`,")")', 'did IN (select did from dataset_status where status = "active")', '`name` ASC' );
 $this->datasetVersionOriginal= $this->Dataset->getColumnFunctionWhere( 'CONCAT(`name`,"(",`version`,")")', 'isOriginal = "true"', '`name` ASC' );
 
 $this->formats				= $this->Dataset->getDistinct( 'format' );
