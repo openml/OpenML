@@ -396,7 +396,7 @@ class Api_task extends MY_Api_Model {
     }
 
     foreach($tags as $tag) {
-      $this->entity_tag_untag('task', $id, $tag, false, 'task', true);
+      $success = $this->entity_tag_untag('task', $id, $tag, false, 'task', true);
       // if tagging went wrong, an error is displayed. (TODO: something else?)
       if (!$success) return;
     }
