@@ -514,6 +514,7 @@ class Api_data extends MY_Api_Model {
 
     // insert tags. This relies on the ES record to exist.
     foreach ($tags as $tag) {
+      // function relies on ES to know the document ID
       $success = $this->entity_tag_untag('dataset', $id, $tag, false, 'data', true);
     }
 

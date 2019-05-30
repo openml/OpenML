@@ -395,12 +395,6 @@ class Api_task extends MY_Api_Model {
       $this->Task_inputs->insert($task_input);
     }
 
-    foreach($tags as $tag) {
-      $success = $this->entity_tag_untag('task', $id, $tag, false, 'task', false);
-      // if tagging went wrong, an error is displayed. (TODO: something else?)
-      if (!$success) return;
-    }
-
     // update elastic search index.
     try {
       // TODO: uncomment when fixed
@@ -410,6 +404,13 @@ class Api_task extends MY_Api_Model {
       $additionalMsg = get_class() . '.' . __FUNCTION__ . ':' . $e->getMessage();
       $this->returnError(105, $this->version, $this->openmlGeneralErrorCode, $additionalMsg);
       return;
+    }
+
+    foreach($tags as $tag) {
+      // function relies on ES to know the document ID
+      $success = $this->entity_tag_untag('task', $id, $tag, false, 'task', false);
+      // if tagging went wrong, an error is displayed. (TODO: something else?)
+      if (!$success) return;
     }
 
     $this->xmlContents( 'task-upload', $this->version, array( 'id' => $id ) );
