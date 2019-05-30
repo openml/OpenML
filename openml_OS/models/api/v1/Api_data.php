@@ -516,6 +516,7 @@ class Api_data extends MY_Api_Model {
     foreach ($tags as $tag) {
       // function relies on ES to know the document ID
       $success = $this->entity_tag_untag('dataset', $id, $tag, false, 'data', true);
+      // if tagging went wrong, the error is surpressed (as this is usually ES)
     }
 
     // create initial wiki page
