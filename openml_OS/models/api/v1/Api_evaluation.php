@@ -91,14 +91,14 @@ class Api_evaluation extends MY_Api_Model {
 
   private function evaluation_list($segs, $user_id) {
     $result_limit = 10000;
-    $legal_filters = array('task', 'setup', 'flow', 'uploader', 'run', 'tag', 'limit', 'offset', 'function', 'per_fold', 'sort');
+    $legal_filters = array('task', 'setup', 'flow', 'uploader', 'run', 'tag', 'limit', 'offset', 'function', 'per_fold', 'sort_order');
     list($query_string, $illegal_filters) = $this->parse_filters($segs, $legal_filters);
     if (count($illegal_filters) > 0) {
       $this->returnError(544, $this->version, $this->openmlGeneralErrorCode, 'Legal filter operators: ' . implode(',', $legal_filters) .'. Found illegal filter(s): ' . implode(', ', $illegal_filters));
       return;
     }
     
-    $illegal_filter_inputs = $this->check_filter_inputs($query_string, $legal_filters, array('tag', 'function', 'per_fold', 'sort'));
+    $illegal_filter_inputs = $this->check_filter_inputs($query_string, $legal_filters, array('tag', 'function', 'per_fold', 'sort_order'));
     if (count($illegal_filter_inputs) > 0) {
       $this->returnError(541, $this->version, $this->openmlGeneralErrorCode, 'Filters with illegal values: ' . implode(',', $illegal_filter_inputs));
       return;
@@ -114,7 +114,7 @@ class Api_evaluation extends MY_Api_Model {
     $limit = element('limit', $query_string, null);
     $offset = element('offset', $query_string, null);
     $per_fold = element('per_fold', $query_string, null);
-    $sort_results = element('sort', $query_string, null);
+    $sort_order = element('sort_order', $query_string, null);
     if ($per_fold != 'true' && $per_fold != 'false' && $per_fold != null) {
       $this->returnError(547, $this->version, $this->openmlGeneralErrorCode, 'Filters with illegal values: ' . implode(',', $illegal_filter_inputs));
       return;
@@ -129,7 +129,7 @@ class Api_evaluation extends MY_Api_Model {
       $this->returnError(546, $this->version);
       return;
     }
-    if ($sort_results && !in_array($sort_results, array('asc', 'desc'))) {
+    if ($sort_order && !in_array($sort_order, array('asc', 'desc'))) {
       $this->returnError(549, $this->version);
       return;
     }
@@ -187,8 +187,8 @@ class Api_evaluation extends MY_Api_Model {
     }
     
     $order_by = null;
-    if ($sort_results) {
-      $order_by = 'ORDER BY `e`.`value` ' . $sort_results;
+    if ($sort_order) {
+      $order_by = 'ORDER BY `e`.`value` ' . $sort_order;
     }
     
     if ($per_fold) {
