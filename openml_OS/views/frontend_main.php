@@ -311,8 +311,7 @@ if (session_status() === PHP_SESSION_NONE){session_start();}
           </div>
         </div>
 
-        <?php echo ctype_alpha($body) ? loadpage($body) : $body; ?>
-
+        <?php echo (ctype_alpha($body) or $ch=='api_docs') ? loadpage($body) : $body; ?>
 
         </div>
         
