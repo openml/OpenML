@@ -78,6 +78,7 @@ class ElasticSearch {
             'properties' => array(
                 'date' => array(
                     'type' => 'date',
+                    'fielddata' => 'true',
                     'format' => 'yyyy-MM-dd HH:mm:ss',
 		    'fields' => array(
             		'keyword' => array(
@@ -119,6 +120,7 @@ class ElasticSearch {
             'properties' => array(
                 'date' => array(
                     'type' => 'date',
+                    'fielddata' => 'true',
                     'format' => 'yyyy-MM-dd HH:mm:ss'
                 ),
                 'exact_name' => array(
@@ -161,6 +163,7 @@ class ElasticSearch {
             'properties' => array(
                 'date' => array(
                     'type' => 'date',
+                    'fielddata' => 'true',
                     'format' => 'yyyy-MM-dd HH:mm:ss'
                 ),
                 'last_update' => array(
@@ -177,6 +180,7 @@ class ElasticSearch {
             'properties' => array(
                 'date' => array(
                     'type' => 'date',
+                    'fielddata' => 'true',
                     'format' => 'yyyy-MM-dd HH:mm:ss'),
                 'suggest' => array(
                     'type' => 'completion',
@@ -189,10 +193,7 @@ class ElasticSearch {
                         'uploader' => array('type' => 'text'))),
                 'task_id' => array('type' => 'long'),
                 'tasktype.tt_id' => array('type' => 'long'),
-                'date' => array(
-                    'type' => 'date',
-                    'format' => 'yyyy-MM-dd HH:mm:ss'),
-		'runs' => array('type' => 'long')
+		            'runs' => array('type' => 'long')
             )
         );
 	$this->mappings['task_type'] = array(
@@ -207,6 +208,7 @@ class ElasticSearch {
                 ),
                 'date' => array(
                     'type' => 'date',
+                    'fielddata' => 'true',
                     'format' => 'yyyy-MM-dd HH:mm:ss'),
                 'suggest' => array(
                     'type' => 'completion',
@@ -218,6 +220,7 @@ class ElasticSearch {
             'properties' => array(
                 'date' => array(
                     'type' => 'date',
+                    'fielddata' => 'true',
                     'format' => 'yyyy-MM-dd HH:mm:ss'
                 ),
                 'tags' => array(
@@ -230,6 +233,7 @@ class ElasticSearch {
                 'run_flow.name'  => array('type' => 'text', 'fielddata' => true),
                 'last_update' => array(
                     'type' => 'date',
+                    'fielddata' => 'true',
                     'format' => 'yyyy-MM-dd HH:mm:ss'
                 ),
                 'uploader' => array(
@@ -254,6 +258,7 @@ class ElasticSearch {
                     'type' => 'keyword'),
                 'date' => array(
                     'type' => 'date',
+                    'fielddata' => 'true',
                     'format' => 'yyyy-MM-dd HH:mm:ss'
                 ),
                 'description' => array(
@@ -288,6 +293,7 @@ class ElasticSearch {
                 ),
                 'date' => array(
                     'type' => 'date',
+                    'fielddata' => 'true',
                     'format' => 'yyyy-MM-dd HH:mm:ss'),
                 'suggest' => array(
                     'type' => 'completion',
