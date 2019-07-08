@@ -2403,6 +2403,7 @@ paths:
           /uploader/{ids} - return only evaluations uploaded by specific users, specified as a comma-separated list of user IDs, e.g. ''1,2,3''
           /limit/{limit}/offset/{offset} - returns only {limit} results starting from result number {offset}. Useful for paginating results. With /limit/5/offset/10, results 11..15 will be returned. Both limit and offset need to be specified.
           /per_fold/{true,false} - whether or not to return crossvalidation scores per fold. Defaults to 'false'. Setting it to 'true' leads to large numbers of results, use only for very specific sets of runs.
+          /sort_order/{asc,desc} - sorts the results by the evaluation value, according to the selected evaluation measure (function)
         required: true
         type: string
       - name: api_key
