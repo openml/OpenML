@@ -80,7 +80,7 @@
             }
           },
           "412" : {
-            "description" : "Precondition failed. An error code and message are returned\n350 - Please provide API key. In order to remove your content, please authenticate.\n351 - Authentication failed. The API key was not valid. Please try to login again, or contact api administrators.\n352 - Dataset does not exists. The data ID could not be linked to an existing dataset.\n353 - Dataset is not owned by you. The dataset is owned by another user. Hence you cannot delete it.\n354 - Dataset is in use by other content. Can not be deleted. The data is used in tasks or runs. Delete other content before deleting this dataset.\n355 - Deleting dataset failed. Deleting the dataset failed. Please contact\nsupport team.\n",
+            "description" : "Precondition failed. An error code and message are returned\n- 350 - Please provide API key. In order to remove your content, please authenticate.\n- 351 - Authentication failed. The API key was not valid. Please try to login again, or contact api administrators.\n- 352 - Dataset does not exists. The data ID could not be linked to an existing dataset.\n- 353 - Dataset is not owned by you. The dataset is owned by another user. Hence you cannot delete it.\n- 354 - Dataset is in use by other content. Can not be deleted. The data is used in tasks or runs. Delete other content before deleting this dataset.\n- 355 - Deleting dataset failed. Deleting the dataset failed. Please contact support team.\n",
             "schema" : {
               "$ref" : "#/definitions/Error"
             }
@@ -476,7 +476,7 @@
     },
     "/data/unprocessed/{data_engine_id}/{order}" : {
       "get" : {
-        "tags" : [ "evaluation" ],
+        "tags" : [ "data" ],
         "summary" : "Get a list of unprocessed datasets",
         "description" : "This call is for people running their own dataset processing engines. It returns the details of datasets that are not yet processed by the given processing engine. It doesn't process the datasets, it just returns the dataset info.\n",
         "parameters" : [ {
@@ -1298,6 +1298,183 @@
             }
           }
         }
+      },
+      "delete" : {
+        "tags" : [ "setup" ],
+        "summary" : "Delete setup",
+        "description" : "Deletes a setup. Upon success, it returns the ID of the deleted setup.\n",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "Id of the setup.",
+          "required" : true,
+          "type" : "number",
+          "format" : "integer"
+        }, {
+          "name" : "api_key",
+          "in" : "query",
+          "description" : "Api key to authenticate the user",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "ID of the deleted setup",
+            "examples" : {
+              "application/json" : "{\n  \"setup_delete\": {\n    \"id\": \"1\"\n  }\n}"
+            },
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "study_delete" : {
+                  "$ref" : "#/definitions/inline_response_200_14_study_delete"
+                }
+              }
+            }
+          },
+          "412" : {
+            "description" : "Precondition failed. An error code and message are returned.\n401 - Authentication failed. Please provide API key. In order to remove your content, please authenticate.\n402 - Setup does not exists. The setup ID could not be linked to an existing setup.\n404 - Setup deletion failed. Setup is in use by other content (runs, schedules, etc). Can not be deleted.\n405 - Setup deletion failed. Please try again later.\n",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/setup/tag" : {
+      "post" : {
+        "tags" : [ "setup" ],
+        "summary" : "Tag a setup",
+        "description" : "Tags a setup.",
+        "consumes" : [ "application/x-www-form-urlencoded" ],
+        "parameters" : [ {
+          "name" : "setup_id",
+          "in" : "formData",
+          "description" : "Id of the setup.",
+          "required" : true,
+          "type" : "number",
+          "format" : "integer"
+        }, {
+          "name" : "tag",
+          "in" : "formData",
+          "description" : "Tag name",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "api_key",
+          "in" : "formData",
+          "description" : "Api key to authenticate the user",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The id of the tagged setup",
+            "examples" : {
+              "application/json" : "{\n  \"setup_tag\": {\n    \"id\": \"2\"\n  }\n}"
+            },
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "flow_tag" : {
+                  "$ref" : "#/definitions/inline_response_200_15_flow_tag"
+                }
+              }
+            }
+          },
+          "412" : {
+            "description" : "Precondition failed. An error code and message are returned.\n470 - In order to add a tag, please upload the entity id (either data_id, flow_id, run_id) and tag (the name of the tag).\n471 - Entity not found. The provided entity_id {data_id, flow_id, run_id} does not correspond to an existing entity.\n472 - Entity already tagged by this tag. The entity {dataset, flow, run} already had this tag.\n473 - Something went wrong inserting the tag. Please contact OpenML Team.\n474 - Internal error tagging the entity. Please contact OpenML Team.\n",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/setup/untag" : {
+      "post" : {
+        "tags" : [ "setup" ],
+        "summary" : "Untag a setup",
+        "description" : "Untags a setup.",
+        "consumes" : [ "application/x-www-form-urlencoded" ],
+        "parameters" : [ {
+          "name" : "setup_id",
+          "in" : "formData",
+          "description" : "Id of the setup.",
+          "required" : true,
+          "type" : "number"
+        }, {
+          "name" : "tag",
+          "in" : "formData",
+          "description" : "Tag name",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "api_key",
+          "in" : "formData",
+          "description" : "Api key to authenticate the user",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The id of the untagged setup",
+            "examples" : {
+              "application/json" : "{\n  \"setup_untag\": {\n    \"id\": \"2\"\n  }\n}"
+            },
+            "schema" : {
+              "type" : "object",
+              "properties" : {
+                "flow_untag" : {
+                  "$ref" : "#/definitions/inline_response_200_16_flow_untag"
+                }
+              }
+            }
+          },
+          "412" : {
+            "description" : "Precondition failed. An error code and message are returned.\n475 - Please give entity_id {data_id, flow_id, run_id} and tag. In order to remove a tag, please upload the entity id (either data_id, flow_id, run_id) and tag (the name of the tag).\n476 - Entity {dataset, flow, run} not found. The provided entity_id {data_id, flow_id, run_id} does not correspond to an existing entity.\n477 - Tag not found. The provided tag is not associated with the entity {dataset, flow, run}.\n478 - Tag is not owned by you. The entity {dataset, flow, run} was tagged\nby another user. Hence you cannot delete it.\n479 - Internal error removing the tag. Please contact OpenML Team.\n",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/setup/list/{filters}" : {
+      "get" : {
+        "tags" : [ "setup" ],
+        "summary" : "List and filter setups",
+        "description" : "List setups, filtered by a range of properties. Any number of properties can be combined by listing them one after the other in the form '/setup/list/{filter}/{value}/{filter}/{value}/...' Returns an array with all evaluations that match the constraints. A maximum of 1,000 results are returned at a time, an error is returned if the result set is bigger. Use pagination (via limit and offset filters), or limit the results to certain flows, setups, or tags.\n",
+        "parameters" : [ {
+          "name" : "filters",
+          "in" : "path",
+          "description" : "Any combination of these filters\n/tag/{tag} - returns only setups tagged with the given tag.\n/flow/{ids} - return only setups for specific flows, specified as a comma-separated list of flow IDs, e.g. ''1,2,3''\n/setup/{ids} - return only specific setups, specified as a comma-separated list of setup IDs, e.g. ''1,2,3''\n/limit/{limit}/offset/{offset} - returns only {limit} results starting from result number {offset}. Useful for paginating results. With /limit/5/offset/10, results 11..15 will be returned. Both limit and offset need to be specified.\n",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "api_key",
+          "in" : "query",
+          "description" : "API key to authenticate the user",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "A list of setup descriptions",
+            "examples" : {
+              "application/json" : "{\n  \"setups\": {\n    \"setup\": [\n      {\n        \"setup_id\":\"10\",\n        \"flow_id\":\"65\",\n        \"parameter\": [\n          {\n            \"id\":\"4144\",\n            \"flow_id\":\"65\",\n            \"flow_name\":\"weka.RandomForest\",\n            \"full_name\":\"weka.RandomForest(1)_I\",\n            \"parameter_name\":\"I\",\n            \"data_type\":\"option\",\n            \"default_value\":\"10\",\n            \"value\":\"10\"\n          },\n          {\n            \"id\":\"4145\",\n            \"flow_id\":\"65\",\n            \"flow_name\":\"weka.RandomForest\",\n            \"full_name\":\"weka.RandomForest(1)_K\",\n            \"parameter_name\":\"K\",\n            \"data_type\":\"option\",\n            \"default_value\":\"0\",\n            \"value\":\"0\"\n          }\n        ]\n      }\n    ]\n  }\n}"
+            },
+            "schema" : {
+              "$ref" : "#/definitions/SetupList"
+            }
+          },
+          "412" : {
+            "description" : "Precondition failed. An error code and message are returned.\n670 - Please specify at least one filter.\n671 - Illegal filter.\n672 - Illegal filter input.\n673 - Result set too big. Please use one of the filters or the limit option.\n674 - No results, please check the filter.\n675 - Cannot specify offset without limit.\n676 - Requested result limit too high.\n",
+            "schema" : {
+              "$ref" : "#/definitions/Error"
+            }
+          }
+        }
       }
     },
     "/run/{id}" : {
@@ -1365,7 +1542,7 @@
               "type" : "object",
               "properties" : {
                 "data_delete" : {
-                  "$ref" : "#/definitions/inline_response_200_14_data_delete"
+                  "$ref" : "#/definitions/inline_response_200_17_data_delete"
                 }
               }
             }
@@ -1426,7 +1603,7 @@
               "type" : "object",
               "properties" : {
                 "upload_flow" : {
-                  "$ref" : "#/definitions/inline_response_200_15_upload_flow"
+                  "$ref" : "#/definitions/inline_response_200_18_upload_flow"
                 }
               }
             }
@@ -1541,7 +1718,7 @@
               "type" : "object",
               "properties" : {
                 "run_tag" : {
-                  "$ref" : "#/definitions/inline_response_200_16_run_tag"
+                  "$ref" : "#/definitions/inline_response_200_19_run_tag"
                 }
               }
             }
@@ -1590,7 +1767,7 @@
               "type" : "object",
               "properties" : {
                 "run_untag" : {
-                  "$ref" : "#/definitions/inline_response_200_17_run_untag"
+                  "$ref" : "#/definitions/inline_response_200_20_run_untag"
                 }
               }
             }
@@ -1633,7 +1810,7 @@
               "type" : "object",
               "properties" : {
                 "upload_flow" : {
-                  "$ref" : "#/definitions/inline_response_200_18_upload_flow"
+                  "$ref" : "#/definitions/inline_response_200_21_upload_flow"
                 }
               }
             }
@@ -1675,7 +1852,7 @@
               "type" : "object",
               "properties" : {
                 "run_reset" : {
-                  "$ref" : "#/definitions/inline_response_200_18_upload_flow"
+                  "$ref" : "#/definitions/inline_response_200_21_upload_flow"
                 }
               }
             }
@@ -1761,7 +1938,7 @@
               "type" : "object",
               "properties" : {
                 "upload_flow" : {
-                  "$ref" : "#/definitions/inline_response_200_20_upload_flow"
+                  "$ref" : "#/definitions/inline_response_200_23_upload_flow"
                 }
               }
             }
@@ -1957,7 +2134,7 @@
               "type" : "object",
               "properties" : {
                 "study_delete" : {
-                  "$ref" : "#/definitions/inline_response_200_21_study_delete"
+                  "$ref" : "#/definitions/inline_response_200_24_study_delete"
                 }
               }
             }
@@ -2000,7 +2177,7 @@
               "type" : "object",
               "properties" : {
                 "upload_study" : {
-                  "$ref" : "#/definitions/inline_response_200_22_upload_study"
+                  "$ref" : "#/definitions/inline_response_200_25_upload_study"
                 }
               }
             }
@@ -2087,7 +2264,7 @@
               "type" : "object",
               "properties" : {
                 "study_attach" : {
-                  "$ref" : "#/definitions/inline_response_200_23_study_attach"
+                  "$ref" : "#/definitions/inline_response_200_26_study_attach"
                 }
               }
             }
@@ -2137,7 +2314,7 @@
               "type" : "object",
               "properties" : {
                 "upload_study" : {
-                  "$ref" : "#/definitions/inline_response_200_23_study_attach"
+                  "$ref" : "#/definitions/inline_response_200_26_study_attach"
                 }
               }
             }
@@ -2182,9 +2359,9 @@
         }
       }
     },
-    "/estimationmeasure/list" : {
+    "/evaluationmeasure/list" : {
       "get" : {
-        "tags" : [ "estimationmeasure" ],
+        "tags" : [ "evaluationmeasure" ],
         "summary" : "List all evaluation measures",
         "description" : "Returns an array with all model evaluation measures in the system.\n",
         "parameters" : [ {
@@ -2302,6 +2479,14 @@
       "properties" : {
         "runs" : {
           "$ref" : "#/definitions/RunList_runs"
+        }
+      }
+    },
+    "SetupList" : {
+      "type" : "object",
+      "properties" : {
+        "setups" : {
+          "$ref" : "#/definitions/SetupList_setups"
         }
       }
     },
@@ -2648,7 +2833,52 @@
         }
       }
     },
-    "inline_response_200_14_data_delete" : {
+    "inline_response_200_14_study_delete" : {
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "ID of the deleted setup, a positive integer"
+        }
+      }
+    },
+    "inline_response_200_14" : {
+      "properties" : {
+        "study_delete" : {
+          "$ref" : "#/definitions/inline_response_200_14_study_delete"
+        }
+      }
+    },
+    "inline_response_200_15_flow_tag" : {
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "ID of the tagged setup"
+        }
+      }
+    },
+    "inline_response_200_15" : {
+      "properties" : {
+        "flow_tag" : {
+          "$ref" : "#/definitions/inline_response_200_15_flow_tag"
+        }
+      }
+    },
+    "inline_response_200_16_flow_untag" : {
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "ID of the untagged setup"
+        }
+      }
+    },
+    "inline_response_200_16" : {
+      "properties" : {
+        "flow_untag" : {
+          "$ref" : "#/definitions/inline_response_200_16_flow_untag"
+        }
+      }
+    },
+    "inline_response_200_17_data_delete" : {
       "properties" : {
         "id" : {
           "type" : "string",
@@ -2656,55 +2886,10 @@
         }
       }
     },
-    "inline_response_200_14" : {
-      "properties" : {
-        "data_delete" : {
-          "$ref" : "#/definitions/inline_response_200_14_data_delete"
-        }
-      }
-    },
-    "inline_response_200_15_upload_flow" : {
-      "properties" : {
-        "id" : {
-          "type" : "string",
-          "description" : "ID of the uploaded run, a positive integer"
-        }
-      }
-    },
-    "inline_response_200_15" : {
-      "properties" : {
-        "upload_flow" : {
-          "$ref" : "#/definitions/inline_response_200_15_upload_flow"
-        }
-      }
-    },
-    "inline_response_200_16_run_tag" : {
-      "properties" : {
-        "id" : {
-          "type" : "string",
-          "description" : "ID of the tagged run"
-        }
-      }
-    },
-    "inline_response_200_16" : {
-      "properties" : {
-        "run_tag" : {
-          "$ref" : "#/definitions/inline_response_200_16_run_tag"
-        }
-      }
-    },
-    "inline_response_200_17_run_untag" : {
-      "properties" : {
-        "id" : {
-          "type" : "string",
-          "description" : "ID of the untagged run"
-        }
-      }
-    },
     "inline_response_200_17" : {
       "properties" : {
-        "run_untag" : {
-          "$ref" : "#/definitions/inline_response_200_17_run_untag"
+        "data_delete" : {
+          "$ref" : "#/definitions/inline_response_200_17_data_delete"
         }
       }
     },
@@ -2712,7 +2897,7 @@
       "properties" : {
         "id" : {
           "type" : "string",
-          "description" : "ID of the evaluated run, a positive integer"
+          "description" : "ID of the uploaded run, a positive integer"
         }
       }
     },
@@ -2723,14 +2908,59 @@
         }
       }
     },
-    "inline_response_200_19" : {
+    "inline_response_200_19_run_tag" : {
       "properties" : {
-        "run_reset" : {
-          "$ref" : "#/definitions/inline_response_200_18_upload_flow"
+        "id" : {
+          "type" : "string",
+          "description" : "ID of the tagged run"
         }
       }
     },
-    "inline_response_200_20_upload_flow" : {
+    "inline_response_200_19" : {
+      "properties" : {
+        "run_tag" : {
+          "$ref" : "#/definitions/inline_response_200_19_run_tag"
+        }
+      }
+    },
+    "inline_response_200_20_run_untag" : {
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "ID of the untagged run"
+        }
+      }
+    },
+    "inline_response_200_20" : {
+      "properties" : {
+        "run_untag" : {
+          "$ref" : "#/definitions/inline_response_200_20_run_untag"
+        }
+      }
+    },
+    "inline_response_200_21_upload_flow" : {
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "ID of the evaluated run, a positive integer"
+        }
+      }
+    },
+    "inline_response_200_21" : {
+      "properties" : {
+        "upload_flow" : {
+          "$ref" : "#/definitions/inline_response_200_21_upload_flow"
+        }
+      }
+    },
+    "inline_response_200_22" : {
+      "properties" : {
+        "run_reset" : {
+          "$ref" : "#/definitions/inline_response_200_21_upload_flow"
+        }
+      }
+    },
+    "inline_response_200_23_upload_flow" : {
       "properties" : {
         "id" : {
           "type" : "string",
@@ -2738,14 +2968,14 @@
         }
       }
     },
-    "inline_response_200_20" : {
+    "inline_response_200_23" : {
       "properties" : {
         "upload_flow" : {
-          "$ref" : "#/definitions/inline_response_200_20_upload_flow"
+          "$ref" : "#/definitions/inline_response_200_23_upload_flow"
         }
       }
     },
-    "inline_response_200_21_study_delete" : {
+    "inline_response_200_24_study_delete" : {
       "properties" : {
         "id" : {
           "type" : "string",
@@ -2753,14 +2983,14 @@
         }
       }
     },
-    "inline_response_200_21" : {
+    "inline_response_200_24" : {
       "properties" : {
         "study_delete" : {
-          "$ref" : "#/definitions/inline_response_200_21_study_delete"
+          "$ref" : "#/definitions/inline_response_200_24_study_delete"
         }
       }
     },
-    "inline_response_200_22_upload_study" : {
+    "inline_response_200_25_upload_study" : {
       "properties" : {
         "id" : {
           "type" : "string",
@@ -2768,14 +2998,14 @@
         }
       }
     },
-    "inline_response_200_22" : {
+    "inline_response_200_25" : {
       "properties" : {
         "upload_study" : {
-          "$ref" : "#/definitions/inline_response_200_22_upload_study"
+          "$ref" : "#/definitions/inline_response_200_25_upload_study"
         }
       }
     },
-    "inline_response_200_23_study_attach" : {
+    "inline_response_200_26_study_attach" : {
       "properties" : {
         "id" : {
           "type" : "string",
@@ -2791,17 +3021,17 @@
         }
       }
     },
-    "inline_response_200_23" : {
+    "inline_response_200_26" : {
       "properties" : {
         "study_attach" : {
-          "$ref" : "#/definitions/inline_response_200_23_study_attach"
+          "$ref" : "#/definitions/inline_response_200_26_study_attach"
         }
       }
     },
-    "inline_response_200_24" : {
+    "inline_response_200_27" : {
       "properties" : {
         "upload_study" : {
-          "$ref" : "#/definitions/inline_response_200_23_study_attach"
+          "$ref" : "#/definitions/inline_response_200_26_study_attach"
         }
       }
     },
@@ -3427,6 +3657,70 @@
           "type" : "array",
           "items" : {
             "$ref" : "#/definitions/RunList_runs_run"
+          }
+        }
+      }
+    },
+    "SetupList_setups_parameter" : {
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "The parameter ID"
+        },
+        "flow_id" : {
+          "type" : "string",
+          "description" : "The (sub)flow ID"
+        },
+        "flow_name" : {
+          "type" : "string",
+          "description" : "The (sub)flow name"
+        },
+        "full_name" : {
+          "type" : "string",
+          "description" : "The parameter's full name"
+        },
+        "parameter_name" : {
+          "type" : "string",
+          "description" : "The parameter's short name"
+        },
+        "data_type" : {
+          "type" : "string",
+          "description" : "The parameter's data type"
+        },
+        "default_value" : {
+          "type" : "string",
+          "description" : "The parameter's default value"
+        },
+        "value" : {
+          "type" : "string",
+          "description" : "The parameter value in this setup"
+        }
+      }
+    },
+    "SetupList_setups_setup" : {
+      "properties" : {
+        "setup_id" : {
+          "type" : "string",
+          "description" : "The setup ID"
+        },
+        "flow_id" : {
+          "type" : "string",
+          "description" : "The ID of the flow used by this run"
+        },
+        "parameter" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/SetupList_setups_parameter"
+          }
+        }
+      }
+    },
+    "SetupList_setups" : {
+      "properties" : {
+        "setup" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/SetupList_setups_setup"
           }
         }
       }
