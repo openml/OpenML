@@ -189,10 +189,7 @@ class ElasticSearch {
                         'uploader' => array('type' => 'text'))),
                 'task_id' => array('type' => 'long'),
                 'tasktype.tt_id' => array('type' => 'long'),
-                'date' => array(
-                    'type' => 'date',
-                    'format' => 'yyyy-MM-dd HH:mm:ss'),
-		'runs' => array('type' => 'long')
+		            'runs' => array('type' => 'long')
             )
         );
 	$this->mappings['task_type'] = array(
@@ -369,24 +366,23 @@ class ElasticSearch {
     }
 
     public function initialize_index($t) {
-	$createparams = [
-	    'index' => $t,
-    	    'body' => [
-        	'settings' => [
-            		'number_of_shards' => 1,
-            		'number_of_replicas' => 0
-		]
-	    ]
-        ];
-	$this->client->indices()->create($createparams);
         if(!$this->init_indexer)
              $this->initialize();
-        $params['index'] = $t;
-	$params['type'] = $t;
-	$params['update_all_types'] = TRUE;
-        $params['body'][$t] = $this->mappings[$t];
-        $this->client->indices()->putMapping($params);
-
+	$createparams = array(
+	    'index' => $t,
+    	    'body' => array(
+        	'settings' => array(
+		    'index' => array(
+            		'number_of_shards' => 1,
+            		'number_of_replicas' => 0
+		    )
+		),
+		'mappings' => array(
+                    $t => $this->mappings[$t]
+		)
+	    )
+        );
+	$this->client->indices()->create($createparams);
         return '[Initialized mapping for ' . $t. '] ';
     }
 
@@ -765,6 +761,8 @@ class ElasticSearch {
             'uploader_id' => $d->creator,
             'uploader' => array_key_exists($d->creator, $this->user_names) ? $this->user_names[$d->creator] : 'Unknown',
             'visibility' => $d->visibility,
+            'type' => $d->main_entity_type,
+            'legacy' => $d->legacy,
             'suggest' => array(
                 'input' => array($d->name, $d->description . ' '),
                 'weight' => 5
@@ -774,23 +772,49 @@ class ElasticSearch {
         $study['tasks_included'] = 0;
         $study['flows_included'] = 0;
         $study['runs_included'] = 0;
+        $data_tagged = NULL;
+        $task_tagged = NULL;
+        $flows_tagged = NULL;
+        $runs_tagged = NULL;
 
-        $data_tagged = $this->db->query("select count(id) as count from dataset_tag where tag='study_" . $d->id . "'");
-        if ($data_tagged)
-            $study['datasets_included'] = $data_tagged[0]->count;
-
-        $task_tagged = $this->db->query("select count(id) as count from task_tag where tag='study_" . $d->id . "'");
-        if ($task_tagged)
-            $study['tasks_included'] = $task_tagged[0]->count;
-
-        $flows_tagged = $this->db->query("select count(id) as count from implementation_tag where tag='study_" . $d->id . "'");
-        if ($flows_tagged)
-            $study['flows_included'] = $flows_tagged[0]->count;
-
-        $runs_tagged = $this->db->query("select count(id) as count from run_tag where tag='study_" . $d->id . "'");
-        if ($runs_tagged)
-            $study['runs_included'] = $runs_tagged[0]->count;
-
+        if($d->legacy == 'y'){
+          $data_tagged = $this->db->query("select id from dataset_tag where tag='study_" . $d->id . "'");
+          $task_tagged = $this->db->query("select id from task_tag where tag='study_" . $d->id . "'");
+          $flows_tagged = $this->db->query("select id from implementation_tag where tag='study_" . $d->id . "'");
+          $runs_tagged = $this->db->query("select id from run_tag where tag='study_" . $d->id . "'");
+        } elseif ($d->main_entity_type == 'task') {
+          $task_tagged = $this->db->query("select task_id as id from task_study where study_id=" . $d->id);
+          $data_tagged = $this->db->query("select value as id from task_inputs where input='source_data' and task_id in (select task_id from task_study where study_id=" . $d->id . ")");
+        } elseif ($d->main_entity_type == 'run') {
+          $runs_tagged = $this->db->query("select run_id as id from run_study where study_id=" . $d->id);
+          $flows_tagged = $this->db->query("select distinct implementation_id as id from algorithm_setup where sid in (select setup from run where rid in (select run_id from run_study where study_id=" . $d->id . "))");
+          $task_tagged = $this->db->query("select distinct task_id as id from run where rid in (select run_id from run_study where study_id=" . $d->id . ")");
+          $data_tagged = $this->db->query("select distinct value as id from task_inputs where input='source_data' and task_id in (select task_id from run where rid in (select run_id from run_study where study_id=" . $d->id . "))");
+        }
+        if ($data_tagged){
+          $study['datasets_included'] = count($data_tagged);
+          foreach ($data_tagged as $t){
+              $this->index_data($t->id);
+            }
+        }
+        if ($task_tagged){
+          $study['tasks_included'] = count($task_tagged);
+          foreach ($task_tagged as $t){
+              $this->index_task($t->id);
+            }
+        }
+        if ($flows_tagged){
+          $study['flows_included'] = count($flows_tagged);
+          foreach ($flows_tagged as $t){
+              $this->index_flow($t->id);
+            }
+        }
+        if ($runs_tagged){
+          $study['runs_included'] = count($runs_tagged);
+          foreach ($runs_tagged as $t){
+              $this->index_run($t->id);
+            }
+        }
         return $study;
     }
 
@@ -903,13 +927,30 @@ class ElasticSearch {
         }
 
         $newdata['tags'] = array();
+        $studies = array();
         $tags = $this->CI->Task_tag->getAssociativeArray('tag', 'uploader', 'id = ' . $d->task_id);
         if ($tags != false) {
             foreach ($tags as $t => $u) {
                 $newdata['tags'][] = array(
                     'tag' => $t,
                     'uploader' => $u);
+                if(substr( $t, 0, 6 ) === "study_")
+                  $studies[] = substr($t, strpos($t, "_") + 1);
             }
+        }
+
+        // replace with study list in new indexer
+        $new_studies = array();
+        $task_studies = $this->db->query("select study_id from task_study where task_id=" . $d->task_id);
+        if ($task_studies != false) {
+            foreach ($task_studies as $t) { if (!in_array($t, $studies)){ $new_studies[] = $t->study_id; }}
+        }
+        $run_studies = $this->db->query("select distinct study_id from run_study where run_id in (select rid from run where task_id=" . $d->task_id . ")");
+        if ($run_studies != false) {
+            foreach ($run_studies as $t) { if (!in_array($t, $studies)){ $new_studies[] = $t->study_id; }}
+        }
+        if ($new_studies) {
+            foreach ($new_studies as $t) { $new_data['tags'][] = array('tag' => 'study_' . $t, 'uploader' => '0'); }
         }
 
         $newdata['suggest'] = array(
@@ -926,7 +967,7 @@ class ElasticSearch {
             if($downvote_agrees){
                 $nr_of_downvotes+=count($downvote_agrees);
             }
-        }else{
+        } else{
             $newdata['nr_of_issues'] = 0;
         }
         $newdata['nr_of_downvotes'] = $nr_of_downvotes;
@@ -1287,12 +1328,24 @@ class ElasticSearch {
         );
 
         $new_data['tags'] = array();
+        $studies = array();
         $tags = $this->CI->Run_tag->getAssociativeArray('tag', 'uploader', 'id = ' . $r->rid);
         if ($tags != false) {
             foreach ($tags as $t => $u) {
                 $new_data['tags'][] = array(
                     'tag' => $t,
                     'uploader' => $u);
+                if(substr( $t, 0, 6 ) === "study_")
+                  $studies[] = substr($t, strpos($t, "_") + 1);
+            }
+        }
+
+        $run_studies = $this->db->query("select distinct study_id from run_study where run_id=" . $r->rid);
+        if ($run_studies != false) {
+            foreach ($run_studies as $t) {
+              if (!in_array($t, $studies)){
+                 $new_data['tags'][] = array('tag' => 'study_' . $t, 'uploader' => '0');
+              }
             }
         }
 
@@ -1465,12 +1518,24 @@ class ElasticSearch {
             $new_data['qualities'] = array_map(array($this, 'checkNumeric'), $qualities);
 
         $new_data['tags'] = array();
+        $studies = array();
         $tags = $this->CI->Implementation_tag->getAssociativeArray('tag', 'uploader', 'id = ' . $d->id);
         if ($tags != false) {
             foreach ($tags as $t => $u) {
                 $new_data['tags'][] = array(
                     'tag' => $t,
                     'uploader' => $u);
+                if(substr( $t, 0, 6 ) === "study_")
+                  $studies[] = substr($t, strpos($t, "_") + 1);
+            }
+        }
+
+        $run_studies = $this->db->query("select distinct study_id from run_study where run_id in (select rid from run where setup in (select sid from algorithm_setup where implementation_id=" . $d->id . "))");
+        if ($run_studies != false) {
+            foreach ($run_studies as $t) {
+              if (!in_array($t, $studies)){
+                 $new_data['tags'][] = array('tag' => 'study_' . $t, 'uploader' => '0');
+              }
             }
         }
 
@@ -1694,8 +1759,8 @@ class ElasticSearch {
 
     public function index_single_dataset($id) {
 
-	$params['index'] = 'data';
-	$params['type'] = 'data';
+      	$params['index'] = 'data';
+      	$params['type'] = 'data';
         $status_sql_variable = 'IFNULL(`s`.`status`, \'' . $this->CI->config->item('default_dataset_status') . '\')';
         $datasets = $this->db->query('select d.*, ' . $status_sql_variable . ' AS `status`, count(rid) as runs, GROUP_CONCAT(dp.error) as error_message from dataset d left join (SELECT `did`, MAX(`status`) AS `status` FROM `dataset_status` GROUP BY `did`) s ON s.did = d.did left join task_inputs t on (t.value=d.did and t.input="source_data") left join run r on (r.task_id=t.task_id) left join data_processed dp on (d.did=dp.did)' . ($id ? ' where d.did=' . $id : '') . ' group by d.did');
 
@@ -1757,7 +1822,7 @@ class ElasticSearch {
                           '_id' => $d->did
                       )
                   );
-      $valid_ids[] = $d->did;
+                  $valid_ids[] = $d->did;
                   $params['body'][] = $this->build_data($d, $altmetrics);
 
                 } catch (Exception $e) {
@@ -1830,13 +1895,29 @@ class ElasticSearch {
           }
 
         $new_data['tags'] = array();
+        $studies = array();
         $tags = $this->CI->Dataset_tag->getAssociativeArray('tag', 'uploader', 'id = ' . $d->did);
         if ($tags != false) {
             foreach ($tags as $t => $u) {
                 $new_data['tags'][] = array(
                     'tag' => $t,
                     'uploader' => $u);
+                if(substr( $t, 0, 6 ) === "study_")
+                  $studies[] = substr($t, strpos($t, "_") + 1);
             }
+        }
+        // replace with study list in new indexer
+        $new_studies = array();
+        $task_studies = $this->db->query("select study_id from task_study where task_id in (select task_id from task_inputs where input='source_data' and value=" . $d->did . ")");
+        if ($task_studies != false) {
+            foreach ($task_studies as $t) { if (!in_array($t, $studies)){ $new_studies[] = $t->study_id; }}
+        }
+        $run_studies = $this->db->query("select distinct study_id from run_study where run_id in (select rid from run where task_id in (select task_id from task_inputs where input='source_data' and value=" . $d->did . "))");
+        if ($run_studies != false) {
+            foreach ($run_studies as $t) { if (!in_array($t, $studies)){ $new_studies[] = $t->study_id; }}
+        }
+        if ($new_studies) {
+            foreach ($new_studies as $t) { $new_data['tags'][] = array('tag' => 'study_' . $t, 'uploader' => '0'); }
         }
 
         $new_data['features'] = array();
