@@ -951,7 +951,7 @@ class ElasticSearch {
             foreach ($run_studies as $t) { if (!in_array($t, $studies)){ $new_studies[] = $t->study_id; }}
         }
         if ($new_studies) {
-            foreach ($new_studies as $t) { $new_data['tags'][] = array('tag' => 'study_' . $t, 'uploader' => 0); }
+            foreach ($new_studies as $t) { $new_data['tags'][] = array('tag' => 'study_' . $t, 'uploader' => '0'); }
         }
 
         $newdata['suggest'] = array(
@@ -1345,7 +1345,7 @@ class ElasticSearch {
         if ($run_studies != false) {
             foreach ($run_studies as $t) {
               if (!in_array($t, $studies)){
-                 $new_data['tags'][] = array('tag' => 'study_' . $t, 'uploader' => 0);
+                 $new_data['tags'][] = array('tag' => 'study_' . $t, 'uploader' => '0');
               }
             }
         }
@@ -1535,7 +1535,7 @@ class ElasticSearch {
         if ($run_studies != false) {
             foreach ($run_studies as $t) {
               if (!in_array($t, $studies)){
-                 $new_data['tags'][] = array('tag' => 'study_' . $t, 'uploader' => 0);
+                 $new_data['tags'][] = array('tag' => 'study_' . $t, 'uploader' => '0');
               }
             }
         }
@@ -1918,7 +1918,7 @@ class ElasticSearch {
             foreach ($run_studies as $t) { if (!in_array($t, $studies)){ $new_studies[] = $t->study_id; }}
         }
         if ($new_studies) {
-            foreach ($new_studies as $t) { $new_data['tags'][] = array('tag' => 'study_' . $t, 'uploader' => 0); }
+            foreach ($new_studies as $t) { $new_data['tags'][] = array('tag' => 'study_' . $t, 'uploader' => '0'); }
         }
 
         $new_data['features'] = array();
