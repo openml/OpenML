@@ -87,6 +87,9 @@ class Cron extends CI_Controller {
   // builds all es indexes
   public function build_es_indices() {
     foreach($this->es_indices as $index) {
+      $this->elasticsearch->initialize_index($index);
+    }
+    foreach($this->es_indices as $index) {
       $this->indexfrom($index, 1);
     }
   }
