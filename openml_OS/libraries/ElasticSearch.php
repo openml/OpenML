@@ -366,24 +366,23 @@ class ElasticSearch {
     }
 
     public function initialize_index($t) {
-	$createparams = [
-	    'index' => $t,
-    	    'body' => [
-        	'settings' => [
-            		'number_of_shards' => 1,
-            		'number_of_replicas' => 0
-		]
-	    ]
-        ];
-	$this->client->indices()->create($createparams);
         if(!$this->init_indexer)
              $this->initialize();
-        $params['index'] = $t;
-	$params['type'] = $t;
-	$params['update_all_types'] = TRUE;
-        $params['body'][$t] = $this->mappings[$t];
-        $this->client->indices()->putMapping($params);
-
+	$createparams = array(
+	    'index' => $t,
+    	    'body' => array(
+        	'settings' => array(
+		    'index' => array(
+            		'number_of_shards' => 1,
+            		'number_of_replicas' => 0
+		    )
+		),
+		'mappings' => array(
+                    $t => $this->mappings[$t]
+		)
+	    )
+        );
+	$this->client->indices()->create($createparams);
         return '[Initialized mapping for ' . $t. '] ';
     }
 
