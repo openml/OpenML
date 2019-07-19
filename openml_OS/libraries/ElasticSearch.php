@@ -943,11 +943,11 @@ class ElasticSearch {
         $new_studies = array();
         $task_studies = $this->db->query("select study_id from task_study where task_id=" . $d->task_id);
         if ($task_studies != false) {
-            foreach ($task_studies as $t) { if (!in_array($t, $studies)){ $new_studies[] = $t->study_id; }}
+            foreach ($task_studies as $t) { if (!in_array($t->study_id, $studies)){ $new_studies[] = $t->study_id; }}
         }
         $run_studies = $this->db->query("select distinct study_id from run_study where run_id in (select rid from run where task_id=" . $d->task_id . ")");
         if ($run_studies != false) {
-            foreach ($run_studies as $t) { if (!in_array($t, $studies)){ $new_studies[] = $t->study_id; }}
+            foreach ($run_studies as $t) { if (!in_array($t->study_id, $studies)){ $new_studies[] = $t->study_id; }}
         }
         if ($new_studies) {
             foreach ($new_studies as $t) { $new_data['tags'][] = array('tag' => 'study_' . $t, 'uploader' => '0'); }
@@ -1343,8 +1343,8 @@ class ElasticSearch {
         $run_studies = $this->db->query("select distinct study_id from run_study where run_id=" . $r->rid);
         if ($run_studies != false) {
             foreach ($run_studies as $t) {
-              if (!in_array($t, $studies)){
-                 $new_data['tags'][] = array('tag' => 'study_' . $t, 'uploader' => '0');
+              if (!in_array($t->study_id, $studies)){
+                 $new_data['tags'][] = array('tag' => 'study_' . $t->study_id, 'uploader' => '0');
               }
             }
         }
@@ -1533,8 +1533,8 @@ class ElasticSearch {
         $run_studies = $this->db->query("select distinct study_id from run_study where run_id in (select rid from run where setup in (select sid from algorithm_setup where implementation_id=" . $d->id . "))");
         if ($run_studies != false) {
             foreach ($run_studies as $t) {
-              if (!in_array($t, $studies)){
-                 $new_data['tags'][] = array('tag' => 'study_' . $t, 'uploader' => '0');
+              if (!in_array($t->study_id, $studies)){
+                 $new_data['tags'][] = array('tag' => 'study_' . $t->study_id, 'uploader' => '0');
               }
             }
         }
@@ -1910,11 +1910,11 @@ class ElasticSearch {
         $new_studies = array();
         $task_studies = $this->db->query("select study_id from task_study where task_id in (select task_id from task_inputs where input='source_data' and value=" . $d->did . ")");
         if ($task_studies != false) {
-            foreach ($task_studies as $t) { if (!in_array($t, $studies)){ $new_studies[] = $t->study_id; }}
+            foreach ($task_studies as $t) { if (!in_array($t->study_id, $studies)){ $new_studies[] = $t->study_id; }}
         }
         $run_studies = $this->db->query("select distinct study_id from run_study where run_id in (select rid from run where task_id in (select task_id from task_inputs where input='source_data' and value=" . $d->did . "))");
         if ($run_studies != false) {
-            foreach ($run_studies as $t) { if (!in_array($t, $studies)){ $new_studies[] = $t->study_id; }}
+            foreach ($run_studies as $t) { if (!in_array($t->study_id, $studies)){ $new_studies[] = $t->study_id; }}
         }
         if ($new_studies) {
             foreach ($new_studies as $t) { $new_data['tags'][] = array('tag' => 'study_' . $t, 'uploader' => '0'); }

@@ -134,5 +134,5 @@
            </div>
 	</form>
 
-        <p><i>By submitting, you allow OpenML to index the data and link it to uploaded results. All rights remain with the original author(s) of the data. You confirm that you have read and agreed to the <a href="https://www.openml.org/guide/terms">OpenML Honor Code and Terms of Use</a>.</i></p>
+        <p><i>By submitting, you allow OpenML to index the data and link it to uploaded results. All rights remain with the original author(s) of the data. You confirm that you have read and agreed to the <a href="https://docs.openml.org/terms/">OpenML Honor Code and Terms of Use</a>.</i></p>
 </div> <!-- end container -->
