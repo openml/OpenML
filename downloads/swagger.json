@@ -2237,16 +2237,16 @@
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
-          "description" : "Id of the study.",
+          "description" : "Id of the study. Supplied in the URL path.",
           "required" : true,
           "type" : "number",
           "format" : "integer"
         }, {
-          "name" : "description",
+          "name" : "ids",
           "in" : "formData",
-          "description" : "An XML file describing the entities to be attached. Also see the [XSD schema](https://www.openml.org/api/v1/xsd/openml.study.attach) and an [XML example](https://www.openml.org/api/v1/xml_example/attach).",
+          "description" : "Comma-separated list of entity IDs to be attached to the study. For instance, if this is a run study, the list of run IDs that need to be added (attached) to the study. Must be supplied as a POST variable.",
           "required" : true,
-          "type" : "file"
+          "type" : "string"
         }, {
           "name" : "api_key",
           "in" : "query",
@@ -2292,11 +2292,11 @@
           "type" : "number",
           "format" : "integer"
         }, {
-          "name" : "description",
+          "name" : "ids",
           "in" : "formData",
-          "description" : "An XML file describing the entities to be detached. Also see the [XSD schema](https://www.openml.org/api/v1/xsd/openml.study.detach) and an [XML example](https://www.openml.org/api/v1/xml_example/detach).",
+          "description" : "Comma-separated list of entity IDs to be detached from the study. For instance, if this is a run study, the list of run IDs that need to be removed (detached) from the study. Must be supplied as a POST variable.",
           "required" : true,
-          "type" : "file"
+          "type" : "string"
         }, {
           "name" : "api_key",
           "in" : "query",
