@@ -207,7 +207,7 @@ class Api_evaluation extends MY_Api_Model {
     // TODO: remove dependency on task_inputs and dataset table
     // TODO (2): transform into subquery where all columns except evaluation_fold are obtained in subquery (along with limit requirements, as MYSQL query optimizer does not seem to understand this query has an upper limit to the number of obtained runs that need to be inspected)
     $sql =
-      'SELECT r.rid, r.task_id, r.start_time, s.implementation_id, s.sid, f.name AS `function`, i.fullName, d.did, d.name, e.evaluation_engine_id, ' . $columns . ' ' .
+      'SELECT r.rid, r.task_id, r.start_time, r.uploader, s.implementation_id, s.sid, f.name AS `function`, i.fullName, d.did, d.name, e.evaluation_engine_id, ' . $columns . ' ' .
       'FROM run r, ' . $eval_table . ' e, algorithm_setup s, implementation i, dataset d, task t, task_inputs ti, math_function f ' .
       'WHERE r.setup = s.sid ' .
       'AND e.source = r.rid ' .
