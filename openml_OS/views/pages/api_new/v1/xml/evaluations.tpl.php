@@ -2,6 +2,7 @@
   <?php foreach( $evaluations as $e ): ?>
   <oml:evaluation>
     <oml:run_id><?php echo $e->rid; ?></oml:run_id>
+    <oml:uploader><?php echo $e->uploader; ?></oml:uploader>
     <oml:task_id><?php echo $e->task_id; ?></oml:task_id>
     <oml:setup_id><?php echo $e->sid; ?></oml:setup_id>
     <oml:flow_id><?php echo $e->implementation_id; ?></oml:flow_id>
