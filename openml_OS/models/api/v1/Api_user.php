@@ -21,6 +21,12 @@ class Api_user extends MY_Api_Model {
       $this->username_from_id($segments[0]);
       return;
     }
+  # http://test.openml.org/api/v1/user/list/uploader/1,2
+    if (count($segments) >= 1 && $segments[0] == 'list') {
+      array_shift($segments);
+      $this->user_list($segments);
+      return;
+    }
     
     /*$getpost = array('get','post');
 
@@ -87,6 +93,24 @@ class Api_user extends MY_Api_Model {
    $user_name = $user->first_name . ' ' . $user->last_name;
    $this->xmlContents('username', $this->version, $user_name);
  }
+
+ private function user_list($segs)
+ {
+  # pass uploader list to get username list
+  $legal_filters = array('uploader');
+  $query_string = array();
+  for ($i = 0; $i < count($segs); $i += 2) {
+    $query_string[$segs[$i]] = urldecode($segs[$i+1]);
+    if (in_array($segs[$i], $legal_filters) == false) {
+      $this->returnError(370, $this->version, $this->openmlGeneralErrorCode, 'Legal filter operators: ' . implode(',', $legal_filters) .'. Found illegal filter: ' . $segs[$i]);
+      return;
+    }
+  }
+  $uploader_id = element('uploader',$query_string);
+  $sql = 'SELECT `username` FROM `users` WHERE `id` In ('. $uploader_id.')';
+  $user_results = $this->Author->query($sql);    
+  $this->xmlContents('user_results', $this->version, array('user_results' => $user_results));
+}
 
 
 }
