@@ -15,6 +15,12 @@ class Api_user extends MY_Api_Model {
 
   function bootstrap($format, $segments, $request_type, $user_id) {
     $this->outputFormat = $format;
+
+  # http://test.openml.org/api/v1/user/3375
+    if (count($segments)== 1 && is_numeric($segments[0])) {      
+      $this->username_from_id($segments[0]);
+      return;
+    }
     
     /*$getpost = array('get','post');
 
