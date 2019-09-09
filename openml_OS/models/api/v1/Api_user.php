@@ -85,7 +85,7 @@ class Api_user extends MY_Api_Model {
   private function username_list($segs)
   {
   # pass uploader list to get username list
-  	$legal_filters = array('uploader');
+  	$legal_filters = array('user_id');
   	$query_string = array();
   	for ($i = 0; $i < count($segs); $i += 2) {
   		$query_string[$segs[$i]] = urldecode($segs[$i+1]);
@@ -94,8 +94,8 @@ class Api_user extends MY_Api_Model {
   			return;
   		}
   	}
-  	$uploader_id = element('uploader', $query_string);
-  	$sql = 'SELECT `username`,`id` FROM `users` WHERE `id` In ('. $uploader_id.')';
+  	$user_id = element('user_id', $query_string);
+  	$sql = 'SELECT `username`,`id` FROM `users` WHERE `id` In ('. $user_id.')';
   	$users = $this->Author->query($sql);      
   	$this->xmlContents('user-name', $this->version, array('users' => $users));
   }
