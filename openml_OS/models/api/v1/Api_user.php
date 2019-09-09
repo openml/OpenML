@@ -74,5 +74,14 @@ class Api_user extends MY_Api_Model {
     $this->_xmlContents( 'user-delete', array( 'user' => $user ) );
   } */
 
+  private function username_from_id($user_id)
+  {   
+  # pass user_id to get username
+   $user = $this->Author->getById($user_id);
+   $user_name = $user->first_name . ' ' . $user->last_name;
+   $this->xmlContents('username', $this->version, $user_name);
+ }
+
+
 }
 ?>
