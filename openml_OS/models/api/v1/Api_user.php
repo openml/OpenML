@@ -82,8 +82,7 @@ class Api_user extends MY_Api_Model {
   } */
 
 
-  private function username_list($segs)
-  {
+  private function username_list($segs){    
   # pass uploader list to get username list
   	$legal_filters = array('user_id');
   	$query_string = array();
@@ -95,8 +94,7 @@ class Api_user extends MY_Api_Model {
   		}
   	}
   	$user_id = element('user_id', $query_string);
-  	$sql = 'SELECT `username`,`id` FROM `users` WHERE `id` In ('. $user_id.')';
-  	$users = $this->Author->query($sql);      
+  	$users = $this->Author->getWhere('`id` IN (' . $user_id . ')');  
   	$this->xmlContents('user-name', $this->version, array('users' => $users));
   }
 
