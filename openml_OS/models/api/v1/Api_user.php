@@ -82,7 +82,7 @@ class Api_user extends MY_Api_Model {
   } */
 
 
-  private function username_list($segs){    
+  private function username_list($segs) {    
   # pass uploader list to get username list
   	$legal_filters = array('user_id');
   	$query_string = array();
