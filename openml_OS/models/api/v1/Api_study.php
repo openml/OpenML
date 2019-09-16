@@ -524,7 +524,10 @@ class Api_study extends MY_Api_Model {
         'uploader' => $uploader_id,
         'date' => now(),
       );
-      $this->{$model}->insert($data);
+      $result = $this->{$model}->insert($data);
+      if (!$result) {
+        return false;
+      }
     }
     return true;
   }
