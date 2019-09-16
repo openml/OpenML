@@ -143,6 +143,11 @@ class Api_study extends MY_Api_Model {
     );
     
     $study_id = $this->Study->insert($schedule_data);
+    if (!$study_id) {
+      $this->db->trans_rollback();
+      $this->returnError(1039, $this->version, $this->openmlGeneralErrorCode, 'Problem creating study record. Please check whether the alias is unique. ');
+      return;
+    }
     
     $res = $this->_link_entities($study_id, $this->user_id, $link_entities);
     
