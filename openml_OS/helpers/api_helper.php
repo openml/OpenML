@@ -19,7 +19,7 @@ function validateXml( $xmlDocument, $xsdDocument, &$xmlErrors, $from_file = true
   } else {
     $xmlErrors .= 'XML does not correspond to XSD schema. ';
     foreach (libxml_get_errors() as $error) {
-        $xmlErrors .= 'Error ' . $error->message . ' on line ' . $error->line . ' column ' . $error->column . '. ';
+      $xmlErrors .= 'Error ' . $error->message . ' on line ' . $error->line . ' column ' . $error->column . '. ';
     }
     return false;
   }
