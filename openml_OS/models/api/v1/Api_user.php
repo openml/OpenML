@@ -82,20 +82,20 @@ class Api_user extends MY_Api_Model {
   } */
 
 
-  private function username_list($segs) {    
-  # pass uploader list to get username list
-  	$legal_filters = array('user_id');
-  	$query_string = array();
-  	for ($i = 0; $i < count($segs); $i += 2) {
-  		$query_string[$segs[$i]] = urldecode($segs[$i+1]);
-  		if (in_array($segs[$i], $legal_filters) == false) {
-  			$this->returnError(370, $this->version, $this->openmlGeneralErrorCode, 'Legal filter operators: ' . implode(',', $legal_filters) .'. Found illegal filter: ' . $segs[$i]);
-  			return;
-  		}
-  	}
-  	$user_id = element('user_id', $query_string);
-  	$users = $this->Author->getWhere('`id` IN (' . $user_id . ')');  
-  	$this->xmlContents('user-name', $this->version, array('users' => $users));
+  private function username_list($segs) {
+    # pass uploader list to get username list
+    $legal_filters = array('user_id');
+    $query_string = array();
+    for ($i = 0; $i < count($segs); $i += 2) {
+      $query_string[$segs[$i]] = urldecode($segs[$i+1]);
+      if (in_array($segs[$i], $legal_filters) == false) {
+        $this->returnError(370, $this->version, $this->openmlGeneralErrorCode, 'Legal filter operators: ' . implode(',', $legal_filters) .'. Found illegal filter: ' . $segs[$i]);
+        return;
+      }
+    }
+    $user_id = element('user_id', $query_string);
+    $users = $this->Author->getWhere('`id` IN (' . $user_id . ')');
+    $this->xmlContents('user-name', $this->version, array('users' => $users));
   }
 
 }
