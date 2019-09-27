@@ -91,7 +91,7 @@ class Api_evaluation extends MY_Api_Model {
 
   private function evaluation_list($segs, $user_id) {
     $result_limit = 10000;
-    $legal_filters = array('task', 'setup', 'flow', 'uploader', 'run', 'tag', 'limit', 'offset', 'function', 'per_fold', 'sort_order');
+    $legal_filters = array('task', 'setup', 'flow', 'uploader', 'run', 'tag', 'limit', 'offset', 'function', 'per_fold', 'sort_order', 'study');
     list($query_string, $illegal_filters) = $this->parse_filters($segs, $legal_filters);
     if (count($illegal_filters) > 0) {
       $this->returnError(544, $this->version, $this->openmlGeneralErrorCode, 'Legal filter operators: ' . implode(',', $legal_filters) .'. Found illegal filter(s): ' . implode(', ', $illegal_filters));
@@ -115,6 +115,7 @@ class Api_evaluation extends MY_Api_Model {
     $offset = element('offset', $query_string, null);
     $per_fold = element('per_fold', $query_string, null);
     $sort_order = element('sort_order', $query_string, null);
+    $study_id = element('study', $query_string, null);
     if ($per_fold != 'true' && $per_fold != 'false' && $per_fold != null) {
       $this->returnError(547, $this->version, $this->openmlGeneralErrorCode, 'Filters with illegal values: ' . implode(',', $illegal_filter_inputs));
       return;
@@ -134,7 +135,7 @@ class Api_evaluation extends MY_Api_Model {
       return;
     }
 
-    if ($task_id === null && $setup_id === null && $implementation_id === null && $uploader_id === null && $run_id === null && $tag === null && $limit === null && $function_name === null) {
+    if ($task_id === null && $setup_id === null && $implementation_id === null && $uploader_id === null && $run_id === null && $tag === null && $limit === null && $function_name === null && $study_id === null) {
       $this->returnError(540, $this->version);
       return;
     }
@@ -147,30 +148,39 @@ class Api_evaluation extends MY_Api_Model {
     $where_function = $function_name === null ? '' : ' AND `f`.`name` = "' . $function_name . '" ';
     $where_tag = $tag === null ? '' : ' AND `r`.`rid` IN (select id from run_tag where tag="' . $tag . '") ';
     $where_limit = $limit === null ? null : ' LIMIT ' . $limit;
+    $where_study = $study_id === null ? '' : ' AND `rs`.`study_id` IN (' . $study_id . ') ';    
+
     if ($limit && $offset) {
       $where_limit =  ' LIMIT ' . $offset . ',' . $limit;
     }
     $where_task_closed = ' AND (`t`.`embargo_end_date` is NULL OR `t`.`embargo_end_date` < NOW() OR `r`.`uploader` = '.$user_id.')';
     
-    $where_runs = $where_task . $where_setup . $where_uploader . $where_impl . $where_run . $where_tag . $where_task_closed;
+    $where_runs = $where_task . $where_setup . $where_uploader . $where_impl . $where_run . $where_tag . $where_task_closed. $where_study;
     $where_total = $where_runs . $where_function;
 
     //pre-test, should be quick??
     if($limit == false || $per_fold) { // skip pre-test if less than 10000 are requested by definition
       $count = 0;
       //shortcuts
-      if (!$implementation_id) {
+      if (!$implementation_id && !$study_id) {
         $sql_test =
           'SELECT count(distinct r.rid) as count ' .
           'FROM run r, task t '.
           'WHERE r.task_id = t.task_id ' . 
           $where_runs;
         $count = $this->Evaluation->query($sql_test)[0]->count;
-      } else {
+      } elseif ($implementation_id) {
         $sql_test =
           'SELECT count(distinct r.rid) as count ' .
           'FROM run r, task t, algorithm_setup s ' .
           'WHERE r.setup = s.sid AND r.task_id = t.task_id ' .
+          $where_runs;
+        $count = $this->Evaluation->query($sql_test)[0]->count;
+      } else {
+        $sql_test =
+          'SELECT count(distinct r.rid) as count ' .
+          'FROM run r, task t, run_study rs ' .
+          'WHERE r.rid = rs.run_id AND r.task_id = t.task_id ' .
           $where_runs;
         $count = $this->Evaluation->query($sql_test)[0]->count;
       }
@@ -207,8 +217,8 @@ class Api_evaluation extends MY_Api_Model {
     // TODO: remove dependency on task_inputs and dataset table
     // TODO (2): transform into subquery where all columns except evaluation_fold are obtained in subquery (along with limit requirements, as MYSQL query optimizer does not seem to understand this query has an upper limit to the number of obtained runs that need to be inspected)
     $sql =
-      'SELECT r.rid, r.task_id, r.start_time, r.uploader, s.implementation_id, s.sid, f.name AS `function`, i.fullName, d.did, d.name, e.evaluation_engine_id, ' . $columns . ' ' .
-      'FROM run r, ' . $eval_table . ' e, algorithm_setup s, implementation i, dataset d, task t, task_inputs ti, math_function f ' .
+      'SELECT r.rid, r.task_id, r.start_time, r.uploader, s.implementation_id, s.sid, f.name AS `function`, i.fullName, d.did, d.name, e.evaluation_engine_id, rs.study_id, ' . $columns . ' ' .
+      'FROM run r, ' . $eval_table . ' e, algorithm_setup s, implementation i, dataset d, task t, task_inputs ti, math_function f, run_study rs' .
       'WHERE r.setup = s.sid ' .
       'AND e.source = r.rid ' .
       'AND e.function_id = f.id ' . 
@@ -216,7 +226,8 @@ class Api_evaluation extends MY_Api_Model {
       'AND r.task_id = t.task_id ' .
       'AND r.task_id = ti.task_id ' .
       'AND ti.input = "source_data" ' .
-      'AND ti.value = d.did ' . $where_total;
+      'AND ti.value = d.did ' .
+      'AND r.rid = rs.run_id ' . $where_total;
     
     if ($group_by) {
       $sql .= $group_by;
