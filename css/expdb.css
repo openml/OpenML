@@ -2762,11 +2762,10 @@ a.bold:hover{
     font-weight: 100;
 
 
-    width: 76px;
-    height: 76px;
+    width: 100px;
+    height: 100px;
     padding: 0px;
 
-    background: #fff;
     color: #fff;
     display:block;
     position: relative;
@@ -2793,10 +2792,9 @@ a.bold:hover{
 }
 
 .arc {
-	height: 84px;
-	width: 84px;
-	left: -3px;
-	top: -5px;
+	height: 100px;
+	width: 100px;
+	top: -15px;
 	position: absolute;
   box-shadow: 0 0 4px rgba(0,0,0,.14),0 4px 8px rgba(0,0,0,.28);
 

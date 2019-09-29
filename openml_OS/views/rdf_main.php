@@ -20,5 +20,9 @@
 		$getParams['id']    = $info[array_search('t',$info)+1];
 	}
   $command = 'cd ' . $rdfize_path . '&& ./rdfize.sh ' . $getParams['type'] . ' ' . $getParams['id'];
+
+  $filename = 'OpenML_' . $getParams['type'] . '_' . $getParams['id'] . '.rdf';
+  header('Content-Disposition: attachment; filename="'.$filename.'"');
+
   echo shell_exec($command);
 ?>

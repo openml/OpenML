@@ -2635,6 +2635,7 @@ paths:
                 evaluation:
                 - run_id: "1"
                   task_id: "68"
+                  uploader: "1"
                   flow_id: "61"
                   function: area_under_roc_curve
                   upload_time: 2014-04-06 23:30:40
@@ -2642,6 +2643,7 @@ paths:
                   array_data: '[0,0.99113,0.898048,0.874862,0.791282,0.807343,0.820674]'
                 - run_id: "1"
                   task_id: "68"
+                  uploader: "1"
                   flow_id: "61"
                   function: f_measure
                   upload_time: 2014-04-06 23:30:40
@@ -2649,6 +2651,7 @@ paths:
                   array_data: '[0,0,0.711934,0.735714,0.601363,0.435678,0.430913]'
                 - run_id: "1"
                   task_id: "68"
+                  uploader: "1"
                   flow_id: "61"
                   function: predictive_accuracy
                   upload_time: 2014-04-06 23:30:40
@@ -2914,15 +2917,15 @@ paths:
       parameters:
       - name: id
         in: path
-        description: Id of the study.
+        description: Id of the study. Supplied in the URL path.
         required: true
         type: number
         format: integer
-      - name: description
+      - name: ids
         in: formData
-        description: An XML file describing the entities to be attached. Also see the [XSD schema](https://www.openml.org/api/v1/xsd/openml.study.attach) and an [XML example](https://www.openml.org/api/v1/xml_example/attach).
+        description: Comma-separated list of entity IDs to be attached to the study. For instance, if this is a run study, the list of run IDs that need to be added (attached) to the study. Must be supplied as a POST variable.
         required: true
-        type: file
+        type: string
       - name: api_key
         in: query
         description: Api key to authenticate the user
@@ -2971,11 +2974,11 @@ paths:
         required: true
         type: number
         format: integer
-      - name: description
+      - name: ids
         in: formData
-        description: An XML file describing the entities to be detached. Also see the [XSD schema](https://www.openml.org/api/v1/xsd/openml.study.detach) and an [XML example](https://www.openml.org/api/v1/xml_example/detach).
+        description: Comma-separated list of entity IDs to be detached from the study. For instance, if this is a run study, the list of run IDs that need to be removed (detached) from the study. Must be supplied as a POST variable.
         required: true
-        type: file
+        type: string
       - name: api_key
         in: query
         description: Api key to authenticate the user
@@ -3052,6 +3055,38 @@ paths:
             500 - No model performance estimation procedures available.
           schema:
             $ref: '#/definitions/Error'
+  /user/list:
+    get:
+      tags:
+      - user
+      summary: List all users by user id
+      description: |
+        Returns an array with all user ids and names.
+      parameters:
+      - name: api_key
+        in: query
+        description: API key to authenticate the user
+        required: false
+        type: string
+      responses:
+        200:
+          description: A list of users
+          examples:
+            application/json: |-
+              {
+                "users":{
+                  "user":[
+                    {
+                      "id":"1",
+                      "username":"janvanrijn@gmail.com"},
+                    {
+                      "id":"2",
+                      "username":"joaquin.vanschoren@gmail.com"}
+                    ]
+                }
+              }
+          schema:
+            $ref: '#/definitions/UserList'
   /evaluationmeasure/list:
     get:
       tags:
@@ -3095,6 +3130,11 @@ definitions:
     properties:
       flows:
         $ref: '#/definitions/FlowList_flows'
+  UserList:
+    type: object
+    properties:
+      users:
+        $ref: '#/definitions/UserList_users'
   Task:
     type: object
     properties:
@@ -3563,6 +3603,20 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/FlowList_flows_flow'
+  UserList_users_user:
+    properties:
+      id:
+        type: string
+        description: The user ID
+      username:
+        type: string
+        description: The full user name
+  UserList_users:
+    properties:
+      user:
+        type: array
+        items:
+          $ref: '#/definitions/UserList_users_user'
   Task_task_description_data_set:
     properties:
       data_set_id:

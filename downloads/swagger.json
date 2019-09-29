@@ -1979,6 +1979,7 @@
                   "evaluation" : [ {
                     "run_id" : "1",
                     "task_id" : "68",
+                    "uploader" : "1",
                     "flow_id" : "61",
                     "function" : "area_under_roc_curve",
                     "upload_time" : "2014-04-06 23:30:40",
@@ -1987,6 +1988,7 @@
                   }, {
                     "run_id" : "1",
                     "task_id" : "68",
+                    "uploader" : "1",
                     "flow_id" : "61",
                     "function" : "f_measure",
                     "upload_time" : "2014-04-06 23:30:40",
@@ -1995,6 +1997,7 @@
                   }, {
                     "run_id" : "1",
                     "task_id" : "68",
+                    "uploader" : "1",
                     "flow_id" : "61",
                     "function" : "predictive_accuracy",
                     "upload_time" : "2014-04-06 23:30:40",
@@ -2237,16 +2240,16 @@
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
-          "description" : "Id of the study.",
+          "description" : "Id of the study. Supplied in the URL path.",
           "required" : true,
           "type" : "number",
           "format" : "integer"
         }, {
-          "name" : "description",
+          "name" : "ids",
           "in" : "formData",
-          "description" : "An XML file describing the entities to be attached. Also see the [XSD schema](https://www.openml.org/api/v1/xsd/openml.study.attach) and an [XML example](https://www.openml.org/api/v1/xml_example/attach).",
+          "description" : "Comma-separated list of entity IDs to be attached to the study. For instance, if this is a run study, the list of run IDs that need to be added (attached) to the study. Must be supplied as a POST variable.",
           "required" : true,
-          "type" : "file"
+          "type" : "string"
         }, {
           "name" : "api_key",
           "in" : "query",
@@ -2292,11 +2295,11 @@
           "type" : "number",
           "format" : "integer"
         }, {
-          "name" : "description",
+          "name" : "ids",
           "in" : "formData",
-          "description" : "An XML file describing the entities to be detached. Also see the [XSD schema](https://www.openml.org/api/v1/xsd/openml.study.detach) and an [XML example](https://www.openml.org/api/v1/xml_example/detach).",
+          "description" : "Comma-separated list of entity IDs to be detached from the study. For instance, if this is a run study, the list of run IDs that need to be removed (detached) from the study. Must be supplied as a POST variable.",
           "required" : true,
-          "type" : "file"
+          "type" : "string"
         }, {
           "name" : "api_key",
           "in" : "query",
@@ -2359,6 +2362,31 @@
         }
       }
     },
+    "/user/list" : {
+      "get" : {
+        "tags" : [ "user" ],
+        "summary" : "List all users by user id",
+        "description" : "Returns an array with all user ids and names.\n",
+        "parameters" : [ {
+          "name" : "api_key",
+          "in" : "query",
+          "description" : "API key to authenticate the user",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "A list of users",
+            "examples" : {
+              "application/json" : "{\n  \"users\":{\n    \"user\":[\n      {\n        \"id\":\"1\",\n        \"username\":\"janvanrijn@gmail.com\"},\n      {\n        \"id\":\"2\",\n        \"username\":\"joaquin.vanschoren@gmail.com\"}\n      ]\n  }\n}"
+            },
+            "schema" : {
+              "$ref" : "#/definitions/UserList"
+            }
+          }
+        }
+      }
+    },
     "/evaluationmeasure/list" : {
       "get" : {
         "tags" : [ "evaluationmeasure" ],
@@ -2399,6 +2427,14 @@
       "properties" : {
         "flows" : {
           "$ref" : "#/definitions/FlowList_flows"
+        }
+      }
+    },
+    "UserList" : {
+      "type" : "object",
+      "properties" : {
+        "users" : {
+          "$ref" : "#/definitions/UserList_users"
         }
       }
     },
@@ -3142,6 +3178,28 @@
           "type" : "array",
           "items" : {
             "$ref" : "#/definitions/FlowList_flows_flow"
+          }
+        }
+      }
+    },
+    "UserList_users_user" : {
+      "properties" : {
+        "id" : {
+          "type" : "string",
+          "description" : "The user ID"
+        },
+        "username" : {
+          "type" : "string",
+          "description" : "The full user name"
+        }
+      }
+    },
+    "UserList_users" : {
+      "properties" : {
+        "user" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/UserList_users_user"
           }
         }
       }

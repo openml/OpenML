@@ -15,6 +15,13 @@ class Api_user extends MY_Api_Model {
 
   function bootstrap($format, $segments, $request_type, $user_id) {
     $this->outputFormat = $format;
+
+  # http://test.openml.org/api/v1/user/list/uploader/1,2
+    if (count($segments) >= 1 && $segments[0] == 'list') {
+      array_shift($segments);
+      $this->username_list($segments);
+      return;
+    }
     
     /*$getpost = array('get','post');
 
@@ -74,5 +81,25 @@ class Api_user extends MY_Api_Model {
     $this->_xmlContents( 'user-delete', array( 'user' => $user ) );
   } */
 
+
+  private function username_list($segs) {
+    # pass uploader list to get username list
+    $legal_filters = array('user_id');
+    $query_string = array();
+    for ($i = 0; $i < count($segs); $i += 2) {
+      $query_string[$segs[$i]] = urldecode($segs[$i+1]);
+      if (in_array($segs[$i], $legal_filters) == false) {
+        $this->returnError(370, $this->version, $this->openmlGeneralErrorCode, 'Legal filter operators: ' . implode(',', $legal_filters) .'. Found illegal filter: ' . $segs[$i]);
+        return;
+      }
+    }
+    $user_id = element('user_id', $query_string);
+    $users = $this->Author->getWhere('`id` IN (' . $user_id . ')');
+    $this->xmlContents('user-name', $this->version, array('users' => $users));
+  }
+
 }
+
+
+
 ?>
