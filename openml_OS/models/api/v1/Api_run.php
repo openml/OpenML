@@ -127,7 +127,7 @@ class Api_run extends MY_Api_Model {
     $tag = element('tag',$query_string, null);
     $limit = element('limit',$query_string, null);
     $offset = element('offset',$query_string, null);
-    $study_id = element('study_id', $query_string, null);
+    $study_id = element('study', $query_string, null);
     $show_errors = element('show_errors',$query_string, null);
     
     if ($offset && !$limit) {
