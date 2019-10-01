@@ -147,7 +147,7 @@ class Api_run extends MY_Api_Model {
       }
     }
     
-    if ($task_id === null && $task_type_id === null && $setup_id === null && $implementation_id === null && $uploader_id === null && $run_id === null && $tag === null && $limit === null) {
+    if ($task_id === null && $task_type_id === null && $setup_id === null && $implementation_id === null && $uploader_id === null && $run_id === null && $tag === null && $limit === null && $study_id === null) {
       $this->returnError(510, $this->version);
       return;
     }
