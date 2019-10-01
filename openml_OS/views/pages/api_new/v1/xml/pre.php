@@ -301,6 +301,9 @@ $this->apiErrors[549] = 'If set, sort should be set to either "asc" or "desc"';
 $this->apiErrors[550] = 'Admin rights are required.';
 $this->apiErrors[551] = 'Delete query failed.';
 
+// openml.evaluations.list [continued]
+$this->apiErrors[555] = 'Problem with the study filter. The study should exists, be run-based and non-legacy';
+
 // openml.run.trace.upload
 $this->apiErrors[561] = 'Problem with uploaded trace file.';
 $this->apiErrors[562] = 'Problem validating xml trace file.';
