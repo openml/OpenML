@@ -104,7 +104,7 @@ class Api_run extends MY_Api_Model {
 
   private function run_list($segs, $user_id) {
     $result_limit = 10000;
-    $legal_filters = array('task', 'setup', 'flow', 'uploader', 'run', 'tag', 'limit', 'offset', 'task_type', 'show_errors');
+    $legal_filters = array('task', 'setup', 'flow', 'uploader', 'run', 'tag', 'limit', 'offset', 'task_type', 'study_id', 'show_errors');
     
     list($query_string, $illegal_filters) = $this->parse_filters($segs, $legal_filters);
     if (count($illegal_filters) > 0) {
@@ -127,6 +127,7 @@ class Api_run extends MY_Api_Model {
     $tag = element('tag',$query_string, null);
     $limit = element('limit',$query_string, null);
     $offset = element('offset',$query_string, null);
+    $study_id = element('study_id', $query_string, null);
     $show_errors = element('show_errors',$query_string, null);
     
     if ($offset && !$limit) {
@@ -136,6 +137,14 @@ class Api_run extends MY_Api_Model {
     if ($limit && $limit > $result_limit) {
       $this->returnError(516, $this->version);
       return;
+    }
+    
+    if ($study_id) {
+      $study = $this->Study->getById($study_id);
+      if ($study === false || $study->legacy != 'n' || $study->main_entity_type != 'run') {
+        $this->returnError(517, $this->version);
+        return;
+      }
     }
     
     if ($task_id === null && $task_type_id === null && $setup_id === null && $implementation_id === null && $uploader_id === null && $run_id === null && $tag === null && $limit === null) {
@@ -150,6 +159,7 @@ class Api_run extends MY_Api_Model {
     $where_impl = $implementation_id === null ? '' : ' AND `i`.`id` IN (' . $implementation_id . ') ';
     $where_run = $run_id === null ? '' : ' AND `r`.`rid` IN (' . $run_id . ') ';
     $where_tag = $tag === null ? '' : ' AND `r`.`rid` IN (select id from run_tag where tag="' . $tag . '") ';
+    $where_study = $study_id === null ? '' : ' AND `r`.`rid` IN (SELECT `run_id` FROM `run_study` WHERE `study_id`="' . $study_id . '") ';
     // TODO: runs with errors are always removed?
     $where_server_error = ' AND `e`.`error` IS NULL ';
     if (strtolower($show_errors) == 'true') {
@@ -163,7 +173,7 @@ class Api_run extends MY_Api_Model {
       $where_limit =  ' LIMIT ' . $offset . ', ' . $limit;
     }
 
-    $where_total = $where_task . $where_task_type . $where_setup . $where_uploader . $where_impl . $where_run . $where_tag . $where_server_error . $where_task_closed;
+    $where_total = $where_task . $where_task_type . $where_setup . $where_uploader . $where_impl . $where_run . $where_tag . $where_study . $where_server_error . $where_task_closed;
 
     $sql =
       'SELECT r.rid, r.uploader, r.task_id, r.start_time, t.ttid, d.did AS dataset_id, d.name AS dataset_name,' .

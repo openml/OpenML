@@ -281,6 +281,7 @@ $this->apiErrors[513] = 'Too many results';
 $this->apiErrors[514] = 'Illegal filter specified';
 $this->apiErrors[515] = 'Can not specify offset without limit';
 $this->apiErrors[516] = 'Requested result limit too high. ';
+$this->apiErrors[517] = 'Problem with the study filter. The study should exists, be run-based and non-legacy';
 
 // openml.estimationprocedure.list
 $this->apiErrors[520] = 'No results';

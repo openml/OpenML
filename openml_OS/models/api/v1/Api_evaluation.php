@@ -137,7 +137,7 @@ class Api_evaluation extends MY_Api_Model {
     
     if ($study_id) {
       $study = $this->Study->getById($study_id);
-      if ($study === false || $study->legacy != 'n' || $ystudy->main_entity_type != 'run') {
+      if ($study === false || $study->legacy != 'n' || $study->main_entity_type != 'run') {
         $this->returnError(555, $this->version);
         return;
       }
