@@ -143,7 +143,7 @@ class Api_evaluation extends MY_Api_Model {
       }
     }
 
-    if ($task_id === null && $setup_id === null && $implementation_id === null && $uploader_id === null && $run_id === null && $tag === null && $study_id && $limit === null && $function_name === null) {
+    if ($task_id === null && $setup_id === null && $implementation_id === null && $uploader_id === null && $run_id === null && $tag === null && $study_id === null && $limit === null && $function_name === null) {
       $this->returnError(540, $this->version);
       return;
     }
