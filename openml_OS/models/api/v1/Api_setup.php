@@ -264,7 +264,11 @@ class Api_setup extends MY_Api_Model {
     try {
       $setups = $this->Algorithm_setup->searchSetup($implementation, $parameters, $partial); 
     } catch(Exception $e) {
-      $this->returnError(588, $this->version);
+      $additional_message = null;
+      if (substr($e->getMessage(), 0, 5) == '#1116') {
+        $additional_message = 'Flow might not be suitable for this operation (feature request)';
+      }
+      $this->returnError(588, $this->version, $this->openmlGeneralErrorCode, $additional_message);
       return;
     }
     
