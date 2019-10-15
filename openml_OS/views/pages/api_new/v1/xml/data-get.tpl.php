@@ -1,5 +1,5 @@
 <oml:data_set_description xmlns:oml="http://openml.org/openml">
-  <oml:id><?php echo htmlspecialchars($did); ?></oml:id>
+  <oml:id type="xs:integer"><?php echo htmlspecialchars($did); ?></oml:id>
   <oml:name><?php echo htmlspecialchars($name); ?></oml:name>
   <oml:version><?php echo htmlspecialchars($version); ?></oml:version>
   <oml:description><?php echo htmlspecialchars($description); ?></oml:description>
@@ -11,7 +11,7 @@
   <?php if ($language != null): ?><oml:language><?php echo htmlspecialchars($language); ?></oml:language><?php endif; ?>
   <?php if ($licence != null): ?><oml:licence><?php echo htmlspecialchars($licence); ?></oml:licence><?php endif; ?>
   <oml:url><?php echo htmlspecialchars($url); ?></oml:url>
-  <?php if ($file_id != null): ?><oml:file_id><?php echo $file_id; ?></oml:file_id><?php endif; ?>
+  <?php if ($file_id != null): ?><oml:file_id type="xs:integer"><?php echo $file_id; ?></oml:file_id><?php endif; ?>
   <?php if ($default_target_attribute != null): ?><oml:default_target_attribute><?php echo htmlspecialchars($default_target_attribute); ?></oml:default_target_attribute><?php endif; ?>
   <?php if ($row_id_attribute != null): ?><oml:row_id_attribute><?php echo htmlspecialchars($row_id_attribute); ?></oml:row_id_attribute><?php endif; ?>
   <?php if( is_array( $ignore_attribute ) ) foreach( $ignore_attribute as $i ): ?><oml:ignore_attribute><?php echo htmlspecialchars($i); ?></oml:ignore_attribute><?php endforeach; ?>
