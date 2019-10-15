@@ -680,7 +680,7 @@ class Api_data extends MY_Api_Model {
       if (DEBUG) {
         $to = $this->user_email;
         $subject = 'OpenML Data Features Upload DEBUG message. ';
-        $content = 'Filename: ' . $_FILES['description']['name'] . "\nXSD Validation Message: " . $xmlErrors . "\n=====BEGIN XML=====\n"
+        $content = 'Filename: ' . $_FILES['description']['name'] . "\nXSD Validation Message: " . $xmlErrors . "\n=====BEGIN XML=====\n";
         file_get_contents($description['tmp_name']);
         sendEmail($to, $subject, $content,'text');
       }
