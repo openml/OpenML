@@ -366,12 +366,11 @@ class Api_data extends MY_Api_Model {
     if($this->input->post('description')) {
       // get description from string upload
       $description = $this->input->post('description', false);
-      if(validateXml($description, $xsdFile, $xmlErrors, false ) == false) { 
+      if(validateXml($description, $xsdFile, $xmlErrors, false ) == false) {
         if (DEBUG) {
           $to = $this->user_email;
           $subject = 'OpenML Data Upload DEBUG message. ';
-          $content = 'Filename: ' . $_FILES['description']['name'] . "\nXSD Validation Message: " . $xmlErrors . "\n=====BEGIN XML=====\n";
-          file_get_contents($description['tmp_name']);
+          $content = "Uploaded POST field \nXSD Validation Message: " . $xmlErrors . "\n=====BEGIN XML=====\n" . $description;
           sendEmail($to, $subject, $content,'text');
         }
         $this->returnError(131, $this->version, $this->openmlGeneralErrorCode, $xmlErrors);
@@ -392,8 +391,7 @@ class Api_data extends MY_Api_Model {
         if (DEBUG) {
           $to = $this->user_email;
           $subject = 'OpenML Data Upload DEBUG message. ';
-          $content = 'Filename: ' . $_FILES['description']['name'] . "\nXSD Validation Message: " . $xmlErrors . "\n=====BEGIN XML=====\n";
-          file_get_contents($description['tmp_name']);
+          $content = 'Filename: ' . $description['name'] . "\nXSD Validation Message: " . $xmlErrors . "\n=====BEGIN XML=====\n" . file_get_contents($description['tmp_name']);
           sendEmail($to, $subject, $content,'text');
         }
         $this->returnError(131, $this->version, $this->openmlGeneralErrorCode, $xmlErrors);
@@ -680,9 +678,8 @@ class Api_data extends MY_Api_Model {
       if (DEBUG) {
         $to = $this->user_email;
         $subject = 'OpenML Data Features Upload DEBUG message. ';
-        $content = 'Filename: ' . $_FILES['description']['name'] . "\nXSD Validation Message: " . $xmlErrors . "\n=====BEGIN XML=====\n";
-        file_get_contents($description['tmp_name']);
-        sendEmail($to, $subject, $content,'text');
+        $content = 'Filename: ' . $description['name'] . "\nXSD Validation Message: " . $xmlErrors . "\n=====BEGIN XML=====\n" . file_get_contents($description['tmp_name']);
+        sendEmail($to, $subject, $content, 'text');
       }
       $this->returnError(443, $this->version, $this->openmlGeneralErrorCode, $xmlErrors);
       return;
