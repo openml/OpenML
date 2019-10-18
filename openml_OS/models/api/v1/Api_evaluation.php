@@ -15,9 +15,13 @@ class Api_evaluation extends MY_Api_Model {
 
     $getpost = array('get','post');
 
-    if (count($segments) >= 1 && $segments[0] == 'list') {
+    if (count($segments) >= 1 && $segments[0] == 'setup' && $segments[1] == 'list') {
       array_shift($segments);
-      $this->evaluation_list($segments, $user_id);
+      $this->evaluation_list($segments, $user_id, true);
+      return;
+    } elseif (count($segments) >= 1 && $segments[0] == 'list') {
+      array_shift($segments);
+      $this->evaluation_list($segments, $user_id, false);
       return;
     }
 
@@ -89,7 +93,7 @@ class Api_evaluation extends MY_Api_Model {
   }
 
 
-  private function evaluation_list($segs, $user_id) {
+  private function evaluation_list($segs, $user_id, $show_params) {
     $result_limit = 10000;
     $legal_filters = array('task', 'setup', 'flow', 'uploader', 'run', 'tag', 'limit', 'offset', 'function', 'per_fold', 'sort_order', 'study');
     list($query_string, $illegal_filters) = $this->parse_filters($segs, $legal_filters);
@@ -244,7 +248,18 @@ class Api_evaluation extends MY_Api_Model {
       $this->returnError(542, $this->version);
       return;
     }
-
+    
+    if ($show_params) {
+      # 2 stage query .. unfortunately. Can break when too much results. let's take the damage for now
+      $setup_ids = array();
+      foreach ($res as $r) {
+        $setup_ids[] = $r->sid;
+      }
+      $params = $this->Algorithm_setup->setup_ids_to_parameter_values(array_unique($setup_ids));
+      for ($i = 0; $i < count($res); ++$i) {
+        $res->parameters = $params[$res[$i]];
+      }
+    }
     $this->xmlContents('evaluations', $this->version, array('evaluations' => $res));
   }
 }
