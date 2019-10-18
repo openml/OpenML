@@ -258,7 +258,7 @@ class Api_evaluation extends MY_Api_Model {
       }
       $params = $this->Algorithm_setup->setup_ids_to_parameter_values(array_unique($setup_ids));
       for ($i = 0; $i < count($res); ++$i) {
-        $res->parameters = $params[$res[$i]];
+        $res->parameters = $params[$res[$i]->sid];
       }
     }
     $this->xmlContents('evaluations', $this->version, array('evaluations' => $res));
