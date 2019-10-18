@@ -17,6 +17,7 @@ class Api_evaluation extends MY_Api_Model {
 
     if (count($segments) >= 1 && $segments[0] == 'setup' && $segments[1] == 'list') {
       array_shift($segments);
+      array_shift($segments);
       $this->evaluation_list($segments, $user_id, true);
       return;
     } elseif (count($segments) >= 1 && $segments[0] == 'list') {
