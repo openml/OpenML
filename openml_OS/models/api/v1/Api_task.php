@@ -192,7 +192,8 @@ class Api_task extends MY_Api_Model {
       $this->returnError(157, $this->version);
       return;
     }
-
+    
+    // TODO: tags!
     $this->xmlContents('task-inputs', $this->version, array('task' => $task, 'inputs' => $inputs));
   }
 
