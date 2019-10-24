@@ -338,7 +338,7 @@ class Api_task extends MY_Api_Model {
         }
         
         if (!in_array($input_value, $acceptable_inputs)) {
-          $this->returnError(622, $this->version, $this->openmlGeneralErrorCode, 'problematic input: ' . $name);
+          $this->returnError(622, $this->version, $this->openmlGeneralErrorCode, 'problematic input: [' . $name . '], acceptable inputs: [' . implode(', ', $acceptable_inputs) . ']');
           return;
         }
       }
