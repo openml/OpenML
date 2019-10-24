@@ -890,7 +890,7 @@ class ElasticSearch {
         $did = 0;
         if ($task) {
             foreach ($task as $t) {
-                if ($t->type == 'Dataset') {
+                if ($t->input == 'source_data') {
                     $description[] = $this->data_names[$t->value];
                     $newdata[$t->input] = array(
                         'type' => $t->type,
@@ -898,7 +898,7 @@ class ElasticSearch {
                         'name' => $this->data_names[$t->value]
                     );
                     $did = $t->value;
-                } else if ($t->type == 'Estimation Procedure') {
+                } else if ($t->input == 'estimation_procedure') {
                     $description[] = $this->procedure_names[$t->value];
                     $newdata[$t->input] = array(
                         'type' => $t->type,
