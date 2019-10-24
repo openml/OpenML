@@ -17,7 +17,7 @@ class Api_splits extends CI_Controller {
     $this->load->helper('file_upload');
     
     $this->db = $this->load->database('read',true);
-    $this->task_types = array(1, 2, 3, 6, 7);
+    $this->task_types = array(1, 2, 3, 6, 7, 9);
     $this->challenge_types = array(9);
     $this->evaluation = APPPATH . 'third_party/OpenML/Java/evaluate.jar';
     $this->eval_engine_config = " -config 'cache_allowed=false;server=".BASE_URL.";api_key=".API_KEY."' ";
@@ -105,7 +105,7 @@ class Api_splits extends CI_Controller {
     }
   }
   
-  function get_merged($task_id) {
+  function merge_datasets($task_id) {
     $dir_idx = floor($task_id / $this->content_folder_modulo) * $this->content_folder_modulo;
     $directory = $this->directory . '/' . $dir_idx . '/' . $task_id;
     
