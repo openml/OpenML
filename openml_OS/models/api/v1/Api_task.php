@@ -345,19 +345,19 @@ class Api_task extends MY_Api_Model {
       
       // hard constraint. If it is mapped to a dataset, the dataset should be active. TODO: review conditions
       if ($name == 'source_data' /*|| (trim($constraints['select']) == 'did' && trim($constraints['from'] == 'dataset'))*/) {
-        if ($constraints->data_type == 'json') {
-          $input_values = json_decode($input_value);
-          foreach ($input_values as $v) {
-            $status_record = $this->Dataset_status->getWhereSingle('did = ' . $v, '`status` DESC');
-            if (!$status_record || $status_record->status != 'active') {
-              $this->returnError(623, $this->version, $this->openmlGeneralErrorCode, 'problematic input: ' . $name . ', dataset not active: ' . $v);
-              return;
-            }
-          }
-        } else {
-          $status_record = $this->Dataset_status->getWhereSingle('did = ' . $input_value, '`status` DESC');
+        $status_record = $this->Dataset_status->getWhereSingle('did = ' . $input_value, '`status` DESC');
+        if (!$status_record || $status_record->status != 'active') {
+          $this->returnError(623, $this->version, $this->openmlGeneralErrorCode, 'problematic input: ' . $name . ', dataset not active.');
+          return;
+        }
+      }
+      // more hard constraints. should be replaced / refactored
+      if ($name == 'source_data_list' /*|| (trim($constraints['select']) == 'did' && trim($constraints['from'] == 'dataset'))*/) {
+        $input_values = json_decode($input_value);
+        foreach ($input_values as $v) {
+          $status_record = $this->Dataset_status->getWhereSingle('did = ' . $v, '`status` DESC');
           if (!$status_record || $status_record->status != 'active') {
-            $this->returnError(623, $this->version, $this->openmlGeneralErrorCode, 'problematic input: ' . $name . ', dataset not active.');
+            $this->returnError(623, $this->version, $this->openmlGeneralErrorCode, 'problematic input: ' . $name . ', dataset not active: ' . $v);
             return;
           }
         }
