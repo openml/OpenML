@@ -552,6 +552,7 @@ class Api_run extends MY_Api_Model {
 
       $did = $this->Runfile->insert($record);
       if( $did == false ) {
+        $this->db->trans_rollback();
         $this->returnError(212, $this->version);
         return;
       }
@@ -565,7 +566,8 @@ class Api_run extends MY_Api_Model {
       return false;
     }
     $this->db->trans_complete();
-    if ($this->db->trans_status() === FALSE) {
+    if ($this->db->trans_status() === FALSE) {  
+      $this->db->trans_rollback();
       $this->returnError(224, $this->version);
       return;
     }
