@@ -242,30 +242,26 @@ class Api_run extends MY_Api_Model {
       $this->returnError( 393, $this->version );
       return;
     }
+    
+    $this->db->trans_start();
+    
+    $this->Input_data->deleteWhere( 'run =' . $run->rid );
+    $this->Output_data->deleteWhere( 'run =' . $run->rid );
+    
+    $additional_sql = ''; //' AND `did` NOT IN (SELECT `data` FROM `input_data` UNION SELECT `data` FROM `output_data`)';
+    $this->Runfile->deleteWhere('`source` = "' . $run->rid . '" ' . $additional_sql);
+    $this->Evaluation->deleteWhere('`source` = "' .  $run->rid. '" ' . $additional_sql);
+    $this->Evaluation_fold->deleteWhere('`source` = "' . $run->rid . '" ' . $additional_sql);
+    $this->Evaluation_sample->deleteWhere('`source` = "' . $run->rid . '" ' . $additional_sql);
+    $this->Run_evaluated->deleteWhere('`run_id` = "' . $run->rid . '" ');
+    $this->Run->delete( $run->rid );
 
-    $result = true;
-    $result = $result && $this->Input_data->deleteWhere( 'run =' . $run->rid );
-    $result = $result && $this->Output_data->deleteWhere( 'run =' . $run->rid );
-
-    if( $result ) {
-      $additional_sql = ''; //' AND `did` NOT IN (SELECT `data` FROM `input_data` UNION SELECT `data` FROM `output_data`)';
-      $result = $result && $this->Runfile->deleteWhere('`source` = "' . $run->rid . '" ' . $additional_sql);
-      $result = $result && $this->Evaluation->deleteWhere('`source` = "' .  $run->rid. '" ' . $additional_sql);
-      $result = $result && $this->Evaluation_fold->deleteWhere('`source` = "' . $run->rid . '" ' . $additional_sql);
-      $result = $result && $this->Evaluation_sample->deleteWhere('`source` = "' . $run->rid . '" ' . $additional_sql);
-      $result = $result && $this->Run_evaluated->deleteWhere('`run_id` = "' . $run->rid . '" ');
-      // Not needed
-      //$this->Dataset->deleteWhere('`source` = "' . $run->rid . '" ' . $additional_sql);
-    }
-
-    if( $result ) {
-      $result = $result && $this->Run->delete( $run->rid );
-    }
-
-    if( $result == false ) {
+    if ($this->db->trans_status() === FALSE) {
+      $this->db->trans_rollback();
       $this->returnError( 394, $this->version );
       return;
     }
+    $this->db->trans_commit();
 
     try {
       $this->elasticsearch->delete('run', $run_id);
