@@ -827,13 +827,13 @@ class Api_data extends MY_Api_Model {
       //  $data['default_target_attribute'] = $feature->name;
       //}
     }
-    $this->db->trans_complete();
-
-    if ($success) {
-      $this->xmlContents('data-features-upload', $this->version, array('did' => $dataset->did));
-    } else {
+    if ($this->db->trans_status() === FALSE) {
+      $this->db->trans_rollback();
       $this->returnError(445, $this->version);
       return;
+    } else {
+      $this->db->trans_commit();
+      $this->xmlContents('data-features-upload', $this->version, array('did' => $dataset->did));
     }
   }
 
@@ -1084,7 +1084,15 @@ class Api_data extends MY_Api_Model {
         $result = $this->Data_quality->insert_ignore($data);
       }
     }
-    $this->db->trans_complete();
+    
+    if ($this->db->trans_status() === FALSE) {
+      $this->db->trans_rollback();
+      $this->returnError(389, $this->version);
+      return;
+    } else {
+      $this->db->trans_commit();
+      $this->xmlContents('data-qualities-upload', $this->version, array('did' => $did));
+    }
 
     // add to elastic search index.
     try {
@@ -1092,13 +1100,6 @@ class Api_data extends MY_Api_Model {
     } catch (Exception $e) {
       $additionalMsg = get_class() . '.' . __FUNCTION__ . ':' . $e->getMessage();
       $this->returnError(105, $this->version, $this->openmlGeneralErrorCode, $additionalMsg);
-      return;
-    }
-
-    if ($success) {
-      $this->xmlContents('data-qualities-upload', $this->version, array('did' => $did));
-    } else {
-      $this->returnError(389, $this->version);
       return;
     }
   }
