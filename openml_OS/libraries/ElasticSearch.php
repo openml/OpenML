@@ -761,7 +761,7 @@ class ElasticSearch {
             'uploader_id' => $d->creator,
             'uploader' => array_key_exists($d->creator, $this->user_names) ? $this->user_names[$d->creator] : 'Unknown',
             'visibility' => $d->visibility,
-            'type' => $d->main_entity_type,
+            'study_type' => $d->main_entity_type,
             'legacy' => $d->legacy,
             'suggest' => array(
                 'input' => array($d->name, $d->description . ' '),
