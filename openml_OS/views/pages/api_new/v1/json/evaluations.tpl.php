@@ -10,7 +10,7 @@
    "flow_name":"<?php echo $e->fullName; ?>",
    <?php if (property_exists($e, 'parameters')): ?>
    "parameters": [
-     <?php for($i = 0; $i < len($e->parameters); ++$i): ?>
+     <?php for($i = 0; $i < count($e->parameters); ++$i): ?>
        <?php $p = $e->parameters[$i]; 
              if ($i>0) echo ","; ?>
        {"id": <?php echo htmlspecialchars($p->id); ?>,
