@@ -22,7 +22,7 @@
 		   "default_value": "<?php echo htmlspecialchars($p->defaultValue); ?>",
 		   "value": "<?php echo htmlspecialchars($p->value); ?>"}
      <?php endfor; ?>
-   ]
+   ],
    <?php endif; ?>
    "data_name":"<?php echo $e->name; ?>",
    "function":"<?php echo $e->{'function'}; ?>",
