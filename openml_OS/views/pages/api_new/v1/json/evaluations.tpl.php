@@ -10,7 +10,9 @@
    "flow_name":"<?php echo $e->fullName; ?>",
    <?php if (property_exists($e, 'parameters')): ?>
    "parameters": [
-     <?php foreach($e->parameters as $p): ?>
+     <?php for($i = 0; $i < len($e->parameters); ++$i): ?>
+       <?php $p = $e->parameters[$i]; 
+             if ($i>0) echo ","; ?>
        {"id": <?php echo htmlspecialchars($p->id); ?>,
 		   "flow_id": <?php echo htmlspecialchars($p->implementation_id); ?>,
 		   "flow_name": "<?php echo htmlspecialchars($p->flow_name); ?>",
@@ -18,7 +20,7 @@
 		   "parameter_name": "<?php echo htmlspecialchars($p->name); ?>",
 		   "data_type": "<?php echo htmlspecialchars($p->dataType); ?>",
 		   "default_value": "<?php echo htmlspecialchars($p->defaultValue); ?>",
-		   "value": "<?php echo htmlspecialchars($p->value); ?>"},
+		   "value": "<?php echo htmlspecialchars($p->value); ?>"}
      <?php endforeach; ?>
    ]
    <?php endif; ?>
