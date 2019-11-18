@@ -21,7 +21,7 @@
 		   "data_type": "<?php echo htmlspecialchars($p->dataType); ?>",
 		   "default_value": "<?php echo htmlspecialchars($p->defaultValue); ?>",
 		   "value": "<?php echo htmlspecialchars($p->value); ?>"}
-     <?php endforeach; ?>
+     <?php endfor; ?>
    ]
    <?php endif; ?>
    "data_name":"<?php echo $e->name; ?>",
