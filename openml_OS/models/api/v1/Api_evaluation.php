@@ -15,6 +15,54 @@ class Api_evaluation extends MY_Api_Model {
 
     $getpost = array('get','post');
 
+    /**
+     *@OA\Get(
+     *	path="/evaluation/list/{filters}",
+     *	tags={"evaluation"},
+     *	summary="List and filter evaluations",
+     *	description="List evaluations, filtered by a range of properties. Any number of properties can be combined by listing them one after the other in the form '/evaluation/list/{filter}/{value}/{filter}/{value}/...' Returns an array with all evaluations that match the constraints. A maximum of 10,000 results are returned, an error is returned if the result set is bigger. Use pagination (via limit and offset filters), or limit the results to certain tasks, flows, setups, uploaders or runs.",
+     *	@OA\Parameter(
+     *		name="filters",
+     *		in="path",
+     *		type="string",
+     *		description="Any combination of these filters
+    /function/{name} - name of the evaluation measure, e.g. area_under_auc or predictive_accuracy. See the OpenML website for the complete list of measures.
+    /tag/{tag} - returns only evaluations of runs tagged with the given tag.
+    /run/{ids} - return only evaluations for specific runs, specified as a comma-separated list of run IDs, e.g. ''1,2,3''
+    /task/{ids} - return only evaluations for specific tasks, specified as a comma-separated list of task IDs, e.g. ''1,2,3''
+    /flow/{ids} - return only evaluations for specific flows, specified as a comma-separated list of flow IDs, e.g. ''1,2,3''
+    /setup/{ids} - return only evaluations for specific setups, specified as a comma-separated list of setup IDs, e.g. ''1,2,3''
+    /uploader/{ids} - return only evaluations uploaded by specific users, specified as a comma-separated list of user IDs, e.g. ''1,2,3''
+    /limit/{limit}/offset/{offset} - returns only {limit} results starting from result number {offset}. Useful for paginating results. With /limit/5/offset/10, results 11..15 will be returned. Both limit and offset need to be specified.
+    /per_fold/{true,false} - whether or not to return crossvalidation scores per fold. Defaults to 'false'. Setting it to 'true' leads to large numbers of results, use only for very specific sets of runs.
+    /sort_order/{asc,desc} - sorts the results by the evaluation value, according to the selected evaluation measure (function)
+    ",
+     *		required="true",
+     *	),
+     *	@OA\Parameter(
+     *		name="api_key",
+     *		in="query",
+     *		type="string",
+     *		description="API key to authenticate the user",
+     *		required="false",
+     *	),
+     *	@OA\Response(
+     *		response=200,
+     *		description="A list of evaluations descriptions",
+     *		@OA\JsonContent(
+     *			ref="#/components/schemas/EvaluationList",
+     *			example={"evaluations": {"evaluation": [{"function": "area_under_roc_curve", "upload_time": "2014-04-06 23:30:40", "task_id": "68", "run_id": "1", "array_data": "[0,0.99113,0.898048,0.874862,0.791282,0.807343,0.820674]", "value": "0.839359", "uploader": "1", "flow_id": "61"}, {"function": "f_measure", "upload_time": "2014-04-06 23:30:40", "task_id": "68", "run_id": "1", "array_data": "[0,0,0.711934,0.735714,0.601363,0.435678,0.430913]", "value": "0.600026", "uploader": "1", "flow_id": "61"}, {"function": "predictive_accuracy", "upload_time": "2014-04-06 23:30:40", "task_id": "68", "run_id": "1", "array_data": [], "value": "0.614634", "uploader": "1", "flow_id": "61"}]}}
+     *		),
+     *	),
+     *	@OA\Response(
+     *		response=412,
+     *		description="Precondition failed. An error code and message are returned.\n540 - Please provide at least task, flow or setup, uploader or run, to\nfilter results, or limit the number of responses.\n541 - The input parameters (task_id, setup_id, flow_id, run_id, uploader_id) did not meet the constraints (comma separated list of integers).\n542 - There where no results. Check whether there are runs under the given constraint.\n543 - Too many results. Given the constraints, there were still too many results. Please add filters to narrow down the list.\n544 - Illegal filter specified.\n545 - Offset specified without limit.\n546 - Requested result limit too high.\n547 - Per fold can only be set to value "true" or "false".\n548 - Per fold queries are experimental and require a fair amount of filters on resulting run records to keep the query fast (use, e.g., flow, setup, task and uploader filter)\n",
+     *		@OA\JsonContent(
+     *			ref="#/components/schemas/Error",
+     *		),
+     *	),
+     *)
+     */
     if (count($segments) >= 1 && $segments[0] == 'list') {
       array_shift($segments);
       $this->evaluation_list($segments, $user_id);
@@ -22,6 +70,51 @@ class Api_evaluation extends MY_Api_Model {
     }
 
     $order_values = array('random', 'reverse', 'normal');
+
+    /**
+     *@OA\Get(
+     *	path="/evaluation/request/{evaluation_engine_id}/{order}",
+     *	tags={"evaluation"},
+     *	summary="Get an unevaluated run",
+     *	description="This call is for people running their own evaluation engines. It returns the details of a run that is not yet evaluated by the given evaluation engine. It doesn't evaluate the run, it just returns the run info.",
+     *	@OA\Parameter(
+     *		name="evaluation_engine_id",
+     *		in="path",
+     *		type="string",
+     *		description="The ID of the evaluation engine. You get this ID when you register a new evaluation engine with OpenML. The ID of the main evaluation engine is 1.",
+     *		required="true",
+     *	),
+     *	@OA\Parameter(
+     *		name="order",
+     *		in="path",
+     *		type="string",
+     *		description="When there are multiple runs still to evaluate, this defines which one to return. Options are 'normal' - the oldest run, 'reverse' - the newest run, or 'random' - a random run.",
+     *		required="true",
+     *	),
+     *	@OA\Parameter(
+     *		name="api_key",
+     *		in="query",
+     *		type="string",
+     *		description="API key to authenticate the user",
+     *		required="false",
+     *	),
+     *	@OA\Response(
+     *		response=200,
+     *		description="A list of evaluations descriptions",
+     *		@OA\JsonContent(
+     *			ref="#/components/schemas/EvaluationRequest",
+     *			example={"evaluation_request": {"run": [{"setup_id": "68799271", "upload_time": "2018-04-03 21:05:38", "uploader": "1935", "task_id": "3021", "run_id": "8943712"}]}}
+     *		),
+     *	),
+     *	@OA\Response(
+     *		response=412,
+     *		description="Precondition failed. An error code and message are returned.\n100 - Function not valid.\n545 - No unevaluated runs according to the criteria.\n546 - Illegal filter.\n",
+     *		@OA\JsonContent(
+     *			ref="#/components/schemas/Error",
+     *		),
+     *	),
+     *)
+     */
     if (count($segments) >= 4 && $segments[0] == 'request' && is_numeric($segments[1]) && in_array($segments[2], $order_values) && is_numeric($segments[3])) {
       array_shift($segments); // removes 'request'
       $eval_id = array_shift($segments);

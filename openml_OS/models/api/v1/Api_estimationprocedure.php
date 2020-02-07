@@ -41,6 +41,60 @@ class Api_estimationprocedure extends MY_Api_Model {
     }
     $this->xmlContents( 'estimationprocedure-get', $this->version, array( 'ep' => $ep ) );
   }
+
+  /**
+   *@OA\Get(
+   *	path="/estimationprocedure/list",
+   *	tags={"estimationprocedure"},
+   *	summary="List all estimation procedures",
+   *	description="Returns an array with all model performance estimation procedures in the system.",
+   *	@OA\Parameter(
+   *		name="api_key",
+   *		in="query",
+   *		type="string",
+   *		description="API key to authenticate the user",
+   *		required="false",
+   *	),
+   *	@OA\Response(
+   *		response=200,
+   *		description="A list of estimation procedures",
+   *		@OA\JsonContent(
+   *			ref="#/components/schemas/EstimationProcedureList",
+   *			example={
+   *			  "estimationprocedures": {
+   *			    "estimationprocedure": [
+   *			      {
+   *			         "id":"1",
+   *			         "ttid":"1",
+   *			         "name":"10-fold Crossvalidation",
+   *			         "type":"crossvalidation",
+   *			         "repeats":"1",
+   *			         "folds":"10",
+   *			         "stratified_sampling":"true"
+   *			      },
+   *			      {
+   *			        "id":"2",
+   *			        "ttid":"1",
+   *			        "name":"5 times 2-fold Crossvalidation",
+   *			        "type":"crossvalidation",
+   *			        "repeats":"5",
+   *			        "folds":"2",
+   *			        "stratified_sampling":"true"
+   *			      }
+   *			    ]
+   *			  }
+   *			}
+   *		),
+   *	),
+   *	@OA\Response(
+   *		response=412,
+   *		description="Precondition failed. An error code and message are returned.\n500 - No model performance estimation procedures available.\n",
+   *		@OA\JsonContent(
+   *			ref="#/components/schemas/Error",
+   *		),
+   *	),
+   *)
+   */
   private function estimationprocedure_list() {
 
     $estimationprocedures = $this->Estimation_procedure->get();

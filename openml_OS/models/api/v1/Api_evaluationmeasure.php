@@ -23,8 +23,42 @@ class Api_evaluationmeasure extends MY_Api_Model {
     
     $this->returnError( 100, $this->version );
   }
-  
-  
+
+
+  /**
+   *@OA\Get(
+   *	path="/evaluationmeasure/list",
+   *	tags={"evaluationmeasure"},
+   *	summary="List all evaluation measures",
+   *	description="Returns an array with all model evaluation measures in the system.",
+   *	@OA\Parameter(
+   *		name="api_key",
+   *		in="query",
+   *		type="string",
+   *		description="API key to authenticate the user",
+   *		required="false",
+   *	),
+   *	@OA\Response(
+   *		response=200,
+   *		description="A list of evaluation measures",
+   *		@OA\JsonContent(
+   *			ref="#/components/schemas/EvaluationMeasureList",
+   *			example={
+   *			  "evaluation_measures":{
+   *			    "measures":{
+   *			      "measure":[
+   *			        "area_under_roc_curve",
+   *			        "average_cost",
+   *			        "binominal_test",
+   *			        "build_cpu_time"
+   *			        ]
+   *			    }
+   *			  }
+   *			}
+   *		),
+   *	),
+   *)
+   */
   private function evaluationmeasure_list() {
     $data = new stdClass();
     $data->measures = $this->Math_function->getWhere( 'functionType = "EvaluationFunction"' );
