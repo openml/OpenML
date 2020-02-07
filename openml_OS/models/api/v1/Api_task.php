@@ -631,7 +631,8 @@ class Api_task extends MY_Api_Model {
       $this->returnError(157, $this->version);
       return;
     }
-
+    
+    // TODO: tags!
     $this->xmlContents('task-inputs', $this->version, array('task' => $task, 'inputs' => $inputs));
   }
 
@@ -776,7 +777,7 @@ class Api_task extends MY_Api_Model {
         }
         
         if (!in_array($input_value, $acceptable_inputs)) {
-          $this->returnError(622, $this->version, $this->openmlGeneralErrorCode, 'problematic input: ' . $name);
+          $this->returnError(622, $this->version, $this->openmlGeneralErrorCode, 'problematic input: [' . $name . '], acceptable inputs: [' . implode(', ', $acceptable_inputs) . ']');
           return;
         }
       }
@@ -785,8 +786,19 @@ class Api_task extends MY_Api_Model {
       if ($name == 'source_data' /*|| (trim($constraints['select']) == 'did' && trim($constraints['from'] == 'dataset'))*/) {
         $status_record = $this->Dataset_status->getWhereSingle('did = ' . $input_value, '`status` DESC');
         if (!$status_record || $status_record->status != 'active') {
-          $this->returnError(623, $this->version, $this->openmlGeneralErrorCode, 'problematic input: ' . $name);
+          $this->returnError(623, $this->version, $this->openmlGeneralErrorCode, 'problematic input: ' . $name . ', dataset not active.');
           return;
+        }
+      }
+      // more hard constraints. should be replaced / refactored
+      if ($name == 'source_data_list' /*|| (trim($constraints['select']) == 'did' && trim($constraints['from'] == 'dataset'))*/) {
+        $input_values = json_decode($input_value);
+        foreach ($input_values as $v) {
+          $status_record = $this->Dataset_status->getWhereSingle('did = ' . $v, '`status` DESC');
+          if (!$status_record || $status_record->status != 'active') {
+            $this->returnError(623, $this->version, $this->openmlGeneralErrorCode, 'problematic input: ' . $name . ', dataset not active: ' . $v);
+            return;
+          }
         }
       }
       

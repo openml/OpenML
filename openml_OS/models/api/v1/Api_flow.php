@@ -693,12 +693,12 @@ class Api_flow extends MY_Api_Model {
     $implementation = $this->Implementation->getById($flow_id);
     if($implementation == false) {
       $this->returnError(322, $this->version);
-      return;
+      return false;
     }
 
     if($implementation->uploader != $this->user_id && $this->user_has_admin_rights == false) {
       $this->returnError(323, $this->version);
-      return;
+      return false;
     }
 
     $runs = $this->Run->getRunsByFlowId($implementation->id, null, null, 100);
@@ -709,24 +709,24 @@ class Api_flow extends MY_Api_Model {
         $ids[] = $r->id;
       }
       $this->returnError(324, $this->version, $this->openmlGeneralErrorCode, '{'. implode(', ', $ids) .'} ()');
-      return;
+      return false;
     }
 
     if ($this->Implementation->isComponent($implementation->id)) {
       $parent_ids = $this->Implementation_component->getColumnWhere('parent', 'child = "'.$implementation->id.'"');
       $this->returnError(328, $this->version, $this->openmlGeneralErrorCode, '{' . implode(', ', $parent_ids) . '}');
-      return;
+      return false;
     }
 
     $remove_input_setting = $this->Input_setting->deleteWhere('setup IN (SELECT sid FROM algorithm_setup WHERE implementation_id = '.$implementation->id.')');
     if (!$remove_input_setting) {
       $this->returnError(326, $this->version);
-      return;
+      return false;
     }
     $remove_setups = $this->Algorithm_setup->deleteWhere('implementation_id = ' . $implementation->id);
     if (!$remove_setups) {
       $this->returnError(327, $this->version);
-      return;
+      return false;
     }
 
     $this->Input->deleteWhere('implementation_id =' . $implementation->id); // should be handled by constraints ..
@@ -739,7 +739,7 @@ class Api_flow extends MY_Api_Model {
 
     if($result == false) {
       $this->returnError(325, $this->version);
-      return;
+      return false;
     }
 
     try {
@@ -748,10 +748,11 @@ class Api_flow extends MY_Api_Model {
     } catch (Exception $e) {
       $additionalMsg = get_class() . '.' . __FUNCTION__ . ':' . $e->getMessage();
       $this->returnError(105, $this->version, $this->openmlGeneralErrorCode, $additionalMsg);
-      return;
+      return true; // don't care about ES errors, as they pop up anyway
     }
 
     $this->xmlContents('implementation-delete', $this->version, array('implementation' => $implementation));
+    return true;
   }
 
   private function flow_forcedelete($flow_id) {
@@ -770,15 +771,20 @@ class Api_flow extends MY_Api_Model {
       'run' => 'DELETE FROM run WHERE setup IN (SELECT sid FROM algorithm_setup WHERE implementation_id = '.$flow_id.');',
       'algorithm_setup' => 'DELETE FROM algorithm_setup WHERE implementation_id = ' . $flow_id . ';'
     );
-
+    
+    $this->db->trans_start();
     foreach ($queries as $table => $query) {
-      $res = $this->Implementation->query($query);
-      if ($res == false) {
-        $this->returnError(551, $this->version, $this->openmlGeneralErrorCode, 'In query table: ' . $table);
-        return;
-      }
+      $this->Implementation->query($query);
     }
-
+    
+    if ($this->db->trans_status() === FALSE) {
+      $this->db->trans_rollback();
+      $this->returnError(551, $this->version);
+      return;
+    }
+    $this->db->trans_commit();
+    
+    // now delete the actual flow. This will trigger an XML template
     $this->flow_delete($flow_id);
   }
 

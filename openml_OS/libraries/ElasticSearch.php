@@ -761,7 +761,7 @@ class ElasticSearch {
             'uploader_id' => $d->creator,
             'uploader' => array_key_exists($d->creator, $this->user_names) ? $this->user_names[$d->creator] : 'Unknown',
             'visibility' => $d->visibility,
-            'type' => $d->main_entity_type,
+            'study_type' => $d->main_entity_type,
             'legacy' => $d->legacy,
             'suggest' => array(
                 'input' => array($d->name, $d->description . ' '),
@@ -890,7 +890,7 @@ class ElasticSearch {
         $did = 0;
         if ($task) {
             foreach ($task as $t) {
-                if ($t->type == 'Dataset') {
+                if ($t->input == 'source_data') {
                     $description[] = $this->data_names[$t->value];
                     $newdata[$t->input] = array(
                         'type' => $t->type,
@@ -898,7 +898,7 @@ class ElasticSearch {
                         'name' => $this->data_names[$t->value]
                     );
                     $did = $t->value;
-                } else if ($t->type == 'Estimation Procedure') {
+                } else if ($t->input == 'estimation_procedure') {
                     $description[] = $this->procedure_names[$t->value];
                     $newdata[$t->input] = array(
                         'type' => $t->type,
@@ -1064,10 +1064,12 @@ class ElasticSearch {
 
     private function fetch_runfiles($min, $max) {
         $index = array();
-        foreach ($this->db->query('SELECT source, field, name, format, file_id from runfile where source >= ' . $min . ' and source < ' . $max) as $r) {
-            $index[$r->source][$r->field]['url'] = BASE_URL . 'data/download/' . $r->file_id . '/' . $r->name;
-            $index[$r->source][$r->field]['format'] = $r->format;
-        }
+        $runfiles = $this->db->query('SELECT source, field, name, format, file_id from runfile where source >= ' . $min . ' and source < ' . $max);
+        if ($runfiles)
+          foreach ($runfiles as $r) {
+              $index[$r->source][$r->field]['url'] = BASE_URL . 'data/download/' . $r->file_id . '/' . $r->name;
+              $index[$r->source][$r->field]['format'] = $r->format;
+          }
         return $index;
     }
 
@@ -1439,16 +1441,16 @@ class ElasticSearch {
         );
 
         $inputs = $this->db->query('SELECT name, type, description, io, requirement FROM task_type_inout where ttid=' . $d->ttid);
-
-        foreach ($inputs as $i) {
-            $new_data['input'][] = array(
-                'name' => $i->name,
-                'type' => $i->type,
-                'description' => $i->description,
-                'io' => $i->io,
-                'requirement' => $i->requirement
-            );
-        }
+        if ($inputs)
+          foreach ($inputs as $i) {
+              $new_data['input'][] = array(
+                  'name' => $i->name,
+                  'type' => $i->type,
+                  'description' => $i->description,
+                  'io' => $i->io,
+                  'requirement' => $i->requirement
+              );
+          }
         return $new_data;
     }
 
@@ -1767,15 +1769,16 @@ class ElasticSearch {
         if ($id and ! $datasets)
             return 'Error: data set ' . $id . ' is unknown';
 
-        foreach ($datasets as $d) {
-            $params['body'][] = array(
-                'index' => array(
-                    '_id' => $d->did
-                )
-            );
+        if ($datasets)
+          foreach ($datasets as $d) {
+              $params['body'][] = array(
+                  'index' => array(
+                      '_id' => $d->did
+                  )
+              );
 
-            $params['body'][] = $this->build_data($d);
-        }
+              $params['body'][] = $this->build_data($d);
+          }
 
         $responses = $this->client->bulk($params);
 

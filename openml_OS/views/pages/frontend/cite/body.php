@@ -27,7 +27,23 @@
     </div>
     </p>
 
-    <p>If you have used the <b>OpenML R package</b>, please also cite the following paper:</p>
+    <p>If you have used the <b>OpenML Python package</b>, please also cite:</p>
+    <p style="font-family: monospace;">Matthias Feurer, Jan N. van Rijn, Arlind Kadra, Pieter Gijsbers, Neeratyoy Mallik, Sahithya Ravi, Andreas Mueller, Joaquin Vanschoren, Frank Hutter.
+      OpenML-Python: an extensible Python API for OpenML. arXiv:1911.02490 [cs.LG], 2019<br/>
+      <a data-toggle="collapse" data-target="#ppaper">Show BibTeX</a> - <a href="https://arxiv.org/pdf/1911.02490.pdf" target="_blank">Read on arXiv</a>
+
+    <div id="ppaper" class="collapse" style="font-family: monospace;">
+    @article{OpenMLPython2019,<br>
+     author = {Matthias Feurer, Jan N. van Rijn, Arlind Kadra, Pieter Gijsbers, Neeratyoy Mallik, Sahithya Ravi, Andreas Mueller, Joaquin Vanschoren, Frank Hutter},<br>
+     title = {OpenML-Python: an extensible Python API for OpenML},<br>
+     journal = {arXiv},<br>
+     volume = {1911.02490},<br>
+     url = {https://arxiv.org/pdf/1911.02490.pdf},<br>
+    }
+    </div>
+    </p>
+
+    <p>If you have used the <b>OpenML R package</b>, please also cite:</p>
     <p style="font-family: monospace;">Giuseppe Casalicchio, Jakob Bossek, Michel Lang, Dominik Kirchhoff, Pascal Kerschke, Benjamin Hofner, Heidi Seibold, Joaquin Vanschoren, Bernd Bischl.
       OpenML: An R package to connect to the machine learning platform OpenML. Computational Statistics 32 (3), pp 1-15, 2017<br/>
       <a data-toggle="collapse" data-target="#rpaper">Show BibTeX</a> - <a href="https://arxiv.org/abs/1701.01293" target="_blank">Read on arXiv</a>

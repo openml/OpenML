@@ -1125,12 +1125,11 @@ class Api_data extends MY_Api_Model {
     if($this->input->post('description')) {
       // get description from string upload
       $description = $this->input->post('description', false);
-      if(validateXml($description, $xsdFile, $xmlErrors, false ) == false) { 
+      if(validateXml($description, $xsdFile, $xmlErrors, false ) == false) {
         if (DEBUG) {
           $to = $this->user_email;
           $subject = 'OpenML Data Upload DEBUG message. ';
-          $content = 'Filename: ' . $_FILES['description']['name'] . "\nXSD Validation Message: " . $xmlErrors . "\n=====BEGIN XML=====\n";
-          file_get_contents($description['tmp_name']);
+          $content = "Uploaded POST field \nXSD Validation Message: " . $xmlErrors . "\n=====BEGIN XML=====\n" . $description;
           sendEmail($to, $subject, $content,'text');
         }
         $this->returnError(131, $this->version, $this->openmlGeneralErrorCode, $xmlErrors);
@@ -1151,8 +1150,7 @@ class Api_data extends MY_Api_Model {
         if (DEBUG) {
           $to = $this->user_email;
           $subject = 'OpenML Data Upload DEBUG message. ';
-          $content = 'Filename: ' . $_FILES['description']['name'] . "\nXSD Validation Message: " . $xmlErrors . "\n=====BEGIN XML=====\n";
-          file_get_contents($description['tmp_name']);
+          $content = 'Filename: ' . $description['name'] . "\nXSD Validation Message: " . $xmlErrors . "\n=====BEGIN XML=====\n" . file_get_contents($description['tmp_name']);
           sendEmail($to, $subject, $content,'text');
         }
         $this->returnError(131, $this->version, $this->openmlGeneralErrorCode, $xmlErrors);
@@ -1431,25 +1429,18 @@ class Api_data extends MY_Api_Model {
       $this->returnError(442, $this->version);
       return;
     }
-
-    // get description from string upload
+    
+    // get description from file upload. Note that we will check the XSD later on (after we have assembled fields for error handling)
     $description = $_FILES['description'];
-    if (validateXml($description['tmp_name'], xsd('openml.data.features', $this->controller, $this->version), $xmlErrors) == false) {
-      
-      if (DEBUG) {
-        $to = $this->user_email;
-        $subject = 'OpenML Data Features Upload DEBUG message. ';
-        $content = 'Filename: ' . $_FILES['description']['name'] . "\nXSD Validation Message: " . $xmlErrors . "\n=====BEGIN XML=====\n";
-        file_get_contents($description['tmp_name']);
-        sendEmail($to, $subject, $content,'text');
-      }
-      $this->returnError(443, $this->version, $this->openmlGeneralErrorCode, $xmlErrors);
+    $xml = simplexml_load_file($description['tmp_name']);
+    
+    // precheck XSD (if this pre-check succeeds, we can do database error logging later)
+    if (!($xml->children('oml', true)->{'did'} && $xml->children('oml', true)->{'evaluation_engine_id'})) {
+      $this->returnError(443, $this->version, $this->openmlGeneralErrorCode, 'XML misses basic fields did or evaluation_engine_id');
       return;
     }
-
-    $xml = simplexml_load_file($description['tmp_name']);
-    $did = ''. $xml->children('oml', true)->{'did'};
-    $eval_id = ''.$xml->children('oml', true)->{'evaluation_engine_id'};
+    $did = ''. $xml->children('oml', true)->{'did'}; // Note that this relies on this field being in the xml
+    $eval_id = ''.$xml->children('oml', true)->{'evaluation_engine_id'}; // Note that this relies on this field being in the xml
 
     if (!is_numeric($did) || !is_numeric($eval_id) || $did <= 0 || $eval_id <= 0) {
       $this->returnError(446, $this->version);
@@ -1481,6 +1472,19 @@ class Api_data extends MY_Api_Model {
                   'num_tries' => $num_tries + 1);
     if ($xml->children('oml', true)->{'error'}) {
       $data['error'] = htmlentities($xml->children('oml', true)->{'error'});
+    }
+    
+    if (validateXml($description['tmp_name'], xsd('openml.data.features', $this->controller, $this->version), $xmlErrors) == false) {
+      $data['error'] = 'XSD does not comply. XSD errors: ' . $xmlErrors;
+      $success = $this->Data_processed->replace($data);
+      if (DEBUG) {
+        $to = $this->user_email;
+        $subject = 'OpenML Data Features Upload DEBUG message. ';
+        $content = 'Filename: ' . $description['name'] . "\nXSD Validation Message: " . $xmlErrors . "\n=====BEGIN XML=====\n" . file_get_contents($description['tmp_name']);
+        sendEmail($to, $subject, $content, 'text');
+      }
+      $this->returnError(443, $this->version, $this->openmlGeneralErrorCode, $xmlErrors);
+      return;
     }
 
     $this->db->trans_start();
@@ -1582,13 +1586,13 @@ class Api_data extends MY_Api_Model {
       //  $data['default_target_attribute'] = $feature->name;
       //}
     }
-    $this->db->trans_complete();
-
-    if ($success) {
-      $this->xmlContents('data-features-upload', $this->version, array('did' => $dataset->did));
-    } else {
+    if ($this->db->trans_status() === FALSE) {
+      $this->db->trans_rollback();
       $this->returnError(445, $this->version);
       return;
+    } else {
+      $this->db->trans_commit();
+      $this->xmlContents('data-features-upload', $this->version, array('did' => $dataset->did));
     }
   }
 
@@ -1839,7 +1843,15 @@ class Api_data extends MY_Api_Model {
         $result = $this->Data_quality->insert_ignore($data);
       }
     }
-    $this->db->trans_complete();
+    
+    if ($this->db->trans_status() === FALSE) {
+      $this->db->trans_rollback();
+      $this->returnError(389, $this->version);
+      return;
+    } else {
+      $this->db->trans_commit();
+      $this->xmlContents('data-qualities-upload', $this->version, array('did' => $did));
+    }
 
     // add to elastic search index.
     try {
@@ -1847,13 +1859,6 @@ class Api_data extends MY_Api_Model {
     } catch (Exception $e) {
       $additionalMsg = get_class() . '.' . __FUNCTION__ . ':' . $e->getMessage();
       $this->returnError(105, $this->version, $this->openmlGeneralErrorCode, $additionalMsg);
-      return;
-    }
-
-    if ($success) {
-      $this->xmlContents('data-qualities-upload', $this->version, array('did' => $did));
-    } else {
-      $this->returnError(389, $this->version);
       return;
     }
   }

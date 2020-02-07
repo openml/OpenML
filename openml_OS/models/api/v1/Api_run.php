@@ -827,30 +827,26 @@ class Api_run extends MY_Api_Model {
       $this->returnError( 393, $this->version );
       return;
     }
+    
+    $this->db->trans_start();
+    
+    $this->Input_data->deleteWhere( 'run =' . $run->rid );
+    $this->Output_data->deleteWhere( 'run =' . $run->rid );
+    
+    $additional_sql = ''; //' AND `did` NOT IN (SELECT `data` FROM `input_data` UNION SELECT `data` FROM `output_data`)';
+    $this->Runfile->deleteWhere('`source` = "' . $run->rid . '" ' . $additional_sql);
+    $this->Evaluation->deleteWhere('`source` = "' .  $run->rid. '" ' . $additional_sql);
+    $this->Evaluation_fold->deleteWhere('`source` = "' . $run->rid . '" ' . $additional_sql);
+    $this->Evaluation_sample->deleteWhere('`source` = "' . $run->rid . '" ' . $additional_sql);
+    $this->Run_evaluated->deleteWhere('`run_id` = "' . $run->rid . '" ');
+    $this->Run->delete( $run->rid );
 
-    $result = true;
-    $result = $result && $this->Input_data->deleteWhere( 'run =' . $run->rid );
-    $result = $result && $this->Output_data->deleteWhere( 'run =' . $run->rid );
-
-    if( $result ) {
-      $additional_sql = ''; //' AND `did` NOT IN (SELECT `data` FROM `input_data` UNION SELECT `data` FROM `output_data`)';
-      $result = $result && $this->Runfile->deleteWhere('`source` = "' . $run->rid . '" ' . $additional_sql);
-      $result = $result && $this->Evaluation->deleteWhere('`source` = "' .  $run->rid. '" ' . $additional_sql);
-      $result = $result && $this->Evaluation_fold->deleteWhere('`source` = "' . $run->rid . '" ' . $additional_sql);
-      $result = $result && $this->Evaluation_sample->deleteWhere('`source` = "' . $run->rid . '" ' . $additional_sql);
-      $result = $result && $this->Run_evaluated->deleteWhere('`run_id` = "' . $run->rid . '" ');
-      // Not needed
-      //$this->Dataset->deleteWhere('`source` = "' . $run->rid . '" ' . $additional_sql);
-    }
-
-    if( $result ) {
-      $result = $result && $this->Run->delete( $run->rid );
-    }
-
-    if( $result == false ) {
+    if ($this->db->trans_status() === FALSE) {
+      $this->db->trans_rollback();
       $this->returnError( 394, $this->version );
       return;
     }
+    $this->db->trans_commit();
 
     try {
       $this->elasticsearch->delete('run', $run_id);
@@ -1136,6 +1132,7 @@ class Api_run extends MY_Api_Model {
 
       $did = $this->Runfile->insert($record);
       if( $did == false ) {
+        $this->db->trans_rollback();
         $this->returnError(212, $this->version);
         return;
       }
@@ -1148,10 +1145,13 @@ class Api_run extends MY_Api_Model {
       $errorCode = 211;
       return false;
     }
-    $this->db->trans_complete();
-    if ($this->db->trans_status() === FALSE) {
+    
+    if ($this->db->trans_status() === FALSE) {  
+      $this->db->trans_rollback();
       $this->returnError(224, $this->version);
       return;
+    } else {  
+      $this->db->trans_commit();
     }
 
     $timestamps[] = microtime(true); // profiling 3
@@ -1177,12 +1177,8 @@ class Api_run extends MY_Api_Model {
     // tag it, if neccessary
     foreach($tags as $tag) {
       $success = $this->entity_tag_untag('run', $runId, $tag, false, 'run', true);
-      // if tagging went wrong, an error is displayed. (TODO: something else?)
-      if (!$success) return;
+      // on failure, we ignore it (just a tag)
     }
-
-    // remove scheduled task
-    $this->Schedule->deleteWhere( 'task_id = "' . $task_id . '" AND sid = "' . $setupId . '"' );
 
     // and present result, in effect only a run_id.
     $this->xmlContents( 'run-upload', $this->version, $result );
@@ -1242,10 +1238,13 @@ class Api_run extends MY_Api_Model {
 
       $this->Trace->insert($iteration);
     }
-    $this->db->trans_complete();
+    
     if ($this->db->trans_status() === FALSE) {
+      $this->db->trans_rollback();
       $this->returnError(564, $this->version);
       return;
+    } else {
+      $this->db->trans_commit();
     }
 
     $this->xmlContents('run-trace', $this->version, array('run_id' => $run_id));
@@ -1430,10 +1429,13 @@ class Api_run extends MY_Api_Model {
         $this->Evaluation->insert($evaluation);
       }
     }
-    $this->db->trans_complete();
+      
     if ($this->db->trans_status() === FALSE) {
+      $this->db->trans_rollback();
       $this->returnError(428, $this->version);
       return;
+    } else {  
+      $this->db->trans_commit();
     }
 
 
