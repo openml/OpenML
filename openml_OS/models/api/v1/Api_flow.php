@@ -1,4 +1,5 @@
 <?php
+
 class Api_flow extends MY_Api_Model {
 
   protected $version = 'v1';
@@ -27,6 +28,77 @@ class Api_flow extends MY_Api_Model {
 
     $getpost = array('get','post');
 
+    /**
+     *@OA\Get(
+     *	path="/flow/list/{filters}",
+     *	tags={"flow"},
+     *	summary="List and filter flows",
+     *	description="List flows, possibly filtered by a range of properties. Any number of properties can be combined by listing them one after the other in the form '/task/list/{filter}/{value}/{filter}/{value}/...' Returns an array with all flows that match the constraints.",
+     *	@OA\Parameter(
+     *		name="filters",
+     *		in="path",
+     *		type="string",
+     *		description="Any combination of these filters
+    /limit/{limit}/offset/{offset} - returns only {limit} results starting from result number {offset}. Useful for paginating results. With /limit/5/offset/10, tasks 11..15 will be returned. Both limit and offset need to be specified.
+    /tag/{tag} - returns only tasks tagged with the given tag.
+    /uploader/{id} - return only evaluations uploaded by a specific user, specified by user ID.
+    ",
+     *		required="true",
+     *	),
+     *	@OA\Parameter(
+     *		name="api_key",
+     *		in="query",
+     *		type="string",
+     *		description="API key to authenticate the user",
+     *		required="false",
+     *	),
+     *	@OA\Response(
+     *		response=200,
+     *		description="A list of flows",
+     *		@OA\JsonContent(
+     *			ref="#/components/schemas/FlowList",
+     *			example={
+     *			  "flows":
+     *			    {
+     *			      "flow":[
+     *			        {
+     *			          "id":"65",
+     *			          "full_name":"weka.RandomForest(1)",
+     *			          "name":"weka.RandomForest",
+     *			          "version":"1",
+     *			          "external_version":"Weka_3.7.10_9186",
+     *			          "uploader":"1"
+     *			        },
+     *			        {
+     *			          "id":"66",
+     *			          "full_name":"weka.IBk(1)",
+     *			          "name":"weka.IBk",
+     *			          "version":"1",
+     *			          "external_version":"Weka_3.7.10_8034",
+     *			          "uploader":"1"
+     *			        },
+     *			        {
+     *			          "id":"67",
+     *			          "full_name":"weka.BayesNet_K2(1)",
+     *			          "name":"weka.BayesNet_K2",
+     *			          "version":"1",
+     *			          "external_version":"Weka_3.7.10_8034",
+     *			          "uploader":"1"
+     *			        }
+     *			      ]
+     *			    }
+     *			  }
+     *		),
+     *	),
+     *	@OA\Response(
+     *		response=412,
+     *		description="Precondition failed. An error code and message are returned.\n500 - No results. There where no matches for the given constraints.\n501 - Illegal filter specified.\n502 - Filter values/ranges not properly specified.\n503 - Can not specify an offset without a limit.\n",
+     *		@OA\JsonContent(
+     *			ref="#/components/schemas/Error",
+     *		),
+     *	),
+     *)
+     */
     if (count($segments) >= 1 && $segments[0] == 'list') {
       array_shift($segments);
       $this->flow_list($segments);
@@ -34,6 +106,59 @@ class Api_flow extends MY_Api_Model {
     }
 
     // TODO: deprecate!
+    /**
+     *@OA\Get(
+     *	path="/flow/exists/{name}/{version}",
+     *	tags={"flow"},
+     *	summary="Check whether flow exists",
+     *	description="Checks whether a flow with the given name and (external) version exists.",
+     *	@OA\Parameter(
+     *		name="name",
+     *		in="path",
+     *		type="string",
+     *		description="The name of the flow.",
+     *		required="true",
+     *	),
+     *	@OA\Parameter(
+     *		name="version",
+     *		in="path",
+     *		type="string",
+     *		description="The external version of the flow",
+     *		required="true",
+     *	),
+     *	@OA\Parameter(
+     *		name="api_key",
+     *		in="query",
+     *		type="string",
+     *		description="API key to authenticate the user",
+     *		required="false",
+     *	),
+     *	@OA\Response(
+     *		response=200,
+     *		description="A list of flows",
+     *		@OA\JsonContent(
+     *			type="object",
+     *			@OA\Property(
+     *				property="flow_exists",
+     *				ref="#/components/schemas/inline_response_200_10_flow_exists",
+     *			),
+     *			example={
+     *			  "flow_exists": {
+     *			    "exists": "true",
+     *			    "id": "65"
+     *			  }
+     *			}
+     *		),
+     *	),
+     *	@OA\Response(
+     *		response=412,
+     *		description="Precondition failed. An error code and message are returned.\n330 - Mandatory fields not present. Please provide name and external_version.\n",
+     *		@OA\JsonContent(
+     *			ref="#/components/schemas/Error",
+     *		),
+     *	),
+     *)
+     */
     if (count($segments) == 3 && $segments[0] == 'exists') {
       $this->flow_exists($segments[1],$segments[2]);
       return;
@@ -169,6 +294,58 @@ class Api_flow extends MY_Api_Model {
       return;
     }
 
+    /**
+     *@OA\Post(
+     *	path="/flow",
+     *	tags={"flow"},
+     *	summary="Upload a flow",
+     *	description="Uploads a flow. Upon success, it returns the flow id.",
+     *	@OA\Parameter(
+     *		name="description",
+     *		in="formData",
+     *		type="file",
+     *		description="An XML file describing the flow. Only name and description are required. Also see the [XSD schema](https://www.openml.org/api/v1/xsd/openml.implementation.upload) and an [XML example](https://www.openml.org/api/v1/xml_example/flow).",
+     *		required="true",
+     *	),
+     *	@OA\Parameter(
+     *		name="flow",
+     *		in="formData",
+     *		type="file",
+     *		description="The actual flow, being a source (or binary) file.",
+     *		required="false",
+     *	),
+     *	@OA\Parameter(
+     *		name="api_key",
+     *		in="query",
+     *		type="string",
+     *		description="Api key to authenticate the user",
+     *		required="true",
+     *	),
+     *	@OA\Response(
+     *		response=200,
+     *		description="Id of the uploaded flow",
+     *		@OA\JsonContent(
+     *			type="object",
+     *			@OA\Property(
+     *				property="upload_flow",
+     *				ref="#/components/schemas/inline_response_200_9_upload_flow",
+     *			),
+     *			example={
+     *			  "upload_flow": {
+     *			    "id": "2520"
+     *			  }
+     *			}
+     *		),
+     *	),
+     *	@OA\Response(
+     *		response=412,
+     *		description="Precondition failed. An error code and message are returned.\n160 - Error in file uploading. There was a problem with the file upload.\n161 - Please provide description xml.\n163 - Problem validating uploaded description file. The XML description format does not meet the standards.\n164 - Flow already stored in database. Please change name or version number\n165 - Failed to insert flow. There can be many causes for this error. If you included the implements field, it should be an existing entry in the algorithm or math_function table. Otherwise it could be an internal server error. Please contact API support team.\n166 - Failed to add flow to database. Internal server error, please contact API administrators\n167 - Illegal files uploaded. An non required file was uploaded.\n168 - The provided md5 hash equals not the server generated md5 hash of the file.\n169 - Please provide API key. In order to share content, please authenticate and provide API key.\n170 - Authentication failed. The API key was not valid. Please try to login again, or contact API administrators\n171 - Flow already exists. This flow is already in the database\n172 - XSD not found. Please contact API support team\n",
+     *		@OA\JsonContent(
+     *			ref="#/components/schemas/Error",
+     *		),
+     *	),
+     *)
+     */
     if (count($segments) == 0 && $request_type == 'post') {
       $this->flow_upload();
       return;
@@ -297,77 +474,6 @@ class Api_flow extends MY_Api_Model {
     $this->returnError( 100, $this->version );
   }
 
-  /**
-   *@OA\Get(
-   *	path="/flow/list/{filters}",
-   *	tags={"flow"},
-   *	summary="List and filter flows",
-   *	description="List flows, possibly filtered by a range of properties. Any number of properties can be combined by listing them one after the other in the form '/task/list/{filter}/{value}/{filter}/{value}/...' Returns an array with all flows that match the constraints.",
-   *	@OA\Parameter(
-   *		name="filters",
-   *		in="path",
-   *		type="string",
-   *		description="Any combination of these filters
-  /limit/{limit}/offset/{offset} - returns only {limit} results starting from result number {offset}. Useful for paginating results. With /limit/5/offset/10, tasks 11..15 will be returned. Both limit and offset need to be specified.
-  /tag/{tag} - returns only tasks tagged with the given tag.
-  /uploader/{id} - return only evaluations uploaded by a specific user, specified by user ID.
-  ",
-   *		required="true",
-   *	),
-   *	@OA\Parameter(
-   *		name="api_key",
-   *		in="query",
-   *		type="string",
-   *		description="API key to authenticate the user",
-   *		required="false",
-   *	),
-   *	@OA\Response(
-   *		response=200,
-   *		description="A list of flows",
-   *		@OA\JsonContent(
-   *			ref="#/components/schemas/FlowList",
-   *			example={
-   *			  "flows":
-   *			    {
-   *			      "flow":[
-   *			        {
-   *			          "id":"65",
-   *			          "full_name":"weka.RandomForest(1)",
-   *			          "name":"weka.RandomForest",
-   *			          "version":"1",
-   *			          "external_version":"Weka_3.7.10_9186",
-   *			          "uploader":"1"
-   *			        },
-   *			        {
-   *			          "id":"66",
-   *			          "full_name":"weka.IBk(1)",
-   *			          "name":"weka.IBk",
-   *			          "version":"1",
-   *			          "external_version":"Weka_3.7.10_8034",
-   *			          "uploader":"1"
-   *			        },
-   *			        {
-   *			          "id":"67",
-   *			          "full_name":"weka.BayesNet_K2(1)",
-   *			          "name":"weka.BayesNet_K2",
-   *			          "version":"1",
-   *			          "external_version":"Weka_3.7.10_8034",
-   *			          "uploader":"1"
-   *			        }
-   *			      ]
-   *			    }
-   *			  }
-   *		),
-   *	),
-   *	@OA\Response(
-   *		response=412,
-   *		description="Precondition failed. An error code and message are returned.\n500 - No results. There where no matches for the given constraints.\n501 - Illegal filter specified.\n502 - Filter values/ranges not properly specified.\n503 - Can not specify an offset without a limit.\n",
-   *		@OA\JsonContent(
-   *			ref="#/components/schemas/Error",
-   *		),
-   *	),
-   *)
-   */
   private function flow_list($segs) {
     $legal_filters = array('uploader', 'tag', 'limit', 'offset');
     
@@ -422,59 +528,6 @@ class Api_flow extends MY_Api_Model {
   }
 
 
-  /**
-   *@OA\Get(
-   *	path="/flow/exists/{name}/{version}",
-   *	tags={"flow"},
-   *	summary="Check whether flow exists",
-   *	description="Checks whether a flow with the given name and (external) version exists.",
-   *	@OA\Parameter(
-   *		name="name",
-   *		in="path",
-   *		type="string",
-   *		description="The name of the flow.",
-   *		required="true",
-   *	),
-   *	@OA\Parameter(
-   *		name="version",
-   *		in="path",
-   *		type="string",
-   *		description="The external version of the flow",
-   *		required="true",
-   *	),
-   *	@OA\Parameter(
-   *		name="api_key",
-   *		in="query",
-   *		type="string",
-   *		description="API key to authenticate the user",
-   *		required="false",
-   *	),
-   *	@OA\Response(
-   *		response=200,
-   *		description="A list of flows",
-   *		@OA\JsonContent(
-   *			type="object",
-   *			@OA\Property(
-   *				property="flow_exists",
-   *				ref="#/components/schemas/inline_response_200_10_flow_exists",
-   *			),
-   *			example={
-   *			  "flow_exists": {
-   *			    "exists": "true",
-   *			    "id": "65"
-   *			  }
-   *			}
-   *		),
-   *	),
-   *	@OA\Response(
-   *		response=412,
-   *		description="Precondition failed. An error code and message are returned.\n330 - Mandatory fields not present. Please provide name and external_version.\n",
-   *		@OA\JsonContent(
-   *			ref="#/components/schemas/Error",
-   *		),
-   *	),
-   *)
-   */
   private function flow_exists($name, $external_version) {
 
     $similar = false;
@@ -491,58 +544,7 @@ class Api_flow extends MY_Api_Model {
     }
     $this->xmlContents( 'implementation-exists', $this->version, $result );
   }
-  /**
-   *@OA\Post(
-   *	path="/flow",
-   *	tags={"flow"},
-   *	summary="Upload a flow",
-   *	description="Uploads a flow. Upon success, it returns the flow id.",
-   *	@OA\Parameter(
-   *		name="description",
-   *		in="formData",
-   *		type="file",
-   *		description="An XML file describing the flow. Only name and description are required. Also see the [XSD schema](https://www.openml.org/api/v1/xsd/openml.implementation.upload) and an [XML example](https://www.openml.org/api/v1/xml_example/flow).",
-   *		required="true",
-   *	),
-   *	@OA\Parameter(
-   *		name="flow",
-   *		in="formData",
-   *		type="file",
-   *		description="The actual flow, being a source (or binary) file.",
-   *		required="false",
-   *	),
-   *	@OA\Parameter(
-   *		name="api_key",
-   *		in="query",
-   *		type="string",
-   *		description="Api key to authenticate the user",
-   *		required="true",
-   *	),
-   *	@OA\Response(
-   *		response=200,
-   *		description="Id of the uploaded flow",
-   *		@OA\JsonContent(
-   *			type="object",
-   *			@OA\Property(
-   *				property="upload_flow",
-   *				ref="#/components/schemas/inline_response_200_9_upload_flow",
-   *			),
-   *			example={
-   *			  "upload_flow": {
-   *			    "id": "2520"
-   *			  }
-   *			}
-   *		),
-   *	),
-   *	@OA\Response(
-   *		response=412,
-   *		description="Precondition failed. An error code and message are returned.\n160 - Error in file uploading. There was a problem with the file upload.\n161 - Please provide description xml.\n163 - Problem validating uploaded description file. The XML description format does not meet the standards.\n164 - Flow already stored in database. Please change name or version number\n165 - Failed to insert flow. There can be many causes for this error. If you included the implements field, it should be an existing entry in the algorithm or math_function table. Otherwise it could be an internal server error. Please contact API support team.\n166 - Failed to add flow to database. Internal server error, please contact API administrators\n167 - Illegal files uploaded. An non required file was uploaded.\n168 - The provided md5 hash equals not the server generated md5 hash of the file.\n169 - Please provide API key. In order to share content, please authenticate and provide API key.\n170 - Authentication failed. The API key was not valid. Please try to login again, or contact API administrators\n171 - Flow already exists. This flow is already in the database\n172 - XSD not found. Please contact API support team\n",
-   *		@OA\JsonContent(
-   *			ref="#/components/schemas/Error",
-   *		),
-   *	),
-   *)
-   */
+
   //  TODO: check what is going wrong with implementation id 1
   private function flow($id) {
     if( $id == false ) {

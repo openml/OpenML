@@ -1,4 +1,5 @@
 <?php
+
 class Api_data extends MY_Api_Model {
 
   protected $version = 'v1';

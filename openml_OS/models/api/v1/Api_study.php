@@ -187,12 +187,122 @@ class Api_study extends MY_Api_Model {
       $this->study_delete($segments[0]);
       return;
     }
-    
+
+    /**
+     *@OA\Post(
+     *	path="/study/{id}/attach",
+     *	tags={"study"},
+     *	summary="Attach a new entity to a study",
+     *	description="Attach a new entity to an exising study. Upon success, it returns the study id, type, and linked entities.",
+     *	@OA\Parameter(
+     *		name="id",
+     *		in="path",
+     *		type="number",
+     *		format="integer",
+     *		description="Id of the study. Supplied in the URL path.",
+     *		required="true",
+     *	),
+     *	@OA\Parameter(
+     *		name="ids",
+     *		in="formData",
+     *		type="string",
+     *		description="Comma-separated list of entity IDs to be attached to the study. For instance, if this is a run study, the list of run IDs that need to be added (attached) to the study. Must be supplied as a POST variable.",
+     *		required="true",
+     *	),
+     *	@OA\Parameter(
+     *		name="api_key",
+     *		in="query",
+     *		type="string",
+     *		description="Api key to authenticate the user",
+     *		required="true",
+     *	),
+     *	@OA\Response(
+     *		response=200,
+     *		description="Properties of the updated study",
+     *		@OA\JsonContent(
+     *			type="object",
+     *			@OA\Property(
+     *				property="study_attach",
+     *				ref="#/components/schemas/inline_response_200_26_study_attach",
+     *			),
+     *			example={
+     *			  "study_attach": {
+     *			    "id": "1",
+     *			    "main_entity_type": "task",
+     *			    "linked_entities": "5"
+     *			  }
+     *			}
+     *		),
+     *	),
+     *	@OA\Response(
+     *		response=412,
+     *		description="Precondition failed. An error code and message are returned.\n1041 - Could not find study. Check the study ID in your request.\n1042 - Cannnot attach entities to legacy studies.\n1043 - Please provide POST field 'ids'.\n1044 - Please ensure that the 'ids' in the POST field is a list of natural numbers.\n1045 - Could not attach entities to the study. It appears as if the entity does not exist.\n",
+     *		@OA\JsonContent(
+     *			ref="#/components/schemas/Error",
+     *		),
+     *	),
+     *)
+     */
     if (count($segments) == 2 && is_numeric($segments[0]) && $segments[1] == 'attach' && $request_type == 'post') {
       $this->study_attach_detach($segments[0], true);
       return;
     }
-    
+
+    /**
+     *@OA\Post(
+     *	path="/study/{id}/detach",
+     *	tags={"study"},
+     *	summary="Detach an entity from a study",
+     *	description="Detach an entity from an exising study. Upon success, it returns the study id, type, and linked entities.",
+     *	@OA\Parameter(
+     *		name="id",
+     *		in="path",
+     *		type="number",
+     *		format="integer",
+     *		description="Id of the study.",
+     *		required="true",
+     *	),
+     *	@OA\Parameter(
+     *		name="ids",
+     *		in="formData",
+     *		type="string",
+     *		description="Comma-separated list of entity IDs to be detached from the study. For instance, if this is a run study, the list of run IDs that need to be removed (detached) from the study. Must be supplied as a POST variable.",
+     *		required="true",
+     *	),
+     *	@OA\Parameter(
+     *		name="api_key",
+     *		in="query",
+     *		type="string",
+     *		description="Api key to authenticate the user",
+     *		required="true",
+     *	),
+     *	@OA\Response(
+     *		response=200,
+     *		description="Properties of the updated study",
+     *		@OA\JsonContent(
+     *			type="object",
+     *			@OA\Property(
+     *				property="upload_study",
+     *				ref="#/components/schemas/inline_response_200_26_study_attach",
+     *			),
+     *			example={
+     *			  "study_detach": {
+     *			    "id": "1",
+     *			    "main_entity_type": "task",
+     *			    "linked_entities": "5"
+     *			  }
+     *			}
+     *		),
+     *	),
+     *	@OA\Response(
+     *		response=412,
+     *		description="Precondition failed. An error code and message are returned.\n1041 - Could not find study. Check the study ID in your request.\n1042 - Cannot attach entities to legacy studies.\n1043 - Please provide POST field 'ids'.\n1044 - Please ensure that the 'ids' in the POST field is a list of natural numbers.\n1046 - Could not detach entities from the study. It appears as if the entity does not exist.       \n",
+     *		@OA\JsonContent(
+     *			ref="#/components/schemas/Error",
+     *		),
+     *	),
+     *)
+     */
     if (count($segments) == 2 && is_numeric($segments[0]) && $segments[1] == 'detach' && $request_type == 'post') {
       $this->study_attach_detach($segments[0], false);
       return;
@@ -406,116 +516,6 @@ class Api_study extends MY_Api_Model {
     $this->xmlContents('study-status-update', $this->version, $template_vars);
   }
 
-  /**
-   *@OA\Post(
-   *	path="/study/{id}/attach",
-   *	tags={"study"},
-   *	summary="Attach a new entity to a study",
-   *	description="Attach a new entity to an exising study. Upon success, it returns the study id, type, and linked entities.",
-   *	@OA\Parameter(
-   *		name="id",
-   *		in="path",
-   *		type="number",
-   *		format="integer",
-   *		description="Id of the study. Supplied in the URL path.",
-   *		required="true",
-   *	),
-   *	@OA\Parameter(
-   *		name="ids",
-   *		in="formData",
-   *		type="string",
-   *		description="Comma-separated list of entity IDs to be attached to the study. For instance, if this is a run study, the list of run IDs that need to be added (attached) to the study. Must be supplied as a POST variable.",
-   *		required="true",
-   *	),
-   *	@OA\Parameter(
-   *		name="api_key",
-   *		in="query",
-   *		type="string",
-   *		description="Api key to authenticate the user",
-   *		required="true",
-   *	),
-   *	@OA\Response(
-   *		response=200,
-   *		description="Properties of the updated study",
-   *		@OA\JsonContent(
-   *			type="object",
-   *			@OA\Property(
-   *				property="study_attach",
-   *				ref="#/components/schemas/inline_response_200_26_study_attach",
-   *			),
-   *			example={
-   *			  "study_attach": {
-   *			    "id": "1",
-   *			    "main_entity_type": "task",
-   *			    "linked_entities": "5"
-   *			  }
-   *			}
-   *		),
-   *	),
-   *	@OA\Response(
-   *		response=412,
-   *		description="Precondition failed. An error code and message are returned.\n1041 - Could not find study. Check the study ID in your request.\n1042 - Cannnot attach entities to legacy studies.\n1043 - Please provide POST field 'ids'.\n1044 - Please ensure that the 'ids' in the POST field is a list of natural numbers.\n1045 - Could not attach entities to the study. It appears as if the entity does not exist.\n",
-   *		@OA\JsonContent(
-   *			ref="#/components/schemas/Error",
-   *		),
-   *	),
-   *)
-   */
-  /**
-   *@OA\Post(
-   *	path="/study/{id}/detach",
-   *	tags={"study"},
-   *	summary="Detach an entity from a study",
-   *	description="Detach an entity from an exising study. Upon success, it returns the study id, type, and linked entities.",
-   *	@OA\Parameter(
-   *		name="id",
-   *		in="path",
-   *		type="number",
-   *		format="integer",
-   *		description="Id of the study.",
-   *		required="true",
-   *	),
-   *	@OA\Parameter(
-   *		name="ids",
-   *		in="formData",
-   *		type="string",
-   *		description="Comma-separated list of entity IDs to be detached from the study. For instance, if this is a run study, the list of run IDs that need to be removed (detached) from the study. Must be supplied as a POST variable.",
-   *		required="true",
-   *	),
-   *	@OA\Parameter(
-   *		name="api_key",
-   *		in="query",
-   *		type="string",
-   *		description="Api key to authenticate the user",
-   *		required="true",
-   *	),
-   *	@OA\Response(
-   *		response=200,
-   *		description="Properties of the updated study",
-   *		@OA\JsonContent(
-   *			type="object",
-   *			@OA\Property(
-   *				property="upload_study",
-   *				ref="#/components/schemas/inline_response_200_26_study_attach",
-   *			),
-   *			example={
-   *			  "study_detach": {
-   *			    "id": "1",
-   *			    "main_entity_type": "task",
-   *			    "linked_entities": "5"
-   *			  }
-   *			}
-   *		),
-   *	),
-   *	@OA\Response(
-   *		response=412,
-   *		description="Precondition failed. An error code and message are returned.\n1041 - Could not find study. Check the study ID in your request.\n1042 - Cannot attach entities to legacy studies.\n1043 - Please provide POST field 'ids'.\n1044 - Please ensure that the 'ids' in the POST field is a list of natural numbers.\n1046 - Could not detach entities from the study. It appears as if the entity does not exist.       \n",
-   *		@OA\JsonContent(
-   *			ref="#/components/schemas/Error",
-   *		),
-   *	),
-   *)
-   */
   private function study_attach_detach($study_id, $attach) {
     $study = $this->Study->getById($study_id);
     if ($study === false) {

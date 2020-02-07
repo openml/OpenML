@@ -17,12 +17,47 @@ class Api_user extends MY_Api_Model {
     $this->outputFormat = $format;
 
   # http://test.openml.org/api/v1/user/list/uploader/1,2
+
+    /**
+     *@OA\Get(
+     *	path="/user/list",
+     *	tags={"user"},
+     *	summary="List all users by user id",
+     *	description="Returns an array with all user ids and names.",
+     *	@OA\Parameter(
+     *		name="api_key",
+     *		in="query",
+     *		type="string",
+     *		description="API key to authenticate the user",
+     *		required="false",
+     *	),
+     *	@OA\Response(
+     *		response=200,
+     *		description="A list of users",
+     *		@OA\JsonContent(
+     *			ref="#/components/schemas/UserList",
+     *			example={
+     *			  "users":{
+     *			    "user":[
+     *			      {
+     *			        "id":"1",
+     *			        "username":"janvanrijn@gmail.com"},
+     *			      {
+     *			        "id":"2",
+     *			        "username":"joaquin.vanschoren@gmail.com"}
+     *			      ]
+     *			  }
+     *			}
+     *		),
+     *	),
+     *)
+     */
     if (count($segments) >= 1 && $segments[0] == 'list') {
       array_shift($segments);
       $this->username_list($segments);
       return;
     }
-    
+
     /*$getpost = array('get','post');
 
     if (count($segments) == 1 && is_numeric($segments[0]) && $request_type == 'delete') {
@@ -82,40 +117,6 @@ class Api_user extends MY_Api_Model {
   } */
 
 
-  /**
-   *@OA\Get(
-   *	path="/user/list",
-   *	tags={"user"},
-   *	summary="List all users by user id",
-   *	description="Returns an array with all user ids and names.",
-   *	@OA\Parameter(
-   *		name="api_key",
-   *		in="query",
-   *		type="string",
-   *		description="API key to authenticate the user",
-   *		required="false",
-   *	),
-   *	@OA\Response(
-   *		response=200,
-   *		description="A list of users",
-   *		@OA\JsonContent(
-   *			ref="#/components/schemas/UserList",
-   *			example={
-   *			  "users":{
-   *			    "user":[
-   *			      {
-   *			        "id":"1",
-   *			        "username":"janvanrijn@gmail.com"},
-   *			      {
-   *			        "id":"2",
-   *			        "username":"joaquin.vanschoren@gmail.com"}
-   *			      ]
-   *			  }
-   *			}
-   *		),
-   *	),
-   *)
-   */
   private function username_list($segs) {
     # pass uploader list to get username list
     $legal_filters = array('user_id');

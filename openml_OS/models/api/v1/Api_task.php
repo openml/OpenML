@@ -26,6 +26,7 @@ class Api_task extends MY_Api_Model {
     $this->outputFormat = $format;
 
     $getpost = array('get','post');
+
     /**
      *@OA\Get(
      *	path="/task/list/{filters}",
@@ -160,6 +161,122 @@ class Api_task extends MY_Api_Model {
       return;
     }
 
+    /**
+     *@OA\Get(
+     *	path="/task/{id}",
+     *	tags={"task"},
+     *	summary="Get task description",
+     *	description="Returns information about a task. The information includes the task type, input data, train/test sets, and more.",
+     *	@OA\Parameter(
+     *		name="id",
+     *		in="path",
+     *		type="number",
+     *		format="integer",
+     *		description="ID of the task.",
+     *		required="true",
+     *	),
+     *	@OA\Parameter(
+     *		name="api_key",
+     *		in="query",
+     *		type="string",
+     *		description="Api key to authenticate the user",
+     *		required="false",
+     *	),
+     *	@OA\Response(
+     *		response=200,
+     *		description="A task description",
+     *		@OA\JsonContent(
+     *			ref="#/components/schemas/Task",
+     *			example={
+     *			  "task": {
+     *			    "task_id":"1",
+     *			    "task_type":"Supervised Classification",
+     *			    "input":[
+     *			      {
+     *			        "name":"source_data",
+     *			        "data_set":{
+     *			          "data_set_id":"1",
+     *			          "target_feature":"class"
+     *			        }
+     *			      },
+     *			      {
+     *			        "name":"estimation_procedure",
+     *			        "estimation_procedure":{
+     *			          "type":"crossvalidation",
+     *			          "data_splits_url":"https://www.openml.org/api_splits/get/1/Task_1_splits.arff",
+     *			          "parameter":[
+     *			            {
+     *			              "name":"number_repeats",
+     *			              "value":"1"
+     *			            },
+     *			            {
+     *			              "name":"number_folds",
+     *			              "value":"10"
+     *			            },
+     *			            {
+     *			              "name":"percentage"
+     *			            },
+     *			            {
+     *			              "name":"stratified_sampling",
+     *			              "value":"true"
+     *			            }
+     *			          ]
+     *			        }
+     *			      },
+     *			      {
+     *			        "name":"cost_matrix",
+     *			        "cost_matrix":[]
+     *			      },
+     *			      {
+     *			        "name":"evaluation_measures",
+     *			        "evaluation_measures":
+     *			          {
+     *			            "evaluation_measure":"predictive_accuracy"
+     *			          }
+     *			      }
+     *			    ],
+     *			    "output":{
+     *			      "name":"predictions",
+     *			      "predictions":{
+     *			        "format":"ARFF",
+     *			        "feature":[
+     *			          {
+     *			            "name":"repeat",
+     *			            "type":"integer"
+     *			          },
+     *			          {
+     *			            "name":"fold",
+     *			            "type":"integer"
+     *			          },
+     *			          {
+     *			            "name":"row_id",
+     *			            "type":"integer"
+     *			          },
+     *			          {
+     *			            "name":"confidence.classname",
+     *			            "type":"numeric"
+     *			          },
+     *			          {
+     *			            "name":"prediction",
+     *			            "type":"string"
+     *			          }
+     *			        ]
+     *			      }
+     *			    },
+     *			    "tag":["basic","study_1","under100k","under1m"]
+     *			  }
+     *			}
+     *		),
+     *	),
+     *	@OA\Response(
+     *		response=412,
+     *		description="Precondition failed. An error code and message are returned.\n150 - Please provide task_id.\n151 - Unknown task. The task with the given id was not found in the database\n",
+     *		@OA\JsonContent(
+     *			ref="#/components/schemas/Error",
+     *		),
+     *	),
+     *)
+     */
     if (count($segments) == 1 && is_numeric($segments[0]) && in_array($request_type, $getpost)) {
       $this->task($segments[0]);
       return;
@@ -220,6 +337,52 @@ class Api_task extends MY_Api_Model {
       return;
     }
 
+    /**
+     *@OA\Delete(
+     *	path="/task/{id}",
+     *	tags={"task"},
+     *	summary="Delete task",
+     *	description="Deletes a task. Upon success, it returns the ID of the deleted task.",
+     *	@OA\Parameter(
+     *		name="id",
+     *		in="path",
+     *		type="number",
+     *		format="integer",
+     *		description="Id of the task.",
+     *		required="true",
+     *	),
+     *	@OA\Parameter(
+     *		name="api_key",
+     *		in="query",
+     *		type="string",
+     *		description="Api key to authenticate the user",
+     *		required="true",
+     *	),
+     *	@OA\Response(
+     *		response=200,
+     *		description="ID of the deleted task",
+     *		@OA\JsonContent(
+     *			type="object",
+     *			@OA\Property(
+     *				property="task_delete",
+     *				ref="#/components/schemas/inline_response_200_4_task_delete",
+     *			),
+     *			example={
+     *			  "task_delete": {
+     *			    "id": "4328"
+     *			  }
+     *			}
+     *		),
+     *	),
+     *	@OA\Response(
+     *		response=412,
+     *		description="Precondition failed. An error code and message are returned.\n450 - Please provide API key. In order to remove your content, please authenticate.\n451 - Authentication failed. The API key was not valid. Please try to login again, or contact api administrators.\n452 - Task does not exists. The task ID could not be linked to an existing task.\n454 - Task is executed in some runs. Delete these first.\n455 - Deleting the task failed. Please contact support team.\n",
+     *		@OA\JsonContent(
+     *			ref="#/components/schemas/Error",
+     *		),
+     *	),
+     *)
+     */
     if (count($segments) == 1 && is_numeric($segments[0]) && $request_type == 'delete') {
       $this->task_delete($segments[0]);
       return;
@@ -426,122 +589,6 @@ class Api_task extends MY_Api_Model {
     $this->xmlContents( 'tasks', $this->version, array( 'tasks' => $tasks_res ) );
   }
 
-  /**
-   *@OA\Get(
-   *	path="/task/{id}",
-   *	tags={"task"},
-   *	summary="Get task description",
-   *	description="Returns information about a task. The information includes the task type, input data, train/test sets, and more.",
-   *	@OA\Parameter(
-   *		name="id",
-   *		in="path",
-   *		type="number",
-   *		format="integer",
-   *		description="ID of the task.",
-   *		required="true",
-   *	),
-   *	@OA\Parameter(
-   *		name="api_key",
-   *		in="query",
-   *		type="string",
-   *		description="Api key to authenticate the user",
-   *		required="false",
-   *	),
-   *	@OA\Response(
-   *		response=200,
-   *		description="A task description",
-   *		@OA\JsonContent(
-   *			ref="#/components/schemas/Task",
-   *			example={
-   *			  "task": {
-   *			    "task_id":"1",
-   *			    "task_type":"Supervised Classification",
-   *			    "input":[
-   *			      {
-   *			        "name":"source_data",
-   *			        "data_set":{
-   *			          "data_set_id":"1",
-   *			          "target_feature":"class"
-   *			        }
-   *			      },
-   *			      {
-   *			        "name":"estimation_procedure",
-   *			        "estimation_procedure":{
-   *			          "type":"crossvalidation",
-   *			          "data_splits_url":"https://www.openml.org/api_splits/get/1/Task_1_splits.arff",
-   *			          "parameter":[
-   *			            {
-   *			              "name":"number_repeats",
-   *			              "value":"1"
-   *			            },
-   *			            {
-   *			              "name":"number_folds",
-   *			              "value":"10"
-   *			            },
-   *			            {
-   *			              "name":"percentage"
-   *			            },
-   *			            {
-   *			              "name":"stratified_sampling",
-   *			              "value":"true"
-   *			            }
-   *			          ]
-   *			        }
-   *			      },
-   *			      {
-   *			        "name":"cost_matrix",
-   *			        "cost_matrix":[]
-   *			      },
-   *			      {
-   *			        "name":"evaluation_measures",
-   *			        "evaluation_measures":
-   *			          {
-   *			            "evaluation_measure":"predictive_accuracy"
-   *			          }
-   *			      }
-   *			    ],
-   *			    "output":{
-   *			      "name":"predictions",
-   *			      "predictions":{
-   *			        "format":"ARFF",
-   *			        "feature":[
-   *			          {
-   *			            "name":"repeat",
-   *			            "type":"integer"
-   *			          },
-   *			          {
-   *			            "name":"fold",
-   *			            "type":"integer"
-   *			          },
-   *			          {
-   *			            "name":"row_id",
-   *			            "type":"integer"
-   *			          },
-   *			          {
-   *			            "name":"confidence.classname",
-   *			            "type":"numeric"
-   *			          },
-   *			          {
-   *			            "name":"prediction",
-   *			            "type":"string"
-   *			          }
-   *			        ]
-   *			      }
-   *			    },
-   *			    "tag":["basic","study_1","under100k","under1m"]
-   *			  }
-   *			}
-   *		),
-   *	),
-   *	@OA\Response(
-   *		response=412,
-   *		description="Precondition failed. An error code and message are returned.\n150 - Please provide task_id.\n151 - Unknown task. The task with the given id was not found in the database\n",
-   *		@OA\JsonContent(
-   *			ref="#/components/schemas/Error",
-   *		),
-   *	),
-   *)
-   */
   private function task($task_id) {
     $task = $this->Task->getById($task_id);
     if($task === false) {
@@ -588,52 +635,6 @@ class Api_task extends MY_Api_Model {
     $this->xmlContents('task-inputs', $this->version, array('task' => $task, 'inputs' => $inputs));
   }
 
-  /**
-   *@OA\Delete(
-   *	path="/task/{id}",
-   *	tags={"task"},
-   *	summary="Delete task",
-   *	description="Deletes a task. Upon success, it returns the ID of the deleted task.",
-   *	@OA\Parameter(
-   *		name="id",
-   *		in="path",
-   *		type="number",
-   *		format="integer",
-   *		description="Id of the task.",
-   *		required="true",
-   *	),
-   *	@OA\Parameter(
-   *		name="api_key",
-   *		in="query",
-   *		type="string",
-   *		description="Api key to authenticate the user",
-   *		required="true",
-   *	),
-   *	@OA\Response(
-   *		response=200,
-   *		description="ID of the deleted task",
-   *		@OA\JsonContent(
-   *			type="object",
-   *			@OA\Property(
-   *				property="task_delete",
-   *				ref="#/components/schemas/inline_response_200_4_task_delete",
-   *			),
-   *			example={
-   *			  "task_delete": {
-   *			    "id": "4328"
-   *			  }
-   *			}
-   *		),
-   *	),
-   *	@OA\Response(
-   *		response=412,
-   *		description="Precondition failed. An error code and message are returned.\n450 - Please provide API key. In order to remove your content, please authenticate.\n451 - Authentication failed. The API key was not valid. Please try to login again, or contact api administrators.\n452 - Task does not exists. The task ID could not be linked to an existing task.\n454 - Task is executed in some runs. Delete these first.\n455 - Deleting the task failed. Please contact support team.\n",
-   *		@OA\JsonContent(
-   *			ref="#/components/schemas/Error",
-   *		),
-   *	),
-   *)
-   */
   private function task_delete($task_id) {
 
     $task = $this->Task->getById($task_id);

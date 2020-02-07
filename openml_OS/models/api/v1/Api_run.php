@@ -1,4 +1,6 @@
 <?php
+
+
 class Api_run extends MY_Api_Model {
 
   protected $version = 'v1';
@@ -98,31 +100,421 @@ class Api_run extends MY_Api_Model {
       return;
     }
 
+    /**
+     *@OA\Post(
+     *	path="/run/trace/{id}",
+     *	tags={"run"},
+     *	summary="Upload run trace",
+     *	description="Uploads a run trace. Upon success, it returns the run id.",
+     *	@OA\Parameter(
+     *		name="id",
+     *		in="path",
+     *		type="number",
+     *		format="integer",
+     *		description="ID of the run.",
+     *		required="true",
+     *	),
+     *	@OA\Parameter(
+     *		name="description",
+     *		in="formData",
+     *		type="file",
+     *		description="An XML file describing the trace. Also see the [XSD schema](https://www.openml.org/api/v1/xsd/openml.run.trace) and an [XML example](https://www.openml.org/api/v1/xml_example/run.trace).",
+     *		required="true",
+     *	),
+     *	@OA\Parameter(
+     *		name="api_key",
+     *		in="query",
+     *		type="string",
+     *		description="Api key to authenticate the user",
+     *		required="true",
+     *	),
+     *	@OA\Response(
+     *		response=200,
+     *		description="Id of the run with the trace",
+     *		@OA\JsonContent(
+     *			type="object",
+     *			@OA\Property(
+     *				property="upload_flow",
+     *				ref="#/components/schemas/inline_response_200_23_upload_flow",
+     *			),
+     *			example={
+     *			  "run_trace": {
+     *			    "id": "2520"
+     *			  }
+     *			}
+     *		),
+     *	),
+     *	@OA\Response(
+     *		response=412,
+     *		description="Precondition failed. An error code and message are returned.\n561 - Problem with uploaded trace file.\n562 - Problem validating xml trace file.\n563 - Problem loading xml trace file.\n",
+     *		@OA\JsonContent(
+     *			ref="#/components/schemas/Error",
+     *		),
+     *	),
+     *)
+     */
     if (count($segments) == 1 && $segments[0] == 'trace' && $request_type == 'post') {
       $this->run_trace_upload();
       return;
     }
 
+    /**
+     *@OA\Get(
+     *	path="/run/trace/{id}",
+     *	tags={"run"},
+     *	summary="Get run trace",
+     *	description="Returns the optimization trace of run. The trace contains every setup tried, its evaluation, and whether it was selected.",
+     *	@OA\Parameter(
+     *		name="id",
+     *		in="path",
+     *		type="number",
+     *		format="integer",
+     *		description="ID of the run.",
+     *		required="true",
+     *	),
+     *	@OA\Parameter(
+     *		name="api_key",
+     *		in="query",
+     *		type="string",
+     *		description="API key to authenticate the user",
+     *		required="false",
+     *	),
+     *	@OA\Response(
+     *		response=200,
+     *		description="A run trace description",
+     *		@OA\JsonContent(
+     *			ref="#/components/schemas/RunTrace",
+     *			example={
+     *			  "trace": {
+     *			    "run_id":"573055",
+     *			    "trace_iteration": {
+     *			        "repeat":"0",
+     *			        "fold":"0",
+     *			        "repeat":"0",
+     *			        "iteration":"0",
+     *			        "setup_string":{"parameter_minNumObj": "1",
+     *			                        "parameter_confidenceFactor": "0.1"},
+     *			        "evaluation":"94.814815",
+     *			        "selected": "true"
+     *			      },
+     *			    "trace_iteration": {
+     *			        "repeat":"0",
+     *			        "fold":"0",
+     *			        "repeat":"0",
+     *			        "iteration":"1",
+     *			        "setup_string":{"parameter_minNumObj": "1",
+     *			                        "parameter_confidenceFactor": "0.25"},
+     *			        "evaluation": "94.074074",
+     *			        "selected": "true"
+     *			      }
+     *			  }
+     *			}
+     *		),
+     *	),
+     *	@OA\Response(
+     *		response=412,
+     *		description="Precondition failed. An error code and message are returned.\n570 - No successful trace associated with this run\n",
+     *		@OA\JsonContent(
+     *			ref="#/components/schemas/Error",
+     *		),
+     *	),
+     *)
+     */
     if (count($segments) == 2 && $segments[0] == 'trace' && is_numeric($segments[1])) {
       $this->run_trace($segments[1]);
       return;
     }
 
+    /**
+     *@OA\Get(
+     *	path="/run/{id}",
+     *	tags={"run"},
+     *	summary="Get run description",
+     *	description="Returns information about a run. The information includes the name, information about the creator, dependencies, parameters, run instructions and more.",
+     *	@OA\Parameter(
+     *		name="id",
+     *		in="path",
+     *		type="number",
+     *		format="integer",
+     *		description="ID of the run.",
+     *		required="true",
+     *	),
+     *	@OA\Parameter(
+     *		name="api_key",
+     *		in="query",
+     *		type="string",
+     *		description="API key to authenticate the user",
+     *		required="false",
+     *	),
+     *	@OA\Response(
+     *		response=200,
+     *		description="A run description",
+     *		@OA\JsonContent(
+     *			ref="#/components/schemas/Run",
+     *			example={
+     *			  "run": {
+     *			    "run_id":"100",
+     *			    "uploader":"1",
+     *			    "uploader_name":"Jan van Rijn",
+     *			    "task_id":"28",
+     *			    "task_type":"Supervised Classification",
+     *			    "task_evaluation_measure":"predictive_accuracy",
+     *			    "flow_id":"67",
+     *			    "flow_name":"weka.BayesNet_K2(1)",
+     *			    "setup_string":"weka.classifiers.bayes.BayesNet -- -D -Q weka.classifiers.bayes.net.search.local.K2 -- -P 1 -S BAYES -E weka.classifiers.bayes.net.estimate.SimpleEstimator -- -A 0.5",
+     *			    "parameter_setting": [
+     *			      {
+     *			        "name":"D",
+     *			        "value":"true"
+     *			      },
+     *			      {
+     *			        "name":"Q",
+     *			        "value":"weka.classifiers.bayes.net.search.local.K2"
+     *			      },
+     *			      {
+     *			        "name":"P",
+     *			        "value":"1"
+     *			      },
+     *			      {
+     *			        "name":"S",
+     *			        "value":"BAYES"
+     *			      }
+     *			    ],
+     *			    "input_data":
+     *			      {
+     *			        "dataset":
+     *			          {
+     *			            "did":"28",
+     *			            "name":"optdigits",
+     *			            "url":"https:\\/\\/www.openml.org\\/data\\/download\\/28\\/dataset_28_optdigits.arff"
+     *			          }
+     *			      },
+     *			    "output_data":
+     *			      {
+     *			        "file": [
+     *			          {
+     *			            "did":"48838",
+     *			            "file_id":"261",
+     *			            "name":"description",
+     *			            "url":"https:\\/\\/www.openml.org\\/data\\/download\\/261\\/weka_generated_run935374685998857626.xml"
+     *			          },
+     *			          {
+     *			            "did":"48839",
+     *			            "file_id":"262",
+     *			            "name":"predictions",
+     *			            "url":"https:\\/\\/www.openml.org\\/data\\/download\\/262\\/weka_generated_predictions576954524972002741.arff"
+     *			          }
+     *			        ],
+     *			        "evaluation": [
+     *			          {
+     *			            "name":"area_under_roc_curve",
+     *			            "flow_id":"4",
+     *			            "value":"0.990288",
+     *			            "array_data":"[0.99724,0.989212,0.992776,0.994279,0.980578,0.98649,0.99422,0.99727,0.994858,0.976143]"
+     *			          },
+     *			          {
+     *			            "name":"confusion_matrix",
+     *			            "flow_id":"10",
+     *			            "array_data":"[[544,1,0,0,7,0,1,0,0,1],[0,511,21,1,0,1,3,1,5,28],[0,7,511,1,0,1,0,3,23,11],[0,2,2,519,0,3,0,12,16,18],[0,3,0,0,528,0,4,21,6,6],[0,1,0,7,5,488,2,0,4,51],[1,7,0,0,2,0,548,0,0,0],[0,2,0,1,9,1,0,545,4,4],[1,25,2,2,3,6,2,1,503,9],[0,7,0,20,16,5,0,19,9,486]]"
+     *			          },
+     *			          {
+     *			            "name":"f_measure",
+     *			            "flow_id":"12",
+     *			            "value":"0.922723",
+     *			            "array_data":"[0.989091,0.898857,0.935041,0.92431,0.927944,0.918156,0.980322,0.933219,0.895018,0.826531]"
+     *			          },
+     *			          {
+     *			            "name":"kappa",
+     *			            "flow_id":"13",
+     *			            "value":"0.913601"
+     *			          }
+     *			        ]
+     *			      }
+     *			  }
+     *			}
+     *		),
+     *	),
+     *	@OA\Response(
+     *		response=412,
+     *		description="Precondition failed. An error code and message are returned.\n220 - Please provide run ID. In order to view run details, please provide the run ID.\n221 - Run not found. The run ID was invalid, run does not exist (anymore).\n",
+     *		@OA\JsonContent(
+     *			ref="#/components/schemas/Error",
+     *		),
+     *	),
+     *)
+     */
     if (count($segments) == 1 && is_numeric($segments[0]) && in_array($request_type, $getpost)) {
       $this->run($segments[0]);
       return;
     }
 
+    /**
+     *@OA\Get(
+     *	path="/run/reset/{id}",
+     *	tags={"run"},
+     *	summary="Resets a run.",
+     *	description="Removes all run evaluations. When a run is reset, the runs will automatically be evaluated as soon as they are picked up by the evaluation engine again.",
+     *	@OA\Parameter(
+     *		name="id",
+     *		in="path",
+     *		type="string",
+     *		description="Run ID.",
+     *		required="true",
+     *	),
+     *	@OA\Parameter(
+     *		name="api_key",
+     *		in="query",
+     *		type="string",
+     *		description="API key to authenticate the user",
+     *		required="false",
+     *	),
+     *	@OA\Response(
+     *		response=200,
+     *		description="Id of the evaluated run",
+     *		@OA\JsonContent(
+     *			type="object",
+     *			@OA\Property(
+     *				property="run_reset",
+     *				ref="#/components/schemas/inline_response_200_21_upload_flow",
+     *			),
+     *			example={
+     *			  "run_reset": {
+     *			    "id": "2520"
+     *			  }
+     *			}
+     *		),
+     *	),
+     *	@OA\Response(
+     *		response=412,
+     *		description="Precondition failed. An error code and message are returned.\n412 - Run does not exist\n413 - Run is not owned by you\n394 - Resetting run failed\n",
+     *		@OA\JsonContent(
+     *			ref="#/components/schemas/Error",
+     *		),
+     *	),
+     *)
+     */
     if (count($segments) == 2 && is_numeric($segments[1]) && $segments[0] == 'reset' && in_array($request_type, $getpost)) {
       $this->run_reset($segments[1]);
       return;
     }
 
+    /**
+     *@OA\Delete(
+     *	path="/run/{id}",
+     *	tags={"run"},
+     *	summary="Delete run",
+     *	description="Deletes a run. Upon success, it returns the ID of the deleted run.",
+     *	@OA\Parameter(
+     *		name="id",
+     *		in="path",
+     *		type="number",
+     *		format="integer",
+     *		description="Id of the run.",
+     *		required="true",
+     *	),
+     *	@OA\Parameter(
+     *		name="api_key",
+     *		in="query",
+     *		type="string",
+     *		description="API key to authenticate the user",
+     *		required="true",
+     *	),
+     *	@OA\Response(
+     *		response=200,
+     *		description="ID of the deleted run",
+     *		@OA\JsonContent(
+     *			type="object",
+     *			@OA\Property(
+     *				property="data_delete",
+     *				ref="#/components/schemas/inline_response_200_17_data_delete",
+     *			),
+     *			example={
+     *			  "run_delete": {
+     *			    "id": "2520"
+     *			  }
+     *			}
+     *		),
+     *	),
+     *	@OA\Response(
+     *		response=412,
+     *		description="Precondition failed. An error code and message are returned.\n390 - Please provide API key. In order to remove your content, please authenticate.\n391 - Authentication failed. The API key was not valid. Please try to login again, or contact api administrators\n392 - Run does not exists. The run ID could not be linked to an existing run.\n393 - Run is not owned by you. The run was owned by another user. Hence you cannot delete it.\n394 - Deleting run failed. Deleting the run failed. Please contact support team.\n",
+     *		@OA\JsonContent(
+     *			ref="#/components/schemas/Error",
+     *		),
+     *	),
+     *)
+     */
     if (count($segments) == 1 && is_numeric($segments[0]) && $request_type == 'delete') {
       $this->run_delete($segments[0]);
       return;
     }
 
+    /**
+     *@OA\Post(
+     *	path="/run",
+     *	tags={"run"},
+     *	summary="Upload run",
+     *	description="Uploads a run. Upon success, it returns the run id.",
+     *	@OA\Parameter(
+     *		name="description",
+     *		in="formData",
+     *		type="file",
+     *		description="An XML file describing the dataset. Only name, description, and data format are required. Also see the [XSD schema](https://www.openml.org/api/v1/xsd/openml.run.upload) and an [XML example](https://www.openml.org/api/v1/xml_example/run).",
+     *		required="true",
+     *	),
+     *	@OA\Parameter(
+     *		name="predictions",
+     *		in="formData",
+     *		type="file",
+     *		description="The predictions generated by the run",
+     *		required="true",
+     *	),
+     *	@OA\Parameter(
+     *		name="model_readable",
+     *		in="formData",
+     *		type="file",
+     *		description="The human-readable model generated by the run",
+     *		required="false",
+     *	),
+     *	@OA\Parameter(
+     *		name="model_serialized",
+     *		in="formData",
+     *		type="file",
+     *		description="The serialized model generated by the run",
+     *		required="false",
+     *	),
+     *	@OA\Parameter(
+     *		name="api_key",
+     *		in="query",
+     *		type="string",
+     *		description="Api key to authenticate the user",
+     *		required="true",
+     *	),
+     *	@OA\Response(
+     *		response=200,
+     *		description="Id of the uploaded run",
+     *		@OA\JsonContent(
+     *			type="object",
+     *			@OA\Property(
+     *				property="upload_flow",
+     *				ref="#/components/schemas/inline_response_200_18_upload_flow",
+     *			),
+     *			example={
+     *			  "upload_run": {
+     *			    "id": "2520"
+     *			  }
+     *			}
+     *		),
+     *	),
+     *	@OA\Response(
+     *		response=412,
+     *		description="Precondition failed. An error code and message are returned.\n201 - Authentication failed. The API key was not valid. Please try to login again, or contact api administrators.\n202 - Please provide run XML.\n203 - Could not validate run xml by XSD. Please double check that the xml is valid.\n204 - Unknown task. The task with the given ID was not found in the database.\n205 - Unknown flow. The flow with the given ID was not found in the database.\n206 - Invalid number of files. The number of uploaded files did not match the number of files expected for the task type\n207 - File upload failed. One of the files uploaded has a problem.\n208 - Error inserting setup record. Please contact api administrators\n210 - Unable to store run. Please contact api administrators.\n211 - Dataset not in database. One of the datasets of the task was not included in database, please contact api administrators.\n212 - Unable to store file. Please contact api administrators.\n213 - Parameter in run xml unknown. One of the parameters provided in the run xml is not registered as parameter for the flow nor its components.\n214 - Unable to store input setting. Please contact API support team.\n215 - Unable to evaluate predictions. Please contact API support team.\n216 - Error thrown by Java Application. Additional information field is provided.\n217 - Error processing output data. Unknown or inconsistent evaluation measure. One of the provided evaluation measures could not be matched with a record in the math_function or flow table.\n218 - Wrong flow associated with run. The flow implements a math_function, which is unable to generate predictions. Please select another flow.\n219 - Error reading the XML document. The XML description file could not be verified.\n",
+     *		@OA\JsonContent(
+     *			ref="#/components/schemas/Error",
+     *		),
+     *	),
+     *)
+     */
     if (count($segments) == 0 && $request_type == 'post') {
       $this->run_upload();
       return;
@@ -397,124 +789,6 @@ class Api_run extends MY_Api_Model {
     $this->xmlContents('runs', $this->version, array('runs' => $res));
   }
 
-  /**
-   *@OA\Get(
-   *	path="/run/{id}",
-   *	tags={"run"},
-   *	summary="Get run description",
-   *	description="Returns information about a run. The information includes the name, information about the creator, dependencies, parameters, run instructions and more.",
-   *	@OA\Parameter(
-   *		name="id",
-   *		in="path",
-   *		type="number",
-   *		format="integer",
-   *		description="ID of the run.",
-   *		required="true",
-   *	),
-   *	@OA\Parameter(
-   *		name="api_key",
-   *		in="query",
-   *		type="string",
-   *		description="API key to authenticate the user",
-   *		required="false",
-   *	),
-   *	@OA\Response(
-   *		response=200,
-   *		description="A run description",
-   *		@OA\JsonContent(
-   *			ref="#/components/schemas/Run",
-   *			example={
-   *			  "run": {
-   *			    "run_id":"100",
-   *			    "uploader":"1",
-   *			    "uploader_name":"Jan van Rijn",
-   *			    "task_id":"28",
-   *			    "task_type":"Supervised Classification",
-   *			    "task_evaluation_measure":"predictive_accuracy",
-   *			    "flow_id":"67",
-   *			    "flow_name":"weka.BayesNet_K2(1)",
-   *			    "setup_string":"weka.classifiers.bayes.BayesNet -- -D -Q weka.classifiers.bayes.net.search.local.K2 -- -P 1 -S BAYES -E weka.classifiers.bayes.net.estimate.SimpleEstimator -- -A 0.5",
-   *			    "parameter_setting": [
-   *			      {
-   *			        "name":"D",
-   *			        "value":"true"
-   *			      },
-   *			      {
-   *			        "name":"Q",
-   *			        "value":"weka.classifiers.bayes.net.search.local.K2"
-   *			      },
-   *			      {
-   *			        "name":"P",
-   *			        "value":"1"
-   *			      },
-   *			      {
-   *			        "name":"S",
-   *			        "value":"BAYES"
-   *			      }
-   *			    ],
-   *			    "input_data":
-   *			      {
-   *			        "dataset":
-   *			          {
-   *			            "did":"28",
-   *			            "name":"optdigits",
-   *			            "url":"https:\\/\\/www.openml.org\\/data\\/download\\/28\\/dataset_28_optdigits.arff"
-   *			          }
-   *			      },
-   *			    "output_data":
-   *			      {
-   *			        "file": [
-   *			          {
-   *			            "did":"48838",
-   *			            "file_id":"261",
-   *			            "name":"description",
-   *			            "url":"https:\\/\\/www.openml.org\\/data\\/download\\/261\\/weka_generated_run935374685998857626.xml"
-   *			          },
-   *			          {
-   *			            "did":"48839",
-   *			            "file_id":"262",
-   *			            "name":"predictions",
-   *			            "url":"https:\\/\\/www.openml.org\\/data\\/download\\/262\\/weka_generated_predictions576954524972002741.arff"
-   *			          }
-   *			        ],
-   *			        "evaluation": [
-   *			          {
-   *			            "name":"area_under_roc_curve",
-   *			            "flow_id":"4",
-   *			            "value":"0.990288",
-   *			            "array_data":"[0.99724,0.989212,0.992776,0.994279,0.980578,0.98649,0.99422,0.99727,0.994858,0.976143]"
-   *			          },
-   *			          {
-   *			            "name":"confusion_matrix",
-   *			            "flow_id":"10",
-   *			            "array_data":"[[544,1,0,0,7,0,1,0,0,1],[0,511,21,1,0,1,3,1,5,28],[0,7,511,1,0,1,0,3,23,11],[0,2,2,519,0,3,0,12,16,18],[0,3,0,0,528,0,4,21,6,6],[0,1,0,7,5,488,2,0,4,51],[1,7,0,0,2,0,548,0,0,0],[0,2,0,1,9,1,0,545,4,4],[1,25,2,2,3,6,2,1,503,9],[0,7,0,20,16,5,0,19,9,486]]"
-   *			          },
-   *			          {
-   *			            "name":"f_measure",
-   *			            "flow_id":"12",
-   *			            "value":"0.922723",
-   *			            "array_data":"[0.989091,0.898857,0.935041,0.92431,0.927944,0.918156,0.980322,0.933219,0.895018,0.826531]"
-   *			          },
-   *			          {
-   *			            "name":"kappa",
-   *			            "flow_id":"13",
-   *			            "value":"0.913601"
-   *			          }
-   *			        ]
-   *			      }
-   *			  }
-   *			}
-   *		),
-   *	),
-   *	@OA\Response(
-   *		response=412,
-   *		description="Precondition failed. An error code and message are returned.\n220 - Please provide run ID. In order to view run details, please provide the run ID.\n221 - Run not found. The run ID was invalid, run does not exist (anymore).\n",
-   *		@OA\JsonContent(
-   *			ref="#/components/schemas/Error",
-   *		),
-   *	),
-   *)
-   */
   private function run($run_id) {
     if( $run_id == false ) {
       $this->returnError( 235, $this->version );
@@ -540,52 +814,7 @@ class Api_run extends MY_Api_Model {
 
     $this->xmlContents( 'run-get', $this->version, array( 'source' => $run ) );
   }
-  /**
-   *@OA\Delete(
-   *	path="/run/{id}",
-   *	tags={"run"},
-   *	summary="Delete run",
-   *	description="Deletes a run. Upon success, it returns the ID of the deleted run.",
-   *	@OA\Parameter(
-   *		name="id",
-   *		in="path",
-   *		type="number",
-   *		format="integer",
-   *		description="Id of the run.",
-   *		required="true",
-   *	),
-   *	@OA\Parameter(
-   *		name="api_key",
-   *		in="query",
-   *		type="string",
-   *		description="API key to authenticate the user",
-   *		required="true",
-   *	),
-   *	@OA\Response(
-   *		response=200,
-   *		description="ID of the deleted run",
-   *		@OA\JsonContent(
-   *			type="object",
-   *			@OA\Property(
-   *				property="data_delete",
-   *				ref="#/components/schemas/inline_response_200_17_data_delete",
-   *			),
-   *			example={
-   *			  "run_delete": {
-   *			    "id": "2520"
-   *			  }
-   *			}
-   *		),
-   *	),
-   *	@OA\Response(
-   *		response=412,
-   *		description="Precondition failed. An error code and message are returned.\n390 - Please provide API key. In order to remove your content, please authenticate.\n391 - Authentication failed. The API key was not valid. Please try to login again, or contact api administrators\n392 - Run does not exists. The run ID could not be linked to an existing run.\n393 - Run is not owned by you. The run was owned by another user. Hence you cannot delete it.\n394 - Deleting run failed. Deleting the run failed. Please contact support team.\n",
-   *		@OA\JsonContent(
-   *			ref="#/components/schemas/Error",
-   *		),
-   *	),
-   *)
-   */
+
   private function run_delete($run_id) {
 
     $run = $this->Run->getById( $run_id );
@@ -635,52 +864,6 @@ class Api_run extends MY_Api_Model {
     $this->xmlContents( 'run-delete', $this->version, array( 'run' => $run ) );
   }
 
-
-  /**
-   *@OA\Get(
-   *	path="/run/reset/{id}",
-   *	tags={"run"},
-   *	summary="Resets a run.",
-   *	description="Removes all run evaluations. When a run is reset, the runs will automatically be evaluated as soon as they are picked up by the evaluation engine again.",
-   *	@OA\Parameter(
-   *		name="id",
-   *		in="path",
-   *		type="string",
-   *		description="Run ID.",
-   *		required="true",
-   *	),
-   *	@OA\Parameter(
-   *		name="api_key",
-   *		in="query",
-   *		type="string",
-   *		description="API key to authenticate the user",
-   *		required="false",
-   *	),
-   *	@OA\Response(
-   *		response=200,
-   *		description="Id of the evaluated run",
-   *		@OA\JsonContent(
-   *			type="object",
-   *			@OA\Property(
-   *				property="run_reset",
-   *				ref="#/components/schemas/inline_response_200_21_upload_flow",
-   *			),
-   *			example={
-   *			  "run_reset": {
-   *			    "id": "2520"
-   *			  }
-   *			}
-   *		),
-   *	),
-   *	@OA\Response(
-   *		response=412,
-   *		description="Precondition failed. An error code and message are returned.\n412 - Run does not exist\n413 - Run is not owned by you\n394 - Resetting run failed\n",
-   *		@OA\JsonContent(
-   *			ref="#/components/schemas/Error",
-   *		),
-   *	),
-   *)
-   */
   private function run_reset($run_id) {
 
     $run = $this->Run->getById( $run_id );
@@ -703,72 +886,6 @@ class Api_run extends MY_Api_Model {
     $this->xmlContents( 'run-reset', $this->version, array( 'run' => $run ) );
   }
 
-  /**
-   *@OA\Post(
-   *	path="/run",
-   *	tags={"run"},
-   *	summary="Upload run",
-   *	description="Uploads a run. Upon success, it returns the run id.",
-   *	@OA\Parameter(
-   *		name="description",
-   *		in="formData",
-   *		type="file",
-   *		description="An XML file describing the dataset. Only name, description, and data format are required. Also see the [XSD schema](https://www.openml.org/api/v1/xsd/openml.run.upload) and an [XML example](https://www.openml.org/api/v1/xml_example/run).",
-   *		required="true",
-   *	),
-   *	@OA\Parameter(
-   *		name="predictions",
-   *		in="formData",
-   *		type="file",
-   *		description="The predictions generated by the run",
-   *		required="true",
-   *	),
-   *	@OA\Parameter(
-   *		name="model_readable",
-   *		in="formData",
-   *		type="file",
-   *		description="The human-readable model generated by the run",
-   *		required="false",
-   *	),
-   *	@OA\Parameter(
-   *		name="model_serialized",
-   *		in="formData",
-   *		type="file",
-   *		description="The serialized model generated by the run",
-   *		required="false",
-   *	),
-   *	@OA\Parameter(
-   *		name="api_key",
-   *		in="query",
-   *		type="string",
-   *		description="Api key to authenticate the user",
-   *		required="true",
-   *	),
-   *	@OA\Response(
-   *		response=200,
-   *		description="Id of the uploaded run",
-   *		@OA\JsonContent(
-   *			type="object",
-   *			@OA\Property(
-   *				property="upload_flow",
-   *				ref="#/components/schemas/inline_response_200_18_upload_flow",
-   *			),
-   *			example={
-   *			  "upload_run": {
-   *			    "id": "2520"
-   *			  }
-   *			}
-   *		),
-   *	),
-   *	@OA\Response(
-   *		response=412,
-   *		description="Precondition failed. An error code and message are returned.\n201 - Authentication failed. The API key was not valid. Please try to login again, or contact api administrators.\n202 - Please provide run XML.\n203 - Could not validate run xml by XSD. Please double check that the xml is valid.\n204 - Unknown task. The task with the given ID was not found in the database.\n205 - Unknown flow. The flow with the given ID was not found in the database.\n206 - Invalid number of files. The number of uploaded files did not match the number of files expected for the task type\n207 - File upload failed. One of the files uploaded has a problem.\n208 - Error inserting setup record. Please contact api administrators\n210 - Unable to store run. Please contact api administrators.\n211 - Dataset not in database. One of the datasets of the task was not included in database, please contact api administrators.\n212 - Unable to store file. Please contact api administrators.\n213 - Parameter in run xml unknown. One of the parameters provided in the run xml is not registered as parameter for the flow nor its components.\n214 - Unable to store input setting. Please contact API support team.\n215 - Unable to evaluate predictions. Please contact API support team.\n216 - Error thrown by Java Application. Additional information field is provided.\n217 - Error processing output data. Unknown or inconsistent evaluation measure. One of the provided evaluation measures could not be matched with a record in the math_function or flow table.\n218 - Wrong flow associated with run. The flow implements a math_function, which is unable to generate predictions. Please select another flow.\n219 - Error reading the XML document. The XML description file could not be verified.\n",
-   *		@OA\JsonContent(
-   *			ref="#/components/schemas/Error",
-   *		),
-   *	),
-   *)
-   */
   private function run_upload() {
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -1071,68 +1188,6 @@ class Api_run extends MY_Api_Model {
     $this->xmlContents( 'run-upload', $this->version, $result );
   }
 
-  /**
-   *@OA\Get(
-   *	path="/run/trace/{id}",
-   *	tags={"run"},
-   *	summary="Get run trace",
-   *	description="Returns the optimization trace of run. The trace contains every setup tried, its evaluation, and whether it was selected.",
-   *	@OA\Parameter(
-   *		name="id",
-   *		in="path",
-   *		type="number",
-   *		format="integer",
-   *		description="ID of the run.",
-   *		required="true",
-   *	),
-   *	@OA\Parameter(
-   *		name="api_key",
-   *		in="query",
-   *		type="string",
-   *		description="API key to authenticate the user",
-   *		required="false",
-   *	),
-   *	@OA\Response(
-   *		response=200,
-   *		description="A run trace description",
-   *		@OA\JsonContent(
-   *			ref="#/components/schemas/RunTrace",
-   *			example={
-   *			  "trace": {
-   *			    "run_id":"573055",
-   *			    "trace_iteration": {
-   *			        "repeat":"0",
-   *			        "fold":"0",
-   *			        "repeat":"0",
-   *			        "iteration":"0",
-   *			        "setup_string":{"parameter_minNumObj": "1",
-   *			                        "parameter_confidenceFactor": "0.1"},
-   *			        "evaluation":"94.814815",
-   *			        "selected": "true"
-   *			      },
-   *			    "trace_iteration": {
-   *			        "repeat":"0",
-   *			        "fold":"0",
-   *			        "repeat":"0",
-   *			        "iteration":"1",
-   *			        "setup_string":{"parameter_minNumObj": "1",
-   *			                        "parameter_confidenceFactor": "0.25"},
-   *			        "evaluation": "94.074074",
-   *			        "selected": "true"
-   *			      }
-   *			  }
-   *			}
-   *		),
-   *	),
-   *	@OA\Response(
-   *		response=412,
-   *		description="Precondition failed. An error code and message are returned.\n570 - No successful trace associated with this run\n",
-   *		@OA\JsonContent(
-   *			ref="#/components/schemas/Error",
-   *		),
-   *	),
-   *)
-   */
   private function run_trace($run_id) {
     $run = $this->Run->getById($run_id);
     if ($run === false) {
@@ -1149,59 +1204,6 @@ class Api_run extends MY_Api_Model {
     $this->xmlContents('run-trace-get', $this->version, array('run_id' => $run_id, 'trace' => $trace));
   }
 
-  /**
-   *@OA\Post(
-   *	path="/run/trace/{id}",
-   *	tags={"run"},
-   *	summary="Upload run trace",
-   *	description="Uploads a run trace. Upon success, it returns the run id.",
-   *	@OA\Parameter(
-   *		name="id",
-   *		in="path",
-   *		type="number",
-   *		format="integer",
-   *		description="ID of the run.",
-   *		required="true",
-   *	),
-   *	@OA\Parameter(
-   *		name="description",
-   *		in="formData",
-   *		type="file",
-   *		description="An XML file describing the trace. Also see the [XSD schema](https://www.openml.org/api/v1/xsd/openml.run.trace) and an [XML example](https://www.openml.org/api/v1/xml_example/run.trace).",
-   *		required="true",
-   *	),
-   *	@OA\Parameter(
-   *		name="api_key",
-   *		in="query",
-   *		type="string",
-   *		description="Api key to authenticate the user",
-   *		required="true",
-   *	),
-   *	@OA\Response(
-   *		response=200,
-   *		description="Id of the run with the trace",
-   *		@OA\JsonContent(
-   *			type="object",
-   *			@OA\Property(
-   *				property="upload_flow",
-   *				ref="#/components/schemas/inline_response_200_23_upload_flow",
-   *			),
-   *			example={
-   *			  "run_trace": {
-   *			    "id": "2520"
-   *			  }
-   *			}
-   *		),
-   *	),
-   *	@OA\Response(
-   *		response=412,
-   *		description="Precondition failed. An error code and message are returned.\n561 - Problem with uploaded trace file.\n562 - Problem validating xml trace file.\n563 - Problem loading xml trace file.\n",
-   *		@OA\JsonContent(
-   *			ref="#/components/schemas/Error",
-   *		),
-   *	),
-   *)
-   */
   private function run_trace_upload() {
     if (!$this->user_has_admin_rights) {
       $this->returnError(106, $this->version);
