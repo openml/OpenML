@@ -79,6 +79,11 @@ class Api_data extends MY_Api_Model {
       return;
     }
 
+    if ( $segments[0] == 'edit' && $request_type == 'post') {
+      $this->data_edit();
+      return;
+    }
+
     if (count($segments) == 2 && $segments[0] == 'features' && is_numeric($segments[1]) && in_array($request_type, $getpost)) {
       $this->data_features($segments[1]);
       return;
@@ -231,6 +236,66 @@ class Api_data extends MY_Api_Model {
 
     $this->xmlContents('data', $this->version, array('datasets' => $datasets));
   }
+
+   private function data_edit() {
+    // Get columns to be update from post data
+    $data_id = $this->input->post('data_id');
+    $description = $this->input->post('description');
+    $creator =  $this->input->post('creator');
+    $collection_date =  $this->input->post('collection_date');
+    $language = $this->input->post('language');
+    $citation = $this->input->post('citation');
+    $original_data_url = $this->input->post('original_data_url');
+    $paper_url = $this->input->post('paper_url');
+
+    // If data id is not given
+    if( $data_id == false ) {
+      $this->returnError( 110, $this->version );
+      return;}
+
+    // If dataset does not exist
+    $dataset = $this->Dataset->getById( $data_id );
+    if( $dataset == false ) {
+      $this->returnError( 111, $this->version );
+      return;
+    }
+
+    // If all the fields are false, there is nothing to update, return error 
+
+    if( $description == false && $creator == false && $collection_date == false && $language == false && $citation == false
+    && $original_data_url == false && $paper_url == false ) {
+      $this->returnError( 1055, $this->version );
+      return;
+    }
+
+    // check if user owns dataset
+    if($dataset->uploader != $this->user_id and !$this->user_has_admin_rights) {
+      $this->returnError( 353, $this->version );
+      return;
+    }
+
+    // Combine all possible updates 
+    $update_description = $description == false ? '': 'description = "'. $description. '"';
+    $update_creator = $creator == false ? '': ' creator = "'. $creator. '" ';
+    $update_collection_date = $collection_date == false ? '': 'collection_date = "'. $collection_date. '" ';
+    $update_language = $language == false ? '': 'language = "'. $language. '" ';
+    $update_citation = $citation == false ? '': 'citation = "'. $citation. '" ';
+    $update_original_data_url = $original_data_url == false ? '': 'original_data_url = "'. $original_data_url. '" ';
+    $update_paper_url = $paper_url == false ? '': 'paper_url = "'. $paper_url. '" ';
+
+    // use , to separate update columns 
+    $update_total = implode(",", array_filter([$update_description, $update_creator, $update_collection_date, 
+      $update_language, $update_citation, $update_original_data_url, $update_paper_url])) ;
+
+    // where data id
+    $where_data = 'where did='. $data_id;
+
+    $this->Dataset->query('update dataset set '. $update_total . $where_data);
+   
+    // Return edited dataset, for user to verify changes    
+    $this->xmlContents( 'data-get', $this->version, $dataset );
+
+    }
 
   private function data($data_id) {
     if( $data_id == false ) {

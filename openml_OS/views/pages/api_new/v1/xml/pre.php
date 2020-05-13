@@ -509,4 +509,8 @@ $this->apiErrors[1052] = 'Could not find study';
 $this->apiErrors[1053] = 'Study not owned by you';
 $this->apiErrors[1054] = 'Problem inserting in database';
 
+
+//openml.data.edit
+$this->apiErrors[1055] = 'Please provide atleast one field among description, creator, collection_date, language, citation, original_data_url or paper_url to edit. ';
+
 ?>
