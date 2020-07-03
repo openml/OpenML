@@ -15,9 +15,14 @@ class Api_evaluation extends MY_Api_Model {
 
     $getpost = array('get','post');
 
-    if (count($segments) >= 1 && $segments[0] == 'list') {
+    if (count($segments) >= 1 && $segments[0] == 'setup' && $segments[1] == 'list') {
       array_shift($segments);
-      $this->evaluation_list($segments, $user_id);
+      array_shift($segments);
+      $this->evaluation_list($segments, $user_id, true);
+      return;
+    } elseif (count($segments) >= 1 && $segments[0] == 'list') {
+      array_shift($segments);
+      $this->evaluation_list($segments, $user_id, false);
       return;
     }
 
@@ -89,9 +94,9 @@ class Api_evaluation extends MY_Api_Model {
   }
 
 
-  private function evaluation_list($segs, $user_id) {
+  private function evaluation_list($segs, $user_id, $show_params) {
     $result_limit = 10000;
-    $legal_filters = array('task', 'setup', 'flow', 'uploader', 'run', 'tag', 'limit', 'offset', 'function', 'per_fold', 'sort_order');
+    $legal_filters = array('task', 'setup', 'flow', 'uploader', 'run', 'tag', 'limit', 'offset', 'function', 'per_fold', 'sort_order', 'study');
     list($query_string, $illegal_filters) = $this->parse_filters($segs, $legal_filters);
     if (count($illegal_filters) > 0) {
       $this->returnError(544, $this->version, $this->openmlGeneralErrorCode, 'Legal filter operators: ' . implode(',', $legal_filters) .'. Found illegal filter(s): ' . implode(', ', $illegal_filters));
@@ -115,6 +120,7 @@ class Api_evaluation extends MY_Api_Model {
     $offset = element('offset', $query_string, null);
     $per_fold = element('per_fold', $query_string, null);
     $sort_order = element('sort_order', $query_string, null);
+    $study_id = element('study', $query_string, null);
     if ($per_fold != 'true' && $per_fold != 'false' && $per_fold != null) {
       $this->returnError(547, $this->version, $this->openmlGeneralErrorCode, 'Filters with illegal values: ' . implode(',', $illegal_filter_inputs));
       return;
@@ -133,8 +139,16 @@ class Api_evaluation extends MY_Api_Model {
       $this->returnError(549, $this->version);
       return;
     }
+    
+    if ($study_id) {
+      $study = $this->Study->getById($study_id);
+      if ($study === false || $study->legacy != 'n' || $study->main_entity_type != 'run') {
+        $this->returnError(555, $this->version);
+        return;
+      }
+    }
 
-    if ($task_id === null && $setup_id === null && $implementation_id === null && $uploader_id === null && $run_id === null && $tag === null && $limit === null && $function_name === null) {
+    if ($task_id === null && $setup_id === null && $implementation_id === null && $uploader_id === null && $run_id === null && $tag === null && $study_id === null && $limit === null && $function_name === null) {
       $this->returnError(540, $this->version);
       return;
     }
@@ -146,13 +160,14 @@ class Api_evaluation extends MY_Api_Model {
     $where_run = $run_id === null ? '' : ' AND `r`.`rid` IN (' . $run_id . ') ';
     $where_function = $function_name === null ? '' : ' AND `f`.`name` = "' . $function_name . '" ';
     $where_tag = $tag === null ? '' : ' AND `r`.`rid` IN (select id from run_tag where tag="' . $tag . '") ';
+    $where_study = $study_id === null ? '' : ' AND `r`.`rid` IN (SELECT `run_id` FROM `run_study` WHERE `study_id`="' . $study_id . '") ';
     $where_limit = $limit === null ? null : ' LIMIT ' . $limit;
     if ($limit && $offset) {
       $where_limit =  ' LIMIT ' . $offset . ',' . $limit;
     }
     $where_task_closed = ' AND (`t`.`embargo_end_date` is NULL OR `t`.`embargo_end_date` < NOW() OR `r`.`uploader` = '.$user_id.')';
     
-    $where_runs = $where_task . $where_setup . $where_uploader . $where_impl . $where_run . $where_tag . $where_task_closed;
+    $where_runs = $where_task . $where_setup . $where_uploader . $where_impl . $where_run . $where_tag . $where_study . $where_task_closed;
     $where_total = $where_runs . $where_function;
 
     //pre-test, should be quick??
@@ -234,7 +249,18 @@ class Api_evaluation extends MY_Api_Model {
       $this->returnError(542, $this->version);
       return;
     }
-
+    
+    if ($show_params) {
+      # 2 stage query .. unfortunately. Can break when too much results. let's take the damage for now
+      $setup_ids = array();
+      foreach ($res as $r) {
+        $setup_ids[] = $r->sid;
+      }
+      $params = $this->Algorithm_setup->setup_ids_to_parameter_values(array_unique($setup_ids));
+      for ($i = 0; $i < count($res); ++$i) {
+        $res[$i]->parameters = $params[$res[$i]->sid];
+      }
+    }
     $this->xmlContents('evaluations', $this->version, array('evaluations' => $res));
   }
 }

@@ -106,32 +106,6 @@ class Api_setup extends MY_Api_Model {
     }
   }
   
-  private function _setup_ids_to_parameter_values($setups) {
-    // query fails for classifiers without parameters. is fixed further on.
-    $this->db->select('input.*, input_setting.*, `implementation`.`name` AS `flow_name`, `implementation`.`fullName` AS `flow_fullName`')->from('input_setting');
-    $this->db->join('input', 'input_setting.input_id = input.id', 'inner');
-    $this->db->join('implementation', 'input.implementation_id = implementation.id', 'inner');
-    // note that algorithm setup can not be linked to implementation id, otherwise we will only get parameters of the root classifier
-    $this->db->join('algorithm_setup', 'algorithm_setup.sid = input_setting.setup', 'inner');
-    $this->db->join('setup_tag', 'input_setting.setup = setup_tag.id', 'left');
-    $this->db->where_in('algorithm_setup.sid', $setups);
-
-    $query = $this->db->get();
-    $parameters = $query->result();
-
-    $per_setup = array();
-    // initialize the array
-    foreach ($setups as $setup) {
-      $per_setup[$setup] = array();
-    }
-    // now fill with parameters
-    foreach ($parameters as $parameter) {
-      $per_setup[$parameter->setup][] = $parameter;
-    }
-    
-    return $per_setup;
-  }
-  
   function setup_list($segs) { 
     $result_limit = 1000;
     $legal_filters = array('flow', 'setup', 'limit', 'offset', 'tag');
@@ -198,7 +172,7 @@ class Api_setup extends MY_Api_Model {
       return;
     }
     
-    $per_setup = $this->_setup_ids_to_parameter_values($setups);
+    $per_setup = $this->Algorithm_setup->setup_ids_to_parameter_values($setups);
     
     $this->xmlContents('setup-list', $this->version, array('setups' => $per_setup, 'setup_flows' => $setup_flows));
   }
@@ -264,7 +238,11 @@ class Api_setup extends MY_Api_Model {
     try {
       $setups = $this->Algorithm_setup->searchSetup($implementation, $parameters, $partial); 
     } catch(Exception $e) {
-      $this->returnError(588, $this->version);
+      $additional_message = null;
+      if (substr($e->getMessage(), 0, 5) == '1116:') {
+        $additional_message = 'Flow might not be suitable for this operation (feature request)';
+      }
+      $this->returnError(588, $this->version, $this->openmlGeneralErrorCode, $additional_message);
       return;
     }
     
@@ -296,7 +274,7 @@ class Api_setup extends MY_Api_Model {
       }
       
       // TODO: two-stage query, not ideal please fix! 
-      $per_setup = $this->_setup_ids_to_parameter_values(array_keys($setup_flows));
+      $per_setup = $this->Algorithm_setup->setup_ids_to_parameter_values(array_keys($setup_flows));
       
       $this->xmlContents('setup-list', $this->version, array('setups' => $per_setup, 'setup_flows' => $setup_flows));
     }
