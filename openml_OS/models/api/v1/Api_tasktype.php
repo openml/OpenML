@@ -77,15 +77,6 @@ class Api_tasktype extends MY_Api_Model {
      *	summary="Get task type description",
      *	description="Returns information about a task type. The information includes a description, the given inputs and the expected outputs.",
      *	@OA\Parameter(
-     *		name="api_key",
-     *		in="query",
-     *		@OA\Schema(
-     *          type="string"
-     *        ),
-     *		description="API key to authenticate the user",
-     *		required=false,
-     *	),
-     *	@OA\Parameter(
      *		name="id",
      *		in="path",
      *		@OA\Schema(
@@ -93,6 +84,15 @@ class Api_tasktype extends MY_Api_Model {
      *        ),
      *		description="ID of the task.",
      *		required=true,
+     *	),
+     *	@OA\Parameter(
+     *		name="api_key",
+     *		in="query",
+     *		@OA\Schema(
+     *          type="string"
+     *        ),
+     *		description="API key to authenticate the user",
+     *		required=false,
      *	),
      *	@OA\Response(
      *		response=200,
