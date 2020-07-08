@@ -14,7 +14,7 @@
     <xs:element name="custom_name" minOccurs="0" type="oml:basic_latin128"/> <!-- Custom name given to this flow by the owner -->
     <xs:element name="class_name"  minOccurs="0" type="oml:casual_string128"/> <!-- The (dev language) name of the class -->
     <xs:element name="version" minOccurs="0" type="xs:int"/> <!-- The version of the flow. Default is 1. Ignored at upload time. -->
-    <xs:element name="external_version" minOccurs="0" type="oml:casual_string128"/> <!-- A external version, defined by the user. In combination with the name, it must be unique. It is recommended to use the md5 hash of the source code, that way any change in source code will give a unique version number (like GitHub does). It can be used to retrieve the flow later on. If left empty, an md5 hash of either the source or the binary file will be used. -->
+    <xs:element name="external_version" minOccurs="0" type="oml:basic_latin128"/> <!-- A external version, defined by the user. In combination with the name, it must be unique. It is recommended to use the md5 hash of the source code, that way any change in source code will give a unique version number (like GitHub does). It can be used to retrieve the flow later on. If left empty, an md5 hash of either the source or the binary file will be used. -->
     <xs:element name="description" type="oml:basic_latin1024"/> <!-- Description of the flow, given by the user who uploaded it. -->
     <xs:element name="creator" minOccurs="0" maxOccurs="unbounded" type="oml:casual_string128"/>  <!-- The persons/institutions that created the flow. -->
     <xs:element name="contributor" minOccurs="0" maxOccurs="unbounded" type="oml:casual_string128"/>  <!-- Other people that contributed to the flow. -->
