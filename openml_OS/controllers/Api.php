@@ -25,7 +25,8 @@ class Api extends Api_new
  *        description="ID of the untagged setup",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200",
  *	@OA\Property(
@@ -33,15 +34,21 @@ class Api extends Api_new
  *        ref="#/components/schemas/inline_response_200_data_delete",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="EvaluationMeasureList_evaluation_measures_measures",
- *	@OA\Property(
+ *	  @OA\Property(
  *        property="measure",
  *        type="array",
+ *        description="The evaluation measure names",
+ *		  @OA\Items(
+ *			type="string"
+ *		  )
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_10_flow_exists",
  *	@OA\Property(
@@ -55,7 +62,8 @@ class Api extends Api_new
  *        description="true or false",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="Data_data_set_description",
  *	@OA\Property(
@@ -92,6 +100,9 @@ class Api extends Api_new
  *        property="tag",
  *        type="array",
  *        description="Tags added by OpenML users. Includes study tags in the form `study_1`",
+ *		  @OA\Items(
+ *			type="string"
+ *		  )
  *    ),
  *	@OA\Property(
  *        property="visibility",
@@ -139,7 +150,8 @@ class Api extends Api_new
  *        description="The name of the dataset",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="DataList_data_dataset",
  *	@OA\Property(
@@ -155,6 +167,9 @@ class Api extends Api_new
  *	@OA\Property(
  *        property="quality",
  *        type="array",
+ *		  @OA\Items(
+ *			ref="#/components/schemas/DataList_data_quality"
+ *		  )
  *    ),
  *	@OA\Property(
  *        property="name",
@@ -167,12 +182,16 @@ class Api extends Api_new
  *        description="The data format of the dataset, e.g. ARFF",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="Task_task_description_estimation_procedure",
  *	@OA\Property(
  *        property="parameter",
  *        type="array",
+ *		  @OA\Items(
+ *			ref="#/components/schemas/Task_task_description_estimation_procedure_parameter"
+ *		  )
  *    ),
  *	@OA\Property(
  *        property="type",
@@ -185,7 +204,8 @@ class Api extends Api_new
  *        description="The url where the data splits can be downloaded",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="DataList_data_quality",
  *	@OA\Property(
@@ -199,7 +219,8 @@ class Api extends Api_new
  *        description="The value of the property",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="FlowList_flows_flow",
  *	@OA\Property(
@@ -233,7 +254,8 @@ class Api extends Api_new
  *        description="The flow name",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="Run_run_description_input_data_dataset",
  *	@OA\Property(
@@ -252,15 +274,20 @@ class Api extends Api_new
  *        description="The name of the dataset",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="EvaluationList_evaluations",
- *	@OA\Property(
+ *	  @OA\Property(
  *        property="evaluation",
  *        type="array",
+ *		  @OA\Items(
+ *			ref="#/components/schemas/EvaluationList_evaluations_evaluation"
+ *		  )
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_14_study_delete",
  *	@OA\Property(
@@ -269,7 +296,8 @@ class Api extends Api_new
  *        description="ID of the deleted setup, a positive integer",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="DataUnprocessed",
  *    type="object",
@@ -278,7 +306,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/DataUnprocessed_data_unprocessed",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="DataUnprocessed_data_unprocessed_dataset",
  *	@OA\Property(
@@ -307,15 +336,20 @@ class Api extends Api_new
  *        description="The dataset format, e.g. ARFF",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="EstimationProcedureList_estimationprocedures",
  *	@OA\Property(
  *        property="estimationprocedure",
  *        type="array",
+ *		  @OA\Items(
+ *			ref="#/components/schemas/EstimationProcedureList_estimationprocedures_estimationprocedure"
+ *		  )
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="TaskTypeList",
  *    type="object",
@@ -324,7 +358,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/TaskTypeList_task_types",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="Run_run_description_output_data_evaluation",
  *	@OA\Property(
@@ -348,7 +383,8 @@ class Api extends Api_new
  *        description="The id of the code used to compute this evaluation method",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="TaskList_task_quality",
  *	@OA\Property(
@@ -362,12 +398,16 @@ class Api extends Api_new
  *        description="The value of the quality",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="Task_task_description",
  *	@OA\Property(
  *        property="input",
  *        type="array",
+ *		  @OA\Items(
+ *			ref="#/components/schemas/Task_task_description_input"
+ *		  )
  *    ),
  *	@OA\Property(
  *        property="task_type",
@@ -377,6 +417,10 @@ class Api extends Api_new
  *	@OA\Property(
  *        property="tag",
  *        type="array",
+ *        description="Tags added by OpenML uers. Includes study tags in the form 'study_1'",
+ *		  @OA\Items(
+ *			type="string"
+ *		  )
  *    ),
  *	@OA\Property(
  *        property="task_id",
@@ -386,9 +430,13 @@ class Api extends Api_new
  *	@OA\Property(
  *        property="output",
  *        type="array",
+ *		  @OA\Items(
+ *			ref="#/components/schemas/Task_task_description_output"
+ *		  )
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_9_upload_flow",
  *	@OA\Property(
@@ -397,7 +445,8 @@ class Api extends Api_new
  *        description="ID of the uploaded flow, a positive integer",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="Flow_flow_description",
  *	@OA\Property(
@@ -418,11 +467,17 @@ class Api extends Api_new
  *	@OA\Property(
  *        property="parameter",
  *        type="array",
+ *		  @OA\Items(
+ *			ref="#/components/schemas/Flow_flow_description_parameter"
+ *		  )
  *    ),
  *	@OA\Property(
  *        property="tag",
  *        type="array",
  *        description="Tags added by OpenML users. Includes study tags in the form `study_1`",
+ *		  @OA\Items(
+ *			type="string"
+ *		  )
  *    ),
  *	@OA\Property(
  *        property="version",
@@ -455,7 +510,8 @@ class Api extends Api_new
  *        description="The name of the flow",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="Task",
  *    type="object",
@@ -464,7 +520,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/Task_task_description",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="Setup",
  *    type="object",
@@ -473,15 +530,20 @@ class Api extends Api_new
  *        ref="#/components/schemas/Setup_setup_parameters",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="FlowList_flows",
  *	@OA\Property(
  *        property="flow",
  *        type="array",
+ *		  @OA\Items(
+ *			ref="#/components/schemas/FlowList_flows_flow"
+ *		  )
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="RunTrace",
  *    type="object",
@@ -490,7 +552,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/RunTrace_trace",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="Task_task_description_predictions_feature",
  *	@OA\Property(
@@ -504,7 +567,8 @@ class Api extends Api_new
  *        description="The name of the prediction feature, e.g. row_id",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_24_study_delete",
  *	@OA\Property(
@@ -513,7 +577,8 @@ class Api extends Api_new
  *        description="ID of the deleted study, a positive integer",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_5_upload_task",
  *	@OA\Property(
@@ -522,7 +587,8 @@ class Api extends Api_new
  *        description="ID of the uploaded task, a positive integer",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_13_flow_untag",
  *	@OA\Property(
@@ -531,15 +597,20 @@ class Api extends Api_new
  *        description="ID of the untagged flow",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="UserList_users",
  *	@OA\Property(
  *        property="user",
  *        type="array",
+ *		  @OA\Items(
+ *			ref="#/components/schemas/UserList_users_user"
+ *		  )
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="DataFeatures",
  *    type="object",
@@ -548,12 +619,16 @@ class Api extends Api_new
  *        ref="#/components/schemas/DataFeatures_data_features",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="Task_task_description_predictions",
  *	@OA\Property(
  *        property="feature",
  *        type="array",
+ *		  @OA\Items(
+ *			ref="#/components/schemas/Task_task_description_predictions_feature"
+ *		  )
  *    ),
  *	@OA\Property(
  *        property="format",
@@ -561,7 +636,8 @@ class Api extends Api_new
  *        description="The fromat of the predictions, e.g. ARFF",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_15_flow_tag",
  *	@OA\Property(
@@ -570,12 +646,16 @@ class Api extends Api_new
  *        description="ID of the tagged setup",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="Setup_setup_parameters",
  *	@OA\Property(
  *        property="parameter_setting",
  *        type="array",
+ *		  @OA\Items(
+ *			ref="#/components/schemas/Setup_setup_parameters_parameter_setting"
+ *		  )
  *    ),
  *	@OA\Property(
  *        property="flow_id",
@@ -583,7 +663,8 @@ class Api extends Api_new
  *        description="ID of the flow, a positive integer",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="DataList",
  *    type="object",
@@ -592,7 +673,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/DataList_data",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_26_study_attach",
  *	@OA\Property(
@@ -611,7 +693,8 @@ class Api extends Api_new
  *        description="ID of the study, a positive integer",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_2_data_tag",
  *	@OA\Property(
@@ -620,7 +703,8 @@ class Api extends Api_new
  *        description="ID of the tagged dataset",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_12",
  *	@OA\Property(
@@ -628,7 +712,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/inline_response_200_12_flow_tag",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_13",
  *	@OA\Property(
@@ -636,7 +721,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/inline_response_200_13_flow_untag",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_10",
  *	@OA\Property(
@@ -644,7 +730,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/inline_response_200_10_flow_exists",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_23_upload_flow",
  *	@OA\Property(
@@ -653,7 +740,8 @@ class Api extends Api_new
  *        description="ID of the run with the trace, a positive integer",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_16",
  *	@OA\Property(
@@ -661,7 +749,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/inline_response_200_16_flow_untag",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_17",
  *	@OA\Property(
@@ -669,7 +758,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/inline_response_200_17_data_delete",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_14",
  *	@OA\Property(
@@ -677,7 +767,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/inline_response_200_14_study_delete",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_15",
  *	@OA\Property(
@@ -685,7 +776,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/inline_response_200_15_flow_tag",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_18",
  *	@OA\Property(
@@ -693,7 +785,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/inline_response_200_18_upload_flow",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_19",
  *	@OA\Property(
@@ -701,7 +794,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/inline_response_200_19_run_tag",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="EvaluationRequest_evaluation_request",
  *	@OA\Property(
@@ -709,7 +803,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/EvaluationRequest_evaluation_request_run",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="Run",
  *    type="object",
@@ -718,7 +813,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/Run_run_description",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_6_task_tag",
  *	@OA\Property(
@@ -727,7 +823,8 @@ class Api extends Api_new
  *        description="ID of the tagged task",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="RunList",
  *    type="object",
@@ -736,7 +833,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/RunList_runs",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_17_data_delete",
  *	@OA\Property(
@@ -745,7 +843,8 @@ class Api extends Api_new
  *        description="ID of the deleted run, a positive integer",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="Task_task_description_input",
  *	@OA\Property(
@@ -756,6 +855,13 @@ class Api extends Api_new
  *        property="cost_matrix",
  *        type="array",
  *        description="The cost matrix, indicating the costs for each type of misclassification",
+ *		  @OA\Items(
+ *			type="array",
+ *          @OA\Items(
+ *              type="integer",
+ *              format="int64"
+ *          )
+ *		  )
  *    ),
  *	@OA\Property(
  *        property="name",
@@ -771,24 +877,31 @@ class Api extends Api_new
  *        ref="#/components/schemas/Task_task_description_estimation_procedure",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="UserList",
  *    type="object",
  *	@OA\Property(
  *        property="users",
  *        ref="#/components/schemas/UserList_users",
- *    ),
- *)
+ *    )
  *
+ *)
+ */
+/**
  * @OA\Schema(
  *    schema="Study_study_runs",
  *	@OA\Property(
  *        property="run_id",
  *        type="array",
+ *		  @OA\Items(
+ *			type="string"
+ *		  )
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="DataFeatures_data_features_feature",
  *	@OA\Property(
@@ -822,7 +935,8 @@ class Api extends Api_new
  *        description="Whether this feature is a row identifier",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_21_upload_flow",
  *	@OA\Property(
@@ -831,7 +945,8 @@ class Api extends Api_new
  *        description="ID of the evaluated run, a positive integer",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="TaskType",
  *    type="object",
@@ -848,14 +963,23 @@ class Api extends Api_new
  *	@OA\Property(
  *        property="output",
  *        type="array",
+ *		  @OA\Items(
+ *			ref="#/components/schemas/TaskType_output"
+ *		  )
  *    ),
  *	@OA\Property(
  *        property="contributor",
  *        type="array",
+ *		  @OA\Items(
+ *			type="string"
+ *		  )
  *    ),
  *	@OA\Property(
  *        property="input",
  *        type="array",
+ *		  @OA\Items(
+ *			ref="#/components/schemas/TaskType_input"
+ *		  )
  *    ),
  *	@OA\Property(
  *        property="id",
@@ -868,7 +992,8 @@ class Api extends Api_new
  *        description="The name of the task type, e.g. Supervised Classification",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="Run_run_description_output_data_file",
  *	@OA\Property(
@@ -887,7 +1012,8 @@ class Api extends Api_new
  *        description="The name of the uploaded file (e.g., description, predictions, model,...)",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="TaskType_input",
  *	@OA\Property(
@@ -897,6 +1023,13 @@ class Api extends Api_new
  *	@OA\Property(
  *        property="cost_matrix",
  *        type="array",
+ *		  @OA\Items(
+ *			type="array",
+ *          @OA\Items(
+ *              type="integer",
+ *              format="int64"
+ *          )
+ *		  )
  *    ),
  *	@OA\Property(
  *        property="name",
@@ -912,19 +1045,27 @@ class Api extends Api_new
  *        ref="#/components/schemas/Task_task_description_estimation_procedure",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="Run_run_description_output_data",
  *	@OA\Property(
  *        property="evaluation",
  *        type="array",
+ *		  @OA\Items(
+ *			ref="#/components/schemas/Run_run_description_output_data_evaluation"
+ *		  )
  *    ),
  *	@OA\Property(
  *        property="file",
  *        type="array",
+ *		  @OA\Items(
+ *			ref="#/components/schemas/Run_run_description_output_data_file"
+ *		  )
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_3_data_untag",
  *	@OA\Property(
@@ -933,7 +1074,8 @@ class Api extends Api_new
  *        description="ID of the untagged dataset",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="Task_task_description_output",
  *	@OA\Property(
@@ -946,7 +1088,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/Task_task_description_predictions",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="DataQualityList",
  *    type="object",
@@ -955,7 +1098,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/DataQualityList_data_qualities_list",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="DataUnprocessed_data_unprocessed",
  *	@OA\Property(
@@ -963,7 +1107,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/DataUnprocessed_data_unprocessed_dataset",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="Study",
  *    type="object",
@@ -972,15 +1117,20 @@ class Api extends Api_new
  *        ref="#/components/schemas/Study_study",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="DataList_data",
  *	@OA\Property(
  *        property="dataset",
  *        type="array",
+ *		  @OA\Items(
+ *			ref="#/components/schemas/DataList_data_dataset"
+ *		  )
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="UserList_users_user",
  *	@OA\Property(
@@ -994,7 +1144,8 @@ class Api extends Api_new
  *        description="The user ID",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="TaskType_output",
  *	@OA\Property(
@@ -1007,7 +1158,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/TaskType_predictions",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="RunList_runs_run",
  *	@OA\Property(
@@ -1041,15 +1193,20 @@ class Api extends Api_new
  *        description="The ID of the flow used in this run",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="DataFeatures_data_features",
  *	@OA\Property(
  *        property="feature",
  *        type="array",
+ *		  @OA\Items(
+ *			ref="#/components/schemas/DataFeatures_data_features_feature"
+ *		  )
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="DataQualities_data_qualities_quality",
  *	@OA\Property(
@@ -1063,7 +1220,8 @@ class Api extends Api_new
  *        description="The value for this dataset",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_12_flow_tag",
  *	@OA\Property(
@@ -1072,7 +1230,8 @@ class Api extends Api_new
  *        description="ID of the tagged flow",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_8_flow_delete",
  *	@OA\Property(
@@ -1081,15 +1240,20 @@ class Api extends Api_new
  *        description="ID of the deleted flow, a positive integer",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="DataQualities_data_qualities",
  *	@OA\Property(
  *        property="quality",
  *        type="array",
+ *		  @OA\Items(
+ *			ref="#/components/schemas/DataQualities_data_qualities_quality"
+ *		  )
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="EvaluationRequest",
  *    type="object",
@@ -1098,7 +1262,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/EvaluationRequest_evaluation_request",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_18_upload_flow",
  *	@OA\Property(
@@ -1107,7 +1272,8 @@ class Api extends Api_new
  *        description="ID of the uploaded run, a positive integer",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="SetupList",
  *    type="object",
@@ -1116,7 +1282,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/SetupList_setups",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="TaskList",
  *    type="object",
@@ -1125,7 +1292,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/TaskList_task",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_4_task_delete",
  *	@OA\Property(
@@ -1134,7 +1302,8 @@ class Api extends Api_new
  *        description="ID of the deleted task, a positive integer",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="Task_task_description_data_set",
  *	@OA\Property(
@@ -1148,7 +1317,8 @@ class Api extends Api_new
  *        description="The name of the target feature for this task",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="EvaluationList",
  *    type="object",
@@ -1157,7 +1327,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/EvaluationList_evaluations",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="Run_run_description",
  *	@OA\Property(
@@ -1192,6 +1363,9 @@ class Api extends Api_new
  *	@OA\Property(
  *        property="tag",
  *        type="array",
+ *		  @OA\Items(
+ *			type="string"
+ *		  ),
  *        description="Tags added by OpenML users. Includes study tags in the form `study_1`",
  *    ),
  *	@OA\Property(
@@ -1221,9 +1395,13 @@ class Api extends Api_new
  *	@OA\Property(
  *        property="parameter_setting",
  *        type="array",
+ *		  @OA\Items(
+ *			ref="#/components/schemas/Run_run_description_parameter_setting"
+ *		  )
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="FlowList",
  *    type="object",
@@ -1232,7 +1410,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/FlowList_flows",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_19_run_tag",
  *	@OA\Property(
@@ -1241,7 +1420,8 @@ class Api extends Api_new
  *        description="ID of the tagged run",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_8",
  *	@OA\Property(
@@ -1249,7 +1429,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/inline_response_200_8_flow_delete",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_9",
  *	@OA\Property(
@@ -1257,15 +1438,20 @@ class Api extends Api_new
  *        ref="#/components/schemas/inline_response_200_9_upload_flow",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="Study_study_data",
  *	@OA\Property(
  *        property="data_id",
  *        type="array",
+ *		  @OA\Items(
+ *			type="string"
+ *		  )
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_1",
  *	@OA\Property(
@@ -1273,7 +1459,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/inline_response_200_1_upload_data_set",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_2",
  *	@OA\Property(
@@ -1281,7 +1468,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/inline_response_200_2_data_tag",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_3",
  *	@OA\Property(
@@ -1289,7 +1477,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/inline_response_200_3_data_untag",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_4",
  *	@OA\Property(
@@ -1297,7 +1486,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/inline_response_200_4_task_delete",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_5",
  *	@OA\Property(
@@ -1305,7 +1495,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/inline_response_200_5_upload_task",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_6",
  *	@OA\Property(
@@ -1313,7 +1504,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/inline_response_200_6_task_tag",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_7",
  *	@OA\Property(
@@ -1321,7 +1513,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/inline_response_200_7_task_untag",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_data_delete",
  *	@OA\Property(
@@ -1330,12 +1523,16 @@ class Api extends Api_new
  *        description="ID of the deleted dataset, a positive integer",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="RunTrace_trace",
  *	@OA\Property(
  *        property="trace_iteration",
  *        type="array",
+ *		  @OA\Items(
+ *			ref="#/components/schemas/RunTrace_trace_trace_iteration"
+ *		  )
  *    ),
  *	@OA\Property(
  *        property="run_id",
@@ -1343,7 +1540,8 @@ class Api extends Api_new
  *        description="run ID",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_7_task_untag",
  *	@OA\Property(
@@ -1352,7 +1550,8 @@ class Api extends Api_new
  *        description="ID of the untagged task",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="Data",
  *    type="object",
@@ -1361,7 +1560,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/Data_data_set_description",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="Task_task_description_evaluation_measures",
  *	@OA\Property(
@@ -1370,7 +1570,8 @@ class Api extends Api_new
  *        description="The evaluation measure to optimize in this task",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="SetupList_setups_parameter",
  *	@OA\Property(
@@ -1414,7 +1615,8 @@ class Api extends Api_new
  *        description="The parameter ID",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="TaskList_task_input",
  *	@OA\Property(
@@ -1428,15 +1630,20 @@ class Api extends Api_new
  *        description="The value of the input",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="StudyList_study_list",
  *	@OA\Property(
  *        property="study",
  *        type="array",
+ *		  @OA\Items(
+ *			ref="#/components/schemas/StudyList_study_list_study"
+ *		  )
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="Study_study_tag",
  *	@OA\Property(
@@ -1450,7 +1657,8 @@ class Api extends Api_new
  *        description="The name of the study (e.g. study_1)",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="Flow",
  *    type="object",
@@ -1459,7 +1667,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/Flow_flow_description",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="Run_run_description_parameter_setting",
  *	@OA\Property(
@@ -1473,7 +1682,8 @@ class Api extends Api_new
  *        description="The value of the parameter used",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="EvaluationRequest_evaluation_request_run",
  *	@OA\Property(
@@ -1502,7 +1712,8 @@ class Api extends Api_new
  *        description="ID of the run, a positive integer",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="Error",
  *    type="object",
@@ -1519,7 +1730,8 @@ class Api extends Api_new
  *        type="string",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_23",
  *	@OA\Property(
@@ -1527,7 +1739,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/inline_response_200_23_upload_flow",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_22",
  *	@OA\Property(
@@ -1535,7 +1748,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/inline_response_200_21_upload_flow",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_21",
  *	@OA\Property(
@@ -1543,7 +1757,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/inline_response_200_21_upload_flow",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_20",
  *	@OA\Property(
@@ -1551,7 +1766,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/inline_response_200_20_run_untag",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_27",
  *	@OA\Property(
@@ -1559,7 +1775,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/inline_response_200_26_study_attach",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_26",
  *	@OA\Property(
@@ -1567,7 +1784,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/inline_response_200_26_study_attach",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_25",
  *	@OA\Property(
@@ -1575,7 +1793,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/inline_response_200_25_upload_study",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_24",
  *	@OA\Property(
@@ -1583,7 +1802,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/inline_response_200_24_study_delete",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="EstimationProcedureList_estimationprocedures_estimationprocedure",
  *	@OA\Property(
@@ -1622,15 +1842,20 @@ class Api extends Api_new
  *        description="The estimation procedure ID",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="TaskTypeList_task_types",
  *	@OA\Property(
  *        property="task_type",
  *        type="array",
+ *		  @OA\Items(
+ *			ref="#/components/schemas/TaskTypeList_task_types_task_type"
+ *		  )
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="TaskList_task_task",
  *	@OA\Property(
@@ -1666,17 +1891,27 @@ class Api extends Api_new
  *	@OA\Property(
  *        property="tag",
  *        type="array",
+ *		  @OA\Items(
+ *			type="string"
+ *		  )
  *    ),
  *	@OA\Property(
  *        property="input",
  *        type="array",
+ *		  @OA\Items(
+ *			ref="#/components/schemas/TaskList_task_input"
+ *		  )
  *    ),
  *	@OA\Property(
  *        property="quality",
  *        type="array",
+ *		  @OA\Items(
+ *			ref="#/components/schemas/TaskList_task_quality"
+ *		  )
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_20_run_untag",
  *	@OA\Property(
@@ -1685,7 +1920,8 @@ class Api extends Api_new
  *        description="ID of the untagged run",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_11",
  *	@OA\Property(
@@ -1693,7 +1929,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/inline_response_200_11_flow_owned",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="StudyList",
  *    type="object",
@@ -1702,7 +1939,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/StudyList_study_list",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="Study_study",
  *	@OA\Property(
@@ -1756,15 +1994,20 @@ class Api extends Api_new
  *        description="The ID of the study",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_11_flow_owned",
  *	@OA\Property(
  *        property="id",
  *        type="array",
+ *		  @OA\Items(
+ *			type="string"
+ *		  )
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_25_upload_study",
  *	@OA\Property(
@@ -1773,7 +2016,8 @@ class Api extends Api_new
  *        description="ID of the uploaded study, a positive integer",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="EvaluationList_evaluations_evaluation",
  *	@OA\Property(
@@ -1807,7 +2051,8 @@ class Api extends Api_new
  *        description="The ID of the flow used by this run",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="EstimationProcedureList",
  *    type="object",
@@ -1816,23 +2061,32 @@ class Api extends Api_new
  *        ref="#/components/schemas/EstimationProcedureList_estimationprocedures",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="DataQualityList_data_qualities_list",
  *	@OA\Property(
  *        property="quality",
  *        type="array",
+ *		  @OA\Items(
+ *			type="string"
+ *		  )
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="Study_study_flows",
  *	@OA\Property(
  *        property="flow_id",
  *        type="array",
+ *		  @OA\Items(
+ *			type="string"
+ *		  )
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="StudyList_study_list_study",
  *	@OA\Property(
@@ -1861,7 +2115,8 @@ class Api extends Api_new
  *        description="The name of the study",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="Run_run_description_input_data",
  *	@OA\Property(
@@ -1869,7 +2124,8 @@ class Api extends Api_new
  *        ref="#/components/schemas/Run_run_description_input_data_dataset",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="TaskTypeList_task_types_task_type",
  *	@OA\Property(
@@ -1893,7 +2149,8 @@ class Api extends Api_new
  *        description="The name of the task type",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="EvaluationMeasureList_evaluation_measures",
  *	@OA\Property(
@@ -1901,12 +2158,16 @@ class Api extends Api_new
  *        ref="#/components/schemas/EvaluationMeasureList_evaluation_measures_measures",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="TaskType_predictions",
  *	@OA\Property(
  *        property="feature",
  *        type="array",
+ *		  @OA\Items(
+ *			ref="#/components/schemas/Task_task_description_predictions_feature"
+ *		  )
  *    ),
  *	@OA\Property(
  *        property="format",
@@ -1914,7 +2175,8 @@ class Api extends Api_new
  *        description="The format of the predictions, e.g. ARFF",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="Flow_flow_description_parameter",
  *	@OA\Property(
@@ -1938,7 +2200,8 @@ class Api extends Api_new
  *        description="A description of the parameter",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="RunTrace_trace_trace_iteration",
  *	@OA\Property(
@@ -1972,7 +2235,8 @@ class Api extends Api_new
  *        description="The evaluation score of the setup",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="EvaluationMeasureList",
  *    type="object",
@@ -1981,23 +2245,32 @@ class Api extends Api_new
  *        ref="#/components/schemas/EvaluationMeasureList_evaluation_measures",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="SetupList_setups",
  *	@OA\Property(
  *        property="setup",
  *        type="array",
+ *		  @OA\Items(
+ *			ref="#/components/schemas/SetupList_setups_setup"
+ *		  )
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="TaskList_task",
  *	@OA\Property(
  *        property="task",
  *        type="array",
+ *		  @OA\Items(
+ *			ref="#/components/schemas/TaskList_task_task"
+ *		  )
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="SetupList_setups_setup",
  *	@OA\Property(
@@ -2008,6 +2281,9 @@ class Api extends Api_new
  *	@OA\Property(
  *        property="parameter",
  *        type="array",
+ *		  @OA\Items(
+ *			ref="#/components/schemas/SetupList_setups_parameter"
+ *		  )
  *    ),
  *	@OA\Property(
  *        property="flow_id",
@@ -2015,7 +2291,8 @@ class Api extends Api_new
  *        description="The ID of the flow used by this run",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="Task_task_description_estimation_procedure_parameter",
  *	@OA\Property(
@@ -2029,23 +2306,32 @@ class Api extends Api_new
  *        description="The value of the parameter",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="RunList_runs",
  *	@OA\Property(
  *        property="run",
  *        type="array",
+ *		  @OA\Items(
+ *			ref="#/components/schemas/RunList_runs_run"
+ *		  )
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="Study_study_tasks",
  *	@OA\Property(
  *        property="task_id",
  *        type="array",
+ *		  @OA\Items(
+ *			type="string"
+ *		  )
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="inline_response_200_1_upload_data_set",
  *	@OA\Property(
@@ -2054,7 +2340,8 @@ class Api extends Api_new
  *        description="ID of the uploaded dataset, a positive integer",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="Setup_setup_parameters_parameter_setting",
  *	@OA\Property(
@@ -2083,7 +2370,8 @@ class Api extends Api_new
  *        description="The short name of the hyperparameter",
  *    ),
  *)
- *
+ */
+/**
  * @OA\Schema(
  *    schema="DataQualities",
  *    type="object",
