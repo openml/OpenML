@@ -92,7 +92,9 @@ class Api_user extends MY_Api_Model {
    *	@OA\Parameter(
    *		name="api_key",
    *		in="query",
-   *		type="string",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="API key to authenticate the user",
    *		required=false,
    *	),
@@ -103,18 +105,20 @@ class Api_user extends MY_Api_Model {
    *			ref="#/components/schemas/UserList",
    *			example={
    *			  "users":{
-   *			    "user":[
+   *			    "user":{
    *			      {
    *			        "id":"1",
-   *			        "username":"janvanrijn@gmail.com"},
+   *			        "username":"janvanrijn@gmail.com"
+   *                  },
    *			      {
    *			        "id":"2",
-   *			        "username":"joaquin.vanschoren@gmail.com"}
-   *			      ]
+   *			        "username":"joaquin.vanschoren@gmail.com"
+   *                  }
+   *			    }
    *			  }
    *			}
-   *		),
-   *	),
+   *		)
+   *	)
    *)
    */
   private function username_list($segs) {

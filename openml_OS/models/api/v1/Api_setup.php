@@ -92,23 +92,28 @@ class Api_setup extends MY_Api_Model {
    *	description="Tags a setup.",
    *	@OA\Parameter(
    *		name="setup_id",
-   *		in="formData",
-   *		type="number",
-   *		format="integer",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="integer"
+   *        ),
    *		description="Id of the setup.",
    *		required=true,
    *	),
    *	@OA\Parameter(
    *		name="tag",
-   *		in="formData",
-   *		type="string",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="Tag name",
    *		required=true,
    *	),
    *	@OA\Parameter(
    *		name="api_key",
-   *		in="formData",
-   *		type="string",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="Api key to authenticate the user",
    *		required=true,
    *	),
@@ -149,22 +154,28 @@ class Api_setup extends MY_Api_Model {
    *	description="Untags a setup.",
    *	@OA\Parameter(
    *		name="setup_id",
-   *		in="formData",
-   *		type="number",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="integer"
+   *        ),
    *		description="Id of the setup.",
    *		required=true,
    *	),
    *	@OA\Parameter(
    *		name="tag",
-   *		in="formData",
-   *		type="string",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="Tag name",
    *		required=true,
    *	),
    *	@OA\Parameter(
    *		name="api_key",
-   *		in="formData",
-   *		type="string",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="Api key to authenticate the user",
    *		required=true,
    *	),
@@ -210,15 +221,18 @@ class Api_setup extends MY_Api_Model {
    *	@OA\Parameter(
    *		name="id",
    *		in="path",
-   *		type="number",
-   *		format="integer",
+   *		@OA\Schema(
+   *          type="integer"
+   *        ),
    *		description="ID of the hyperparameter setup (configuration). These IDs are stated in run descriptions.",
    *		required=true,
    *	),
    *	@OA\Parameter(
    *		name="api_key",
    *		in="query",
-   *		type="string",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="API key to authenticate the user",
    *		required=false,
    *	),
@@ -230,7 +244,7 @@ class Api_setup extends MY_Api_Model {
    *			example={
    *			  "setup_parameters":{
    *			    "flow_id":"59",
-   *			    "parameter":[
+   *			    "parameter":{
    *			      {
    *			        "full_name":"weka.JRip(1)_F",
    *			        "parameter_name":"F",
@@ -255,7 +269,7 @@ class Api_setup extends MY_Api_Model {
    *			        "data_type":"option",
    *			        "default_value":"1",
    *			        "value":"1"
-   *			      }]
+   *			      }}
    *			  }
    *			}
    *		),
@@ -300,7 +314,9 @@ class Api_setup extends MY_Api_Model {
    *	@OA\Parameter(
    *		name="filters",
    *		in="path",
-   *		type="string",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="Any combination of these filters
   /tag/{tag} - returns only setups tagged with the given tag.
   /flow/{ids} - return only setups for specific flows, specified as a comma-separated list of flow IDs, e.g. ''1,2,3''
@@ -312,7 +328,9 @@ class Api_setup extends MY_Api_Model {
    *	@OA\Parameter(
    *		name="api_key",
    *		in="query",
-   *		type="string",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="API key to authenticate the user",
    *		required=false,
    *	),
@@ -323,11 +341,11 @@ class Api_setup extends MY_Api_Model {
    *			ref="#/components/schemas/SetupList",
    *			example={
    *			  "setups": {
-   *			    "setup": [
+   *			    "setup": {
    *			      {
    *			        "setup_id":"10",
    *			        "flow_id":"65",
-   *			        "parameter": [
+   *			        "parameter": {
    *			          {
    *			            "id":"4144",
    *			            "flow_id":"65",
@@ -348,9 +366,9 @@ class Api_setup extends MY_Api_Model {
    *			            "default_value":"0",
    *			            "value":"0"
    *			          }
-   *			        ]
+   *			        }
    *			      }
-   *			    ]
+   *			    }
    *			  }
    *			}
    *		),
@@ -547,15 +565,18 @@ class Api_setup extends MY_Api_Model {
    *	@OA\Parameter(
    *		name="id",
    *		in="path",
-   *		type="number",
-   *		format="integer",
+   *		@OA\Schema(
+   *          type="integer"
+   *        ),
    *		description="Id of the setup.",
    *		required=true,
    *	),
    *	@OA\Parameter(
    *		name="api_key",
    *		in="query",
-   *		type="string",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="Api key to authenticate the user",
    *		required=true,
    *	),

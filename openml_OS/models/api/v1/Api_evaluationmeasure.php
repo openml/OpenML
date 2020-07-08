@@ -34,7 +34,9 @@ class Api_evaluationmeasure extends MY_Api_Model {
    *	@OA\Parameter(
    *		name="api_key",
    *		in="query",
-   *		type="string",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="API key to authenticate the user",
    *		required=false,
    *	),
@@ -46,12 +48,12 @@ class Api_evaluationmeasure extends MY_Api_Model {
    *			example={
    *			  "evaluation_measures":{
    *			    "measures":{
-   *			      "measure":[
+   *			      "measure":{
    *			        "area_under_roc_curve",
    *			        "average_cost",
    *			        "binominal_test",
    *			        "build_cpu_time"
-   *			        ]
+   *			        }
    *			    }
    *			  }
    *			}

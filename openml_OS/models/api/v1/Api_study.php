@@ -67,15 +67,19 @@ class Api_study extends MY_Api_Model {
    *	description="Creates a new study. Upon success, it returns the study id.",
    *	@OA\Parameter(
    *		name="description",
-   *		in="formData",
-   *		type="file",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="file"
+   *        ),
    *		description="An XML file describing the study. Also see the [XSD schema](https://www.openml.org/api/v1/xsd/openml.study.upload) and an [XML example](https://www.openml.org/api/v1/xml_example/study).",
    *		required=true,
    *	),
    *	@OA\Parameter(
    *		name="api_key",
    *		in="query",
-   *		type="string",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="Api key to authenticate the user",
    *		required=true,
    *	),
@@ -255,22 +259,27 @@ class Api_study extends MY_Api_Model {
    *	@OA\Parameter(
    *		name="id",
    *		in="path",
-   *		type="number",
-   *		format="integer",
+   *		@OA\Schema(
+   *          type="integer"
+   *        ),
    *		description="Id of the study. Supplied in the URL path.",
    *		required=true,
    *	),
    *	@OA\Parameter(
    *		name="ids",
-   *		in="formData",
-   *		type="string",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="Comma-separated list of entity IDs to be attached to the study. For instance, if this is a run study, the list of run IDs that need to be added (attached) to the study. Must be supplied as a POST variable.",
    *		required=true,
    *	),
    *	@OA\Parameter(
    *		name="api_key",
    *		in="query",
-   *		type="string",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="Api key to authenticate the user",
    *		required=true,
    *	),
@@ -314,22 +323,27 @@ class Api_study extends MY_Api_Model {
    *	@OA\Parameter(
    *		name="id",
    *		in="path",
-   *		type="number",
-   *		format="integer",
+   *		@OA\Schema(
+   *          type="integer"
+   *        ),
    *		description="Id of the study.",
    *		required=true,
    *	),
    *	@OA\Parameter(
    *		name="ids",
-   *		in="formData",
-   *		type="string",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="Comma-separated list of entity IDs to be detached from the study. For instance, if this is a run study, the list of run IDs that need to be removed (detached) from the study. Must be supplied as a POST variable.",
    *		required=true,
    *	),
    *	@OA\Parameter(
    *		name="api_key",
    *		in="query",
-   *		type="string",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="Api key to authenticate the user",
    *		required=true,
    *	),
@@ -442,15 +456,18 @@ class Api_study extends MY_Api_Model {
    *	@OA\Parameter(
    *		name="id",
    *		in="path",
-   *		type="number",
-   *		format="integer",
+   *		@OA\Schema(
+   *          type="integer"
+   *        ),
    *		description="Id of the study.",
    *		required=true,
    *	),
    *	@OA\Parameter(
    *		name="api_key",
    *		in="query",
-   *		type="string",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="Api key to authenticate the user",
    *		required=true,
    *	),
@@ -525,7 +542,9 @@ class Api_study extends MY_Api_Model {
    *	@OA\Parameter(
    *		name="filters",
    *		in="path",
-   *		type="string",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="Any combination of these filters
   /main_entity_type/{type} - only return studies collecting entities of a given type (e.g. 'task' or 'run').
   /uploader/{ids} - return only evaluations uploaded by specific users, specified as a comma-separated list of user IDs, e.g. ''1,2,3''
@@ -536,7 +555,9 @@ class Api_study extends MY_Api_Model {
    *	@OA\Parameter(
    *		name="api_key",
    *		in="query",
-   *		type="string",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="API key to authenticate the user",
    *		required=false,
    *	),
@@ -547,7 +568,7 @@ class Api_study extends MY_Api_Model {
    *			ref="#/components/schemas/StudyList",
    *			example={
    *			  "study_list":{
-   *			    "study":[
+   *			    "study":{
    *			      {
    *			        "id":"1",
    *			        "alias":"Study_1",
@@ -562,7 +583,7 @@ class Api_study extends MY_Api_Model {
    *			        "creation_date":"2017-07-20 15:51:20",
    *			        "creator":"2"
    *			      }
-   *			    ]
+   *			    }
    *			  }
    *			}
    *		),
@@ -639,14 +660,18 @@ class Api_study extends MY_Api_Model {
    *	@OA\Parameter(
    *		name="id",
    *		in="path",
-   *		type="string",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="ID or alias of the study.",
    *		required=true,
    *	),
    *	@OA\Parameter(
    *		name="api_key",
    *		in="query",
-   *		type="string",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="Api key to authenticate the user",
    *		required=false,
    *	),
@@ -663,8 +688,8 @@ class Api_study extends MY_Api_Model {
    *			    "description": "CC18 benchmark suite",
    *			    "creation_date": "2019-02-16T17:35:58",
    *			    "creator": "1159",
-   *			    "data": {"data_id": ["1","2","3"]},
-   *			    "tasks": {"task_id": ["1","2","3"]}
+   *			    "data": {"data_id": {"1","2","3"}},
+   *			    "tasks": {"task_id": {"1","2","3"}}
    *			  }
    *			}
    *		),

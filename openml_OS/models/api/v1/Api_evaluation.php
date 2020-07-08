@@ -50,21 +50,27 @@ class Api_evaluation extends MY_Api_Model {
    *	@OA\Parameter(
    *		name="evaluation_engine_id",
    *		in="path",
-   *		type="string",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="The ID of the evaluation engine. You get this ID when you register a new evaluation engine with OpenML. The ID of the main evaluation engine is 1.",
    *		required=true,
    *	),
    *	@OA\Parameter(
    *		name="order",
    *		in="path",
-   *		type="string",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="When there are multiple runs still to evaluate, this defines which one to return. Options are 'normal' - the oldest run, 'reverse' - the newest run, or 'random' - a random run.",
    *		required=true,
    *	),
    *	@OA\Parameter(
    *		name="api_key",
    *		in="query",
-   *		type="string",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="API key to authenticate the user",
    *		required=false,
    *	),
@@ -73,7 +79,7 @@ class Api_evaluation extends MY_Api_Model {
    *		description="A list of evaluations descriptions",
    *		@OA\JsonContent(
    *			ref="#/components/schemas/EvaluationRequest",
-   *			example={"evaluation_request": {"run": [{"setup_id": "68799271", "upload_time": "2018-04-03 21:05:38", "uploader": "1935", "task_id": "3021", "run_id": "8943712"}]}}
+   *			example={"evaluation_request": {"run": {{"setup_id": "68799271", "upload_time": "2018-04-03 21:05:38", "uploader": "1935", "task_id": "3021", "run_id": "8943712"}}}}
    *		),
    *	),
    *	@OA\Response(
@@ -148,7 +154,9 @@ class Api_evaluation extends MY_Api_Model {
    *	@OA\Parameter(
    *		name="filters",
    *		in="path",
-   *		type="string",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="Any combination of these filters
   /function/{name} - name of the evaluation measure, e.g. area_under_auc or predictive_accuracy. See the OpenML website for the complete list of measures.
   /tag/{tag} - returns only evaluations of runs tagged with the given tag.
@@ -166,7 +174,9 @@ class Api_evaluation extends MY_Api_Model {
    *	@OA\Parameter(
    *		name="api_key",
    *		in="query",
-   *		type="string",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="API key to authenticate the user",
    *		required=false,
    *	),
@@ -175,12 +185,12 @@ class Api_evaluation extends MY_Api_Model {
    *		description="A list of evaluations descriptions",
    *		@OA\JsonContent(
    *			ref="#/components/schemas/EvaluationList",
-   *			example={"evaluations": {"evaluation": [{"function": "area_under_roc_curve", "upload_time": "2014-04-06 23:30:40", "task_id": "68", "run_id": "1", "array_data": "[0,0.99113,0.898048,0.874862,0.791282,0.807343,0.820674]", "value": "0.839359", "uploader": "1", "flow_id": "61"}, {"function": "f_measure", "upload_time": "2014-04-06 23:30:40", "task_id": "68", "run_id": "1", "array_data": "[0,0,0.711934,0.735714,0.601363,0.435678,0.430913]", "value": "0.600026", "uploader": "1", "flow_id": "61"}, {"function": "predictive_accuracy", "upload_time": "2014-04-06 23:30:40", "task_id": "68", "run_id": "1", "array_data": [], "value": "0.614634", "uploader": "1", "flow_id": "61"}]}}
+   *			example={"evaluations": {"evaluation": {{"function": "area_under_roc_curve", "upload_time": "2014-04-06 23:30:40", "task_id": "68", "run_id": "1", "array_data": "[0,0.99113,0.898048,0.874862,0.791282,0.807343,0.820674]", "value": "0.839359", "uploader": "1", "flow_id": "61"}, {"function": "f_measure", "upload_time": "2014-04-06 23:30:40", "task_id": "68", "run_id": "1", "array_data": "[0,0,0.711934,0.735714,0.601363,0.435678,0.430913]", "value": "0.600026", "uploader": "1", "flow_id": "61"}, {"function": "predictive_accuracy", "upload_time": "2014-04-06 23:30:40", "task_id": "68", "run_id": "1", "array_data": {}, "value": "0.614634", "uploader": "1", "flow_id": "61"}}}}
    *		),
    *	),
    *	@OA\Response(
    *		response=412,
-   *		description="Precondition failed. An error code and message are returned.\n540 - Please provide at least task, flow or setup, uploader or run, to\nfilter results, or limit the number of responses.\n541 - The input parameters (task_id, setup_id, flow_id, run_id, uploader_id) did not meet the constraints (comma separated list of integers).\n542 - There where no results. Check whether there are runs under the given constraint.\n543 - Too many results. Given the constraints, there were still too many results. Please add filters to narrow down the list.\n544 - Illegal filter specified.\n545 - Offset specified without limit.\n546 - Requested result limit too high.\n547 - Per fold can only be set to value "true" or "false".\n548 - Per fold queries are experimental and require a fair amount of filters on resulting run records to keep the query fast (use, e.g., flow, setup, task and uploader filter)\n",
+   *		description="Precondition failed. An error code and message are returned.\n540 - Please provide at least task, flow or setup, uploader or run, to\nfilter results, or limit the number of responses.\n541 - The input parameters (task_id, setup_id, flow_id, run_id, uploader_id) did not meet the constraints (comma separated list of integers).\n542 - There where no results. Check whether there are runs under the given constraint.\n543 - Too many results. Given the constraints, there were still too many results. Please add filters to narrow down the list.\n544 - Illegal filter specified.\n545 - Offset specified without limit.\n546 - Requested result limit too high.\n547 - Per fold can only be set to value 'true' or 'false'.\n548 - Per fold queries are experimental and require a fair amount of filters on resulting run records to keep the query fast (use, e.g., flow, setup, task and uploader filter)\n",
    *		@OA\JsonContent(
    *			ref="#/components/schemas/Error",
    *		),

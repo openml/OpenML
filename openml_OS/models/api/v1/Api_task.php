@@ -79,23 +79,28 @@ class Api_task extends MY_Api_Model {
    *	description="Tags a task.",
    *	@OA\Parameter(
    *		name="task_id",
-   *		in="formData",
-   *		type="number",
-   *		format="integer",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="integer"
+   *        ),
    *		description="Id of the task.",
    *		required=true,
    *	),
    *	@OA\Parameter(
    *		name="tag",
-   *		in="formData",
-   *		type="string",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="Tag name",
    *		required=true,
    *	),
    *	@OA\Parameter(
    *		name="api_key",
-   *		in="formData",
-   *		type="string",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="Api key to authenticate the user",
    *		required=true,
    *	),
@@ -136,22 +141,28 @@ class Api_task extends MY_Api_Model {
    *	description="Untags a task.",
    *	@OA\Parameter(
    *		name="task_id",
-   *		in="formData",
-   *		type="number",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="integer"
+   *        ),
    *		description="Id of the task.",
    *		required=true,
    *	),
    *	@OA\Parameter(
    *		name="tag",
-   *		in="formData",
-   *		type="string",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="Tag name",
    *		required=true,
    *	),
    *	@OA\Parameter(
    *		name="api_key",
-   *		in="formData",
-   *		type="string",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="Api key to authenticate the user",
    *		required=true,
    *	),
@@ -197,7 +208,9 @@ class Api_task extends MY_Api_Model {
    *	@OA\Parameter(
    *		name="filters",
    *		in="path",
-   *		type="string",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="Any combination of these filters
   /limit/{limit}/offset/{offset} - returns only {limit} results starting from result number {offset}. Useful for paginating results. With /limit/5/offset/10, tasks 11..15 will be returned. Both limit and offset need to be specified.
   /status/{status} - returns only tasks with a given status, either 'active', 'deactivated', or 'in_preparation'.
@@ -211,7 +224,9 @@ class Api_task extends MY_Api_Model {
    *	@OA\Parameter(
    *		name="api_key",
    *		in="query",
-   *		type="string",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="API key to authenticate the user",
    *		required=false,
    *	),
@@ -222,7 +237,7 @@ class Api_task extends MY_Api_Model {
    *			ref="#/components/schemas/TaskList",
    *			example={
    *			  "task": {
-   *			    "task": [
+   *			    "task": {
    *			      {
    *			        "task_id":"1",
    *			        "task_type":"Supervised Classification",
@@ -230,7 +245,7 @@ class Api_task extends MY_Api_Model {
    *			        "name":"anneal",
    *			        "status":"active",
    *			        "format":"ARFF",
-   *			        "input":[
+   *			        "input":{
    *			          {
    *			            "name":"estimation_procedure",
    *			            "value":"1"
@@ -247,8 +262,8 @@ class Api_task extends MY_Api_Model {
    *			            "name":"target_feature",
    *			            "value":"class"
    *			          }
-   *			          ],
-   *			        "quality":[
+   *			          },
+   *			        "quality":{
    *			          {
    *			            "name":"MajorityClassSize",
    *			            "value":"684"
@@ -293,16 +308,16 @@ class Api_task extends MY_Api_Model {
    *			            "name":"NumberOfSymbolicFeatures",
    *			            "value":"32"
    *			          }
-   *			          ],
-   *			        "tag":[
+   *			          },
+   *			        "tag":{
    *			          "basic",
    *			          "study_1",
    *			          "study_7",
    *			          "under100k",
    *			          "under1m"
-   *			        ]
+   *			        }
    *			      }
-   *			    ]
+   *			    }
    *			  }
    *			}
    *		),
@@ -402,15 +417,18 @@ class Api_task extends MY_Api_Model {
    *	@OA\Parameter(
    *		name="id",
    *		in="path",
-   *		type="number",
-   *		format="integer",
+   *		@OA\Schema(
+   *          type="integer"
+   *        ),
    *		description="ID of the task.",
    *		required=true,
    *	),
    *	@OA\Parameter(
    *		name="api_key",
    *		in="query",
-   *		type="string",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="Api key to authenticate the user",
    *		required=false,
    *	),
@@ -423,7 +441,7 @@ class Api_task extends MY_Api_Model {
    *			  "task": {
    *			    "task_id":"1",
    *			    "task_type":"Supervised Classification",
-   *			    "input":[
+   *			    "input":{
    *			      {
    *			        "name":"source_data",
    *			        "data_set":{
@@ -436,7 +454,7 @@ class Api_task extends MY_Api_Model {
    *			        "estimation_procedure":{
    *			          "type":"crossvalidation",
    *			          "data_splits_url":"https://www.openml.org/api_splits/get/1/Task_1_splits.arff",
-   *			          "parameter":[
+   *			          "parameter":{
    *			            {
    *			              "name":"number_repeats",
    *			              "value":"1"
@@ -452,12 +470,12 @@ class Api_task extends MY_Api_Model {
    *			              "name":"stratified_sampling",
    *			              "value":"true"
    *			            }
-   *			          ]
+   *			          }
    *			        }
    *			      },
    *			      {
    *			        "name":"cost_matrix",
-   *			        "cost_matrix":[]
+   *			        "cost_matrix":{}
    *			      },
    *			      {
    *			        "name":"evaluation_measures",
@@ -466,12 +484,12 @@ class Api_task extends MY_Api_Model {
    *			            "evaluation_measure":"predictive_accuracy"
    *			          }
    *			      }
-   *			    ],
+   *			    },
    *			    "output":{
    *			      "name":"predictions",
    *			      "predictions":{
    *			        "format":"ARFF",
-   *			        "feature":[
+   *			        "feature":{
    *			          {
    *			            "name":"repeat",
    *			            "type":"integer"
@@ -492,10 +510,10 @@ class Api_task extends MY_Api_Model {
    *			            "name":"prediction",
    *			            "type":"string"
    *			          }
-   *			        ]
+   *			        }
    *			      }
    *			    },
-   *			    "tag":["basic","study_1","under100k","under1m"]
+   *			    "tag":{"basic","study_1","under100k","under1m"}
    *			  }
    *			}
    *		),
@@ -565,15 +583,18 @@ class Api_task extends MY_Api_Model {
    *	@OA\Parameter(
    *		name="id",
    *		in="path",
-   *		type="number",
-   *		format="integer",
+   *		@OA\Schema(
+   *          type="integer"
+   *        ),
    *		description="Id of the task.",
    *		required=true,
    *	),
    *	@OA\Parameter(
    *		name="api_key",
    *		in="query",
-   *		type="string",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="Api key to authenticate the user",
    *		required=true,
    *	),
@@ -656,15 +677,19 @@ class Api_task extends MY_Api_Model {
    *	description="Uploads a task. Upon success, it returns the task id.",
    *	@OA\Parameter(
    *		name="description",
-   *		in="formData",
-   *		type="file",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="file"
+   *        ),
    *		description="An XML file describing the task. Only name, description, and task format are required. Also see the [XSD schema](https://www.openml.org/api/v1/xsd/openml.task.upload) and an [XML example](https://www.openml.org/api/v1/xml_example/task).",
    *		required=true,
    *	),
    *	@OA\Parameter(
    *		name="api_key",
    *		in="query",
-   *		type="string",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="Api key to authenticate the user",
    *		required=true,
    *	),

@@ -25,12 +25,14 @@ class Api_tasktype extends MY_Api_Model {
      *	@OA\Parameter(
      *		name="api_key",
      *		in="query",
-     *		type="string",
+     *		@OA\Schema(
+     *          type="string"
+     *        ),
      *		description="API key to authenticate the user",
-     *		required="false",
+     *		required=false,
      *	),
      *	@OA\Response(
-     *		response=default,
+     *		response="default",
      *		description="Unexpected error",
      *		@OA\JsonContent(
      *			ref="#/components/schemas/Error",
@@ -43,7 +45,7 @@ class Api_tasktype extends MY_Api_Model {
      *			ref="#/components/schemas/TaskTypeList",
      *			example={
      *			  "task_types":{
-     *			    "task_type":[
+     *			    "task_type":{
      *			      {
      *			        "id":"1",
      *			        "name":"Supervised Classification",
@@ -55,8 +57,8 @@ class Api_tasktype extends MY_Api_Model {
      *			        "name":"Supervised Regression",
      *			        "description":"Given a dataset with a numeric target ...",
      *			        "creator":"Joaquin Vanschoren, Jan van Rijn, Luis Torgo, Bernd Bischl"
-     *			      },{}
-     *			    ]
+     *			      }
+     *			    }
      *			  }
      *			}
      *		),
@@ -75,19 +77,22 @@ class Api_tasktype extends MY_Api_Model {
      *	summary="Get task type description",
      *	description="Returns information about a task type. The information includes a description, the given inputs and the expected outputs.",
      *	@OA\Parameter(
-     *		name="id",
-     *		in="path",
-     *		type="number",
-     *		format="integer",
-     *		description="ID of the task.",
-     *		required="true",
-     *	),
-     *	@OA\Parameter(
      *		name="api_key",
      *		in="query",
-     *		type="string",
-     *		description="Api key to authenticate the user",
-     *		required="false",
+     *		@OA\Schema(
+     *          type="string"
+     *        ),
+     *		description="API key to authenticate the user",
+     *		required=false,
+     *	),
+     *	@OA\Parameter(
+     *		name="id",
+     *		in="path",
+     *		@OA\Schema(
+     *          type="integer"
+     *        ),
+     *		description="ID of the task.",
+     *		required=true,
      *	),
      *	@OA\Response(
      *		response=200,
@@ -105,22 +110,22 @@ class Api_tasktype extends MY_Api_Model {
      *			You can also upload your own evaluation measures, provided that the code for doing so is available from the implementation used. For extremely large datasets, it may be infeasible to upload all predictions. In those cases, you need to compute and provide the evaluations yourself.<br><br>\
      *			\
      *			Optionally, you can upload the model trained on all the input data. There is no restriction on the file format, but please use a well-known format or PMML.",
-     *			    "creator": [
+     *			    "creator": {
      *			      "Joaquin Vanschoren",
      *			      "Jan van Rijn",
      *			      "Luis Torgo",
      *			      "Bernd Bischl"
-     *			    ],
-     *			    "contributor": [
+     *			    },
+     *			    "contributor": {
      *			      "Bo Gao",
      *			      "Simon Fischer",
      *			      "Venkatesh Umaashankar",
      *			      "Michael Berthold",
      *			      "Bernd Wiswedel",
      *			      "Patrick Winter"
-     *			    ],
+     *			    },
      *			    "creation_date": "2013-01-24 00:00:00",
-     *			    "input": [
+     *			    "input": {
      *			      {
      *			        "name": "source_data",
      *			        "requirement": "required",
@@ -148,7 +153,7 @@ class Api_tasktype extends MY_Api_Model {
      *			        "name": "evaluation_measures",
      *			        "data_type": "string"
      *			      }
-     *			    ]
+     *			    }
      *			  }
      *			}
      *		),

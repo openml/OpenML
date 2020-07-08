@@ -92,7 +92,9 @@ class Api_flow extends MY_Api_Model {
    *	@OA\Parameter(
    *		name="filters",
    *		in="path",
-   *		type="string",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="Any combination of these filters
   /limit/{limit}/offset/{offset} - returns only {limit} results starting from result number {offset}. Useful for paginating results. With /limit/5/offset/10, tasks 11..15 will be returned. Both limit and offset need to be specified.
   /tag/{tag} - returns only tasks tagged with the given tag.
@@ -103,7 +105,9 @@ class Api_flow extends MY_Api_Model {
    *	@OA\Parameter(
    *		name="api_key",
    *		in="query",
-   *		type="string",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="API key to authenticate the user",
    *		required=false,
    *	),
@@ -115,7 +119,7 @@ class Api_flow extends MY_Api_Model {
    *			example={
    *			  "flows":
    *			    {
-   *			      "flow":[
+   *			      "flow":{
    *			        {
    *			          "id":"65",
    *			          "full_name":"weka.RandomForest(1)",
@@ -140,7 +144,7 @@ class Api_flow extends MY_Api_Model {
    *			          "external_version":"Weka_3.7.10_8034",
    *			          "uploader":"1"
    *			        }
-   *			      ]
+   *			      }
    *			    }
    *			  }
    *		),
@@ -215,23 +219,28 @@ class Api_flow extends MY_Api_Model {
    *	description="Tags a flow.",
    *	@OA\Parameter(
    *		name="flow_id",
-   *		in="formData",
-   *		type="number",
-   *		format="integer",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="integer"
+   *        ),
    *		description="Id of the flow.",
    *		required=true,
    *	),
    *	@OA\Parameter(
    *		name="tag",
-   *		in="formData",
-   *		type="string",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="Tag name",
    *		required=true,
    *	),
    *	@OA\Parameter(
    *		name="api_key",
-   *		in="formData",
-   *		type="string",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="Api key to authenticate the user",
    *		required=true,
    *	),
@@ -272,22 +281,28 @@ class Api_flow extends MY_Api_Model {
    *	description="Untags a flow.",
    *	@OA\Parameter(
    *		name="flow_id",
-   *		in="formData",
-   *		type="number",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="integer"
+   *        ),
    *		description="Id of the flow.",
    *		required=true,
    *	),
    *	@OA\Parameter(
    *		name="tag",
-   *		in="formData",
-   *		type="string",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="Tag name",
    *		required=true,
    *	),
    *	@OA\Parameter(
    *		name="api_key",
-   *		in="formData",
-   *		type="string",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="Api key to authenticate the user",
    *		required=true,
    *	),
@@ -335,21 +350,27 @@ class Api_flow extends MY_Api_Model {
    *	@OA\Parameter(
    *		name="name",
    *		in="path",
-   *		type="string",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="The name of the flow.",
    *		required=true,
    *	),
    *	@OA\Parameter(
    *		name="version",
    *		in="path",
-   *		type="string",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="The external version of the flow",
    *		required=true,
    *	),
    *	@OA\Parameter(
    *		name="api_key",
    *		in="query",
-   *		type="string",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="API key to authenticate the user",
    *		required=false,
    *	),
@@ -405,15 +426,18 @@ class Api_flow extends MY_Api_Model {
    *	@OA\Parameter(
    *		name="id",
    *		in="path",
-   *		type="number",
-   *		format="integer",
+   *		@OA\Schema(
+   *          type="integer"
+   *        ),
    *		description="ID of the flow.",
    *		required=true,
    *	),
    *	@OA\Parameter(
    *		name="api_key",
    *		in="query",
-   *		type="string",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="API key to authenticate the user",
    *		required=false,
    *	),
@@ -433,11 +457,11 @@ class Api_flow extends MY_Api_Model {
    *			    "upload_date":"2014-04-23 18:00:36",
    *			    "language":"Java",
    *			    "dependencies":"Weka_3.7.5",
-   *			    "parameter": [
+   *			    "parameter": {
    *			      {
    *			        "name":"A",
    *			        "data_type":"flag",
-   *			        "default_value":[],
+   *			        "default_value":{},
    *			        "description":"Laplace smoothing..."
    *			      },
    *			      {
@@ -446,7 +470,7 @@ class Api_flow extends MY_Api_Model {
    *			        "default_value":"0.25",
    *			        "description":"Set confidence threshold..."
    *			      }
-   *			    ]
+   *			    }
    *			  }
    *			}
    *		),
@@ -485,22 +509,28 @@ class Api_flow extends MY_Api_Model {
    *	description="Uploads a flow. Upon success, it returns the flow id.",
    *	@OA\Parameter(
    *		name="description",
-   *		in="formData",
-   *		type="file",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="file"
+   *        ),
    *		description="An XML file describing the flow. Only name and description are required. Also see the [XSD schema](https://www.openml.org/api/v1/xsd/openml.implementation.upload) and an [XML example](https://www.openml.org/api/v1/xml_example/flow).",
    *		required=true,
    *	),
    *	@OA\Parameter(
    *		name="flow",
-   *		in="formData",
-   *		type="file",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="file"
+   *        ),
    *		description="The actual flow, being a source (or binary) file.",
    *		required=false,
    *	),
    *	@OA\Parameter(
    *		name="api_key",
    *		in="query",
-   *		type="string",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="Api key to authenticate the user",
    *		required=true,
    *	),
@@ -664,15 +694,18 @@ class Api_flow extends MY_Api_Model {
    *	@OA\Parameter(
    *		name="id",
    *		in="path",
-   *		type="number",
-   *		format="integer",
+   *		@OA\Schema(
+   *          type="integer"
+   *        ),
    *		description="Id of the flow.",
    *		required=true,
    *	),
    *	@OA\Parameter(
    *		name="api_key",
    *		in="query",
-   *		type="string",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="API key to authenticate the user",
    *		required=true,
    *	),

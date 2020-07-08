@@ -51,7 +51,9 @@ class Api_estimationprocedure extends MY_Api_Model {
    *	@OA\Parameter(
    *		name="api_key",
    *		in="query",
-   *		type="string",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="API key to authenticate the user",
    *		required=false,
    *	),
@@ -62,7 +64,7 @@ class Api_estimationprocedure extends MY_Api_Model {
    *			ref="#/components/schemas/EstimationProcedureList",
    *			example={
    *			  "estimationprocedures": {
-   *			    "estimationprocedure": [
+   *			    "estimationprocedure": {
    *			      {
    *			         "id":"1",
    *			         "ttid":"1",
@@ -81,7 +83,7 @@ class Api_estimationprocedure extends MY_Api_Model {
    *			        "folds":"2",
    *			        "stratified_sampling":"true"
    *			      }
-   *			    ]
+   *			    }
    *			  }
    *			}
    *		),

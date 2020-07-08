@@ -111,23 +111,28 @@ class Api_run extends MY_Api_Model {
    *	description="Tags a run.",
    *	@OA\Parameter(
    *		name="run_id",
-   *		in="formData",
-   *		type="number",
-   *		format="integer",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="integer"
+   *        ),
    *		description="Id of the run.",
    *		required=true,
    *	),
    *	@OA\Parameter(
    *		name="tag",
-   *		in="formData",
-   *		type="string",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="Tag name",
    *		required=true,
    *	),
    *	@OA\Parameter(
    *		name="api_key",
-   *		in="formData",
-   *		type="string",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="Api key to authenticate the user",
    *		required=true,
    *	),
@@ -168,22 +173,28 @@ class Api_run extends MY_Api_Model {
    *	description="Untags a run.",
    *	@OA\Parameter(
    *		name="run_id",
-   *		in="formData",
-   *		type="number",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="integer"
+   *        ),
    *		description="Id of the run.",
    *		required=true,
    *	),
    *	@OA\Parameter(
    *		name="tag",
-   *		in="formData",
-   *		type="string",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="Tag name",
    *		required=true,
    *	),
    *	@OA\Parameter(
    *		name="api_key",
-   *		in="formData",
-   *		type="string",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="Api key to authenticate the user",
    *		required=true,
    *	),
@@ -229,7 +240,9 @@ class Api_run extends MY_Api_Model {
    *	@OA\Parameter(
    *		name="filters",
    *		in="path",
-   *		type="string",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="Any combination of these filters
   /tag/{tag} - return only runs tagged with the given tag.
   /run/{ids} - return only specific runs, specified as a comma-separated list of run IDs, e.g. ''1,2,3''
@@ -244,7 +257,9 @@ class Api_run extends MY_Api_Model {
    *	@OA\Parameter(
    *		name="api_key",
    *		in="query",
-   *		type="string",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="API key to authenticate the user",
    *		required=false,
    *	),
@@ -253,7 +268,7 @@ class Api_run extends MY_Api_Model {
    *		description="A list of runs descriptions",
    *		@OA\JsonContent(
    *			ref="#/components/schemas/RunList",
-   *			example={"runs": {"run": [{"upload_time": "2014-04-06 23:30:40", "task_id": "28", "run_id": "100", "error_message": [], "setup_id": "12", "uploader": "1", "flow_id": "67"}, {"upload_time": "2014-04-06 23:30:40", "task_id": "48", "run_id": "101", "error_message": [], "setup_id": "6", "uploader": "1", "flow_id": "61"}, {"upload_time": "2014-04-06 23:30:40", "task_id": "41", "run_id": "102", "error_message": [], "setup_id": "3", "uploader": "1", "flow_id": "58"}]}}
+   *			example={"runs": {"run": {{"upload_time": "2014-04-06 23:30:40", "task_id": "28", "run_id": "100", "error_message": {}, "setup_id": "12", "uploader": "1", "flow_id": "67"}, {"upload_time": "2014-04-06 23:30:40", "task_id": "48", "run_id": "101", "error_message": {}, "setup_id": "6", "uploader": "1", "flow_id": "61"}, {"upload_time": "2014-04-06 23:30:40", "task_id": "41", "run_id": "102", "error_message": {}, "setup_id": "3", "uploader": "1", "flow_id": "58"}}}}
    *		),
    *	),
    *	@OA\Response(
@@ -375,15 +390,18 @@ class Api_run extends MY_Api_Model {
    *	@OA\Parameter(
    *		name="id",
    *		in="path",
-   *		type="number",
-   *		format="integer",
+   *		@OA\Schema(
+   *          type="integer"
+   *        ),
    *		description="ID of the run.",
    *		required=true,
    *	),
    *	@OA\Parameter(
    *		name="api_key",
    *		in="query",
-   *		type="string",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="API key to authenticate the user",
    *		required=false,
    *	),
@@ -403,7 +421,7 @@ class Api_run extends MY_Api_Model {
    *			    "flow_id":"67",
    *			    "flow_name":"weka.BayesNet_K2(1)",
    *			    "setup_string":"weka.classifiers.bayes.BayesNet -- -D -Q weka.classifiers.bayes.net.search.local.K2 -- -P 1 -S BAYES -E weka.classifiers.bayes.net.estimate.SimpleEstimator -- -A 0.5",
-   *			    "parameter_setting": [
+   *			    "parameter_setting": {
    *			      {
    *			        "name":"D",
    *			        "value":"true"
@@ -420,7 +438,7 @@ class Api_run extends MY_Api_Model {
    *			        "name":"S",
    *			        "value":"BAYES"
    *			      }
-   *			    ],
+   *			    },
    *			    "input_data":
    *			      {
    *			        "dataset":
@@ -432,7 +450,7 @@ class Api_run extends MY_Api_Model {
    *			      },
    *			    "output_data":
    *			      {
-   *			        "file": [
+   *			        "file": {
    *			          {
    *			            "did":"48838",
    *			            "file_id":"261",
@@ -445,8 +463,8 @@ class Api_run extends MY_Api_Model {
    *			            "name":"predictions",
    *			            "url":"https:\\/\\/www.openml.org\\/data\\/download\\/262\\/weka_generated_predictions576954524972002741.arff"
    *			          }
-   *			        ],
-   *			        "evaluation": [
+   *			        },
+   *			        "evaluation": {
    *			          {
    *			            "name":"area_under_roc_curve",
    *			            "flow_id":"4",
@@ -469,7 +487,7 @@ class Api_run extends MY_Api_Model {
    *			            "flow_id":"13",
    *			            "value":"0.913601"
    *			          }
-   *			        ]
+   *			        }
    *			      }
    *			  }
    *			}
@@ -519,15 +537,18 @@ class Api_run extends MY_Api_Model {
    *	@OA\Parameter(
    *		name="id",
    *		in="path",
-   *		type="number",
-   *		format="integer",
+   *		@OA\Schema(
+   *          type="integer"
+   *        ),
    *		description="Id of the run.",
    *		required=true,
    *	),
    *	@OA\Parameter(
    *		name="api_key",
    *		in="query",
-   *		type="string",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="API key to authenticate the user",
    *		required=true,
    *	),
@@ -610,14 +631,18 @@ class Api_run extends MY_Api_Model {
    *	@OA\Parameter(
    *		name="id",
    *		in="path",
-   *		type="string",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="Run ID.",
    *		required=true,
    *	),
    *	@OA\Parameter(
    *		name="api_key",
    *		in="query",
-   *		type="string",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="API key to authenticate the user",
    *		required=false,
    *	),
@@ -676,36 +701,46 @@ class Api_run extends MY_Api_Model {
    *	description="Uploads a run. Upon success, it returns the run id.",
    *	@OA\Parameter(
    *		name="description",
-   *		in="formData",
-   *		type="file",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="file"
+   *        ),
    *		description="An XML file describing the dataset. Only name, description, and data format are required. Also see the [XSD schema](https://www.openml.org/api/v1/xsd/openml.run.upload) and an [XML example](https://www.openml.org/api/v1/xml_example/run).",
    *		required=true,
    *	),
    *	@OA\Parameter(
    *		name="predictions",
-   *		in="formData",
-   *		type="file",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="file"
+   *        ),
    *		description="The predictions generated by the run",
    *		required=true,
    *	),
    *	@OA\Parameter(
    *		name="model_readable",
-   *		in="formData",
-   *		type="file",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="file"
+   *        ),
    *		description="The human-readable model generated by the run",
    *		required=false,
    *	),
    *	@OA\Parameter(
    *		name="model_serialized",
-   *		in="formData",
-   *		type="file",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="file"
+   *        ),
    *		description="The serialized model generated by the run",
    *		required=false,
    *	),
    *	@OA\Parameter(
    *		name="api_key",
    *		in="query",
-   *		type="string",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="Api key to authenticate the user",
    *		required=true,
    *	),
@@ -1045,15 +1080,18 @@ class Api_run extends MY_Api_Model {
    *	@OA\Parameter(
    *		name="id",
    *		in="path",
-   *		type="number",
-   *		format="integer",
+   *		@OA\Schema(
+   *          type="integer"
+   *        ),
    *		description="ID of the run.",
    *		required=true,
    *	),
    *	@OA\Parameter(
    *		name="api_key",
    *		in="query",
-   *		type="string",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="API key to authenticate the user",
    *		required=false,
    *	),
@@ -1123,22 +1161,27 @@ class Api_run extends MY_Api_Model {
    *	@OA\Parameter(
    *		name="id",
    *		in="path",
-   *		type="number",
-   *		format="integer",
+   *		@OA\Schema(
+   *          type="integer"
+   *        ),
    *		description="ID of the run.",
    *		required=true,
    *	),
    *	@OA\Parameter(
    *		name="description",
-   *		in="formData",
-   *		type="file",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="file"
+   *        ),
    *		description="An XML file describing the trace. Also see the [XSD schema](https://www.openml.org/api/v1/xsd/openml.run.trace) and an [XML example](https://www.openml.org/api/v1/xml_example/run.trace).",
    *		required=true,
    *	),
    *	@OA\Parameter(
    *		name="api_key",
    *		in="query",
-   *		type="string",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="Api key to authenticate the user",
    *		required=true,
    *	),
@@ -1225,15 +1268,19 @@ class Api_run extends MY_Api_Model {
    *	description="Uploads a run evaluation. When successful, it returns the run id.",
    *	@OA\Parameter(
    *		name="description",
-   *		in="formData",
-   *		type="file",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="file"
+   *        ),
    *		description="An XML file describing the run evaluation.Also see the [XSD schema](https://www.openml.org/api/v1/xsd/openml.run.evaluate) and an [XML example](https://www.openml.org/api/v1/xml_example/run.evaluate).",
    *		required=true,
    *	),
    *	@OA\Parameter(
    *		name="api_key",
    *		in="query",
-   *		type="string",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
    *		description="Api key to authenticate the user",
    *		required=true,
    *	),
