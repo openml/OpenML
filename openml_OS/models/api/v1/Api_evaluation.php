@@ -27,7 +27,6 @@ class Api_evaluation extends MY_Api_Model {
     }
 
     $order_values = array('random', 'reverse', 'normal');
-
     if (count($segments) >= 4 && $segments[0] == 'request' && is_numeric($segments[1]) && in_array($segments[2], $order_values) && is_numeric($segments[3])) {
       array_shift($segments); // removes 'request'
       $eval_id = array_shift($segments);
@@ -179,7 +178,7 @@ class Api_evaluation extends MY_Api_Model {
    *	),
    *)
    */
-  private function evaluation_list($segs, $user_id) {
+  private function evaluation_list($segs, $user_id, $show_params) {
     $result_limit = 10000;
     $legal_filters = array('task', 'setup', 'flow', 'uploader', 'run', 'tag', 'limit', 'offset', 'function', 'per_fold', 'sort_order', 'study');
     list($query_string, $illegal_filters) = $this->parse_filters($segs, $legal_filters);
@@ -187,7 +186,7 @@ class Api_evaluation extends MY_Api_Model {
       $this->returnError(544, $this->version, $this->openmlGeneralErrorCode, 'Legal filter operators: ' . implode(',', $legal_filters) .'. Found illegal filter(s): ' . implode(', ', $illegal_filters));
       return;
     }
-    
+
     $illegal_filter_inputs = $this->check_filter_inputs($query_string, $legal_filters, array('tag', 'function', 'per_fold', 'sort_order'));
     if (count($illegal_filter_inputs) > 0) {
       $this->returnError(541, $this->version, $this->openmlGeneralErrorCode, 'Filters with illegal values: ' . implode(',', $illegal_filter_inputs));
@@ -211,7 +210,7 @@ class Api_evaluation extends MY_Api_Model {
       return;
     }
     $per_fold = ($per_fold === 'true') ? true : false; // cast to boolean. we only accept lowercase entrees
-    
+
     if ($offset && !$limit) {
       $this->returnError(545, $this->version);
       return;
@@ -224,7 +223,7 @@ class Api_evaluation extends MY_Api_Model {
       $this->returnError(549, $this->version);
       return;
     }
-    
+
     if ($study_id) {
       $study = $this->Study->getById($study_id);
       if ($study === false || $study->legacy != 'n' || $study->main_entity_type != 'run') {
@@ -251,7 +250,7 @@ class Api_evaluation extends MY_Api_Model {
       $where_limit =  ' LIMIT ' . $offset . ',' . $limit;
     }
     $where_task_closed = ' AND (`t`.`embargo_end_date` is NULL OR `t`.`embargo_end_date` < NOW() OR `r`.`uploader` = '.$user_id.')';
-    
+
     $where_runs = $where_task . $where_setup . $where_uploader . $where_impl . $where_run . $where_tag . $where_study . $where_task_closed;
     $where_total = $where_runs . $where_function;
 
@@ -261,17 +260,17 @@ class Api_evaluation extends MY_Api_Model {
       //shortcuts
       if (!$implementation_id) {
         $sql_test =
-          'SELECT count(distinct r.rid) as count ' .
-          'FROM run r, task t '.
-          'WHERE r.task_id = t.task_id ' . 
-          $where_runs;
+            'SELECT count(distinct r.rid) as count ' .
+            'FROM run r, task t '.
+            'WHERE r.task_id = t.task_id ' .
+            $where_runs;
         $count = $this->Evaluation->query($sql_test)[0]->count;
       } else {
         $sql_test =
-          'SELECT count(distinct r.rid) as count ' .
-          'FROM run r, task t, algorithm_setup s ' .
-          'WHERE r.setup = s.sid AND r.task_id = t.task_id ' .
-          $where_runs;
+            'SELECT count(distinct r.rid) as count ' .
+            'FROM run r, task t, algorithm_setup s ' .
+            'WHERE r.setup = s.sid AND r.task_id = t.task_id ' .
+            $where_runs;
         $count = $this->Evaluation->query($sql_test)[0]->count;
       }
       if ($count > $result_limit) {
@@ -285,12 +284,12 @@ class Api_evaluation extends MY_Api_Model {
         }
       }
     }
-    
+
     $order_by = null;
     if ($sort_order) {
       $order_by = 'ORDER BY `e`.`value` ' . $sort_order;
     }
-    
+
     if ($per_fold) {
       $eval_table = 'evaluation_fold';
       $columns = 'NULL as value, NULL as array_data, CONCAT("[", GROUP_CONCAT(e.value), "]") AS `values`';
@@ -307,17 +306,17 @@ class Api_evaluation extends MY_Api_Model {
     // TODO: remove dependency on task_inputs and dataset table
     // TODO (2): transform into subquery where all columns except evaluation_fold are obtained in subquery (along with limit requirements, as MYSQL query optimizer does not seem to understand this query has an upper limit to the number of obtained runs that need to be inspected)
     $sql =
-      'SELECT r.rid, r.task_id, r.start_time, r.uploader, s.implementation_id, s.sid, f.name AS `function`, i.fullName, d.did, d.name, e.evaluation_engine_id, ' . $columns . ' ' .
-      'FROM run r, ' . $eval_table . ' e, algorithm_setup s, implementation i, dataset d, task t, task_inputs ti, math_function f ' .
-      'WHERE r.setup = s.sid ' .
-      'AND e.source = r.rid ' .
-      'AND e.function_id = f.id ' . 
-      'AND s.implementation_id = i.id ' .
-      'AND r.task_id = t.task_id ' .
-      'AND r.task_id = ti.task_id ' .
-      'AND ti.input = "source_data" ' .
-      'AND ti.value = d.did ' . $where_total;
-    
+        'SELECT r.rid, r.task_id, r.start_time, r.uploader, s.implementation_id, s.sid, f.name AS `function`, i.fullName, d.did, d.name, e.evaluation_engine_id, ' . $columns . ' ' .
+        'FROM run r, ' . $eval_table . ' e, algorithm_setup s, implementation i, dataset d, task t, task_inputs ti, math_function f ' .
+        'WHERE r.setup = s.sid ' .
+        'AND e.source = r.rid ' .
+        'AND e.function_id = f.id ' .
+        'AND s.implementation_id = i.id ' .
+        'AND r.task_id = t.task_id ' .
+        'AND r.task_id = ti.task_id ' .
+        'AND ti.input = "source_data" ' .
+        'AND ti.value = d.did ' . $where_total;
+
     if ($group_by) {
       $sql .= $group_by;
     }
@@ -327,7 +326,7 @@ class Api_evaluation extends MY_Api_Model {
     if ($where_limit) {
       $sql .= $where_limit;
     }
-    
+
     $res = $this->Evaluation->query($sql);
 
     if ($res == false) {
@@ -335,6 +334,17 @@ class Api_evaluation extends MY_Api_Model {
       return;
     }
 
+    if ($show_params) {
+      # 2 stage query .. unfortunately. Can break when too much results. let's take the damage for now
+      $setup_ids = array();
+      foreach ($res as $r) {
+        $setup_ids[] = $r->sid;
+      }
+      $params = $this->Algorithm_setup->setup_ids_to_parameter_values(array_unique($setup_ids));
+      for ($i = 0; $i < count($res); ++$i) {
+        $res[$i]->parameters = $params[$res[$i]->sid];
+      }
+    }
     $this->xmlContents('evaluations', $this->version, array('evaluations' => $res));
   }
 }
