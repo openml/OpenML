@@ -39,15 +39,6 @@ class Api extends Api_new
  */
 /**
  * @OA\Schema(
- *    schema="inline_response_200",
- *	@OA\Property(
- *        property="data_delete",
- *        ref="#/components/schemas/inline_response_200_data_delete",
- *    ),
- *)
- */
-/**
- * @OA\Schema(
  *    schema="EvaluationMeasureList_evaluation_measures_measures",
  *	  @OA\Property(
  *        property="measure",
@@ -717,92 +708,11 @@ class Api extends Api_new
  */
 /**
  * @OA\Schema(
- *    schema="inline_response_200_12",
- *	@OA\Property(
- *        property="flow_tag",
- *        ref="#/components/schemas/inline_response_200_12_flow_tag",
- *    ),
- *)
- */
-/**
- * @OA\Schema(
- *    schema="inline_response_200_13",
- *	@OA\Property(
- *        property="flow_untag",
- *        ref="#/components/schemas/inline_response_200_13_flow_untag",
- *    ),
- *)
- */
-/**
- * @OA\Schema(
- *    schema="inline_response_200_10",
- *	@OA\Property(
- *        property="flow_exists",
- *        ref="#/components/schemas/inline_response_200_10_flow_exists",
- *    ),
- *)
- */
-/**
- * @OA\Schema(
  *    schema="inline_response_200_23_upload_flow",
  *	@OA\Property(
  *        property="id",
  *        type="string",
  *        description="ID of the run with the trace, a positive integer",
- *    ),
- *)
- */
-/**
- * @OA\Schema(
- *    schema="inline_response_200_16",
- *	@OA\Property(
- *        property="flow_untag",
- *        ref="#/components/schemas/inline_response_200_16_flow_untag",
- *    ),
- *)
- */
-/**
- * @OA\Schema(
- *    schema="inline_response_200_17",
- *	@OA\Property(
- *        property="data_delete",
- *        ref="#/components/schemas/inline_response_200_17_data_delete",
- *    ),
- *)
- */
-/**
- * @OA\Schema(
- *    schema="inline_response_200_14",
- *	@OA\Property(
- *        property="study_delete",
- *        ref="#/components/schemas/inline_response_200_14_study_delete",
- *    ),
- *)
- */
-/**
- * @OA\Schema(
- *    schema="inline_response_200_15",
- *	@OA\Property(
- *        property="flow_tag",
- *        ref="#/components/schemas/inline_response_200_15_flow_tag",
- *    ),
- *)
- */
-/**
- * @OA\Schema(
- *    schema="inline_response_200_18",
- *	@OA\Property(
- *        property="upload_flow",
- *        ref="#/components/schemas/inline_response_200_18_upload_flow",
- *    ),
- *)
- */
-/**
- * @OA\Schema(
- *    schema="inline_response_200_19",
- *	@OA\Property(
- *        property="run_tag",
- *        ref="#/components/schemas/inline_response_200_19_run_tag",
  *    ),
  *)
  */
@@ -1434,24 +1344,6 @@ class Api extends Api_new
  */
 /**
  * @OA\Schema(
- *    schema="inline_response_200_8",
- *	@OA\Property(
- *        property="flow_delete",
- *        ref="#/components/schemas/inline_response_200_8_flow_delete",
- *    ),
- *)
- */
-/**
- * @OA\Schema(
- *    schema="inline_response_200_9",
- *	@OA\Property(
- *        property="upload_flow",
- *        ref="#/components/schemas/inline_response_200_9_upload_flow",
- *    ),
- *)
- */
-/**
- * @OA\Schema(
  *    schema="Study_study_data",
  *	@OA\Property(
  *        property="data_id",
@@ -1459,69 +1351,6 @@ class Api extends Api_new
  *		  @OA\Items(
  *			type="string"
  *		  )
- *    ),
- *)
- */
-/**
- * @OA\Schema(
- *    schema="inline_response_200_1",
- *	@OA\Property(
- *        property="upload_data_set",
- *        ref="#/components/schemas/inline_response_200_1_upload_data_set",
- *    ),
- *)
- */
-/**
- * @OA\Schema(
- *    schema="inline_response_200_2",
- *	@OA\Property(
- *        property="data_tag",
- *        ref="#/components/schemas/inline_response_200_2_data_tag",
- *    ),
- *)
- */
-/**
- * @OA\Schema(
- *    schema="inline_response_200_3",
- *	@OA\Property(
- *        property="data_untag",
- *        ref="#/components/schemas/inline_response_200_3_data_untag",
- *    ),
- *)
- */
-/**
- * @OA\Schema(
- *    schema="inline_response_200_4",
- *	@OA\Property(
- *        property="task_delete",
- *        ref="#/components/schemas/inline_response_200_4_task_delete",
- *    ),
- *)
- */
-/**
- * @OA\Schema(
- *    schema="inline_response_200_5",
- *	@OA\Property(
- *        property="upload_task",
- *        ref="#/components/schemas/inline_response_200_5_upload_task",
- *    ),
- *)
- */
-/**
- * @OA\Schema(
- *    schema="inline_response_200_6",
- *	@OA\Property(
- *        property="task_tag",
- *        ref="#/components/schemas/inline_response_200_6_task_tag",
- *    ),
- *)
- */
-/**
- * @OA\Schema(
- *    schema="inline_response_200_7",
- *	@OA\Property(
- *        property="task_untag",
- *        ref="#/components/schemas/inline_response_200_7_task_untag",
  *    ),
  *)
  */
@@ -1744,78 +1573,6 @@ class Api extends Api_new
  */
 /**
  * @OA\Schema(
- *    schema="inline_response_200_23",
- *	@OA\Property(
- *        property="upload_flow",
- *        ref="#/components/schemas/inline_response_200_23_upload_flow",
- *    ),
- *)
- */
-/**
- * @OA\Schema(
- *    schema="inline_response_200_22",
- *	@OA\Property(
- *        property="run_reset",
- *        ref="#/components/schemas/inline_response_200_21_upload_flow",
- *    ),
- *)
- */
-/**
- * @OA\Schema(
- *    schema="inline_response_200_21",
- *	@OA\Property(
- *        property="upload_flow",
- *        ref="#/components/schemas/inline_response_200_21_upload_flow",
- *    ),
- *)
- */
-/**
- * @OA\Schema(
- *    schema="inline_response_200_20",
- *	@OA\Property(
- *        property="run_untag",
- *        ref="#/components/schemas/inline_response_200_20_run_untag",
- *    ),
- *)
- */
-/**
- * @OA\Schema(
- *    schema="inline_response_200_27",
- *	@OA\Property(
- *        property="upload_study",
- *        ref="#/components/schemas/inline_response_200_26_study_attach",
- *    ),
- *)
- */
-/**
- * @OA\Schema(
- *    schema="inline_response_200_26",
- *	@OA\Property(
- *        property="study_attach",
- *        ref="#/components/schemas/inline_response_200_26_study_attach",
- *    ),
- *)
- */
-/**
- * @OA\Schema(
- *    schema="inline_response_200_25",
- *	@OA\Property(
- *        property="upload_study",
- *        ref="#/components/schemas/inline_response_200_25_upload_study",
- *    ),
- *)
- */
-/**
- * @OA\Schema(
- *    schema="inline_response_200_24",
- *	@OA\Property(
- *        property="study_delete",
- *        ref="#/components/schemas/inline_response_200_24_study_delete",
- *    ),
- *)
- */
-/**
- * @OA\Schema(
  *    schema="EstimationProcedureList_estimationprocedures_estimationprocedure",
  *	@OA\Property(
  *        property="name",
@@ -1934,15 +1691,6 @@ class Api extends Api_new
  */
 /**
  * @OA\Schema(
- *    schema="inline_response_200_11",
- *	@OA\Property(
- *        property="flow_owned",
- *        ref="#/components/schemas/inline_response_200_11_flow_owned",
- *    ),
- *)
- */
-/**
- * @OA\Schema(
  *    schema="StudyList",
  *    type="object",
  *	@OA\Property(
@@ -2003,18 +1751,6 @@ class Api extends Api_new
  *        property="id",
  *        type="string",
  *        description="The ID of the study",
- *    ),
- *)
- */
-/**
- * @OA\Schema(
- *    schema="inline_response_200_11_flow_owned",
- *	@OA\Property(
- *        property="id",
- *        type="array",
- *		  @OA\Items(
- *			type="string"
- *		  )
  *    ),
  *)
  */
