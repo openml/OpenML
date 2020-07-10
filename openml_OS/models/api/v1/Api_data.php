@@ -237,65 +237,80 @@ class Api_data extends MY_Api_Model {
     $this->xmlContents('data', $this->version, array('datasets' => $datasets));
   }
 
-   private function data_edit() {
-    // Get columns to be update from post data
+   private function data_edit() {  
+    // get data id
     $data_id = $this->input->post('data_id');
-    $description = $this->input->post('description');
-    $creator =  $this->input->post('creator');
-    $collection_date =  $this->input->post('collection_date');
-    $language = $this->input->post('language');
-    $citation = $this->input->post('citation');
-    $original_data_url = $this->input->post('original_data_url');
-    $paper_url = $this->input->post('paper_url');
+    // get edit parameters as xml
+    $xsdFile = xsd('openml.data.edit', $this->controller, $this->version);
+
+    if($this->input->post('edit_parameters')) {
+      // get fields from string upload
+      $edit_parameters = $this->input->post('edit_parameters', false);
+      if(validateXml($edit_parameters, $xsdFile, $xmlErrors, false ) == false) {
+        $this->returnError(1060, $this->version, $this->openmlGeneralErrorCode, $xmlErrors);
+        return;
+      }
+      $xml = simplexml_load_string( $edit_parameters );
+    } elseif (isset($_FILES['edit_parameters'])) {
+      $uploadError = '';
+      $xmlErrors = '';
+      if (check_uploaded_file($_FILES['edit_parameters'], false, $uploadError) == false) {
+        $this->returnError(1061, $this->version, $this->openmlGeneralErrorCode, $uploadError);
+      }
+      // get fields from file upload
+      $edit_parameters = $_FILES['edit_parameters'];
+
+      if (validateXml($edit_parameters['tmp_name'], $xsdFile, $xmlErrors) == false) {
+        $this->returnError(1060, $this->version, $this->openmlGeneralErrorCode, $xmlErrors);
+        return;
+      }
+      $xml = simplexml_load_file($edit_parameters['tmp_name']);
+    } else {
+      $this->returnError(1061, $this->version);
+      return;
+    }
+
+    // create an array of update fields for the update
+    $update_fields = array();
+    foreach($xml->children('oml', true) as $input) {
+      // iterate over all fields, does not check for legal fields, as it wont match the xsd.  
+        $name = $input->getName() . '';
+        $update_fields[$name] = $input . '';
+      }
 
     // If data id is not given
     if( $data_id == false ) {
-      $this->returnError( 110, $this->version );
+      $this->returnError( 1062, $this->version );
       return;}
-
     // If dataset does not exist
     $dataset = $this->Dataset->getById( $data_id );
     if( $dataset == false ) {
-      $this->returnError( 111, $this->version );
+      $this->returnError( 1063, $this->version );
       return;
     }
 
     // If all the fields are false, there is nothing to update, return error 
-
-    if( $description == false && $creator == false && $collection_date == false && $language == false && $citation == false
-    && $original_data_url == false && $paper_url == false ) {
-      $this->returnError( 1055, $this->version );
+    if(!$update_fields) {
+      $this->returnError( 1064, $this->version );
       return;
     }
-
     // check if user owns dataset
     if($dataset->uploader != $this->user_id and !$this->user_has_admin_rights) {
-      $this->returnError( 353, $this->version );
+      $this->returnError( 1065, $this->version );
       return;
     }
 
-    // Combine all possible updates 
-    $update_description = $description == false ? '': 'description = "'. $description. '"';
-    $update_creator = $creator == false ? '': ' creator = "'. $creator. '" ';
-    $update_collection_date = $collection_date == false ? '': 'collection_date = "'. $collection_date. '" ';
-    $update_language = $language == false ? '': 'language = "'. $language. '" ';
-    $update_citation = $citation == false ? '': 'citation = "'. $citation. '" ';
-    $update_original_data_url = $original_data_url == false ? '': 'original_data_url = "'. $original_data_url. '" ';
-    $update_paper_url = $paper_url == false ? '': 'paper_url = "'. $paper_url. '" ';
-
-    // use , to separate update columns 
-    $update_total = implode(",", array_filter([$update_description, $update_creator, $update_collection_date, 
-      $update_language, $update_citation, $update_original_data_url, $update_paper_url])) ;
-
-    // where data id
-    $where_data = 'where did='. $data_id;
-
-    $this->Dataset->query('update dataset set '. $update_total . $where_data);
-   
-    // Return edited dataset, for user to verify changes    
-    $this->xmlContents( 'data-get', $this->version, $dataset );
-
+    $update_result = $this->Dataset->update($data_id, $update_fields);
+    // If result returns error    
+    if( $update_result == false ) {
+      $this->returnError( 1066, $this->version );
+      return;
     }
+
+    // Return data id, for user to verify changes    
+    $this->xmlContents( 'data-edit', $this->version, array( 'dataset' => $dataset ) );
+    }
+
 
   private function data($data_id) {
     if( $data_id == false ) {
