@@ -65,15 +65,6 @@ class Api_evaluation extends MY_Api_Model {
    *		description="When there are multiple runs still to evaluate, this defines which one to return. Options are 'normal' - the oldest run, 'reverse' - the newest run, or 'random' - a random run.",
    *		required=true,
    *	),
-   *	@OA\Parameter(
-   *		name="api_key",
-   *		in="query",
-   *		@OA\Schema(
-   *          type="string"
-   *        ),
-   *		description="API key to authenticate the user",
-   *		required=false,
-   *	),
    *	@OA\Response(
    *		response=200,
    *		description="A list of evaluations descriptions",
@@ -170,15 +161,6 @@ class Api_evaluation extends MY_Api_Model {
   /sort_order/{asc,desc} - sorts the results by the evaluation value, according to the selected evaluation measure (function)
   ",
    *		required=true,
-   *	),
-   *	@OA\Parameter(
-   *		name="api_key",
-   *		in="query",
-   *		@OA\Schema(
-   *          type="string"
-   *        ),
-   *		description="API key to authenticate the user",
-   *		required=false,
    *	),
    *	@OA\Response(
    *		response=200,

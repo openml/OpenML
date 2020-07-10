@@ -31,15 +31,6 @@ class Api_evaluationmeasure extends MY_Api_Model {
    *	tags={"evaluationmeasure"},
    *	summary="List all evaluation measures",
    *	description="Returns an array with all model evaluation measures in the system.",
-   *	@OA\Parameter(
-   *		name="api_key",
-   *		in="query",
-   *		@OA\Schema(
-   *          type="string"
-   *        ),
-   *		description="API key to authenticate the user",
-   *		required=false,
-   *	),
    *	@OA\Response(
    *		response=200,
    *		description="A list of evaluation measures",

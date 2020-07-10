@@ -48,15 +48,6 @@ class Api_estimationprocedure extends MY_Api_Model {
    *	tags={"estimationprocedure"},
    *	summary="List all estimation procedures",
    *	description="Returns an array with all model performance estimation procedures in the system.",
-   *	@OA\Parameter(
-   *		name="api_key",
-   *		in="query",
-   *		@OA\Schema(
-   *          type="string"
-   *        ),
-   *		description="API key to authenticate the user",
-   *		required=false,
-   *	),
    *	@OA\Response(
    *		response=200,
    *		description="A list of estimation procedures",

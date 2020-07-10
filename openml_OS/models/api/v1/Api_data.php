@@ -293,15 +293,6 @@ class Api_data extends MY_Api_Model {
   ",
    *		required=true,
    *	),
-   *	@OA\Parameter(
-   *		name="api_key",
-   *		in="query",
-   *		@OA\Schema(
-   *          type="string"
-   *        ),
-   *		description="API key to authenticate the user",
-   *		required=false,
-   *	),
    *	@OA\Response(
    *		response=200,
    *		description="A list of datasets with the given task",
@@ -479,15 +470,6 @@ class Api_data extends MY_Api_Model {
    *        ),
    *		description="Id of the dataset.",
    *		required=true,
-   *	),
-   *	@OA\Parameter(
-   *		name="api_key",
-   *		in="query",
-   *		@OA\Schema(
-   *          type="string"
-   *        ),
-   *		description="Api key to authenticate the user",
-   *		required=false,
    *	),
    *	@OA\Response(
    *		response=200,
@@ -1066,15 +1048,6 @@ class Api_data extends MY_Api_Model {
    *		description="Id of the dataset.",
    *		required=true,
    *	),
-   *	@OA\Parameter(
-   *		name="api_key",
-   *		in="query",
-   *		@OA\Schema(
-   *          type="string"
-   *        ),
-   *		description="Api key to authenticate the user",
-   *		required=false,
-   *	),
    *	@OA\Response(
    *		response=200,
    *		description="All the features of the dataset",
@@ -1407,15 +1380,6 @@ class Api_data extends MY_Api_Model {
    *	tags={"data"},
    *	summary="List all data qualities",
    *	description="Returns a list of all data qualities in the system.",
-   *	@OA\Parameter(
-   *		name="api_key",
-   *		in="query",
-   *		@OA\Schema(
-   *          type="string"
-   *        ),
-   *		description="API key to authenticate the user",
-   *		required=false,
-   *	),
    *	@OA\Response(
    *		response=200,
    *		description="A list of data qualities",
@@ -1489,15 +1453,6 @@ class Api_data extends MY_Api_Model {
    *        ),
    *		description="Id of the dataset.",
    *		required=true,
-   *	),
-   *	@OA\Parameter(
-   *		name="api_key",
-   *		in="query",
-   *		@OA\Schema(
-   *          type="string"
-   *        ),
-   *		description="Api key to authenticate the user",
-   *		required=false,
    *	),
    *	@OA\Response(
    *		response=200,
@@ -1850,15 +1805,6 @@ class Api_data extends MY_Api_Model {
    *        ),
    *		description="When there are multiple datasets still to process, this defines which ones to return. Options are 'normal' - the oldest datasets, or 'random'.",
    *		required=true,
-   *	),
-   *	@OA\Parameter(
-   *		name="api_key",
-   *		in="query",
-   *		@OA\Schema(
-   *          type="string"
-   *        ),
-   *		description="API key to authenticate the user",
-   *		required=false,
    *	),
    *	@OA\Response(
    *		response=200,

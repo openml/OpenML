@@ -2,14 +2,18 @@
 require_once('Api_new.php');
 
 /**
- * @OA\Info(title="OpenML API", version="1.0.0", description="REST API for sharing, organizing and reusing machine learning datasets, code, and experiments. Follows a predictive URL scheme from endpoint https://www.openml.org/api/v1/json (or /xml). You need to add your `api_key` to every call (see your account settings), or simply log in. See https://www.openml.org/api_data_docs for the file server API."
+ * @OA\Info(title="OpenML API", version="1.0.0", description="REST API for sharing, organizing and reusing machine learning datasets, code, and experiments. Follows a predictive URL scheme from endpoint https://www.openml.org/api/v1/json (or /xml). You need to add your api_key for every call except GET calls. The API key can be found in your profile on openml.org."
  * )
  */
  
  /**
  * @OA\Server(
  *	url="https://openml.org/api/v1/json",
- *  description="The base path of the current OpenML's API"
+ *  description="The current OpenML API"
+ * )
+ * @OA\Server(
+ *	url="https://test.openml.org/api/v1/json",
+ *  description="The test OpenML API"
  * )
  */
 class Api extends Api_new

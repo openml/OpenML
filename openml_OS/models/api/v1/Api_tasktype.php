@@ -22,15 +22,6 @@ class Api_tasktype extends MY_Api_Model {
      *	tags={"tasktype"},
      *	summary="List all task types",
      *	description="Returns an array with all task types in the system.",
-     *	@OA\Parameter(
-     *		name="api_key",
-     *		in="query",
-     *		@OA\Schema(
-     *          type="string"
-     *        ),
-     *		description="API key to authenticate the user",
-     *		required=false,
-     *	),
      *	@OA\Response(
      *		response="default",
      *		description="Unexpected error",
@@ -84,15 +75,6 @@ class Api_tasktype extends MY_Api_Model {
      *        ),
      *		description="ID of the task.",
      *		required=true,
-     *	),
-     *	@OA\Parameter(
-     *		name="api_key",
-     *		in="query",
-     *		@OA\Schema(
-     *          type="string"
-     *        ),
-     *		description="API key to authenticate the user",
-     *		required=false,
      *	),
      *	@OA\Response(
      *		response=200,

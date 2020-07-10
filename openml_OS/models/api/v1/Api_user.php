@@ -89,15 +89,6 @@ class Api_user extends MY_Api_Model {
    *	tags={"user"},
    *	summary="List all users by user id",
    *	description="Returns an array with all user ids and names.",
-   *	@OA\Parameter(
-   *		name="api_key",
-   *		in="query",
-   *		@OA\Schema(
-   *          type="string"
-   *        ),
-   *		description="API key to authenticate the user",
-   *		required=false,
-   *	),
    *	@OA\Response(
    *		response=200,
    *		description="A list of users",

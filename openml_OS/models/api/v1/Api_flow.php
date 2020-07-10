@@ -102,15 +102,6 @@ class Api_flow extends MY_Api_Model {
   ",
    *		required=true,
    *	),
-   *	@OA\Parameter(
-   *		name="api_key",
-   *		in="query",
-   *		@OA\Schema(
-   *          type="string"
-   *        ),
-   *		description="API key to authenticate the user",
-   *		required=false,
-   *	),
    *	@OA\Response(
    *		response=200,
    *		description="A list of flows",
@@ -365,15 +356,6 @@ class Api_flow extends MY_Api_Model {
    *		description="The external version of the flow",
    *		required=true,
    *	),
-   *	@OA\Parameter(
-   *		name="api_key",
-   *		in="query",
-   *		@OA\Schema(
-   *          type="string"
-   *        ),
-   *		description="API key to authenticate the user",
-   *		required=false,
-   *	),
    *	@OA\Response(
    *		response=200,
    *		description="A list of flows",
@@ -431,15 +413,6 @@ class Api_flow extends MY_Api_Model {
    *        ),
    *		description="ID of the flow.",
    *		required=true,
-   *	),
-   *	@OA\Parameter(
-   *		name="api_key",
-   *		in="query",
-   *		@OA\Schema(
-   *          type="string"
-   *        ),
-   *		description="API key to authenticate the user",
-   *		required=false,
    *	),
    *	@OA\Response(
    *		response=200,

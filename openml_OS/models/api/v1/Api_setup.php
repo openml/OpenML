@@ -227,15 +227,6 @@ class Api_setup extends MY_Api_Model {
    *		description="ID of the hyperparameter setup (configuration). These IDs are stated in run descriptions.",
    *		required=true,
    *	),
-   *	@OA\Parameter(
-   *		name="api_key",
-   *		in="query",
-   *		@OA\Schema(
-   *          type="string"
-   *        ),
-   *		description="API key to authenticate the user",
-   *		required=false,
-   *	),
    *	@OA\Response(
    *		response=200,
    *		description="A setup description",
@@ -324,15 +315,6 @@ class Api_setup extends MY_Api_Model {
   /limit/{limit}/offset/{offset} - returns only {limit} results starting from result number {offset}. Useful for paginating results. With /limit/5/offset/10, results 11..15 will be returned. Both limit and offset need to be specified.
   ",
    *		required=true,
-   *	),
-   *	@OA\Parameter(
-   *		name="api_key",
-   *		in="query",
-   *		@OA\Schema(
-   *          type="string"
-   *        ),
-   *		description="API key to authenticate the user",
-   *		required=false,
    *	),
    *	@OA\Response(
    *		response=200,

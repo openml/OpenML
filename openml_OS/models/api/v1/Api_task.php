@@ -221,15 +221,6 @@ class Api_task extends MY_Api_Model {
   ",
    *		required=true,
    *	),
-   *	@OA\Parameter(
-   *		name="api_key",
-   *		in="query",
-   *		@OA\Schema(
-   *          type="string"
-   *        ),
-   *		description="API key to authenticate the user",
-   *		required=false,
-   *	),
    *	@OA\Response(
    *		response=200,
    *		description="A list of tasks with the given tag",
@@ -422,15 +413,6 @@ class Api_task extends MY_Api_Model {
    *        ),
    *		description="ID of the task.",
    *		required=true,
-   *	),
-   *	@OA\Parameter(
-   *		name="api_key",
-   *		in="query",
-   *		@OA\Schema(
-   *          type="string"
-   *        ),
-   *		description="Api key to authenticate the user",
-   *		required=false,
    *	),
    *	@OA\Response(
    *		response=200,

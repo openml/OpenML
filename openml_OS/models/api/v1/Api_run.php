@@ -254,15 +254,6 @@ class Api_run extends MY_Api_Model {
   ",
    *		required=true,
    *	),
-   *	@OA\Parameter(
-   *		name="api_key",
-   *		in="query",
-   *		@OA\Schema(
-   *          type="string"
-   *        ),
-   *		description="API key to authenticate the user",
-   *		required=false,
-   *	),
    *	@OA\Response(
    *		response=200,
    *		description="A list of runs descriptions",
@@ -395,15 +386,6 @@ class Api_run extends MY_Api_Model {
    *        ),
    *		description="ID of the run.",
    *		required=true,
-   *	),
-   *	@OA\Parameter(
-   *		name="api_key",
-   *		in="query",
-   *		@OA\Schema(
-   *          type="string"
-   *        ),
-   *		description="API key to authenticate the user",
-   *		required=false,
    *	),
    *	@OA\Response(
    *		response=200,
@@ -636,15 +618,6 @@ class Api_run extends MY_Api_Model {
    *        ),
    *		description="Run ID.",
    *		required=true,
-   *	),
-   *	@OA\Parameter(
-   *		name="api_key",
-   *		in="query",
-   *		@OA\Schema(
-   *          type="string"
-   *        ),
-   *		description="API key to authenticate the user",
-   *		required=false,
    *	),
    *	@OA\Response(
    *		response=200,
@@ -1085,15 +1058,6 @@ class Api_run extends MY_Api_Model {
    *        ),
    *		description="ID of the run.",
    *		required=true,
-   *	),
-   *	@OA\Parameter(
-   *		name="api_key",
-   *		in="query",
-   *		@OA\Schema(
-   *          type="string"
-   *        ),
-   *		description="API key to authenticate the user",
-   *		required=false,
    *	),
    *	@OA\Response(
    *		response=200,

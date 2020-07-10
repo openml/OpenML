@@ -552,15 +552,6 @@ class Api_study extends MY_Api_Model {
   ",
    *		required=true,
    *	),
-   *	@OA\Parameter(
-   *		name="api_key",
-   *		in="query",
-   *		@OA\Schema(
-   *          type="string"
-   *        ),
-   *		description="API key to authenticate the user",
-   *		required=false,
-   *	),
    *	@OA\Response(
    *		response=200,
    *		description="A list of studies",
@@ -665,15 +656,6 @@ class Api_study extends MY_Api_Model {
    *        ),
    *		description="ID or alias of the study.",
    *		required=true,
-   *	),
-   *	@OA\Parameter(
-   *		name="api_key",
-   *		in="query",
-   *		@OA\Schema(
-   *          type="string"
-   *        ),
-   *		description="Api key to authenticate the user",
-   *		required=false,
    *	),
    *	@OA\Response(
    *		response=200,
