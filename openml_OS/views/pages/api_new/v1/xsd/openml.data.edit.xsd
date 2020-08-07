@@ -14,6 +14,9 @@
     <xs:element name="collection_date" minOccurs="0" type="oml:basic_latin128"/>  <!-- The date the data was originally collected, given by the uploader -->
     <xs:element name="language" minOccurs="0" type="oml:casual_string128"/> <!-- Language in which the data is represented. Starts with 1 upper case letter, rest lower case, e.g. 'English' -->
     <!-- other -->
+    <xs:element name="default_target_attribute" minOccurs="0" type="oml:casual_string1024"/>  <!-- The default target attribute, if it exists. Can also have multiple values (comma-separated). Of course, tasks can be defined that use another attribute as target -->  
+    <xs:element name="row_id_attribute" minOccurs="0" type="oml:casual_string128"/>  <!-- The attribute that represents the row-id column, if present in the dataset. If not set, the tool should create a string rowid from 0 to (n.obs - 1). This is what is then used in the data splits object. If set, it should of course be excluded in modeling -->
+    <xs:element name="ignore_attribute" minOccurs="0" maxOccurs="unbounded" type="oml:casual_string128"/>  <!-- Attributes that should be excluded in modelling, such as identifiers and indexes. -->
     <xs:element name="citation" minOccurs="0" type="oml:basic_latin1024"/> <!-- Reference(s) that should be cited when building on this data -->
     <xs:element name="original_data_url" minOccurs="0" type="xs:anyURI"/> <!-- For derived data, the url to the original dataset. This can be an OpenML dataset, e.g. 'http://openml.org/d/1'. -->
     <xs:element name="paper_url" minOccurs="0" type="xs:anyURI"/> <!-- Link to a paper describing the dataset -->

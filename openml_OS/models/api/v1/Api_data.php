@@ -294,10 +294,26 @@ class Api_data extends MY_Api_Model {
       $this->returnError( 1064, $this->version );
       return;
     }
-    // check if user owns dataset
+
+    // create a copy of the dataset with same file but different ID and different user ID
     if($dataset->uploader != $this->user_id and !$this->user_has_admin_rights) {
-      $this->returnError( 1065, $this->version );
+      $dataset->uploader = $this->user_id;
+      unset($dataset->did); 
+      $data_id = $this->Dataset->insert($dataset);
+
+      if (!$data_id) {
+      $this->returnError(1065, $this->version);
       return;
+    }
+    }
+    // If sensitive fields need to be edited, create a copy with different ID
+    elseif (isset($update_fields['default_target_attribute']) || isset($update_fields['row_id_attribute']) || isset($update_fields['ignore_attribute'])) {
+     unset($dataset->did); 
+     $data_id = $this->Dataset->insert($dataset);
+     if (!$data_id) {
+      $this->returnError(1065, $this->version);
+      return;
+    }
     }
 
     $update_result = $this->Dataset->update($data_id, $update_fields);
@@ -308,7 +324,7 @@ class Api_data extends MY_Api_Model {
     }
 
     // Return data id, for user to verify changes    
-    $this->xmlContents( 'data-edit', $this->version, array( 'dataset' => $dataset ) );
+    $this->xmlContents( 'data-edit', $this->version, array( 'id' => $data_id) );
     }
 
 
