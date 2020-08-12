@@ -79,6 +79,11 @@ class Api_data extends MY_Api_Model {
       return;
     }
 
+    if ( $segments[0] == 'fork' && $request_type == 'post') {
+      $this->data_fork();
+      return;
+    }
+
     if ( $segments[0] == 'edit' && $request_type == 'post') {
       $this->data_edit();
       return;
@@ -236,8 +241,34 @@ class Api_data extends MY_Api_Model {
 
     $this->xmlContents('data', $this->version, array('datasets' => $datasets));
   }
+  
+  private function data_fork() {
+    // get data id
+    $data_id = $this->input->post('data_id');
+    // If data id is not given
+    if( $data_id == false ) {
+      $this->returnError( 1070, $this->version );
+      return;
+    }
+    // If dataset does not exist
+    $dataset = $this->Dataset->getById( $data_id );
+    if( $dataset == false ) {
+      $this->returnError( 1071, $this->version );
+      return;
+    }
+    // create a copy
+    $dataset->uploader = $this->user_id;
+    unset($dataset->did);
+    $data_id = $this->Dataset->insert($dataset);
+    if (!$data_id) {
+      $this->returnError(1072, $this->version);
+      return;
+    }
+    // Return data id, for user to verify changes
+    $this->xmlContents( 'data-fork', $this->version, array( 'id' => $data_id) );
+  }
 
-   private function data_edit() {  
+  private function data_edit() {
     // get data id
     $data_id = $this->input->post('data_id');
     // get edit parameters as xml
@@ -274,14 +305,16 @@ class Api_data extends MY_Api_Model {
     $update_fields = array();
     foreach($xml->children('oml', true) as $input) {
       // iterate over all fields, does not check for legal fields, as it wont match the xsd.  
-        $name = $input->getName() . '';
-        $update_fields[$name] = $input . '';
-      }
+      $name = $input->getName() . '';
+      $update_fields[$name] = $input . '';
+    }
 
     // If data id is not given
     if( $data_id == false ) {
       $this->returnError( 1062, $this->version );
-      return;}
+      return;
+    }
+
     // If dataset does not exist
     $dataset = $this->Dataset->getById( $data_id );
     if( $dataset == false ) {
@@ -295,38 +328,30 @@ class Api_data extends MY_Api_Model {
       return;
     }
 
-    // create a copy of the dataset with same file but different ID and different user ID
-    if($dataset->uploader != $this->user_id and !$this->user_has_admin_rights) {
-      $dataset->uploader = $this->user_id;
-      unset($dataset->did); 
-      $data_id = $this->Dataset->insert($dataset);
-
-      if (!$data_id) {
-      $this->returnError(1065, $this->version);
-      return;
-    }
-    }
-    // If sensitive fields need to be edited, create a copy with different ID
-    elseif (isset($update_fields['default_target_attribute']) || isset($update_fields['row_id_attribute']) || isset($update_fields['ignore_attribute'])) {
-     unset($dataset->did); 
-     $data_id = $this->Dataset->insert($dataset);
-     if (!$data_id) {
-      $this->returnError(1065, $this->version);
-      return;
-    }
+    // If critical fields need to be edited
+    if (isset($update_fields['default_target_attribute']) || isset($update_fields['row_id_attribute']) || isset($update_fields['ignore_attribute'])) {
+      # Only owner can edit critical features
+      if($dataset->uploader != $this->user_id and !$this->user_has_admin_rights) {
+        $this->returnError(1065, $this->version);
+        return;
+      }
+      # Only datasets without tasks can allow critical feature edits
+      $tasks = $this->Task->getTasksWithValue( array( 'source_data' => $dataset->did ) );
+      if( $tasks !== false ) {
+        $this->returnError( 1066, $this->version );
+        return;
+      }
     }
 
     $update_result = $this->Dataset->update($data_id, $update_fields);
     // If result returns error    
     if( $update_result == false ) {
-      $this->returnError( 1066, $this->version );
+      $this->returnError( 1067, $this->version );
       return;
     }
-
     // Return data id, for user to verify changes    
     $this->xmlContents( 'data-edit', $this->version, array( 'id' => $data_id) );
-    }
-
+  }
 
   private function data($data_id) {
     if( $data_id == false ) {
