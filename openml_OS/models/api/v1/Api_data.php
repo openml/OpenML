@@ -258,6 +258,7 @@ class Api_data extends MY_Api_Model {
     }
     // create a copy
     $dataset->uploader = $this->user_id;
+    $dataset->version = $dataset->version + 1;
     unset($dataset->did);
     $data_id = $this->Dataset->insert($dataset);
     if (!$data_id) {
