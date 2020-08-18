@@ -3,6 +3,9 @@ class Api_task extends MY_Api_Model {
 
   protected $version = 'v1';
 
+  const ENTITY_TYPE = "task";
+  const ENTITY_SPECIAL_NAME = "task";
+
   function __construct() {
     parent::__construct();
     
@@ -130,7 +133,7 @@ class Api_task extends MY_Api_Model {
    *)
    */
   private function task_tag($task_id, $tag) {
-    $this->task_tag_untag($task_id, $tag, false);
+    $this->entity_tag_untag(self::ENTITY_TYPE, $task_id, $tag, false, self::ENTITY_SPECIAL_NAME);
   }
 
   /**
@@ -192,11 +195,7 @@ class Api_task extends MY_Api_Model {
    *)
    */
   private function task_untag($task_id, $tag) {
-    $this->task_untag($task_id, $tag, true);
-  }
-
-  private function task_tag_untag($task_id, $tag, $do_untag) {
-    $this->entity_tag_untag('task', $task_id, $tag, $do_untag, 'task');
+    $this->entity_tag_untag(self::ENTITY_TYPE, $task_id, $tag, true, self::ENTITY_SPECIAL_NAME);
   }
 
   /**

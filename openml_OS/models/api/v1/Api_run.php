@@ -3,6 +3,9 @@
 
 class Api_run extends MY_Api_Model {
 
+  const ENTITY_TYPE = "run";
+  const ENTITY_SPECIAL_NAME = "run";
+
   protected $version = 'v1';
 
   function __construct() {
@@ -162,7 +165,7 @@ class Api_run extends MY_Api_Model {
    *)
    */
   private function run_tag($run_id, $tag) {
-    $this->run_tag_untag($run_id, $tag, false);
+    $this->entity_tag_untag(self::ENTITY_TYPE, $run_id, $tag, false, self::ENTITY_SPECIAL_NAME);
   }
 
   /**
@@ -224,11 +227,7 @@ class Api_run extends MY_Api_Model {
    *)
    */
   private function run_untag($run_id, $tag) {
-    $this->run_tag_untag($run_id, $tag, true);
-  }
-
-  private function run_tag_untag($run_id, $tag, $do_untag) {
-    $this->entity_tag_untag('run',$run_id, $tag, $do_untag, 'run');
+    $this->entity_tag_untag(self::ENTITY_TYPE, $run_id, $tag, true, self::ENTITY_SPECIAL_NAME);
   }
 
   /**
