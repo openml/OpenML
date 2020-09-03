@@ -482,7 +482,7 @@ class Api_data extends MY_Api_Model {
     }
     // create a copy
     $dataset->uploader = $this->user_id;   
-    $latest_version = $this->Dataset-> getWhereSingle('`name` = "' . $dataset->name . '"', 'version DESC');
+    $latest_version = $this->Dataset-> getWhereSingle('`name` = "' . $dataset->name . '"', 'CAST(`version` AS DECIMAL) DESC');
     $dataset->version = $latest_version->version + 1;
     unset($dataset->did);
     $data_id = $this->Dataset->insert($dataset);
