@@ -48,7 +48,7 @@
               <div class="row-content">
                   <h4 class="list-group-item-heading"><div id="colorchange"><span>H</span><span>A</span><span>C</span><span>K</span><span>A</span><span>T</span><span>H</span><span>O</span><span>N</span></div></h4>
                   <p class="list-group-item-text">Bring your own data, bring your own algorithms, or build cool new features.</p>
-                  <p class="list-group-item-text"><a href="https://meet.openml.org" target="_blank">Next workshop: March 2020, Munich, Germany</a></p>
+                  <p class="list-group-item-text"><a href="https://new.openml.org/meet#upcoming" target="_blank">Next workshop: 26-30 October 2020, Virtual</a></p>
               </div>
           </div>
         </div>
