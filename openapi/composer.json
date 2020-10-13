@@ -1,0 +1,14 @@
+{
+	"description": "OpenML OpenAPI Specification",
+	"name": "openml/openapi",
+	"type": "project",
+	"homepage": "https://openml.org",
+	"license": "",
+	"support": {
+		"source": "https://github.com/openml/OpenML"
+	},
+	"require": {
+		"php": ">=5.2.4",
+		"zircote/swagger-php": "^3.0"
+	}
+}

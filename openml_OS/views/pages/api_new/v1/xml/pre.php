@@ -509,4 +509,21 @@ $this->apiErrors[1052] = 'Could not find study';
 $this->apiErrors[1053] = 'Study not owned by you';
 $this->apiErrors[1054] = 'Problem inserting in database';
 
+
+//openml.data.edit
+$this->apiErrors[1060] = 'Problem validating edit_parameters xml';
+$this->apiErrors[1061] = 'Please provide edit_parameters xml';
+$this->apiErrors[1062] = 'Data ID is required';
+$this->apiErrors[1063] = 'Unknown dataset';
+$this->apiErrors[1064] = 'Please provide atleast one field among description, creator, contributor, collection_date, language, citation, original_data_url, default_target_attribute, row_id_attribute, ignore_attribute or paper_url to edit. ';
+$this->apiErrors[1065] = 'Critical features default_target_attribute, row_id_attribute and ignore_attribute can be edited only by the owner. Fork the dataset if changes are required.';
+$this->apiErrors[1066] = 'Critical features default_target_attribute, row_id_attribute and ignore_attribute can only be edited for datasets without any tasks.';
+$this->apiErrors[1067] = 'Dataset update failed';
+
+
+//openml.data.edit
+$this->apiErrors[1070] = 'Data ID is required';
+$this->apiErrors[1071] = 'Unknown dataset';
+$this->apiErrors[1072] = 'Failed to insert record in database';
+
 ?>

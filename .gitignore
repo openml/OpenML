@@ -3,3 +3,5 @@ data/*
 openml_OS/config/BASE_CONFIG.php
 openml_OS/third_party/OpenML/Java/old-evaluate.jar
 docs/site/
+openml_OS/vendor/
+openapi/vendor/

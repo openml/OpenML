@@ -41,12 +41,12 @@ class Api_setup extends MY_Api_Model {
     }
 
     if (count($segments) == 1 && $segments[0] == 'tag' && $request_type == 'post') {
-      $this->entity_tag_untag('algorithm_setup', $this->input->post('setup_id'), $this->input->post('tag'), false, 'setup');
+      $this->setup_tag( $this->input->post('setup_id'), $this->input->post('tag'));
       return;
     }
 
     if (count($segments) == 1 && $segments[0] == 'untag' && $request_type == 'post') {
-      $this->entity_tag_untag('algorithm_setup', $this->input->post('setup_id'), $this->input->post('tag'), true, 'setup');
+      $this->setup_untag($this->input->post('setup_id'), $this->input->post('tag'));
       return;
     }
     
@@ -84,6 +84,196 @@ class Api_setup extends MY_Api_Model {
     $this->returnError( 100, $this->version );
   }
 
+  /**
+   *@OA\Post(
+   *	path="/setup/tag",
+   *	tags={"setup"},
+   *	summary="Tag a setup",
+   *	description="Tags a setup.",
+   *	@OA\Parameter(
+   *		name="setup_id",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="integer"
+   *        ),
+   *		description="Id of the setup.",
+   *		required=true,
+   *	),
+   *	@OA\Parameter(
+   *		name="tag",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
+   *		description="Tag name",
+   *		required=true,
+   *	),
+   *	@OA\Parameter(
+   *		name="api_key",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
+   *		description="Api key to authenticate the user",
+   *		required=true,
+   *	),
+   *	@OA\Response(
+   *		response=200,
+   *		description="The id of the tagged setup",
+   *		@OA\JsonContent(
+   *			type="object",
+   *			@OA\Property(
+   *				property="flow_tag",
+   *				ref="#/components/schemas/inline_response_200_15_flow_tag",
+   *			),
+   *			example={
+   *			  "setup_tag": {
+   *			    "id": "2"
+   *			  }
+   *			}
+   *		),
+   *	),
+   *	@OA\Response(
+   *		response=412,
+   *		description="Precondition failed. An error code and message are returned.\n470 - In order to add a tag, please upload the entity id (either data_id, flow_id, run_id) and tag (the name of the tag).\n471 - Entity not found. The provided entity_id {data_id, flow_id, run_id} does not correspond to an existing entity.\n472 - Entity already tagged by this tag. The entity {dataset, flow, run} already had this tag.\n473 - Something went wrong inserting the tag. Please contact OpenML Team.\n474 - Internal error tagging the entity. Please contact OpenML Team.\n",
+   *		@OA\JsonContent(
+   *			ref="#/components/schemas/Error",
+   *		),
+   *	),
+   *)
+   */
+  private function setup_tag($setup_id, $tag) {
+    $this->setup_tag_untag($setup_id, $tag, false);
+  }
+
+  /**
+   *@OA\Post(
+   *	path="/setup/untag",
+   *	tags={"setup"},
+   *	summary="Untag a setup",
+   *	description="Untags a setup.",
+   *	@OA\Parameter(
+   *		name="setup_id",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="integer"
+   *        ),
+   *		description="Id of the setup.",
+   *		required=true,
+   *	),
+   *	@OA\Parameter(
+   *		name="tag",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
+   *		description="Tag name",
+   *		required=true,
+   *	),
+   *	@OA\Parameter(
+   *		name="api_key",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
+   *		description="Api key to authenticate the user",
+   *		required=true,
+   *	),
+   *	@OA\Response(
+   *		response=200,
+   *		description="The id of the untagged setup",
+   *		@OA\JsonContent(
+   *			type="object",
+   *			@OA\Property(
+   *				property="flow_untag",
+   *				ref="#/components/schemas/inline_response_200_16_flow_untag",
+   *			),
+   *			example={
+   *			  "setup_untag": {
+   *			    "id": "2"
+   *			  }
+   *			}
+   *		),
+   *	),
+   *	@OA\Response(
+   *		response=412,
+   *		description="Precondition failed. An error code and message are returned.\n475 - Please give entity_id {data_id, flow_id, run_id} and tag. In order to remove a tag, please upload the entity id (either data_id, flow_id, run_id) and tag (the name of the tag).\n476 - Entity {dataset, flow, run} not found. The provided entity_id {data_id, flow_id, run_id} does not correspond to an existing entity.\n477 - Tag not found. The provided tag is not associated with the entity {dataset, flow, run}.\n478 - Tag is not owned by you. The entity {dataset, flow, run} was tagged\nby another user. Hence you cannot delete it.\n479 - Internal error removing the tag. Please contact OpenML Team.\n",
+   *		@OA\JsonContent(
+   *			ref="#/components/schemas/Error",
+   *		),
+   *	),
+   *)
+   */
+  private function setup_untag($setup_id, $tag) {
+    $this->setup_tag_untag($setup_id, $tag, true);
+  }
+
+  private function setup_tag_untag($setup_id, $tag, $do_untag) {
+    $this->entity_tag_untag('algorithm_setup', $setup_id, $tag, $do_untag, 'setup');
+  }
+
+  /**
+   *@OA\Get(
+   *	path="/setup/{id}",
+   *	tags={"setup"},
+   *	summary="Get a hyperparameter setup",
+   *	description="Returns information about a setup. The information includes the list of hyperparameters, with name, value, and default value.",
+   *	@OA\Parameter(
+   *		name="id",
+   *		in="path",
+   *		@OA\Schema(
+   *          type="integer"
+   *        ),
+   *		description="ID of the hyperparameter setup (configuration). These IDs are stated in run descriptions.",
+   *		required=true,
+   *	),
+   *	@OA\Response(
+   *		response=200,
+   *		description="A setup description",
+   *		@OA\JsonContent(
+   *			ref="#/components/schemas/Setup",
+   *			example={
+   *			  "setup_parameters":{
+   *			    "flow_id":"59",
+   *			    "parameter":{
+   *			      {
+   *			        "full_name":"weka.JRip(1)_F",
+   *			        "parameter_name":"F",
+   *			        "data_type":"option",
+   *			        "default_value":"3",
+   *			        "value":"3"
+   *			      },{
+   *			        "full_name":"weka.JRip(1)_N",
+   *			        "parameter_name":"N",
+   *			        "data_type":"option",
+   *			        "default_value":"2.0",
+   *			        "value":"2.0"
+   *			      },{
+   *			        "full_name":"weka.JRip(1)_O",
+   *			        "parameter_name":"O",
+   *			        "data_type":"option",
+   *			        "default_value":"2",
+   *			        "value":"2"
+   *			      },{
+   *			        "full_name":"weka.JRip(1)_S",
+   *			        "parameter_name":"S",
+   *			        "data_type":"option",
+   *			        "default_value":"1",
+   *			        "value":"1"
+   *			      }}
+   *			  }
+   *			}
+   *		),
+   *	),
+   *	@OA\Response(
+   *		response=412,
+   *		description="Precondition failed. An error code and message are returned.\n280 - Please provide setup ID. In order to view setup details, please provide the run ID\n281 - Setup not found. The setup ID was invalid, or setup does not exist (anymore).\n",
+   *		@OA\JsonContent(
+   *			ref="#/components/schemas/Error",
+   *		),
+   *	),
+   *)
+   */
   private function setup($setup_id) {
     if($setup_id == false) {
       $this->returnError(280, $this->version);
@@ -105,7 +295,75 @@ class Api_setup extends MY_Api_Model {
       $this->xmlContents('setup-parameters', $this->version, array('parameters' => $this->parameters, 'setup' => $setup));
     }
   }
-  
+
+  /**
+   *@OA\Get(
+   *	path="/setup/list/{filters}",
+   *	tags={"setup"},
+   *	summary="List and filter setups",
+   *	description="List setups, filtered by a range of properties. Any number of properties can be combined by listing them one after the other in the form '/setup/list/{filter}/{value}/{filter}/{value}/...' Returns an array with all evaluations that match the constraints. A maximum of 1,000 results are returned at a time, an error is returned if the result set is bigger. Use pagination (via limit and offset filters), or limit the results to certain flows, setups, or tags.",
+   *	@OA\Parameter(
+   *		name="filters",
+   *		in="path",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
+   *		description="Any combination of these filters
+  /tag/{tag} - returns only setups tagged with the given tag.
+  /flow/{ids} - return only setups for specific flows, specified as a comma-separated list of flow IDs, e.g. ''1,2,3''
+  /setup/{ids} - return only specific setups, specified as a comma-separated list of setup IDs, e.g. ''1,2,3''
+  /limit/{limit}/offset/{offset} - returns only {limit} results starting from result number {offset}. Useful for paginating results. With /limit/5/offset/10, results 11..15 will be returned. Both limit and offset need to be specified.
+  ",
+   *		required=true,
+   *	),
+   *	@OA\Response(
+   *		response=200,
+   *		description="A list of setup descriptions",
+   *		@OA\JsonContent(
+   *			ref="#/components/schemas/SetupList",
+   *			example={
+   *			  "setups": {
+   *			    "setup": {
+   *			      {
+   *			        "setup_id":"10",
+   *			        "flow_id":"65",
+   *			        "parameter": {
+   *			          {
+   *			            "id":"4144",
+   *			            "flow_id":"65",
+   *			            "flow_name":"weka.RandomForest",
+   *			            "full_name":"weka.RandomForest(1)_I",
+   *			            "parameter_name":"I",
+   *			            "data_type":"option",
+   *			            "default_value":"10",
+   *			            "value":"10"
+   *			          },
+   *			          {
+   *			            "id":"4145",
+   *			            "flow_id":"65",
+   *			            "flow_name":"weka.RandomForest",
+   *			            "full_name":"weka.RandomForest(1)_K",
+   *			            "parameter_name":"K",
+   *			            "data_type":"option",
+   *			            "default_value":"0",
+   *			            "value":"0"
+   *			          }
+   *			        }
+   *			      }
+   *			    }
+   *			  }
+   *			}
+   *		),
+   *	),
+   *	@OA\Response(
+   *		response=412,
+   *		description="Precondition failed. An error code and message are returned.\n670 - Please specify at least one filter.\n671 - Illegal filter.\n672 - Illegal filter input.\n673 - Result set too big. Please use one of the filters or the limit option.\n674 - No results, please check the filter.\n675 - Cannot specify offset without limit.\n676 - Requested result limit too high.\n",
+   *		@OA\JsonContent(
+   *			ref="#/components/schemas/Error",
+   *		),
+   *	),
+   *)
+   */
   function setup_list($segs) { 
     $result_limit = 1000;
     $legal_filters = array('flow', 'setup', 'limit', 'offset', 'tag');
@@ -280,6 +538,55 @@ class Api_setup extends MY_Api_Model {
     }
   }
 
+  /**
+   *@OA\Delete(
+   *	path="/setup/{id}",
+   *	tags={"setup"},
+   *	summary="Delete setup",
+   *	description="Deletes a setup. Upon success, it returns the ID of the deleted setup.",
+   *	@OA\Parameter(
+   *		name="id",
+   *		in="path",
+   *		@OA\Schema(
+   *          type="integer"
+   *        ),
+   *		description="Id of the setup.",
+   *		required=true,
+   *	),
+   *	@OA\Parameter(
+   *		name="api_key",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
+   *		description="Api key to authenticate the user",
+   *		required=true,
+   *	),
+   *	@OA\Response(
+   *		response=200,
+   *		description="ID of the deleted setup",
+   *		@OA\JsonContent(
+   *			type="object",
+   *			@OA\Property(
+   *				property="study_delete",
+   *				ref="#/components/schemas/inline_response_200_14_study_delete",
+   *			),
+   *			example={
+   *			  "setup_delete": {
+   *			    "id": "1"
+   *			  }
+   *			}
+   *		),
+   *	),
+   *	@OA\Response(
+   *		response=412,
+   *		description="Precondition failed. An error code and message are returned.\n401 - Authentication failed. Please provide API key. In order to remove your content, please authenticate.\n402 - Setup does not exists. The setup ID could not be linked to an existing setup.\n404 - Setup deletion failed. Setup is in use by other content (runs, schedules, etc). Can not be deleted.\n405 - Setup deletion failed. Please try again later.\n",
+   *		@OA\JsonContent(
+   *			ref="#/components/schemas/Error",
+   *		),
+   *	),
+   *)
+   */
   private function setup_delete($setup_id) {
 
     $setup = $this->Algorithm_setup->getById( $setup_id );

@@ -19,7 +19,7 @@
     <p>OpenML is an open source project on GitHub. To get help quickly, please <a href='https://docs.openml.org/developers/'>post issues in our GitHub issue trackers</a></p>.
 
     <h2 id="team-core">Core Team</h2>
-    <p>OpenML wouldn't exist without these people who put their heart and sole into making machine learning easier for all</p>
+    <p>OpenML wouldn't exist without these people who put their heart and soul into making machine learning easier for all</p>
 
     <?php
      if( $this->coreteam != false ) {

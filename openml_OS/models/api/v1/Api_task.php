@@ -3,6 +3,9 @@ class Api_task extends MY_Api_Model {
 
   protected $version = 'v1';
 
+  const ENTITY_TYPE = "task";
+  const ENTITY_SPECIAL_NAME = "task";
+
   function __construct() {
     parent::__construct();
     
@@ -54,12 +57,12 @@ class Api_task extends MY_Api_Model {
     }
 
     if (count($segments) == 1 && $segments[0] == 'tag' && $request_type == 'post') {
-      $this->entity_tag_untag('task', $this->input->post('task_id'), $this->input->post('tag'), false, 'task');
+      $this->task_tag($this->input->post('task_id'), $this->input->post('tag'));
       return;
     }
 
     if (count($segments) == 1 && $segments[0] == 'untag' && $request_type == 'post') {
-      $this->entity_tag_untag('task', $this->input->post('task_id'), $this->input->post('tag'), true, 'task');
+      $this->task_untag($this->input->post('task_id'), $this->input->post('tag'));
       return;
     }
     
@@ -71,7 +74,253 @@ class Api_task extends MY_Api_Model {
     $this->returnError(100, $this->version);
   }
 
+  /**
+   *@OA\Post(
+   *	path="/task/tag",
+   *	tags={"task"},
+   *	summary="Tag a task",
+   *	description="Tags a task.",
+   *	@OA\Parameter(
+   *		name="task_id",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="integer"
+   *        ),
+   *		description="Id of the task.",
+   *		required=true,
+   *	),
+   *	@OA\Parameter(
+   *		name="tag",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
+   *		description="Tag name",
+   *		required=true,
+   *	),
+   *	@OA\Parameter(
+   *		name="api_key",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
+   *		description="Api key to authenticate the user",
+   *		required=true,
+   *	),
+   *	@OA\Response(
+   *		response=200,
+   *		description="The id of the tagged task",
+   *		@OA\JsonContent(
+   *			type="object",
+   *			@OA\Property(
+   *				property="task_tag",
+   *				ref="#/components/schemas/inline_response_200_6_task_tag",
+   *			),
+   *			example={
+   *			  "task_tag": {
+   *			    "id": "2"
+   *			  }
+   *			}
+   *		),
+   *	),
+   *	@OA\Response(
+   *		response=412,
+   *		description="Precondition failed. An error code and message are returned.\n470 - In order to add a tag, please upload the entity id (either data_id, task_id, flow_id, run_id) and tag (the name of the tag).\n471 - Entity not found. The provided entity_id {data_id, task_id, flow_id, run_id} does not correspond to an existing entity.\n472 - Entity already tagged by this tag. The entity {dataset, task, flow, run} already had this tag.\n473 - Something went wrong inserting the tag. Please contact OpenML Team.\n474 - Internal error tagging the entity. Please contact OpenML Team.\n",
+   *		@OA\JsonContent(
+   *			ref="#/components/schemas/Error",
+   *		),
+   *	),
+   *)
+   */
+  private function task_tag($task_id, $tag) {
+    $this->entity_tag_untag(self::ENTITY_TYPE, $task_id, $tag, false, self::ENTITY_SPECIAL_NAME);
+  }
 
+  /**
+   *@OA\Post(
+   *	path="/task/untag",
+   *	tags={"task"},
+   *	summary="Untag a task",
+   *	description="Untags a task.",
+   *	@OA\Parameter(
+   *		name="task_id",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="integer"
+   *        ),
+   *		description="Id of the task.",
+   *		required=true,
+   *	),
+   *	@OA\Parameter(
+   *		name="tag",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
+   *		description="Tag name",
+   *		required=true,
+   *	),
+   *	@OA\Parameter(
+   *		name="api_key",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
+   *		description="Api key to authenticate the user",
+   *		required=true,
+   *	),
+   *	@OA\Response(
+   *		response=200,
+   *		description="A the features of the task",
+   *		@OA\JsonContent(
+   *			type="object",
+   *			@OA\Property(
+   *				property="task_untag",
+   *				ref="#/components/schemas/inline_response_200_7_task_untag",
+   *			),
+   *			example={
+   *			  "task_untag": {
+   *			    "id": "2"
+   *			  }
+   *			}
+   *		),
+   *	),
+   *	@OA\Response(
+   *		response=412,
+   *		description="Precondition failed. An error code and message are returned.\n475 - Please give entity_id {data_id, flow_id, run_id} and tag. In order to remove a tag, please upload the entity id (either data_id, task_id, flow_id, run_id) and tag (the name of the tag).\n476 - Entity {dataset, task, flow, run} not found. The provided entity_id {data_id, task_id, flow_id, run_id} does not correspond to an existing entity.\n477 - Tag not found. The provided tag is not associated with the entity {dataset, task, flow, run}.\n478 - Tag is not owned by you. The entity {dataset, flow, run} was tagged by another user. Hence you cannot delete it.\n479 - Internal error removing the tag. Please contact OpenML Team.\n",
+   *		@OA\JsonContent(
+   *			ref="#/components/schemas/Error",
+   *		),
+   *	),
+   *)
+   */
+  private function task_untag($task_id, $tag) {
+    $this->entity_tag_untag(self::ENTITY_TYPE, $task_id, $tag, true, self::ENTITY_SPECIAL_NAME);
+  }
+
+  /**
+   *@OA\Get(
+   *	path="/task/list/{filters}",
+   *	tags={"task"},
+   *	summary="List and filter tasks",
+   *	description="List tasks, possibly filtered by a range of properties from the task itself or from the underlying dataset. Any number of properties can be combined by listing them one after the other in the form '/task/list/{filter}/{value}/{filter}/{value}/...' Returns an array with all tasks that match the constraints.",
+   *	@OA\Parameter(
+   *		name="filters",
+   *		in="path",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
+   *		description="Any combination of these filters
+  /limit/{limit}/offset/{offset} - returns only {limit} results starting from result number {offset}. Useful for paginating results. With /limit/5/offset/10, tasks 11..15 will be returned. Both limit and offset need to be specified.
+  /status/{status} - returns only tasks with a given status, either 'active', 'deactivated', or 'in_preparation'.
+  /type/{type_id} - returns only tasks with a given task type id. See the list of task types of the ID's (e.g. 1 = Supervised Classification).
+  /tag/{tag} - returns only tasks tagged with the given tag.
+  /data_tag/{tag} - returns only tasks for which the underlying dataset is tagged with the given tag.
+  /{data_quality}/{range} - returns only tasks for which the underlying datasets have certain qualities. {data_quality} can be data_id, data_name, number_instances, number_features, number_classes, number_missing_values. {range} can be a specific value or a range in the form 'low..high'. Multiple qualities can be combined, as in 'number_instances/0..50/number_features/0..10'.
+  ",
+   *		required=true,
+   *	),
+   *	@OA\Response(
+   *		response=200,
+   *		description="A list of tasks with the given tag",
+   *		@OA\JsonContent(
+   *			ref="#/components/schemas/TaskList",
+   *			example={
+   *			  "task": {
+   *			    "task": {
+   *			      {
+   *			        "task_id":"1",
+   *			        "task_type":"Supervised Classification",
+   *			        "did":"1",
+   *			        "name":"anneal",
+   *			        "status":"active",
+   *			        "format":"ARFF",
+   *			        "input":{
+   *			          {
+   *			            "name":"estimation_procedure",
+   *			            "value":"1"
+   *			          },
+   *			          {
+   *			            "name":"evaluation_measures",
+   *			            "value":"predictive_accuracy"
+   *			          },
+   *			          {
+   *			            "name":"source_data",
+   *			            "value":"1"
+   *			          },
+   *			          {
+   *			            "name":"target_feature",
+   *			            "value":"class"
+   *			          }
+   *			          },
+   *			        "quality":{
+   *			          {
+   *			            "name":"MajorityClassSize",
+   *			            "value":"684"
+   *			          },
+   *			          {
+   *			            "name":"MaxNominalAttDistinctValues",
+   *			            "value":"10.0"
+   *			          },
+   *			          {
+   *			            "name":"MinorityClassSize",
+   *			            "value":"0"
+   *			          },
+   *			          {
+   *			            "name":"NumBinaryAtts",
+   *			            "value":"14.0"
+   *			          },
+   *			          {
+   *			            "name":"NumberOfClasses",
+   *			            "value":"6"
+   *			          },
+   *			          {
+   *			            "name":"NumberOfFeatures",
+   *			            "value":"39"
+   *			          },
+   *			          {
+   *			            "name":"NumberOfInstances",
+   *			            "value":"898"
+   *			          },
+   *			          {
+   *			            "name":"NumberOfInstancesWithMissingValues",
+   *			            "value":"0"
+   *			          },
+   *			          {
+   *			            "name":"NumberOfMissingValues",
+   *			            "value":"0"
+   *			          },
+   *			          {
+   *			            "name":"NumberOfNumericFeatures",
+   *			            "value":"6"
+   *			          },
+   *			          {
+   *			            "name":"NumberOfSymbolicFeatures",
+   *			            "value":"32"
+   *			          }
+   *			          },
+   *			        "tag":{
+   *			          "basic",
+   *			          "study_1",
+   *			          "study_7",
+   *			          "under100k",
+   *			          "under1m"
+   *			        }
+   *			      }
+   *			    }
+   *			  }
+   *			}
+   *		),
+   *	),
+   *	@OA\Response(
+   *		response=412,
+   *		description="Precondition failed. An error code and message are returned.\n480 - Illegal filter specified.\n481 - Filter values/ranges not properly specified.\n482 - No results. There where no matches for the given constraints.\n483 - Can not specify an offset without a limit.\n",
+   *		@OA\JsonContent(
+   *			ref="#/components/schemas/Error",
+   *		),
+   *	),
+   *)
+   */
   private function task_list($segs, $user_id) {
     $legal_filters = array('type', 'tag', 'data_tag', 'status', 'limit', 'offset', 'task_id', 'data_id', 'data_name', 'number_instances', 'number_features', 'number_classes', 'number_missing_values');
     
@@ -149,7 +398,116 @@ class Api_task extends MY_Api_Model {
     $this->xmlContents( 'tasks', $this->version, array( 'tasks' => $tasks_res ) );
   }
 
-
+  /**
+   *@OA\Get(
+   *	path="/task/{id}",
+   *	tags={"task"},
+   *	summary="Get task description",
+   *	description="Returns information about a task. The information includes the task type, input data, train/test sets, and more.",
+   *	@OA\Parameter(
+   *		name="id",
+   *		in="path",
+   *		@OA\Schema(
+   *          type="integer"
+   *        ),
+   *		description="ID of the task.",
+   *		required=true,
+   *	),
+   *	@OA\Response(
+   *		response=200,
+   *		description="A task description",
+   *		@OA\JsonContent(
+   *			ref="#/components/schemas/Task",
+   *			example={
+   *			  "task": {
+   *			    "task_id":"1",
+   *			    "task_type":"Supervised Classification",
+   *			    "input":{
+   *			      {
+   *			        "name":"source_data",
+   *			        "data_set":{
+   *			          "data_set_id":"1",
+   *			          "target_feature":"class"
+   *			        }
+   *			      },
+   *			      {
+   *			        "name":"estimation_procedure",
+   *			        "estimation_procedure":{
+   *			          "type":"crossvalidation",
+   *			          "data_splits_url":"https://www.openml.org/api_splits/get/1/Task_1_splits.arff",
+   *			          "parameter":{
+   *			            {
+   *			              "name":"number_repeats",
+   *			              "value":"1"
+   *			            },
+   *			            {
+   *			              "name":"number_folds",
+   *			              "value":"10"
+   *			            },
+   *			            {
+   *			              "name":"percentage"
+   *			            },
+   *			            {
+   *			              "name":"stratified_sampling",
+   *			              "value":"true"
+   *			            }
+   *			          }
+   *			        }
+   *			      },
+   *			      {
+   *			        "name":"cost_matrix",
+   *			        "cost_matrix":{}
+   *			      },
+   *			      {
+   *			        "name":"evaluation_measures",
+   *			        "evaluation_measures":
+   *			          {
+   *			            "evaluation_measure":"predictive_accuracy"
+   *			          }
+   *			      }
+   *			    },
+   *			    "output":{
+   *			      "name":"predictions",
+   *			      "predictions":{
+   *			        "format":"ARFF",
+   *			        "feature":{
+   *			          {
+   *			            "name":"repeat",
+   *			            "type":"integer"
+   *			          },
+   *			          {
+   *			            "name":"fold",
+   *			            "type":"integer"
+   *			          },
+   *			          {
+   *			            "name":"row_id",
+   *			            "type":"integer"
+   *			          },
+   *			          {
+   *			            "name":"confidence.classname",
+   *			            "type":"numeric"
+   *			          },
+   *			          {
+   *			            "name":"prediction",
+   *			            "type":"string"
+   *			          }
+   *			        }
+   *			      }
+   *			    },
+   *			    "tag":{"basic","study_1","under100k","under1m"}
+   *			  }
+   *			}
+   *		),
+   *	),
+   *	@OA\Response(
+   *		response=412,
+   *		description="Precondition failed. An error code and message are returned.\n150 - Please provide task_id.\n151 - Unknown task. The task with the given id was not found in the database\n",
+   *		@OA\JsonContent(
+   *			ref="#/components/schemas/Error",
+   *		),
+   *	),
+   *)
+   */
   private function task($task_id) {
     $task = $this->Task->getById($task_id);
     if($task === false) {
@@ -197,6 +555,55 @@ class Api_task extends MY_Api_Model {
     $this->xmlContents('task-inputs', $this->version, array('task' => $task, 'inputs' => $inputs));
   }
 
+  /**
+   *@OA\Delete(
+   *	path="/task/{id}",
+   *	tags={"task"},
+   *	summary="Delete task",
+   *	description="Deletes a task. Upon success, it returns the ID of the deleted task.",
+   *	@OA\Parameter(
+   *		name="id",
+   *		in="path",
+   *		@OA\Schema(
+   *          type="integer"
+   *        ),
+   *		description="Id of the task.",
+   *		required=true,
+   *	),
+   *	@OA\Parameter(
+   *		name="api_key",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
+   *		description="Api key to authenticate the user",
+   *		required=true,
+   *	),
+   *	@OA\Response(
+   *		response=200,
+   *		description="ID of the deleted task",
+   *		@OA\JsonContent(
+   *			type="object",
+   *			@OA\Property(
+   *				property="task_delete",
+   *				ref="#/components/schemas/inline_response_200_4_task_delete",
+   *			),
+   *			example={
+   *			  "task_delete": {
+   *			    "id": "4328"
+   *			  }
+   *			}
+   *		),
+   *	),
+   *	@OA\Response(
+   *		response=412,
+   *		description="Precondition failed. An error code and message are returned.\n450 - Please provide API key. In order to remove your content, please authenticate.\n451 - Authentication failed. The API key was not valid. Please try to login again, or contact api administrators.\n452 - Task does not exists. The task ID could not be linked to an existing task.\n454 - Task is executed in some runs. Delete these first.\n455 - Deleting the task failed. Please contact support team.\n",
+   *		@OA\JsonContent(
+   *			ref="#/components/schemas/Error",
+   *		),
+   *	),
+   *)
+   */
   private function task_delete($task_id) {
 
     $task = $this->Task->getById($task_id);
@@ -243,6 +650,55 @@ class Api_task extends MY_Api_Model {
     $this->xmlContents( 'task-delete', $this->version, array( 'task' => $task ) );
   }
 
+  /**
+   *@OA\Post(
+   *	path="/task",
+   *	tags={"task"},
+   *	summary="Upload task",
+   *	description="Uploads a task. Upon success, it returns the task id.",
+   *	@OA\Parameter(
+   *		name="description",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="file"
+   *        ),
+   *		description="An XML file describing the task. Only name, description, and task format are required. Also see the [XSD schema](https://www.openml.org/api/v1/xsd/openml.task.upload) and an [XML example](https://www.openml.org/api/v1/xml_example/task).",
+   *		required=true,
+   *	),
+   *	@OA\Parameter(
+   *		name="api_key",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
+   *		description="Api key to authenticate the user",
+   *		required=true,
+   *	),
+   *	@OA\Response(
+   *		response=200,
+   *		description="Id of the uploaded task",
+   *		@OA\JsonContent(
+   *			type="object",
+   *			@OA\Property(
+   *				property="upload_task",
+   *				ref="#/components/schemas/inline_response_200_5_upload_task",
+   *			),
+   *			example={
+   *			  "upload_task": {
+   *			    "id": "4328"
+   *			  }
+   *			}
+   *		),
+   *	),
+   *	@OA\Response(
+   *		response=412,
+   *		description="Precondition failed. An error code and message are returned.\n530 - Description file not present. Please upload the task description.\n531 - Internal error. Please contact api support team\n532 - Problem validating uploaded description file. The XML description format does not meet the standards\n533 - Task already exists.\n534 - Error creating the task.\n",
+   *		@OA\JsonContent(
+   *			ref="#/components/schemas/Error",
+   *		),
+   *	),
+   *)
+   */
   public function task_upload() {
 
     $description = isset( $_FILES['description'] ) ? $_FILES['description'] : false;
