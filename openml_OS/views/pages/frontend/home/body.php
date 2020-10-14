@@ -39,6 +39,8 @@
                   <p class="list-group-item-text"><a href="https://competitions.codalab.org/competitions/26638">Read the details and participate</a>, and <a href="https://sites.google.com/chalearn.org/metalearning/">an associated workshop at AAAI </a> with high-level keynote speakers</p>
               </div>
           </div>
+        </div>
+        <div class="item">
           <div class="list-group-item">
               <div class="row-picture">
                   <img class="circle" src="http://icons.iconarchive.com/icons/cornmanthe3rd/plex/512/Other-python-icon.png" alt="icon">
