@@ -490,6 +490,15 @@ class Api_data extends MY_Api_Model {
       $this->returnError(1072, $this->version);
       return;
     }
+
+    // update elastic search index.  
+    try {
+      $this->elasticsearch->index('data', $data_id);
+    } catch (Exception $e) {
+      $this->returnError(105, $this->version, $this->openmlGeneralErrorCode, $e->getMessage());
+      return;
+    }
+
     // Return data id, for user to verify changes
     $this->xmlContents( 'data-fork', $this->version, array( 'id' => $data_id) );
   }
@@ -575,6 +584,14 @@ class Api_data extends MY_Api_Model {
       $this->returnError( 1067, $this->version );
       return;
     }
+    
+    // update elastic search index.  
+    try {
+      $this->elasticsearch->index('data', $data_id);
+    } catch (Exception $e) {
+      $this->returnError(105, $this->version, $this->openmlGeneralErrorCode, $e->getMessage());
+    }
+
     // Return data id, for user to verify changes    
     $this->xmlContents( 'data-edit', $this->version, array( 'id' => $data_id) );
   }
