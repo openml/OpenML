@@ -31,14 +31,16 @@
       <div class="carousel-inner list-group" role="listbox">
         <div class="item active">
           <div class="list-group-item">
-              <div class="row-picture">
-                  <img class="circle" src="https://i0.wp.com/syncedreview.com/wp-content/uploads/2020/06/Imagenet.jpg?fit=1400%2C600&ssl=1" alt="icon">
-              </div>
-              <div class="row-content">
-                  <h4 class="list-group-item-heading">Challenge on Metalearning released</h4>
-                  <p class="list-group-item-text"><a href="https://competitions.codalab.org/competitions/26638">Read the details and participate</a>, and <a href="https://sites.google.com/chalearn.org/metalearning/">an associated workshop at AAAI </a> with high-level keynote speakers</p>
-              </div>
-          </div>
+            <div class="row-picture">
+              <img class="circle" src="https://i0.wp.com/syncedreview.com/wp-content/uploads/2020/06/Imagenet.jpg?fit=1400%2C600&ssl=1" alt="icon">
+            </div>
+            <div class="row-content">
+              <h4 class="list-group-item-heading">Challenge on Metalearning released</h4>
+              <p class="list-group-item-text"><a href="https://competitions.codalab.org/competitions/26638">Read the details and participate</a>, and <a href="https://sites.google.com/chalearn.org/metalearning/">an associated workshop at AAAI </a> with high-level keynote speakers</p>
+            </div>
+	  </div>
+        </div>
+        <div class="item">
           <div class="list-group-item">
               <div class="row-picture">
                   <img class="circle" src="http://icons.iconarchive.com/icons/cornmanthe3rd/plex/512/Other-python-icon.png" alt="icon">
