@@ -1,5 +1,5 @@
 <?php
-class Algorithm_quality extends Database_write {
+class Algorithm_quality extends MY_Database_Write_Model {
 	
   function __construct() {
     parent::__construct();

@@ -1,5 +1,5 @@
 <?php
-class Run_tag extends Tag {
+class Run_tag extends MY_Tag_Model {
   
   function __construct() {
     parent::__construct();

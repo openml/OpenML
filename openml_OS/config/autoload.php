@@ -103,7 +103,7 @@ $autoload['helper'] = array('url','array','form','cms','os','openml','email','da
 | config files.  Otherwise, leave it blank.
 |
 */
-$autoload['config'] = array('openML', 'openml_mappings', 'external_apis');
+$autoload['config'] = array('openML', 'openml_mappings');
 
 /*
 | -------------------------------------------------------------------
@@ -132,4 +132,4 @@ $autoload['language'] = array();
 |
 |	$autoload['model'] = array('first_model' => 'first');
 */
-$autoload['model'] = array('abstract/database_read','abstract/database_write','abstract/tag','abstract/community', 'abstract/api_model');
+$autoload['model'] = array();

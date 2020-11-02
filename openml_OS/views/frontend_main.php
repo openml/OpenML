@@ -53,7 +53,7 @@ if (session_status() === PHP_SESSION_NONE){session_start();}
         <link rel="stylesheet" href="css/jquery-ui.css" type="text/css"/>
         <link rel="stylesheet" href="css/bootstrap-select.css">
         <link rel="stylesheet" href="css/perfect-scrollbar.min.css">
-        <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
       	<link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300,500,700' rel='stylesheet' type='text/css'>
         <link href="https://fonts.googleapis.com/css?family=RobotoDraft:400,500,700,400italic" rel="stylesheet" type="text/css">
         <link rel="stylesheet" href="css/gamification.css"/>
@@ -159,14 +159,16 @@ if (session_status() === PHP_SESSION_NONE){session_start();}
             $href = $ch;
             $materialcolor = "blue";
           }
-      elseif($ch=='register' or $ch=='profile' or $ch=='frontend' or $ch=='login' or $ch=='password_forgot'){
+      elseif($ch=='register' or $ch=='profile' or $ch=='frontend' or $ch=='login'){
             $section = 'OpenML';
             $href = $ch;
           }
 
     $this->section = $section;
     $this->materialcolor = $materialcolor;
-    $this->user = $this->ion_auth->user()->row();
+    if (!isset($this->user)) {
+      $this->user = false;
+    }
     $this->image = array(
     	'name' => 'image',
     	'id' => 'image',
@@ -185,7 +187,7 @@ if (session_status() === PHP_SESSION_NONE){session_start();}
             <a class="openmlsoc openmlsocicon col-xs-2 hidden-sm hidden-md hidden-lg pull-left searchicon" onclick="showsearch()"><i class="fa fa-search fa-2x"></i></a>
 
        <div class="menuicons">
-			<?php if ($this->ion_auth->logged_in()) {
+			<?php if ($this->user) {
         $authimg = "img/community/misc/anonymousMan.png";
          if ($this->user){ $authimg = htmlentities( authorImage( $this->user->image ) );}
         ?>
@@ -195,7 +197,7 @@ if (session_status() === PHP_SESSION_NONE){session_start();}
           <ul class="dropdown-menu">
               <li><a href="u/<?php echo $this->user->id;?>"><?php echo user_display_text(); ?></a></li>
               <li class="divider"></li>
-              <li><a href="frontend/logout">Sign off</a></li>
+              <li><a href="auth/logout">Sign off</a></li>
           </ul>
         </div>
 
@@ -248,7 +250,7 @@ if (session_status() === PHP_SESSION_NONE){session_start();}
         </div>
 
         <?php
-          loadpage('login', true, 'body');
+          o('login');
         ?>
 
         <div id="wrap">
@@ -260,7 +262,8 @@ if (session_status() === PHP_SESSION_NONE){session_start();}
                     JavaScript is required to properly view the contents of this page!
                 </div>
             </noscript>
-            <?php if($this->input->post('warningmessage')!==false and strlen($this->input->post('warningmessage')) > 0){
+            <?php 
+                  if($this->input->post('warningmessage')!==false and strlen($this->input->post('warningmessage')) > 0){
                     $this->message = $this->input->post('warningmessage');
                   }
                   if($this->message!==false and strlen($this->message) > 0): ?>
@@ -273,7 +276,7 @@ if (session_status() === PHP_SESSION_NONE){session_start();}
 
 
           <div class="searchbarcontainer">
-          <div class="searchbar" id="mainmenu" <?php if($section == "OpenML" or $section == "Guide" or $ch == "new"){echo 'style="display:none"';}?>>
+          <div class="searchbar" id="mainmenu" <?php if($section == "OpenML" or $section == "Guide" or $ch == "new" or $ch == "backend"){echo 'style="display:none"';}?>>
             <div class="sidebar-overlay">
             <div class="nav pull-left">
               <a class="navbar-brand menubutton"><i class="fa fa-bars fa-lg"></i></a>
@@ -284,12 +287,6 @@ if (session_status() === PHP_SESSION_NONE){session_start();}
               <li class="panel mainchapter">
                 <a data-toggle="collapse" data-parent="#topaccordeon" data-target="#mainlist"> <b>Explore</b></a>
                 <ul class="sidenav nav collapse in" id="mainlist">
-                  <!--
-                  <?php if (!$this->ion_auth->logged_in()){ ?>
-                      <li <?php echo ($section == '' ?  'class="topactive"' : '');?>><a href="register" class="icongrayish"><i class="fa fa-fw fa-lg fa-child"></i> Join OpenML</a></li>
-                  <?php } else { ?>
-                      <li <?php echo ($section == '' ?  'class="topactive"' : '');?>><a href="u/<?php echo $this->user->id; ?>"><img src="<?php echo htmlentities( authorImage( $this->user->image ) ); ?>" width="25" height="25" class="img-circle" alt="<?php echo $this->user->first_name . ' ' . $this->user->last_name; ?>" /> <?php echo user_display_text(); ?></a></li>
-                  <?php } ?> -->
                       <?php
 
                         $sections = ["Data", "Task", "Flow", "Run", "Study", "Task type", "Measure", "People"];
@@ -314,19 +311,17 @@ if (session_status() === PHP_SESSION_NONE){session_start();}
           </div>
         </div>
 
-        <?php echo body(); ?>
-
+        <?php echo (ctype_alpha($body) or $ch=='api_docs' or $ch=='api_data_docs') ? loadpage($body) : $body; ?>
 
         </div>
+        
         <script type="text/javascript">
-          var ES_URL = '<?php echo ES_PUBLIC_URL; ?>';
-
+          var ES_URL = '<?php echo ES_URL; ?>';
           function downloadJSAtOnload() {
           //var element3= document.createElement("script");
           //element3.src = "js/libs/jquery.sharrre.js";
           //document.body.appendChild(element3);
           }
-
           !function(e,t,r){function n(){for(;d[0]&&"loaded"==d[0][f];)c=d.shift(),c[o]=!i.parentNode.insertBefore(c,i)}for(var s,a,c,d=[],i=e.scripts[0],o="onreadystatechange",f="readyState";s=r.shift();)a=e.createElement(t),"async"in i?(a.async=!1,e.head.appendChild(a)):i[f]?(d.push(a),a[o]=n):e.write("<"+t+' src="'+s+'" defer></'+t+">"),a.src=s}(document,"script",[
               'https:///ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js',
               'js/libs/modernizr-2.5.3-respond-1.1.0.min.js',
@@ -355,7 +350,6 @@ if (session_status() === PHP_SESSION_NONE){session_start();}
               }?>
               'js/openmlafter.js'
             ])
-
           //download js that does not affect DOM and can be loaded after page is rendered
           if (window.addEventListener)
           window.addEventListener("load", downloadJSAtOnload, false);
@@ -368,12 +362,10 @@ if (session_status() === PHP_SESSION_NONE){session_start();}
           (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
           m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
           })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
           ga('require', 'linkid', 'linkid.js');
           ga('create', 'UA-40902346-1', 'openml.org');
           ga('send', 'pageview');
         </script>
-
 
     </body>
 </html>

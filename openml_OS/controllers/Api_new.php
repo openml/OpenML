@@ -9,7 +9,9 @@ class Api_new extends CI_Controller {
     $this->controller = 'api_new';
     $this->page = 'xml';
     $this->active = 'learn';
-
+    
+    $this->load->model('Database_singleton');
+    
     //$this->load->model('api/v1/Api_test');
     $this->load->model('api/v1/Api_data');
     $this->load->model('api/v1/Api_votes');
@@ -38,14 +40,6 @@ class Api_new extends CI_Controller {
     // helper
     $this->load->helper('api');
 
-    // paths
-    $this->data_folders = array(
-      'dataset'        => 'dataset/api/',
-      'implementation' => 'implementation/',
-      'run'            => 'run/',
-      'misc'           => 'misc/'
-    );
-
     $this->load->Library('session');
     $this->load->Library('ion_auth');
     $this->load->library('elasticSearch');
@@ -54,13 +48,25 @@ class Api_new extends CI_Controller {
     $this->groups_upload_rights = array(1,2); // must be part of this group to upload stuff
     $this->groups_admin = array(1); // must be part of this group to do really important stuff
 
-    // XML maintainance
+    // XML maintainance. TODO: remove and place in appropriate models
     $this->xml_fields_dataset = $this->config->item('xml_fields_dataset');
+    $this->xml_fields_features = $this->config->item('xml_fields_features');
     $this->xml_fields_dataset_update = $this->config->item('xml_fields_dataset_update');
     $this->xml_fields_implementation = $this->config->item('xml_fields_implementation');
     $this->xml_fields_run = $this->config->item('xml_fields_run');
+    $this->xml_fields_study = $this->config->item('xml_fields_study');
 
     $this->data_controller = $this->config->item('data_controller');
+    
+    
+    // ------------- EVERYTHING BELOW SHOULD NOT BE IN CONSTRUCTOR -------------
+    //               (because of undesired return statement)
+    $this->database_connection_error = true;
+    if ($this->Database_singleton->connected()) {
+      $this->database_connection_error = false;
+    } else {
+      return;
+    }
 
     // some user authentication things. 
     // used the stfu operator as CI throws notice otherwise
@@ -117,7 +123,7 @@ class Api_new extends CI_Controller {
 
   private function bootstrap($version) {
     $outputFormats = array('xml','json');
-
+    
     loadpage('v'.$version.'/'.$this->page,false,'pre');
     $segs = $this->uri->segment_array();
 
@@ -132,9 +138,14 @@ class Api_new extends CI_Controller {
       $outputFormat = $type;
       $type = array_shift($segs);
     }
-
+    
+    // TODO: very important (for future versions of the API)! 
+    if ($this->database_connection_error) {
+      $this->Api_data->returnError(107, $this->version);
+      return;
+    }
+    
     $request_type = strtolower($_SERVER['REQUEST_METHOD']);
-
     if ($this->authenticated == false && $request_type != 'get') {
       if ($this->provided_hash) {
         $this->Api_data->returnError(103, $this->version);

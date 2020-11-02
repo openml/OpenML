@@ -1,6 +1,6 @@
 <?php
   $p = array();
-  $p['index'] = 'openml';
+  $p['index'] = 'measure';
   $p['type'] = 'measure';
 ?>
 

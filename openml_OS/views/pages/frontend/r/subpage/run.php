@@ -191,48 +191,7 @@
       if(array_key_exists('data',$r)){
         echo $r['data'];
       }
-      /* TODO: currently not implemented
-      if($r['evaluation_measure'] == "area_under_roc_curve"){
-        $charts = $this->Vipercharts->getWhere( 'run_id = ' . $this->run['run_id'] );
-
-        if( $charts ) {
-          ?>
-          <div>
-            <ul class="nav nav-tabs" role="tablist">
-            <?php for( $i = 0; $i < count($charts); ++$i ): ?>
-              <li class="<?php if($i == 0) echo 'active';?>"><a href="#roc-chart-<?php echo $charts[$i]->class; ?>" role="tab" data-toggle="tab"><?php echo $charts[$i]->{'class'}; ?></a></li>
-            <?php endfor;?>
-            </ul>
-            <div class="tab-content">
-            <?php for( $i = 0; $i < count($charts); ++$i ): ?>
-              <div class="tab-pane<?php if($i == 0) echo ' active';?>" id="roc-chart-<?php echo $charts[$i]->class; ?>">
-                <iframe src="<?php echo $this->config->item('api_vipercharts') . $charts[$i]->viper_id . '/'; ?>" width="300" height="250"></iframe>
-              </div>
-            <?php endfor; ?>
-            </div>
-          </div><?php
-        }
-      }*/
       ?>
     </div></div></td></tr>
     <?php endforeach; ?>
   </table></div></div>
-
-  <h3>Discussions</h3>
-  <div class="panel disquspanel">
-
-    <div id="disqus_thread">Loading discussions...</div>
-    <script type="text/javascript">
-        var disqus_shortname = 'openml'; // forum name
-	      var disqus_category_id = '3353606'; // Data category
-	      var disqus_title = '<?php echo 'Run '.$this->run_id; ?>'; // Data name
-	      var disqus_url = '<?php echo BASE_URL;?>r/<?php echo $this->run_id; ?>'; // Data url
-
-        /* * * DON'T EDIT BELOW THIS LINE * * */
-        (function() {
-            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-        })();
-    </script>
-  </div>

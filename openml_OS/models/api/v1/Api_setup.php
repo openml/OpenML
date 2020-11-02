@@ -1,5 +1,5 @@
 <?php
-class Api_setup extends Api_model {
+class Api_setup extends MY_Api_Model {
 
   protected $version = 'v1';
 
@@ -41,26 +41,27 @@ class Api_setup extends Api_model {
     }
 
     if (count($segments) == 1 && $segments[0] == 'tag' && $request_type == 'post') {
-      $this->entity_tag_untag('algorithm_setup', $this->input->post('setup_id'), $this->input->post('tag'), false, 'setup');
+      $this->setup_tag( $this->input->post('setup_id'), $this->input->post('tag'));
       return;
     }
 
     if (count($segments) == 1 && $segments[0] == 'untag' && $request_type == 'post') {
-      $this->entity_tag_untag('algorithm_setup', $this->input->post('setup_id'), $this->input->post('tag'), true, 'setup');
+      $this->setup_untag($this->input->post('setup_id'), $this->input->post('tag'));
+      return;
+    }
+    
+    if (count($segments) == 2 && $segments[0] == 'tag' && $segments[1] == 'list') {
+      $this->list_tags('algorithm_setup', 'setup');
       return;
     }
 
     if (count($segments) == 1 && $segments[0] == 'exists' && $request_type == 'post') {
-      $this->setup_exists();
+      $this->setup_exists(false);
       return;
     }
 
-    if (count($segments) >= 1 && count($segments) <= 2 && $segments[0] == 'count' && in_array($request_type, $getpost)) {
-      if (count($segments) == 2) {
-        $this->setup_count($segments[1]);
-      } else {
-        $this->setup_count();
-      }
+    if (count($segments) == 1 && $segments[0] == 'partial' && $request_type == 'post') {
+      $this->setup_exists(true); // re-uses setup exists .. but has different output (please synchronize)
       return;
     }
 
@@ -83,6 +84,196 @@ class Api_setup extends Api_model {
     $this->returnError( 100, $this->version );
   }
 
+  /**
+   *@OA\Post(
+   *	path="/setup/tag",
+   *	tags={"setup"},
+   *	summary="Tag a setup",
+   *	description="Tags a setup.",
+   *	@OA\Parameter(
+   *		name="setup_id",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="integer"
+   *        ),
+   *		description="Id of the setup.",
+   *		required=true,
+   *	),
+   *	@OA\Parameter(
+   *		name="tag",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
+   *		description="Tag name",
+   *		required=true,
+   *	),
+   *	@OA\Parameter(
+   *		name="api_key",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
+   *		description="Api key to authenticate the user",
+   *		required=true,
+   *	),
+   *	@OA\Response(
+   *		response=200,
+   *		description="The id of the tagged setup",
+   *		@OA\JsonContent(
+   *			type="object",
+   *			@OA\Property(
+   *				property="flow_tag",
+   *				ref="#/components/schemas/inline_response_200_15_flow_tag",
+   *			),
+   *			example={
+   *			  "setup_tag": {
+   *			    "id": "2"
+   *			  }
+   *			}
+   *		),
+   *	),
+   *	@OA\Response(
+   *		response=412,
+   *		description="Precondition failed. An error code and message are returned.\n470 - In order to add a tag, please upload the entity id (either data_id, flow_id, run_id) and tag (the name of the tag).\n471 - Entity not found. The provided entity_id {data_id, flow_id, run_id} does not correspond to an existing entity.\n472 - Entity already tagged by this tag. The entity {dataset, flow, run} already had this tag.\n473 - Something went wrong inserting the tag. Please contact OpenML Team.\n474 - Internal error tagging the entity. Please contact OpenML Team.\n",
+   *		@OA\JsonContent(
+   *			ref="#/components/schemas/Error",
+   *		),
+   *	),
+   *)
+   */
+  private function setup_tag($setup_id, $tag) {
+    $this->setup_tag_untag($setup_id, $tag, false);
+  }
+
+  /**
+   *@OA\Post(
+   *	path="/setup/untag",
+   *	tags={"setup"},
+   *	summary="Untag a setup",
+   *	description="Untags a setup.",
+   *	@OA\Parameter(
+   *		name="setup_id",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="integer"
+   *        ),
+   *		description="Id of the setup.",
+   *		required=true,
+   *	),
+   *	@OA\Parameter(
+   *		name="tag",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
+   *		description="Tag name",
+   *		required=true,
+   *	),
+   *	@OA\Parameter(
+   *		name="api_key",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
+   *		description="Api key to authenticate the user",
+   *		required=true,
+   *	),
+   *	@OA\Response(
+   *		response=200,
+   *		description="The id of the untagged setup",
+   *		@OA\JsonContent(
+   *			type="object",
+   *			@OA\Property(
+   *				property="flow_untag",
+   *				ref="#/components/schemas/inline_response_200_16_flow_untag",
+   *			),
+   *			example={
+   *			  "setup_untag": {
+   *			    "id": "2"
+   *			  }
+   *			}
+   *		),
+   *	),
+   *	@OA\Response(
+   *		response=412,
+   *		description="Precondition failed. An error code and message are returned.\n475 - Please give entity_id {data_id, flow_id, run_id} and tag. In order to remove a tag, please upload the entity id (either data_id, flow_id, run_id) and tag (the name of the tag).\n476 - Entity {dataset, flow, run} not found. The provided entity_id {data_id, flow_id, run_id} does not correspond to an existing entity.\n477 - Tag not found. The provided tag is not associated with the entity {dataset, flow, run}.\n478 - Tag is not owned by you. The entity {dataset, flow, run} was tagged\nby another user. Hence you cannot delete it.\n479 - Internal error removing the tag. Please contact OpenML Team.\n",
+   *		@OA\JsonContent(
+   *			ref="#/components/schemas/Error",
+   *		),
+   *	),
+   *)
+   */
+  private function setup_untag($setup_id, $tag) {
+    $this->setup_tag_untag($setup_id, $tag, true);
+  }
+
+  private function setup_tag_untag($setup_id, $tag, $do_untag) {
+    $this->entity_tag_untag('algorithm_setup', $setup_id, $tag, $do_untag, 'setup');
+  }
+
+  /**
+   *@OA\Get(
+   *	path="/setup/{id}",
+   *	tags={"setup"},
+   *	summary="Get a hyperparameter setup",
+   *	description="Returns information about a setup. The information includes the list of hyperparameters, with name, value, and default value.",
+   *	@OA\Parameter(
+   *		name="id",
+   *		in="path",
+   *		@OA\Schema(
+   *          type="integer"
+   *        ),
+   *		description="ID of the hyperparameter setup (configuration). These IDs are stated in run descriptions.",
+   *		required=true,
+   *	),
+   *	@OA\Response(
+   *		response=200,
+   *		description="A setup description",
+   *		@OA\JsonContent(
+   *			ref="#/components/schemas/Setup",
+   *			example={
+   *			  "setup_parameters":{
+   *			    "flow_id":"59",
+   *			    "parameter":{
+   *			      {
+   *			        "full_name":"weka.JRip(1)_F",
+   *			        "parameter_name":"F",
+   *			        "data_type":"option",
+   *			        "default_value":"3",
+   *			        "value":"3"
+   *			      },{
+   *			        "full_name":"weka.JRip(1)_N",
+   *			        "parameter_name":"N",
+   *			        "data_type":"option",
+   *			        "default_value":"2.0",
+   *			        "value":"2.0"
+   *			      },{
+   *			        "full_name":"weka.JRip(1)_O",
+   *			        "parameter_name":"O",
+   *			        "data_type":"option",
+   *			        "default_value":"2",
+   *			        "value":"2"
+   *			      },{
+   *			        "full_name":"weka.JRip(1)_S",
+   *			        "parameter_name":"S",
+   *			        "data_type":"option",
+   *			        "default_value":"1",
+   *			        "value":"1"
+   *			      }}
+   *			  }
+   *			}
+   *		),
+   *	),
+   *	@OA\Response(
+   *		response=412,
+   *		description="Precondition failed. An error code and message are returned.\n280 - Please provide setup ID. In order to view setup details, please provide the run ID\n281 - Setup not found. The setup ID was invalid, or setup does not exist (anymore).\n",
+   *		@OA\JsonContent(
+   *			ref="#/components/schemas/Error",
+   *		),
+   *	),
+   *)
+   */
   private function setup($setup_id) {
     if($setup_id == false) {
       $this->returnError(280, $this->version);
@@ -94,8 +285,9 @@ class Api_setup extends Api_model {
       $this->returnError(281, $this->version);
       return;
     } else {
-      $this->db->select('*')->from('input_setting');
+      $this->db->select('`input_setting`.*, `input`.*, `implementation`.`name` AS `flow_name`, `implementation`.`fullName` AS `flow_fullName`')->from('input_setting');
       $this->db->join('input', 'input_setting.input_id = input.id', 'inner');
+      $this->db->join('implementation', 'input.implementation_id = implementation.id', 'inner');
       $this->db->where('setup = "'.$setup->sid.'"');
       $query = $this->db->get();
       $this->parameters = $query->result();
@@ -104,61 +296,106 @@ class Api_setup extends Api_model {
     }
   }
 
-  function setup_list($segs) {
+  /**
+   *@OA\Get(
+   *	path="/setup/list/{filters}",
+   *	tags={"setup"},
+   *	summary="List and filter setups",
+   *	description="List setups, filtered by a range of properties. Any number of properties can be combined by listing them one after the other in the form '/setup/list/{filter}/{value}/{filter}/{value}/...' Returns an array with all evaluations that match the constraints. A maximum of 1,000 results are returned at a time, an error is returned if the result set is bigger. Use pagination (via limit and offset filters), or limit the results to certain flows, setups, or tags.",
+   *	@OA\Parameter(
+   *		name="filters",
+   *		in="path",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
+   *		description="Any combination of these filters
+  /tag/{tag} - returns only setups tagged with the given tag.
+  /flow/{ids} - return only setups for specific flows, specified as a comma-separated list of flow IDs, e.g. ''1,2,3''
+  /setup/{ids} - return only specific setups, specified as a comma-separated list of setup IDs, e.g. ''1,2,3''
+  /limit/{limit}/offset/{offset} - returns only {limit} results starting from result number {offset}. Useful for paginating results. With /limit/5/offset/10, results 11..15 will be returned. Both limit and offset need to be specified.
+  ",
+   *		required=true,
+   *	),
+   *	@OA\Response(
+   *		response=200,
+   *		description="A list of setup descriptions",
+   *		@OA\JsonContent(
+   *			ref="#/components/schemas/SetupList",
+   *			example={
+   *			  "setups": {
+   *			    "setup": {
+   *			      {
+   *			        "setup_id":"10",
+   *			        "flow_id":"65",
+   *			        "parameter": {
+   *			          {
+   *			            "id":"4144",
+   *			            "flow_id":"65",
+   *			            "flow_name":"weka.RandomForest",
+   *			            "full_name":"weka.RandomForest(1)_I",
+   *			            "parameter_name":"I",
+   *			            "data_type":"option",
+   *			            "default_value":"10",
+   *			            "value":"10"
+   *			          },
+   *			          {
+   *			            "id":"4145",
+   *			            "flow_id":"65",
+   *			            "flow_name":"weka.RandomForest",
+   *			            "full_name":"weka.RandomForest(1)_K",
+   *			            "parameter_name":"K",
+   *			            "data_type":"option",
+   *			            "default_value":"0",
+   *			            "value":"0"
+   *			          }
+   *			        }
+   *			      }
+   *			    }
+   *			  }
+   *			}
+   *		),
+   *	),
+   *	@OA\Response(
+   *		response=412,
+   *		description="Precondition failed. An error code and message are returned.\n670 - Please specify at least one filter.\n671 - Illegal filter.\n672 - Illegal filter input.\n673 - Result set too big. Please use one of the filters or the limit option.\n674 - No results, please check the filter.\n675 - Cannot specify offset without limit.\n676 - Requested result limit too high.\n",
+   *		@OA\JsonContent(
+   *			ref="#/components/schemas/Error",
+   *		),
+   *	),
+   *)
+   */
+  function setup_list($segs) { 
+    $result_limit = 1000;
+    $legal_filters = array('flow', 'setup', 'limit', 'offset', 'tag');
+    list($query_string, $illegal_filters) = $this->parse_filters($segs, $legal_filters);
+    if (count($illegal_filters) > 0) {
+      $this->returnError(671, $this->version, $this->openmlGeneralErrorCode, 'Legal filter operators: ' . implode(',', $legal_filters) .'. Found illegal filter(s): ' . implode(', ', $illegal_filters));
+      return;
+    }
+    
+    $illegal_filter_inputs = $this->check_filter_inputs($query_string, $legal_filters, array('tag'));
+    if (count($illegal_filter_inputs)) {
+      $this->returnError(672, $this->version, $this->openmlGeneralErrorCode, 'Filters with illegal values: ' . implode(',', $illegal_filter_inputs));
+      return;
+    }
+    
     if (count($segs) == 0) {
       $this->returnError(670, $this->version);
       return;
     }
-
-    $legal_filters = array('flow', 'setup', 'limit', 'offset', 'tag');
-    $query_string = array();
-    for ($i = 0; $i < count($segs); $i += 2) {
-      $query_string[$segs[$i]] = (count($segs) > $i + 1) ? urldecode($segs[$i+1]) : ""; // empty string in else to force an error later on. 
-      if (in_array($segs[$i], $legal_filters) == false) {
-        $this->returnError(671, $this->version, $this->openmlGeneralErrorCode, 'Legal filter operators: ' . implode(',', $legal_filters) .'. Found illegal filter: ' . $segs[$i]);
-        return;
-      }
-    }
-
+    
     $flows = element('flow',$query_string, null);
     $tag = element('tag',$query_string, null);
     $limit = element('limit',$query_string, null);
     $offset = element('offset',$query_string, null);
     $setups = element('setup',$query_string, null); 
-    
-    if ($flows !== null) {
-      if (strlen($flows) == 0 || !is_cs_natural_numbers($flows)) {
-        $this->returnError(672, $this->version, $this->openmlGeneralErrorCode, 'Non-numeric input: flow');
-        return;
-      }
+    if ($offset && !$limit) {
+      $this->returnError(675, $this->version);
+      return;
     }
-    
-    if ($setups !== null) {
-      if (strlen($setups) == 0 || !is_cs_natural_numbers($setups)) {
-        $this->returnError(672, $this->version, $this->openmlGeneralErrorCode, 'Non-numeric input: setup');
-        return;
-      }
-    }
-    
-    if ($limit !== null) {
-      if (strlen($limit) == 0 || !is_numeric($limit)) {
-        $this->returnError(672, $this->version, $this->openmlGeneralErrorCode, 'Non-numeric input: limit');
-        return;
-      }
-    }
-    
-    if ($offset !== null) {
-      if (strlen($offset) == 0 || !is_numeric($offset)) {
-        $this->returnError(672, $this->version, $this->openmlGeneralErrorCode, 'Non-numeric input: offset');
-        return;
-      }
-    }
-    
-    if ($tag !== null) {
-      if (len($tag) == 0 || !is_safe($tag)) {
-        $this->returnError(672, $this->version, $this->openmlGeneralErrorCode, 'Illegal input: tag');
-        return;
-      }
+    if ($limit && $limit > $result_limit) {
+      $this->returnError(676, $this->version);
+      return;
     }
     
     // JvR: Two queries, because I really don't know how to do it otherwise. 
@@ -188,46 +425,17 @@ class Api_setup extends Api_model {
     
     $setups = array_keys($setup_flows);
     
-    $maxAllowed = 1000;
-    if (count($setups) > $maxAllowed) {
-      $this->returnError(673, $this->version, $this->openmlGeneralErrorCode, 'Allowed: ' . $maxAllowed . ', found:' . count($setups));
+    if (count($setups) > $result_limit) {
+      $this->returnError(673, $this->version, $this->openmlGeneralErrorCode, 'Allowed: ' . $result_limit . ', found:' . count($setups));
       return;
     }
-
-    // query fails for classifiers without parameters. is fixed further on.
-    $this->db->select('input.*, input_setting.*, algorithm_setup.implementation_id AS flow_id')->from('input_setting');
-    $this->db->join('input', 'input_setting.input_id = input.id', 'inner');
-    $this->db->join('algorithm_setup', 'algorithm_setup.sid = input_setting.setup', 'inner');
-    $this->db->join('setup_tag', 'input_setting.setup = setup_tag.id', 'left');
-    $this->db->where_in('algorithm_setup.sid', $setups);
-
-    $query = $this->db->get();
-    $parameters = $query->result();
-
-    $per_setup = array();
-    // initialize the array
-    foreach ($setups as $setup) {
-      $per_setup[$setup] = array();
-    }
-    // now fill with parameters
-    foreach ($parameters as $parameter) {
-      $per_setup[$parameter->setup][] = $parameter;
-    }
+    
+    $per_setup = $this->Algorithm_setup->setup_ids_to_parameter_values($setups);
+    
     $this->xmlContents('setup-list', $this->version, array('setups' => $per_setup, 'setup_flows' => $setup_flows));
   }
 
-  function setup_count($tags = null) {
-    $result = $this->Algorithm_setup->setup_runs($tags, $tags);
-
-    if ($result == false) {
-      $this->returnError(661, $this->version);
-      return;
-    }
-
-    $this->xmlContents('setup-count', $this->version, array('setups' => $result));
-  }
-
-  private function setup_exists() {
+  private function setup_exists($partial) {
     $description = isset($_FILES['description']) ? $_FILES['description'] : false;
     $uploadError = '';
     if(!check_uploaded_file($description,false,$uploadError)) {
@@ -263,6 +471,7 @@ class Api_setup extends Api_model {
       $this->returnError(584, $this->version);
       return;
     }
+    
     // makes sure that the implementation is not a math_function
     if(in_array($implementation->{'implements'}, $this->supportedMetrics)) {
       $this->returnError(585, $this->version);
@@ -270,7 +479,7 @@ class Api_setup extends Api_model {
     }
 
     $parameters = array();
-    foreach( $parameter_objects as $p ) {
+    foreach($parameter_objects as $p) {
       // since 'component' is an optional XML field, we add a default option
       $component = property_exists($p, 'component') ? $p->component : $implementation->id;
 
@@ -283,16 +492,101 @@ class Api_setup extends Api_model {
 
       $parameters[$input_id->id] = $p->value . '';
     }
-    // search setup ... // TODO: do something about the new parameters. Are still retrieved by ID, does not work with Weka plugin.
-    $setupId = $this->Algorithm_setup->getSetupId($implementation, $parameters, false);
-
-    $result = array('exists' => 'false', 'id' => -1);
-    if($setupId) {
-      $result = array('exists' => 'true', 'id' => $setupId);
+    
+    try {
+      $setups = $this->Algorithm_setup->searchSetup($implementation, $parameters, $partial); 
+    } catch(Exception $e) {
+      $additional_message = null;
+      if (substr($e->getMessage(), 0, 5) == '1116:') {
+        $additional_message = 'Flow might not be suitable for this operation (feature request)';
+      }
+      $this->returnError(588, $this->version, $this->openmlGeneralErrorCode, $additional_message);
+      return;
     }
-    $this->xmlContents('setup-exists', $this->version, $result);
+    
+    
+    // ===== THIS FUNCTION CONTAINS BOTH SETUP EXISTS AND SETUP PARTIAL =====
+    // TODO: merge them in a later stage 
+    if (!$partial) {
+      
+      // ===== SETUP EXISTS =====
+    
+      $result = array('exists' => 'false', 'id' => -1);
+      if ($setups != false) {
+        $result = array('exists' => 'true', 'id' => $setups[0]->sid);
+      }
+      
+      $this->xmlContents('setup-exists', $this->version, $result);
+    } else {
+      
+      // ===== SETUP PARTIAL =====
+      
+      if ($setups == false) {
+        $this->returnError(587, $this->version);
+        return;
+      }
+      
+      $setup_flows = array();
+      foreach ($setups as $value) {
+        $setup_flows[$value->sid] = $value->implementation_id;
+      }
+      
+      // TODO: two-stage query, not ideal please fix! 
+      $per_setup = $this->Algorithm_setup->setup_ids_to_parameter_values(array_keys($setup_flows));
+      
+      $this->xmlContents('setup-list', $this->version, array('setups' => $per_setup, 'setup_flows' => $setup_flows));
+    }
   }
 
+  /**
+   *@OA\Delete(
+   *	path="/setup/{id}",
+   *	tags={"setup"},
+   *	summary="Delete setup",
+   *	description="Deletes a setup. Upon success, it returns the ID of the deleted setup.",
+   *	@OA\Parameter(
+   *		name="id",
+   *		in="path",
+   *		@OA\Schema(
+   *          type="integer"
+   *        ),
+   *		description="Id of the setup.",
+   *		required=true,
+   *	),
+   *	@OA\Parameter(
+   *		name="api_key",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
+   *		description="Api key to authenticate the user",
+   *		required=true,
+   *	),
+   *	@OA\Response(
+   *		response=200,
+   *		description="ID of the deleted setup",
+   *		@OA\JsonContent(
+   *			type="object",
+   *			@OA\Property(
+   *				property="study_delete",
+   *				ref="#/components/schemas/inline_response_200_14_study_delete",
+   *			),
+   *			example={
+   *			  "setup_delete": {
+   *			    "id": "1"
+   *			  }
+   *			}
+   *		),
+   *	),
+   *	@OA\Response(
+   *		response=412,
+   *		description="Precondition failed. An error code and message are returned.\n401 - Authentication failed. Please provide API key. In order to remove your content, please authenticate.\n402 - Setup does not exists. The setup ID could not be linked to an existing setup.\n404 - Setup deletion failed. Setup is in use by other content (runs, schedules, etc). Can not be deleted.\n405 - Setup deletion failed. Please try again later.\n",
+   *		@OA\JsonContent(
+   *			ref="#/components/schemas/Error",
+   *		),
+   *	),
+   *)
+   */
   private function setup_delete($setup_id) {
 
     $setup = $this->Algorithm_setup->getById( $setup_id );

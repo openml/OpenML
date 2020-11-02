@@ -1,5 +1,5 @@
 <?php
-class Groups extends Community {
+class Groups extends MY_Community_Model {
   
   function __construct() {
     parent::__construct();

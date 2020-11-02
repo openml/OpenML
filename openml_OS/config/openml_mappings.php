@@ -31,6 +31,30 @@ $config['xml_fields_dataset'] = array(
   'plain'   => array()
 );
 
+$config['xml_fields_features'] = array(
+  'string' => array(
+    'index',
+    'name',
+    'data_type',
+    'is_target',
+    'NumberOfDistinctValues',
+    'NumberOfUniqueValues',
+    'NumberOfMissingValues',
+    'NumberOfIntegerValues',
+    'NumberOfRealValues',
+    'NumberOfNominalValues',
+    'NumberOfValues',
+    'MaximumValue',
+    'MinimumValue',
+    'MeanValue',
+    'StandardDeviation',
+    'ClassDistribution'
+  ),
+  'csv' => array(),
+  'array'   => array('nominal_value'),
+  'plain'   => array()
+);
+
 $config['xml_fields_implementation'] = array(
   'string'  => array(
 	  0 => 'name',
@@ -58,6 +82,13 @@ $config['xml_fields_run'] = array(
   'csv'     => array('tag'),
   'array'   => array('parameter_setting'),
   'plain'   => array('output_data')
+);
+
+$config['xml_fields_study'] = array(
+  'string' => array('alias', 'main_entity_type', 'benchmark_suite', 'name', 'description'),
+  'csv' => array(),
+  'array' => array('data', 'tasks', 'flows', 'setups', 'runs'),
+  'plain' => array()
 );
 
 // qualities to show in, e.g., task list

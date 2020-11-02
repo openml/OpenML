@@ -69,6 +69,7 @@ else{
 	$this->terms = htmlspecialchars(safe($this->input->get('q')), ENT_QUOTES);
   $this->terms = str_replace('lt;','<',$this->terms);
   $this->terms = str_replace('gt;','>',$this->terms);
+  $this->terms = str_replace('&','',$this->terms);
   $this->terms = explode('/',$this->terms)[0];
 }
 
@@ -154,7 +155,6 @@ if(startsWith($this->sort,'qualities.NumberOf')){
   }
   $this->curr_sort .= substr($this->sort,18);
 }
-
 $attrs = $_GET;
 unset($attrs['from']);
 $this->rel_uri = "search?".http_build_query($attrs);
@@ -184,8 +184,13 @@ $jsonshould = array();
 //visibility defaults
 $jsonshould[] = '{ "term" : { "visibility" : "public" } }';
 if ($this->ion_auth->logged_in()) {
-	$jsonshould[] = '{ "term" : { "uploader_id" : "'.$this->ion_auth->user()->row()->id.'" } }';
+  $jsonshould[] = '{ "term" : { "uploader_id" : "'.$this->ion_auth->user()->row()->id.'" } }';
 }
+if($this->ion_auth->is_admin()){
+  $jsonshould[] = '{ "term" : { "visibility" : "private" } }';
+}
+
+
 if($this->filtertype == 'data' and false === strpos($this->terms,'status')){
   $jsonfilters[] = '{ "term" : { "status" : "active" } }';
 }
@@ -218,9 +223,11 @@ if(count($jsonfilters)>1)
 	$fjson = '['.$fjson.']';
 $sjson = '['.implode(",",$jsonshould).'], "minimum_should_match" : 1 ';
 
-$params['index'] = 'openml';
-if($this->filtertype)
+$params['index'] = '_all';
+if($this->filtertype){
+  $params['index'] = $this->filtertype;
   $params['type'] = $this->filtertype;
+}
 $params['body']  = '{'.
     ($this->table ? '"_source" : ["data_id","name","version","runs","qualities"],' : '').
    '"from" : '. ($this->from ? $this->from : 0) .',
@@ -240,7 +247,7 @@ $params['body']  = '{'.
         }
     }
 }';
-// print_r($params);
+//print_r($params);
 
 // prepare query for result counts over all types (will be loaded using JS)
 $this->alltypes = $params;
@@ -251,7 +258,7 @@ $time_start = microtime_float();
 // launch query
 try {
 	$this->results = $this->searchclient->search($params);
-  // print_r($this->results);
+        //print_r($this->results);
 } catch (Exception $e) {
 	$this->results = array();
 	$this->results['hits'] = array();

@@ -33,7 +33,10 @@ if ($this->subpage == 'task'){
 
 $this->datasets 			= $this->Dataset->getColumnWhere( 'name', 'isOriginal = "true"', '`name` ASC' );
 $this->datasetIds 			= $this->Dataset->getColumn( 'did', 'did' );
-$this->datasetVersion		= $this->Dataset->getColumnFunction( 'CONCAT(`name`,"(",`version`,")")', '`name` ASC' );
+$valid_data_sql = 'select CONCAT(`name`,"(",`version`,")") as name from dataset d left outer join dataset_status ds ' . 
+		  'on d.did = ds.did and status = (SELECT status FROM dataset_status where did=d.did ORDER BY status_date ' . 
+		  'DESC LIMIT 1) where status="active"';
+$this->datasetVersion		        = $this->Dataset->getColumnFromSql('name', $valid_data_sql);
 $this->datasetVersionOriginal= $this->Dataset->getColumnFunctionWhere( 'CONCAT(`name`,"(",`version`,")")', 'isOriginal = "true"', '`name` ASC' );
 
 $this->formats				= $this->Dataset->getDistinct( 'format' );

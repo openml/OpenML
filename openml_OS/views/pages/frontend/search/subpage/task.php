@@ -1,6 +1,6 @@
 <?php
   $p = array();
-  $p['index'] = 'openml';
+  $p['index'] = 'task_type';
   $p['type'] = 'task_type';
 
   // TODO: Update ES to replace this DB call.

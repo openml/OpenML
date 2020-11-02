@@ -1,5 +1,5 @@
 <?php
-class Task_io_types extends Database_write {
+class Task_io_types extends MY_Database_Write_Model {
 	
 	function __construct() {
     parent::__construct();

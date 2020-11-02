@@ -1,5 +1,5 @@
 <?php
-class Implementation extends Database_write {
+class Implementation extends MY_Database_Write_Model {
 	
 	function __construct() {
 		parent::__construct();
@@ -44,12 +44,11 @@ class Implementation extends Database_write {
 		return $implementation[0];
 	}
 
-	function fullImplementation( $id ) {
-	  $impls = $this->getWhere( 'id = ' . $id );
-    if(count($impls) == 0) return false;
-    $implementation = $impls[0];
+	function fullImplementation($id) {
+	  $implementation = $this->getById($id);
+    if ($implementation === false) return false;
     
-		return ( $implementation == false ) ? false : $this->_extendImplementation($implementation);
+		return ($implementation == false) ? false : $this->_extendImplementation($implementation);
 	}
 	
 	function getComponents( $parent ) {

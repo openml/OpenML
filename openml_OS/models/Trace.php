@@ -1,5 +1,5 @@
 <?php
-class Trace extends Database_write {
+class Trace extends MY_Database_Write_Model {
 	
   function __construct() {
     parent::__construct();

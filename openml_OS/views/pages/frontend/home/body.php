@@ -3,7 +3,7 @@
 <canvas id="c" width="400" height="400"></canvas>
 <div class="marketing">
 <div class="col-md-12">
-  <div id="logo">OpenML<div id="beta">beta</div></div>
+  <div id="logo">OpenML<div id="beta">beta_2</div></div>
 </div>
 <div id="catchphrase">Machine learning, better, together</div>
 <div class="col-md-12">
@@ -32,28 +32,37 @@
         <div class="item active">
           <div class="list-group-item">
               <div class="row-picture">
+                  <img class="circle" src="https://i0.wp.com/syncedreview.com/wp-content/uploads/2020/06/Imagenet.jpg?fit=1400%2C600&ssl=1" alt="icon">
+              </div>
+              <div class="row-content">
+                  <h4 class="list-group-item-heading">Challenge on Metalearning released</h4>
+                  <p class="list-group-item-text"><a href="https://competitions.codalab.org/competitions/26638">Read the details and participate</a>, and <a href="https://sites.google.com/chalearn.org/metalearning/">an associated workshop at AAAI </a> with high-level keynote speakers</p>
+              </div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="list-group-item">
+              <div class="row-picture">
+                  <img class="circle" src="http://icons.iconarchive.com/icons/cornmanthe3rd/plex/512/Other-python-icon.png" alt="icon">
+              </div>
+              <div class="row-content">
+                  <h4 class="list-group-item-heading">Python API 0.10 is released</h4>
+                  <p class="list-group-item-text"><a href="https://openml.github.io/openml-python/master/">Get started now</a> or <a href="https://arxiv.org/pdf/1911.02490.pdf">read the paper first :)</a></p>
+              </div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="list-group-item">
+              <div class="row-picture">
                   <img class="circle" src="img/colordots.png" alt="icon">
               </div>
               <div class="row-content">
                   <h4 class="list-group-item-heading"><div id="colorchange"><span>H</span><span>A</span><span>C</span><span>K</span><span>A</span><span>T</span><span>H</span><span>O</span><span>N</span></div></h4>
                   <p class="list-group-item-text">Bring your own data, bring your own algorithms, or build cool new features.</p>
-                  <p class="list-group-item-text">Next location: Early April, Porto, Portugal</a></p>
+                  <p class="list-group-item-text"><a href="https://new.openml.org/meet#upcoming" target="_blank">Next workshop: 26-30 October 2020, Virtual</a></p>
               </div>
           </div>
         </div>
-        <!--
-        <div class="item">
-          <div class="list-group-item">
-              <div class="row-picture">
-                  <img class="circle" src="img/COSEAL_small.png" alt="icon">
-              </div>
-              <div class="row-content">
-                  <h4 class="list-group-item-heading">Algorithm Selection Competition</h4>
-                  <p class="list-group-item-text">Use your favorite OpenML tool to participate in the (external) <a href="http://www.coseal.net/open-algorithm-selection-challenge-2017-oasc/">Open Algorithm Selection Competition 2017</a>. Deadline is <b>August 27, 2017</b>.</p>
-              </div>
-          </div>
-        </div>
-      -->
         <div class="item">
           <div class="list-group-item">
               <div class="row-picture">
@@ -117,9 +126,9 @@
   <div class="covertext">As machine learning is enhancing our ability to understand nature and build a better future,
     it is crucial that we make it transparent and easily accessible to everyone in research, education and industry.
     The Open Machine Learning project is an inclusive movement to build an open, organized, online ecosystem for machine learning.
-    We build <a class="coverlink" href="https://www.openml.org/guide/api">open source tools</a> to discover (and share)
+    We build <a class="coverlink" href="https://docs.openml.org/APIs/">open source tools</a> to discover (and share)
     <a class="coverlink" href="https://www.openml.org/search?type=data">open data from any domain</a>,
-    easily draw them into your <a class="coverlink" href="https://www.openml.org/guide/integrations">favourite machine learning environments</a>,
+    easily draw them into your <a class="coverlink" href="https://docs.openml.org/sklearn/">favourite machine learning environments</a>,
     quickly build models alongside (and together with) thousands of other data scientists, analyse your results against the state
     of the art, and even get automatic advice on how to build better models. Stand on the shoulders of giants and make the world a better place.
   <br><br>
@@ -140,7 +149,7 @@
         data to algorithms and people, so you can build on the state of the art and learn to teach machines to learn better.
       </div>
       <div class="covertext">
-        <a class="coverlink" href="guide/bootcamp">Learn more</a>
+        <a class="coverlink" href="https://docs.openml.org/">Learn more</a>
       </div>
     </div>
     <div class="col-sm-8 col-md-6 coverflow">
@@ -160,7 +169,7 @@
         Easily search thousands of datasets and import them directly into your code or toolboxes, or quickly find similar datasets together with the best machine learning approaches.
       </div>
       <div class="covertext">
-        <a class="coverlink" href="guide/bootcamp">Learn more</a>
+        <a class="coverlink" href="https://docs.openml.org/">Learn more</a>
       </div>
     </div>
 </div>
@@ -177,7 +186,7 @@
 
     </div>
     <div class="covertext">
-      <a class="coverlink" href="guide/bootcamp">Learn more</a>
+      <a class="coverlink" href="https://docs.openml.org/">Learn more</a>
     </div>
   </div>
 
@@ -203,8 +212,8 @@
         with the Python, R, Java, and C++ APIs, or program against the REST API.
       </div>
       <div class="covertext">
-        <a class="coverlink" href="guide/api">OpenML APIs ></a><br>
-        <a class="coverlink" href="guide/integrations">OpenML integrations ></a>
+        <a class="coverlink" href="https://docs.openml.org/APIs/">OpenML APIs ></a><br>
+        <a class="coverlink" href="https://docs.openml.org/sklearn/">OpenML integrations ></a>
       </div>
     </div>
 </div>
@@ -219,7 +228,7 @@
       Wherever possible, we extract clear descriptions of machine learning workflows and models.
     </div>
     <div class="covertext">
-      <a class="coverlink" href="guide/bootcamp">Learn more</a>
+      <a class="coverlink" href="https://docs.openml.org/">Learn more</a>
     </div>
   </div>
 
@@ -269,9 +278,8 @@
 		  <div class="col-xs-12 col-sm-6 pull-left centerfooter">
         <div class="twitter-header">
          <a href="https://twitter.com/intent/tweet?text=%23OpenML" data-related="open_ml"><i class="fa fa-twitter fa-2x"></i></a>
-        </div>
-        <a class="twitter-timeline" data-dnt="true" href="https://twitter.com/joavanschoren/timelines/616186899376525312" data-widget-id="616191425143816192">Click here if tweets don't load.</a>
-        <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	</div>
+<a class="twitter-timeline" href="https://twitter.com/joavanschoren/timelines/616186899376525312?ref_src=twsrc%5Etfw">Click here if tweets don't load</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
   </div>
 
 

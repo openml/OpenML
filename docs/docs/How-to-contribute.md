@@ -1,1 +1,0 @@
-Our contributing guide was moved to https://github.com/openml/OpenML/blob/master/CONTRIBUTING.md

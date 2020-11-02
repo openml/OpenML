@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-class KnowledgePiece extends Database_write{
+class KnowledgePiece extends MY_Database_Write_Model {
 
     function __construct() {
         parent::__construct();
@@ -64,6 +64,15 @@ class KnowledgePiece extends Database_write{
             $upload_sql.=" GROUP BY uploads.kt, DATE(uploads.time) ORDER BY date;";
         }
 
+        return $this->KnowledgePiece->query($upload_sql);
+    }
+
+    function getTotalNumberOfUploadsOfUser($u_id){
+        $data_sql = "SELECT count(did) as mcount, 'd' as kt FROM dataset WHERE uploader=".$u_id;
+        $flow_sql = "SELECT count(id) as mcount, 'f' as kt FROM implementation WHERE uploader=".$u_id;
+        $task_sql = "SELECT count(task_id) as mcount, 't' as kt FROM task WHERE creator=".$u_id;
+        $run_sql = "SELECT count(rid) as mcount, 'r' as kt FROM run WHERE uploader=".$u_id;
+        $upload_sql = "SELECT uploads.kt, uploads.mcount as count FROM (".$data_sql." UNION ".$flow_sql." UNION ".$task_sql." UNION ".$run_sql.") as uploads";
         return $this->KnowledgePiece->query($upload_sql);
     }
 
@@ -218,6 +227,14 @@ class KnowledgePiece extends Database_write{
         return $this->KnowledgePiece->query($sql);
     }
 
+    function getTotalNumberOfReusesOfUploadsOfUser($u_id){
+        $datareuse_sql = "SELECT 'd' as ot, count(run.rid) as count FROM `run`, `task_inputs`, `dataset` WHERE dataset.uploader=".$u_id." AND task_inputs.value=dataset.did AND task_inputs.input='source_data' AND run.task_id=task_inputs.task_id AND dataset.uploader<>run.uploader group by ot";
+        $flowreuse_sql = "SELECT 'f' as ot, count(run.rid) as count FROM `implementation`, `run`, `algorithm_setup` WHERE implementation.uploader=".$u_id." AND algorithm_setup.implementation_id=implementation.id AND run.setup=algorithm_setup.sid AND implementation.uploader<>run.uploader group by ot";
+        $sql= "(".$datareuse_sql.") UNION (".$flowreuse_sql.")";
+
+        return $this->KnowledgePiece->query($sql);
+    }
+
     function getNumberOfReusesOfUpload($type,$id,$from,$to){
         if($type=='d'){
             $sql = "SELECT 'd' as ot, count(task_inputs.task_id) as count, DATE(task.creation_date) as date FROM  `task`, `task_inputs`, `dataset` WHERE dataset.did=".$id." AND task_inputs.value=dataset.did AND task_inputs.input='source_data' AND task.task_id=task_inputs.task_id AND (task.creator IS NULL OR dataset.uploader<>task.creator)";
@@ -260,7 +277,8 @@ class KnowledgePiece extends Database_write{
         return $this->KnowledgePiece->query($sql);
     }
 
-    function bgetNumberOfLikesAndDownloadsOnReuseOfUploadsOfUser($u_id,$from=null,$to=null){
+    /** Older version.
+    function getNumberOfLikesAndDownloadsOnReuseOfUploadsOfUser($u_id,$from=null,$to=null){
         $datareuse_sql = "SELECT 'd' as ot, 'r' as rt, run.rid as reuse_id, DATE(run.start_time) as date FROM `run`, `task_inputs`, `dataset` WHERE dataset.uploader=".$u_id." AND task_inputs.value=dataset.did AND task_inputs.input='source_data' AND run.task_id=task_inputs.task_id AND dataset.uploader<>run.uploader";
         $flowreuse_sql = "SELECT 'f' as ot, 'r' as rt, run.rid as reuse_id, DATE(run.start_time) as date FROM `implementation`, `run`, `algorithm_setup` WHERE implementation.uploader=".$u_id." AND algorithm_setup.implementation_id=implementation.id AND run.setup=algorithm_setup.sid AND implementation.uploader<>run.uploader";
 
@@ -298,7 +316,7 @@ class KnowledgePiece extends Database_write{
 
         echo $sql;
         return $this->KnowledgePiece->query($sql);
-    }
+    }**/
 
     //Adapted in same way as above
     function getNumberOfLikesAndDownloadsOnReuseOfUploadsOfUser($u_id,$from=null,$to=null){

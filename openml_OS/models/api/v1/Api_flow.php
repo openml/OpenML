@@ -1,5 +1,6 @@
 <?php
-class Api_flow extends Api_model {
+
+class Api_flow extends MY_Api_Model {
 
   protected $version = 'v1';
 
@@ -65,34 +66,113 @@ class Api_flow extends Api_model {
     }
 
     if (count($segments) == 1 && $segments[0] == 'tag' && $request_type == 'post') {
-      $this->entity_tag_untag('implementation', $this->input->post('flow_id'), $this->input->post('tag'), false, 'flow');
+      $this->flow_tag($this->input->post('flow_id'), $this->input->post('tag'));
       return;
     }
 
     if (count($segments) == 1 && $segments[0] == 'untag' && $request_type == 'post') {
-      $this->entity_tag_untag('implementation', $this->input->post('flow_id'), $this->input->post('tag'), true, 'flow');
+      $this->flow_untag($this->input->post('flow_id'), $this->input->post('tag'));
+      return;
+    }
+
+    if (count($segments) == 2 && $segments[0] == 'tag' && $segments[1] == 'list') {
+      $this->list_tags('implementation', 'flow');
       return;
     }
 
     $this->returnError( 100, $this->version );
   }
 
-
+  /**
+   *@OA\Get(
+   *	path="/flow/list/{filters}",
+   *	tags={"flow"},
+   *	summary="List and filter flows",
+   *	description="List flows, possibly filtered by a range of properties. Any number of properties can be combined by listing them one after the other in the form '/task/list/{filter}/{value}/{filter}/{value}/...' Returns an array with all flows that match the constraints.",
+   *	@OA\Parameter(
+   *		name="filters",
+   *		in="path",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
+   *		description="Any combination of these filters
+  /limit/{limit}/offset/{offset} - returns only {limit} results starting from result number {offset}. Useful for paginating results. With /limit/5/offset/10, tasks 11..15 will be returned. Both limit and offset need to be specified.
+  /tag/{tag} - returns only tasks tagged with the given tag.
+  /uploader/{id} - return only evaluations uploaded by a specific user, specified by user ID.
+  ",
+   *		required=true,
+   *	),
+   *	@OA\Response(
+   *		response=200,
+   *		description="A list of flows",
+   *		@OA\JsonContent(
+   *			ref="#/components/schemas/FlowList",
+   *			example={
+   *			  "flows":
+   *			    {
+   *			      "flow":{
+   *			        {
+   *			          "id":"65",
+   *			          "full_name":"weka.RandomForest(1)",
+   *			          "name":"weka.RandomForest",
+   *			          "version":"1",
+   *			          "external_version":"Weka_3.7.10_9186",
+   *			          "uploader":"1"
+   *			        },
+   *			        {
+   *			          "id":"66",
+   *			          "full_name":"weka.IBk(1)",
+   *			          "name":"weka.IBk",
+   *			          "version":"1",
+   *			          "external_version":"Weka_3.7.10_8034",
+   *			          "uploader":"1"
+   *			        },
+   *			        {
+   *			          "id":"67",
+   *			          "full_name":"weka.BayesNet_K2(1)",
+   *			          "name":"weka.BayesNet_K2",
+   *			          "version":"1",
+   *			          "external_version":"Weka_3.7.10_8034",
+   *			          "uploader":"1"
+   *			        }
+   *			      }
+   *			    }
+   *			  }
+   *		),
+   *	),
+   *	@OA\Response(
+   *		response=412,
+   *		description="Precondition failed. An error code and message are returned.\n500 - No results. There where no matches for the given constraints.\n501 - Illegal filter specified.\n502 - Filter values/ranges not properly specified.\n503 - Can not specify an offset without a limit.\n",
+   *		@OA\JsonContent(
+   *			ref="#/components/schemas/Error",
+   *		),
+   *	),
+   *)
+   */
   private function flow_list($segs) {
     $legal_filters = array('uploader', 'tag', 'limit', 'offset');
-    $query_string = array();
-    for ($i = 0; $i < count($segs); $i += 2) {
-      $query_string[$segs[$i]] = urldecode($segs[$i+1]);
-      if (in_array($segs[$i], $legal_filters) == false) {
-        $this->returnError(501, $this->version, $this->openmlGeneralErrorCode, 'Legal filter operators: ' . implode(',', $legal_filters) .'. Found illegal filter: ' . $segs[$i]);
-        return;
-      }
+    
+    list($query_string, $illegal_filters) = $this->parse_filters($segs, $legal_filters);
+    if (count($illegal_filters) > 0) {
+      $this->returnError(501, $this->version, $this->openmlGeneralErrorCode, 'Legal filter operators: ' . implode(',', $legal_filters) .'. Found illegal filter(s): ' . implode(', ', $illegal_filters));
+      return;
+    }
+    
+    $illegal_filter_inputs = $this->check_filter_inputs($query_string, $legal_filters, array('tag'));
+    if (count($illegal_filter_inputs) > 0) {
+      $this->returnError(502, $this->version, $this->openmlGeneralErrorCode, 'Filters with illegal values: ' . implode(',', $illegal_filter_inputs));
+      return;
     }
 
-    $uploader_id = element('uploader', $query_string);
-    $tag = element('tag', $query_string);
-    $limit = element('limit', $query_string);
-    $offset = element('offset', $query_string);
+    $uploader_id = element('uploader', $query_string, null);
+    $tag = element('tag', $query_string, null);
+    $limit = element('limit', $query_string, null);
+    $offset = element('offset', $query_string, null);
+    
+    if ($offset && !$limit) {
+      $this->returnError(503, $this->version);
+      return;
+    }
 
     $query = $this->db->select('`i`.*');
     $query->from('implementation i');
@@ -101,7 +181,7 @@ class Api_flow extends Api_model {
       $query->where('t.tag', $tag);
     }
     $query->group_start()->where('`visibility`', 'public')->or_where('i.uploader', $this->user_id)->group_end();
-    if ($uploader_id) {
+    if ($uploader_id !== null) {
       $query->where('i.uploader', $uploader_id);
     }
     if ($limit) {
@@ -114,26 +194,194 @@ class Api_flow extends Api_model {
 
     # TODO: can remove next statement and replace by original active record
     $implementations_res = $this->Implementation->query($sql);
-    if( $implementations_res == false ) {
-      $this->returnError( 500, $this->version );
+    if($implementations_res == false) {
+      $this->returnError(500, $this->version);
       return;
     }
 
     $this->xmlContents('implementations', $this->version, array('implementations' => $implementations_res));
   }
 
-  // deprecated, will be removed soon
-  /*private function flow_owned() {
+  /**
+   *@OA\Post(
+   *	path="/flow/tag",
+   *	tags={"flow"},
+   *	summary="Tag a flow",
+   *	description="Tags a flow.",
+   *	@OA\Parameter(
+   *		name="flow_id",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="integer"
+   *        ),
+   *		description="Id of the flow.",
+   *		required=true,
+   *	),
+   *	@OA\Parameter(
+   *		name="tag",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
+   *		description="Tag name",
+   *		required=true,
+   *	),
+   *	@OA\Parameter(
+   *		name="api_key",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
+   *		description="Api key to authenticate the user",
+   *		required=true,
+   *	),
+   *	@OA\Response(
+   *		response=200,
+   *		description="The id of the tagged flow",
+   *		@OA\JsonContent(
+   *			type="object",
+   *			@OA\Property(
+   *				property="flow_tag",
+   *				ref="#/components/schemas/inline_response_200_12_flow_tag",
+   *			),
+   *			example={
+   *			  "flow_tag": {
+   *			    "id": "2"
+   *			  }
+   *			}
+   *		),
+   *	),
+   *	@OA\Response(
+   *		response=412,
+   *		description="Precondition failed. An error code and message are returned.\n470 - In order to add a tag, please upload the entity id (either data_id, flow_id, run_id) and tag (the name of the tag).\n471 - Entity not found. The provided entity_id {data_id, flow_id, run_id} does not correspond to an existing entity.\n472 - Entity already tagged by this tag. The entity {dataset, flow, run} already had this tag.\n473 - Something went wrong inserting the tag. Please contact OpenML Team.\n474 - Internal error tagging the entity. Please contact OpenML Team.\n",
+   *		@OA\JsonContent(
+   *			ref="#/components/schemas/Error",
+   *		),
+   *	),
+   *)
+   */
+  private function flow_tag($flow_id, $tag) {
+    $this->flow_tag_untag($flow_id,$tag, false);
+  }
 
-    $implementations = $this->Implementation->getColumnWhere( 'id', '`uploader` = "'.$this->user_id.'"' );
-    if( $implementations == false ) {
-      $this->returnError( 312, $this->version );
-      return;
-    }
-    $this->xmlContents( 'implementation-owned', $this->version, array( 'implementations' => $implementations ) );
-  }*/
+  /**
+   *@OA\Post(
+   *	path="/flow/untag",
+   *	tags={"flow"},
+   *	summary="Untag a flow",
+   *	description="Untags a flow.",
+   *	@OA\Parameter(
+   *		name="flow_id",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="integer"
+   *        ),
+   *		description="Id of the flow.",
+   *		required=true,
+   *	),
+   *	@OA\Parameter(
+   *		name="tag",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
+   *		description="Tag name",
+   *		required=true,
+   *	),
+   *	@OA\Parameter(
+   *		name="api_key",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
+   *		description="Api key to authenticate the user",
+   *		required=true,
+   *	),
+   *	@OA\Response(
+   *		response=200,
+   *		description="The id of the untagged flow",
+   *		@OA\JsonContent(
+   *			type="object",
+   *			@OA\Property(
+   *				property="flow_untag",
+   *				ref="#/components/schemas/inline_response_200_13_flow_untag",
+   *			),
+   *			example={
+   *			  "flow_untag": {
+   *			    "id": "2"
+   *			  }
+   *			}
+   *		),
+   *	),
+   *	@OA\Response(
+   *		response=412,
+   *		description="Precondition failed. An error code and message are returned.\n475 - Please give entity_id {data_id, flow_id, run_id} and tag. In order to remove a tag, please upload the entity id (either data_id, flow_id, run_id) and tag (the name of the tag).\n476 - Entity {dataset, flow, run} not found. The provided entity_id {data_id, flow_id, run_id} does not correspond to an existing entity.\n477 - Tag not found. The provided tag is not associated with the entity {dataset, flow, run}.\n478 - Tag is not owned by you. The entity {dataset, flow, run} was tagged\nby another user. Hence you cannot delete it.\n479 - Internal error removing the tag. Please contact OpenML Team.\n",
+   *		@OA\JsonContent(
+   *			ref="#/components/schemas/Error",
+   *		),
+   *	),
+   *)
+   */
+  private function flow_untag($flow_id, $tag) {
+    $this->flow_tag_untag($flow_id, $tag, true);
+  }
+
+  private function flow_tag_untag($flow_id, $tag, $do_untag) {
+    //forward execution of logic to superclass.
+    $this->entity_tag_untag('implementation', $flow_id, $tag, $do_untag, 'flow');
+  }
 
 
+  /**
+   *@OA\Get(
+   *	path="/flow/exists/{name}/{version}",
+   *	tags={"flow"},
+   *	summary="Check whether flow exists",
+   *	description="Checks whether a flow with the given name and (external) version exists.",
+   *	@OA\Parameter(
+   *		name="name",
+   *		in="path",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
+   *		description="The name of the flow.",
+   *		required=true,
+   *	),
+   *	@OA\Parameter(
+   *		name="version",
+   *		in="path",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
+   *		description="The external version of the flow",
+   *		required=true,
+   *	),
+   *	@OA\Response(
+   *		response=200,
+   *		description="A list of flows",
+   *		@OA\JsonContent(
+   *			type="object",
+   *			@OA\Property(
+   *				property="flow_exists",
+   *				ref="#/components/schemas/inline_response_200_10_flow_exists",
+   *			),
+   *			example={
+   *			  "flow_exists": {
+   *			    "exists": "true",
+   *			    "id": "65"
+   *			  }
+   *			}
+   *		),
+   *	),
+   *	@OA\Response(
+   *		response=412,
+   *		description="Precondition failed. An error code and message are returned.\n330 - Mandatory fields not present. Please provide name and external_version.\n",
+   *		@OA\JsonContent(
+   *			ref="#/components/schemas/Error",
+   *		),
+   *	),
+   *)
+   */
   private function flow_exists($name, $external_version) {
 
     $similar = false;
@@ -151,7 +399,65 @@ class Api_flow extends Api_model {
     $this->xmlContents( 'implementation-exists', $this->version, $result );
   }
 
-  // TODO: check what is going wrong with implementation id 1
+  /**
+   *@OA\Get(
+   *	path="/flow/{id}",
+   *	tags={"flow"},
+   *	summary="Get flow description",
+   *	description="Returns information about a flow. The information includes the name, information about the creator, dependencies, parameters, run instructions and more.",
+   *	@OA\Parameter(
+   *		name="id",
+   *		in="path",
+   *		@OA\Schema(
+   *          type="integer"
+   *        ),
+   *		description="ID of the flow.",
+   *		required=true,
+   *	),
+   *	@OA\Response(
+   *		response=200,
+   *		description="A flow description",
+   *		@OA\JsonContent(
+   *			ref="#/components/schemas/Flow",
+   *			example={
+   *			  "flow": {
+   *			    "id":"100",
+   *			    "uploader":"1",
+   *			    "name":"weka.J48",
+   *			    "version":"2",
+   *			    "external_version":"Weka_3.7.5_9117",
+   *			    "description":"...",
+   *			    "upload_date":"2014-04-23 18:00:36",
+   *			    "language":"Java",
+   *			    "dependencies":"Weka_3.7.5",
+   *			    "parameter": {
+   *			      {
+   *			        "name":"A",
+   *			        "data_type":"flag",
+   *			        "default_value":{},
+   *			        "description":"Laplace smoothing..."
+   *			      },
+   *			      {
+   *			        "name":"C",
+   *			        "data_type":"option",
+   *			        "default_value":"0.25",
+   *			        "description":"Set confidence threshold..."
+   *			      }
+   *			    }
+   *			  }
+   *			}
+   *		),
+   *	),
+   *	@OA\Response(
+   *		response=412,
+   *		description="Precondition failed. An error code and message are returned.\n180 - Please provide flow id.\n181 - Unknown flow. The flow with the given ID was not found in the database.\n",
+   *		@OA\JsonContent(
+   *			ref="#/components/schemas/Error",
+   *		),
+   *	),
+   *)
+   */
+  //  TODO: check what is going wrong with implementation id 1
   private function flow($id) {
     if( $id == false ) {
       $this->returnError( 180, $this->version );
@@ -168,6 +474,64 @@ class Api_flow extends Api_model {
     $this->xmlContents( 'implementation-get', $this->version, array( 'source' => $implementation ) );
   }
 
+  /**
+   *@OA\Post(
+   *	path="/flow",
+   *	tags={"flow"},
+   *	summary="Upload a flow",
+   *	description="Uploads a flow. Upon success, it returns the flow id.",
+   *	@OA\Parameter(
+   *		name="description",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="file"
+   *        ),
+   *		description="An XML file describing the flow. Only name and description are required. Also see the [XSD schema](https://www.openml.org/api/v1/xsd/openml.implementation.upload) and an [XML example](https://www.openml.org/api/v1/xml_example/flow).",
+   *		required=true,
+   *	),
+   *	@OA\Parameter(
+   *		name="flow",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="file"
+   *        ),
+   *		description="The actual flow, being a source (or binary) file.",
+   *		required=false,
+   *	),
+   *	@OA\Parameter(
+   *		name="api_key",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
+   *		description="Api key to authenticate the user",
+   *		required=true,
+   *	),
+   *	@OA\Response(
+   *		response=200,
+   *		description="Id of the uploaded flow",
+   *		@OA\JsonContent(
+   *			type="object",
+   *			@OA\Property(
+   *				property="upload_flow",
+   *				ref="#/components/schemas/inline_response_200_9_upload_flow",
+   *			),
+   *			example={
+   *			  "upload_flow": {
+   *			    "id": "2520"
+   *			  }
+   *			}
+   *		),
+   *	),
+   *	@OA\Response(
+   *		response=412,
+   *		description="Precondition failed. An error code and message are returned.\n160 - Error in file uploading. There was a problem with the file upload.\n161 - Please provide description xml.\n163 - Problem validating uploaded description file. The XML description format does not meet the standards.\n164 - Flow already stored in database. Please change name or version number\n165 - Failed to insert flow. There can be many causes for this error. If you included the implements field, it should be an existing entry in the algorithm or math_function table. Otherwise it could be an internal server error. Please contact API support team.\n166 - Failed to add flow to database. Internal server error, please contact API administrators\n167 - Illegal files uploaded. An non required file was uploaded.\n168 - The provided md5 hash equals not the server generated md5 hash of the file.\n169 - Please provide API key. In order to share content, please authenticate and provide API key.\n170 - Authentication failed. The API key was not valid. Please try to login again, or contact API administrators\n171 - Flow already exists. This flow is already in the database\n172 - XSD not found. Please contact API support team\n",
+   *		@OA\JsonContent(
+   *			ref="#/components/schemas/Error",
+   *		),
+   *	),
+   *)
+   */
   private function flow_upload() {
 
     if(isset($_FILES['source']) && $_FILES['source']['error'] == 0) {
@@ -183,11 +547,6 @@ class Api_flow extends Api_model {
       $binary = false;
       unset($_FILES['binary']);
     }
-
-    //if( $source == false && $binary == false ) {
-    //  $this->returnError( 162, $this->version );
-    //  return;
-    //}
 
     foreach( $_FILES as $key => $file ) {
       if( check_uploaded_file( $file ) == false ) {
@@ -299,17 +658,66 @@ class Api_flow extends Api_model {
     $this->xmlContents( 'implementation-upload', $this->version, $implementation );
   }
 
+  /**
+   *@OA\Delete(
+   *	path="/flow/{id}",
+   *	tags={"flow"},
+   *	summary="Delete a flow",
+   *	description="Deletes a flow. Upon success, it returns the ID of the deleted flow.",
+   *	@OA\Parameter(
+   *		name="id",
+   *		in="path",
+   *		@OA\Schema(
+   *          type="integer"
+   *        ),
+   *		description="Id of the flow.",
+   *		required=true,
+   *	),
+   *	@OA\Parameter(
+   *		name="api_key",
+   *		in="query",
+   *		@OA\Schema(
+   *          type="string"
+   *        ),
+   *		description="API key to authenticate the user",
+   *		required=true,
+   *	),
+   *	@OA\Response(
+   *		response=200,
+   *		description="ID of the deleted flow",
+   *		@OA\JsonContent(
+   *			type="object",
+   *			@OA\Property(
+   *				property="flow_delete",
+   *				ref="#/components/schemas/inline_response_200_8_flow_delete",
+   *			),
+   *			example={
+   *			  "flow_delete": {
+   *			    "id": "4328"
+   *			  }
+   *			}
+   *		),
+   *	),
+   *	@OA\Response(
+   *		response=412,
+   *		description="Precondition failed. An error code and message are returned.\n320 - Please provide API key. In order to remove your content, please authenticate.\n321 - Authentication failed. The API key was not valid. Please try to login again, or contact api administrators.\n322 - Flow does not exists. The flow ID could not be linked to an existing flow.\n323 - Flow is not owned by you. The flow is owned by another user. Hence you cannot delete it.\n324 - Flow is in use by other content. Can not be deleted. The flow is used in runs, evaluations or as a component of another flow. Delete other content before deleting this flow.\n325 - Deleting flow failed. Deleting the flow failed. Please contact\nsupport team.\n",
+   *		@OA\JsonContent(
+   *			ref="#/components/schemas/Error",
+   *		),
+   *	),
+   *)
+   */
   private function flow_delete($flow_id) {
 
     $implementation = $this->Implementation->getById($flow_id);
     if($implementation == false) {
       $this->returnError(322, $this->version);
-      return;
+      return false;
     }
 
     if($implementation->uploader != $this->user_id && $this->user_has_admin_rights == false) {
       $this->returnError(323, $this->version);
-      return;
+      return false;
     }
 
     $runs = $this->Run->getRunsByFlowId($implementation->id, null, null, 100);
@@ -320,24 +728,24 @@ class Api_flow extends Api_model {
         $ids[] = $r->id;
       }
       $this->returnError(324, $this->version, $this->openmlGeneralErrorCode, '{'. implode(', ', $ids) .'} ()');
-      return;
+      return false;
     }
 
     if ($this->Implementation->isComponent($implementation->id)) {
       $parent_ids = $this->Implementation_component->getColumnWhere('parent', 'child = "'.$implementation->id.'"');
       $this->returnError(328, $this->version, $this->openmlGeneralErrorCode, '{' . implode(', ', $parent_ids) . '}');
-      return;
+      return false;
     }
 
     $remove_input_setting = $this->Input_setting->deleteWhere('setup IN (SELECT sid FROM algorithm_setup WHERE implementation_id = '.$implementation->id.')');
     if (!$remove_input_setting) {
       $this->returnError(326, $this->version);
-      return;
+      return false;
     }
     $remove_setups = $this->Algorithm_setup->deleteWhere('implementation_id = ' . $implementation->id);
     if (!$remove_setups) {
       $this->returnError(327, $this->version);
-      return;
+      return false;
     }
 
     $this->Input->deleteWhere('implementation_id =' . $implementation->id); // should be handled by constraints ..
@@ -350,7 +758,7 @@ class Api_flow extends Api_model {
 
     if($result == false) {
       $this->returnError(325, $this->version);
-      return;
+      return false;
     }
 
     try {
@@ -359,10 +767,11 @@ class Api_flow extends Api_model {
     } catch (Exception $e) {
       $additionalMsg = get_class() . '.' . __FUNCTION__ . ':' . $e->getMessage();
       $this->returnError(105, $this->version, $this->openmlGeneralErrorCode, $additionalMsg);
-      return;
+      return true; // don't care about ES errors, as they pop up anyway
     }
 
     $this->xmlContents('implementation-delete', $this->version, array('implementation' => $implementation));
+    return true;
   }
 
   private function flow_forcedelete($flow_id) {
@@ -381,15 +790,20 @@ class Api_flow extends Api_model {
       'run' => 'DELETE FROM run WHERE setup IN (SELECT sid FROM algorithm_setup WHERE implementation_id = '.$flow_id.');',
       'algorithm_setup' => 'DELETE FROM algorithm_setup WHERE implementation_id = ' . $flow_id . ';'
     );
-
+    
+    $this->db->trans_start();
     foreach ($queries as $table => $query) {
-      $res = $this->Implementation->query($query);
-      if ($res == false) {
-        $this->returnError(551, $this->version, $this->openmlGeneralErrorCode, 'In query table: ' . $table);
-        return;
-      }
+      $this->Implementation->query($query);
     }
-
+    
+    if ($this->db->trans_status() === FALSE) {
+      $this->db->trans_rollback();
+      $this->returnError(551, $this->version);
+      return;
+    }
+    $this->db->trans_commit();
+    
+    // now delete the actual flow. This will trigger an XML template
     $this->flow_delete($flow_id);
   }
 
@@ -477,7 +891,6 @@ class Api_flow extends Api_model {
           $children = $entry->children('oml', true);
           $succes = $this->Input->insert(
             array(
-              'fullName' => $implementation['fullName'] . '_' . $children->name,
               'implementation_id' => $flow_id,
               'name' => trim($children->name),
               'defaultValue' => property_exists( $children, 'default_value') ? trim($children->default_value) : null,

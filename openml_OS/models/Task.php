@@ -1,5 +1,5 @@
 <?php
-class Task extends Database_write {
+class Task extends MY_Database_Write_Model {
   
   function __construct() {
     parent::__construct();
@@ -11,28 +11,32 @@ class Task extends Database_write {
     $this->load->model('Task_inputs');
   }
   
+  // @deprecated, useless function. Please use instead 'getColumnWhere'
   function getUploaderOf($tid){
       $sql = 'SELECT '.$this->user_column.' as uploader FROM '.$this->table.' WHERE '.$this->id_column.'='.$tid;
       
       return $this->Task->query($sql);
   }
   
+  // @deprecated, useless function. Please use instead 'getColumnWhere'
   function getTasksByDataId($did){
-      $sql = 'SELECT '.$this->id_column.' as id FROM `task_inputs` WHERE task_inputs.value='.$did.' AND task_inputs.input="source_data"';
-      
-      return $this->Task->query($sql);      
+    $sql = 'SELECT '.$this->id_column.' as id FROM `task_inputs` WHERE task_inputs.value='.$did.' AND task_inputs.input="source_data"';
+    
+    return $this->Task->query($sql);      
   }
   
+  
+  // @deprecated, useless function. Please use instead 'getColumnWhere'
   function getTasksOfUser($u_id, $from=null, $to=null){
-      $sql = 'SELECT '.$this->id_column.' as id FROM '.$this->table.' WHERE '.$this->user_column.'='.$u_id;
-      
-      if($from!=null){
-        $sql .= ' AND creation_date>="'.$from.'"';
-      }
-      if($to!=null){
-        $sql .= ' AND creation_date<"'.$to.'"';
-      }
-      return $this->Task->query($sql);
+    $sql = 'SELECT '.$this->id_column.' as id FROM '.$this->table.' WHERE '.$this->user_column.'='.$u_id;
+    
+    if($from!=null){
+      $sql .= ' AND creation_date>="'.$from.'"';
+    }
+    if($to!=null){
+      $sql .= ' AND creation_date<"'.$to.'"';
+    }
+    return $this->Task->query($sql);
   }
   
   function search( $task_type_id, $keyValues ) {
@@ -65,6 +69,7 @@ class Task extends Database_write {
     return $this->query( $sql );
   }
   
+  // @deprecated, source of errors. REMOVE ASAP
   function create_batch( $ttid, $task_batch ) {
     $result = array();
     $to_insert = array();
@@ -86,7 +91,7 @@ class Task extends Database_write {
           $numInstances = $this->Data_quality->getFeature( $task['source_data'], 'NumberOfInstances' );
           $estimation_procedure = $this->Estimation_procedure->getById( $task['estimation_procedure'] );
           $numSamples = $this->Estimation_procedure->number_of_samples(
-            $this->Estimation_procedure->trainingset_size( $numInstances, $estimation_procedure->folds ) 
+            $this->Estimation_procedure->trainingset_size($numInstances, $estimation_procedure)
           );
           $to_insert[] = array( 'task_id' => $task_id, 'input' => 'number_samples', 'value' => $numSamples );
         }
@@ -101,8 +106,8 @@ class Task extends Database_write {
     
     return $result;
   }
-
-  function tasks_crosstabulated( $ttid, $include_task_id = false, $where_additional = array(), $order_by_values = false, $single_task_id = false ) {
+  
+  function tasks_crosstabulated($ttid, $include_task_id = false, $where_additional = array(), $order_by_values = false, $single_task_id = false) {
     $inputs = $this->Task_type_inout->getWhere( '`io` = "input" AND `ttid` = "' . $ttid . '"' );
     $select = array();
     $left_join = array();
@@ -156,7 +161,8 @@ class Task extends Database_write {
     return $result;
   }
   
-  function getTasksWithValue( $assoc ) {
+  // @deprecated, only used once; seems useless. 
+  function getTasksWithValue($assoc) {
     $select = array();
     $from = array();
     $where = array();

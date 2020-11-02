@@ -9,17 +9,23 @@
 				</select>
       </div>
 			<h2 style="margin-top:0px;"><?php echo $this->task['runs']; ?> Runs</h2>
-
+			<?php if($this->task['visibility'] == 'private'){
+							if(!$this->ion_auth->logged_in()){
+								echo '<p>This task is currently closed. Log in to see you runs.</p>';
+							} else {
+								echo '<p>This task is currently closed. You can only see your own runs.</p>';
+							}}	?>
 
       <?php if($this->task['tasktype']['tt_id'] != 6){ ?>
 
       <div class="col-xs-12 panel">
 			     <div id="data_result_visualize" class="reflow-chart"><span>Fetching data</span> <i class="fa fa-spinner fa-spin"></i></div>
       </div>
+			<?php if($this->task['runs'] > 1000){ ?>
 			<div class="alert alert-info">
-  		<strong>Note:</strong> Chart is limited to the 1000 best flows, and the 1000 best runs for each flow.
+  		<strong>Note:</strong> Chart is limited to the 100 best flows, and the 100 best runs for each flow.
 			</div>
-
+			<?php } ?>
       <div class="col-xs-12 panel">
         <div class="table-responsive reflow-table">
            <div id="table-spinner"><span>Fetching data</span> <i class="fa fa-spinner fa-spin"></i></div>

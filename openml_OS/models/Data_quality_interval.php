@@ -1,5 +1,5 @@
 <?php
-class Data_quality_interval extends Database_write {
+class Data_quality_interval extends MY_Database_Write_Model {
   
   function __construct() {
     parent::__construct();

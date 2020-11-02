@@ -69,12 +69,12 @@ if(false !== strpos($_SERVER['REQUEST_URI'],'/f/')) {
 
 	// Get data from ES
 	$this->p = array();
-	$this->p['index'] = 'openml';
+	$this->p['index'] = 'flow';
 	$this->p['type'] = 'flow';
 	$this->p['id'] = $this->id;
 
         $this->down = array();
-        $this->down['index'] = 'openml';
+        $this->down['index'] = 'downvote';
         $this->down['type'] = 'downvote';
         $json = '{
                     "query": {
@@ -89,7 +89,7 @@ if(false !== strpos($_SERVER['REQUEST_URI'],'/f/')) {
         $this->down['body'] = $json;
         if ($this->ion_auth->logged_in()) {
             $this->l = array();
-            $this->l['index'] = 'openml';
+            $this->l['index'] = 'like';
             $this->l['type'] = 'like';
             $json = '{
                         "query": {

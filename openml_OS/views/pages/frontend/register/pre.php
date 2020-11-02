@@ -67,13 +67,13 @@ $this->bio = array(
 	'class' => 'form-control floating-label'
 );
 
-$this->affiliation = array(
+$this->company = array(
 	'placeholder' => 'Affiliation',
 	'data-hint' => 'The organization where you work. This may help you connect to interesting people.',
-	'name' => 'affiliation',
-	'id' => 'affiliation',
+	'name' => 'company',
+	'id' => 'company',
 	'type' => 'text',
-	'value' => $this->input->post('affiliation'),
+	'value' => $this->input->post('company'),
 	'class' => 'form-control floating-label'
 );
 

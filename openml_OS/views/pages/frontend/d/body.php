@@ -2,12 +2,12 @@
 
     //get data from ES
     $this->p = array();
-    $this->p['index'] = 'openml';
+    $this->p['index'] = 'data';
     $this->p['type'] = 'data';
     $this->p['id'] = $this->id;
 
     $this->down = array();
-    $this->down['index'] = 'openml';
+    $this->down['index'] = 'downvote';
     $this->down['type'] = 'downvote';
     $json = '{
                 "query": {
@@ -22,7 +22,7 @@
     $this->down['body'] = $json;
     if ($this->ion_auth->logged_in()) {
         $this->l = array();
-        $this->l['index'] = 'openml';
+        $this->l['index'] = 'like';
         $this->l['type'] = 'like';
         $json = '{
                     "query": {
@@ -62,10 +62,10 @@
 
     //get other versions -> do in javascript?
     $this->p2 = array();
-    $this->p2['index'] = 'openml';
+    $this->p2['index'] = 'data';
     $this->p2['type'] = 'data';
     $this->p2['body']['_source'] = array("data_id", "version", "version_label");
-    $this->p2['body']['query']['term']['exact_name'] = $this->data['name'];
+    $this->p2['body']['query']['term']['exact_name.keyword'] = $this->data['name'];
     $this->p2['body']['sort'] = 'version';
     try{
       $this->versions = array_column($this->searchclient->search($this->p2)['hits']['hits'],'_source');
@@ -75,7 +75,7 @@
 
     //get tasks
     $this->p3 = array();
-    $this->p3['index'] = 'openml';
+    $this->p3['index'] = 'task';
     $this->p3['type'] = 'task';
     $this->p3['body']['query']['term']['source_data.data_id'] = $this->id;
     $this->p3['body']['sort'] = array('tasktype.tt_id' => array ('order' => 'asc'), 'runs' => array ('order' => 'desc'));
@@ -88,12 +88,11 @@
 
     //get properties - needed for the descriptions
     $this->p4 = array();
-    $this->p4['index'] = 'openml';
+    $this->p4['index'] = 'measure';
     $this->p4['type'] = 'measure';
     $this->p4['body']['size'] = 1000;
     $this->p4['body']['query']['bool']['must']['match_all'] = (object)[];
     $this->p4['body']['query']['bool']['filter']['term']['measure_type'] = "data_quality";
-    $this->p4['body']['sort'] = array('priority');
     try {
       $responses = $this->searchclient->search($this->p4);
       $this->dataproperties = array();
@@ -106,12 +105,11 @@
 
     //get measures
     $this->p4 = array();
-    $this->p4['index'] = 'openml';
+    $this->p4['index'] = 'measure';
     $this->p4['type'] = 'measure';
     $this->p4['body']['size'] = 1000;
     $this->p4['body']['query']['bool']['must']['match_all'] = (object)[];
     $this->p4['body']['query']['bool']['filter']['term']['measure_type'] = "evaluation_measure";
-    $this->p4['body']['sort'] = array('priority');
     try {
       $responses = $this->searchclient->search($this->p4);
       $this->allmeasures = array_column($responses['hits']['hits'],'_source');
@@ -128,7 +126,7 @@
 
     // licences
     $this->licences = array();
-    $this->licences['Public'] = array( "name" => 'Publicly available', "url" => 'https://creativecommons.org/publicdomain/mark/1.0/' );    
+    $this->licences['Public'] = array( "name" => 'Publicly available', "url" => 'https://creativecommons.org/publicdomain/mark/1.0/' );
     $this->licences['CC_BY'] = array( "name" => 'Attribution (CC BY)', "url" => 'http://creativecommons.org/licenses/by/4.0/' );
     $this->licences['CC_BY-SA'] = array( "name" => 'Attribution-ShareAlike (CC BY-SA)', "url" => 'http://creativecommons.org/licenses/by-sa/4.0/' );
     $this->licences['CC_BY-ND'] = array( "name" => 'Attribution-NoDerivs (CC BY-ND)', "url" => 'http://creativecommons.org/licenses/by-nd/4.0/' );

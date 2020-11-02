@@ -1,5 +1,6 @@
 var es_config = {};
 es_config['host'] = ES_URL;
+es_config['requestTimeout'] = 100000;
 var client = new $.es.Client(es_config);
 
 client.ping({
@@ -160,7 +161,7 @@ $(function() {
   });
 
   // automatically show/hide the menu depending on the page width
-  if($('#sectiontitle').html() == 'OpenML' || $('#sectiontitle').html() == 'Guide'){
+  if($('#sectiontitle').html() == 'OpenML' || $('#sectiontitle').html() == 'Guide' || $('#sectiontitle').html() == 'Backend'){
     $('#mainmenu').css("display","none");
   } else if($('#wrap').width()>992){
     $('#mainmenu').css("display","block");
@@ -193,7 +194,7 @@ $(function() {
       },
       source: function(request, fresponse) {
         client.search({
-          index: 'openml',
+          index: '_all',
           body: {
             suggest: {
               mysuggester: {
@@ -268,7 +269,7 @@ $(function() {
     is_loading = 1; // note: this will break when the server doesn't respond
     function showFollowing(data) {
       next_data_cache = false;
-      if(!$(data).find("#itempage").is(':empty') && $(data).find("#itempage")[0].childElementCount > 0) {
+      if(!$(data).find("#itempage").is(':empty') && $(data).find("#itempage").length != 0 && $(data).find("#itempage")[0].childElementCount > 0) {
         $(data).find("#itempage").appendTo("#scrollingcontent");
         next_data_url = $(data).find("#itempage").attr("data-next-url");
         if(next_data_url)

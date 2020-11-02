@@ -1,6 +1,6 @@
 <?php
 
-class Downvote extends Database_write {
+class Downvote extends MY_Database_Write_Model {
 
     function __construct() {
         parent::__construct();

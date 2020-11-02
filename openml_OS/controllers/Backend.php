@@ -35,7 +35,11 @@ class Backend extends CI_Controller {
     $this->controller = strtolower(get_class ($this));
     $this->query_string = $this->uri->uri_to_assoc(2);
     $this->data_controller = $this->config->item('data_controller');
-
+    
+    if ($this->ion_auth->logged_in()) {
+      $this->user = $this->ion_auth->user()->row();
+    }
+    
     $this->page = 'home'; // default value
 
     // login is mandatory
@@ -64,18 +68,13 @@ class Backend extends CI_Controller {
     }
     if($_POST) loadpage($indicator,TRUE,'post');
 
-	  $this->load->view('frontend_main'); // frontend main will do fine for now.
+    $body = loadpage($indicator);
+	  $this->load->view('frontend_main', array('body' => $body)); // frontend main for now
   }
 
   public function error404() {
     header("Status: 404 Not Found");
     $this->load->view('404');
-  }
-
-  public function logout() {
-    $logout = $this->ion_auth->logout();
-    $this->session->set_flashdata('message', $this->ion_auth->messages());
-    redirect('frontend/page/home');
   }
 
   public function result_output() {

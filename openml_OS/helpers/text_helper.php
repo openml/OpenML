@@ -19,16 +19,25 @@ function is_safe( $unsafe ) {
   return !preg_match('/[^a-zA-Z0-9\s.,-_()]/', $unsafe );
 }
 
-function is_natural_number( $query ) {
+function is_natural_number($query) {
   return preg_match('/[0-9]+/', $query ) && !preg_match('/[^0-9]/', $query );
 }
 
-function is_cs_natural_numbers( $query ) { // is comma separated numeric
-  return preg_match('/[0-9]+[0-9\s.,]*/', $query ) && !preg_match('/[^0-9\s.,]/', $query );
+function is_cs_natural_numbers($query) { // is comma separated numeric
+  $result = true;
+  foreach(explode(',', $query) as $number) {
+    $result &= is_natural_number($number);
+  }
+  return $result;
 }
 
 function is_natural_number_range( $query ) {
   return preg_match('/[0-9]+..[0-9]+/', $query ) && !preg_match('/[^0-9\s.]/', $query );
+}
+
+function is_json($string) {
+  json_decode($string);
+  return (json_last_error() == JSON_ERROR_NONE);
 }
 
 //function startsWith($haystack, $needle) {

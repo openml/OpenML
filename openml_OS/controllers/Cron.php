@@ -18,6 +18,7 @@ class Cron extends CI_Controller {
     $this->load->helper('file_upload');
     $this->load->helper('text');
     $this->load->helper('directory');
+    $this->load->helper('arff');
 
     $this->load->library('email');
     $this->email->from( EMAIL_FROM, 'The OpenML Team');
@@ -25,6 +26,7 @@ class Cron extends CI_Controller {
     $this->load->model('Algorithm_setup');
     $this->load->model('File');
     $this->load->model('Data_quality');
+    $this->load->model('Dataset_status');
     $this->load->model('Implementation');
     $this->load->model('Math_function');
     $this->load->model('Schedule');
@@ -142,16 +144,89 @@ class Cron extends CI_Controller {
   public function build_es_indices() {
     echo "\r\nBuild_es_indices...";
     foreach($this->es_indices as $index) {
+      $this->elasticsearch->initialize_index($index);
+    }
+    foreach($this->es_indices as $index) {
       $this->indexfrom($index, 1);
     }
     echo "\r\nDone!";
+  }
+  
+  public function arff_parses($file_id) {
+    $file = $this->File->getById($file_id);
+    if ($file === false) {
+      die('File does not exists.');
+    }
+    
+    $ext = strtolower($file->extension);
+    if ($ext != 'arff' && $ext != 'sparse_arff') {
+      die('File does not have an arff extension.');
+    }
+    
+    if ($file->type == 'url') {
+      $result = ARFFcheck($file->filepath, 100);
+    } else {
+      $result = ARFFcheck(DATA_PATH . $file->filepath, 100);
+    }
+    
+    if ($result === TRUE) {
+      die('Valid arff. ');
+    } else {
+      die($result);
+    }
+  }
+  
+  function missing_file_report() {
+    $start_time = now();
+    $batch_size = 10000;
+    $missing_files = array();
+    for ($i = 0; $i == 0 || $all_records !== false; ++$i) {
+      $all_records = $this->File->getWhere('type != "url"', null, $batch_size, $i * $batch_size);
+      if ($all_records) {
+        echo now() . ' Starting with batch ' . $i . ' with ids ' . ($i * $batch_size) . ' - ' . ($batch_size + ($i * $batch_size)) . "..\n";
+        foreach ($all_records as $record) {
+          if (file_exists(DATA_PATH . $record->filepath) == false) {
+            $missing_files[] = $record->id;
+            echo now() . ' Missing file from record with id: ' . $record->id . "\n";
+          }
+        }
+      }
+    }
+    
+    $to = EMAIL_API_LOG;
+    $subject = 'OpenML Cronjob report - Missing files';
+    $content = 'Start time: ' . $start_time . "\nFinish time: " . now() . "\nServer: " . BASE_URL . "\nMissing files from records with the following ID's: " . implode(', ', $missing_files);
+    sendEmail($to, $subject, $content, 'text');
+  }
+  
+  // temp 
+  function move_run_files($start_index, $end_index) {
+    $this->load->model('Runfile');
+    $results = $this->Runfile->getWhere("source >= " . $start_index . ' AND source < ' . $end_index);
+    $run_path = 'run_structured/';
+    
+    foreach ($results as $result) {
+      $file = $this->File->getById($result->file_id);
+      
+      if (substr($file->filepath, 0, strlen($run_path)) === $run_path) {
+        continue;
+      }
+      $this->content_folder_modulo = 10000;
+      $runId = $result->source;
+      $subdirectory = floor($runId / $this->content_folder_modulo) * $this->content_folder_modulo;
+      $to_folder = $run_path . '/' . $subdirectory . '/' . $runId . '/';
+      $success = $this->File->move_file($file->id, $to_folder);
+      if (!$success) {
+        echo now() . ' failure for file ' . $result->field . ' from run id ' . $runId . "..\n";
+      }
+    }
   }
 
   function install_database() {
     echo "\r\nInstall database...";
     // note that this one does not come from DATA folder, as they are stored in github
     $models = directory_map('data/sql/', 1);
-    $manipulated_order = array('implementation.sql', 'algorithm_setup.sql', 'dataset.sql', 'study.sql', 'groups.sql', 'users.sql');
+    $manipulated_order = array('file.sql', 'implementation.sql', 'algorithm_setup.sql', 'dataset.sql', 'task_type.sql', 'task.sql', 'study.sql', 'groups.sql', 'users.sql');
 
     // moves elements of $manipulated_order to the start of the models array
     foreach (array_reverse($manipulated_order) as $name) {
@@ -159,7 +234,7 @@ class Cron extends CI_Controller {
         array_unshift($models, $name);
       }
     }
-    array_unique($models);
+    $models = array_unique($models);
 
     foreach ($models as $m) {
       $modelname = ucfirst(substr($m, 0, strpos($m, '.')));
@@ -167,11 +242,15 @@ class Cron extends CI_Controller {
       if ($this->$modelname->get() === false) {
         $sql = file_get_contents('data/sql/' . $m);
         
-        echo 'inserting ' . $modelname . ', with ' . strlen($sql) . ' characters... ' + "\n";
+        echo 'inserting ' . $modelname . ', with ' . strlen($sql) . ' characters... ' . "\n";
         // might need to adapt this, because not all models are supposed to write
         $result = $this->$modelname->query($sql);
+        
+        if ($result === false) {
+          echo 'failure: ' . $this->$modelname->mysqlErrorMessage() . "\n";
+        }
       } else {
-        echo 'skipping ' . $modelname . ', as it is not empty... ' + "\n";
+        echo 'skipping ' . $modelname . ', as it is not empty... ' . "\n";
       }
     }
     echo "\r\nDone!";
@@ -214,10 +293,9 @@ class Cron extends CI_Controller {
         $evaluation_keys = array('e.repeat', 'e.fold', 'e.sample', 'e.sample_size', 'm.name');
         $evaluation_column = 'evaluation_sample';
       }
-
-      if (create_dir(DATA_PATH . $this->dir_suffix) == false) {
-        $this->_error_meta_dataset($meta_dataset->id, 'Failed to create data directory. ', $meta_dataset->user_id);
-        return;
+      
+      if (file_exists(DATA_PATH . $this->dir_suffix) == false) {
+        mkdir(DATA_PATH . $this->dir_suffix, $this->config->item('content_directories_mode'), true);
       }
 
       $tmp_path = '/tmp/' . rand_string( 20 ) . '.csv';

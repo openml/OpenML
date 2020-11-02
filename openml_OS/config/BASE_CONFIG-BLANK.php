@@ -154,11 +154,6 @@ define( 'EMAIL_FROM', 'noreply@openml.org' );
 define( 'EMAIL_API_LOG', 'api@openml.org' );
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * DISQUS_USERNAME: The username for the discuss plug-in.
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-define( 'DISQUS_USERNAME', 'DISQUS USERNAME HERE' );
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * EXTERNAL API SETTINGS
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * EXTERNAL_API_PROXY: Set this to true if you want to use a proxy

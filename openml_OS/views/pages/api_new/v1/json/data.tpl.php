@@ -8,6 +8,7 @@
    "version":<?php echo $data->version; ?>,
    "status":"<?php echo $data->status; ?>",
    "format":"<?php echo $data->format; ?>",
+   "md5_checksum":"<?php echo $data->md5_checksum; ?>",
    <?php if ($data->file_id != null): /* optional field! */?>
    "file_id": <?php echo $data->file_id; ?>,
    <?php endif; ?>

@@ -1,19 +1,22 @@
 <?php
 
-function check_uploaded_file( $file, $image_restriction = false, &$message = NULL ) {
-  if( $file == false ) {
+function check_uploaded_file($file, $image_restriction = false, &$message = NULL) {
+  if($file == false) {
     $message = 'File meta-info is missing. ';
     return false;
-  } else if( is_array($file) == false ) {
+  } else if(is_array($file) == false) {
     $message = 'File meta-info is no array. ';
     return false;
-  } else if( $file['error'] > 0 ) { // php error generated
-    $message = 'Upload Error ' . $file['error'] . ': ' . upload_error_message( $file['error'] );
+  } else if($file['size'] == 0) {
+    $message = 'Filesize is 0 bytes, which is not allowed. ';
     return false;
-  } else if( ! file_exists( $file['tmp_name'] ) ) { // file doesn't exist
+  } else if($file['error'] > 0) { // php error generated
+    $message = 'Upload Error ' . $file['error'] . ': ' . upload_error_message($file['error']);
+    return false;
+  } else if(!file_exists($file['tmp_name'])) { // file doesn't exist
     $message = 'File not present at expected location. ';
     return false;
-  } else if( $image_restriction && substr( $file['type'], 0, 5 ) != 'image' ) {
+  } else if($image_restriction && substr($file['type'], 0, 5) != 'image') {
     $message = 'File should be an image; MIME-type does not confirm this. ';
     return false;
   }
@@ -124,43 +127,6 @@ function crop_image( $image_path, $target_width, $target_height ) {
   $ci->image_lib->initialize($config);
   $ci->image_lib->crop();
   $ci->image_lib->clear();
-}
-
-/**
- * Checks if a directory exists, and creates it if allowed. 
- **/
-function create_dir( $directory ) {
-  $ci =& get_instance();
-  $creation_rights = $ci->config->item('content_directories_create');
-  $creation_mode = $ci->config->item('content_directories_mode');
-  
-  if(! file_exists( $directory ) ) {
-    if( $creation_rights ) {
-      $res = true;
-      $all_dirs = explode( '/', $directory );
-      $total_path = '/';
-      foreach( $all_dirs as $dir ) {
-        if( $dir != '' ) {
-          $total_path .= $dir . '/';
-          if(! file_exists( $total_path ) ) {
-            $res = $res && mkdir( $total_path, $creation_mode );
-          }
-        }
-      }
-      
-      if($res) {
-        return true;
-      } else {
-        // TODO: log it
-        return false;
-      }
-    } else {
-      return false;
-    }
-  } else {
-    // directory already exists
-    return true;
-  }
 }
 
 function fileRecordToUrl( $file ) {

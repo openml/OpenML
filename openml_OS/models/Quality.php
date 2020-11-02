@@ -1,5 +1,5 @@
 <?php
-class Quality extends Database_read {
+class Quality extends MY_Database_Read_Model {
   
   function __construct() {
     parent::__construct();

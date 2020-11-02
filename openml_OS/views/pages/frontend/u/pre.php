@@ -9,11 +9,11 @@ if(false !== strpos($_SERVER['REQUEST_URI'],'/u/')) {
 	$this->user_id = $info[array_search('u',$info)+1];
 	$this->baseurl = $_SERVER['REQUEST_URI'];
 	$this->author = $this->Author->getById($this->user_id);
-	$this->activity_subpages = array('flows','data','runs');
+	$this->activity_subpages = array('flows','data','runs','tasks');
 
 	//get data from ES
 	$this->p = array();
-	$this->p['index'] = 'openml';
+	$this->p['index'] = 'user';
 	$this->p['type'] = 'user';
 	$this->p['id'] = $this->user_id;
 	try{
@@ -114,13 +114,13 @@ $this->bio = array(
 	'class' => 'form-control floating-label'
 );
 
-$this->affiliation = array(
+$this->company = array(
 	'placeholder' => 'Affiliation',
 	'data-hint' => 'The organization where you work. This may help you connect to interesting people.',
-	'name' => 'affiliation',
-	'id' => 'affiliation',
+	'name' => 'company',
+	'id' => 'company',
 	'type' => 'text',
-	'value' => $this->user->affiliation,
+	'value' => $this->user->company,
 	'class' => 'form-control floating-label'
 );
 

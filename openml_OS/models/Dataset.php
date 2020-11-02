@@ -1,5 +1,5 @@
 <?php
-class Dataset extends Database_write {
+class Dataset extends MY_Database_Write_Model {
   
   function __construct() {
     parent::__construct();

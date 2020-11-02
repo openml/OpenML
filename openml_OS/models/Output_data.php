@@ -1,5 +1,5 @@
 <?php
-class Output_data extends Database_write {
+class Output_data extends MY_Database_Write_Model {
   
   function __construct() {
     parent::__construct();

@@ -114,15 +114,20 @@ options2 = {
         };
 
 client.search({
-  index: 'openml',
+  index: 'run',
   type: 'run',
   size: '5000',
 	body: {
 		_source: [ "run_id", "date", "run_flow.name", "run_flow.flow_id", "uploader", "uploader_id", "evaluations.evaluation_measure", "evaluations.value" ],
 		query: {
-			term: {
-				'run_task.task_id': current_task
-			}
+			 bool: {
+				 must: [{term: {'run_task.task_id': current_task }},
+							 <?php if($this->task['visibility'] == 'private' and !$this->is_admin){?>
+								{term: {'uploader_id': <?php echo $this->user_id; ?>}},
+							 <?php }?>
+								{nested: {path: "evaluations",
+													query: {exists: {field: "evaluations"}}}}]
+			 }
 		},
 		sort: { 'date' : 'asc' }
 	}
@@ -138,6 +143,11 @@ client.search({
   var pairs = new Set();
 	d[0] = [];
 	names[0] = 'frontier';
+
+	var embargo_end_date = null;
+	<?php if(array_key_exists('embargo_end_date', $this->task)){
+		echo 'embargo_end_date = Date.parse("'. str_replace(" ","T",$this->task['embargo_end_date']) .'");';
+	}?>
 
 	for(var i=0;i<data.length;i++){
 		var run = data[i]['_source'];
@@ -161,8 +171,8 @@ client.search({
 			if(d[0].length==0 || (higherIsBetter && e > d[0][d[0].length-1]['y']) || (!higherIsBetter && e < d[0][d[0].length-1]['y'])){
 				d[0].push({x: dat, y: e, f: run['run_flow']['name'], r: run['run_id'], u: run['uploader'], t: getEval(evals,'build_cpu_time')});
 			}
-
-			if(!pairs.has(run['run_flow']['name']+e)){ //check if submission is new
+			//check if submission is new or submitted during closed phase
+			if(!pairs.has(run['run_flow']['name']+e) || (embargo_end_date !== null && embargo_end_date > dat)){
 				pairs.add(run['run_flow']['name']+e);
 				var l = leaders[map[run['uploader']]-1];
 				l.entries = l.entries+1;
@@ -241,13 +251,16 @@ function leaderboard(data){
 function showData(){
 	updateTableHeader();
 	client.search({
-	  index: 'openml',
+	  index: 'run',
 	  type: 'run',
 	  size: 0,
 	  body: {
 	    query: {
 				 bool: {
 					 must: [{term: {'run_task.task_id': current_task }},
+					 			 <?php if($this->task['visibility'] == 'private' and !$this->is_admin){?>
+									{term: {'uploader_id': <?php echo $this->user_id; ?>}},
+								 <?php }?>
 					 				{nested: {path: "evaluations",
 														query: {exists: {field: "evaluations"}}}}]
 				 }
@@ -256,7 +269,7 @@ function showData(){
 					'flows' : {
 							terms : {
 								field : "run_flow.flow_id",
-								size: 1000
+								size: 100
 							},
 							aggs : {
 									'top_score': {
@@ -275,7 +288,7 @@ function showData(){
 										      }
 										    }
 										    ],
-												size: 1000
+												size: 100
 											}
 									}
 							}

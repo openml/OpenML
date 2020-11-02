@@ -11,7 +11,7 @@
       <xs:element name="flow_id" type="xs:integer"/> <!-- The id of the implementation (algorithm, workflow,...) used to solve the task. This id is returned by the API when you first upload the implementation, or given in the implementation description when you download an existing implementation. -->
       <xs:element name="flow_name" minOccurs="0" type="oml:casual_string1024"/> <!--Added by server. Ignored when uploading a run -->
       <xs:element name="setup_id" minOccurs="0" type="xs:integer"/> <!-- the setup id, will be ignored when uploading a run (i.e., it will be searched based on the parameter settings) -->
-      <xs:element name="setup_string" minOccurs="0" type="xs:string"/> <!-- The CLI string that can invoke the learner with the correct parameter settings. -->
+      <xs:element name="setup_string" minOccurs="0" type="oml:basic_latin2048"/> <!-- The CLI string that can invoke the learner with the correct parameter settings. -->
       <xs:element name="error_message" minOccurs="0" type="oml:basic_latin128"/> <!-- Whenever an error occurs during the run, this can be reported here for further inspection and on line logging purposes. -->
       <xs:element name="run_details" minOccurs="0" type="oml:casual_string1024"/> <!-- Any other information useful for reproducing the run, e.g. exact package versions, hardware info. -->
       <xs:element name="parameter_setting" minOccurs="0" maxOccurs="unbounded" type="oml:parameter_setting"/> <!-- The parameter settings used in this run -->
@@ -24,7 +24,7 @@
     <xs:sequence>
       <xs:element name="name" type="oml:casual_string1024"/> <!-- The name of the parameter that is set -->
       <xs:element name="value" type="oml:basic_latin2048"/> <!-- The value used for this parameter -->
-      <xs:element name="component" minOccurs="0" maxOccurs="1" type="oml:casual_string1024"/> <!-- If the parameter belongs to a subcomponent of an implementation, the implementation name of that component. This name must match a component of the implementation that is stated above (in 'implementation_id'). -->
+      <xs:element name="component" minOccurs="0" maxOccurs="1" type="xs:integer"/> <!-- If the parameter belongs to a subcomponent of an implementation, the flow id of that component. This name must match the id of a component of the implementation that is stated above (in 'implementation_id'). -->
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="data">
@@ -90,11 +90,11 @@
        <xs:minLength value="1" />
     </xs:restriction>
   </xs:simpleType>
-  <xs:simpleType name="basic_latin2048">
+  <xs:simpleType name="basic_latin2048"> <!-- TODO: NOTE THAT MIN LENGTH IS 0. CHANGE WHEN OK? -->
     <xs:restriction base="xs:string">
       <xs:pattern value="\p{IsBasicLatin}*"/>
       <xs:maxLength value="2048" />
-      <xs:minLength value="1" />
+      <xs:minLength value="0" />
     </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="basic_latin1024">

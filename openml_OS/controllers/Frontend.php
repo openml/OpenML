@@ -29,6 +29,7 @@ class Frontend extends CI_Controller {
 
     $this->load->model('Meta_dataset');
     $this->load->model('Author');
+    $this->load->model('Users');
 
     $this->load->helper('table');
     $this->load->helper('tasksearch');
@@ -43,6 +44,10 @@ class Frontend extends CI_Controller {
     $this->controller = strtolower(get_class ($this));
     $this->query_string = $this->uri->uri_to_assoc(2);
     $this->data_controller = $this->config->item('data_controller');
+    
+    if ($this->ion_auth->logged_in()) {
+      $this->user = $this->ion_auth->user()->row();
+    }
 
     $this->page = 'home'; // default value
     $this->subpage = false;
@@ -83,6 +88,7 @@ class Frontend extends CI_Controller {
       }
       if($_POST) loadpage($indicator,TRUE,'post');
     }
+    
     if(false !== strpos($_SERVER['REQUEST_URI'],'/html')){
 	    $this->load->view('html_main');
     } elseif(false !== strpos($_SERVER['REQUEST_URI'],'/json')){
@@ -92,19 +98,13 @@ class Frontend extends CI_Controller {
     } elseif(false !== strpos($_SERVER['REQUEST_URI'],'/output')){
 	    $this->load->view('output_main');
     } else {
-	    $this->load->view('frontend_main');
+	    $this->load->view('frontend_main', array('body' => $indicator));
     }
   }
 
   public function error404() {
     header("Status: 404 Not Found");
     $this->load->view('404');
-  }
-
-  public function logout() {
-    $logout = $this->ion_auth->logout();
-    $this->session->set_flashdata('message', $this->ion_auth->messages());
-    redirect('home');
   }
 
   public function result_output() {

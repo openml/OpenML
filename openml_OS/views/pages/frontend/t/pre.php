@@ -12,8 +12,12 @@ $this->load_css = array('https://cdn.datatables.net/1.10.13/css/jquery.dataTable
 'https://cdn.datatables.net/buttons/1.2.4/css/buttons.dataTables.min.css');
 
 $this->user_id = -1;
+$this->is_admin = false;
 if ($this->ion_auth->logged_in()) {
 	$this->user_id = $this->ion_auth->user()->row()->id;
+	if ($this->ion_auth->is_admin()){
+		$this->is_admin = true;
+	}
 }
 
 /// SEARCH
@@ -35,12 +39,12 @@ if(false === strpos($_SERVER['REQUEST_URI'],'type') && false !== strpos($_SERVER
 
 	//get data from ES
 	$this->p = array();
-	$this->p['index'] = 'openml';
+	$this->p['index'] = 'task';
 	$this->p['type'] = 'task';
 	$this->p['id'] = $this->task_id;
 
   $this->down = array();
-  $this->down['index'] = 'openml';
+  $this->down['index'] = 'downvote';
   $this->down['type'] = 'downvote';
   $json = '{
               "query": {
@@ -55,7 +59,7 @@ if(false === strpos($_SERVER['REQUEST_URI'],'type') && false !== strpos($_SERVER
   $this->down['body'] = $json;
   if ($this->ion_auth->logged_in()) {
       $this->l = array();
-      $this->l['index'] = 'openml';
+      $this->l['index'] = 'like';
       $this->l['type'] = 'like';
       $json = '{
                   "query": {
@@ -75,7 +79,7 @@ if(false === strpos($_SERVER['REQUEST_URI'],'type') && false !== strpos($_SERVER
 		$this->task = $result['_source'];
 
 		$this->tt = array();
-		$this->tt['index'] = 'openml';
+		$this->tt['index'] = 'task_type';
 		$this->tt['type'] = 'task_type';
 		$this->tt['id'] = $this->task['tasktype']['tt_id'];
 		$this->tasktype = $this->searchclient->get($this->tt)['_source'];

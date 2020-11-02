@@ -15,20 +15,15 @@
        <li><a href="https://twitter.com/intent/tweet?screen_name=open_ml&text=%23openml.org" data-related="open_ml"><i class="fa fa-twitter fa-fw fa-lg"></i></a></li>
      </ul>
 
-
     <h2 class="contact-header">Report issues, feature request</h2>
-    <p>OpenML is an open source project on GitHub. If you are familiar with GitHub, please post issues and feature request there:</p>
-    <a href="https://github.com/openml/OpenML/issues"><i class="fa fa-github fa-lg"></i> OpenML project, API</a><br><br>
-    <a href="https://github.com/openml/website/issues"><i class="fa fa-github fa-lg"></i> Website</a><br><br>
-    <a href="https://github.com/openml/openml-r/issues"><i class="fa fa-github fa-lg"></i> R interface</a><br><br>
-    <a href="https://github.com/openml/openml-python/issues"><i class="fa fa-github fa-lg"></i> Python interface</a><br><br>
+    <p>OpenML is an open source project on GitHub. To get help quickly, please <a href='https://docs.openml.org/developers/'>post issues in our GitHub issue trackers</a></p>.
 
-    <h2 id="team-core">Our Team</h2>
-    <p>OpenML is a community effort, and <a href="https://github.com/openml/OpenML/wiki/How-to-contribute">everybody is welcome to contribute</a>. Below are some of the core contributors, but also check out <a href="https://github.com/openml/">our GitHub page</a>.<br />
+    <h2 id="team-core">Core Team</h2>
+    <p>OpenML wouldn't exist without these people who put their heart and soul into making machine learning easier for all</p>
 
     <?php
-     if( $this->team != false ) {
-        foreach( $this->team as $t ) { ?>
+     if( $this->coreteam != false ) {
+        foreach( $this->coreteam as $t ) { ?>
     			<div class="col-md-4 head">
     				<img src="<?php echo htmlentities( authorImage( $t->image ) );?>" class="img-circle" width="70" /><br/><br/>
     				<span class="membername"><a href="u/<?php echo $t->id;?>"><?php echo $t->first_name.' '.$t->last_name; ?></a></span><br>
@@ -36,8 +31,24 @@
     			</div>
     <?php }}?>
 
-    <h2 id="terms-data">Get involved</h2>
-    <i class="fa fa-heart" style="color:red;"></i> We always <a href='https://github.com/openml/OpenML/wiki/How-to-contribute'>love to welcome new contributers</a>.
+    <h2 id="team-core" style="padding-top:100px">Key contributors</h2>
+    <p>OpenML is a community effort, and <a href="https://docs.openml.org/Contributing/">everybody is welcome to contribute</a>.
+       We are tremendously grateful to our key contributors who markedly improved the project for the benefit of all.<br />
+       Also check out <a href="https://github.com/openml/">our GitHub page</a> for our other active contributors.</p>
+
+    <?php
+     if( $this->team != false ) {
+        foreach( $this->team as $t ) { ?>
+          <div class="col-md-4 head">
+            <img src="<?php echo htmlentities( authorImage( $t->image ) );?>" class="img-circle" width="70" /><br/><br/>
+            <span class="membername"><a href="u/<?php echo $t->id;?>"><?php echo $t->first_name.' '.$t->last_name; ?></a></span><br>
+            <span class="memberline"><?php echo $t->bio; ?></span>
+          </div>
+    <?php }}?>
+
+    <h2 id="terms-data" style="padding-top:100px">Get involved</h2>
+    <i class="fa fa-heart" style="color:red;"></i> We always <a href='https://github.com/openml/OpenML/wiki/How-to-contribute'>love to welcome new contributors.
+      Come and help us change the world!</a>.
 
  </div> <!-- end col-10 -->
 

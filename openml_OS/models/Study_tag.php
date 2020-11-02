@@ -1,5 +1,5 @@
 <?php
-class Study_tag extends Database_write {
+class Study_tag extends MY_Database_Write_Model {
 
   function __construct() {
     parent::__construct();

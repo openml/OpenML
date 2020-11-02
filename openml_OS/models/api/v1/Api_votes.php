@@ -1,6 +1,6 @@
 <?php
 
-class Api_votes extends Api_model {
+class Api_votes extends MY_Api_Model {
 
     protected $version = 'v1';
 

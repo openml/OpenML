@@ -43,11 +43,6 @@ class ElasticSearch {
             }
 
         $this->mappings['badge'] = array(
-            '_all' => array(
-                'enabled' => true,
-                'type' => 'string',
-                'analyzer' => 'snowball'
-            ),
             'properties' => array(
                 'time' => array(
                     'type' => 'date',
@@ -56,11 +51,6 @@ class ElasticSearch {
         );
 
         $this->mappings['downvote'] = array(
-            '_all' => array(
-                'enabled' => true,
-                'type' => 'string',
-                'analyzer' => 'snowball'
-            ),
             'properties' => array(
                 'time' => array(
                     'type' => 'date',
@@ -69,11 +59,6 @@ class ElasticSearch {
         );
 
         $this->mappings['like'] = array(
-            '_all' => array(
-                'enabled' => true,
-                'type' => 'string',
-                'analyzer' => 'snowball'
-            ),
             'properties' => array(
                 'time' => array(
                     'type' => 'date',
@@ -82,11 +67,6 @@ class ElasticSearch {
         );
 
         $this->mappings['download'] = array(
-            '_all' => array(
-                'enabled' => true,
-                'type' => 'string',
-                'analyzer' => 'snowball'
-            ),
             'properties' => array(
                 'time' => array(
                     'type' => 'date',
@@ -95,69 +75,60 @@ class ElasticSearch {
         );
 
         $this->mappings['data'] = array(
-            '_all' => array(
-                'enabled' => true,
-                'type' => 'string',
-                'analyzer' => 'snowball'
-            ),
             'properties' => array(
                 'date' => array(
                     'type' => 'date',
-                    'format' => 'yyyy-MM-dd HH:mm:ss'),
+                    'format' => 'yyyy-MM-dd HH:mm:ss',
+		    'fields' => array(
+            		'keyword' => array(
+			   'type' => 'keyword'))
+		),
                 'uploader' => array(
-                    'type' => 'string',
+                    'type' => 'text',
                     'analyzer' => 'keyword'
                 ),
                 'exact_name' => array(
-                    'type' => 'string',
-                    'index' => 'not_analyzed'
+                    'type' => 'keyword'
                 ),
                 'tags' => array(
                     'type' => 'nested',
                     'properties' => array(
-                        'tag' => array('type' => 'string'),
-                        'uploader' => array('type' => 'string'))),
+                        'tag' => array('type' => 'text'),
+                        'uploader' => array('type' => 'text'))),
                 'last_update' => array(
                     'type' => 'date',
                     'format' => 'yyyy-MM-dd HH:mm:ss'),
                 'description' => array(
-                    'type' => 'string',
+                    'type' => 'text',
                     'analyzer' => 'snowball'),
                 'data_id' => array('type' => 'long'),
                 'version' => array('type' => 'float'),
                 'name' => array(
-                    'type' => 'string',
+                    'type' => 'text',
                     'analyzer' => 'snowball'),
                 'visibility' => array(
-                    'type' => 'string',
-                    'index' => 'not_analyzed'),
+                    'type' => 'keyword'),
                 'format' => array(
-                    'type' => 'string',
-                    'index' => 'not_analyzed'),
+                    'type' => 'keyword'),
                 'suggest' => array(
                     'type' => 'completion',
                     'analyzer' => 'standard')
             )
         );
-          $this->mappings['flow'] = array('_all' => array(
-                'enabled' => true,
-                'type' => 'string',
-                'analyzer' => 'snowball'
-            ),
+	$this->mappings['flow'] = array(
             'properties' => array(
                 'date' => array(
                     'type' => 'date',
                     'format' => 'yyyy-MM-dd HH:mm:ss'
                 ),
                 'exact_name' => array(
-                    'type' => 'string',
-                    'index' => 'not_analyzed'
+                    'type' => 'keyword',
                 ),
                 'tags' => array(
                     'type' => 'nested',
                     'properties' => array(
-                        'tag' => array('type' => 'string'),
-                        'uploader' => array('type' => 'string'))),
+                        'tag' => array('type' => 'text'),
+                        'uploader' => array('type' => 'text'))),
                 'flow_id' => array('type' => 'long'),
                 'version' => array('type' => 'float'),
                 'last_update' => array(
@@ -165,19 +136,19 @@ class ElasticSearch {
                     'format' => 'yyyy-MM-dd HH:mm:ss'
                 ),
                 'uploader' => array(
-                    'type' => 'string',
+                    'type' => 'text',
                     'analyzer' => 'keyword'
                 ),
                 'description' => array(
-                    'type' => 'string',
+                    'type' => 'text',
                     'analyzer' => 'snowball'
                 ),
                 'full_description' => array(
-                    'type' => 'string',
+                    'type' => 'text',
                     'analyzer' => 'snowball'
                 ),
                 'name' => array(
-                    'type' => 'string',
+                    'type' => 'text',
                     'analyzer' => 'snowball'
                 ),
                 'suggest' => array(
@@ -186,11 +157,7 @@ class ElasticSearch {
                 )
             )
         );
-        $this->mappings['user'] = array('_all' => array(
-                'enabled' => true,
-                'type' => 'string',
-                'analyzer' => 'snowball'
-            ),
+	$this->mappings['user'] = array(
             'properties' => array(
                 'date' => array(
                     'type' => 'date',
@@ -206,11 +173,7 @@ class ElasticSearch {
                 )
             )
         );
-        $this->mappings['task'] = array('_all' => array(
-                'enabled' => true,
-                'type' => 'string',
-                'analyzer' => 'snowball'
-            ),
+	$this->mappings['task'] = array(
             'properties' => array(
                 'date' => array(
                     'type' => 'date',
@@ -222,27 +185,21 @@ class ElasticSearch {
                 'tags' => array(
                     'type' => 'nested',
                     'properties' => array(
-                        'tag' => array('type' => 'string'),
-                        'uploader' => array('type' => 'string'))),
+                        'tag' => array('type' => 'text'),
+                        'uploader' => array('type' => 'text'))),
                 'task_id' => array('type' => 'long'),
                 'tasktype.tt_id' => array('type' => 'long'),
-                'date' => array(
-                    'type' => 'date',
-                    'format' => 'yyyy-MM-dd HH:mm:ss')
+		            'runs' => array('type' => 'long')
             )
         );
-        $this->mappings['task_type'] = array('_all' => array(
-                'enabled' => true,
-                'type' => 'string',
-                'analyzer' => 'snowball'
-            ),
+	$this->mappings['task_type'] = array(
             'properties' => array(
                 'description' => array(
-                    'type' => 'string',
+                    'type' => 'text',
                     'analyzer' => 'snowball'
                 ),
                 'name' => array(
-                    'type' => 'string',
+                    'type' => 'text',
                     'analyzer' => 'snowball'
                 ),
                 'date' => array(
@@ -254,11 +211,7 @@ class ElasticSearch {
                 )
             )
         );
-        $this->mappings['run'] = array('_all' => array(
-                'enabled' => true,
-                'type' => 'string',
-                'analyzer' => 'snowball'
-            ),
+	$this->mappings['run'] = array(
             'properties' => array(
                 'date' => array(
                     'type' => 'date',
@@ -267,8 +220,8 @@ class ElasticSearch {
                 'tags' => array(
                     'type' => 'nested',
                     'properties' => array(
-                        'tag' => array('type' => 'string'),
-                        'uploader' => array('type' => 'string'))),
+                        'tag' => array('type' => 'text'),
+                        'uploader' => array('type' => 'text'))),
                 'run_id' => array('type' => 'long'),
                 'run_flow.flow_id' => array('type' => 'long'),
                 'run_flow.name'  => array('type' => 'text', 'fielddata' => true),
@@ -277,41 +230,36 @@ class ElasticSearch {
                     'format' => 'yyyy-MM-dd HH:mm:ss'
                 ),
                 'uploader' => array(
-                    'type' => 'string',
+                    'type' => 'text',
                     'analyzer' => 'keyword'
                 ),
                 'evaluations' => array(
                     'type' => 'nested',
                     'properties' => array(
-                        'evaluation_measure' => array('type' => 'string'),
-                        'value' => array('type' => 'string', 'fielddata' => true)
+                        'evaluation_measure' => array('type' => 'text'),
+                        'value' => array('type' => 'text', 'fielddata' => true)
                     )
                 )
             )
         );
-        $this->mappings['study'] = array('_all' => array(
-                'enabled' => true,
-                'type' => 'string',
-                'analyzer' => 'snowball'
-            ),
+	$this->mappings['study'] = array(
             'properties' => array(
                 'name' => array(
-                    'type' => 'string',
+                    'type' => 'text',
                     'analyzer' => 'snowball'),
                 'visibility' => array(
-                    'type' => 'string',
-                    'index' => 'not_analyzed'),
+                    'type' => 'keyword'),
                 'date' => array(
                     'type' => 'date',
                     'format' => 'yyyy-MM-dd HH:mm:ss'
                 ),
                 'description' => array(
-                    'type' => 'string',
+                    'type' => 'text',
                     'analyzer' => 'snowball'
                 ),
                 'study_id' => array('type' => 'long'),
                 'uploader' => array(
-                    'type' => 'string',
+                    'type' => 'text',
                     'analyzer' => 'keyword'
                 ),
                 'suggest' => array(
@@ -321,25 +269,17 @@ class ElasticSearch {
             )
         );
 
-  $this->mappings['measure'] = array('_all' => array(
-                'enabled' => true,
-                'type' => 'string',
-                'analyzer' => 'snowball'
-            ),
+	$this->mappings['measure'] = array(
             'properties' => array(
                 'description' => array(
-                    'type' => 'string',
+                    'type' => 'text',
                     'analyzer' => 'snowball'
                 ),
                 'name' => array(
-                    'type' => 'string',
+                    'type' => 'text',
                     'analyzer' => 'snowball'
                 ),
                 'measure_type' => array(
-                    'type' => 'text',
-                    'fielddata' => true
-                ),
-                'priority' => array(
                     'type' => 'text',
                     'fielddata' => true
                 ),
@@ -360,15 +300,14 @@ class ElasticSearch {
     }
 
     public function get_types() {
-        $params['index'] = 'openml';
-        $array_data = $this->client->indices()->getMapping($params);
-        return array_keys($array_data['openml']['mappings']);
+        $params['index'] = '_all';
+	$array_data = $this->client->indices()->getMapping($params);
+        return array_keys($array_data);
     }
 
     public function index($type, $id = false, $altmetrics=True, $verbosity=0) {
         //bootstrap
-        $indexParams['index'] = 'openml';
-        $indexParams['type'] = $type;
+        $indexParams['index'] = $type;
         if(! $this->client->indices()->getMapping($indexParams))
           echo $this->initialize_index($type);
         elseif (! $this->init_indexer)
@@ -378,7 +317,8 @@ class ElasticSearch {
         if (method_exists($this, $method_name)) {
             try {
                 return $this->$method_name($id, $altmetrics, $verbosity);
-            } catch (Exception $e) {
+	    } catch (Exception $e) {
+		echo $e->getMessage();
                 // TODO: log?
             }
         } else {
@@ -388,8 +328,7 @@ class ElasticSearch {
 
     public function index_from($type, $id = false, $verbosity=1, $altmetrics=True) {
         //bootstrap
-        $indexParams['index'] = 'openml';
-        $indexParams['type'] = $type;
+        $indexParams['index'] = $type;
         if(! $this->client->indices()->getMapping($indexParams))
           echo $this->initialize_index($type);
         elseif (! $this->init_indexer)
@@ -399,7 +338,8 @@ class ElasticSearch {
         if (method_exists($this, $method_name)) {
             try {
                 return $this->$method_name(false, $id, $altmetrics, $verbosity);
-            } catch (Exception $e) {
+	    } catch (Exception $e) {
+		echo $e->getMessage();
                 // TODO: log?
             }
         } else {
@@ -409,8 +349,8 @@ class ElasticSearch {
 
     public function delete($type, $id = false) {
         $deleteParams = array();
-        $deleteParams['index'] = 'openml';
-        $deleteParams['type'] = $type;
+        $deleteParams['index'] = $type;
+	$deleteParams['type'] = $type;
         $deleteParams['id'] = $id;
         $response = $this->client->delete($deleteParams);
         return $response;
@@ -418,7 +358,7 @@ class ElasticSearch {
 
     public function initialize_settings() {
 
-        $params['index'] = 'openml';
+        $params['index'] = '_all';
         $params['body']['index']['analysis']['analyzer']['keyword-ci'] = array('tokenizer' => 'keyword', 'filter' => 'lowercase');
         $this->client->indices()->putSettings($params);
 
@@ -428,19 +368,28 @@ class ElasticSearch {
     public function initialize_index($t) {
         if(!$this->init_indexer)
              $this->initialize();
-        $params['index'] = 'openml';
-        $params['type'] = $t;
-        $params['update_all_types'] = TRUE;
-        $params['body'][$t] = $this->mappings[$t];
-        $this->client->indices()->putMapping($params);
-
+	$createparams = array(
+	    'index' => $t,
+    	    'body' => array(
+        	'settings' => array(
+		    'index' => array(
+            		'number_of_shards' => 1,
+            		'number_of_replicas' => 0
+		    )
+		),
+		'mappings' => array(
+                    $t => $this->mappings[$t]
+		)
+	    )
+        );
+	$this->client->indices()->create($createparams);
         return '[Initialized mapping for ' . $t. '] ';
     }
 
     public function index_downvote($id, $start_id = 0, $altmetrics=True, $verbosity=0){
 
-        $params['index'] = 'openml';
-        $params['type'] = 'downvote';
+        $params['index'] = 'downvote';
+	$params['type'] = 'downvote';
 
         $downvotes = $this->CI->Downvote->getDownvote($id);
 
@@ -464,9 +413,8 @@ class ElasticSearch {
 
     public function index_like($id, $start_id = 0, $altmetrics=True, $verbosity=0){
 
-        $params['index'] = 'openml';
+        $params['index'] = 'like';
         $params['type'] = 'like';
-
         $likes = $this->db->query('select * from likes' . ($id ? ' where lid=' . $id : ''));
 
         if ($id and ! $likes)
@@ -516,9 +464,8 @@ class ElasticSearch {
     }
 
     public function index_download($id, $start_id = 0, $altmetrics=True, $verbosity=0){
-        $params['index'] = 'openml';
+        $params['index'] = 'download';
         $params['type'] = 'download';
-
         $downloads = $this->db->query('select * from downloads' . ($id ? ' where did=' . $id : ''));
 
         if ($id and ! $downloads)
@@ -556,10 +503,9 @@ class ElasticSearch {
 
     public function index_user($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
 
-        $params['index'] = 'openml';
+        $params['index'] = 'user';
         $params['type'] = 'user';
-
-        $users = $this->userdb->query('select id, first_name, last_name, email, affiliation, country, bio, image, created_on, gamification_visibility from users where active="1"' . ($id ? ' and id=' . $id : ''));
+        $users = $this->userdb->query('select id, first_name, last_name, email, company, country, bio, image, created_on, gamification_visibility from users where active="1"' . ($id ? ' and id=' . $id : ''));
 
         if ($id and ! $users)
             return 'Error: user ' . $id . ' is unknown';
@@ -585,7 +531,7 @@ class ElasticSearch {
             'first_name' => $d->first_name,
             'last_name' => $d->last_name,
             'email' => $d->email,
-            'affiliation' => $d->affiliation,
+            'company' => $d->company,
             'country' => $d->country,
             'bio' => $d->bio,
             'image' => $d->image,
@@ -598,7 +544,7 @@ class ElasticSearch {
             'gamification_visibility' => $d->gamification_visibility
         );
 
-        $uploads = $this->CI->KnowledgePiece->getNumberOfUploadsOfUser($d->id);
+        $uploads = $this->CI->KnowledgePiece->getTotalNumberOfUploadsOfUser($d->id);
         $data_up = 0;
         $flow_up = 0;
         $task_up = 0;
@@ -752,7 +698,7 @@ class ElasticSearch {
         if($d->gamification_visibility=='show'){
             $user['reach'] = $this->CI->Gamification->getReachFromParts($user['likes_received'],$user['downloads_received']);
 
-            $impact_struct = $this->CI->Gamification->getImpact('u',$d->id,"2013-1-1",date("Y-m-d"));
+            $impact_struct = $this->CI->Gamification->getTotalImpact('u',$d->id,"2013-1-1",date("Y-m-d"));
 
             $user['reuse'] = $impact_struct['reuse'];
 
@@ -777,9 +723,8 @@ class ElasticSearch {
 
     public function index_study($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
 
-        $params['index'] = 'openml';
+        $params['index'] = 'study';
         $params['type'] = 'study';
-
         $studies = $this->db->query('select * from study' . ($id ? ' where id=' . $id : ''));
 
         if ($id and ! $studies)
@@ -812,10 +757,12 @@ class ElasticSearch {
             'name' => $d->name,
             'alias' => $d->alias,
             'description' => $d->description,
-            'date' => $d->created,
+            'date' => $d->creation_date,
             'uploader_id' => $d->creator,
             'uploader' => array_key_exists($d->creator, $this->user_names) ? $this->user_names[$d->creator] : 'Unknown',
             'visibility' => $d->visibility,
+            'study_type' => $d->main_entity_type,
+            'legacy' => $d->legacy,
             'suggest' => array(
                 'input' => array($d->name, $d->description . ' '),
                 'weight' => 5
@@ -825,30 +772,55 @@ class ElasticSearch {
         $study['tasks_included'] = 0;
         $study['flows_included'] = 0;
         $study['runs_included'] = 0;
+        $data_tagged = NULL;
+        $task_tagged = NULL;
+        $flows_tagged = NULL;
+        $runs_tagged = NULL;
 
-        $data_tagged = $this->db->query("select count(id) as count from dataset_tag where tag='study_" . $d->id . "'");
-        if ($data_tagged)
-            $study['datasets_included'] = $data_tagged[0]->count;
-
-        $task_tagged = $this->db->query("select count(id) as count from task_tag where tag='study_" . $d->id . "'");
-        if ($task_tagged)
-            $study['tasks_included'] = $task_tagged[0]->count;
-
-        $flows_tagged = $this->db->query("select count(id) as count from implementation_tag where tag='study_" . $d->id . "'");
-        if ($flows_tagged)
-            $study['flows_included'] = $flows_tagged[0]->count;
-
-        $runs_tagged = $this->db->query("select count(id) as count from run_tag where tag='study_" . $d->id . "'");
-        if ($runs_tagged)
-            $study['runs_included'] = $runs_tagged[0]->count;
-
+        if($d->legacy == 'y'){
+          $data_tagged = $this->db->query("select id from dataset_tag where tag='study_" . $d->id . "'");
+          $task_tagged = $this->db->query("select id from task_tag where tag='study_" . $d->id . "'");
+          $flows_tagged = $this->db->query("select id from implementation_tag where tag='study_" . $d->id . "'");
+          $runs_tagged = $this->db->query("select id from run_tag where tag='study_" . $d->id . "'");
+        } elseif ($d->main_entity_type == 'task') {
+          $task_tagged = $this->db->query("select task_id as id from task_study where study_id=" . $d->id);
+          $data_tagged = $this->db->query("select value as id from task_inputs where input='source_data' and task_id in (select task_id from task_study where study_id=" . $d->id . ")");
+        } elseif ($d->main_entity_type == 'run') {
+          $runs_tagged = $this->db->query("select run_id as id from run_study where study_id=" . $d->id);
+          $flows_tagged = $this->db->query("select distinct implementation_id as id from algorithm_setup where sid in (select setup from run where rid in (select run_id from run_study where study_id=" . $d->id . "))");
+          $task_tagged = $this->db->query("select distinct task_id as id from run where rid in (select run_id from run_study where study_id=" . $d->id . ")");
+          $data_tagged = $this->db->query("select distinct value as id from task_inputs where input='source_data' and task_id in (select task_id from run where rid in (select run_id from run_study where study_id=" . $d->id . "))");
+        }
+        if ($data_tagged){
+          $study['datasets_included'] = count($data_tagged);
+          foreach ($data_tagged as $t){
+              $this->index_data($t->id);
+            }
+        }
+        if ($task_tagged){
+          $study['tasks_included'] = count($task_tagged);
+          foreach ($task_tagged as $t){
+              $this->index_task($t->id);
+            }
+        }
+        if ($flows_tagged){
+          $study['flows_included'] = count($flows_tagged);
+          foreach ($flows_tagged as $t){
+              $this->index_flow($t->id);
+            }
+        }
+        if ($runs_tagged){
+          $study['runs_included'] = count($runs_tagged);
+          foreach ($runs_tagged as $t){
+              $this->index_run($t->id);
+            }
+        }
         return $study;
     }
 
     public function index_task($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
-        $params['index'] = 'openml';
+        $params['index'] = 'task';
         $params['type'] = 'task';
-
         $taskmaxquery = $this->db->query('SELECT min(task_id) as mintask, max(task_id) as maxtask from task' . ($id ? ' where task_id=' . $id : ''));
         $taskcountquery = $this->db->query('SELECT count(task_id) as taskcount from task' . ($id ? ' where task_id=' . $id : ''));
         $taskmin = intval($taskmaxquery[0]->mintask);
@@ -867,7 +839,7 @@ class ElasticSearch {
             }
             $tasks = null;
             $params['body'] = array();
-            $tasks = $this->db->query('select a.*, b.runs from (SELECT t.task_id, tt.ttid, tt.name, t.creation_date, t.creator FROM task t, task_type tt where t.ttid=tt.ttid and task_id>=' . $task_id . ' and task_id<' . ($task_id + $incr) . ') as a left outer join (select task_id, count(rid) as runs from run r group by task_id) as b on a.task_id=b.task_id');
+            $tasks = $this->db->query('select a.*, b.runs from (SELECT t.task_id, tt.ttid, tt.name, t.creation_date, t.embargo_end_date, t.creator FROM task t, task_type tt where t.ttid=tt.ttid and task_id>=' . $task_id . ' and task_id<' . ($task_id + $incr) . ') as a left outer join (select task_id, count(rid) as runs from run r group by task_id) as b on a.task_id=b.task_id');
             if ($tasks) {
                 foreach ($tasks as $t) {
                     $params['body'][] = array(
@@ -889,7 +861,7 @@ class ElasticSearch {
 
     private function build_single_task($id) {
         $time = microtime(true);
-        $task = $this->db->query('select a.*, b.runs from (SELECT t.task_id, tt.ttid, tt.name, t.creation_date, t.creator FROM task t, task_type tt where t.ttid=tt.ttid and task_id=' . $id . ') as a left outer join (select task_id, count(rid) as runs from run r group by task_id) as b on a.task_id=b.task_id');
+        $task = $this->db->query('select a.*, b.runs from (SELECT t.task_id, tt.ttid, tt.name, t.creation_date, t.embargo_end_date, t.creator FROM task t, task_type tt where t.ttid=tt.ttid and task_id=' . $id . ') as a left outer join (select task_id, count(rid) as runs from run r group by task_id) as b on a.task_id=b.task_id');
         $t = $this->build_task($task[0]);
         echo "Build task: ".(microtime(true) - $time)."\r\n";
         $time = microtime(true);
@@ -900,10 +872,11 @@ class ElasticSearch {
 
         $newdata = array(
             'task_id' => $d->task_id,
-            'runs' => $this->checkNumeric($d->runs),
-            'visibility' => 'public',
+            'runs' => (int) $this->checkNumeric($d->runs),
+            'visibility' => ((strtotime($d->embargo_end_date) < time()) ? 'public' : 'private'),
+            'embargo_end_date' => $d->embargo_end_date,
             'tasktype' => array(
-                'tt_id' => $d->ttid,
+                'tt_id' => (float) $d->ttid,
                 'name' => $d->name
             ),
             'date' => $d->creation_date,
@@ -917,7 +890,7 @@ class ElasticSearch {
         $did = 0;
         if ($task) {
             foreach ($task as $t) {
-                if ($t->type == 'Dataset') {
+                if ($t->input == 'source_data') {
                     $description[] = $this->data_names[$t->value];
                     $newdata[$t->input] = array(
                         'type' => $t->type,
@@ -925,7 +898,7 @@ class ElasticSearch {
                         'name' => $this->data_names[$t->value]
                     );
                     $did = $t->value;
-                } else if ($t->type == 'Estimation Procedure') {
+                } else if ($t->input == 'estimation_procedure') {
                     $description[] = $this->procedure_names[$t->value];
                     $newdata[$t->input] = array(
                         'type' => $t->type,
@@ -954,13 +927,30 @@ class ElasticSearch {
         }
 
         $newdata['tags'] = array();
+        $studies = array();
         $tags = $this->CI->Task_tag->getAssociativeArray('tag', 'uploader', 'id = ' . $d->task_id);
         if ($tags != false) {
             foreach ($tags as $t => $u) {
                 $newdata['tags'][] = array(
                     'tag' => $t,
                     'uploader' => $u);
+                if(substr( $t, 0, 6 ) === "study_")
+                  $studies[] = substr($t, strpos($t, "_") + 1);
             }
+        }
+
+        // replace with study list in new indexer
+        $new_studies = array();
+        $task_studies = $this->db->query("select study_id from task_study where task_id=" . $d->task_id);
+        if ($task_studies != false) {
+            foreach ($task_studies as $t) { if (!in_array($t->study_id, $studies)){ $new_studies[] = $t->study_id; }}
+        }
+        $run_studies = $this->db->query("select distinct study_id from run_study where run_id in (select rid from run where task_id=" . $d->task_id . ")");
+        if ($run_studies != false) {
+            foreach ($run_studies as $t) { if (!in_array($t->study_id, $studies)){ $new_studies[] = $t->study_id; }}
+        }
+        if ($new_studies) {
+            foreach ($new_studies as $t) { $new_data['tags'][] = array('tag' => 'study_' . $t, 'uploader' => '0'); }
         }
 
         $newdata['suggest'] = array(
@@ -977,7 +967,7 @@ class ElasticSearch {
             if($downvote_agrees){
                 $nr_of_downvotes+=count($downvote_agrees);
             }
-        }else{
+        } else{
             $newdata['nr_of_issues'] = 0;
         }
         $newdata['nr_of_downvotes'] = $nr_of_downvotes;
@@ -1019,10 +1009,12 @@ class ElasticSearch {
 
     private function fetch_setups($id = false) {
         $index = array();
-        $setups = $this->db->query('SELECT s.setup, i.fullName, s.value FROM input_setting s, input i where i.id=s.input_id' . ($id ? ' and s.setup=' . $id : ''));
+        $setups = $this->db->query('SELECT s.setup, f.fullName, i.name, s.value FROM input_setting s, input i, implementation f where i.id=s.input_id AND i.implementation_id = f.id' . ($id ? ' and s.setup=' . $id : ''));
         if ($setups)
             foreach ($setups as $v) {
-                $index[$v->setup][] = array('parameter' => $v->fullName, 'value' => $v->value);
+                // JvR: if we keep relying on the fullname, there should be a central convenience fn that concatenates the full name in an uniform manner.
+                $parameter_fullname = $v->fullName . '_' . $v->name;
+                $index[$v->setup][] = array('parameter' => $parameter_fullname, 'value' => $v->value);
             }
         elseif($id != false)
           $index[$id] = array();
@@ -1031,29 +1023,31 @@ class ElasticSearch {
 
     private function fetch_tasks($id = false) {
         $index = array();
-        $tasks = $this->db->query("SELECT t.task_id, tt.name, i.value AS did, d.name AS dname, ep.name AS epname FROM task_inputs i, task_inputs i2, estimation_procedure ep,
-          task t, task_type tt, dataset d WHERE t.task_id = i.task_id AND t.task_id = i2.task_id AND i.input = 'source_data' AND i2.input = 'estimation_procedure' AND
-          t.ttid = tt.ttid AND d.did = i.value AND ep.id = i2.value" . ($id ? ' and t.task_id=' . $id : ''));
+	$tasks = $this->db->query("SELECT t.task_id, t.embargo_end_date, tt.name as ttname, i.value AS did, d.name AS dname, ep.name AS epname FROM task_inputs i, task_type tt, dataset d, task t LEFT JOIN task_inputs i2 on (t.task_id = i2.task_id AND i2.input = 'estimation_procedure') LEFT JOIN estimation_procedure ep on ep.id = i2.value WHERE t.task_id = i.task_id AND i.input = 'source_data' AND t.ttid = tt.ttid AND d.did = i.value" . ($id ? ' and t.task_id=' . $id : ''));
         if ($tasks){
             if($id)
-              $targets = $this->fetch_targets($tasks[0]->did);
+              $targets = $this->fetch_classes($tasks[0]->did);
             else
-              $targets = $this->fetch_targets();
+              $targets = $this->fetch_classes();
             foreach ($tasks as $v) {
-              if(array_key_exists($v->did,$targets)){ //check whether the task is valid (uses an existing dataset)
-                $index[$v->task_id]['task_id'] = $v->task_id;
-                $index[$v->task_id]['tasktype']['name'] = $v->name;
-                $index[$v->task_id]['source_data']['data_id'] = $v->did;
-                $index[$v->task_id]['source_data']['name'] = $v->dname;
-                $index[$v->task_id]['estimation_procedure']['name'] = $v->epname;
-                $index[$v->task_id]['target_values'] = $targets[$v->did]['target_values'];
+              $index[$v->task_id]['task_id'] = $v->task_id;
+              $index[$v->task_id]['visibility'] = ((strtotime($v->embargo_end_date) < time()) ? 'public' : 'private');
+              $index[$v->task_id]['tasktype']['name'] = $v->ttname;
+              $index[$v->task_id]['source_data']['data_id'] = $v->did;
+              $index[$v->task_id]['source_data']['name'] = $v->dname;
+              $index[$v->task_id]['estimation_procedure']['name'] = $v->epname;
+
+              if($v->ttname == "Supervised Classification"){
+                if(array_key_exists($v->did,$targets)){ //check whether the task is valid (uses an existing dataset)
+                  $index[$v->task_id]['target_values'] = $targets[$v->did]['target_values'];
+                }
               }
             }
           }
         return $index;
     }
 
-    private function fetch_targets($id = false) {
+    private function fetch_classes($id = false) {
         $index = array();
         $data = $this->db->query("SELECT did, data_type, ClassDistribution FROM data_feature WHERE is_target='true'" . ($id ? ' and did=' . $id : ''));
         if ($data)
@@ -1070,10 +1064,12 @@ class ElasticSearch {
 
     private function fetch_runfiles($min, $max) {
         $index = array();
-        foreach ($this->db->query('SELECT source, field, name, format, file_id from runfile where source >= ' . $min . ' and source < ' . $max) as $r) {
-            $index[$r->source][$r->field]['url'] = BASE_URL . 'data/download/' . $r->file_id . '/' . $r->name;
-            $index[$r->source][$r->field]['format'] = $r->format;
-        }
+        $runfiles = $this->db->query('SELECT source, field, name, format, file_id from runfile where source >= ' . $min . ' and source < ' . $max);
+        if ($runfiles)
+          foreach ($runfiles as $r) {
+              $index[$r->source][$r->field]['url'] = BASE_URL . 'data/download/' . $r->file_id . '/' . $r->name;
+              $index[$r->source][$r->field]['format'] = $r->format;
+          }
         return $index;
     }
 
@@ -1167,25 +1163,26 @@ class ElasticSearch {
 
     //update task, dataset, flow to make sure that their indexed run counts are up to date? Only needed for sorting on number of runs.
     private function update_runcounts($run) {
-        $runparams['index'] = 'openml';
-        $runparams['type'] = 'run';
+        $runparams['index'] = 'run';
+	$runparams['type'] = 'run';
         $runparams['body']['query']['match']['run_task.task_id'] = $run->task_id;
         $result = $this->client->search($runparams);
         $runcount = $this->checkNumeric($result['hits']['total']);
 
-        $params['index'] = 'openml';
+        $params['index'] = 'task';
         $params['type'] = 'task';
         $params['id'] = $run->task_id;
         $params['body'] = array('doc' => array('runs' => $runcount));
         $this->client->update($params);
 
         $runparams = array();
-        $runparams['index'] = 'openml';
+        $runparams['index'] = 'run';
         $runparams['type'] = 'run';
         $runparams['body']['query']['match']['run_flow.flow_id'] = $run->implementation_id;
         $result = $this->client->search($runparams);
         $runcount = $this->checkNumeric($result['hits']['total']);
 
+        $params['index'] = 'flow';
         $params['type'] = 'flow';
         $params['id'] = $run->implementation_id;
         $params['body'] = array('doc' => array('runs' => $runcount));
@@ -1212,7 +1209,7 @@ class ElasticSearch {
             }
         }
 
-        $params['index'] = 'openml';
+        $params['index'] = $type;
         $params['type'] = $type;
         $params['id'] = $id;
         $params['body'] = array('doc' => array('tags' => $ts));
@@ -1221,7 +1218,7 @@ class ElasticSearch {
 
     private function index_single_run($id) {
 
-        $params['index'] = 'openml';
+        $params['index'] = 'run';
         $params['type'] = 'run';
         $params['id'] = $id;
 
@@ -1238,16 +1235,15 @@ class ElasticSearch {
         $responses = $this->client->index($params);
         $this->update_runcounts($run[0]);
 
-        return 'Successfully indexed ' . sizeof($responses['_id']) . ' run(s).';
+        return 'Successfully indexed run '. $id;
     }
 
     public function index_run($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
         if ($id)
             return $this->index_single_run($id);
 
-        $params['index'] = 'openml';
+        $params['index'] = 'run';
         $params['type'] = 'run';
-
   $setups = array();
         $tasks = array();
 
@@ -1258,7 +1254,7 @@ class ElasticSearch {
 
         $rid = $start_id;
         $submitted = 0;
-        $incr = 5;
+        $incr = 100;
         if ($verbosity) {
           echo "Processing run ";
         }
@@ -1266,7 +1262,7 @@ class ElasticSearch {
           if ($verbosity) {
             echo str_pad($rid, 9, ' ', STR_PAD_RIGHT);
           }
-          set_time_limit(600);
+          set_time_limit(6000);
           $runs = null;
           $runfiles = null;
           $evals = null;
@@ -1293,7 +1289,7 @@ class ElasticSearch {
               $responses = $this->client->bulk($params);
               $submitted += sizeof($responses['items']);
               if ($verbosity) {
-                echo "-  completed ".str_pad($submitted, 9, ' ', STR_PAD_RIGHT);
+                #echo "-  completed ".str_pad($submitted, 9, ' ', STR_PAD_RIGHT);
                 echo "\033[31D";
               }
            }
@@ -1330,16 +1326,28 @@ class ElasticSearch {
             'error' => (isset($r->error) ? $r->error : ""),
             'error_message' => (isset($r->error_message) ? $r->error_message : ""),
             'run_details' => (isset($r->run_details) ? $r->run_details : ""),
-            'visibility' => 'public'
+            'visibility' => $tasks[$r->task_id]['visibility']
         );
 
         $new_data['tags'] = array();
+        $studies = array();
         $tags = $this->CI->Run_tag->getAssociativeArray('tag', 'uploader', 'id = ' . $r->rid);
         if ($tags != false) {
             foreach ($tags as $t => $u) {
                 $new_data['tags'][] = array(
                     'tag' => $t,
                     'uploader' => $u);
+                if(substr( $t, 0, 6 ) === "study_")
+                  $studies[] = substr($t, strpos($t, "_") + 1);
+            }
+        }
+
+        $run_studies = $this->db->query("select distinct study_id from run_study where run_id=" . $r->rid);
+        if ($run_studies != false) {
+            foreach ($run_studies as $t) {
+              if (!in_array($t->study_id, $studies)){
+                 $new_data['tags'][] = array('tag' => 'study_' . $t->study_id, 'uploader' => '0');
+              }
             }
         }
 
@@ -1395,9 +1403,8 @@ class ElasticSearch {
 
     public function index_task_type($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
 
-        $params['index'] = 'openml';
+        $params['index'] = 'task_type';
         $params['type'] = 'task_type';
-
         $types = $this->db->query('SELECT tt.ttid, tt.name, tt.description, count(task_id) as tasks, tt.creationDate as date FROM task_type tt, task t where tt.ttid=t.ttid' . ($id ? ' and tt.ttid=' . $id : '') . ' group by tt.ttid');
 
         if ($id and ! $types)
@@ -1434,24 +1441,23 @@ class ElasticSearch {
         );
 
         $inputs = $this->db->query('SELECT name, type, description, io, requirement FROM task_type_inout where ttid=' . $d->ttid);
-
-        foreach ($inputs as $i) {
-            $new_data['input'][] = array(
-                'name' => $i->name,
-                'type' => $i->type,
-                'description' => $i->description,
-                'io' => $i->io,
-                'requirement' => $i->requirement
-            );
-        }
+        if ($inputs)
+          foreach ($inputs as $i) {
+              $new_data['input'][] = array(
+                  'name' => $i->name,
+                  'type' => $i->type,
+                  'description' => $i->description,
+                  'io' => $i->io,
+                  'requirement' => $i->requirement
+              );
+          }
         return $new_data;
     }
 
     public function index_flow($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
 
-        $params['index'] = 'openml';
+        $params['index'] = 'flow';
         $params['type'] = 'flow';
-
         $flows = $this->db->query('select i.*, count(rid) as runs from implementation i left join algorithm_setup s on (s.implementation_id=i.id) left join run r on (r.setup=s.sid)' . ($id ? ' where i.id=' . $id : '') . ' group by i.id');
 
 
@@ -1514,12 +1520,24 @@ class ElasticSearch {
             $new_data['qualities'] = array_map(array($this, 'checkNumeric'), $qualities);
 
         $new_data['tags'] = array();
+        $studies = array();
         $tags = $this->CI->Implementation_tag->getAssociativeArray('tag', 'uploader', 'id = ' . $d->id);
         if ($tags != false) {
             foreach ($tags as $t => $u) {
                 $new_data['tags'][] = array(
                     'tag' => $t,
                     'uploader' => $u);
+                if(substr( $t, 0, 6 ) === "study_")
+                  $studies[] = substr($t, strpos($t, "_") + 1);
+            }
+        }
+
+        $run_studies = $this->db->query("select distinct study_id from run_study where run_id in (select rid from run where setup in (select sid from algorithm_setup where implementation_id=" . $d->id . "))");
+        if ($run_studies != false) {
+            foreach ($run_studies as $t) {
+              if (!in_array($t->study_id, $studies)){
+                 $new_data['tags'][] = array('tag' => 'study_' . $t->study_id, 'uploader' => '0');
+              }
             }
         }
 
@@ -1538,12 +1556,14 @@ class ElasticSearch {
         }
 
         $new_data['parameters'] = array();
-        $parameters = $this->db->query('select * from input where implementation_id=' . $d->id);
+        $parameters = $this->db->query('select input.*, implementation.fullName from input, implementation where input.implementation_id = implementation.id AND implementation_id=' . $d->id);
         if ($parameters) {
             foreach ($parameters as $p) {
+                // JvR: if we keep relying on the fullname, there should be a central convenience fn that concatenates the full name in an uniform manner.
+                $parameter_fullname = $p->fullName . '_' . $p->name;
                 $par = array(
                     'name' => $p->name,
-                    'full_name' => $p->fullName,
+                    'full_name' => $parameter_fullname,
                     'description' => $p->description,
                     'default_value' => $p->defaultValue,
                     'recommended_range' => $p->recommendedRange,
@@ -1603,9 +1623,8 @@ class ElasticSearch {
 
     public function index_measure($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
 
-        $params['index'] = 'openml';
+        $params['index'] = 'measure';
         $params['type'] = 'measure';
-
         $procs = $this->db->query('SELECT e.*, t.description FROM estimation_procedure e, estimation_procedure_type t WHERE e.type=t.name' . ($id ? ' and e.id=' . $id : ''));
         if ($procs)
             foreach ($procs as $d) {
@@ -1742,23 +1761,24 @@ class ElasticSearch {
 
     public function index_single_dataset($id) {
 
-        $params['index'] = 'openml';
-        $params['type'] = 'data';
-
-        $datasets = $this->db->query('select d.*, count(rid) as runs, GROUP_CONCAT(dp.error) as error_message from dataset d left join task_inputs t on (t.value=d.did and t.input="source_data") left join run r on (r.task_id=t.task_id) left join data_processed dp on (d.did=dp.did)' . ($id ? ' where d.did=' . $id : '') . ' group by d.did');
+      	$params['index'] = 'data';
+      	$params['type'] = 'data';
+        $status_sql_variable = 'IFNULL(`s`.`status`, \'' . $this->CI->config->item('default_dataset_status') . '\')';
+        $datasets = $this->db->query('select d.*, ' . $status_sql_variable . ' AS `status`, count(rid) as runs, GROUP_CONCAT(dp.error) as error_message from dataset d left join (SELECT `did`, MAX(`status`) AS `status` FROM `dataset_status` GROUP BY `did`) s ON s.did = d.did left join task_inputs t on (t.value=d.did and t.input="source_data") left join run r on (r.task_id=t.task_id) left join data_processed dp on (d.did=dp.did)' . ($id ? ' where d.did=' . $id : '') . ' group by d.did');
 
         if ($id and ! $datasets)
             return 'Error: data set ' . $id . ' is unknown';
 
-        foreach ($datasets as $d) {
-            $params['body'][] = array(
-                'index' => array(
-                    '_id' => $d->did
-                )
-            );
+        if ($datasets)
+          foreach ($datasets as $d) {
+              $params['body'][] = array(
+                  'index' => array(
+                      '_id' => $d->did
+                  )
+              );
 
-            $params['body'][] = $this->build_data($d);
-        }
+              $params['body'][] = $this->build_data($d);
+          }
 
         $responses = $this->client->bulk($params);
 
@@ -1767,16 +1787,15 @@ class ElasticSearch {
           return 'ERROR: Type:' . $err['type'] . ' Reason: ' . $err['reason'] . (array_key_exists('caused_by', $err) ? ' Caused by: ' . $err['caused_by']['reason'] : '');
         }
 
-        return 'Successfully indexed ' . sizeof($responses['items']) . ' out of ' . sizeof($datasets) . ' datasets.';
+        return 'Successfully indexed dataset '.$id;
     }
 
     public function index_data($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
         if ($id)
             return $this->index_single_dataset($id);
 
-        $params['index'] = 'openml';
+        $params['index'] = 'data';
         $params['type'] = 'data';
-
         $datamaxquery = $this->db->query('SELECT max(did) as maxdata from dataset');
         $datacountquery = $this->db->query('SELECT count(did) as datacount from dataset');
         $datamax = intval($datamaxquery[0]->maxdata);
@@ -1784,7 +1803,7 @@ class ElasticSearch {
 
         $did = $start_id;
         $submitted = 0;
-        $incr = 100;
+        $incr = 10;
         if ($verbosity) {
           echo "Processing dataset ";
         }
@@ -1796,7 +1815,8 @@ class ElasticSearch {
             $datasets = null;
             $params['body'] = array();
             $valid_ids = array();
-            $datasets = $this->db->query('select d.*, count(rid) as runs, GROUP_CONCAT(dp.error) as error_message from dataset d left join task_inputs t on (t.value=d.did and t.input="source_data") left join run r on (r.task_id=t.task_id) left join data_processed dp on (d.did=dp.did) where d.did>=' . $did . ' and d.did<' . ($did + $incr) . ' group by d.did');
+            $status_sql_variable = 'IFNULL(`s`.`status`, \'' . $this->CI->config->item('default_dataset_status') . '\')';
+            $datasets = $this->db->query('select d.*, ' . $status_sql_variable . 'AS `status`, count(rid) as runs, GROUP_CONCAT(dp.error) as error_message from dataset d left join (SELECT `did`, MAX(`status`) AS `status` FROM `dataset_status` GROUP BY `did`) s ON d.did = s.did left join task_inputs t on (t.value=d.did and t.input="source_data") left join run r on (r.task_id=t.task_id) left join data_processed dp on (d.did=dp.did) where d.did>=' . $did . ' and d.did<' . ($did + $incr) . ' group by d.did');
             if($datasets){
               foreach ($datasets as $d) {
                 try {
@@ -1805,7 +1825,7 @@ class ElasticSearch {
                           '_id' => $d->did
                       )
                   );
-      $valid_ids[] = $d->did;
+                  $valid_ids[] = $d->did;
                   $params['body'][] = $this->build_data($d, $altmetrics);
 
                 } catch (Exception $e) {
@@ -1817,8 +1837,7 @@ class ElasticSearch {
               $submitted += sizeof($responses['items']);
 
         //clean up, just to be sure
-              $params_del['index'] = 'openml';
-              $params_del['type'] = 'data';
+              $params_del['index'] = 'data';
         foreach(array_diff(range($did,$did+$incr-1),$valid_ids) as $delid){
             $params_del['id'] = $delid;
       try{
@@ -1844,7 +1863,7 @@ class ElasticSearch {
             'data_id' => $d->did,
             'name' => $d->name,
             'exact_name' => $d->name,
-            'version' => $d->version,
+            'version' => (float) $d->version,
             'version_label' => $d->version_label,
             'description' => $d->description,
             'format' => $d->format,
@@ -1879,13 +1898,29 @@ class ElasticSearch {
           }
 
         $new_data['tags'] = array();
+        $studies = array();
         $tags = $this->CI->Dataset_tag->getAssociativeArray('tag', 'uploader', 'id = ' . $d->did);
         if ($tags != false) {
             foreach ($tags as $t => $u) {
                 $new_data['tags'][] = array(
                     'tag' => $t,
                     'uploader' => $u);
+                if(substr( $t, 0, 6 ) === "study_")
+                  $studies[] = substr($t, strpos($t, "_") + 1);
             }
+        }
+        // replace with study list in new indexer
+        $new_studies = array();
+        $task_studies = $this->db->query("select study_id from task_study where task_id in (select task_id from task_inputs where input='source_data' and value=" . $d->did . ")");
+        if ($task_studies != false) {
+            foreach ($task_studies as $t) { if (!in_array($t->study_id, $studies)){ $new_studies[] = $t->study_id; }}
+        }
+        $run_studies = $this->db->query("select distinct study_id from run_study where run_id in (select rid from run where task_id in (select task_id from task_inputs where input='source_data' and value=" . $d->did . "))");
+        if ($run_studies != false) {
+            foreach ($run_studies as $t) { if (!in_array($t->study_id, $studies)){ $new_studies[] = $t->study_id; }}
+        }
+        if ($new_studies) {
+            foreach ($new_studies as $t) { $new_data['tags'][] = array('tag' => 'study_' . $t, 'uploader' => '0'); }
         }
 
         $new_data['features'] = array();
