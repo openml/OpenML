@@ -526,4 +526,15 @@ $this->apiErrors[1070] = 'Data ID is required';
 $this->apiErrors[1071] = 'Unknown dataset';
 $this->apiErrors[1072] = 'Failed to insert record in database';
 
+
+//openml.data.topic
+$this->apiErrors[1080] = 'Please provide a dataset id and a topic.';
+$this->apiErrors[1081] = 'Unknown dataset.';
+$this->apiErrors[1082] = 'Topic can only be added/removed by admin.';
+$this->apiErrors[1083] = 'The topic you provided is already added for this dataset.';
+$this->apiErrors[1084] = 'Failed to insert record in database.';
+
+$this->apiErrors[1085] = 'Failed to find record in database.';
+
+
 ?>
