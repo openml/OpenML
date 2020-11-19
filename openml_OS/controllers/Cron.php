@@ -259,8 +259,8 @@ class Cron extends CI_Controller {
   // Runs all local env init steps
   public function init_local_env() {
     $this->install_database();
-    $this->create_es_openml_index();
-    $this->initialize_es_indices();
+    // $this->create_es_openml_index();
+    // $this->initialize_es_indices();
     $this->create_local_admin();
     $this->build_es_indices();
   }
