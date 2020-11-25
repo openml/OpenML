@@ -101,7 +101,7 @@ class Cron extends CI_Controller {
   
     $username="admin";
     $email="admin";
-    $session_hash=md5(rand());
+    $session_hash='0123456789abcdef0123456789abcdef';
     $additional_data = array(
       'first_name' => "Admin",
       'last_name'  => "",
@@ -124,7 +124,7 @@ class Cron extends CI_Controller {
 
     # Add to admin group
     $group = array('1');
-    $adminId=$this->ion_auth->register($username, $password, $email,$additional_data, $group);
+    //$adminId=$this->ion_auth->register($username, $password, $email,$additional_data, $group);
     
     echo "\r\nDone! ";
     
@@ -226,7 +226,8 @@ class Cron extends CI_Controller {
     echo "\r\nInstall database...";
     // note that this one does not come from DATA folder, as they are stored in github
     $models = directory_map('data/sql/', 1);
-    $manipulated_order = array('file.sql', 'implementation.sql', 'algorithm_setup.sql', 'dataset.sql', 'task_type.sql', 'task.sql', 'study.sql', 'groups.sql', 'users.sql');
+    $manipulated_order = array('file.sql', 'groups.sql', 'users.sql', 'implementation.sql', 'algorithm_setup.sql', 
+      'dataset.sql', 'task_type.sql', 'task.sql', 'study.sql');
 
     // moves elements of $manipulated_order to the start of the models array
     foreach (array_reverse($manipulated_order) as $name) {
