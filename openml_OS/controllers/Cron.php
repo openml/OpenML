@@ -99,13 +99,19 @@ class Cron extends CI_Controller {
   // Create admin user
   public function create_local_admin() {
     echo "\r\Fetching local admin user from user table...";
-
-    $session_hash = $this->Users->getColumnWhere('session_hash', 'id = ' . 1);
-  
-    // $username="admin";
-    // $email="admin";
-    // $session_hash=md5(rand());
-    // $additional_data = array(
+ 
+    $record = $this->Users->getWhereSingle('id = ' . 1);  
+    $username= $record->username;
+    $session_hash=md5(rand());
+    $password = "admin";    
+    $this->Users->update(1, array('session_hash' => $session_hash));
+    echo "\r\nUser Name:\t" .$username; 
+    echo "\r\nPassword:\t" . $password;
+    echo "\r\nAPI key:\t" .$session_hash;
+    echo "\r\nSaving key in shared config...config/api_key.txt";
+    file_put_contents("/openmlconfig/api_key.txt",$session_hash);     
+    echo "\r\nDone! ";
+    // $user_data = array(
     //   'first_name' => "Admin",
     //   'last_name'  => "",
     //   'affiliation'=> "",
@@ -113,24 +119,33 @@ class Cron extends CI_Controller {
     //   'bio'    	 => "",
     //   'external_source' => null,
     //   'external_id' => null,
-    //   'session_hash' => $session_hash
+    //   'session_hash' => $session_hash,
+    //   'created_on' => time(),
+    //   'active' => 1
     // );
-  
-    // $password=substr(md5(uniqid()), 0, 12);    
-    // echo "\r\nPassword:\t" .$password;
-    // echo "\r\nAPI key:\t" .$session_hash;
-
-    echo "\r\nSaving key in shared config...config/api_key.txt";
-    file_put_contents("/openmlconfig/api_key.txt",$session_hash);
-   
-    // $this->load->Library('ion_auth');
-
-    // # Add to admin group
+    //$password=substr(md5(uniqid()), 0, 12);
+    // $this->load->Library('ion_auth'); 
+    // $hash = $this->ion_auth->hash_password($username, $password);
+    
+    // if ($hash === FALSE)
+    // {
+    //   $password = "admin";
+    // }
+    // else
+    // {
+    //   $data = [
+    //   'password' => $hash,
+    //   'remember_code' => NULL,
+    //   'forgotten_password_code' => NULL,
+    //   'forgotten_password_time' => NULL
+    // ];
+    //   $this->Users->update(1, $data);
+    // }
+    
+    
+     // # Add to admin group
     // $group = array('1');
     // $adminId=$this->ion_auth->register($username, $password, $email,$additional_data, $group);
-    
-    echo "\r\nDone! ";
-    
   }
 
   
