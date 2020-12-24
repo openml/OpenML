@@ -102,9 +102,10 @@ class Cron extends CI_Controller {
  
     $record = $this->Users->getWhereSingle('id = ' . 1);  
     $username= $record->username;
-    $session_hash=md5(rand());
+    $session_hash = $record->session_hash;
+    // $session_hash=md5(rand());
     $password = "admin";    
-    $this->Users->update(1, array('session_hash' => $session_hash));
+    // $this->Users->update(1, array('session_hash' => $session_hash));
     echo "\r\nUser Name:\t" .$username; 
     echo "\r\nPassword:\t" . $password;
     echo "\r\nAPI key:\t" .$session_hash;
