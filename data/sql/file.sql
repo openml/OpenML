@@ -1,11 +1,2 @@
 INSERT INTO `file` (`id`, `creator`, `creation_date`, `filepath`, `filesize`, `filename_original`, `extension`, `mime_type`, `md5_hash`, `type`, `access_policy`) VALUES
-(1, 1, '2017-06-18 14:37:03', 'https://www.openml.org/data/download/1666876/phpFsFYVN', 84089, 'anneal.arff', 'arff', 'application/octet-stream', '4eaed8b6ec9d8211024b6c089b064761', 'url', 'public'),
-(2, 1, '2017-06-18 14:37:04', 'https://www.openml.org/data/download/3/dataset_3_kr-vs-kp.arff', 489987, 'kr-vs-kp.arff', 'arff', 'text/plain;charset=UTF-8', 'ad6eb32b7492524d4382a40e23cdbb8e', 'url', 'public'),
-(3, 1, '2017-06-18 14:37:05', 'https://www.openml.org/data/download/6/dataset_6_letter.arff', 720419, 'letter.arff', 'arff', 'text/plain;charset=UTF-8', '9d8a79dccd72f429b67b88387e994db8', 'url', 'public'),
-(4, 1, '2017-06-18 14:37:06', 'https://www.openml.org/data/download/11/dataset_11_balance-scale.arff', 8724, 'balance-scale.arff', 'arff', 'text/plain;charset=UTF-8', '76938608d472f620c170cef9c8c1fa65', 'url', 'public'),
-(5, 1, '2017-06-18 14:37:07', 'https://www.openml.org/data/download/12/dataset_12_mfeat-factors.arff', 1475655, 'mfeat-factors.arff', 'arff', 'text/plain;charset=UTF-8', '2c55b6bb1ad6eaad86d6e6bc0a1d4e1b', 'url', 'public'),
-(6, 1, '2017-06-18 14:37:08', 'https://www.openml.org/data/download/14/dataset_14_mfeat-fourier.arff', 1680757, 'mfeat-fourier.arff', 'arff', 'text/plain;charset=UTF-8', '498da46a7c832efe8914bf52abdfb87b', 'url', 'public'),
-(7, 1, '2017-06-18 14:37:08', 'https://www.openml.org/data/download/52350/openml_phpJNxH0q', 19177, 'breast-w.arff', 'arff', 'application/octet-stream', '88633c065209e7a57323d3d7f2d00546', 'url', 'public'),
-(8, 1, '2017-06-18 14:37:09', 'https://www.openml.org/data/download/16/dataset_16_mfeat-karhunen.arff', 1480772, 'mfeat-karhunen.arff', 'arff', 'text/plain;charset=UTF-8', '76cd333768169bd895e87f3f90a07d2c', 'url', 'public'),
-(9, 1, '2017-06-18 14:37:10', 'https://www.openml.org/data/download/18/dataset_18_mfeat-morphological.arff', 149465, 'mfeat-morphological.arff', 'arff', 'text/plain;charset=UTF-8', '5600bd857927b893e2e4430240b2e74a', 'url', 'public'),
-(10, 1, '2017-06-18 14:37:11', 'https://www.openml.org/data/download/20/dataset_20_mfeat-pixel.arff', 975410, 'mfeat-pixel.arff', 'arff', 'text/plain;charset=UTF-8', '0bdca54aadf13d4717810feb12a27c73', 'url', 'public');
+(1, 1, '2021-01-04 22:01:06', 'dataset_structured//0/11//dataset.arff', 493338, 'dataset.arff', 'arff', 'text/xml', '6f6215ebe8c370b63991015b02afcd1f', 'dataset', 'public');
