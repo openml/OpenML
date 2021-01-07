@@ -73,7 +73,7 @@ define( 'LIB_PATH', '/var/lib/' );
  * DB_PASS_WRITING: The password that belongs to the DB_USER_WRITING
  * account.
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-define( 'DB_NAME_EXPDB', 'FILL_IN' );
+define( 'DB_NAME_EXPDB', 'openml_expdb' );
 define( 'DB_HOST_EXPDB', 'FILL_IN' );
 define( 'DB_USER_EXPDB_READ', 'FILL_IN' );
 define( 'DB_PASS_EXPDB_READ', 'FILL_IN' );
@@ -92,7 +92,7 @@ define( 'DB_PASS_EXPDB_WRITE', 'FILL_IN' );
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * DB_PASS: The password that belongs to the username
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-define( 'DB_NAME_OPENML', 'FILL_IN' );
+define( 'DB_NAME_OPENML', 'openml' );
 define( 'DB_HOST_OPENML', 'FILL_IN' );
 define( 'DB_USER_OPENML', 'FILL_IN' );
 define( 'DB_PASS_OPENML', 'FILL_IN' );
@@ -115,8 +115,9 @@ define( 'API_KEY', 'FILL_IN_KEY' );
  * ES_USERNAME and ES_PASSWORD can be set by ElasticSearch or a protected proxy
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 define( 'ES_URL', 'FILL_IN' );
-define( 'ES_USERNAME', 'FILL_IN' );
-define( 'ES_PASSWORD', 'FILL_IN' );
+define( 'ES_PUBLIC_URL', 'FILL_IN' );
+define( 'ES_USERNAME', '' );
+define( 'ES_PASSWORD', '' );
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Configuration details for the Wiki server (Username, password)
