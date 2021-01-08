@@ -12,6 +12,7 @@ class Api_data extends MY_Api_Model {
     $this->load->model('Dataset');
     $this->load->model('Dataset_status');
     $this->load->model('Dataset_tag');
+    $this->load->model('Dataset_topic');
     $this->load->model('Data_feature');
     $this->load->model('Data_feature_value');
     $this->load->model('Data_quality');
@@ -141,6 +142,16 @@ class Api_data extends MY_Api_Model {
       return;
     }
 
+    if ( $segments[0] == 'topicadd' && $request_type == 'post') {
+      $this->data_add_topic($this->input->post('data_id'), $this->input->post('topic'));
+      return;
+    }
+
+    if ( $segments[0] == 'topicdelete' && $request_type == 'post') {
+      $this->data_delete_topic($this->input->post('data_id'), $this->input->post('topic'));
+      return;
+    }
+    
     if (count($segments) == 2 && $segments[0] == 'tag' && $segments[1] == 'list') {
       $this->list_tags('dataset', 'data');
       return;
@@ -761,6 +772,88 @@ class Api_data extends MY_Api_Model {
    *	),
    *)
    */
+
+  private function data_add_topic($id, $topic) {
+    # Data id and topic are required
+    if ($id == false || $topic == false) {
+      $this->returnError(1080, $this->version);
+      return false;
+    }
+    # If dataset does not exist
+    $dataset = $this->Dataset->getById($id);
+    if($dataset == false) {
+      $this->returnError(1081, $this->version);
+      return;
+    }
+    # Restrict only to admin
+    if(!$this->user_has_admin_rights) {
+      $this->returnError(1082, $this->version);
+      return;
+    }
+    # Check if topic and id combination exists
+    $topics = $this->Dataset_topic->getColumnWhere('topic', 'id = ' . $id);
+      if($topics != false && in_array($topic, $topics)) {
+        $this->returnError(1083, $this->version);
+        return false;
+    }
+    $currentTime = now();
+    $topic_data = array(
+      'id' => $id,
+      'topic' => $topic,
+      'uploader' => $this->user_id,
+      'date' => $currentTime
+    );
+    # Insert into DB
+    $res = $this->Dataset_topic->insert($topic_data);
+    if ($res == false) {
+        $this->returnError(1084, $this->version);
+        return false;
+      }
+
+     try {
+      //update index
+      $this->elasticsearch->update_topics($id);
+      
+    } catch (Exception $e) {
+      $this->returnError(105, $this->version, $this->openmlGeneralErrorCode, $e->getMessage(), false, $surpressOutput);
+      return false;
+    }
+  }
+
+
+  private function data_delete_topic($id, $topic) {
+    # Data id and topic are required
+    if ($id == false || $topic == false) {
+      $this->returnError(1080, $this->version);
+      return false;
+    }
+    # If dataset does not exist
+    $dataset = $this->Dataset->getById($id);
+    if($dataset == false) {
+      $this->returnError(1081, $this->version);
+      return;
+    }
+    # Restrict only to admin
+    if(!$this->user_has_admin_rights) {
+      $this->returnError(1082, $this->version);
+      return;
+    }
+    $topic_record = $this->Dataset_topic->getWhereSingle('id = ' . $id . ' AND topic = "' . $topic . '"');
+    if ($topic_record == false) {
+      $this->returnError(1085, $this->version);
+      return false;
+    }
+   $this->Dataset_topic->delete(array($id, $topic));
+   try {
+      //update index
+      $this->elasticsearch->update_topics($id);
+      
+    } catch (Exception $e) {
+      $this->returnError(105, $this->version, $this->openmlGeneralErrorCode, $e->getMessage());
+      return false;
+    }
+    
+    
   private function data_delete($data_id) {
 
     $dataset = $this->Dataset->getById( $data_id );
