@@ -869,6 +869,7 @@ class Api_data extends MY_Api_Model {
       $this->returnError(105, $this->version, $this->openmlGeneralErrorCode, $e->getMessage());
       return false;
     }
+  }
     
     
   private function data_delete($data_id) {
