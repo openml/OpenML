@@ -986,10 +986,11 @@ class Api_data extends MY_Api_Model {
       // get description from string upload
       $description = $this->input->post('description', false);
       if(validateXml($description, $xsdFile, $xmlErrors, false ) == false) {
-        if (DEBUG) {
+        if (DEBUG_XSD_EMAIL) {
           $to = $this->user_email;
-          $subject = 'OpenML Data Upload DEBUG message. ';
-          $content = "Uploaded POST field \nXSD Validation Message: " . $xmlErrors . "\n=====BEGIN XML=====\n" . $description;
+          $server = 'Server:' . $_SERVER['SERVER_ADDR'] . ':' . $_SERVER['SERVER_PORT'];
+          $subject = 'OpenML Data Upload DEBUG message (' . $server . ')';
+          $content = $server . "\nUploaded Post Field\nXSD Validation Message: " . $xmlErrors . "\n=====BEGIN XML=====\n" . file_get_contents($description['tmp_name']);
           sendEmail($to, $subject, $content,'text');
         }
         $this->returnError(131, $this->version, $this->openmlGeneralErrorCode, $xmlErrors);
@@ -1007,10 +1008,11 @@ class Api_data extends MY_Api_Model {
       $description = $_FILES['description'];
 
       if (validateXml($description['tmp_name'], $xsdFile, $xmlErrors) == false) {
-        if (DEBUG) {
+        if (DEBUG_XSD_EMAIL) {
           $to = $this->user_email;
-          $subject = 'OpenML Data Upload DEBUG message. ';
-          $content = 'Filename: ' . $description['name'] . "\nXSD Validation Message: " . $xmlErrors . "\n=====BEGIN XML=====\n" . file_get_contents($description['tmp_name']);
+          $server = 'Server:' . $_SERVER['SERVER_ADDR'] . ':' . $_SERVER['SERVER_PORT'];
+          $subject = 'OpenML Data Upload DEBUG message (' . $server . ')';
+          $content = $server . "\nFilename: " . $description['name'] . "\nXSD Validation Message: " . $xmlErrors . "\n=====BEGIN XML=====\n" . file_get_contents($description['tmp_name']);
           sendEmail($to, $subject, $content,'text');
         }
         $this->returnError(131, $this->version, $this->openmlGeneralErrorCode, $xmlErrors);
@@ -1489,10 +1491,11 @@ class Api_data extends MY_Api_Model {
     if (validateXml($description['tmp_name'], xsd('openml.data.features', $this->controller, $this->version), $xmlErrors) == false) {
       $data['error'] = 'XSD does not comply. XSD errors: ' . $xmlErrors;
       $success = $this->Data_processed->replace($data);
-      if (DEBUG) {
+      if (DEBUG_XSD_EMAIL) {
         $to = $this->user_email;
-        $subject = 'OpenML Data Features Upload DEBUG message. ';
-        $content = 'Filename: ' . $description['name'] . "\nXSD Validation Message: " . $xmlErrors . "\n=====BEGIN XML=====\n" . file_get_contents($description['tmp_name']);
+        $server = 'Server:' . $_SERVER['SERVER_ADDR'] . ':' . $_SERVER['SERVER_PORT'];
+        $subject = 'OpenML Data Feature Upload DEBUG message (' . $server . ')';
+        $content = $server . "\nFilename: " . $description['name'] . "\nXSD Validation Message: " . $xmlErrors . "\n=====BEGIN XML=====\n" . file_get_contents($description['tmp_name']);
         sendEmail($to, $subject, $content, 'text');
       }
       $this->returnError(443, $this->version, $this->openmlGeneralErrorCode, $xmlErrors);
