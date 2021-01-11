@@ -136,8 +136,8 @@ define( 'DEBUG', FALSE );
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * * * * * *
- * DEBUG: Will produce errors and warnings on the screen. Set this
- * to true when developing. Set to false on the production server
+ * DEBUG_XSD_EMAIL: Will send debug information for failed XSD
+ * validations to the user who initiated it
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 define( 'DEBUG_XSD_EMAIL', FALSE );
 
