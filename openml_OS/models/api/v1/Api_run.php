@@ -764,10 +764,11 @@ class Api_run extends MY_Api_Model {
     // validate xml
     $xmlErrors = '';
     if(validateXml($description['tmp_name'], xsd('openml.run.upload', $this->controller, $this->version), $xmlErrors) == false) {
-      if (DEBUG) {
+      if (DEBUG_XSD_EMAIL) {
         $to = $this->user_email;
-        $subject = 'OpenML Flow Upload DEBUG message. ';
-        $content = 'Filename: ' . $_FILES['description']['name'] . "\nXSD Validation Message: " . $xmlErrors . "\n=====BEGIN XML=====\n" . file_get_contents($description['tmp_name']);
+        $server = 'Server:' . $_SERVER['SERVER_ADDR'] . ':' . $_SERVER['SERVER_PORT'];
+        $subject = 'OpenML Run Upload DEBUG message  (' . $server . ')';
+        $content = $server . "\nFilename: " . $_FILES['description']['name'] . "\nXSD Validation Message: " . $xmlErrors . "\n=====BEGIN XML=====\n" . file_get_contents($description['tmp_name']);
         sendEmail($to, $subject, $content,'text');
       }
 

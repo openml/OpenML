@@ -134,6 +134,13 @@ define( 'WIKI_PASSWORD', 'password' );
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 define( 'DEBUG', FALSE );
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * * * * * *
+ * DEBUG: Will produce errors and warnings on the screen. Set this
+ * to true when developing. Set to false on the production server
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+define( 'DEBUG_XSD_EMAIL', FALSE );
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * CMD_PREFIX: Adds a prefix to all shell commands; needed for bugfix
  * on some MAMP (OSX) systems. Can be left empty on all other systems.
