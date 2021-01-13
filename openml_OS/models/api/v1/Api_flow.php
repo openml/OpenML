@@ -567,10 +567,12 @@ class Api_flow extends MY_Api_Model {
       $description = $this->input->post('description');
       $xmlErrors = "";
       if( validateXml( $description, $xsd, $xmlErrors, false ) == false ) {
-        if (DEBUG) {
+        if (DEBUG_XSD_EMAIL) {
           $to = $this->user_email;
-          $subject = 'OpenML Flow Upload DEBUG message. ';
-          $content = "Uploaded by POST field.\nXSD Validation Message: " . $xmlErrors . "\n=====BEGIN XML=====\n" . $this->input->post('description');
+          $server = 'Server:' . $_SERVER['SERVER_ADDR'] . ':' . $_SERVER['SERVER_PORT'];
+          $content = $server . "\nFilename: " . $description['name'] . "\nXSD Validation Message: " . $xmlErrors . "\n=====BEGIN XML=====\n" . file_get_contents($description['tmp_name']);
+          $subject = 'OpenML Flow Upload DEBUG message (' . $server . ')';
+          $content = $server . "\nUploaded by POST field.\nXSD Validation Message: " . $xmlErrors . "\n=====BEGIN XML=====\n" . $this->input->post('description');
           sendEmail($to, $subject, $content,'text');
         }
 
@@ -583,10 +585,11 @@ class Api_flow extends MY_Api_Model {
       $description = $_FILES['description'];
 
       if (validateXml($description['tmp_name'], $xsd, $xmlErrors) == false) {
-        if (DEBUG) {
+        if (DEBUG_XSD_EMAIL) {
           $to = $this->user_email;
-          $subject = 'OpenML Flow Upload DEBUG message. ';
-          $content = 'Filename: ' . $_FILES['description']['name'] . "\nXSD Validation Message: " . $xmlErrors . "\n=====BEGIN XML=====\n" . file_get_contents($description['tmp_name']);
+          $server = 'Server:' . $_SERVER['SERVER_ADDR'] . ':' . $_SERVER['SERVER_PORT'];
+          $subject = 'OpenML Flow Upload DEBUG message (' . $server . ')';
+          $content = $server . "\nFilename: " . $_FILES['description']['name'] . "\nXSD Validation Message: " . $xmlErrors . "\n=====BEGIN XML=====\n" . file_get_contents($description['tmp_name']);
           sendEmail($to, $subject, $content,'text');
         }
 

@@ -914,7 +914,7 @@ ALTER TABLE `dataset_tag`
 -- Indexes for table `dataset_topic`
 --
 ALTER TABLE `dataset_topic`
-  ADD PRIMARY KEY (`id`,`topic`);
+  ADD PRIMARY KEY (`id`,`topic`),
   ADD KEY `uploader` (`uploader`);  
   
 --
