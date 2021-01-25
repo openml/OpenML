@@ -584,20 +584,23 @@ class Api_data extends MY_Api_Model {
     }
 
     // Add description in the description table as a new version
-    $description_record = $this->Dataset_description->getWhereSingle('did =' . $data_id, 'version DESC');
-    $version_new = $description_record->version + 1;
+    if (isset($update_fields['description']))
+    {
+      $description_record = $this->Dataset_description->getWhereSingle('did =' . $data_id, 'version DESC');
+      $version_new = $description_record->version + 1;
 
-    $desc = array(
-        'did'=>$data_id,
-        'version' => $version_new,
-        'description'=>$update_fields['description'],
-        'uploader' => $dataset->uploader);
+      $desc = array(
+          'did'=>$data_id,
+          'version' => $version_new,
+          'description'=>$update_fields['description'],
+          'uploader' => $dataset->uploader);
 
-    unset($update_fields['description']);
-    $desc_id = $this->Dataset_description->insert($desc);
-    if (!$desc_id) {
-      $this->returnError(1067, $this->version);
-      return;
+      unset($update_fields['description']);
+      $desc_id = $this->Dataset_description->insert($desc);
+      if (!$desc_id) {
+        $this->returnError(1067, $this->version);
+        return;
+      }
     }
 
     if ($update_fields)
