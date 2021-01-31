@@ -591,17 +591,15 @@ class Api_data extends MY_Api_Model {
     }
 
     // Add description in the description table as a new version
-    if (isset($update_fields['description']))
-    {
+    if (isset($update_fields['description'])) {
       $description_record = $this->Dataset_description->getWhereSingle('did =' . $data_id, 'version DESC');
       $version_new = $description_record->version + 1;
-
       $desc = array(
-          'did'=>$data_id,
-          'version' => $version_new,
-          'description'=>$update_fields['description'],
-          'uploader' => $dataset->uploader);
-
+        'did'=>$data_id,
+        'version' => $version_new,
+        'description'=>$update_fields['description'],
+        'uploader' => $dataset->uploader
+      );
       unset($update_fields['description']);
       $desc_id = $this->Dataset_description->insert($desc);
       if (!$desc_id) {
@@ -610,14 +608,20 @@ class Api_data extends MY_Api_Model {
       }
     }
 
-    if ($update_fields)
-    {
+    if ($update_fields) {
       $update_result = $this->Dataset->update($data_id, $update_fields);
       // If result returns error
-      if( $update_result == false ) {
-        $this->returnError( 1068, $this->version );
+      if($update_result == false) {
+        $this->returnError(1068, $this->version);
         return;
       }
+    }
+    // update elastic search index.  
+    try {
+      $this->elasticsearch->index('data', $data_id);
+    } catch (Exception $e) {
+      $this->returnError(105, $this->version, $this->openmlGeneralErrorCode, $e->getMessage());
+    
     }
 
     // Return data id, for user to verify changes    
@@ -1138,15 +1142,14 @@ class Api_data extends MY_Api_Model {
       unset($dataset['tag']);
     }
 
-
     $desc = array(
-        'version' => 1,
-        'description'=>$dataset['description'],
-        'uploader' => $this->user_id);
+      'version' => 1,
+      'description'=>$dataset['description'],
+      'uploader' => $this->user_id
+    );
 
     unset($dataset['description']);
-    #echo "inserted description";
-
+ 
     /* * * *
      * THE ACTUAL INSERTION
      * * * */
