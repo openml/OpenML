@@ -147,6 +147,19 @@ CREATE TABLE `dataset_tag` (
 
 -- --------------------------------------------------------
 
+
+-- Table structure for table `dataset_topic`
+--
+
+CREATE TABLE `dataset_topic` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `topic` varchar(255) NOT NULL,
+  `uploader` mediumint(8) UNSIGNED NOT NULL,
+  `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
 --
 -- Table structure for table `data_feature`
 --
@@ -898,6 +911,13 @@ ALTER TABLE `dataset_tag`
   ADD KEY `uploader` (`uploader`);
 
 --
+-- Indexes for table `dataset_topic`
+--
+ALTER TABLE `dataset_topic`
+  ADD PRIMARY KEY (`id`,`topic`),
+  ADD KEY `uploader` (`uploader`);  
+  
+--
 -- Indexes for table `data_feature`
 --
 ALTER TABLE `data_feature`
@@ -1359,6 +1379,13 @@ ALTER TABLE `dataset_status`
 ALTER TABLE `dataset_tag`
   ADD CONSTRAINT `dataset_tag_ibfk_1` FOREIGN KEY (`uploader`) REFERENCES `openml`.`users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_dataset_tag` FOREIGN KEY (`id`) REFERENCES `dataset` (`did`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `dataset_topic`
+--
+ALTER TABLE `dataset_topic`
+  ADD CONSTRAINT `dataset_topic_ibfk_1` FOREIGN KEY (`uploader`) REFERENCES `openml`.`users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_dataset_topic` FOREIGN KEY (`id`) REFERENCES `dataset` (`did`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `data_feature`

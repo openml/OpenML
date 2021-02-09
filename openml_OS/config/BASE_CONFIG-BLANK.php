@@ -134,6 +134,13 @@ define( 'WIKI_PASSWORD', 'password' );
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 define( 'DEBUG', FALSE );
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * * * * * *
+ * DEBUG_XSD_EMAIL: Will send debug information for failed XSD
+ * validations to the user who initiated it
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+define( 'DEBUG_XSD_EMAIL', FALSE );
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * CMD_PREFIX: Adds a prefix to all shell commands; needed for bugfix
  * on some MAMP (OSX) systems. Can be left empty on all other systems.
