@@ -835,6 +835,7 @@ class Api_data extends MY_Api_Model {
       $this->returnError(105, $this->version, $this->openmlGeneralErrorCode, $e->getMessage(), false, $surpressOutput);
       return false;
     }
+    $this->xmlContents( 'data-topic', $this->version, array( 'id' => id) );
   }
 
 
@@ -869,6 +870,7 @@ class Api_data extends MY_Api_Model {
       $this->returnError(105, $this->version, $this->openmlGeneralErrorCode, $e->getMessage());
       return false;
     }
+    $this->xmlContents( 'data-topic', $this->version, array( 'id' => id) );
   }
     
     
