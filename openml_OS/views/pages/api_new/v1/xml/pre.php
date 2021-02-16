@@ -536,5 +536,7 @@ $this->apiErrors[1084] = 'Failed to insert record in database.';
 
 $this->apiErrors[1085] = 'Failed to find record in database.';
 
+//openml.list.data.description
+$this->apiErrors[1090] = 'Failed to find description versions for this dataset/Unknown dataset';
 
 ?>

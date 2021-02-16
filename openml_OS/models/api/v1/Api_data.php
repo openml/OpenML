@@ -107,6 +107,11 @@ class Api_data extends MY_Api_Model {
       return;
     }
 
+    if (count($segments) == 3 && $segments[0] == 'description' && $segments[1] == 'list' && is_numeric($segments[2]) && in_array($request_type, $getpost)) {
+      $this->data_description_list($segments[2]);
+      return;
+    }
+
     if (count($segments) == 2 && $segments[0] == 'qualities' && is_numeric($segments[1]) && in_array($request_type, $getpost)) {
       $this->data_qualities($segments[1], $this->config->item('default_evaluation_engine_id'));
       return;
@@ -626,6 +631,17 @@ class Api_data extends MY_Api_Model {
 
     // Return data id, for user to verify changes    
     $this->xmlContents( 'data-edit', $this->version, array( 'id' => $data_id) );
+  }
+
+  private function data_description_list($data_id) {
+  // Get descriptions for given id
+    $description_records = $this->Dataset_description->getWhere('did =' . $data_id, 'version DESC');
+    if( is_array( $description_records ) == false || count( $description_records ) == 0 ) {
+      $this->returnError( 1090, $this->version );
+      return;
+    }
+    // Return history
+    $this->xmlContents( 'data-description-list', $this->version, array('descriptions' => $description_records));
   }
 
   /**
