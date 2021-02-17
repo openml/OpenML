@@ -716,10 +716,8 @@ class Api_data extends MY_Api_Model {
     if ($data_status != false) {
       $dataset->status = $data_status->status;
     }
-    $dataset->minio_url = $this->'http://openml1.win.tue.nl/data' . $data_id . '/dataset_' . $data_id . '.pq';
-
-
-
+     
+    $dataset->minio_url = 'http://openml1.win.tue.nl/data' . $data_id . '/dataset_' . $data_id . '.pq';
     $this->xmlContents( 'data-get', $this->version, $dataset );
   }
 
