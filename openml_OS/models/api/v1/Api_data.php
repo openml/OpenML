@@ -1131,6 +1131,20 @@ class Api_data extends MY_Api_Model {
       return;
     }
 
+
+  // Check if parquet file is provided and upload it to minio
+    $datasetpqProvided = isset($_FILES['dataset_pq']);
+    $retval = null;
+    if ($datasetpqProvided) {
+      $pq_filepath = $_FILES['dataset']['tmp_name'];
+      exec('mc mb miniodist/dataset'.$id,  $retval);
+      echo "Returned create bucket with status $retval";
+      exec ('mc cp '. $pq_filepath.' miniodist/dataset'. $id.'/dataset_'.$id.'pq', $retval);
+      echo "Returned copy pq file with status $retval";
+      exec ('mc policy set download miniodist/dataset'.$id);
+    }
+
+
     // try to move the file to a new directory. If it fails, the dataset is
     // still valid, but we probably want to make some mechanism to inform administrators
     if ($file_record->type != 'url') {
