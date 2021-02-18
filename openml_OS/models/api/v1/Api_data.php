@@ -685,6 +685,7 @@ class Api_data extends MY_Api_Model {
       $dataset->url = BASE_URL . 'data/v1/download/' . $dataset->file_id . '/' . htmlspecialchars($dataset->name) . '.' . strtolower($dataset->format);
     }
 
+
     $file = $this->File->getById($dataset->file_id);
     if (!$file) {
       $this->returnError(113, $this->version);
@@ -715,7 +716,8 @@ class Api_data extends MY_Api_Model {
     if ($data_status != false) {
       $dataset->status = $data_status->status;
     }
-
+     
+    $dataset->minio_url = 'http://openml1.win.tue.nl/data' . $data_id . '/dataset_' . $data_id . '.pq';
     $this->xmlContents( 'data-get', $this->version, $dataset );
   }
 
@@ -1105,7 +1107,7 @@ class Api_data extends MY_Api_Model {
       'last_update' => now(),
       'uploader' => $this->user_id,
       'isOriginal' => 'true',
-      'file_id' => $file_id
+      'file_id' => $file_id,
     );
 
     // extract all other necessary info from the XML description
