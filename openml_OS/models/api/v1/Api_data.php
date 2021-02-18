@@ -1137,11 +1137,11 @@ class Api_data extends MY_Api_Model {
     $retval = null;
     if ($datasetpqProvided) {
       $pq_filepath = $_FILES['dataset']['tmp_name'];
-      exec('mc mb miniodist/dataset'.$id,  $retval);
+      exec('./mc mb miniodist/dataset'.$id,  $retval);
       echo "Returned create bucket with status $retval";
-      exec ('mc cp '. $pq_filepath.' miniodist/dataset'. $id.'/dataset_'.$id.'pq', $retval);
+      exec ('./mc cp '. $pq_filepath.' miniodist/dataset'. $id.'/dataset_'.$id.'pq', $retval);
       echo "Returned copy pq file with status $retval";
-      exec ('mc policy set download miniodist/dataset'.$id);
+      exec ('./mc policy set download miniodist/dataset'.$id);
     }
 
 
