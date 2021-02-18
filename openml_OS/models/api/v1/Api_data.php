@@ -1131,18 +1131,20 @@ class Api_data extends MY_Api_Model {
       return;
     }
 
+    echo "Current path ". getcwd();
+
 
   // Check if parquet file is provided and upload it to minio
     $datasetpqProvided = isset($_FILES['dataset_pq']);
     $retval = null;
     if ($datasetpqProvided) {
       $pq_filepath = $_FILES['dataset']['tmp_name'];
-      exec('./mc mb miniodist/dataset'.$id,  $retval);
-      print_r ($retval);
-      exec ('./mc cp '. $pq_filepath.' miniodist/dataset'. $id.'/dataset_'.$id.'pq', $retval);
-      print_r ($retval);
-      exec ('./mc policy set download miniodist/dataset'.$id, $retval);
-      print_r ($retval);
+      $retval = shell_exec('./mc mb miniodist/dataset'.$id);
+      echo ($retval);
+       $retval = shell_exec('./mc cp '. $pq_filepath.' miniodist/dataset'. $id.'/dataset_'.$id.'pq');
+      echo ($retval);
+       $retval = shell_exec('./mc policy set download miniodist/dataset'.$id);
+      echo ($retval);
     }
 
 
