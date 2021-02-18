@@ -1138,8 +1138,6 @@ class Api_data extends MY_Api_Model {
     $datasetpqProvided = isset($_FILES['dataset_pq']);
     $retval = null;
     if ($datasetpqProvided) {
-      $retval = system('./mc --config-dir /var/www/openml.org/public_html/ 2>&1');
-      echo $retval;
       $pq_filepath = $_FILES['dataset']['tmp_name'];
       $retval = system('./mc mb miniodist/dataset'.$id.' 2>&1');
       echo ($retval);
