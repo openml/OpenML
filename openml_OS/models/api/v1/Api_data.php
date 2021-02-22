@@ -1139,13 +1139,7 @@ class Api_data extends MY_Api_Model {
     $retval = null;
     if ($datasetpqProvided) {
       $pq_filepath = $_FILES['dataset']['tmp_name'];
-      $retval = system('./mc ls miniodist 2>&1');
-      echo ($retval);
-      $retval = system('./mc mb miniodist/dataset'.$id.' 2>&1');
-      echo ($retval);
-       $retval = system('./mc cp '. $pq_filepath.' miniodist/dataset'. $id.'/dataset_'.$id.'pq'.' 2>&1');
-      echo ($retval);
-       $retval = system('./mc policy set download miniodist/dataset'.$id. ' 2>&1');
+      $retval = system('python3 minio_upload.py '.$id.' '.$pq_filepath);
       echo ($retval);
     }
 
