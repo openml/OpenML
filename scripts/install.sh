@@ -23,7 +23,7 @@ cd $OPENML_DIR
 # reinitiate the database
 echo "Building databases... "
 mysql -u $MYSQL_USER -p$MYSQL_PASS < downloads/openml.sql
-mysql -u $MYSQL_USER -p$MYSQL_PASS openml < /home/jvanscho/users-secret.sql
+# mysql -u $MYSQL_USER -p$MYSQL_PASS openml < /home/jvanscho/users-secret.sql
 mysql -u $MYSQL_USER -p$MYSQL_PASS < downloads/openml_expdb.sql
 
 # fill important columns
