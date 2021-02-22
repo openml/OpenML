@@ -153,7 +153,7 @@ CREATE TABLE `dataset_tag` (
 
 CREATE TABLE `dataset_description` (
   `did` int(10) UNSIGNED NOT NULL,
-  `version` varchar(64) COLLATE utf8_unicode_ci NOT NULL,
+  `version` int(10) UNSIGNED NOT NULL,
   `description` text CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `uploader` mediumint(8) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
