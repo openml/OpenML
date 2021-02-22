@@ -13,6 +13,7 @@ class Api_data extends MY_Api_Model {
     $this->load->model('Dataset_status');
     $this->load->model('Dataset_tag');
     $this->load->model('Dataset_topic');
+    $this->load->model('Dataset_description');
     $this->load->model('Data_feature');
     $this->load->model('Data_feature_value');
     $this->load->model('Data_quality');
@@ -103,6 +104,11 @@ class Api_data extends MY_Api_Model {
 
     if (count($segments) == 2 && $segments[0] == 'qualities' && $segments[1] == 'list' && in_array($request_type, $getpost)) {
       $this->data_qualities_list($segments[1]);
+      return;
+    }
+
+    if (count($segments) == 3 && $segments[0] == 'description' && $segments[1] == 'list' && is_numeric($segments[2]) && in_array($request_type, $getpost)) {
+      $this->data_description_list($segments[2]);
       return;
     }
 
@@ -589,22 +595,53 @@ class Api_data extends MY_Api_Model {
       }
     }
 
-    $update_result = $this->Dataset->update($data_id, $update_fields);
-    // If result returns error    
-    if( $update_result == false ) {
-      $this->returnError( 1067, $this->version );
-      return;
+    // Add description in the description table as a new version
+    if (isset($update_fields['description'])) {
+      $description_record = $this->Dataset_description->getWhereSingle('did =' . $data_id, 'version DESC');
+      $version_new = $description_record->version + 1;
+      $desc = array(
+        'did'=>$data_id,
+        'version' => $version_new,
+        'description'=>$update_fields['description'],
+        'uploader' => $dataset->uploader
+      );
+      unset($update_fields['description']);
+      $desc_id = $this->Dataset_description->insert($desc);
+      if (!$desc_id) {
+        $this->returnError(1067, $this->version);
+        return;
+      }
     }
-    
+
+    if ($update_fields) {
+      $update_result = $this->Dataset->update($data_id, $update_fields);
+      // If result returns error
+      if($update_result == false) {
+        $this->returnError(1068, $this->version);
+        return;
+      }
+    }
     // update elastic search index.  
     try {
       $this->elasticsearch->index('data', $data_id);
     } catch (Exception $e) {
       $this->returnError(105, $this->version, $this->openmlGeneralErrorCode, $e->getMessage());
+    
     }
 
     // Return data id, for user to verify changes    
     $this->xmlContents( 'data-edit', $this->version, array( 'id' => $data_id) );
+  }
+
+  private function data_description_list($data_id) {
+  // Get descriptions for given id
+    $description_records = $this->Dataset_description->getWhere('did =' . $data_id, 'version DESC');
+    if( is_array( $description_records ) == false || count( $description_records ) == 0 ) {
+      $this->returnError( 1090, $this->version );
+      return;
+    }
+    // Return history
+    $this->xmlContents( 'data-description-list', $this->version, array('descriptions' => $description_records));
   }
 
   /**
@@ -696,6 +733,9 @@ class Api_data extends MY_Api_Model {
 
     $tags = $this->Dataset_tag->getColumnWhere('tag', 'id = ' . $dataset->did);
     $dataset->tag = $tags != false ? '"' . implode( '","', $tags ) . '"' : array();
+
+    $description_record = $this->Dataset_description->getWhereSingle('did =' . $data_id, 'version DESC');
+    $dataset->description = $description_record->description;
 
     foreach( $this->xml_fields_dataset['csv'] as $field ) {
       $dataset->{$field} = getcsv( $dataset->{$field} );
@@ -1122,11 +1162,25 @@ class Api_data extends MY_Api_Model {
       unset($dataset['tag']);
     }
 
+    $desc = array(
+      'version' => 1,
+      'description'=>$dataset['description'],
+      'uploader' => $this->user_id
+    );
+
+    unset($dataset['description']);
+ 
     /* * * *
      * THE ACTUAL INSERTION
      * * * */
     $id = $this->Dataset->insert($dataset);
     if (!$id) {
+      $this->returnError(134, $this->version);
+      return;
+    }
+    $desc['did'] = $id;
+    $desc_id = $this->Dataset_description->insert($desc);
+    if (!$desc_id) {
       $this->returnError(134, $this->version);
       return;
     }
