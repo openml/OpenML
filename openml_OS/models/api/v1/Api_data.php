@@ -1191,8 +1191,9 @@ class Api_data extends MY_Api_Model {
     if ($datasetpqProvided) {
       echo "entered Parquet";
       $pq_filepath = $_FILES['dataset']['tmp_name'];
-      $retval = system('python3 minio_upload.py '.$id.' '.$pq_filepath);
-      echo ($retval);
+      $message = exec("python3 minio_upload.py ".$id.' '.$pq_filepath. "2>&1");
+      print_r($message);
+
     }
 
 
