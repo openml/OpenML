@@ -1189,13 +1189,14 @@ class Api_data extends MY_Api_Model {
     $datasetpqProvided = isset($_FILES['dataset_pq']);
     $retval = null;
     if ($datasetpqProvided) {
+      putenv("PATH=$PATH:/opt/anaconda3/bin");
       echo "entered Parquet";
       $pq_filepath = $_FILES['dataset']['tmp_name'];
       $message = exec('source /etc/profile');
       print_r($message. "/n");
       $message = exec('ls -l /opt/anaconda3/bin/python3');
       print_r($message."/n");
-      $message = system("/opt/anaconda3/bin/python3 minio_upload.py ".$id.' '.$pq_filepath. "2>&1");
+      $message = system("python3 minio_upload.py ".$id.' '.$pq_filepath. "2>&1");
       print_r($message);
 
     }
