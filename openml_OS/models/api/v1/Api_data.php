@@ -1190,7 +1190,7 @@ class Api_data extends MY_Api_Model {
     $retval = null;
     if ($datasetpqProvided) {
       putenv("PATH=$PATH:/opt/anaconda3/bin");      
-      $pq_filepath = $_FILES['dataset']['tmp_name'];
+      $pq_filepath = $_FILES['dataset_pq']['tmp_name'];
       echo "entered Parquet upload pq file ". $pq_filepath;
       $message = exec('source /etc/profile');
       print_r($message. "/n");
