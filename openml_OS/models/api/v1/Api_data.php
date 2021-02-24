@@ -1193,7 +1193,9 @@ class Api_data extends MY_Api_Model {
       $pq_filepath = $_FILES['dataset']['tmp_name'];
       $message = exec('source /etc/profile');
       print_r($message);
-      $message = exec("python3 minio_upload.py ".$id.' '.$pq_filepath. "2>&1");
+      $message = exec('ls -l /opt/anaconda3/bin/python3');
+      print_r($message);
+      $message = system("/opt/anaconda3/bin/python3 minio_upload.py ".$id.' '.$pq_filepath. "2>&1");
       print_r($message);
 
     }
