@@ -1195,7 +1195,7 @@ class Api_data extends MY_Api_Model {
       $message = exec('source /etc/profile');
       print_r($message. "\n");
       $message = exec('ls -l /opt/anaconda3/bin/python3');    
-      $message = system("python3 minio_upload.py ".$id.' '.$pq_filepath);
+      $message = system("python3 minio_upload.py ".$id." ".$pq_filepath);
       // echo ("python3 minio_upload.py ".$id.' '.$pq_filepath);
       print_r($message);
 
