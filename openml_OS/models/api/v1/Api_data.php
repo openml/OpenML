@@ -1192,7 +1192,7 @@ class Api_data extends MY_Api_Model {
       // add conda to path
       putenv("PATH=$PATH:/opt/anaconda3/bin");      
       $pq_filepath = $_FILES['dataset_pq']['tmp_name'];   
-      $exec_message = system("python3 minio_upload_pq.py ".$id." ".$pq_filepath);
+      $exec_message = system("python3 minio_upload.py ".$id." ".$pq_filepath);
       print_r($exec_message);
 
     }
@@ -1201,7 +1201,7 @@ class Api_data extends MY_Api_Model {
       // add conda to path
       putenv("PATH=$PATH:/opt/anaconda3/bin");      
       $arff_filepath = $_FILES['dataset']['tmp_name'];   
-      $exec_message = system("python3 minio_upload_arff.py ".$id." ".$arff_filepath);
+      $exec_message = system("python3 minio_upload_pq.py ".$id." ".$arff_filepath);
       print_r($exec_message);
 
     }
