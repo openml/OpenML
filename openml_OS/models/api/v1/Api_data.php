@@ -1186,20 +1186,32 @@ class Api_data extends MY_Api_Model {
     }
 
       // Check if parquet file is provided and upload it to minio
+    try {
     $datasetpqProvided = isset($_FILES['dataset_pq']);
-    $retval = null;
     if ($datasetpqProvided) {
+      // add conda to path
       putenv("PATH=$PATH:/opt/anaconda3/bin");      
-      $pq_filepath = $_FILES['dataset_pq']['tmp_name'];
-      echo "entered Parquet upload pq file ". $pq_filepath;
-      $message = exec('source /etc/profile');
-      print_r($message. "\n");
-      $message = exec('ls -l /opt/anaconda3/bin/python3');    
-      $message = system("python3 minio_upload.py ".$id." ".$pq_filepath);
-      echo ("python3 minio_upload.py ".$id." ".$pq_filepath);
-      print_r($message);
+      $pq_filepath = $_FILES['dataset_pq']['tmp_name'];   
+      $exec_message = system("python3 minio_upload_pq.py ".$id." ".$pq_filepath);
+      print_r($exec_message);
 
     }
+
+    if ($datasetUrlProvided || $datasetFileProvided ) {
+      // add conda to path
+      putenv("PATH=$PATH:/opt/anaconda3/bin");      
+      $arff_filepath = $_FILES['dataset']['tmp_name'];   
+      $exec_message = system("python3 minio_upload_arff.py ".$id." ".$arff_filepath);
+      print_r($exec_message);
+
+    }
+  } catch (Exception $e) {
+      // TODO: should log
+    }
+
+     
+
+
 
 
     // try to move the file to a new directory. If it fails, the dataset is
