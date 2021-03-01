@@ -1202,7 +1202,7 @@ class Api_data extends MY_Api_Model {
       putenv("PATH=$PATH:/opt/anaconda3/bin"); 
       echo "Uploading ARFF to minio";     
       $arff_filepath = $_FILES['dataset']['tmp_name'];   
-      $exec_message = system("python3 minio_upload_pq.py ".$id." ".$arff_filepath);
+      $exec_message = system("python3 minio_upload_pq.py ".$id." ".$arff_filepath. " 2>&1");
       print_r($exec_message);
 
     }
