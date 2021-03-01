@@ -1186,7 +1186,7 @@ class Api_data extends MY_Api_Model {
     }
 
       // Check if parquet file is provided and upload it to minio
-    try {
+   
     $datasetpqProvided = isset($_FILES['dataset_pq']);
     if ($datasetpqProvided) {
       // add conda to path
@@ -1197,17 +1197,16 @@ class Api_data extends MY_Api_Model {
 
     }
 
-    if ($datasetUrlProvided || $datasetFileProvided ) {
+    if ($datasetFileProvided ) {
       // add conda to path
-      putenv("PATH=$PATH:/opt/anaconda3/bin");      
+      putenv("PATH=$PATH:/opt/anaconda3/bin"); 
+      echo "Uploading ARFF to minio";     
       $arff_filepath = $_FILES['dataset']['tmp_name'];   
       $exec_message = system("python3 minio_upload_pq.py ".$id." ".$arff_filepath);
       print_r($exec_message);
 
     }
-  } catch (Exception $e) {
-      // TODO: should log
-    }
+
 
      
 
