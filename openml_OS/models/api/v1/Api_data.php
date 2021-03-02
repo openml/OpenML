@@ -1100,6 +1100,8 @@ class Api_data extends MY_Api_Model {
         return;
       }
 
+      $arff_filepath = $_FILES['dataset']['tmp_name'];   
+
       $uploadedFileCheck = ARFFcheck($_FILES['dataset']['tmp_name'], 1000);
       if ($uploadedFileCheck !== true) {
         $this->returnError(145, $this->version, $this->openmlGeneralErrorCode, 'Arff error in dataset file: ' . $uploadedFileCheck);
@@ -1200,8 +1202,7 @@ class Api_data extends MY_Api_Model {
     if ($datasetFileProvided ) {
       // add conda to path
       putenv("PATH=$PATH:/opt/anaconda3/bin"); 
-      echo "Uploading ARFF to minio";     
-      $arff_filepath = $_FILES['dataset']['tmp_name'];   
+      echo "Uploading ARFF to minio";  
       $exec_message = system("python3 minio_upload_pq.py ".$id." ".$arff_filepath. " 2>&1");
       print_r($exec_message);
 
