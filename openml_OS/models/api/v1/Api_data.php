@@ -1100,7 +1100,7 @@ class Api_data extends MY_Api_Model {
         return;
       }
 
-      $arff_filepath = $_FILES['dataset']['tmp_name'];   
+
 
       $uploadedFileCheck = ARFFcheck($_FILES['dataset']['tmp_name'], 1000);
       if ($uploadedFileCheck !== true) {
@@ -1200,6 +1200,8 @@ class Api_data extends MY_Api_Model {
     }
 
     if ($datasetFileProvided ) {
+      $arff_filepath = DATA_PATH. $file_record->filepath;
+
       // add conda to path
       putenv("PATH=$PATH:/opt/anaconda3/bin"); 
       echo "Uploading ARFF to minio";  
