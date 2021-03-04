@@ -1207,6 +1207,7 @@ class Api_data extends MY_Api_Model {
     }
 
     if ($datasetFileProvided ) {
+       $file_record = $this->File->getById($file_id);
       $arff_filepath = DATA_PATH. $file_record->filepath;
 
       // add conda to path
