@@ -1088,10 +1088,18 @@ class Api_data extends MY_Api_Model {
     //check and register the data files, return url
     $file_id = null;
     $datasetUrlProvided = property_exists($xml->children('oml', true), 'url');
-    $datasetFileProvided = isset($_FILES['dataset']);
+    $datasetFileProvided = isset($_FILES['dataset']); 
+    $datasetpqProvided = isset($_FILES['dataset_pq']);
+
+    // Accept either parquet or ARFF, not both
+    if ($datasetpqProvided && ($datasetUrlProvided || $datasetFileProvided)){
+      $this->returnError(146, $this->version);
+      return;
+    } 
+
+
     if ($datasetUrlProvided && $datasetFileProvided) {
       $this->returnError(140, $this->version);
-
       return;
     } elseif($datasetFileProvided) {
       $message = '';
@@ -1099,8 +1107,6 @@ class Api_data extends MY_Api_Model {
         $this->returnError(130, $this->version, $this->openmlGeneralErrorCode, 'File dataset: ' . $message);
         return;
       }
-
-
 
       $uploadedFileCheck = ARFFcheck($_FILES['dataset']['tmp_name'], 1000);
       if ($uploadedFileCheck !== true) {
@@ -1194,37 +1200,22 @@ class Api_data extends MY_Api_Model {
       $this->File->move_file($file_id, $to_folder);
     }
 
-      // Check if parquet file is provided and upload it to minio
-   
-    $datasetpqProvided = isset($_FILES['dataset_pq']);
+    // If only parquet file is provided.
     if ($datasetpqProvided) {
-      // add conda to path
-      putenv("PATH=$PATH:/opt/anaconda3/bin");      
+      // putenv("PATH=$PATH:/opt/anaconda3/bin");      
       $pq_filepath = $_FILES['dataset_pq']['tmp_name'];   
       $exec_message = system("python3 minio_upload.py ".$id." ".$pq_filepath);
-      print_r($exec_message);
-
+      // print_r($exec_message);
     }
 
+    // If ARFF file is provided
     if ($datasetFileProvided ) {
+      // putenv("PATH=$PATH:/opt/anaconda3/bin"); 
       $file_record = $this->File->getById($file_id);
       $arff_filepath = DATA_PATH. $file_record->filepath;
-      $uploadedFileCheck = ARFFcheck($arff_filepath, 1000);
-      if ($uploadedFileCheck !== true)
-        {
-          echo "ARFF check successful";
-        }
-
-
-      // add conda to path
-      putenv("PATH=$PATH:/opt/anaconda3/bin"); 
-      echo "Uploading ARFF to minio";  
       $exec_message = system("python3 minio_upload_pq.py ".$id." ".$arff_filepath. " 2>&1");
-      print_r($exec_message);
-
+      // print_r($exec_message);
     }
-
-
 
     // try making the ES stuff
     try {
