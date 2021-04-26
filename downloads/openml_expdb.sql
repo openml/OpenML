@@ -95,7 +95,6 @@ CREATE TABLE `dataset` (
   `name` varchar(128) COLLATE utf8_unicode_ci NOT NULL,
   `version` varchar(64) COLLATE utf8_unicode_ci NOT NULL,
   `version_label` varchar(128) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `description` text CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `format` varchar(64) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'arff',
   `creator` text COLLATE utf8_unicode_ci,
   `contributor` text COLLATE utf8_unicode_ci,
@@ -144,6 +143,20 @@ CREATE TABLE `dataset_tag` (
   `uploader` mediumint(8) UNSIGNED NOT NULL,
   `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+
+--
+-- Table structure for table `dataset_description`
+--
+
+CREATE TABLE `dataset_description` (
+  `did` int(10) UNSIGNED NOT NULL,
+  `version` int(10) UNSIGNED NOT NULL,
+  `description` text CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `uploader` mediumint(8) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -911,6 +924,13 @@ ALTER TABLE `dataset_tag`
   ADD KEY `uploader` (`uploader`);
 
 --
+-- Indexes for table `dataset_description`
+--
+ALTER TABLE `dataset_description`
+  ADD PRIMARY KEY (`did`,`version`),
+  ADD KEY `uploader` (`uploader`);
+
+--
 -- Indexes for table `dataset_topic`
 --
 ALTER TABLE `dataset_topic`
@@ -1372,6 +1392,13 @@ ALTER TABLE `dataset`
 ALTER TABLE `dataset_status`
   ADD CONSTRAINT `dataset_status_ibfk_1` FOREIGN KEY (`did`) REFERENCES `dataset` (`did`) ON DELETE CASCADE,
   ADD CONSTRAINT `dataset_status_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `openml`.`users` (`id`);
+
+--
+-- Constraints for table `dataset_description`
+--
+ALTER TABLE `dataset_description`
+  ADD CONSTRAINT `dataset_description_ibfk_1` FOREIGN KEY (`did`) REFERENCES `dataset` (`did`) ON DELETE CASCADE,
+  ADD CONSTRAINT `dataset_description_ibfk_2` FOREIGN KEY (`uploader`) REFERENCES `openml`.`users` (`id`);
 
 --
 -- Constraints for table `dataset_tag`
