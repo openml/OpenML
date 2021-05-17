@@ -735,6 +735,7 @@ class Api_data extends MY_Api_Model {
     $dataset->tag = $tags != false ? '"' . implode( '","', $tags ) . '"' : array();
 
     $description_record = $this->Dataset_description->getWhereSingle('did =' . $data_id, 'version DESC');
+    $dataset->description_version = $description_record->version;
     $dataset->description = $description_record->description;
 
     foreach( $this->xml_fields_dataset['csv'] as $field ) {

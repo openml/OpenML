@@ -3,6 +3,7 @@
   <oml:name><?php echo htmlspecialchars($name); ?></oml:name>
   <oml:version><?php echo htmlspecialchars($version); ?></oml:version>
   <oml:description><?php echo htmlspecialchars($description); ?></oml:description>
+  <oml:description_version><?php echo htmlspecialchars($description_version); ?></oml:description_version>
   <oml:format><?php echo htmlspecialchars($format); ?></oml:format>
   <?php if( is_array( $creator ) ) foreach( $creator as $c ): ?><oml:creator><?php echo htmlspecialchars($c); ?></oml:creator><?php endforeach; ?>
   <?php if( is_array( $contributor ) ) foreach( $contributor as $c ): ?><oml:contributor><?php echo htmlspecialchars($c); ?></oml:contributor><?php endforeach; ?>
