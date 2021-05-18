@@ -796,6 +796,8 @@ class Api_run extends MY_Api_Model {
     $output_data = array_key_exists('output_data', $run_xml) ? $run_xml['output_data'] : array();
     $tags = array_key_exists('tag', $run_xml) ? str_getcsv ($run_xml['tag']) : array();
 
+    print_r($run_details);
+
     $predictionsUrl   = false;
 
     // fetch implementation
@@ -940,6 +942,12 @@ class Api_run extends MY_Api_Model {
         return;
       }
     }
+
+    if($run_details === false)
+    {
+
+    print_r("false");
+  }
     
     // now create a run
     $runData = array(
