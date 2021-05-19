@@ -66,8 +66,10 @@ function all_tags_from_xml( $xml, $configuration = array(), $return_array = arra
   $include = array_collapse($configuration);
 
   foreach( $xml as $key => $value ) {
-    print_r(($key));
+
     if( in_array( $key, $include ) ) {
+       print_r(($key));
+       print_r("  \n");
       if( array_key_exists( 'array', $configuration ) && in_array( $key, $configuration['array'] ) ) {
         // returned in plain array
         if( !array_key_exists( $key, $return_array ) ) {
@@ -85,12 +87,17 @@ function all_tags_from_xml( $xml, $configuration = array(), $return_array = arra
         $return_array[$key] = $value;
       } elseif( array_key_exists( 'string', $configuration ) && in_array( $key , $configuration['string'] ) ) {
         // returned as string
+        print_r($key);
+        print_r("\n   ");
         $return_array[$key] = trim($value);
       } else {
         print_r($key);
         // an illegal or undefined category
       }
     }
+    else
+      {print_r($key);
+        print_r("\n");}
   }
 
   foreach( $csv_tags as $key => $value ) {
