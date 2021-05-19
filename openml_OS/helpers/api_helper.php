@@ -95,8 +95,7 @@ function all_tags_from_xml( $xml, $configuration = array(), $return_array = arra
     }
     else
       {print_r("NOT FOUND ");
-    print_r($key);
-        print_r("NOT FOUND\n");}
+    print_r($key);}
   }
 
   foreach( $csv_tags as $key => $value ) {
