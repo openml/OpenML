@@ -66,6 +66,7 @@ function all_tags_from_xml( $xml, $configuration = array(), $return_array = arra
   $include = array_collapse($configuration);
 
   foreach( $xml as $key => $value ) {
+    print_r(($key));
     if( in_array( $key, $include ) ) {
       if( array_key_exists( 'array', $configuration ) && in_array( $key, $configuration['array'] ) ) {
         // returned in plain array
