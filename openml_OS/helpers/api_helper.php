@@ -68,8 +68,7 @@ function all_tags_from_xml( $xml, $configuration = array(), $return_array = arra
   foreach( $xml as $key => $value ) {
 
     if( in_array( $key, $include ) ) {
-       print_r(($key));
-       print_r("  \n");
+
       if( array_key_exists( 'array', $configuration ) && in_array( $key, $configuration['array'] ) ) {
         // returned in plain array
         if( !array_key_exists( $key, $return_array ) ) {
@@ -88,7 +87,7 @@ function all_tags_from_xml( $xml, $configuration = array(), $return_array = arra
       } elseif( array_key_exists( 'string', $configuration ) && in_array( $key , $configuration['string'] ) ) {
         // returned as string
         print_r($key);
-        print_r("\n   ");
+        print_r("  Above string\n   ");
         $return_array[$key] = trim($value);
       } else {
         print_r($key);
@@ -97,12 +96,13 @@ function all_tags_from_xml( $xml, $configuration = array(), $return_array = arra
     }
     else
       {print_r($key);
-        print_r("\n");}
+        print_r("  NOT FOUND\n");}
   }
 
   foreach( $csv_tags as $key => $value ) {
     $return_array[$key] = putcsv( $value );
   }
+  print_r(array_keys($return_array));
   return $return_array;
 }
 
