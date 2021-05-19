@@ -64,6 +64,7 @@ function quote_array_strings($in){
 function all_tags_from_xml( $xml, $configuration = array(), $return_array = array() ) {
   $csv_tags = array();
   $include = array_collapse($configuration);
+  print_r($include);
 
   foreach( $xml as $key => $value ) {
 
@@ -86,8 +87,6 @@ function all_tags_from_xml( $xml, $configuration = array(), $return_array = arra
         $return_array[$key] = $value;
       } elseif( array_key_exists( 'string', $configuration ) && in_array( $key , $configuration['string'] ) ) {
         // returned as string
-        print_r($key);
-        print_r("  Above string\n   ");
         $return_array[$key] = trim($value);
       } else {
         print_r($key);
@@ -95,14 +94,15 @@ function all_tags_from_xml( $xml, $configuration = array(), $return_array = arra
       }
     }
     else
-      {print_r($key);
-        print_r("  NOT FOUND\n");}
+      {print_r("NOT FOUND ");
+    print_r($key);
+        print_r("NOT FOUND\n");}
   }
 
   foreach( $csv_tags as $key => $value ) {
     $return_array[$key] = putcsv( $value );
   }
-  print_r(array_keys($return_array));
+ 
   return $return_array;
 }
 
