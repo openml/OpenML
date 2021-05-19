@@ -786,7 +786,7 @@ class Api_run extends MY_Api_Model {
     $run_xml = all_tags_from_xml(
       $xml->children('oml', true),
       $this->xml_fields_run);
-    print_r($run_xml);
+    print_r(array_keys ($run_xml));
 
     $task_id = $run_xml['task_id'];
     $implementation_id = $run_xml['flow_id'];

@@ -86,6 +86,7 @@ function all_tags_from_xml( $xml, $configuration = array(), $return_array = arra
         // returned as string
         $return_array[$key] = trim($value);
       } else {
+        print_r($key);
         // an illegal or undefined category
       }
     }
