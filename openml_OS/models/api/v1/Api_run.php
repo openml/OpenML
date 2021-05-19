@@ -946,7 +946,7 @@ class Api_run extends MY_Api_Model {
     if($run_details == false)
     {
 
-    print_r("false");
+    print_r("run_details false");
   }
   else
     {print_r("run_details");}
