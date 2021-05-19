@@ -13,7 +13,7 @@
       <xs:element name="setup_id" minOccurs="0" type="xs:integer"/> <!-- the setup id, will be ignored when uploading a run (i.e., it will be searched based on the parameter settings) -->
       <xs:element name="setup_string" minOccurs="0" type="oml:basic_latin2048"/> <!-- The CLI string that can invoke the learner with the correct parameter settings. -->
       <xs:element name="error_message" minOccurs="0" type="oml:basic_latin128"/> <!-- Whenever an error occurs during the run, this can be reported here for further inspection and on line logging purposes. -->
-      <xs:element name="run_details" minOccurs="0" maxOccurs="unbounded" type="oml:system_string128"/> <!-- Any other information useful for reproducing the run, e.g. exact package versions, hardware info. -->
+      <xs:element name="run_details" minOccurs="0" maxOccurs="unbounded" type="oml:casual_string1024"/> <!-- Any other information useful for reproducing the run, e.g. exact package versions, hardware info. -->
       <xs:element name="parameter_setting" minOccurs="0" maxOccurs="unbounded" type="oml:parameter_setting"/> <!-- The parameter settings used in this run -->
       <xs:element name="tag" minOccurs="0" maxOccurs="unbounded" type="oml:system_string128" /> <!-- Tags, describing the run  -->
       <xs:element name="input_data" minOccurs="0" type="oml:data"/> <!-- all data that served as input for the run. Determined server side, will be ignored on uploading -->
