@@ -782,11 +782,11 @@ class Api_run extends MY_Api_Model {
       $this->returnError(203, $this->version);
       return;
     }
-    print_r($xml);
+
     $run_xml = all_tags_from_xml(
       $xml->children('oml', true),
       $this->xml_fields_run);
-    //print_r(array_keys ($run_xml));
+      print_r(($run_xml));
 
     $task_id = $run_xml['task_id'];
     $implementation_id = $run_xml['flow_id'];
@@ -797,7 +797,6 @@ class Api_run extends MY_Api_Model {
     $output_data = array_key_exists('output_data', $run_xml) ? $run_xml['output_data'] : array();
     $tags = array_key_exists('tag', $run_xml) ? str_getcsv ($run_xml['tag']) : array();
 
-    print_r($run_details);
 
     $predictionsUrl   = false;
 

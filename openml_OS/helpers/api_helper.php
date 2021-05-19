@@ -64,7 +64,7 @@ function quote_array_strings($in){
 function all_tags_from_xml( $xml, $configuration = array(), $return_array = array() ) {
   $csv_tags = array();
   $include = array_collapse($configuration);
-  print_r($include);
+  // print_r($include);
 
   foreach( $xml as $key => $value ) {
 
@@ -93,9 +93,7 @@ function all_tags_from_xml( $xml, $configuration = array(), $return_array = arra
         // an illegal or undefined category
       }
     }
-    else
-      {print_r("NOT FOUND ");
-    print_r($key);}
+          
   }
 
   foreach( $csv_tags as $key => $value ) {
