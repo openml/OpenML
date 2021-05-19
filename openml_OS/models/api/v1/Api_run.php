@@ -786,6 +786,7 @@ class Api_run extends MY_Api_Model {
     $run_xml = all_tags_from_xml(
       $xml->children('oml', true),
       $this->xml_fields_run);
+    print_r($run_xml);
 
     $task_id = $run_xml['task_id'];
     $implementation_id = $run_xml['flow_id'];
@@ -943,11 +944,13 @@ class Api_run extends MY_Api_Model {
       }
     }
 
-    if($run_details === false)
+    if($run_details == false)
     {
 
     print_r("false");
   }
+  else
+    {print_r("run_details");}
     
     // now create a run
     $runData = array(
