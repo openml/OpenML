@@ -1880,7 +1880,7 @@ class ElasticSearch {
     }
 
     private function build_data($d, $altmetrics=True) {
-        $description_record = $this->Dataset_description->getWhereSingle('did =' . $d->did, 'version DESC');
+        $description_record = $this->CI->Dataset_description->getWhereSingle('did =' . $d->did, 'version DESC');
         $headless_description = trim(preg_replace('/\s+/', ' ', preg_replace('/^\*{2,}.*/m', '', $description_record->description)));
         $new_data = array(
             'data_id' => $d->did,
