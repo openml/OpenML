@@ -12,6 +12,7 @@ class ElasticSearch {
         $this->CI->load->model('Data_quality');
         $this->CI->load->model('Dataset_tag');
         $this->CI->load->model('Dataset_topic');
+        $this->CI->load->model('Dataset_description');
         $this->CI->load->model('Implementation_tag');
         $this->CI->load->model('Setup_tag');
         $this->CI->load->model('Task_tag');
@@ -1879,14 +1880,15 @@ class ElasticSearch {
     }
 
     private function build_data($d, $altmetrics=True) {
-        $headless_description = trim(preg_replace('/\s+/', ' ', preg_replace('/^\*{2,}.*/m', '', $d->description)));
+        $description_record = $this->CI->Dataset_description->getWhereSingle('did =' . $d->did, 'version DESC');
+        $headless_description = trim(preg_replace('/\s+/', ' ', preg_replace('/^\*{2,}.*/m', '', $description_record->description)));
         $new_data = array(
             'data_id' => $d->did,
             'name' => $d->name,
             'exact_name' => $d->name,
             'version' => (float) $d->version,
             'version_label' => $d->version_label,
-            'description' => $d->description,
+            'description' => $description_record->description,
             'format' => $d->format,
             'uploader' => array_key_exists($d->uploader, $this->user_names) ? $this->user_names[$d->uploader]: 'unknown',
             'uploader_id' => intval($d->uploader),
