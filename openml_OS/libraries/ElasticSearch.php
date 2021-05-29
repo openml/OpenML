@@ -1888,7 +1888,7 @@ class ElasticSearch {
             'exact_name' => $d->name,
             'version' => (float) $d->version,
             'version_label' => $d->version_label,
-            'description' => $d->description,
+            'description' => $description_record->description,
             'format' => $d->format,
             'uploader' => array_key_exists($d->uploader, $this->user_names) ? $this->user_names[$d->uploader]: 'unknown',
             'uploader_id' => intval($d->uploader),
