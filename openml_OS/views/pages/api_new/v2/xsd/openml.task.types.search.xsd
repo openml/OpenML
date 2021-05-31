@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:oml="http://openml.org/task_type" targetNamespace="http://openml.org/task_type" elementFormDefault="qualified">
+  <xs:element name="task_type" type="oml:task_type" />
+  <xs:complexType name="task_type">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string" />
+      <xs:element name="description" type="xs:string" />
+      <xs:element name="creator" type="xs:string" />
+      <xs:element name="contributor" minOccurs="0" maxOccurs="unbounded" type="xs:string" />
+      <xs:element name="date" type="xs:string" />
+      <xs:element name="parameter" minOccurs="0" maxOccurs="unbounded" type="oml:task_type_parameter" />
+      <xs:element name="input" minOccurs="1" maxOccurs="unbounded" type="oml:task_type_input" />
+      <xs:element name="output" minOccurs="0" maxOccurs="unbounded" type="oml:task_type_output" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="task_type_input">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string" />
+      <xs:element name="description" type="xs:string" />
+      <xs:element name="data_type" type="xs:string" />
+      <xs:element name="format" type="xs:string" />
+	  <xs:element name="parameter" minOccurs="0" maxOccurs="unbounded" type="oml:task_type_parameter" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="task_type_parameter">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string" />
+      <xs:element name="description" type="xs:string" />
+      <xs:element name="data_type" type="xs:string" />
+      <xs:element name="allowed_values" minOccurs="0" type="xs:string" />
+	  <xs:element name="required" type="xs:boolean" />
+      <xs:element name="dependency" minOccurs="0" maxOccurs="unbounded" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="task_type_output">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string" />
+      <xs:element name="description" type="xs:string" />
+      <xs:element name="format" type="xs:string" />
+      <xs:element name="should_upload" type="xs:boolean" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="system_string128"> <!-- Subset on xs:string. Highly restricted form of string. URL-friendly -->
+    <xs:restriction base="xs:string">
+       <xs:pattern value="([a-zA-Z0-9_\-\.])+"/>
+      <xs:maxLength value="128" />
+       <xs:minLength value="1" />
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>

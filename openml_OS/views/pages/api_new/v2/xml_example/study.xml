@@ -1,0 +1,19 @@
+<oml:study xmlns:oml="http://openml.org/openml">
+  <oml:alias>CoolStudy</oml:alias>  
+  <oml:main_entity_type>task</oml:main_entity_type>
+  <oml:name>A Cool Study with an Awesome name</oml:name>
+  <oml:description>A short description of the benchmark suite. </oml:description>
+  <oml:tasks>
+    <oml:task_id>6</oml:task_id>
+    <oml:task_id>11</oml:task_id>
+    <oml:task_id>12</oml:task_id>
+    <oml:task_id>14</oml:task_id>
+    <oml:task_id>15</oml:task_id>
+    <oml:task_id>16</oml:task_id>
+    <oml:task_id>18</oml:task_id>
+    <oml:task_id>20</oml:task_id>
+    <oml:task_id>21</oml:task_id>
+    <oml:task_id>22</oml:task_id>
+  </oml:tasks>
+</oml:study>
+

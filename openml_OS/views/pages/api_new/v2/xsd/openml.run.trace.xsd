@@ -1,0 +1,28 @@
+<xs:schema targetNamespace="http://openml.org/openml" xmlns:oml="http://openml.org/openml" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="trace" type="oml:trace"/>
+  
+  <xs:complexType name="trace">
+    <xs:sequence>
+      <xs:element name="run_id" type="xs:nonNegativeInteger"/>
+      <xs:element name="trace_iteration" minOccurs="1" maxOccurs="unbounded" type="oml:trace_iteration"/>
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:complexType name="trace_iteration">
+    <xs:sequence>
+      <xs:element name="repeat" type="xs:nonNegativeInteger"/>
+      <xs:element name="fold" type="xs:nonNegativeInteger"/>
+      <xs:element name="iteration" type="xs:nonNegativeInteger"/>
+      <xs:element name="setup_string" type="oml:basic_latin1024"/>
+      <xs:element name="evaluation" type="xs:decimal"/>
+      <xs:element name="selected" type="xs:boolean" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="basic_latin1024">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="\p{IsBasicLatin}*"/>
+      <xs:maxLength value="1024" />
+      <xs:minLength value="1" />
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>

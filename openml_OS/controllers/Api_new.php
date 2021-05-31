@@ -30,6 +30,26 @@ class Api_new extends CI_Controller {
     $this->load->model('api/v1/Api_job');
     $this->load->model('api/v1/Api_user');
     $this->load->model('api/v1/Api_study');
+
+
+    $this->load->model('api/v2/Api_data');
+    $this->load->model('api/v2/Api_votes');
+    $this->load->model('api/v2/Api_downloads');
+    $this->load->model('api/v2/Api_gamification');
+    $this->load->model('api/v2/Api_badges');
+    $this->load->model('api/v2/Api_task');
+    $this->load->model('api/v2/Api_tasktype');
+    $this->load->model('api/v2/Api_flow');
+    $this->load->model('api/v2/Api_run');
+    $this->load->model('api/v2/Api_setup');
+    $this->load->model('api/v2/Api_evaluation');
+    $this->load->model('api/v2/Api_estimationprocedure');
+    $this->load->model('api/v2/Api_evaluationmeasure');
+    $this->load->model('api/v2/Api_file');
+    $this->load->model('api/v2/Api_job');
+    $this->load->model('api/v2/Api_user');
+    $this->load->model('api/v2/Api_study');
+
     
     $this->load->model('Study');
     $this->load->model('Math_function');
@@ -121,6 +141,10 @@ class Api_new extends CI_Controller {
     $this->bootstrap('1');
   }
 
+  public function v2($type) {
+    $this->bootstrap('2');
+  }
+
   private function bootstrap($version) {
     $outputFormats = array('xml','json');
     
@@ -159,11 +183,11 @@ class Api_new extends CI_Controller {
     } else if (file_exists(APPPATH.'models/api/' . $this->version . '/Api_' . $type . '.php') == false && $type != 'xsd' && $type != 'xml_example' && $type != 'arff_example') {
        $this->Api_data->returnError(100, $this->version);
     } else if($type == 'xsd') {
-      $this->server_document('xsd', $segs[0] . '.xsd', 'v1', 'Content-type: text/xml; charset=utf-8');
+      $this->server_document('xsd', $segs[0] . '.xsd', $version, 'Content-type: text/xml; charset=utf-8');
     } else if($type == 'xml_example') {
-      $this->server_document('xml_example', $segs[0] . '.xml', 'v1', 'Content-type: text/xml; charset=utf-8');
+      $this->server_document('xml_example', $segs[0] . '.xml', $version, 'Content-type: text/xml; charset=utf-8');
     } else if($type == 'arff_example') {
-      $this->server_document('arff_example', $segs[0] . '.arff', 'v1', 'Content-type: text/plain; charset=utf-8');
+      $this->server_document('arff_example', $segs[0] . '.arff', $version, 'Content-type: text/plain; charset=utf-8');
     } else {
       $this->{'Api_'.$type}->bootstrap($outputFormat, $segs, $request_type, $this->user_id);
     }

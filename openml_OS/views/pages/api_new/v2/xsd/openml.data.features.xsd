@@ -1,0 +1,62 @@
+<xs:schema targetNamespace="http://openml.org/openml" xmlns:oml="http://openml.org/openml" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="data_features" type="oml:data_features"/>
+  <xs:complexType name="data_features">
+    <xs:sequence>
+      <xs:element name="did" minOccurs="0" type="xs:integer"/> <!-- Pointer to the did. Is mandatory for uploading qualities -->
+      <xs:element name="evaluation_engine_id" minOccurs="0" type="xs:integer"/> <!-- Specifying engine responsible for extracting the features. Is mandatory for uploading qualities -->
+      <xs:element name="error" minOccurs="0" type="oml:basic_latin1024"/> <!-- For error messages in case of failure -->
+      <xs:element name="feature" minOccurs="0" maxOccurs="unbounded" type="oml:feature"/> <!-- The qualities that need to be set -->
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="feature">
+    <xs:sequence>
+      <xs:element name="index" type="xs:integer"/>
+      <xs:element name="name" type="oml:basic_latin64"/> <!-- The name of the quality that is set -->
+      <xs:element name="data_type" type="oml:basic_latin64"/> <!-- The value of the quality --> 
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="nominal_value" type="oml:basic_latin256"/>
+      <xs:element minOccurs="0" name="is_target" type="xs:boolean"/>
+      <xs:element minOccurs="0" name="is_ignore" type="xs:boolean"/>
+      <xs:element minOccurs="0" name="is_row_identifier" type="xs:boolean"/>
+      <xs:element minOccurs="0" name="NumberOfDistinctValues" type="xs:integer"/>
+      <xs:element minOccurs="0" name="NumberOfUniqueValues" type="xs:integer"/>
+      <xs:element minOccurs="0" name="NumberOfMissingValues" type="xs:integer"/>
+      <xs:element minOccurs="0" name="NumberOfIntegerValues" type="xs:integer"/>
+      <xs:element minOccurs="0" name="NumberOfRealValues" type="xs:integer"/>
+      <xs:element minOccurs="0" name="NumberOfNominalValues" type="xs:integer"/>
+      <xs:element minOccurs="0" name="NumberOfValues" type="xs:integer"/>
+      <xs:element minOccurs="0" name="MaximumValue" type="xs:double"/>
+      <xs:element minOccurs="0" name="MinimumValue" type="xs:double"/>
+      <xs:element minOccurs="0" name="MeanValue" type="xs:double"/>
+      <xs:element minOccurs="0" name="StandardDeviation" type="xs:double"/>
+      <xs:element minOccurs="0" name="ClassDistribution" type="oml:basic_latin16384"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="basic_latin64">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="\p{IsBasicLatin}*"/>
+      <xs:maxLength value="64" />
+      <xs:minLength value="1" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="basic_latin256">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="\p{IsBasicLatin}*"/>
+      <xs:maxLength value="256" />
+      <xs:minLength value="1" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="basic_latin1024">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="\p{IsBasicLatin}*"/>
+      <xs:maxLength value="1024" />
+      <xs:minLength value="1" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="basic_latin16384">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="\p{IsBasicLatin}*"/>
+      <xs:maxLength value="16384" />
+      <xs:minLength value="1" />
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>
