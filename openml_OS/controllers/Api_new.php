@@ -13,7 +13,7 @@ class Api_new extends CI_Controller {
     $this->load->model('Database_singleton');
     
     //$this->load->model('api/v1/Api_test');
-    $this->load->model('api/v1/Api_data');
+    // $this->load->model('api/v1/Api_data');
     $this->load->model('api/v1/Api_votes');
     $this->load->model('api/v1/Api_downloads');
     $this->load->model('api/v1/Api_gamification');
@@ -155,16 +155,16 @@ class Api_new extends CI_Controller {
     $request_type = strtolower($_SERVER['REQUEST_METHOD']);
     if ($this->authenticated == false && $request_type != 'get') {
       if ($this->provided_hash) {
-        $this->Api_data->returnError(103, $default_version);
+        $this->Api_run->returnError(103, $default_version);
       } else {
-        $this->Api_data->returnError(102, $default_version);
+        $this->Api_run->returnError(102, $default_version);
       }
     } else if ($this->authenticated == false && $this->provided_hash) {
-        $this->Api_data->returnError(103,$default_version);
+        $this->Api_run->returnError(103,$default_version);
     } else if ($this->user_has_writing_rights == false && $request_type != 'get') {
-      $this->Api_data->returnError(104,$default_version, $this->openmlGeneralErrorCode, 'API calls of the read-only user can only be of type GET. ');
+      $this->Api_run->returnError(104,$default_version, $this->openmlGeneralErrorCode, 'API calls of the read-only user can only be of type GET. ');
     } else if (file_exists(APPPATH.'models/api/' .$default_version . '/Api_' . $type . '.php') == false && $type != 'xsd' && $type != 'xml_example' && $type != 'arff_example') {
-       $this->Api_data->returnError(100,$default_version);
+       $this->Api_run->returnError(100,$default_version);
     } else if($type == 'xsd') {
       $this->server_document('xsd', $segs[0] . '.xsd', $default_version, 'Content-type: text/xml; charset=utf-8');
     } else if($type == 'xml_example') {
@@ -176,6 +176,7 @@ class Api_new extends CI_Controller {
       $this->load->model('api/v2/Api_data');
       $this->{'Api_'.$type}->bootstrap($outputFormat, $segs, $request_type, $this->user_id);
     } else {
+      $this->load->model('api/v1/Api_data');
       print_r("v1");
       $this->{'Api_'.$type}->bootstrap($outputFormat, $segs, $request_type, $this->user_id);
     }
