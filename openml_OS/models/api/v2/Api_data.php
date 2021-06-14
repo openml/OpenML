@@ -700,6 +700,8 @@ class Api_data extends MY_Api_Model {
    *)
    */
   private function data($data_id) {
+
+    echo ($this->version);
     if( $data_id == false ) {
       $this->returnError( 110, $this->version );
       return;
