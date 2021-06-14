@@ -32,25 +32,7 @@ class Api_new extends CI_Controller {
     $this->load->model('api/v1/Api_study');
 
 
-    $this->load->model('api/v2/Api_data');
-    $this->load->model('api/v2/Api_votes');
-    $this->load->model('api/v2/Api_downloads');
-    $this->load->model('api/v2/Api_gamification');
-    $this->load->model('api/v2/Api_badges');
-    $this->load->model('api/v2/Api_task');
-    $this->load->model('api/v2/Api_tasktype');
-    $this->load->model('api/v2/Api_flow');
-    $this->load->model('api/v2/Api_run');
-    $this->load->model('api/v2/Api_setup');
-    $this->load->model('api/v2/Api_evaluation');
-    $this->load->model('api/v2/Api_estimationprocedure');
-    $this->load->model('api/v2/Api_evaluationmeasure');
-    $this->load->model('api/v2/Api_file');
-    $this->load->model('api/v2/Api_job');
-    $this->load->model('api/v2/Api_user');
-    $this->load->model('api/v2/Api_study');
-
-    
+  
     $this->load->model('Study');
     $this->load->model('Math_function');
 
@@ -169,25 +151,29 @@ class Api_new extends CI_Controller {
       return;
     }
     
+    $default_version = 'v1';
     $request_type = strtolower($_SERVER['REQUEST_METHOD']);
     if ($this->authenticated == false && $request_type != 'get') {
       if ($this->provided_hash) {
-        $this->Api_data->returnError(103, $this->version);
+        $this->Api_data->returnError(103, $default_version);
       } else {
-        $this->Api_data->returnError(102, $this->version);
+        $this->Api_data->returnError(102, $default_version);
       }
     } else if ($this->authenticated == false && $this->provided_hash) {
-        $this->Api_data->returnError(103, $this->version);
+        $this->Api_data->returnError(103,$default_version);
     } else if ($this->user_has_writing_rights == false && $request_type != 'get') {
-      $this->Api_data->returnError(104, $this->version, $this->openmlGeneralErrorCode, 'API calls of the read-only user can only be of type GET. ');
-    } else if (file_exists(APPPATH.'models/api/' . $this->version . '/Api_' . $type . '.php') == false && $type != 'xsd' && $type != 'xml_example' && $type != 'arff_example') {
-       $this->Api_data->returnError(100, $this->version);
+      $this->Api_data->returnError(104,$default_version, $this->openmlGeneralErrorCode, 'API calls of the read-only user can only be of type GET. ');
+    } else if (file_exists(APPPATH.'models/api/' .$default_version . '/Api_' . $type . '.php') == false && $type != 'xsd' && $type != 'xml_example' && $type != 'arff_example') {
+       $this->Api_data->returnError(100,$default_version);
     } else if($type == 'xsd') {
-      $this->server_document('xsd', $segs[0] . '.xsd', $version, 'Content-type: text/xml; charset=utf-8');
+      $this->server_document('xsd', $segs[0] . '.xsd', $default_version, 'Content-type: text/xml; charset=utf-8');
     } else if($type == 'xml_example') {
-      $this->server_document('xml_example', $segs[0] . '.xml', $version, 'Content-type: text/xml; charset=utf-8');
+      $this->server_document('xml_example', $segs[0] . '.xml', $default_version, 'Content-type: text/xml; charset=utf-8');
     } else if($type == 'arff_example') {
-      $this->server_document('arff_example', $segs[0] . '.arff', $version, 'Content-type: text/plain; charset=utf-8');
+      $this->server_document('arff_example', $segs[0] . '.arff', $default_version, 'Content-type: text/plain; charset=utf-8');
+    } else if($type == 'data' && $version == 'v2') {
+      $this->load->model('api/v2/Api_data');
+      $this->{'Api_'.$type}->bootstrap($outputFormat, $segs, $request_type, $this->user_id);
     } else {
       $this->{'Api_'.$type}->bootstrap($outputFormat, $segs, $request_type, $this->user_id);
     }

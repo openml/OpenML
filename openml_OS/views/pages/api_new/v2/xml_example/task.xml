@@ -1,7 +1,0 @@
-<oml:task_inputs xmlns:oml="http://openml.org/openml">
-  <oml:task_type_id>1</oml:task_type_id>
-  <oml:input name="source_data">1</oml:input>
-  <oml:input name="target_feature">class</oml:input>
-  <oml:input name="estimation_procedure">1</oml:input>
-  <oml:input name="evaluation_measures">predictive_accuracy</oml:input>
-</oml:task_inputs>
