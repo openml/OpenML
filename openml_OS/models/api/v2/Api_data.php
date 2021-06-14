@@ -700,7 +700,6 @@ class Api_data extends MY_Api_Model {
    */
   private function data($data_id) {
 
-    echo ($this->version);
     if( $data_id == false ) {
       $this->returnError( 110, $this->version );
       return;
@@ -760,7 +759,7 @@ class Api_data extends MY_Api_Model {
       $dataset->status = $data_status->status;
     }
      
-    $dataset->minio_url = 'https://openml1.win.tue.nl/dataset' . $data_id . '/dataset_' . $data_id . '.pq';
+    $dataset->minio_url = 'http://openml1.win.tue.nl/dataset' . $data_id . '/dataset_' . $data_id . '.pq';
     $this->xmlContents( 'data-get', $this->version, $dataset );
   }
 
