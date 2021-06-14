@@ -171,10 +171,12 @@ class Api_new extends CI_Controller {
       $this->server_document('xml_example', $segs[0] . '.xml', $default_version, 'Content-type: text/xml; charset=utf-8');
     } else if($type == 'arff_example') {
       $this->server_document('arff_example', $segs[0] . '.arff', $default_version, 'Content-type: text/plain; charset=utf-8');
-    } else if($type == 'data' && $version == 'v2') {
+    } else if($type == 'data' && $this->version == 'v2') {
+      print_r("v2");
       $this->load->model('api/v2/Api_data');
       $this->{'Api_'.$type}->bootstrap($outputFormat, $segs, $request_type, $this->user_id);
     } else {
+      print_r("v1");
       $this->{'Api_'.$type}->bootstrap($outputFormat, $segs, $request_type, $this->user_id);
     }
   }
