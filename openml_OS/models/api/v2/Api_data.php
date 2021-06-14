@@ -2,8 +2,7 @@
 
 class Api_data extends MY_Api_Model {
 
-// we still use errors, xml content from v1. We need to change this if something changes.
-  protected $version = 'v1';
+  protected $version = 'v2';
 
   function __construct() {
     parent::__construct();
