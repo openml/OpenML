@@ -104,7 +104,8 @@ CREATE TABLE `dataset` (
   `licence` varchar(64) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Public',
   `citation` text COLLATE utf8_unicode_ci,
   `collection` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
-  `url` mediumtext CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `url` mediumtext CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
+  `parquet_url` mediumtext CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
   `isOriginal` enum('true','false') CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
   `file_id` int(10) DEFAULT NULL,
   `default_target_attribute` varchar(1024) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -226,6 +227,19 @@ CREATE TABLE `data_processed` (
   `error` text CHARACTER SET utf8 COLLATE utf8_unicode_ci,
   `warning` text CHARACTER SET utf8 COLLATE utf8_unicode_ci,
   `num_tries` int(8) NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `data_conversion`
+-- conversion_type indicates which type to convert to
+--
+
+CREATE TABLE `data_conversion` (
+  `did` int(10) UNSIGNED NOT NULL,
+  `conversion_type` enum('parquet','arff','none') NOT NULL DEFAULT 'none'
+ 
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -959,6 +973,12 @@ ALTER TABLE `data_processed`
   ADD KEY `evaluation_engine_id` (`evaluation_engine_id`);
 
 --
+-- Indexes for table `data_conversion`
+--
+ALTER TABLE `data_conversion`
+  ADD PRIMARY KEY (`did`);
+
+--
 -- Indexes for table `data_quality`
 --
 ALTER TABLE `data_quality`
@@ -1434,6 +1454,12 @@ ALTER TABLE `data_feature_value`
 ALTER TABLE `data_processed`
   ADD CONSTRAINT `data_processed_ibfk_1` FOREIGN KEY (`did`) REFERENCES `dataset` (`did`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `data_processed_ibfk_2` FOREIGN KEY (`evaluation_engine_id`) REFERENCES `evaluation_engine` (`id`) ON UPDATE CASCADE;
+
+--
+-- Constraints for table `data_processed`
+--
+ALTER TABLE `data_conversion`
+  ADD CONSTRAINT `data_conversion_ibfk_1` FOREIGN KEY (`did`) REFERENCES `dataset` (`did`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `data_quality`

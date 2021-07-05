@@ -9,6 +9,7 @@ class Api_data extends MY_Api_Model {
 
     // load models
     $this->load->model('Data_processed');
+    $this->load->model('Data_conversion');
     $this->load->model('Dataset');
     $this->load->model('Dataset_status');
     $this->load->model('Dataset_tag');
@@ -758,7 +759,7 @@ class Api_data extends MY_Api_Model {
       $dataset->status = $data_status->status;
     }
      
-    //$dataset->minio_url = 'http://openml1.win.tue.nl/dataset' . $data_id . '/dataset_' . $data_id . '.pq';
+   // $dataset->minio_url = 'http://openml1.win.tue.nl/dataset' . $data_id . '/dataset_' . $data_id . '.pq';
     $this->xmlContents( 'data-get', $this->version, $dataset );
   }
 
@@ -1089,10 +1090,17 @@ class Api_data extends MY_Api_Model {
     //check and register the data files, return url
     $file_id = null;
     $datasetUrlProvided = property_exists($xml->children('oml', true), 'url');
-    $datasetFileProvided = isset($_FILES['dataset']);
+    $datasetFileProvided = isset($_FILES['dataset']); 
+    $datasetpqProvided = isset($_FILES['dataset_pq']);
+
+    //Accept either parquet or ARFF, not both
+    if ($datasetpqProvided && ($datasetUrlProvided || $datasetFileProvided)){
+      $this->returnError(146, $this->version);
+      return;
+    }  
+
     if ($datasetUrlProvided && $datasetFileProvided) {
       $this->returnError(140, $this->version);
-
       return;
     } elseif($datasetFileProvided) {
       $message = '';
@@ -1133,6 +1141,9 @@ class Api_data extends MY_Api_Model {
 
       $file_record = $this->File->getById($file_id);
       $destinationUrl = $this->data_controller . 'download/' . $file_id . '/' . $file_record->filename_original;
+    } elseif ($datasetpqProvided) {      
+    $pq_filepath = $_FILES['dataset_pq']['tmp_name']; 
+    $destinationUrl = null;   
     } else {
       $this->returnError(141, $this->version);
       return;
@@ -1185,7 +1196,7 @@ class Api_data extends MY_Api_Model {
       $this->returnError(134, $this->version);
       return;
     }
-
+    
     // try to move the file to a new directory. If it fails, the dataset is
     // still valid, but we probably want to make some mechanism to inform administrators
     if ($file_record->type != 'url') {
@@ -1193,6 +1204,43 @@ class Api_data extends MY_Api_Model {
       $to_folder = $this->data_folders['dataset'] . '/' . $subdirectory . '/' . $id . '/';
       $this->File->move_file($file_id, $to_folder);
     }
+
+    // If only parquet file is provided.
+    if ($datasetpqProvided) {
+      putenv("PATH=$PATH:/opt/anaconda3/bin");      
+      $pq_filepath = $_FILES['dataset_pq']['tmp_name'];   
+      $exec_message = system("python3 scripts/minio_python/minio_upload.py ".$id." ".$pq_filepath. " ". "pq");
+      print_r($exec_message);
+      $conversion_data = array(
+      'did' => $id,
+      'conversion_type'=>'arff'
+    );
+      $this->Data_conversion->insert($conversion_data);
+    }
+
+    // If ARFF file is provided
+    if ($datasetFileProvided ) {
+      putenv("PATH=$PATH:/opt/anaconda3/bin"); 
+      $file_record = $this->File->getById($file_id);
+      $arff_filepath = DATA_PATH. $file_record->filepath;
+      $exec_message = system("python3 scripts/minio_python/minio_upload.py ".$id." ".$arff_filepath. " ". "arff"); //" 2>&1"
+      print_r($exec_message);
+       $conversion_data = array(
+      'did' => $id,
+      'conversion_type'=>'parquet'
+    );
+      $this->Data_conversion->insert($conversion_data);
+    }
+
+
+    $pq_url = 'http://openml1.win.tue.nl/dataset' . $id . '/dataset_' . $id . '.pq';
+    $arff_url = 'http://openml1.win.tue.nl/dataset' . $id . '/dataset_' . $id . '.arff';
+    $update_fields = array(
+      'parquet_url' => $pq_url,
+      'url'=>$arff_url
+  );
+    $this->Dataset->update($id, $update_fields);
+
 
     // try making the ES stuff
     try {
