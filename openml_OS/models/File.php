@@ -103,6 +103,15 @@ class File extends MY_Community_Model {
     return $this->insert($file_record);
   }
   
+  function upload_file_minio($id, $filepath, $filetype) {
+    // This function invokes a python script to upload the files to minio server
+    putenv("PATH=$PATH:/opt/anaconda3/bin");
+    $exec_message = system("python3 scripts/minio_python/minio_upload.py ".$id." ".$filepath. " ". $filetype);
+    print_r($exec_message);
+
+  }
+
+
   function move_file($file_id, $to_folder) {
     // moves a registered file by copying it to another folder, updating the
     // database record, and removing the old record (to prevent losing a file

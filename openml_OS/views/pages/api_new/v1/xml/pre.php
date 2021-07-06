@@ -34,7 +34,7 @@ $this->apiErrors[143] = 'Suggested target feature not legal ';
 $this->apiErrors[144] = 'Unable to update dataset ';
 $this->apiErrors[145] = 'Error parsing dataset ARFF file';
 $this->apiErrors[146] = 'Both ARFF and parquet format of dataset provided. Please provide only one.';
-
+$this->apiErrors[147] = 'We only support upload of ARFF files less than 1 GB. Please use the parquet format to upload datasets > 1 GB.';
 
 // for function: openml.tasks.search
 $this->apiErrors[151] = 'Unknown task';

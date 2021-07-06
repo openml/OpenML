@@ -1092,6 +1092,7 @@ class Api_data extends MY_Api_Model {
     $datasetUrlProvided = property_exists($xml->children('oml', true), 'url');
     $datasetFileProvided = isset($_FILES['dataset']); 
     $datasetpqProvided = isset($_FILES['dataset_pq']);
+    $threshold_size = 1073741824;
 
     //Accept either parquet or ARFF, not both
     if ($datasetpqProvided && ($datasetUrlProvided || $datasetFileProvided)){
@@ -1104,6 +1105,11 @@ class Api_data extends MY_Api_Model {
       return;
     } elseif($datasetFileProvided) {
       $message = '';
+      if ($_FILES['dataset']['size'] > $threshold_size) {
+        $this->returnError(147, $this->version);
+        return;
+      }
+
       if (!check_uploaded_file($_FILES['dataset'], false, $message)) {
         $this->returnError(130, $this->version, $this->openmlGeneralErrorCode, 'File dataset: ' . $message);
         return;
@@ -1126,6 +1132,11 @@ class Api_data extends MY_Api_Model {
       $destinationUrl = $this->data_controller . 'download/' . $file_id . '/' . $file_record->filename_original;
     } elseif ($datasetUrlProvided) {
       $destinationUrl = '' . $xml->children('oml', true)->url;
+      $headers = get_headers($destinationUrl, 1);
+      if ($headers['Content-Length'] > $threshold_size) {
+        $this->returnError(147, $this->version);
+        return;
+      }
 
       $uploadedFileCheck = ARFFcheck($destinationUrl, 1000);
       if ($uploadedFileCheck !== true) {
@@ -1205,26 +1216,23 @@ class Api_data extends MY_Api_Model {
       $this->File->move_file($file_id, $to_folder);
     }
 
-    // If only parquet file is provided.
+    // If only parquet file is provided. Upload, set conversion_type = ARFF (if file less than 1 GB)
     if ($datasetpqProvided) {
-      putenv("PATH=$PATH:/opt/anaconda3/bin");      
-      $pq_filepath = $_FILES['dataset_pq']['tmp_name'];   
-      $exec_message = system("python3 scripts/minio_python/minio_upload.py ".$id." ".$pq_filepath. " ". "pq");
-      print_r($exec_message);
-      $conversion_data = array(
-      'did' => $id,
-      'conversion_type'=>'arff'
-    );
+      $this->File->upload_file_minio($id, $_FILES['dataset_pq']['tmp_name'], "pq");
+      if($_FILES['dataset_pq']['size'] < $threshold_size) {
+
+        $conversion_data = array(
+          'did' => $id,
+          'conversion_type'=>'arff'
+        );
       $this->Data_conversion->insert($conversion_data);
+      }      
     }
 
-    // If ARFF file is provided
+    // If ARFF file is provided, Upload, set conversion_type = PARQUET
     if ($datasetFileProvided ) {
-      putenv("PATH=$PATH:/opt/anaconda3/bin"); 
       $file_record = $this->File->getById($file_id);
-      $arff_filepath = DATA_PATH. $file_record->filepath;
-      $exec_message = system("python3 scripts/minio_python/minio_upload.py ".$id." ".$arff_filepath. " ". "arff"); //" 2>&1"
-      print_r($exec_message);
+      $this->File->upload_file_minio($id, DATA_PATH. $file_record->filepath, "arff");
        $conversion_data = array(
       'did' => $id,
       'conversion_type'=>'parquet'
@@ -1233,8 +1241,8 @@ class Api_data extends MY_Api_Model {
     }
 
 
-    $pq_url = 'http://openml1.win.tue.nl/dataset' . $id . '/dataset_' . $id . '.pq';
-    $arff_url = 'http://openml1.win.tue.nl/dataset' . $id . '/dataset_' . $id . '.arff';
+    $pq_url = MINIO_URL .'dataset'. $id . '/dataset_' . $id . '.pq';
+    $arff_url = MINIO_URL .'dataset'. $id . '/dataset_' . $id . '.arff';
     $update_fields = array(
       'parquet_url' => $pq_url,
       'url'=>$arff_url

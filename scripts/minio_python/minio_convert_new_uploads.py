@@ -22,7 +22,8 @@ def init_minio():
     os.getenv('MINIO_URL'),
     access_key=os.getenv('MINIO_ACCESS_KEY'),
     secret_key=os.getenv('MINIO_SECRET_KEY'),
-    secure=False)
+    secure=False
+    )
     return client
 
 def connect_to_db():
@@ -90,9 +91,11 @@ def perform_conversions():
         # TODO: Change this hardcoded URL and fetch from dataset table
         arff_url = f"http://openml1.win.tue.nl/dataset{did}/dataset_{did}.arff"    
         df = arff_to_pandas(arff_url)
+        print(df.head())
         df.to_parquet('dataset.pq')
 
-        minio_client.fput_object(f"dataset{did}", f"dataset_{did}.pq", 'dataset.pq')
+        m = minio_client.fput_object(f"dataset{did}", f"dataset_{did}.pq", 'dataset.pq')
+        print(m)
         print("saved dataset in parquet format to bucket  ", did)
         update_conversion_table(did, connection)
 
