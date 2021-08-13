@@ -38,6 +38,7 @@ $this->apiErrors[145] = 'Error parsing dataset ARFF file';
 // for function: openml.tasks.search
 $this->apiErrors[151] = 'Unknown task';
 $this->apiErrors[152] = 'Unknown task type';
+$this->apiErrors[153] = 'Deprecated task. This kind of task is no longer supported, please find or create a new task.';
 
 // for function: openml.tasks.inputs
 $this->apiErrors[156] = 'Unknown task';
