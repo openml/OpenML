@@ -523,6 +523,10 @@ class Api_task extends MY_Api_Model {
 
     $inputs = $this->Task_inputs->getAssociativeArray('input', 'value', 'task_id = ' . $task_id);
 
+    if (array_key_exists('custom_testset', $inputs)) {
+      $this->returnError(153, $this->version);
+      return;
+    }
 
     $parsed_io = $this->Task_type_inout->getParsed($task_id);
     $tags = $this->Task_tag->getColumnWhere('tag', 'id = ' . $task_id);
