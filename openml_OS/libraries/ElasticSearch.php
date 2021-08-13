@@ -189,9 +189,14 @@ class ElasticSearch {
                     'properties' => array(
                         'tag' => array('type' => 'text'),
                         'uploader' => array('type' => 'text'))),
+                'collections' => array(
+                    'type' => 'nested',
+                    'properties' => array(
+                        'id' => array('type' => 'long'),
+                        'type' => array('type' => 'text'))),
                 'task_id' => array('type' => 'long'),
                 'tasktype.tt_id' => array('type' => 'long'),
-		            'runs' => array('type' => 'long')
+		        'runs' => array('type' => 'long')
             )
         );
 	$this->mappings['task_type'] = array(
@@ -929,6 +934,7 @@ class ElasticSearch {
         }
 
         $newdata['tags'] = array();
+        $newdata['collections'] = array();
         $studies = array();
         $tags = $this->CI->Task_tag->getAssociativeArray('tag', 'uploader', 'id = ' . $d->task_id);
         if ($tags != false) {
@@ -936,8 +942,13 @@ class ElasticSearch {
                 $newdata['tags'][] = array(
                     'tag' => $t,
                     'uploader' => $u);
-                if(substr( $t, 0, 6 ) === "study_")
-                  $studies[] = substr($t, strpos($t, "_") + 1);
+                if(substr( $t, 0, 6 ) === "study_"){
+                    $study_id = substr($t, strpos($t, "_") + 1);
+                    $studies[] = $study_id;
+                    $newdata['collections'][] = array(
+                        'type' => 'task',
+                        'id' => $study_id);
+                }
             }
         }
 
@@ -945,11 +956,23 @@ class ElasticSearch {
         $new_studies = array();
         $task_studies = $this->db->query("select study_id from task_study where task_id=" . $d->task_id);
         if ($task_studies != false) {
-            foreach ($task_studies as $t) { if (!in_array($t->study_id, $studies)){ $new_studies[] = $t->study_id; }}
+            foreach ($task_studies as $t) { 
+                if (!in_array($t->study_id, $studies)){ 
+                    $new_studies[] = $t->study_id;
+                    $newdata['collections'][] = array(
+                        'type' => 'task',
+                        'id' => $t->study_id);
+                }}
         }
         $run_studies = $this->db->query("select distinct study_id from run_study where run_id in (select rid from run where task_id=" . $d->task_id . ")");
         if ($run_studies != false) {
-            foreach ($run_studies as $t) { if (!in_array($t->study_id, $studies)){ $new_studies[] = $t->study_id; }}
+            foreach ($run_studies as $t) { 
+                if (!in_array($t->study_id, $studies)){ 
+                    $new_studies[] = $t->study_id; 
+                    $newdata['collections'][] = array(
+                        'type' => 'run',
+                        'id' => $t->study_id);
+                }}
         }
         if ($new_studies) {
             foreach ($new_studies as $t) { $new_data['tags'][] = array('tag' => 'study_' . $t, 'uploader' => '0'); }
