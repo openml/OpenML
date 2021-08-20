@@ -209,7 +209,7 @@ CREATE TABLE `data_feature` (
 CREATE TABLE `data_feature_value` (
   `did` int(10) UNSIGNED NOT NULL,
   `index` int(10) UNSIGNED NOT NULL,
-  `value` varchar(256) NOT NULL
+  `value` varchar(256) NOT NULL COLLATE latin1_general_cs
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
