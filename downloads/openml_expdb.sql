@@ -949,7 +949,8 @@ ALTER TABLE `data_feature`
 -- Indexes for table `data_feature_value`
 --
 ALTER TABLE `data_feature_value`
-  ADD KEY `did` (`did`,`index`);
+  ADD KEY `did` (`did`,`index`),
+  ADD UNIQUE(`did`, `index`, `value`);
 
 --
 -- Indexes for table `data_processed`
