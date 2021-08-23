@@ -209,7 +209,7 @@ CREATE TABLE `data_feature` (
 CREATE TABLE `data_feature_value` (
   `did` int(10) UNSIGNED NOT NULL,
   `index` int(10) UNSIGNED NOT NULL,
-  `value` varchar(256) NOT NULL
+  `value` varchar(256) NOT NULL COLLATE latin1_general_cs
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -949,7 +949,8 @@ ALTER TABLE `data_feature`
 -- Indexes for table `data_feature_value`
 --
 ALTER TABLE `data_feature_value`
-  ADD KEY `did` (`did`,`index`);
+  ADD KEY `did` (`did`,`index`),
+  ADD UNIQUE(`did`, `index`, `value`);
 
 --
 -- Indexes for table `data_processed`

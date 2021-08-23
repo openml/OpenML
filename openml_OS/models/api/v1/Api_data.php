@@ -780,6 +780,15 @@ class Api_data extends MY_Api_Model {
       $this->returnError(1023, $this->version);
       return;
     }
+    
+    // Temporary fix: makes sure that feature values are also removed when data is reset
+    // A new foreign key on Data_processed should be added to replace this
+    $result = $this->Data_feature_value->deleteWhere('`did` = "' . $dataset->did . '" ');
+    if ($result == false) {
+      $this->returnError(1023, $this->version);
+      return;
+    }
+    
     $this->xmlContents('data-reset', $this->version, array('dataset' => $dataset));
   }
 
