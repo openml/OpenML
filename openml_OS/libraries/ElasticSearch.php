@@ -229,6 +229,11 @@ class ElasticSearch {
                     'properties' => array(
                         'tag' => array('type' => 'text'),
                         'uploader' => array('type' => 'text'))),
+                'collections' => array(
+                    'type' => 'nested',
+                    'properties' => array(
+                        'id' => array('type' => 'long'),
+                        'type' => array('type' => 'text'))),
                 'run_id' => array('type' => 'long'),
                 'run_flow.flow_id' => array('type' => 'long'),
                 'run_flow.name'  => array('type' => 'text', 'fielddata' => true),
@@ -1375,6 +1380,7 @@ class ElasticSearch {
         );
 
         $new_data['tags'] = array();
+        $new_data['collections'] = array();
         $studies = array();
         $tags = $this->CI->Run_tag->getAssociativeArray('tag', 'uploader', 'id = ' . $r->rid);
         if ($tags != false) {
@@ -1382,8 +1388,13 @@ class ElasticSearch {
                 $new_data['tags'][] = array(
                     'tag' => $t,
                     'uploader' => $u);
-                if(substr( $t, 0, 6 ) === "study_")
-                  $studies[] = substr($t, strpos($t, "_") + 1);
+                if(substr( $t, 0, 6 ) === "study_"){
+                    $study_id = substr($t, strpos($t, "_") + 1);
+                    $studies[] = $study_id;
+                    $new_data['collections'][] = array(
+                        'type' => 'run',
+                        'id' => $study_id);
+                }
             }
         }
 
@@ -1391,7 +1402,10 @@ class ElasticSearch {
         if ($run_studies != false) {
             foreach ($run_studies as $t) {
               if (!in_array($t->study_id, $studies)){
-                 $new_data['tags'][] = array('tag' => 'study_' . $t->study_id, 'uploader' => '0');
+                 $new_data['tags'][] = array('tag' => 'study_' . $t->study_id, 'uploader' => '0');                    
+                 $new_data['collections'][] = array(
+                    'type' => 'run',
+                    'id' => $t->study_id);
               }
             }
         }
