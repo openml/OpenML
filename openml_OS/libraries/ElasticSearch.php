@@ -1764,7 +1764,7 @@ class ElasticSearch {
 
     private function build_function($d) {
         $id = str_replace("_", "-", $d->name);
-        $desc = $d->description . '<div class="codehighlight">Source Code:<pre>' . $d->source_code . '</pre></div>';
+        $desc = $d->description . '\n\n' . $d->source_code . '\n';
         $desc = str_replace("<math>","$$",$desc);
         $desc = str_replace("</math>","$$",$desc);
 
