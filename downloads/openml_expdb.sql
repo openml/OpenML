@@ -105,6 +105,7 @@ CREATE TABLE `dataset` (
   `citation` text COLLATE utf8_unicode_ci,
   `collection` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
   `url` mediumtext CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `parquet_url` mediumtext CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
   `isOriginal` enum('true','false') CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
   `file_id` int(10) DEFAULT NULL,
   `default_target_attribute` varchar(1024) COLLATE utf8_unicode_ci DEFAULT NULL,
