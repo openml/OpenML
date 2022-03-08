@@ -25,6 +25,11 @@ define( 'BASE_URL', 'FILL_IN' );
 define( 'DATA_URL', BASE_URL . 'data/' );
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * MINIO_URL: MINIO Server URL. Currently this is 'http://openml1.win.tue.nl/'.
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+define( 'MINIO_URL', 'FILL_IN' );
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * PATH: The directory on the hard disk where the instance of OpenML
  * can be found, with tailing slash. Typically, this would be
  * something like /var/www/ (on Ubuntu installations)
