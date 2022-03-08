@@ -34,7 +34,7 @@
 
     <div id="ppaper" class="collapse" style="font-family: monospace;">
     @article{OpenMLPython2019,<br>
-     author = {Matthias Feurer, Jan N. van Rijn, Arlind Kadra, Pieter Gijsbers, Neeratyoy Mallik, Sahithya Ravi, Andreas Mueller, Joaquin Vanschoren, Frank Hutter},<br>
+     author = {Matthias Feurer and Jan N. van Rijn and Arlind Kadra and Pieter Gijsbers and Neeratyoy Mallik and Sahithya Ravi and Andreas Mueller and Joaquin Vanschoren and Frank Hutter},<br>
      title = {OpenML-Python: an extensible Python API for OpenML},<br>
      journal = {arXiv},<br>
      volume = {1911.02490},<br>
