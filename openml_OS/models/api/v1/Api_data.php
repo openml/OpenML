@@ -165,12 +165,12 @@ class Api_data extends MY_Api_Model {
     }
 
     if (count($segments) == 3 && $segments[0] == 'feature' && $segments[1] == 'ontology' && $segments[2] == 'add' && $request_type == 'post') {
-      $this->data_feature_description_add($this->input->post('data_id'), $this->input->post('index'), $this->input->post('ontology'), 'ontology');
+      $this->data_feature_description($this->input->post('data_id'), $this->input->post('index'), $this->input->post('ontology'), 'ontology', true);
       return;
     }
 
     if (count($segments) == 3 && $segments[0] == 'feature' && $segments[1] == 'ontology' && $segments[2] == 'remove' && $request_type == 'post') {
-      $this->data_feature_description_remove($this->input->post('data_id'), $this->input->post('index'), $this->input->post('ontology'), 'ontology');
+      $this->data_feature_description($this->input->post('data_id'), $this->input->post('index'), $this->input->post('ontology'), 'ontology', false);
       return;
     }
 
@@ -182,7 +182,7 @@ class Api_data extends MY_Api_Model {
     $this->returnError(100, $this->version);
   }
     
-  private function data_feature_description_add($data_id, $feature_idx, $description, $description_type, $do_add) {
+  private function data_feature_description($data_id, $feature_idx, $description, $description_type, $do_add) {
     if ($data_id == false || feature_idx == false || $description == false) {
       $this->returnError(1100, $this->version);
       return false;
