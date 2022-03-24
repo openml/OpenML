@@ -184,13 +184,13 @@ class Api_data extends MY_Api_Model {
     
   private function data_feature_description_add($data_id, $feature_idx, $description, $description_type, $do_add) {
     if ($data_id == false || feature_idx == false || $description == false) {
-      $this->returnError(1081, $this->version);
+      $this->returnError(1100, $this->version);
       return false;
     }
     if ($do_add) {
       $descriptions = $this->Data_feature_description->getColumnWhere('value', 'id = ' . $id . ' AND `type` = "' . $description_type . '"');
       if($descriptions != false && in_array($description, $descriptions)) {
-        $this->returnError(1082, $this->version, 450, 'id=' . $id . '; description=' . $description);
+        $this->returnError(1101, $this->version, 450, 'id=' . $id . '; description=' . $description);
         return false;
       }
     
@@ -205,18 +205,18 @@ class Api_data extends MY_Api_Model {
       
       $res = $this->Data_feature_description->insert($description_data);
       if ($res == false) {
-        $this->returnError(1083, $this->version);
+        $this->returnError(1102, $this->version);
         return false;
       }
     } else {
-      $descriptions = $this->Data_feature_description->getColumnWhere('value', 'id = ' . $id . ' AND `type` = "' . $description_type . '"');
+      $descriptions = $this->Data_feature_description->getColumnWhere('value', 'id = ' . $id . ' AND `type` = "' . $description_type . '" AND `value` = "' . $description . '"');
       if ($descriptions == false) {
-        $this->returnError(1084, $this->version);
+        $this->returnError(1103, $this->version);
         return false;
       }
       $is_admin = $this->ion_auth->is_admin($this->user_id);
       if ($tag_record->uploader != $this->user_id && $is_admin == false) {
-        $this->returnError(1085, $this->version);
+        $this->returnError(1104, $this->version);
         return false;
       }
       $this->Data_feature_description->delete(array($id, $index, $description));
