@@ -13,6 +13,7 @@ class Api_data extends MY_Api_Model {
     $this->load->model('Dataset_status');
     $this->load->model('Dataset_tag');
     $this->load->model('Dataset_topic');
+    $this->load->model('Dataset_description');
     $this->load->model('Data_feature');
     $this->load->model('Data_feature_value');
     $this->load->model('Data_quality');
@@ -103,6 +104,11 @@ class Api_data extends MY_Api_Model {
 
     if (count($segments) == 2 && $segments[0] == 'qualities' && $segments[1] == 'list' && in_array($request_type, $getpost)) {
       $this->data_qualities_list($segments[1]);
+      return;
+    }
+
+    if (count($segments) == 3 && $segments[0] == 'description' && $segments[1] == 'list' && is_numeric($segments[2]) && in_array($request_type, $getpost)) {
+      $this->data_description_list($segments[2]);
       return;
     }
 
@@ -580,14 +586,53 @@ class Api_data extends MY_Api_Model {
       }
     }
 
-    $update_result = $this->Dataset->update($data_id, $update_fields);
-    // If result returns error    
-    if( $update_result == false ) {
-      $this->returnError( 1067, $this->version );
-      return;
+    // Add description in the description table as a new version
+    if (isset($update_fields['description'])) {
+      $description_record = $this->Dataset_description->getWhereSingle('did =' . $data_id, 'version DESC');
+      $version_new = $description_record->version + 1;
+      $desc = array(
+        'did'=>$data_id,
+        'version' => $version_new,
+        'description'=>$update_fields['description'],
+        'uploader' => $dataset->uploader
+      );
+      unset($update_fields['description']);
+      $desc_id = $this->Dataset_description->insert($desc);
+      if (!$desc_id) {
+        $this->returnError(1067, $this->version);
+        return;
+      }
     }
+
+    if ($update_fields) {
+      $update_result = $this->Dataset->update($data_id, $update_fields);
+      // If result returns error
+      if($update_result == false) {
+        $this->returnError(1068, $this->version);
+        return;
+      }
+    }
+    // update elastic search index.  
+    try {
+      $this->elasticsearch->index('data', $data_id);
+    } catch (Exception $e) {
+      $this->returnError(105, $this->version, $this->openmlGeneralErrorCode, $e->getMessage());
+    
+    }
+
     // Return data id, for user to verify changes    
     $this->xmlContents( 'data-edit', $this->version, array( 'id' => $data_id) );
+  }
+
+  private function data_description_list($data_id) {
+  // Get descriptions for given id
+    $description_records = $this->Dataset_description->getWhere('did =' . $data_id, 'version DESC');
+    if( is_array( $description_records ) == false || count( $description_records ) == 0 ) {
+      $this->returnError( 1090, $this->version );
+      return;
+    }
+    // Return history
+    $this->xmlContents( 'data-description-list', $this->version, array('descriptions' => $description_records));
   }
 
   /**
@@ -668,6 +713,7 @@ class Api_data extends MY_Api_Model {
       $dataset->url = BASE_URL . 'data/v1/download/' . $dataset->file_id . '/' . htmlspecialchars($dataset->name) . '.' . strtolower($dataset->format);
     }
 
+
     $file = $this->File->getById($dataset->file_id);
     if (!$file) {
       $this->returnError(113, $this->version);
@@ -678,6 +724,10 @@ class Api_data extends MY_Api_Model {
 
     $tags = $this->Dataset_tag->getColumnWhere('tag', 'id = ' . $dataset->did);
     $dataset->tag = $tags != false ? '"' . implode( '","', $tags ) . '"' : array();
+
+    $description_record = $this->Dataset_description->getWhereSingle('did =' . $data_id, 'version DESC');
+    $dataset->description_version = $description_record->version;
+    $dataset->description = $description_record->description;
 
     foreach( $this->xml_fields_dataset['csv'] as $field ) {
       $dataset->{$field} = getcsv( $dataset->{$field} );
@@ -698,8 +748,10 @@ class Api_data extends MY_Api_Model {
     if ($data_status != false) {
       $dataset->status = $data_status->status;
     }
-
-    $this->xmlContents( 'data-get', $this->version, $dataset );
+    if ($dataset->format != 'Sparse_ARFF') {
+      $dataset->minio_url = 'http://openml1.win.tue.nl/dataset' . $data_id . '/dataset_' . $data_id . '.pq';
+    }
+      $this->xmlContents( 'data-get', $this->version, $dataset );
   }
 
   private function data_reset($data_id) {
@@ -720,6 +772,15 @@ class Api_data extends MY_Api_Model {
       $this->returnError(1023, $this->version);
       return;
     }
+    
+    // Temporary fix: makes sure that feature values are also removed when data is reset
+    // A new foreign key on Data_processed should be added to replace this
+    $result = $this->Data_feature_value->deleteWhere('`did` = "' . $dataset->did . '" ');
+    if ($result == false) {
+      $this->returnError(1023, $this->version);
+      return;
+    }
+    
     $this->xmlContents('data-reset', $this->version, array('dataset' => $dataset));
   }
 
@@ -818,6 +879,7 @@ class Api_data extends MY_Api_Model {
       $this->returnError(105, $this->version, $this->openmlGeneralErrorCode, $e->getMessage(), false, $surpressOutput);
       return false;
     }
+    $this->xmlContents( 'data-topic', $this->version, array( 'id' => $id) );
   }
 
 
@@ -852,6 +914,8 @@ class Api_data extends MY_Api_Model {
       $this->returnError(105, $this->version, $this->openmlGeneralErrorCode, $e->getMessage());
       return false;
     }
+    $this->xmlContents( 'data-topic', $this->version, array( 'id' => $id) );
+  }
     
     
   private function data_delete($data_id) {
@@ -968,10 +1032,11 @@ class Api_data extends MY_Api_Model {
       // get description from string upload
       $description = $this->input->post('description', false);
       if(validateXml($description, $xsdFile, $xmlErrors, false ) == false) {
-        if (DEBUG) {
+        if (DEBUG_XSD_EMAIL) {
           $to = $this->user_email;
-          $subject = 'OpenML Data Upload DEBUG message. ';
-          $content = "Uploaded POST field \nXSD Validation Message: " . $xmlErrors . "\n=====BEGIN XML=====\n" . $description;
+          $server = 'Server:' . $_SERVER['SERVER_ADDR'] . ':' . $_SERVER['SERVER_PORT'];
+          $subject = 'OpenML Data Upload DEBUG message (' . $server . ')';
+          $content = $server . "\nUploaded Post Field\nXSD Validation Message: " . $xmlErrors . "\n=====BEGIN XML=====\n" . file_get_contents($description['tmp_name']);
           sendEmail($to, $subject, $content,'text');
         }
         $this->returnError(131, $this->version, $this->openmlGeneralErrorCode, $xmlErrors);
@@ -989,10 +1054,11 @@ class Api_data extends MY_Api_Model {
       $description = $_FILES['description'];
 
       if (validateXml($description['tmp_name'], $xsdFile, $xmlErrors) == false) {
-        if (DEBUG) {
+        if (DEBUG_XSD_EMAIL) {
           $to = $this->user_email;
-          $subject = 'OpenML Data Upload DEBUG message. ';
-          $content = 'Filename: ' . $description['name'] . "\nXSD Validation Message: " . $xmlErrors . "\n=====BEGIN XML=====\n" . file_get_contents($description['tmp_name']);
+          $server = 'Server:' . $_SERVER['SERVER_ADDR'] . ':' . $_SERVER['SERVER_PORT'];
+          $subject = 'OpenML Data Upload DEBUG message (' . $server . ')';
+          $content = $server . "\nFilename: " . $description['name'] . "\nXSD Validation Message: " . $xmlErrors . "\n=====BEGIN XML=====\n" . file_get_contents($description['tmp_name']);
           sendEmail($to, $subject, $content,'text');
         }
         $this->returnError(131, $this->version, $this->openmlGeneralErrorCode, $xmlErrors);
@@ -1083,7 +1149,7 @@ class Api_data extends MY_Api_Model {
       'last_update' => now(),
       'uploader' => $this->user_id,
       'isOriginal' => 'true',
-      'file_id' => $file_id
+      'file_id' => $file_id,
     );
 
     // extract all other necessary info from the XML description
@@ -1098,11 +1164,25 @@ class Api_data extends MY_Api_Model {
       unset($dataset['tag']);
     }
 
+    $desc = array(
+      'version' => 1,
+      'description'=>$dataset['description'],
+      'uploader' => $this->user_id
+    );
+
+    unset($dataset['description']);
+ 
     /* * * *
      * THE ACTUAL INSERTION
      * * * */
     $id = $this->Dataset->insert($dataset);
     if (!$id) {
+      $this->returnError(134, $this->version);
+      return;
+    }
+    $desc['did'] = $id;
+    $desc_id = $this->Dataset_description->insert($desc);
+    if (!$desc_id) {
       $this->returnError(134, $this->version);
       return;
     }
@@ -1471,10 +1551,11 @@ class Api_data extends MY_Api_Model {
     if (validateXml($description['tmp_name'], xsd('openml.data.features', $this->controller, $this->version), $xmlErrors) == false) {
       $data['error'] = 'XSD does not comply. XSD errors: ' . $xmlErrors;
       $success = $this->Data_processed->replace($data);
-      if (DEBUG) {
+      if (DEBUG_XSD_EMAIL) {
         $to = $this->user_email;
-        $subject = 'OpenML Data Features Upload DEBUG message. ';
-        $content = 'Filename: ' . $description['name'] . "\nXSD Validation Message: " . $xmlErrors . "\n=====BEGIN XML=====\n" . file_get_contents($description['tmp_name']);
+        $server = 'Server:' . $_SERVER['SERVER_ADDR'] . ':' . $_SERVER['SERVER_PORT'];
+        $subject = 'OpenML Data Feature Upload DEBUG message (' . $server . ')';
+        $content = $server . "\nFilename: " . $description['name'] . "\nXSD Validation Message: " . $xmlErrors . "\n=====BEGIN XML=====\n" . file_get_contents($description['tmp_name']);
         sendEmail($to, $subject, $content, 'text');
       }
       $this->returnError(443, $this->version, $this->openmlGeneralErrorCode, $xmlErrors);

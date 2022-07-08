@@ -25,6 +25,11 @@ define( 'BASE_URL', 'FILL_IN' );
 define( 'DATA_URL', BASE_URL . 'data/' );
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * MINIO_URL: MINIO Server URL. Currently this is 'http://openml1.win.tue.nl/'.
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+define( 'MINIO_URL', 'FILL_IN' );
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * PATH: The directory on the hard disk where the instance of OpenML
  * can be found, with tailing slash. Typically, this would be
  * something like /var/www/ (on Ubuntu installations)
@@ -134,6 +139,13 @@ define( 'WIKI_PASSWORD', 'password' );
  * to true when developing. Set to false on the production server
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 define( 'DEBUG', FALSE );
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * * * * * *
+ * DEBUG_XSD_EMAIL: Will send debug information for failed XSD
+ * validations to the user who initiated it
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+define( 'DEBUG_XSD_EMAIL', FALSE );
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * CMD_PREFIX: Adds a prefix to all shell commands; needed for bugfix

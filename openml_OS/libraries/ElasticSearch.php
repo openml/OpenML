@@ -12,6 +12,7 @@ class ElasticSearch {
         $this->CI->load->model('Data_quality');
         $this->CI->load->model('Dataset_tag');
         $this->CI->load->model('Dataset_topic');
+        $this->CI->load->model('Dataset_description');
         $this->CI->load->model('Implementation_tag');
         $this->CI->load->model('Setup_tag');
         $this->CI->load->model('Task_tag');
@@ -188,9 +189,14 @@ class ElasticSearch {
                     'properties' => array(
                         'tag' => array('type' => 'text'),
                         'uploader' => array('type' => 'text'))),
+                'collections' => array(
+                    'type' => 'nested',
+                    'properties' => array(
+                        'id' => array('type' => 'long'),
+                        'type' => array('type' => 'text'))),
                 'task_id' => array('type' => 'long'),
                 'tasktype.tt_id' => array('type' => 'long'),
-		            'runs' => array('type' => 'long')
+		        'runs' => array('type' => 'long')
             )
         );
 	$this->mappings['task_type'] = array(
@@ -223,6 +229,11 @@ class ElasticSearch {
                     'properties' => array(
                         'tag' => array('type' => 'text'),
                         'uploader' => array('type' => 'text'))),
+                'collections' => array(
+                    'type' => 'nested',
+                    'properties' => array(
+                        'id' => array('type' => 'long'),
+                        'type' => array('type' => 'text'))),
                 'run_id' => array('type' => 'long'),
                 'run_flow.flow_id' => array('type' => 'long'),
                 'run_flow.name'  => array('type' => 'text', 'fielddata' => true),
@@ -928,6 +939,7 @@ class ElasticSearch {
         }
 
         $newdata['tags'] = array();
+        $newdata['collections'] = array();
         $studies = array();
         $tags = $this->CI->Task_tag->getAssociativeArray('tag', 'uploader', 'id = ' . $d->task_id);
         if ($tags != false) {
@@ -935,8 +947,13 @@ class ElasticSearch {
                 $newdata['tags'][] = array(
                     'tag' => $t,
                     'uploader' => $u);
-                if(substr( $t, 0, 6 ) === "study_")
-                  $studies[] = substr($t, strpos($t, "_") + 1);
+                if(substr( $t, 0, 6 ) === "study_"){
+                    $study_id = substr($t, strpos($t, "_") + 1);
+                    $studies[] = $study_id;
+                    $newdata['collections'][] = array(
+                        'type' => 'task',
+                        'id' => $study_id);
+                }
             }
         }
 
@@ -944,11 +961,23 @@ class ElasticSearch {
         $new_studies = array();
         $task_studies = $this->db->query("select study_id from task_study where task_id=" . $d->task_id);
         if ($task_studies != false) {
-            foreach ($task_studies as $t) { if (!in_array($t->study_id, $studies)){ $new_studies[] = $t->study_id; }}
+            foreach ($task_studies as $t) { 
+                if (!in_array($t->study_id, $studies)){ 
+                    $new_studies[] = $t->study_id;
+                    $newdata['collections'][] = array(
+                        'type' => 'task',
+                        'id' => $t->study_id);
+                }}
         }
         $run_studies = $this->db->query("select distinct study_id from run_study where run_id in (select rid from run where task_id=" . $d->task_id . ")");
         if ($run_studies != false) {
-            foreach ($run_studies as $t) { if (!in_array($t->study_id, $studies)){ $new_studies[] = $t->study_id; }}
+            foreach ($run_studies as $t) { 
+                if (!in_array($t->study_id, $studies)){ 
+                    $new_studies[] = $t->study_id; 
+                    $newdata['collections'][] = array(
+                        'type' => 'run',
+                        'id' => $t->study_id);
+                }}
         }
         if ($new_studies) {
             foreach ($new_studies as $t) { $new_data['tags'][] = array('tag' => 'study_' . $t, 'uploader' => '0'); }
@@ -1231,6 +1260,7 @@ class ElasticSearch {
         }
 
         $params['index'] = 'data';
+        $params['type'] = 'data';
         $params['id'] = $id;
         $params['body'] = array('doc' => array('topics' => $ts));
         $this->client->update($params);
@@ -1350,6 +1380,7 @@ class ElasticSearch {
         );
 
         $new_data['tags'] = array();
+        $new_data['collections'] = array();
         $studies = array();
         $tags = $this->CI->Run_tag->getAssociativeArray('tag', 'uploader', 'id = ' . $r->rid);
         if ($tags != false) {
@@ -1357,8 +1388,13 @@ class ElasticSearch {
                 $new_data['tags'][] = array(
                     'tag' => $t,
                     'uploader' => $u);
-                if(substr( $t, 0, 6 ) === "study_")
-                  $studies[] = substr($t, strpos($t, "_") + 1);
+                if(substr( $t, 0, 6 ) === "study_"){
+                    $study_id = substr($t, strpos($t, "_") + 1);
+                    $studies[] = $study_id;
+                    $new_data['collections'][] = array(
+                        'type' => 'run',
+                        'id' => $study_id);
+                }
             }
         }
 
@@ -1366,7 +1402,10 @@ class ElasticSearch {
         if ($run_studies != false) {
             foreach ($run_studies as $t) {
               if (!in_array($t->study_id, $studies)){
-                 $new_data['tags'][] = array('tag' => 'study_' . $t->study_id, 'uploader' => '0');
+                 $new_data['tags'][] = array('tag' => 'study_' . $t->study_id, 'uploader' => '0');                    
+                 $new_data['collections'][] = array(
+                    'type' => 'run',
+                    'id' => $t->study_id);
               }
             }
         }
@@ -1725,7 +1764,7 @@ class ElasticSearch {
 
     private function build_function($d) {
         $id = str_replace("_", "-", $d->name);
-        $desc = $d->description . '<div class="codehighlight">Source Code:<pre>' . $d->source_code . '</pre></div>';
+        $desc = $d->description;
         $desc = str_replace("<math>","$$",$desc);
         $desc = str_replace("</math>","$$",$desc);
 
@@ -1734,6 +1773,7 @@ class ElasticSearch {
             'measure_type' => 'evaluation_measure',
             'name' => $d->name,
             'description' => $desc,
+            'code' => $d->source_code,
             'min' => $d->min,
             'max' => $d->max,
             'unit' => $d->unit,
@@ -1878,14 +1918,15 @@ class ElasticSearch {
     }
 
     private function build_data($d, $altmetrics=True) {
-        $headless_description = trim(preg_replace('/\s+/', ' ', preg_replace('/^\*{2,}.*/m', '', $d->description)));
+        $description_record = $this->CI->Dataset_description->getWhereSingle('did =' . $d->did, 'version DESC');
+        $headless_description = trim(preg_replace('/\s+/', ' ', preg_replace('/^\*{2,}.*/m', '', $description_record->description)));
         $new_data = array(
             'data_id' => $d->did,
             'name' => $d->name,
             'exact_name' => $d->name,
             'version' => (float) $d->version,
             'version_label' => $d->version_label,
-            'description' => $d->description,
+            'description' => $description_record->description,
             'format' => $d->format,
             'uploader' => array_key_exists($d->uploader, $this->user_names) ? $this->user_names[$d->uploader]: 'unknown',
             'uploader_id' => intval($d->uploader),
