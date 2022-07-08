@@ -11,6 +11,7 @@ class ElasticSearch {
         $this->CI->load->model('Author');
         $this->CI->load->model('Data_quality');
         $this->CI->load->model('Dataset_tag');
+        $this->CI->load->model('Dataset_topic');
         $this->CI->load->model('Implementation_tag');
         $this->CI->load->model('Setup_tag');
         $this->CI->load->model('Task_tag');
@@ -1216,6 +1217,25 @@ class ElasticSearch {
         $this->client->update($params);
     }
 
+    //update topics for given type and id
+    public function update_topics($id) {
+        $topictable = $this->CI->Dataset_topic;
+        $ts = array();
+        $topics = $topictable->getAssociativeArray('topic', 'uploader', 'id = ' . $id);
+        if ($topics != false) {
+            foreach ($topics as $t => $u) {
+                $ts[] = array(
+                    'topic' => $t,
+                    'uploader' => $u);
+            }
+        }
+
+        $params['index'] = 'data';
+        $params['id'] = $id;
+        $params['body'] = array('doc' => array('topics' => $ts));
+        $this->client->update($params);
+    }
+
     private function index_single_run($id) {
 
         $params['index'] = 'run';
@@ -1907,6 +1927,15 @@ class ElasticSearch {
                     'uploader' => $u);
                 if(substr( $t, 0, 6 ) === "study_")
                   $studies[] = substr($t, strpos($t, "_") + 1);
+            }
+        }
+
+        $topics = $this->CI->Dataset_topic->getAssociativeArray('topic', 'uploader', 'id = ' . $d->did);
+        if ($topics != false) {
+            foreach ($topics as $t => $u) {
+                $new_data['topics'][] = array(
+                    'topic' => $t,
+                    'uploader' => $u);                
             }
         }
         // replace with study list in new indexer
