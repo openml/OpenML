@@ -39,8 +39,6 @@
                   <p class="list-group-item-text"><a href="https://new.openml.org">Check out the new OpenML website</a>. Currently in beta.</p>
               </div>
           </div>
-        </div>
-        <div class="item">
           <div class="list-group-item">
               <div class="row-picture">
                   <img class="circle" src="http://icons.iconarchive.com/icons/cornmanthe3rd/plex/512/Other-python-icon.png" alt="icon">

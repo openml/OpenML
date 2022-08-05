@@ -16,7 +16,7 @@ setlocale(LC_TIME, 'nl_NL');
  * of OpenML, this would be http://www.openml.org/. For an instance on
  * a localhost, this would be http://localhost/.
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-define( 'BASE_URL', 'FILL_IN' );
+define( 'BASE_URL', $_ENV["BASE_URL"] );
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * DATA_URL: The subdirectory where the data can be accessed. Will be
@@ -27,14 +27,14 @@ define( 'DATA_URL', BASE_URL . 'data/' );
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * MINIO_URL: MINIO Server URL. Currently this is 'http://openml1.win.tue.nl/'.
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-define( 'MINIO_URL', 'FILL_IN' );
+define( 'MINIO_URL', 'fill_in' );
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * PATH: The directory on the hard disk where the instance of OpenML
  * can be found, with tailing slash. Typically, this would be
  * something like /var/www/ (on Ubuntu installations)
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-define( 'PATH', 'FILL_IN' );
+define( 'PATH', $_ENV["DIRECTORY_PATH"] );
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * DATA_PATH: The directory on whether the uploaded data is stored.
@@ -44,7 +44,8 @@ define( 'PATH', 'FILL_IN' );
  * (PATH . 'data/') into something different, make sure to also move
  * the content of the data directory that was provided at installation.
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-define( 'DATA_PATH', PATH . 'data/' );
+// define( 'DATA_PATH', $_ENV["DATA_PATH"]PATH . 'data/' );
+define( 'DATA_PATH', $_ENV["DATA_PATH"] );
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * TMP_PATH: Directory in which temporary files can be places. LOCK
@@ -78,12 +79,13 @@ define( 'LIB_PATH', '/var/lib/' );
  * DB_PASS_WRITING: The password that belongs to the DB_USER_WRITING
  * account.
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-define( 'DB_NAME_EXPDB', 'openml_expdb' );
-define( 'DB_HOST_EXPDB', 'FILL_IN' );
-define( 'DB_USER_EXPDB_READ', 'FILL_IN' );
-define( 'DB_PASS_EXPDB_READ', 'FILL_IN' );
-define( 'DB_USER_EXPDB_WRITE', 'FILL_IN' );
-define( 'DB_PASS_EXPDB_WRITE', 'FILL_IN' );
+define( 'DB_NAME_EXPDB', $_ENV["DB_NAME_EXPDB"] );
+// define( 'DB_HOST_EXPDB', 'mysql' );
+define( 'DB_HOST_EXPDB', $_ENV["DB_HOST_EXPDB"] );
+define( 'DB_USER_EXPDB_READ', $_ENV["DB_USER_EXPDB_READ"] );
+define( 'DB_PASS_EXPDB_READ', $_ENV["DB_PASS_EXPDB_READ"] );
+define( 'DB_USER_EXPDB_WRITE', $_ENV["DB_USER_EXPDB_WRITE"] );
+define( 'DB_PASS_EXPDB_WRITE', $_ENV["DB_PASS_EXPDB_WRITE"] );
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Configuration details for the OpenML database (User accounts, etc.)
@@ -97,10 +99,11 @@ define( 'DB_PASS_EXPDB_WRITE', 'FILL_IN' );
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * DB_PASS: The password that belongs to the username
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-define( 'DB_NAME_OPENML', 'openml' );
-define( 'DB_HOST_OPENML', 'FILL_IN' );
-define( 'DB_USER_OPENML', 'FILL_IN' );
-define( 'DB_PASS_OPENML', 'FILL_IN' );
+define( 'DB_NAME_OPENML', $_ENV["DB_NAME_OPENML"] );
+// define( 'DB_HOST_OPENML', 'mysql' );
+define( 'DB_HOST_OPENML', $_ENV["DB_HOST_OPENML"] );
+define( 'DB_USER_OPENML', $_ENV["DB_USER_OPENML"] );
+define( 'DB_PASS_OPENML', $_ENV["DB_PASS_OPENML"] );
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Configuration details for the OpenML API (Username, password)
@@ -119,8 +122,10 @@ define( 'API_KEY', 'FILL_IN_KEY' );
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * ES_USERNAME and ES_PASSWORD can be set by ElasticSearch or a protected proxy
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-define( 'ES_URL', 'FILL_IN' );
-define( 'ES_PUBLIC_URL', 'FILL_IN' );
+// define( 'ES_URL', 'elasticsearch:9200' );
+define( 'ES_URL', $_ENV["ES_URL"] );
+// define( 'ES_PUBLIC_URL', 'localhost:9200' );
+define( 'ES_PUBLIC_URL', $_ENV["ES_PUBLIC_URL"] );
 define( 'ES_USERNAME', '' );
 define( 'ES_PASSWORD', '' );
 
@@ -138,7 +143,7 @@ define( 'WIKI_PASSWORD', 'password' );
  * DEBUG: Will produce errors and warnings on the screen. Set this
  * to true when developing. Set to false on the production server
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-define( 'DEBUG', FALSE );
+define( 'DEBUG', TRUE );
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * * * * * *

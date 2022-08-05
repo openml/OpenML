@@ -36,6 +36,7 @@ class Cron extends CI_Controller {
     $this->load->model('Task_type_inout');
     $this->load->model('Estimation_procedure');
     $this->load->model('Run');
+    $this->load->model('Users');
     $this->load->Library('elasticSearch');
 
     $this->dir_suffix = 'dataset/cron/';
@@ -77,21 +78,52 @@ class Cron extends CI_Controller {
       $this->elasticsearch->update_tags($type, $id);
   }
 
-  // initialize all es indexes
-  public function initialize_es_indices() {
-    foreach($this->es_indices as $index) {
-      $this->elasticsearch->initialize_index($index);
-    }
+
+  // Create admin user
+  public function create_local_admin() {
+    echo "\r\Fetching local admin user from user table...";
+ 
+    $record = $this->Users->getWhereSingle('id = ' . 1);  
+    $username= $record->username;
+    $session_hash = $record->session_hash;
+    // $session_hash=md5(rand());
+    $password = "admin";    
+    // $this->Users->update(1, array('session_hash' => $session_hash));
+    echo "\r\nUser Name:\t" .$username; 
+    echo "\r\nPassword:\t" . $password;
+    echo "\r\nAPI key:\t" .$session_hash;
+    echo "\r\nSaving key in shared config...config/api_key.txt";
+    file_put_contents("/openmlconfig/api_key.txt",$session_hash);     
+    echo "\r\nDone! ";
+    // $user_data = array(
+    //   'first_name' => "Admin",
+    //   'last_name'  => "",
+    //   'affiliation'=> "",
+    //   'country'    => "",
+    //   'bio'    	 => "",
+    //   'external_source' => null,
+    //   'external_id' => null,
+    //   'session_hash' => $session_hash,
+    //   'created_on' => time(),
+    //   'active' => 1
+    // );
+   
+     // # Add to admin group
+    // $group = array('1');
+    // $adminId=$this->ion_auth->register($username, $password, $email,$additional_data, $group);
   }
 
+  
   // builds all es indexes
   public function build_es_indices() {
+    echo "\r\nBuild_es_indices...";
     foreach($this->es_indices as $index) {
       $this->elasticsearch->initialize_index($index);
     }
     foreach($this->es_indices as $index) {
       $this->indexfrom($index, 1);
     }
+    echo "\r\nDone!";
   }
   
   public function arff_parses($file_id) {
@@ -165,9 +197,11 @@ class Cron extends CI_Controller {
   }
 
   function install_database() {
+    echo "\r\nInstall database...\n";
     // note that this one does not come from DATA folder, as they are stored in github
     $models = directory_map('data/sql/', 1);
-    $manipulated_order = array('file.sql', 'implementation.sql', 'algorithm_setup.sql', 'dataset.sql', 'task_type.sql', 'task.sql', 'study.sql', 'groups.sql', 'users.sql');
+    $manipulated_order = array('file.sql', 'groups.sql', 'users.sql', 'implementation.sql', 'algorithm_setup.sql', 
+      'dataset.sql', 'task_type.sql', 'task.sql', 'study.sql');
 
     // moves elements of $manipulated_order to the start of the models array
     foreach (array_reverse($manipulated_order) as $name) {
@@ -176,7 +210,7 @@ class Cron extends CI_Controller {
       }
     }
     $models = array_unique($models);
-
+    
     foreach ($models as $m) {
       $modelname = ucfirst(substr($m, 0, strpos($m, '.')));
       if ($this->load->is_model_loaded($modelname) == false) { $this->load->model($modelname); }
@@ -194,6 +228,16 @@ class Cron extends CI_Controller {
         echo 'skipping ' . $modelname . ', as it is not empty... ' . "\n";
       }
     }
+    echo "\r\nDone!";
+  }
+
+  // Runs all local env init steps
+  public function init_local_env() {
+    $this->install_database();
+    // $this->create_es_openml_index();
+    // $this->initialize_es_indices();
+    $this->create_local_admin();
+    $this->build_es_indices();
   }
 
   function create_meta_dataset($id = false) {
