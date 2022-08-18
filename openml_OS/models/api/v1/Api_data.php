@@ -502,22 +502,28 @@ class Api_data extends MY_Api_Model {
     $latest_version = $this->Dataset-> getWhereSingle('`name` = "' . $dataset->name . '"', 'CAST(`version` AS DECIMAL) DESC');
     $dataset->version = $latest_version->version + 1;
     unset($dataset->did);
-    $data_id = $this->Dataset->insert($dataset);
-    if (!$data_id) {
+    $new_data_id = $this->Dataset->insert($dataset);
+    if (!$new_data_id) {
       $this->returnError(1072, $this->version);
       return;
     }
+    
+    // create a copy of the latest description
+    $description_record = $this->Dataset_description->getWhereSingle('did =' . $data_id, 'version DESC');
+    $description_record->did = $new_data_id;
+    $description_record->version = "1";
+    $this->Dataset_description->insert($description_record);
 
     // update elastic search index.  
     try {
-      $this->elasticsearch->index('data', $data_id);
+      $this->elasticsearch->index('data', $new_data_id);
     } catch (Exception $e) {
       $this->returnError(105, $this->version, $this->openmlGeneralErrorCode, $e->getMessage());
       return;
     }
 
     // Return data id, for user to verify changes
-    $this->xmlContents( 'data-fork', $this->version, array( 'id' => $data_id) );
+    $this->xmlContents( 'data-fork', $this->version, array( 'id' => $new_data_id) );
   }
 
   private function data_edit() {
