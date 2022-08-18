@@ -13,7 +13,7 @@ RewriteRule ^(.*)$ index.php/$1 [L]
 
 
 <IfModule mod_headers.c>
-   SetEnvIfNoCase Origin "https?://(www\.)?(openml\.org|staging\.openml\.org)(:\d+)?$" ACAO=$0
+   SetEnvIfNoCase Origin "https?://(www\.|api\.)?(openml\.org|staging\.openml\.org)(:\d+)?$" ACAO=$0
    Header set Access-Control-Allow-Origin %{ACAO}e env=ACAO
    Header set Access-Control-Allow-Headers "Origin, X-Requested-With, Content-Type, Accept"
 </IfModule>
