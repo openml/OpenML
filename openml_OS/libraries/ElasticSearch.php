@@ -338,7 +338,7 @@ class ElasticSearch {
         }
     }
 
-    public function index_from($type, $id = false, $verbosity=1, $altmetrics=True) {
+    public function index_from($type, $id = false, $verbosity=1, $altmetrics=False) {
         //bootstrap
         $indexParams['index'] = $type;
         if(! $this->client->indices()->getMapping($indexParams))
@@ -1340,11 +1340,11 @@ class ElasticSearch {
               $submitted += sizeof($responses['items']);
               if ($verbosity) {
                 #echo "-  completed ".str_pad($submitted, 9, ' ', STR_PAD_RIGHT);
-                echo "\033[31D";
+                #echo "\033[31D";
               }
            }
          } elseif($verbosity) {
-           echo "\033[9D";
+           #echo "\033[9D";
          }
          $rid += $incr;
        }

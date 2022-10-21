@@ -10,10 +10,9 @@ RewriteRule ^(.*)$ https://www.openml.org/api_new/$1 [L,P]
 RewriteCond $1 !^(questions|SWF|img|docs|downloads|GFX|favicon\.ico|tiny_mce|index\.php|js|css|robots\.txt)
 RewriteRule ^(.*)$ index.php/$1 [L]
 
-
+RedirectMatch 301 ^/?$ http://api.openml.org/home
 
 <IfModule mod_headers.c>
-   SetEnvIfNoCase Origin "https?://(www\.)?(openml\.org|staging\.openml\.org)(:\d+)?$" ACAO=$0
-   Header set Access-Control-Allow-Origin %{ACAO}e env=ACAO
+   Header set Access-Control-Allow-Origin "*"
    Header set Access-Control-Allow-Headers "Origin, X-Requested-With, Content-Type, Accept"
 </IfModule>
