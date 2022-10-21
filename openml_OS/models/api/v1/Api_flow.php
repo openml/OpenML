@@ -819,17 +819,17 @@ class Api_flow extends MY_Api_Model {
     $implementation['fullName'] = $implementation['name'] . '(' . $version . ')';
     $implementation['version'] = $version;
 
-    if( array_key_exists( 'source_md5', $implementation ) ) {
-      if( array_key_exists( 'external_version', $implementation ) === false ) {
+    if( isset( $implementation['source_md5'] ) ) {
+      if( isset( $implementation['external_version'] ) === false ) {
         $implementation['external_version'] = $implementation['source_md5'];
       }
-    } elseif( array_key_exists( 'binary_md5', $implementation ) ) {
-      if( array_key_exists( 'external_version', $implementation ) === false ) {
+    } elseif( isset( $implementation['binary_md5'] ) ) {
+      if( isset( $implementation['external_version'] ) === false ) {
         $implementation['external_version'] = $implementation['binary_md5'];
       }
     }
 
-    if( array_key_exists( 'implements', $implementation ) ) {
+    if( isset( $implementation['implements'] ) ) {
       if( in_array( $implementation['implements'], $this->supportedMetrics ) == false &&
           in_array( $implementation['implements'], $this->supportedAlgorithms == false ) ) {
         return false;
@@ -842,7 +842,7 @@ class Api_flow extends MY_Api_Model {
 
     // tags also not insertable. but handled differently.
     $tags = array();
-    if( array_key_exists( 'tag', $implementation ) ) {
+    if( isset( $implementation['tag'] ) ) {
       $tags = str_getcsv( $implementation['tag'] );
       unset( $implementation['tag'] );
     }
