@@ -690,49 +690,62 @@ class Api_data extends MY_Api_Model {
    *)
    */
   private function data($data_id) {
+    // echo "check if data ID is provided \n";
     if( $data_id == false ) {
       $this->returnError( 110, $this->version );
       return;
     }
-
+    // echo "[Success] check if data ID is provided \n";
+    // echo "Get dataset by ID \n";
     $dataset = $this->Dataset->getById( $data_id );
     if( $dataset === false ) {
       $this->returnError( 111, $this->version );
       return;
     }
-
+    // echo "[Success] Get dataset by ID \n";
+    // echo "Check dataset visibility or if user is the uploader \n";
     if($dataset->visibility != 'public' &&
        $dataset->uploader != $this->user_id &&
        !$this->user_has_admin_rights) {
       $this->returnError( 112, $this->version );
       return;
     }
-
+    // echo "[Success] Check dataset visibility or if user is the uploader \n";
+    // echo "Override URL field \n";
     // overwrite url field
     if ($dataset->file_id != NULL) {
       $dataset->url = BASE_URL . 'data/v1/download/' . $dataset->file_id . '/' . htmlspecialchars($dataset->name) . '.' . strtolower($dataset->format);
     }
+    // echo "[Success] Override URL field \n";
 
-
+    // echo "Get file \n";
     $file = $this->File->getById($dataset->file_id);
     if (!$file) {
       $this->returnError(113, $this->version);
       return;
     }
+    // echo "[Success] get file \n";
 
     $dataset->md5_checksum = $file->md5_hash;
 
+    // echo "Get tags \n";
     $tags = $this->Dataset_tag->getColumnWhere('tag', 'id = ' . $dataset->did);
     $dataset->tag = $tags != false ? '"' . implode( '","', $tags ) . '"' : array();
+    // echo "[Success] Get tags \n";
 
+    // echo "Get description \n";
     $description_record = $this->Dataset_description->getWhereSingle('did =' . $data_id, 'version DESC');
     $dataset->description_version = $description_record->version;
     $dataset->description = $description_record->description;
+    // echo "[Success] Get description \n";
 
+    // echo "Get csv \n";
     foreach( $this->xml_fields_dataset['csv'] as $field ) {
       $dataset->{$field} = getcsv( $dataset->{$field} );
     }
+    // echo "[Success] Get csv \n";
 
+    // echo "Get data processed \n";
     $data_processed = $this->Data_processed->getById(array($data_id, $this->config->item('default_evaluation_engine_id')));
     $relevant_fields = array('processing_date', 'error', 'warning');
     foreach ($relevant_fields as $field) {
@@ -742,15 +755,18 @@ class Api_data extends MY_Api_Model {
         $dataset->{$field} = null;
       }
     }
+    // echo "[Success] Get data processed \n";
 
+    // echo "Get status \n";
     $dataset->status = $this->config->item('default_dataset_status');
     $data_status = $this->Dataset_status->getWhereSingle('did =' . $data_id, 'status_date DESC');
     if ($data_status != false) {
       $dataset->status = $data_status->status;
     }
-    if ($dataset->format != 'Sparse_ARFF') {
-      $dataset->minio_url = 'http://openml1.win.tue.nl/dataset' . $data_id . '/dataset_' . $data_id . '.pq';
-    }
+    // echo "[Success] Get status \n";
+    // if ($dataset->format != 'Sparse_ARFF') {
+    //   $dataset->minio_url = 'http://openml1.win.tue.nl/dataset' . $data_id . '/dataset_' . $data_id . '.pq';
+    // }
       $this->xmlContents( 'data-get', $this->version, $dataset );
   }
 

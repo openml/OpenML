@@ -113,8 +113,8 @@ define( 'DB_PASS_OPENML', $_ENV["DB_PASS_OPENML"] );
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * API_KEY: The API_KEY that belongs to the username
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-define( 'API_USERNAME', 'FILL_IN_USERNAME' );
-define( 'API_KEY', 'FILL_IN_KEY' );
+define( 'API_USERNAME', $_ENV["API_USERNAME"] );
+define( 'API_KEY', $_ENV["API_KEY"] );
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
