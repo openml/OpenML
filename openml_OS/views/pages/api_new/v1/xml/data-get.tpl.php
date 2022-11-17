@@ -12,6 +12,7 @@
   <?php if ($language != null): ?><oml:language><?php echo htmlspecialchars($language); ?></oml:language><?php endif; ?>
   <?php if ($licence != null): ?><oml:licence><?php echo htmlspecialchars($licence); ?></oml:licence><?php endif; ?>
   <oml:url><?php echo htmlspecialchars($url); ?></oml:url>
+  <?php if ($parquet_url != null): ?><oml:parquet_url><?php echo htmlspecialchars($parquet_url); ?></oml:parquet_url><?php endif; ?>
   <?php if ($file_id != null): ?><oml:file_id><?php echo $file_id; ?></oml:file_id><?php endif; ?>
   <?php if ($default_target_attribute != null): ?><oml:default_target_attribute><?php echo htmlspecialchars($default_target_attribute); ?></oml:default_target_attribute><?php endif; ?>
   <?php if ($row_id_attribute != null): ?><oml:row_id_attribute><?php echo htmlspecialchars($row_id_attribute); ?></oml:row_id_attribute><?php endif; ?>
