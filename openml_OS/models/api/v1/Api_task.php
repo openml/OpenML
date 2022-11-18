@@ -523,7 +523,7 @@ class Api_task extends MY_Api_Model {
 
     $inputs = $this->Task_inputs->getAssociativeArray('input', 'value', 'task_id = ' . $task_id);
 
-    if (isset($inputs['custom_testset'])) {
+    if (array_key_exists('custom_testset', $inputs)) {
       $this->returnError(153, $this->version);
       return;
     }
@@ -533,7 +533,7 @@ class Api_task extends MY_Api_Model {
 
     $name = 'Task ' . $task_id . ' (' . $task_type->name . ')';
 
-    if (isset($inputs['source_data'])) {
+    if (array_key_exists('source_data', $inputs)) {
       $dataset = $this->Dataset->getById($inputs['source_data']);
       $name = 'Task ' . $task_id . ': ' . $dataset->name . ' (' . $task_type->name . ')';
     }
@@ -737,7 +737,7 @@ class Api_task extends MY_Api_Model {
         $name = $input->attributes() . '';
         
         // check if input is no duplicate
-        if (isset($inputs[$name])) {
+        if (array_key_exists($name, $inputs)) {
           $this->returnError(617, $this->version, 
                              $this->openmlGeneralErrorCode, 
                              'problematic input: ' . $name);
@@ -759,7 +759,7 @@ class Api_task extends MY_Api_Model {
 
     foreach($inputs as $name => $input_value) {
       // check if input is legal
-      if (isset($legal_inputs[$name]) == false) {
+      if (array_key_exists($name, $legal_inputs) == false) {
         $this->returnError(616, $this->version, $this->openmlGeneralErrorCode, 'problematic input: ' . $name);
         return;
       }
@@ -772,7 +772,7 @@ class Api_task extends MY_Api_Model {
       
       // is_json lives in text_helper
       $type_check_mappings = array('numeric' => 'is_numeric', 'json' => 'is_json', 'string' => 'is_string');
-      if (!property_exists($constraints, 'data_type') || !isset($type_check_mappings[$constraints->data_type])) {
+      if (!property_exists($constraints, 'data_type') || !array_key_exists($constraints->data_type, $type_check_mappings)) {
         $this->returnError(620, $this->version, $this->openmlGeneralErrorCode, 'problematic input: ' . $name);
         return;
       }

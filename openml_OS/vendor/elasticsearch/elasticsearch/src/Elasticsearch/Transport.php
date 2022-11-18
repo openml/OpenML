@@ -1,20 +1,4 @@
 <?php
-/**
- * Elasticsearch PHP client
- *
- * @link      https://github.com/elastic/elasticsearch-php/
- * @copyright Copyright (c) Elasticsearch B.V (https://www.elastic.co)
- * @license   http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
- * @license   https://www.gnu.org/licenses/lgpl-2.1.html GNU Lesser General Public License, Version 2.1 
- * 
- * Licensed to Elasticsearch B.V under one or more agreements.
- * Elasticsearch B.V licenses this file to you under the Apache 2.0 License or
- * the GNU Lesser General Public License, Version 2.1, at your option.
- * See the LICENSE file in the project root for more information.
- */
-
-
-declare(strict_types = 1);
 
 namespace Elasticsearch;
 
@@ -28,6 +12,11 @@ use Psr\Log\LoggerInterface;
 /**
  * Class Transport
  *
+ * @category Elasticsearch
+ * @package  Elasticsearch
+ * @author   Zachary Tong <zach@elastic.co>
+ * @license  http://www.apache.org/licenses/LICENSE-2.0 Apache2
+ * @link     http://elastic.co
  */
 class Transport
 {
@@ -54,14 +43,14 @@ class Transport
      * Transport class is responsible for dispatching requests to the
      * underlying cluster connections
      *
-     * @param int $retries
+     * @param $retries
      * @param bool $sniffOnStart
      * @param ConnectionPool\AbstractConnectionPool $connectionPool
-     * @param \Psr\Log\LoggerInterface $log
+     * @param \Psr\Log\LoggerInterface $log    Monolog logger object
      */
 	// @codingStandardsIgnoreStart
 	// "Arguments with default values must be at the end of the argument list" - cannot change the interface
-    public function __construct(int $retries, AbstractConnectionPool $connectionPool, LoggerInterface $log, bool $sniffOnStart = false)
+    public function __construct($retries, $sniffOnStart = false, AbstractConnectionPool $connectionPool, LoggerInterface $log)
     {
 	    // @codingStandardsIgnoreEnd
 
@@ -129,9 +118,8 @@ class Transport
             },
             //onFailure
             function ($response) {
-                $code = $response->getCode();
                 // Ignore 400 level errors, as that means the server responded just fine
-                if ($code < 400 || $code >= 500) {
+                if (!(isset($response['code']) && $response['code'] >=400 && $response['code'] < 500)) {
                     // Otherwise schedule a check
                     $this->connectionPool->scheduleCheck();
                 }
@@ -147,19 +135,23 @@ class Transport
      *
      * @return callable|array
      */
-    public function resultOrFuture(FutureArrayInterface $result, array $options = [])
+    public function resultOrFuture($result, $options = [])
     {
+        $response = null;
         $async = isset($options['client']['future']) ? $options['client']['future'] : null;
         if (is_null($async) || $async === false) {
             do {
                 $result = $result->wait();
             } while ($result instanceof FutureArrayInterface);
-        } 
-        return $result;
+
+            return $result;
+        } elseif ($async === true || $async === 'lazy') {
+            return $result;
+        }
     }
 
     /**
-     * @param array $request
+     * @param $request
      *
      * @return bool
      */

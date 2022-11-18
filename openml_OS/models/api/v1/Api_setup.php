@@ -463,7 +463,7 @@ class Api_setup extends MY_Api_Model {
       $this->xml_fields_run);
 
     $implementation_id = $run_xml['flow_id'];
-    $parameter_objects = isset($run_xml['parameter_setting']) ? $run_xml['parameter_setting'] : array();
+    $parameter_objects = array_key_exists('parameter_setting', $run_xml) ? $run_xml['parameter_setting'] : array();
 
     // fetch implementation
     $implementation = $this->Implementation->getById($implementation_id);

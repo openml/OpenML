@@ -1,4 +1,4 @@
-[[configuration]]
+
 == Configuration
 
 Almost every aspect of the client is configurable.  Most users will only need to configure a few parameters to suit
@@ -60,17 +60,16 @@ Basic Auth's password contains special characters such as a pound sign (`#`) or 
 For this reason, the client supports an extended host syntax which provides greater control over host initialization.
 None of the components are validated, so edge-cases like underscores domain names will not cause problems.
 
-The extended syntax is an array of parameters for each host. The structure of the parameter list is identical to the return values of a http://php.net/manual/en/function.parse-url.php#refsect1-function.parse-url-returnvalues[`parse_url()`] call:
+The extended syntax is an array of parameters for each host:
 
 [source,php]
 ----
 $hosts = [
-    // This is effectively equal to: "https://username:password!#$?*abc@foo.com:9200/elastic"
+    // This is effectively equal to: "https://username:password!#$?*abc@foo.com:9200/"
     [
         'host' => 'foo.com',
         'port' => '9200',
         'scheme' => 'https',
-        'path' => '/elastic',
         'user' => 'username',
         'pass' => 'password!#$?*abc'
     ],
@@ -90,8 +89,7 @@ scheme is `http`.
 
 === Authorization and Encryption
 
-For details about HTTP Authorization and SSL encryption, see
-<<security,Authorization and SSL>>.
+For details about HTTP Authorization and SSL encryption, please see link:_security.html[Authorization and SSL].
 
 === Set retries
 
@@ -182,7 +180,34 @@ And then update your composer installation:
 php composer.phar update
 ----------------------------
 
-Once Monolog (or another logger) is installed, you need to create a log object and inject it into the client:
+Once Monolog (or another logger) is installed, you need to create a log object and inject it into the client.  The
+`ClientBuilder` object has a helper static function that will generate a common Monolog-based logger for you.  All you need
+to do is provide the path to your desired logging location:
+
+[source,php]
+----
+$logger = ClientBuilder::defaultLogger('path/to/your.log');
+
+$client = ClientBuilder::create()       // Instantiate a new ClientBuilder
+            ->setLogger($logger)        // Set the logger with a default logger
+            ->build();                  // Build the client object
+----
+
+You can also specify the severity of log messages that you wish to log:
+
+[source,php]
+----
+// set severity with second parameter
+$logger = ClientBuilder::defaultLogger('/path/to/logs/', Logger::INFO);
+
+$client = ClientBuilder::create()       // Instantiate a new ClientBuilder
+            ->setLogger($logger)        // Set the logger with a default logger
+            ->build();                  // Build the client object
+----
+
+The `defaultLogger()` method is just a helper, you are not required to use it.  You can create your own logger and inject
+that instead:
+
 
 [source,php]
 ----
@@ -244,8 +269,7 @@ $client = ClientBuilder::create()
             ->build();
 ----
 
-For more details, please see the dedicated page on 
-<<connection_pool,configuring connection pools>>.
+For more details, please see the dedicated page on link:_connection_pool.html[configuring connection pools].
 
 === Setting the Connection Selector
 
@@ -261,8 +285,7 @@ $client = ClientBuilder::create()
             ->build();
 ----
 
-For more details, please see the dedicated page on
-<<selectors,configuring selectors>>.
+For more details, please see the dedicated page on link:_selectors.html[configuring selectors].
 
 
 === Setting the Serializer
@@ -282,8 +305,7 @@ $client = ClientBuilder::create()
             ->build();
 ----
 
-For more details, please see the dedicated page on
-<<serializers,configuring serializers>>.
+For more details, please see the dedicated page on link:_serializers.html[configuring serializers].
 
 
 === Setting a custom ConnectionFactory

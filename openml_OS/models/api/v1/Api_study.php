@@ -145,7 +145,7 @@ class Api_study extends MY_Api_Model {
       return;
     }
     
-    if (isset($study['benchmark_suite'])) {
+    if (array_key_exists('benchmark_suite', $study)) {
       if ($study['main_entity_type'] != 'run') {
         $this->returnError(1035, $this->version);
         return;
@@ -163,7 +163,7 @@ class Api_study extends MY_Api_Model {
       }
     }
     
-    if (isset($study['alias'])) {
+    if (array_key_exists('alias', $study)) {
       $res = $this->Study->getWhereSingle('alias = "' . $study['alias']  . '"');
       if ($res) {
         $this->returnError(1038, $this->version);
@@ -174,11 +174,11 @@ class Api_study extends MY_Api_Model {
     $this->db->trans_start();
     
     $schedule_data = array(
-      'alias' => isset($study['alias']) ? $study['alias'] : null, 
+      'alias' => array_key_exists('alias', $study) ? $study['alias'] : null, 
       'main_entity_type' => $study['main_entity_type'],
-      'benchmark_suite' => isset($study['benchmark_suite']) ? $study['benchmark_suite'] : null,
+      'benchmark_suite' => array_key_exists('benchmark_suite', $study) ? $study['benchmark_suite'] : null,
       'name' => $study['name'], 
-      'description' => isset($study['description']) ? $study['description'] : null,
+      'description' => array_key_exists('description', $study) ? $study['description'] : null,
       'visibility' => 'public',
       'creation_date' => now(),
       'creator' => $this->user_id,
@@ -804,11 +804,11 @@ class Api_study extends MY_Api_Model {
       return;
     }
     
-    $data = isset($res['data']) ? $res['data'] : null;
-    $tasks = isset($res['tasks']) ? $res['tasks'] : null;
-    $flows = isset($res['flows']) ? $res['flows'] : null;
-    $setups = isset($res['setups']) ? $res['setups'] : null;
-    $runs = isset($res['runs']) ? $res['runs'] : null;
+    $data = array_key_exists('data', $res) ? $res['data'] : null;
+    $tasks = array_key_exists('tasks', $res) ? $res['tasks'] : null;
+    $flows = array_key_exists('flows', $res) ? $res['flows'] : null;
+    $setups = array_key_exists('setups', $res) ? $res['setups'] : null;
+    $runs = array_key_exists('runs', $res) ? $res['runs'] : null;
     
     $template_values = array(
       'study' => $study,
@@ -845,8 +845,7 @@ class Api_study extends MY_Api_Model {
     $model = ucfirst($study->main_entity_type) . '_study';
     $id_name = $study->main_entity_type . '_id';
     
-    if(array_key_exists($study->main_entity_type, $link_entities)){ 
-     foreach ($link_entities[$study->main_entity_type] as $id) {
+    foreach ($link_entities[$study->main_entity_type] as $id) {
       $data = array(
         'study_id' => $study_id,
         $id_name => $id,
@@ -857,7 +856,6 @@ class Api_study extends MY_Api_Model {
       if (!$result) {
         return false;
       }
-     }
     }
     return true;
   }

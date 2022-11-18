@@ -46,6 +46,7 @@ The class defines the following methods:
 * <<Elasticsearch_ClientputScript_putScript,`putScript()`>>
 * <<Elasticsearch_ClientgetTemplate_getTemplate,`getTemplate()`>>
 * <<Elasticsearch_ClientdeleteTemplate_deleteTemplate,`deleteTemplate()`>>
+* <<Elasticsearch_ClientputTemplate_putTemplate,`putTemplate()`>>
 * <<Elasticsearch_ClientfieldStats_fieldStats,`fieldStats()`>>
 * <<Elasticsearch_ClientfieldCaps_fieldCaps,`fieldCaps()`>>
 * <<Elasticsearch_ClientrenderSearchTemplate_renderSearchTemplate,`renderSearchTemplate()`>>
@@ -931,6 +932,7 @@ $response = $client->updateByQuery($params);
 ----
 /*
 $params['id']   = (string) The script ID (Required)
+       ['lang'] = (string) The script language (Required)
        ['body']  = (array) Request body
 */
 
@@ -952,6 +954,7 @@ $response = $client->getScript($params);
 ----
 /*
 $params['id']   = (string) The script ID (Required)
+       ['lang'] = (string) The script language (Required)
        ['body']  = (array) Request body
 */
 
@@ -973,6 +976,7 @@ $response = $client->deleteScript($params);
 ----
 /*
 $params['id']   = (string) The script ID (Required)
+       ['lang'] = (string) The script language (Required)
        ['body']  = (array) Request body
 */
 
@@ -1024,6 +1028,27 @@ $params = [
 
 $client = ClientBuilder::create()->build();
 $response = $client->deleteTemplate($params);
+----
+****
+
+
+
+[[Elasticsearch_ClientputTemplate_putTemplate]]
+.`putTemplate()`
+****
+[source,php]
+----
+/*
+$params['id']   = (string) The search template ID (Required)
+       ['body']  = (array) Request body
+*/
+
+$params = [
+    // ...
+];
+
+$client = ClientBuilder::create()->build();
+$response = $client->putTemplate($params);
 ----
 ****
 
