@@ -1922,7 +1922,8 @@ class ElasticSearch {
         if(!$description_record){
            return 'Could not find description of dataset ' . $d->did;
         }
-	$headless_description = trim(preg_replace('/\s+/', ' ', preg_replace('/^\*{2,}.*/m', '', $description_record->description)));
+        
+	      $headless_description = trim(preg_replace('/\s+/', ' ', preg_replace('/^\*{2,}.*/m', '', $description_record->description)));
         $new_data = array(
             'data_id' => $d->did,
             'name' => $d->name,
