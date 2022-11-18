@@ -1,5 +1,5 @@
 <?php
-class Data_feature_value extends MY_Database_Write_Model {
+class Data_feature_description extends MY_Database_Write_Model {
   
   function __construct() {
     parent::__construct();
