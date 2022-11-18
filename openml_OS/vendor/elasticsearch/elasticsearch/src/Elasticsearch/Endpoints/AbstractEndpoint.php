@@ -1,23 +1,12 @@
 <?php
-/**
- * Elasticsearch PHP client
- *
- * @link      https://github.com/elastic/elasticsearch-php/
- * @copyright Copyright (c) Elasticsearch B.V (https://www.elastic.co)
- * @license   http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
- * @license   https://www.gnu.org/licenses/lgpl-2.1.html GNU Lesser General Public License, Version 2.1 
- * 
- * Licensed to Elasticsearch B.V under one or more agreements.
- * Elasticsearch B.V licenses this file to you under the Apache 2.0 License or
- * the GNU Lesser General Public License, Version 2.1, at your option.
- * See the LICENSE file in the project root for more information.
- */
-declare(strict_types = 1);
 
 namespace Elasticsearch\Endpoints;
 
 use Elasticsearch\Common\Exceptions\UnexpectedValueException;
 use Elasticsearch\Serializers\SerializerInterface;
+use Elasticsearch\Transport;
+use Exception;
+use GuzzleHttp\Ring\Future\FutureArrayInterface;
 
 /**
  * Class AbstractEndpoint
@@ -45,7 +34,7 @@ abstract class AbstractEndpoint
     /** @var  string */
     protected $method = null;
 
-    /** @var string|array */
+    /** @var  array */
     protected $body = null;
 
     /** @var array  */
@@ -57,17 +46,17 @@ abstract class AbstractEndpoint
     /**
      * @return string[]
      */
-    abstract public function getParamWhitelist(): array;
+    abstract public function getParamWhitelist();
 
     /**
      * @return string
      */
-    abstract public function getURI(): string;
+    abstract public function getURI();
 
     /**
      * @return string
      */
-    abstract public function getMethod(): string;
+    abstract public function getMethod();
 
 
     /**
@@ -82,9 +71,9 @@ abstract class AbstractEndpoint
             $params = (array) $params;
         }
 
-        $this->extractOptions($params);
         $this->checkUserParams($params);
         $params = $this->convertCustom($params);
+        $this->extractOptions($params);
         $this->params = $this->convertArraysToStrings($params);
 
         return $this;
@@ -175,10 +164,6 @@ abstract class AbstractEndpoint
             return $this;
         }
 
-        if (is_int($docID)) {
-            $docID = (string) $docID;
-        }
-
         $this->id = urlencode($docID);
 
         return $this;
@@ -237,13 +222,13 @@ abstract class AbstractEndpoint
      *
      * @throws \Elasticsearch\Common\Exceptions\UnexpectedValueException
      */
-    private function checkUserParams(array $params)
+    private function checkUserParams($params)
     {
-        if (empty($params)) {
+        if (isset($params) !== true) {
             return; //no params, just return.
         }
 
-        $whitelist = array_merge($this->getParamWhitelist(), array('client', 'custom', 'filter_path', 'human', 'opaqueId'));
+        $whitelist = array_merge($this->getParamWhitelist(), array('client', 'custom', 'filter_path', 'human'));
 
         $invalid = array_diff(array_keys($params), $whitelist);
         if (count($invalid) > 0) {
@@ -258,21 +243,12 @@ abstract class AbstractEndpoint
     }
 
     /**
-     * @param array $params       Note: this is passed by-reference!
+     * @param $params       Note: this is passed by-reference!
      */
     private function extractOptions(&$params)
     {
         // Extract out client options, then start transforming
         if (isset($params['client']) === true) {
-            // Check if the opaqueId is populated and add the header
-            if (isset($params['client']['opaqueId']) === true) {
-                if (isset($params['client']['headers']) === false) {
-                    $params['client']['headers'] = [];
-                }
-                $params['client']['headers']['x-opaque-id'] = [trim($params['client']['opaqueId'])];
-                unset($params['client']['opaqueId']);
-            }
-
             $this->options['client'] = $params['client'];
             unset($params['client']);
         }

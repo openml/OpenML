@@ -1,9 +1,12 @@
 parameters:
-    reportUnmatchedIgnoredErrors:
-        false
     ignoreErrors:
-        - '#Unsafe usage of new static\(\)#'
-        - '#Call to static method performRequest\(\) on trait#'
-        - '#Constant JSON_THROW_ON_ERROR not found#'
-        - '#Caught class JsonException not found#'
-        - '#Call to method getCode\(\) on an unknown class JsonException#'
+        - '#Mockery\\MockInterface::shouldReceive\(\)#'
+        - '#Mockery\\MockInterface given#'
+        - '#Mockery\\MockInterface\[\] given#'
+
+        # because of \Elasticsearch\Tests\RegisteredNamespaceTest
+        - '#Call to an undefined method Elasticsearch\\Client::foo\(\)#'
+        - '#Call to an undefined method Elasticsearch\\Client::bar\(\)#'
+
+        # because of \Elasticsearch\Tests\ClientBuilderTest
+        - '#expects Psr\\Log\\LoggerInterface, Elasticsearch\\Tests\\ClientBuilder\\DummyLogger given.$#'

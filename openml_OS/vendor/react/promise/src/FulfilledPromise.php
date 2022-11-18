@@ -2,9 +2,6 @@
 
 namespace React\Promise;
 
-/**
- * @deprecated 2.8.0 External usage of FulfilledPromise is deprecated, use `resolve()` instead.
- */
 class FulfilledPromise implements ExtendedPromiseInterface, CancellablePromiseInterface
 {
     private $value;

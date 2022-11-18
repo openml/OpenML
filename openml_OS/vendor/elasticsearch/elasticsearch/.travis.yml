@@ -1,0 +1,60 @@
+language: php
+
+jdk:
+  - oraclejdk8
+
+addons:
+  apt:
+    packages:
+      - oracle-java8-installer
+
+branches:
+  except:
+    - 0.4
+
+sudo: true
+
+matrix:
+  fast_finish: true
+  include:
+    - php: 7.0
+      env: ES_VERSION="6.0"
+    - php: 7.0
+      env: ES_VERSION="6.x"
+
+    - php: 7.1
+      env: ES_VERSION="6.0"
+    - php: 7.1
+      env: ES_VERSION="6.x"
+
+    - php: 7.2
+      env: ES_VERSION="6.0"
+
+  allow_failures:
+    - env: ES_VERSION="6.x"
+
+env:
+  global:
+    - ES_TEST_HOST=http://localhost:9200
+    - JAVA_HOME="/usr/lib/jvm/java-8-oracle/jre"
+
+before_install:
+  - sudo update-java-alternatives -s java-8-oracle
+  - ./travis/download_and_run_es.sh
+
+install:
+  - composer install --prefer-source
+
+before_script:
+  - if [ $TRAVIS_PHP_VERSION = '7.0' ]; then PHPUNIT_FLAGS="--coverage-clover ./build/logs/clover.xml"; fi
+  - php util/RestSpecRunner.php
+  - php util/EnsureClusterAlive.php
+
+script:
+  - composer run-script phpcs
+  - composer run-script phpstan
+  - vendor/bin/phpunit $PHPUNIT_FLAGS
+  - vendor/bin/phpunit -c phpunit-integration.xml --group sync $PHPUNIT_FLAGS
+
+after_script:
+  - if [ $TRAVIS_PHP_VERSION = '7.0' ]; then php vendor/bin/coveralls; fi

@@ -7,13 +7,6 @@ This repository holds all interfaces/classes/traits related to
 Note that this is not a logger of its own. It is merely an interface that
 describes a logger. See the specification for more details.
 
-Installation
-------------
-
-```bash
-composer require psr/log
-```
-
 Usage
 -----
 
@@ -37,12 +30,6 @@ class Foo
     {
         if ($this->logger) {
             $this->logger->info('Doing work');
-        }
-           
-        try {
-            $this->doSomethingElse();
-        } catch (Exception $exception) {
-            $this->logger->error('Oh no!', array('exception' => $exception));
         }
 
         // do something useful
