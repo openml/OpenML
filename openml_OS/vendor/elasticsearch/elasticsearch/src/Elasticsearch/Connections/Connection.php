@@ -1,7 +1,24 @@
 <?php
+/**
+ * Elasticsearch PHP client
+ *
+ * @link      https://github.com/elastic/elasticsearch-php/
+ * @copyright Copyright (c) Elasticsearch B.V (https://www.elastic.co)
+ * @license   http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
+ * @license   https://www.gnu.org/licenses/lgpl-2.1.html GNU Lesser General Public License, Version 2.1 
+ * 
+ * Licensed to Elasticsearch B.V under one or more agreements.
+ * Elasticsearch B.V licenses this file to you under the Apache 2.0 License or
+ * the GNU Lesser General Public License, Version 2.1, at your option.
+ * See the LICENSE file in the project root for more information.
+ */
+
+
+declare(strict_types = 1);
 
 namespace Elasticsearch\Connections;
 
+use Elasticsearch\Client;
 use Elasticsearch\Common\Exceptions\AlreadyExpiredException;
 use Elasticsearch\Common\Exceptions\BadRequest400Exception;
 use Elasticsearch\Common\Exceptions\Conflict409Exception;
@@ -28,11 +45,6 @@ use Psr\Log\LoggerInterface;
 /**
  * Class AbstractConnection
  *
- * @category Elasticsearch
- * @package  Elasticsearch\Connections
- * @author   Zachary Tong <zach@elastic.co>
- * @license  http://www.apache.org/licenses/LICENSE-2.0 Apache2
- * @link     http://elastic.co
  */
 class Connection implements ConnectionInterface
 {
@@ -53,7 +65,7 @@ class Connection implements ConnectionInterface
     protected $host;
 
     /**
-     * @var string || null
+     * @var string|null
      */
     protected $path;
 
@@ -90,9 +102,7 @@ class Connection implements ConnectionInterface
     private $lastRequest = array();
 
     /**
-     * Constructor
-     *
-     * @param $handler
+     * @param callable $handler
      * @param array $hostDetails
      * @param array $connectionParams Array of connection-specific parameters
      * @param \Elasticsearch\Serializers\SerializerInterface $serializer
@@ -107,7 +117,7 @@ class Connection implements ConnectionInterface
         LoggerInterface $log,
         LoggerInterface $trace
     ) {
-    
+
         if (isset($hostDetails['port']) !== true) {
             $hostDetails['port'] = 9200;
         }
@@ -126,6 +136,20 @@ class Connection implements ConnectionInterface
             unset($connectionParams['client']['headers']);
         }
 
+        // Add the User-Agent using the format: <client-repo-name>/<client-version> (metadata-values)
+        $this->headers['User-Agent'] = [sprintf(
+            "elasticsearch-php/%s (%s %s, PHP %s)",
+            Client::VERSION,
+            php_uname("s"),
+            php_uname("r"),
+            phpversion()
+        )];
+
+        // Add x-elastic-client-meta header, if enabled
+        if (isset($connectionParams['client']['x-elastic-client-meta']) && $connectionParams['client']['x-elastic-client-meta']) {
+            $this->headers['x-elastic-client-meta'] = [$this->getElasticMetaHeader($connectionParams)];
+        }
+
         $host = $hostDetails['host'].':'.$hostDetails['port'];
         $path = null;
         if (isset($hostDetails['path']) === true) {
@@ -138,13 +162,13 @@ class Connection implements ConnectionInterface
         $this->connectionParams = $connectionParams;
         $this->serializer       = $serializer;
 
-        $this->handler = $this->wrapHandler($handler, $log, $trace);
+        $this->handler = $this->wrapHandler($handler);
     }
 
     /**
-     * @param $method
-     * @param $uri
-     * @param null $params
+     * @param string $method
+     * @param string $uri
+     * @param array $params
      * @param null $body
      * @param array $options
      * @param \Elasticsearch\Transport $transport
@@ -152,8 +176,13 @@ class Connection implements ConnectionInterface
      */
     public function performRequest($method, $uri, $params = null, $body = null, $options = [], Transport $transport = null)
     {
-        if (isset($body) === true) {
+        if ($body !== null) {
             $body = $this->serializer->serialize($body);
+        }
+
+        $headers = $this->headers;
+        if (isset($options['client']['headers']) && is_array($options['client']['headers'])) {
+            $headers = array_merge($this->headers, $options['client']['headers']);
         }
 
         $request = [
@@ -161,9 +190,7 @@ class Connection implements ConnectionInterface
             'scheme'      => $this->transportSchema,
             'uri'         => $this->getURI($uri, $params),
             'body'        => $body,
-            'headers'     => array_merge([
-                'Host'  => [$this->host]
-            ], $this->headers)
+            'headers'     => array_merge(['Host' => [$this->host]], $headers)
         ];
 
         $request = array_replace_recursive($request, $this->connectionParams, $options);
@@ -179,6 +206,12 @@ class Connection implements ConnectionInterface
         return $future;
     }
 
+    /** @return array */
+    public function getHeaders()
+    {
+        return $this->headers;
+    }
+
     /** @return string */
     public function getTransportSchema()
     {
@@ -191,15 +224,15 @@ class Connection implements ConnectionInterface
         return $this->lastRequest;
     }
 
-    private function wrapHandler(callable $handler, LoggerInterface $logger, LoggerInterface $tracer)
+    private function wrapHandler(callable $handler)
     {
-        return function (array $request, Connection $connection, Transport $transport = null, $options) use ($handler, $logger, $tracer) {
+        return function (array $request, Connection $connection, Transport $transport = null, $options) use ($handler) {
 
             $this->lastRequest = [];
             $this->lastRequest['request'] = $request;
 
             // Send the request using the wrapped handler.
-            $response =  Core::proxy($handler($request), function ($response) use ($connection, $transport, $logger, $tracer, $request, $options) {
+            $response =  Core::proxy($handler($request), function ($response) use ($connection, $transport, $request, $options) {
 
                 $this->lastRequest['response'] = $response;
 
@@ -308,16 +341,20 @@ class Connection implements ConnectionInterface
      *
      * @return string
      */
-    private function getURI($uri, $params)
+    private function getURI(string $uri, ?array $params): string
     {
         if (isset($params) === true && !empty($params)) {
-            array_walk($params, function (&$value, &$key) {
-                if ($value === true) {
-                    $value = 'true';
-                } elseif ($value === false) {
-                    $value = 'false';
-                }
-            });
+            $params = array_map(
+                function ($value) {
+                    if ($value === true) {
+                        return 'true';
+                    } elseif ($value === false) {
+                        return 'false';
+                    }
+                    return $value;
+                },
+                $params
+            );
 
             $uri .= '?' . http_build_query($params);
         }
@@ -326,7 +363,7 @@ class Connection implements ConnectionInterface
             $uri = $this->path . $uri;
         }
 
-        return $uri;
+        return $uri ?? '';
     }
 
     /**
@@ -382,7 +419,7 @@ class Connection implements ConnectionInterface
      * @param null|string $statusCode
      * @param null|string $response
      * @param string $duration
-     * @param \Exception|null $exception
+     * @param \Exception $exception
      *
      * @return void
      */
@@ -530,8 +567,8 @@ class Connection implements ConnectionInterface
     }
 
     /**
-     * @param $request
-     * @param $response
+     * @param array $request
+     * @param array $response
      * @return \Elasticsearch\Common\Exceptions\Curl\CouldNotConnectToHost|\Elasticsearch\Common\Exceptions\Curl\CouldNotResolveHostException|\Elasticsearch\Common\Exceptions\Curl\OperationTimeoutException|\Elasticsearch\Common\Exceptions\MaxRetriesException
      */
     protected function getCurlRetryException($request, $response)
@@ -541,13 +578,13 @@ class Connection implements ConnectionInterface
         $exception = new MaxRetriesException($message);
         switch ($response['curl']['errno']) {
             case 6:
-                $exception = new CouldNotResolveHostException($message, null, $exception);
+                $exception = new CouldNotResolveHostException($message, 0, $exception);
                 break;
             case 7:
-                $exception = new CouldNotConnectToHost($message, null, $exception);
+                $exception = new CouldNotConnectToHost($message, 0, $exception);
                 break;
             case 28:
-                $exception = new OperationTimeoutException($message, null, $exception);
+                $exception = new OperationTimeoutException($message, 0, $exception);
                 break;
         }
 
@@ -563,7 +600,7 @@ class Connection implements ConnectionInterface
      *
      * @return string
      */
-    private function buildCurlCommand($method, $uri, $body)
+    private function buildCurlCommand(string $method, string $uri, ?string $body): string
     {
         if (strpos($uri, '?') === false) {
             $uri .= '?pretty=true';
@@ -582,10 +619,10 @@ class Connection implements ConnectionInterface
     }
 
     /**
-     * @param $request
-     * @param $response
-     * @param $ignore
-     * @throws \Elasticsearch\Common\Exceptions\AlreadyExpiredException|\Elasticsearch\Common\Exceptions\BadRequest400Exception|\Elasticsearch\Common\Exceptions\Conflict409Exception|\Elasticsearch\Common\Exceptions\Forbidden403Exception|\Elasticsearch\Common\Exceptions\Missing404Exception|\Elasticsearch\Common\Exceptions\ScriptLangNotSupportedException|null
+     * @param array $request
+     * @param array $response
+     * @param array $ignore
+     * @throws \Elasticsearch\Common\Exceptions\AlreadyExpiredException|\Elasticsearch\Common\Exceptions\BadRequest400Exception|\Elasticsearch\Common\Exceptions\Conflict409Exception|\Elasticsearch\Common\Exceptions\Forbidden403Exception|\Elasticsearch\Common\Exceptions\Missing404Exception|\Elasticsearch\Common\Exceptions\ScriptLangNotSupportedException
      */
     private function process4xxError($request, $response, $ignore)
     {
@@ -597,6 +634,11 @@ class Connection implements ConnectionInterface
 
         if (array_search($response['status'], $ignore) !== false) {
             return;
+        }
+
+        // if responseBody is not string, we convert it so it can be used as Exception message
+        if (!is_string($responseBody)) {
+            $responseBody = json_encode($responseBody);
         }
 
         if ($statusCode === 400 && strpos($responseBody, "AlreadyExpiredException") !== false) {
@@ -630,9 +672,9 @@ class Connection implements ConnectionInterface
     }
 
     /**
-     * @param $request
-     * @param $response
-     * @param $ignore
+     * @param array $request
+     * @param array $response
+     * @param array $ignore
      * @throws \Elasticsearch\Common\Exceptions\NoDocumentsToGetException|\Elasticsearch\Common\Exceptions\NoShardAvailableException|\Elasticsearch\Common\Exceptions\RoutingMissingException|\Elasticsearch\Common\Exceptions\ServerErrorResponseException
      */
     private function process5xxError($request, $response, $ignore)
@@ -716,7 +758,37 @@ class Connection implements ConnectionInterface
             return new $errorClass($response['body'], $response['status']);
         }
 
+        // if responseBody is not string, we convert it so it can be used as Exception message
+        $responseBody = $response['body'];
+        if (!is_string($responseBody)) {
+            $responseBody = json_encode($responseBody);
+        }
+
         // <2.0 "i just blew up" nonstructured exception
-        return new $errorClass($response['body']);
+        return new $errorClass($responseBody);
+    }
+
+    /**
+     * Get the x-elastic-client-meta header
+     */
+    private function getElasticMetaHeader(array $connectionParams): string
+    {
+        $phpSemVersion = sprintf("%d.%d.%d", PHP_MAJOR_VERSION, PHP_MINOR_VERSION, PHP_RELEASE_VERSION);
+        // Reduce the size in case of '-snapshot' version (using 'p' as pre-release)
+        $clientVersion = str_replace('-snapshot', '-p', strtolower(Client::VERSION)); 
+        $clientMeta = sprintf(
+            "es=%s,php=%s,t=%s,a=%d",
+            $clientVersion,
+            $phpSemVersion,
+            $clientVersion,
+            isset($connectionParams['client']['future']) && $connectionParams['client']['future'] === 'lazy' ? 1 : 0
+        );
+        if (function_exists('curl_version')) {
+            $curlVersion = curl_version();
+            if (isset($curlVersion['version'])) {
+                $clientMeta .= sprintf(",cu=%s", $curlVersion['version']); // cu = curl library
+            }
+        }
+        return $clientMeta;
     }
 }

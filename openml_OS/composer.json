@@ -12,12 +12,12 @@
 	},
 	"require": {
 		"php": ">=5.2.4",
-		"elasticsearch/elasticsearch": "~6.0"
+		"elasticsearch/elasticsearch": "~6.7"
 	},
 	"suggest": {
 		"paragonie/random_compat": "Provides better randomness in PHP 5.x"
 	},
 	"require-dev": {
-		"mikey179/vfsStream": "1.1.*"
+		"mikey179/vfsstream": "1.1.*"
 	}
 }

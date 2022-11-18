@@ -1,4 +1,20 @@
 <?php
+/**
+ * Elasticsearch PHP client
+ *
+ * @link      https://github.com/elastic/elasticsearch-php/
+ * @copyright Copyright (c) Elasticsearch B.V (https://www.elastic.co)
+ * @license   http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
+ * @license   https://www.gnu.org/licenses/lgpl-2.1.html GNU Lesser General Public License, Version 2.1 
+ * 
+ * Licensed to Elasticsearch B.V under one or more agreements.
+ * Elasticsearch B.V licenses this file to you under the Apache 2.0 License or
+ * the GNU Lesser General Public License, Version 2.1, at your option.
+ * See the LICENSE file in the project root for more information.
+ */
+
+
+declare(strict_types = 1);
 
 namespace Elasticsearch\Serializers;
 
@@ -8,11 +24,6 @@ use Elasticsearch\Common\Exceptions\Serializer\JsonErrorException;
 /**
  * Class SmartSerializer
  *
- * @category Elasticsearch
- * @package  Elasticsearch\Serializers\JSONSerializer
- * @author   Zachary Tong <zach@elastic.co>
- * @license  http://www.apache.org/licenses/LICENSE-2.0 Apache2
- * @link     http://elastic.co
  */
 class SmartSerializer implements SerializerInterface
 {
@@ -68,7 +79,7 @@ class SmartSerializer implements SerializerInterface
     /**
      * @todo For 2.0, remove the E_NOTICE check before raising the exception.
      *
-     * @param $data
+     * @param string|null $data
      *
      * @return array
      * @throws JsonErrorException

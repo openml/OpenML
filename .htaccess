@@ -1,14 +1,17 @@
-RewriteEngine on
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php/$0 [L]
 
 # TODO: specific for main instance of OpenML site. Should do something better
-RewriteCond %{HTTP_HOST} ^api_new.openml.org
-RewriteRule ^(.*)$ http://www.openml.org/api_new/$1 [L,P]
+#RewriteCond %{HTTP_HOST} ^api_new.openml.org
+#RewriteRule ^(.*)$ http://www.openml.org/api_new/$1 [L,P]
 
-RewriteCond %{HTTPS_HOST} ^api_new.openml.org
-RewriteRule ^(.*)$ https://www.openml.org/api_new/$1 [L,P]
+#RewriteCond %{HTTPS_HOST} ^api_new.openml.org
+#RewriteRule ^(.*)$ https://www.openml.org/api_new/$1 [L,P]
 
-RewriteCond $1 !^(questions|SWF|img|docs|downloads|GFX|favicon\.ico|tiny_mce|index\.php|js|css|robots\.txt)
-RewriteRule ^(.*)$ index.php/$1 [L]
+#RewriteCond $1 !^(questions|SWF|img|docs|downloads|GFX|favicon\.ico|tiny_mce|index\.php|js|css|robots\.txt)
+#RewriteRule ^(.*)$ index.php/$1 [L]
 
 RedirectMatch 301 ^/?$ http://api.openml.org/home
 
