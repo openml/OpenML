@@ -1,11 +1,13 @@
 <?php
-class Cron extends CI_Controller {
+class Cron extends CI_Controller
+{
 
-  function __construct() {
+  function __construct()
+  {
     parent::__construct();
 
-    $this->controller = strtolower(get_class ($this));
-    if(!$this->input->is_cli_request()) {
+    $this->controller = strtolower(get_class($this));
+    if (!$this->input->is_cli_request()) {
       die('Cron Controller can only be accessed by CLI. ');
     }
 
@@ -21,7 +23,7 @@ class Cron extends CI_Controller {
     $this->load->helper('arff');
 
     $this->load->library('email');
-    $this->email->from( EMAIL_FROM, 'The OpenML Team');
+    $this->email->from(EMAIL_FROM, 'The OpenML Team');
 
     $this->load->model('Algorithm_setup');
     $this->load->model('File');
@@ -45,55 +47,59 @@ class Cron extends CI_Controller {
   }
 
   // indexes a single es item, unless $id = false
-  public function index($type, $id = false){
-      $time_start = microtime(true);
+  public function index($type, $id = false)
+  {
+    $time_start = microtime(true);
 
-      if(!$id){
-        echo "\r\n Starting ".$type." indexer... ";
-        echo $this->elasticsearch->index($type);
-      } else {
-        echo "\r\n Starting ".$type." indexer for id ".$id." ";
-        echo $this->elasticsearch->index($type, $id);
-      }
+    if (!$id) {
+      echo "\r\n Starting " . $type . " indexer... ";
+      echo $this->elasticsearch->index($type);
+    } else {
+      echo "\r\n Starting " . $type . " indexer for id " . $id . " ";
+      echo $this->elasticsearch->index($type, $id);
+    }
 
-      $time_end = microtime(true);
-      $time = $time_end - $time_start;
-      echo "\nIndexing done in $time seconds\n";
+    $time_end = microtime(true);
+    $time = $time_end - $time_start;
+    echo "\nIndexing done in $time seconds\n";
   }
 
   // indices a range of es items, starting by $id (or 0 if id == false)
-  public function indexfrom($type, $id = false, $verbosity = 0){
-      if(!$id){
-        // TODO: I guess this function enables the exact same hevaiour as index($type, false) (JvR)
-        echo "\r\n Starting ".$type." indexer... ";
-        echo $this->elasticsearch->index($type);
-      } else {
-        echo "\r\n Starting ".$type." indexer from id ".$id."... ";
-        echo $this->elasticsearch->index_from($type, $id, $verbosity);
-      }
+  public function indexfrom($type, $id = false, $verbosity = 0)
+  {
+    if (!$id) {
+      // TODO: I guess this function enables the exact same hevaiour as index($type, false) (JvR)
+      echo "\r\n Starting " . $type . " indexer... ";
+      echo $this->elasticsearch->index($type);
+    } else {
+      echo "\r\n Starting " . $type . " indexer from id " . $id . "... ";
+      echo $this->elasticsearch->index_from($type, $id, $verbosity);
+    }
   }
 
-  public function update_tag($type, $id){
-      echo "tagging ".$type." ".$id;
-      $this->elasticsearch->update_tags($type, $id);
+  public function update_tag($type, $id)
+  {
+    echo "tagging " . $type . " " . $id;
+    $this->elasticsearch->update_tags($type, $id);
   }
 
 
   // Create admin user
-  public function create_local_admin() {
+  public function create_local_admin()
+  {
     echo "\r\Fetching local admin user from user table...";
- 
-    $record = $this->Users->getWhereSingle('id = ' . 1);  
-    $username= $record->username;
+
+    $record = $this->Users->getWhereSingle('id = ' . 1);
+    $username = $record->username;
     $session_hash = $record->session_hash;
     // $session_hash=md5(rand());
-    $password = "admin";    
+    $password = "admin";
     // $this->Users->update(1, array('session_hash' => $session_hash));
-    echo "\r\nUser Name:\t" .$username; 
+    echo "\r\nUser Name:\t" . $username;
     echo "\r\nPassword:\t" . $password;
-    echo "\r\nAPI key:\t" .$session_hash;
+    echo "\r\nAPI key:\t" . $session_hash;
     echo "\r\nSaving key in shared config...config/api_key.txt";
-    file_put_contents("/openmlconfig/api_key.txt",$session_hash);     
+    file_put_contents("/openmlconfig/api_key.txt", $session_hash);
     echo "\r\nDone! ";
     // $user_data = array(
     //   'first_name' => "Admin",
@@ -107,50 +113,53 @@ class Cron extends CI_Controller {
     //   'created_on' => time(),
     //   'active' => 1
     // );
-   
-     // # Add to admin group
+
+    // # Add to admin group
     // $group = array('1');
     // $adminId=$this->ion_auth->register($username, $password, $email,$additional_data, $group);
   }
 
-  
+
   // builds all es indexes
-  public function build_es_indices() {
+  public function build_es_indices()
+  {
     echo "\r\nBuild_es_indices...";
-    foreach($this->es_indices as $index) {
+    foreach ($this->es_indices as $index) {
       $this->elasticsearch->initialize_index($index);
     }
-    foreach($this->es_indices as $index) {
+    foreach ($this->es_indices as $index) {
       $this->indexfrom($index, 1);
     }
     echo "\r\nDone!";
   }
-  
-  public function arff_parses($file_id) {
+
+  public function arff_parses($file_id)
+  {
     $file = $this->File->getById($file_id);
     if ($file === false) {
       die('File does not exists.');
     }
-    
+
     $ext = strtolower($file->extension);
     if ($ext != 'arff' && $ext != 'sparse_arff') {
       die('File does not have an arff extension.');
     }
-    
+
     if ($file->type == 'url') {
       $result = ARFFcheck($file->filepath, 100);
     } else {
       $result = ARFFcheck(DATA_PATH . $file->filepath, 100);
     }
-    
+
     if ($result === TRUE) {
       die('Valid arff. ');
     } else {
       die($result);
     }
   }
-  
-  function missing_file_report() {
+
+  function missing_file_report()
+  {
     $start_time = now();
     $batch_size = 10000;
     $missing_files = array();
@@ -166,22 +175,23 @@ class Cron extends CI_Controller {
         }
       }
     }
-    
+
     $to = EMAIL_API_LOG;
     $subject = 'OpenML Cronjob report - Missing files';
     $content = 'Start time: ' . $start_time . "\nFinish time: " . now() . "\nServer: " . BASE_URL . "\nMissing files from records with the following ID's: " . implode(', ', $missing_files);
     sendEmail($to, $subject, $content, 'text');
   }
-  
+
   // temp 
-  function move_run_files($start_index, $end_index) {
+  function move_run_files($start_index, $end_index)
+  {
     $this->load->model('Runfile');
     $results = $this->Runfile->getWhere("source >= " . $start_index . ' AND source < ' . $end_index);
     $run_path = 'run_structured/';
-    
+
     foreach ($results as $result) {
       $file = $this->File->getById($result->file_id);
-      
+
       if (substr($file->filepath, 0, strlen($run_path)) === $run_path) {
         continue;
       }
@@ -196,12 +206,15 @@ class Cron extends CI_Controller {
     }
   }
 
-  function install_database() {
+  function install_database()
+  {
     echo "\r\nInstall database...\n";
     // note that this one does not come from DATA folder, as they are stored in github
     $models = directory_map('data/sql/', 1);
-    $manipulated_order = array('file.sql', 'groups.sql', 'users.sql', 'implementation.sql', 'algorithm_setup.sql', 
-      'dataset.sql', 'task_type.sql', 'task.sql', 'study.sql');
+    $manipulated_order = array(
+      'file.sql', 'groups.sql', 'users.sql', 'implementation.sql', 'algorithm_setup.sql',
+      'dataset.sql', 'task_type.sql', 'task.sql', 'study.sql'
+    );
 
     // moves elements of $manipulated_order to the start of the models array
     foreach (array_reverse($manipulated_order) as $name) {
@@ -210,17 +223,19 @@ class Cron extends CI_Controller {
       }
     }
     $models = array_unique($models);
-    
+
     foreach ($models as $m) {
       $modelname = ucfirst(substr($m, 0, strpos($m, '.')));
-      if ($this->load->is_model_loaded($modelname) == false) { $this->load->model($modelname); }
+      if ($this->load->is_model_loaded($modelname) == false) {
+        $this->load->model($modelname);
+      }
       if ($this->$modelname->get() === false) {
         $sql = file_get_contents('data/sql/' . $m);
-        
+
         echo 'inserting ' . $modelname . ', with ' . strlen($sql) . ' characters... ' . "\n";
         // might need to adapt this, because not all models are supposed to write
         $result = $this->$modelname->query($sql);
-        
+
         if ($result === false) {
           echo 'failure: ' . $this->$modelname->mysqlErrorMessage() . "\n";
         }
@@ -232,7 +247,8 @@ class Cron extends CI_Controller {
   }
 
   // Runs all local env init steps
-  public function init_local_env() {
+  public function init_local_env()
+  {
     $this->install_database();
     // $this->create_es_openml_index();
     // $this->initialize_es_indices();
@@ -240,7 +256,8 @@ class Cron extends CI_Controller {
     $this->build_es_indices();
   }
 
-  function create_meta_dataset($id = false) {
+  function create_meta_dataset($id = false)
+  {
     if ($id == false) {
       $meta_dataset = $this->Meta_dataset->getWhere('processed IS NULL');
       echo 'No id specified, requesting first dataset in queue.' . "\n";
@@ -252,7 +269,7 @@ class Cron extends CI_Controller {
     if ($meta_dataset) {
       $meta_dataset = $meta_dataset[0];
       echo 'Processing meta-dataset with id ' . $meta_dataset->id . ".\n";
-      $this->Meta_dataset->update( $meta_dataset->id, array('processed' => now()));
+      $this->Meta_dataset->update($meta_dataset->id, array('processed' => now()));
       $dataset_constr = ($meta_dataset->datasets) ? 'AND d.did IN (' . $meta_dataset->datasets . ') ' : '';
       $task_constr = ($meta_dataset->tasks) ? 'AND t.task_id IN (' . $meta_dataset->tasks . ') ' : '';
       $flow_constr = ($meta_dataset->flows) ? 'AND i.id IN (' . $meta_dataset->flows . ') ' : '';
@@ -268,12 +285,12 @@ class Cron extends CI_Controller {
         $evaluation_keys = array('e.repeat', 'e.fold', 'e.sample', 'e.sample_size', 'm.name');
         $evaluation_column = 'evaluation_sample';
       }
-      
+
       if (file_exists(DATA_PATH . $this->dir_suffix) == false) {
         mkdir(DATA_PATH . $this->dir_suffix, $this->config->item('content_directories_mode'), true);
       }
 
-      $tmp_path = '/tmp/' . rand_string( 20 ) . '.csv';
+      $tmp_path = '/tmp/' . rand_string(20) . '.csv';
 
       if ($meta_dataset->type == 'qualities') {
         $quality_keys_string = '';
@@ -285,14 +302,14 @@ class Cron extends CI_Controller {
         $header = '"data_id","task_id","name","quality",' . $quality_keys_key_string . '"value" ' . "\n";
         $sql =
           'SELECT d.did, t.task_id, d.name, q.quality, ' . $quality_keys_string . 'q.value ' .
-          'FROM dataset d, '.$quality_colum.' q, task t, task_inputs i ' .
+          'FROM dataset d, ' . $quality_colum . ' q, task t, task_inputs i ' .
           'WHERE t.task_id = i.task_id ' .
           'AND i.input = "source_data" ' .
           'AND i.value = q.data AND q.evaluation_engine_id = 1 ' .
           'AND d.did = q.data ' .
           'AND t.ttid = "' . $meta_dataset->task_type . '" ' .
           $dataset_constr . $task_constr .
-          'INTO OUTFILE "'. $tmp_path .'" ' .
+          'INTO OUTFILE "' . $tmp_path . '" ' .
           'FIELDS TERMINATED BY "," ' .
           'ENCLOSED BY "\"" ' .
           'LINES TERMINATED BY "\n" ' .
@@ -304,8 +321,8 @@ class Cron extends CI_Controller {
           'SELECT MAX(r.rid) AS run_id, s.sid AS setup_id, t.task_id AS task_id, ' .
           implode(', ', $evaluation_keys) . ', MAX(e.value) ' .
           ', CONCAT("Task_", t.task_id, "_", MAX(d.name)) AS task_name, MAX(i.fullName) as flow_name ' .
-//          ',s.setup_string ' .
-//          ',CONCAT(i.fullName, " on ", d.name) as textual ' .
+          //          ',s.setup_string ' .
+          //          ',CONCAT(i.fullName, " on ", d.name) as textual ' .
           'FROM run r, task t, task_inputs v, dataset d, algorithm_setup s, implementation i, ' . $evaluation_column . ' e, math_function m ' .
           'WHERE r.task_id = t.task_id AND v.task_id = t.task_id  ' .
           'AND v.input = "source_data" AND v.value = d.did ' .
@@ -314,9 +331,9 @@ class Cron extends CI_Controller {
           'AND e.function_id = m.id AND e.evaluation_engine_id = 1 ' .
           'AND t.ttid = "' . $meta_dataset->task_type . '"' .
           $dataset_constr . $task_constr . $flow_constr . $setup_constr . $function_constr .
-           /* the GROUP BY line makes stuff slower, we might want to comment it out. */
+          /* the GROUP BY line makes stuff slower, we might want to comment it out. */
           'GROUP BY r.setup, r.task_id, ' . implode(',', $evaluation_keys) . ' ' .
-          'INTO OUTFILE "' . $tmp_path .'" ' .
+          'INTO OUTFILE "' . $tmp_path . '" ' .
           'FIELDS TERMINATED BY "," ' .
           'ENCLOSED BY "\"" ' .
           'LINES TERMINATED BY "\n" ' .
@@ -331,7 +348,7 @@ class Cron extends CI_Controller {
           'AND is.setup = s.sid ' .
           'AND s.implementation_id = i.id ' .
           $flow_constr . $setup_constr .
-          'INTO OUTFILE "'. $tmp_path .'" ' .
+          'INTO OUTFILE "' . $tmp_path . '" ' .
           'FIELDS TERMINATED BY "," ' .
           'ENCLOSED BY "\"" ' .
           'LINES TERMINATED BY "\n" ' .
@@ -370,7 +387,7 @@ class Cron extends CI_Controller {
 
       $file_id = $this->File->register_created_file($this->dir_suffix, $filename, $meta_dataset->user_id, 'dataset', 'text/csv', 'private');
 
-      $this->Meta_dataset->update($meta_dataset->id, array( 'file_id' => $file_id));
+      $this->Meta_dataset->update($meta_dataset->id, array('file_id' => $file_id));
 
       $user = $this->ion_auth->user($meta_dataset->user_id)->row();
       $this->email->to($user->email);
@@ -378,11 +395,12 @@ class Cron extends CI_Controller {
       $this->email->message("This is an automatically generated email. The your requested meta-dataset was created successfully and can be downloaded from " . BASE_URL);
       $this->email->send();
     } else {
-      echo 'No meta-dataset to process. '."\n";
+      echo 'No meta-dataset to process. ' . "\n";
     }
   }
 
-  private function _error_meta_dataset($id, $msg, $user_id) {
+  private function _error_meta_dataset($id, $msg, $user_id)
+  {
     echo $msg . "\n";
     $this->Meta_dataset->update($id, array('error_message' => $msg));
 
@@ -394,4 +412,3 @@ class Cron extends CI_Controller {
     $this->email->send();
   }
 }
-?>
