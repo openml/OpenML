@@ -27,4 +27,9 @@ INSERT INTO `estimation_procedure` (`id`, `ttid`, `name`, `type`, `repeats`, `fo
 (26, 1, 'Test on Training Data', 'testontrainingdata', NULL, NULL, 'false', NULL, NULL, 'false', '2019-03-16 11:30:14'),
 (27, 2, 'Test on Training Data', 'testontrainingdata', NULL, NULL, 'false', NULL, NULL, 'false', '2019-03-16 11:30:14'),
 (28, 1, '20% Holdout (Ordered)', 'holdout_ordered', 1, 1, 'false', 20, NULL, 'false', '2019-05-23 12:40:53'),
-(29, 9, '10-fold Crossvalidation', 'crossvalidation', 1, 10, 'false', NULL, 'true', 'false', '2014-12-31 20:00:00');
+(29, 9, '10-fold Crossvalidation', 'crossvalidation', 1, 10, 'false', NULL, 'true', 'false', '2014-12-31 20:00:00'),
+(30, 10, '10-fold Crossvalidation', 'crossvalidation', 1, 10, 'false', NULL, 'true', 'false', '2023-02-22 11:46:54'),
+(31, 10, '5 times 2-fold Crossvalidation', 'crossvalidation', 5, 2, 'false', NULL, 'true', 'false', '2023-02-22 11:46:54'),
+(32, 10, '10 times 10-fold Crossvalidation', 'crossvalidation', 10, 10, 'false', NULL, 'true', 'false', '2023-02-22 11:46:54'),
+(33, 10, '10% Holdout set', 'holdout', 1, NULL, 'false', 33, 'true', 'false', '2023-02-22 11:46:54'),
+(34, 10, '33% Holdout set', 'holdout', 1, NULL, 'false', 33, 'true', 'false', '2023-02-22 11:46:54');
