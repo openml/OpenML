@@ -17,7 +17,7 @@ class Api_splits extends CI_Controller {
     $this->load->helper('file_upload');
     
     $this->db = $this->load->database('read',true);
-    $this->task_types = array(1, 2, 3, 6, 7, 9);
+    $this->task_types = array(1, 2, 3, 6, 7, 9, 10);
     $this->challenge_types = array(9);
     $this->evaluation = APPPATH . 'third_party/OpenML/Java/evaluate.jar';
     $this->eval_engine_config = " -config 'cache_allowed=false;server=".BASE_URL.";api_key=".API_KEY."' ";
@@ -135,6 +135,7 @@ class Api_splits extends CI_Controller {
   
   private function generate($function, $task_id, $filepath) {
     $task = $this->Task->getById($task_id);
+    // JvR: in hinge sight, this check belongs in the eval engine, and not here.
     if ($task === false || in_array($task->ttid, $this->task_types) === false) {
       http_response_code($this->config->item('general_http_error_code'));
       die('Task not providing datasplits.');
