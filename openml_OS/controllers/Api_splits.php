@@ -135,7 +135,7 @@ class Api_splits extends CI_Controller {
   
   private function generate($function, $task_id, $filepath) {
     $task = $this->Task->getById($task_id);
-    // JvR: in hinge sight, this check belongs in the eval engine, and not here.
+    // JvR: in hindsight, this check belongs in the eval engine, and not here.
     if ($task === false || in_array($task->ttid, $this->task_types) === false) {
       http_response_code($this->config->item('general_http_error_code'));
       die('Task not providing datasplits.');
