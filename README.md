@@ -26,7 +26,7 @@ Want to learn about OpenML or get involved? Please do and [get in touch](openmlH
     - The OpenML [Documentation page](https://openml.github.io/OpenML/) gives an introduction in details and features, as well as
     - OpenML's different [APIs](https://openml.github.io/OpenML/APIs) and [integrations](https://openml.github.io/OpenML/sklearn/) so that everyone can work with their favorite tool. 
 - How to contribute: https://github.com/openml/OpenML/blob/master/CONTRIBUTING.md 
-- Citation and Honor Code: http://openml.org/cite  
+- Citation and Honor Code: https://www.openml.org/terms
 - Communication / Contact: https://github.com/openml/OpenML/wiki/Communication-Channels
 
 OpenML is an online machine learning platform for sharing and organizing data, machine learning algorithms and experiments. It is designed to create a frictionless, networked ecosystem, that you can readily integrate into your existing processes/code/environments, allowing people all over the world to collaborate and build directly on each other’s latest ideas, data and results, irrespective of the tools and infrastructure they happen to use. 
