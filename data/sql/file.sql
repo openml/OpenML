@@ -129,4 +129,4 @@ INSERT INTO `file` (`id`, `creator`, `creation_date`, `filepath`, `filesize`, `f
 (128, 16, '2018-05-29 14:00:00', 'https://www.openml.org/data/download/61/iris.arff', 7487, 'iris.arff', 'arff', 'text/plain;charset=UTF-8', 'ad484452702105cbf3d30f8deaba39a9', 'url', 'public'),
 (129, 16, '2018-05-29 14:00:00', 'https://www.openml.org/data/download/19330175/iris-challenge.arff', 7103, 'iris-challenge.arff', 'arff', 'text/plain;charset=UTF-8', 'bce91bc6033c311070d198e78e7fc954', 'url', 'public'),
 (130, 16, '2018-05-29 14:00:00', 'https://www.openml.org/data/download/61/iris.arff', 7487, 'iris.arff', 'arff', 'text/plain;charset=UTF-8', 'ad484452702105cbf3d30f8deaba39a9', 'url', 'private'),
-(131, 16, '2023-06-15 14:00:00', 'https://api.openml.org/data/v1/download/22116555/web_questions.arff', 7487, 'web_questions.arff', 'arff', 'text/plain;charset=UTF-8', 'd79b7778d067106005c8406abb22c2e7', 'url', 'private');
+(131, 16, '2023-06-15 14:00:00', 'https://api.openml.org/data/v1/download/22116555/web_questions.arff', 7487, 'web_questions.arff', 'arff', 'text/plain;charset=UTF-8', 'd79b7778d067106005c8406abb22c2e7', 'url', 'public');
