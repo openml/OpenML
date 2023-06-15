@@ -17,7 +17,7 @@ class Api_splits extends CI_Controller {
     $this->load->helper('file_upload');
     
     $this->db = $this->load->database('read',true);
-    $this->task_types = array(1, 2, 3, 6, 7, 9, 10);
+    $this->task_types = array(1, 2, 3, 6, 7, 9, 10, 11);
     $this->challenge_types = array(9);
     $this->evaluation = APPPATH . 'third_party/OpenML/Java/evaluate.jar';
     $this->eval_engine_config = " -config 'cache_allowed=false;server=".BASE_URL.";api_key=".API_KEY."' ";

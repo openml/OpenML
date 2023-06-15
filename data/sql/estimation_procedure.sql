@@ -32,4 +32,5 @@ INSERT INTO `estimation_procedure` (`id`, `ttid`, `name`, `type`, `repeats`, `fo
 (31, 10, '5 times 2-fold Crossvalidation', 'crossvalidation', 5, 2, 'false', NULL, 'true', 'false', '2023-02-22 11:46:54'),
 (32, 10, '10 times 10-fold Crossvalidation', 'crossvalidation', 10, 10, 'false', NULL, 'true', 'false', '2023-02-22 11:46:54'),
 (33, 10, '10% Holdout set', 'holdout', 1, NULL, 'false', 33, 'true', 'false', '2023-02-22 11:46:54'),
-(34, 10, '33% Holdout set', 'holdout', 1, NULL, 'false', 33, 'true', 'false', '2023-02-22 11:46:54');
+(34, 10, '33% Holdout set', 'holdout', 1, NULL, 'false', 33, 'true', 'false', '2023-02-22 11:46:54'),
+(35, 11, '33% Holdout set', 'holdout', 1, NULL, 'false', 33, 'true', 'false', '2023-06-15 16:34:54');
