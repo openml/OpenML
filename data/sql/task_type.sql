@@ -8,4 +8,5 @@ INSERT INTO `task_type` (`ttid`, `name`, `description`, `creator`, `contributors
 (7, 'Survival Analysis', 'Related to Regression. Given a dataset (typically consisting of patient data) predict a left timestamp (date entering the study), right timestamp (date of leaving the study), or both. ', '\"Benrd Bischl\",\"Dominik Kirchhoff\",\"Michel Lang\",\"Jan van Rijn\",\"Joaquin Vanschoren\"', NULL, '2014-12-03 00:00:00'),
 (8, 'Subgroup Discovery', 'Subgroup discovery is a data mining technique which extracts interesting rules with respect to a target variable. An important characteristic of this task is the combination of predictive and descriptive induction. An overview related to the task of subgroup discovery is presented. (description by: Herrera et. al., An overview on subgroup discovery: foundations and applications)', '\"Jan N. van Rijn\", \"Arno Knobbe\", \"Joaquin Vanschoren\"', NULL, '2016-06-17 10:59:20'),
 (9, 'Multitask Regression', '', 'Jan N. van Rijn', NULL, '2019-10-24 23:46:54'),
-(10, 'Active Classification', '', 'various contributors', NULL, '2023-02-22 11:46:54');
+(10, 'Active Classification', '', 'various contributors', NULL, '2023-02-22 11:46:54'),
+(11, 'Text tasks', '', 'various contributors', NULL, '2023-06-15 16:32:41');
