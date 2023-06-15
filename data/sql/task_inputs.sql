@@ -3910,4 +3910,4 @@ INSERT INTO `task_inputs` (`task_id`, `input`, `value`) VALUES
 (1303, 'target_feature', 'Y'),
 (1304, 'estimation_procedure', '35'),
 (1304, 'source_data', '131'),
-(1304, 'target_feature', 'answer');
+(1304, 'target_feature', 'answers');
