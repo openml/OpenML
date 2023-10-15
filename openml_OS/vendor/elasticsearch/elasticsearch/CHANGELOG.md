@@ -1,3 +1,630 @@
+## Release 8.10.0
+
+- Added 10 new APIs: 8 EXPERIMENTAL and 2 stable:
+  - `QueryRuleset.list` (new EXPERIMENTAL API)
+    - API: https://github.com/elastic/elasticsearch/blob/main/rest-api-spec/src/main/resources/rest-api-spec/api/query_ruleset.list.json
+    - Documentation: https://www.elastic.co/guide/en/elasticsearch/reference/master/list-query-rulesets.html
+  - `Security.getSettings` (new API)
+    - API: https://github.com/elastic/elasticsearch/blob/main/rest-api-spec/src/main/resources/rest-api-spec/api/security.get_settings.json
+    - Documentation: https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-get-settings.html
+  - `Security.updateSettings` (new API)
+    - API: https://github.com/elastic/elasticsearch/blob/main/rest-api-spec/src/main/resources/rest-api-spec/api/security.update_settings.json
+    - Documentation: https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-update-settings.html
+  - `Synonyms.delete`
+    - Removed this API in favor of `deleteSynonym`.
+  - `Synonyms.deleteSynonym` (new EXPERIMENTAL API)
+    - This API replaces `Synonyms.delete`. Removed `synonyms_set` in favor of `id`
+parameter (string). The id of the synonyms set to be deleted.
+  - `Synonyms.deleteSynonymRule` (new EXPERIMENTAL API)
+    - API: https://github.com/elastic/elasticsearch/blob/main/rest-api-spec/src/main/resources/rest-api-spec/api/synonyms.delete_synonym_rule.json
+    - Documentation: https://www.elastic.co/guide/en/elasticsearch/reference/master/delete-synonym-rule.html
+  - `Synonyms.get`
+    - Removed this function in favor of `getSynonym`. 
+  - `Synonyms.getSynonym` (new EXPERIMENTAL API)
+    - This API replaces `Synonyms.getSynonym`. Removed `synonyms_set` in favor of `id`
+required parameter (string). The name of the synonyms set to be retrieved.
+  - `Synonyms.getSynonymRule` (new EXPERIMENTAL API)
+    - API: https://github.com/elastic/elasticsearch/blob/main/rest-api-spec/src/main/resources/rest-api-spec/api/synonyms.get_synonym_rule.json
+    - Documentation: https://www.elastic.co/guide/en/elasticsearch/reference/master/get-synonym-rule.html
+  - `Synonyms.getSynonymsSets` (new EXPERIMENTAL API)
+    - API: https://github.com/elastic/elasticsearch/blob/main/rest-api-spec/src/main/resources/rest-api-spec/api/synonyms.get_synonyms_sets.json
+    - Documentation: https://www.elastic.co/guide/en/elasticsearch/reference/master/list-synonyms-sets.html
+  - `Synonyms.put`
+    - Removed this function in favor of `putSynonym`.
+  - `Synonyms.putSynonym` (new EXPERIMENTAL API)
+    - This API replaces `Synonyms.put`. Removed `synonyms_set` in favor of `id`
+required parameter (string). The id of the synonyms set to be created or updated.
+  - `Synonyms.putSynonymRule` (new EXPERIMENTAL API)
+    - API: https://github.com/elastic/elasticsearch/blob/main/rest-api-spec/src/main/resources/rest-api-spec/api/synonyms.put_synonym_rule.json
+    - Documentation: https://www.elastic.co/guide/en/elasticsearch/reference/master/put-synonym-rule.html
+
+
+## Release 8.9.0
+
+- Fixed issue with psr/http-message, changed PSR-7 versions to 1.1 and 2.0
+  [#1344](https://github.com/elastic/elasticsearch-php/pull/1344)
+- Added 12 new APIs: 11 EXPERIMENTAL and 1 stable:
+  - `Cluster.info` (new API)
+    - API: https://github.com/elastic/elasticsearch/blob/8.9/rest-api-spec/src/main/resources/rest-api-spec/api/cluster.info.json
+    - Documentation: https://www.elastic.co/guide/en/elasticsearch/reference/master/cluster-info.html
+  - `QueryRuleset.delete` (new EXPERIMENTAL API)
+    - API: https://github.com/elastic/elasticsearch/blob/8.9/rest-api-spec/src/main/resources/rest-api-spec/api/query_ruleset.delete.json
+    - Documentation: https://www.elastic.co/guide/en/elasticsearch/reference/master/delete-query-ruleset.html
+  - `QueryRuleset.get` (new EXPERIMENTAL API)
+    - API: https://github.com/elastic/elasticsearch/blob/8.9/rest-api-spec/src/main/resources/rest-api-spec/api/query_ruleset.get.json
+    - Documentation: https://www.elastic.co/guide/en/elasticsearch/reference/master/get-query-ruleset.html
+  - `QueryRuleset.put` (new EXPERIMENTAL API)
+    - API: https://github.com/elastic/elasticsearch/blob/8.9/rest-api-spec/src/main/resources/rest-api-spec/api/query_ruleset.put.json
+    - Documentation: https://www.elastic.co/guide/en/elasticsearch/reference/master/put-query-ruleset.html
+  - `SearchApplication.renderQuery` (new EXPERIMENTAL API)
+    - API: https://github.com/elastic/elasticsearch/blob/8.9/rest-api-spec/src/main/resources/rest-api-spec/api/search_application.render_query.json
+    - Documentation: https://www.elastic.co/guide/en/elasticsearch/reference/master/search-application-render-query.html
+  - `Security.createCrossClusterApiKey` (new EXPERIMENTAL API)
+    - API: https://github.com/elastic/elasticsearch/blob/8.9/rest-api-spec/src/main/resources/rest-api-spec/api/security.create_cross_cluster_api_key.json
+    - Documentation: https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-create-cross-cluster-api-key.html
+  - `Security.updateCrossClusterApiKey` (new EXPERIMENTAL API)
+    - API: https://github.com/elastic/elasticsearch/blob/8.9/rest-api-spec/src/main/resources/rest-api-spec/api/security.update_cross_cluster_api_key.json
+    - Documentation: https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-update-cross-cluster-api-key.html
+  - `SynonymRule.put` (new EXPERIMENTAL API)
+    - API: https://github.com/elastic/elasticsearch/blob/8.9/rest-api-spec/src/main/resources/rest-api-spec/api/synonym_rule.put.json
+    - Documentation: https://www.elastic.co/guide/en/elasticsearch/reference/master/put-synonym-rule.html
+  - `Synonyms.delete` (new EXPERIMENTAL API)
+    - API: https://github.com/elastic/elasticsearch/blob/8.9/rest-api-spec/src/main/resources/rest-api-spec/api/synonyms.delete.json
+    - Documentation: https://www.elastic.co/guide/en/elasticsearch/reference/master/delete-synonyms.html
+  - `Synonyms.get` (new EXPERIMENTAL API)
+    - API: https://github.com/elastic/elasticsearch/blob/8.9/rest-api-spec/src/main/resources/rest-api-spec/api/synonyms.get.json
+    - Documentation: https://www.elastic.co/guide/en/elasticsearch/reference/master/get-synonyms.html
+  - `Synonyms.put` (new EXPERIMENTAL API)
+    - API: https://github.com/elastic/elasticsearch/blob/8.9/rest-api-spec/src/main/resources/rest-api-spec/api/synonyms.put.json
+    - Documentation: https://www.elastic.co/guide/en/elasticsearch/reference/master/put-synonyms.html
+  - `SynonymsSets.get` (new EXPERIMENTAL API)
+    - API: https://github.com/elastic/elasticsearch/blob/8.9/rest-api-spec/src/main/resources/rest-api-spec/api/synonyms_sets.get.json
+    - Documentation: https://www.elastic.co/guide/en/elasticsearch/reference/master/list-synonyms.html
+
+## Release 8.8.0
+
+- Added SearchHitIterators and SearchResponseIterator helpers revised with new version 
+  [#1302](https://github.com/elastic/elasticsearch-php/pull/1302)
+- Added 15 new APIs: 13 EXPERIMENTAL and 2 stable:
+  - `Indices.deleteDataLifecycle` (new EXPERIMENTAL API)
+      - API: https://github.com/elastic/elasticsearch/blob/main/rest-api-spec/src/main/resources/rest-api-spec/api/indices.delete_data_lifecycle.json
+      - Documentation: https://www.elastic.co/guide/en/elasticsearch/reference/master/dlm-delete-lifecycle.html
+  - `Indices.explainDataLifecycle` (new EXPERIMENTAL API)
+    - API: https://github.com/elastic/elasticsearch/blob/main/rest-api-spec/src/main/resources/rest-api-spec/api/indices.explain_data_lifecycle.json
+    - Documentation: https://www.elastic.co/guide/en/elasticsearch/reference/current/dlm-explain-lifecycle.html
+  - `Indices.getDataLifecycle` (new EXPERIMENTAL API)
+    - API: https://github.com/elastic/elasticsearch/blob/main/rest-api-spec/src/main/resources/rest-api-spec/api/indices.get_data_lifecycle.json
+    - Documentation: https://www.elastic.co/guide/en/elasticsearch/reference/master/dlm-get-lifecycle.html
+  - `Indices.putDataLifecycle` (new EXPERIMENTAL API)
+    - API: https://github.com/elastic/elasticsearch/blob/main/rest-api-spec/src/main/resources/rest-api-spec/api/indices.put_data_lifecycle.json
+    - Documentation: https://www.elastic.co/guide/en/elasticsearch/reference/master/dlm-put-lifecycle.html
+  - `SearchApplication.delete` (new EXPERIMENTAL API)
+    - API: https://github.com/elastic/elasticsearch/blob/main/rest-api-spec/src/main/resources/rest-api-spec/api/search_application.delete.json
+    - Documentation: https://www.elastic.co/guide/en/elasticsearch/reference/master/put-search-application.html
+  - `SearchApplication.deleteBehavioralAnalytics` (new EXPERIMENTAL API)
+    - API: https://github.com/elastic/elasticsearch/blob/main/rest-api-spec/src/main/resources/rest-api-spec/api/search_application.delete_behavioral_analytics.json
+    - Documentation: https://www.elastic.co/guide/en/elasticsearch/reference/master/delete-analytics-collection.html
+  - `SearchApplication.get` (new EXPERIMENTAL API)
+    - API: https://github.com/elastic/elasticsearch/blob/main/rest-api-spec/src/main/resources/rest-api-spec/api/search_application.get.json
+    - Documentation: https://www.elastic.co/guide/en/elasticsearch/reference/master/get-search-application.html
+  - `SearchApplication.getBehavioralAnalytics` (new EXPERIMENTAL API)
+    - API: https://github.com/elastic/elasticsearch/blob/main/rest-api-spec/src/main/resources/rest-api-spec/api/search_application.get_behavioral_analytics.json
+    - Documentation: https://www.elastic.co/guide/en/elasticsearch/reference/master/list-analytics-collection.html
+  - `SearchApplication.list` (new EXPERIMENTAL API)
+    - API: https://github.com/elastic/elasticsearch/blob/main/rest-api-spec/src/main/resources/rest-api-spec/api/search_application.list.json
+    - Documentation: https://www.elastic.co/guide/en/elasticsearch/reference/master/list-search-applications.html
+  - `SearchApplication.postBehavioralAnalyticsEvent` (new EXPERIMENTAL API)
+    - API: https://github.com/elastic/elasticsearch/blob/main/rest-api-spec/src/main/resources/rest-api-spec/api/search_application.post_behavioral_analytics_event.json
+    - Documentation: TBD
+  - `SearchApplication.put` (new EXPERIMENTAL API)
+    - API: https://github.com/elastic/elasticsearch/blob/main/rest-api-spec/src/main/resources/rest-api-spec/api/search_application.put.json
+    - Documentation: https://www.elastic.co/guide/en/elasticsearch/reference/master/put-search-application.html
+  - `SearchApplication.putBehavioralAnalytics` (new EXPERIMENTAL API)
+    - API: https://github.com/elastic/elasticsearch/blob/main/rest-api-spec/src/main/resources/rest-api-spec/api/search_application.put_behavioral_analytics.json
+    - Documentation: https://www.elastic.co/guide/en/elasticsearch/reference/master/put-analytics-collection.html
+  - `SearchApplication.search` (new EXPERIMENTAL API)
+    - API: https://github.com/elastic/elasticsearch/blob/main/rest-api-spec/src/main/resources/rest-api-spec/api/search_application.search.json
+    - Documentation: https://www.elastic.co/guide/en/elasticsearch/reference/master/search-application-search.html
+  - `Watcher.getSettings` (new API)
+    - API: https://github.com/elastic/elasticsearch/blob/main/rest-api-spec/src/main/resources/rest-api-spec/api/watcher.get_settings.json
+    - Documentation: https://www.elastic.co/guide/en/elasticsearch/reference/current/watcher-api-get-settings.html
+  - `Watcher.updateSettings` (new API)
+    - API: https://github.com/elastic/elasticsearch/blob/main/rest-api-spec/src/main/resources/rest-api-spec/api/watcher.update_settings.json
+    - Documentation: https://www.elastic.co/guide/en/elasticsearch/reference/current/watcher-api-update-settings.html
+- ES 8.8.0 updates some API:
+  - `search`: Added the `include_named_queries_score` boolean parameter. Indicates whether hit.matched_queries should be rendered as a map that includes the name of the matched query associated with its score (true) or as an array containing the name of the matched queries (false)
+  - `Cluster.getComponentTemplate`: Added `include_defaults` boolean parameters. Return all default configurations for the component template (default: false)
+  - `Indices.getDataStream`: Added `include_defaults` boolean parameter. Return all relevant default configurations for the data stream (default: false)
+  - `Indices.getIndexTemplate`: Added `include_defaults` boolean parameter. Return all relevant default configurations for the index template (default: false)
+  - `Indices.simulateIndexTemplate`: Added `include_defaults` boolean parameter. Return all relevant default configurations for this index template simulation (default: false)
+  - `Indices.simulateTemplate`: Added `include_defaults` boolean parameter. Return all relevant default configurations for this template simulation (default: false)
+  - `Logstash.getPipeline`: Make `id` parameter optional.
+  - `Ml.putTrainedModel`: Added `wait_for_completion` boolean parameter. Whether to wait for all child operations
+(e.g. model download) to complete, before returning or not. Default to false
+  - `Ml.startTrainedModelDeployment`: Added `deployment_id` string parameter. The Id of the new deployment. Defaults to the model_id if not set.
+  - `Transform.deleteTransform`: Added `delete_dest_index` boolean parameter. When `true`, the destination index is deleted together with the transform. The default value is `false`, meaning that the destination index will not be deleted.
+
+## Release 8.7.0
+
+- Added 2 new endpoints:
+  - [healthReport](https://github.com/elastic/elasticsearch-php/blob/8.7/src/Traits/ClientEndpointsTrait.php#L839),
+    documentation [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/health-api.html)
+  - [Transform.scheduleNowTransform](https://github.com/elastic/elasticsearch-php/blob/8.7/src/Endpoints/Transform.php#L286),
+    documentation [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/schedule-now-transform.html)
+- Added the `delete_user_annotations` boolean parameter in `Ml.deleteJob`.
+  Should annotations added by the user be deleted
+- Added the `delete_user_annotations` boolean parameter in `Ml.resetJob`.
+  Should annotations added by the user be deleted
+- Added the `timeout` time parameter in `Transform.getTransformStats`.
+  Controls the time to wait for the stats
+- Added the `from` string parameter in `Transform.startTransform`.
+  Restricts the set of transformed entities to those changed after this time
+- Allow plugin for `php-http/discovery` library
+  [#1294](https://github.com/elastic/elasticsearch-php/pull/1294)
+
+## Release 8.6.1
+
+- Added a new endpoint [Ml.updateTrainedModelDeployment](https://github.com/elastic/elasticsearch-php/blob/v8.6.1/src/Endpoints/Ml.php#L2743), documentation [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/update-trained-model-deployment.html) 
+- Added the `priority` string parameter for `Ml.startTrainedModelDeployment`.
+  The deployment priority.
+
+## Release 8.5.0
+
+- Added 2 new endpoints:
+  - [Ml.clearTrainedModelDeploymentCache](https://github.com/elastic/elasticsearch-php/blob/v8.5.0/src/Endpoints/Ml.php#L52),    documentation [here](https://www.elastic.co/guide/en/
+elasticsearch/reference/master/clear-trained-model-deployment-cache.html)
+  - [Security.bulkUpdateApiKeys](https://github.com/elastic/elasticsearch-php/blob/v8.5.0/src/Endpoints/Security.php#L118), documentation [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-bulk-update-api-keys.html)
+- Added 1 new experimental endpoint:
+  - [Indices.downsample](), documentation [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/xpack-rolluphtml)
+- Added the `with_limited_by` boolean parameter in the endpoint `Security.getApiKey`.
+  Flag to show the limited-by role descriptors of API Keys.
+- Added the `with_profile_uid` boolean parameter in the endpoint `Security.getUser`.
+  Flag to retrieve profile uid (if exists) associated to the user.
+- Changed the description of `uid` parameter in the endpoint `Security.getUserProfile`.
+  A comma-separated list of unique identifier for user profiles.
+- Added the `with_limited_by` boolean parameter in the endpoint `Security.queryApiKeys`.
+  Flag to show the limited-by role descriptors of API Keys.
+- Added the `ecs_compatibility` string parameter in the endpoint `TextStructure.findStructure`.
+  Optional parameter to specify the compatibility mode with ECS Grok patterns -
+  may be either 'v1' or 'disabled'.
+
+## Release 8.4.0
+
+- Added a `ClientInterface` to simplify the mock of the Client,
+  this is a fix for [#1227](https://github.com/elastic/elasticsearch-php/issues/1227)
+  [#1249](https://github.com/elastic/elasticsearch-php/pull/1249)
+- Added the support of Symfony HTTP client, fixing the issue [#1241](https://github.com/elastic/elasticsearch-php/issues/1241)
+  [#1243](https://github.com/elastic/elasticsearch-php/pull/1243)
+- Added the API compatibility header
+  [#1233](https://github.com/elastic/elasticsearch-php/pull/1233)
+- Updated APIs for [Elasticsearch 8.4](https://github.com/elastic/elasticsearch/releases/tag/v8.4.0)
+  [7815caa](https://github.com/elastic/elasticsearch-php/commit/7815caac3d9342f13555481bd03ceb8d9c49a881)
+
+## Release 8.3.0
+
+- Updated APIs for [Elasticsearch 8.3](https://github.com/elastic/elasticsearch/releases/tag/v8.3.0)
+  [fb117a8](https://github.com/elastic/elasticsearch-php/commit/fb117a813cd28e8c0b9f4350896b66c068bfd072)
+
+## Release 8.2.0
+
+- Updated APIs for [Elasticsearch 8.2](https://github.com/elastic/elasticsearch/releases/tag/v8.2.0)
+  [630cb0b](https://github.com/elastic/elasticsearch-php/commit/630cb0bdcd4b864d2ed8cef380665cdb90429eec)
+- Added the array support for `text/plain`
+  [#1220](https://github.com/elastic/elasticsearch-php/pull/1220) 
+
+## Release 8.1.0
+
+- Updated APIs for [Elasticsearch 8.1](https://github.com/elastic/elasticsearch/releases/tag/v8.1.0)
+  [e4c2ac9](https://github.com/elastic/elasticsearch-php/commit/e4c2ac9b2c71e06c99b7a43712ccd83711fe6510)
+
+## Release 8.0.1
+
+- Fixed `NoNodeAvailableException` exception in endpoints
+  [e7d448d](https://github.com/elastic/elasticsearch-php/commit/e7d448d540f120eb3a3e3fe0d5866bf62fb67f3a)
+
+## Release 8.0.0
+
+- Finally released 8.0.0 GA.
+
+## Release 8.0.0-rc2
+
+- Added the common parameters in all the endpoints
+  [6427f8c](https://github.com/elastic/elasticsearch-php/commit/6427f8c42ba2afbe82c00adffdf93dd60b439432)
+
+## Release 8.0.0-rc1
+
+- Fixed query string in API endpoints + added a first integration test
+  [e404235](https://github.com/elastic/elasticsearch-php/commit/e404235890b53a99242f7fc5ddea6ee6b2459e8f)
+- Added AdapterOptions class and setNodePool() in ClientBuilder
+  [9150f71](https://github.com/elastic/elasticsearch-php/commit/9150f717488ddb74d83a119d215c0584aa98c95a)
+- Fixed urlencode in params, Exception in test code generation
+  [142327b](https://github.com/elastic/elasticsearch-php/commit/142327b3cb730042ec0b21b7c6076164bb0721ed)
+- Improved client/server response exception messages
+  [50de3e6](https://github.com/elastic/elasticsearch-php/commit/50de3e60fc9b0167a948a992fda78bc5e1a42152)
+
+## Release 8.0.0-alpha
+
+First alpha release of elasticsearch-php 8.0.0.
+
+This major release is a complete new PHP client for Elasticsearch. We build it from scratch!
+We tried to reduce the BC breaks as much as possible but there are some (big) differences: 
+
+### Architectural changes:
+
+- we changed the namespace, now everything is under `Elastic\Elasticsearch`
+- we used the [elastic-transport-php](https://github.com/elastic/elastic-transport-php) library for HTTP communications;
+- we changed the `Exception` model, using the namespace `Elastic\Elasticsearch\Exception`. All the exceptions extends the
+  `ElasticsearchException` interface, as in 7.x
+- we changed the response type of each endpoints using an [Elasticsearch](src/Response/Elasticsearch.php) response class.
+  This class wraps a a [PSR-7](https://www.php-fig.org/psr/psr-7/) response allowing the access of the body response
+  as array or object. This means you can access the API response as in 7.x, no BC break here! :angel:
+- we changed the `ConnectionPool` in `NodePool`. The `connection` naming was ambigous since the objects are nodes (hosts)
+
+You can have a look at the [BREAKING_CHANGES](BREAKING_CHANGES.md) file for more information.
+
+## Release 7.17.0
+
+- Allow psr/log v3
+  [#1184](https://github.com/elastic/elasticsearch-php/pull/1184)
+
+## Release 7.16.0
+
+- Added support of includePortInHostHeader in ClientBuilder::fromConfig
+  [#1181](https://github.com/elastic/elasticsearch-php/pull/1181)
+- Fixed UTF-16 issue in SmartSerializer with single unpaired surrogate in unicode escape
+  [#1179](https://github.com/elastic/elasticsearch-php/pull/1179)
+- Replace trait with abstract class to avoid Deprecated Functionality issue in PHP 8.1
+  [#1175](https://github.com/elastic/elasticsearch-php/pull/1175)
+
+## Release 7.15.0
+
+- Updated endpoints for Elasticsearch 7.15.0
+  [995f6d4](https://github.com/elastic/elasticsearch-php/commit/995f6d4bde7de76004e95d7a434b1d59da7a7e75)
+
+## Release 7.14.0
+
+- Usage of psr/log version 2
+  [#1154](https://github.com/elastic/elasticsearch-php/pull/1154)
+- Update search iterators to send `scroll_id` inside the request body
+  [#1134](https://github.com/elastic/elasticsearch-php/pull/1134)
+- Added the `ingest.geoip.downloader.enabled=false` setting for ES
+  [5867351](https://github.com/elastic/elasticsearch-php/commit/586735109dc18f22bfdf3b73ab0621b37e857be1)
+- Removed phpcs for autogenerated files (endpoints)
+  [651c57b](https://github.com/elastic/elasticsearch-php/commit/651c57b2e6bf98a0fd48220949966e630e5a804a)
+
+## Release 7.13.1
+
+- Added port in url for trace and logger messages
+  [#1126](https://github.com/elastic/elasticsearch-php/pull/1126) 
+## Release 7.13.0
+
+- (DOCS) Added the HTTP meta data section
+  [#1143](https://github.com/elastic/elasticsearch-php/pull/1143)
+- Added support for API Compatibility Header
+  [#1142](https://github.com/elastic/elasticsearch-php/pull/1142)
+- (DOCS) Added Helpers section to PHP book
+  [#1129](https://github.com/elastic/elasticsearch-php/pull/1129)
+- Added the API description in phpdoc section for each endpoint
+  [9e05c81](https://github.com/elastic/elasticsearch-php/commit/9e05c8108b638b60cc676b6a4f4be97c7df9eb64)
+- Usage of PHPUnit 9 only + migrated xml configurations
+  [038b5dd](https://github.com/elastic/elasticsearch-php/commit/038b5dd043dc76b20b9f5f265ea914a38d33568d)
+
+## Release 7.12.0
+
+- Updated the endpoints for ES 7.12 + removed cpliakas/git-wrapper
+  in favor of symplify/git-wrapper
+  [136d5b9](https://github.com/elastic/elasticsearch-php/commit/136d5b9717b3806c6b34ef8a5076bfe7cee8b46e)
+- Fixed warning header as array in YAML tests generator
+  [0d81be1](https://github.com/elastic/elasticsearch-php/commit/0d81be131bfc7eff6ef82468e61c16077a892aab)
+- Refactored TEST_SUITE with free, platinum + removed old YamlRunnerTest
+  [f69d96f](https://github.com/elastic/elasticsearch-php/commit/f69d96fc283580177002b4088c279c3d0c07befe)
+  
+## Release 7.11.0
+
+- Added the `X-Elastic-Client-Meta` header which is used by Elastic Cloud
+  and can be disabled with `ClientBuilder::setElasticMetaHeader(false)`
+  [#1089](https://github.com/elastic/elasticsearch-php/pull/1089)
+- Replaced `array_walk` with `array_map` in `Connection::getURI` for PHP 8
+  compatibility
+  [#1075](https://github.com/elastic/elasticsearch-php/pull/1075)
+- Remove unnecessary `InvalidArgumentExceptions`
+  [#1069](https://github.com/elastic/elasticsearch-php/pull/1069)
+- Introducing PHP 8 compatibility
+  [#1063](https://github.com/elastic/elasticsearch-php/pull/1063) 
+- Replace Sami by Doctum and fix `.gitignore`
+  [#1062](https://github.com/elastic/elasticsearch-php/pull/1062)
+
+## Release 7.10.0
+
+- Updated endpoints and namespaces for Elasticsearch 7.10
+  [3ceb748](https://github.com/elastic/elasticsearch-php/commit/3ceb7484a111aa20126168460c79f098c4fe0792)
+- Fixed ClientBuilder::fromConfig allowing multiple function
+  parameters (e.g. setApiKey)
+  [#1076](https://github.com/elastic/elasticsearch-php/pull/1076)
+- Refactored the YAML tests using generated PHPUnit code
+  [85fadc2](https://github.com/elastic/elasticsearch-php/commit/85fadc2bd4b2b309b19761a50ff13010d43a524d)
+
+## Release 7.9.1
+
+- Fixed using object instead of array in onFailure transport event
+  [#1066](https://github.com/elastic/elasticsearch-php/pull/1066)
+- Fixed reset custom header after endpoint call
+  [#1065](https://github.com/elastic/elasticsearch-php/pull/1065)
+- Show generic error messages when server returns no response
+  [#1056](https://github.com/elastic/elasticsearch-php/pull/1056)
+
+## Release 7.9.0
+
+- Updated endpoints and namespaces for Elasticsearch 7.9
+  [28bf0ed](https://github.com/elastic/elasticsearch-php/commit/28bf0ed6df6bc95f83f369509431d97907bfdeb0)
+- Moved `scroll_id` into `body` for search operations in the documentation
+  [#1052](https://github.com/elastic/elasticsearch-php/pull/1052)
+- Fixed PHP 7.4 preloading feature for autoload.php
+  [#1051](https://github.com/elastic/elasticsearch-php/pull/1051)
+- Improved message of JSON errors using `json_last_error_msg()`
+  [#1045](https://github.com/elastic/elasticsearch-php/pull/1045)
+
+## Release 7.8.0
+
+- Updated endpoints and namespaces for Elasticsearch 7.8
+  [f2a0828](https://github.com/elastic/elasticsearch-php/commit/f2a0828d5ee9d126ad63e2a1d43f70b4013845e2)
+- Improved documentation
+  [#1038](https://github.com/elastic/elasticsearch-php/pull/1038)
+  [#1027](https://github.com/elastic/elasticsearch-php/pull/1027)
+  [#1025](https://github.com/elastic/elasticsearch-php/pull/1025)
+
+## Release 7.7.0
+
+- Removed setId() into endpoints, fixed `util/GenerateEndpoints.php`
+  [#1026](https://github.com/elastic/elasticsearch-php/pull/1026)
+- Fixes JsonErrorException with code instead of message
+  [#1022](https://github.com/elastic/elasticsearch-php/pull/1022)
+- Better exception message for Could not parse URI
+  [#1016](https://github.com/elastic/elasticsearch-php/pull/1016)
+- Added JUnit log for PHPUnit
+  [88b7e1c](https://github.com/elastic/elasticsearch-php/commit/88b7e1ce80a5a52c1d64d00c55fef77097bbd8a9)
+- Added the XPack endpoints
+  [763d91a](https://github.com/elastic/elasticsearch-php/commit/763d91a3d506075316b84a38b2bed7a098da5028)
+
+## Release 7.6.1
+
+- Fixed issue with `guzzlehttp/ringphp` and `guzzle/streams`
+  using forks `ezimuel/ringphp` and `ezimuel/guzzlestreams`
+  [92a6a4a](https://github.com/elastic/elasticsearch-php/commit/92a6a4adda5eafd1823c7c9c386e2c7e5e75cd08)
+
+## Release 7.6.0
+
+- Generated the new endpoints for Elasticsearch 7.6.0
+  [be31f31](https://github.com/elastic/elasticsearch-php/commit/be31f317af704f333b43bbcc7c01ddc7c91ec6f8)
+
+## Release 7.5.1
+
+- Fixes port missing in log [#925](https://github.com/elastic/elasticsearch-php/issues/925)
+  [75e0888](https://github.com/elastic/elasticsearch-php/commit/125594b40d167ef1509b3ee49a3f93426390c426)
+- Added `ClientBuilder::includePortInHostHeader()` to add the
+  `port` in the `Host` header. This fixes [#993](https://github.com/elastic/elasticsearch-php/issues/993).
+  By default the `port` is not included in the `Host` header.
+  [#997](https://github.com/elastic/elasticsearch-php/pull/997)
+- Replace abandoned packages: ringphp, streams and phpstan-shim 
+  [#996](https://github.com/elastic/elasticsearch-php/pull/996)
+- Fixed gzip compression when setting Cloud Id
+  [#986](https://github.com/elastic/elasticsearch-php/pull/986)
+
+## Release 7.5.0
+
+- Fixed `Client::extractArgument` iterable casting to array;
+  this allows passing a `Traversable` body for some endpoints
+  (e.g. Bulk, Msearch, MsearchTemplate)
+  [#983](https://github.com/elastic/elasticsearch-php/pull/983)
+- Fixed the Response Exception if the `reason` field is null
+  [#980](https://github.com/elastic/elasticsearch-php/pull/980)
+- Added support for PHP 7.4
+  [#976](https://github.com/elastic/elasticsearch-php/pull/976)
+
+## Release 7.4.1
+
+- We added the suppress operator `@` for the deprecation messages `@trigger_error()`.
+  With this approach we don't break existing application that convert PHP errors in Exception
+  (e.g. using Laravel with issue https://github.com/babenkoivan/scout-elasticsearch-driver/issues/297)
+  Using the `@` operator is still possible to intercept the deprecation message using
+  a custom error handler.
+  [#973](https://github.com/elastic/elasticsearch-php/pull/973)
+- Add missing leading slash in the URL of put mapping endpoint
+  [#970](https://github.com/elastic/elasticsearch-php/pull/970)
+- Fix pre 7.2 endpoint class name with aliases + reapply fix #947.
+  This PR solved the unexpected BC break introduce in 7.4.0 with the code
+  generation tool
+  [#968](https://github.com/elastic/elasticsearch-php/pull/968)
+
+## Release 7.4.0
+
+- Added the code generation for endpoints and namespaces based on
+  the [REST API specification](https://github.com/elastic/elasticsearch/tree/v7.4.2/rest-api-spec/src/main/resources/rest-api-spec/api)
+  of Elasticsearch. This tool is available in `util/GenerateEndpoints.php`.
+  [#966](https://github.com/elastic/elasticsearch-php/pull/966)
+- Fixed the asciidoc [endpoints documentation](https://www.elastic.co/guide/en/elasticsearch/client/php-api/current/ElasticsearchPHP_Endpoints.html) based on the code generation 
+  using [Sami](https://github.com/FriendsOfPHP/Sami) project
+  [#966](https://github.com/elastic/elasticsearch-php/pull/966)
+- All the `experimental` and `beta` APIs are now signed with
+  a `@note` tag in the phpdoc section (e.g. [$client->rankEval()](https://github.com/elastic/elasticsearch-php/blob/master/src/Elasticsearch/Client.php)). For more information read the [experimental and beta APIs](docs/experimental-beta-apis.asciidoc)
+  section in the documentation.
+  [#966](https://github.com/elastic/elasticsearch-php/pull/966)
+- Removed `AlreadyExpiredException` since it has been removed
+  from Elasticsearch with https://github.com/elastic/elasticsearch/pull/24857
+  [#954](https://github.com/elastic/elasticsearch-php/pull/954)
+
+## Release 7.3.0
+
+- Added support for simplified access to the `X-Opaque-Id` header
+  [#952](https://github.com/elastic/elasticsearch-php/pull/952)
+- Added the HTTP port in the log messages
+  [#950](https://github.com/elastic/elasticsearch-php/pull/950)
+- Fixed hostname with underscore (ClientBuilder::prependMissingScheme)
+  [#949](https://github.com/elastic/elasticsearch-php/pull/949)
+- Removed unused Monolog in ClientBuilder
+  [#948](https://github.com/elastic/elasticsearch-php/pull/948)
+  
+## Release 7.2.2
+
+- Reintroduced the optional parameter in `Elasticsearch\Namespaces\IndicesNamespace::getAliases()`.
+  This fixes the BC break introduced in 7.2.0 and 7.2.1.
+  [#947](https://github.com/elastic/elasticsearch-php/pull/)
+
+## Release 7.2.1
+
+- Reintroduced `Elasticsearch\Namespaces\IndicesNamespace::getAliases()` as proxy
+  to `IndicesNamespace::getAlias()` to prevent BC breaks. The `getAliases()` is
+  marked as deprecated and it will be removed from `elasticsearch-php 8.0`
+  [#943](https://github.com/elastic/elasticsearch-php/pull/943)
+
+### Docs
+
+- Fixed missing put mapping code snippet in code examples
+  [#938](https://github.com/elastic/elasticsearch-php/pull/938)
+
+# Release 7.2.0
+
+- Updated the API endpoints for working with Elasticsearch 7.2.0:
+    - added `wait_for_active_shards` parameter to `indices.close` API;
+    - added `expand_wildcards` parameter to `cluster.health` API;
+    - added include_unloaded_segments`, `expand_wildcards`, `forbid_closed_indices`
+      parameters to `indices.stats` API.
+  [[27d721b]](https://github.com/elastic/elasticsearch-php/pull/933/commits/27d721ba44b8c199388650c5a1c8bd69757229aa)
+- Updated the phpdoc parameters for all the API endpoints
+  [[27d721b]](https://github.com/elastic/elasticsearch-php/pull/933/commits/27d721ba44b8c199388650c5a1c8bd69757229aa)  
+- Improved the Travis CI speed using cache feature with composer
+  [#929](https://github.com/elastic/elasticsearch-php/pull/929)
+- Fixed `php_uname()` usage checking if it is disabled
+  [#927](https://github.com/elastic/elasticsearch-php/pull/927)
+- Added support of Elastic Cloud ID and API key authentication
+  [#923](https://github.com/elastic/elasticsearch-php/pull/923)
+
+## Release 7.1.1
+
+- Fixed `ClientBuilder::setSSLVerification()` to accept string or boolean
+  [#917](https://github.com/elastic/elasticsearch-php/pull/917)
+- Fix type hinting for `setBody` in `Elasticsearch\Endpoints\Ingest\Pipeline\Put`
+  [#913](https://github.com/elastic/elasticsearch-php/pull/913)
+
+## Release 7.1.0
+
+- Added warning log for Elasticsearch response containing the `Warning` header
+  [#911](https://github.com/elastic/elasticsearch-php/pull/911)
+- Fixed #838 hosting company is blocking ports because of `YamlRunnerTest.php`
+  [#844](https://github.com/elastic/elasticsearch-php/pull/844)
+- Specialized inheritance of `NoNodesAvailableException` to extend `ServerErrorResponseException`
+  instead of the generic `\Exception`
+  [#607](https://github.com/elastic/elasticsearch-php/pull/607)
+- Fixed scroll TTL is extracted but not set as a body param
+  [#907](https://github.com/elastic/elasticsearch-php/pull/907)
+
+### Testing
+
+- Improved the speed of integration tests removing snapshots delete from `YamlRunnerTest::clean`
+  [#911](https://github.com/elastic/elasticsearch-php/pull/911)
+- Reduced the number of skipping YAML integration tests from 20 to 6
+  [#911](https://github.com/elastic/elasticsearch-php/pull/911)
+
+### Docs
+
+- Documentation updated for Elasticsearch 7
+  [#904](https://github.com/elastic/elasticsearch-php/pull/904)
+
+## Release 7.0.2
+
+- Fixed incorrect return type hint when using async requests/futures
+  [#905](https://github.com/elastic/elasticsearch-php/pull/905)
+
+## Release 7.0.1
+
+- Fixed SniffingConnectionPool removing the return type of Connection::sniff()
+  [#899](https://github.com/elastic/elasticsearch-php/pull/899)
+
+## Release 7.0.0
+
+- Requirement of PHP 7.1 instead of 7.0 that is not supported since 1 Jan 2019.
+  [#897](https://github.com/elastic/elasticsearch-php/pull/897)
+- Code refactoring using type hints and return type declarations where possible
+  [#897](https://github.com/elastic/elasticsearch-php/pull/897)
+- Update vendor libraries (PHPUnit 7.5, Symfony YAML 4.3, etc)
+  [#897](https://github.com/elastic/elasticsearch-php/pull/897)
+- Updated all the API endpoints using the [latest 7.0.0 specs](https://github.com/elastic/elasticsearch/tree/v7.0.0/rest-api-spec/src/main/resources/rest-api-spec/api) of Elasticsearch [#897](https://github.com/elastic/elasticsearch-php/pull/897)
+- Added the `User-Agent` in each HTTP request [#898](https://github.com/elastic/elasticsearch-php/pull/898)
+- Simplified the logging methods `logRequestFail($request, $response, $exception)`
+  and `logRequestSuccess($request, $response)` in `Elasticsearch\Connections\Connection`
+  [#876](https://github.com/elastic/elasticsearch-php/pull/876)
+- Fix `json_encode` for unicode(emoji) characters [856](https://github.com/elastic/elasticsearch-php/pull/856)
+- Fix HTTP port specification using CURLOPT_PORT, not anymore in the host [782](https://github.com/elastic/elasticsearch-php/pull/782)
+
+## Release 6.7.1
+
+- Added `track_total_hits` in `search` endpoint [0c9ff47](https://github.com/elastic/elasticsearch-php/commit/9f4f0dfa331c4f50d2c88c0068afd3062e6ea353)
+
+## Release 6.7.0
+
+- Removed requirement of `{type}` part in `indices.put_mapping`, see new API specification [here](https://github.com/elastic/elasticsearch/blob/v6.7.0/rest-api-spec/src/main/resources/rest-api-spec/api/indices.put_mapping.json)
+- Added `seq_no_primary_term` parameter in `bulk` endpoint [#884](https://github.com/elastic/elasticsearch-php/pull/884)
+- Added `include_type_name`, `if_primary_term`, `if_seq_no` in `delete` endpoint [#884](https://github.com/elastic/elasticsearch-php/pull/884)
+- Added `include_type_name` in `get`, `index`, `indices.create`, `indices.field.get`, `indices.get`, `indices.mapping.get`, `indices.mapping.getfield`, `indices.mapping.put`, `indices.rollover`, `indices.template.get`, `indices.template.put` endpoints [#884](https://github.com/elastic/elasticsearch-php/pull/884)
+- Added `seq_no_primary_term` in `search` endpoint [#884](https://github.com/elastic/elasticsearch-php/pull/884)
+- Added `if_primary_term', 'if_seq_no`in `update` endpoint [#884](https://github.com/elastic/elasticsearch-php/pull/884)
+
+### Testing
+
+- Fix tests for PHP 7 with ES 6.7 [[5401479](https://github.com/elastic/elasticsearch-php/pull/884/commits/5401479)
+
+### Docs
+
+- [DOCS] Fix doc links in README [[5a1782d]](https://github.com/elastic/elasticsearch-php/pull/884/commits/5a1782d)
+
+## Release 6.5.0
+
+- Remove `_suggest` endpoint, which has disappeared from ES6 [#763](https://github.com/elastic/elasticsearch-php/pull/763)
+- Fix `SearchHitIterator` key duplicates [#872](https://github.com/elastic/elasticsearch-php/pull/872)
+- Fixing script get and delete by removing `lang` from endpoint url [#814](https://github.com/elastic/elasticsearch-php/pull/814)
+- Fix `SearchResponseIterator` is scrolling the first page twice [#871](https://github.com/elastic/elasticsearch-php/pull/871), issue [#595](https://github.com/elastic/elasticsearch-php/issues/595)
+
+### Docs
+
+- [DOCS] Add reference to `parse_url()` for Extended Host Configuration [#778](https://github.com/elastic/elasticsearch-php/pull/778)
+- [DOCS] Update php version requirement [#757](https://github.com/elastic/elasticsearch-php/pull/757)
+- [DOCS] Update `community.asciidoc`, added `ElasticSearchQueryDSL` project [#749](https://github.com/elastic/elasticsearch-php/pull/749)
+- [DOCS] Proper return type array for get method for `IndicesNamespace` [#651](https://github.com/elastic/elasticsearch-php/pull/651)
+- [DOCS] Fix full docs link [#862](https://github.com/elastic/elasticsearch-php/pull/862)
+- [DOCS] Update breaking-changes.asciidoc, removal of ClientBuilder::defaultLogger() [879](https://github.com/elastic/elasticsearch-php/pull/879)
+
+### Testing
+
+- Fix integration tests using docker [#867](https://github.com/elastic/elasticsearch-php/pull/867)
+
+## Release 6.1.0
+
+- Add 'wait_for_no_initializing_shards' to Cluster\Health whitelist [[98a372c]](http://github.com/elasticsearch/elasticsearch-php/commit/98a372c)
+- Add 'wait_for_active_shards' to Indices\Open whitelist [[0275fe5]](http://github.com/elasticsearch/elasticsearch-php/commit/0275fe5)
+- Add 'max_concurrent_searches' to msearch whitelist [[5624123]](http://github.com/elasticsearch/elasticsearch-php/commit/5624123)
+- Add 'max_concurrent_shard_requests' param to MSearch endpoint [[00800c1]](http://github.com/elasticsearch/elasticsearch-php/commit/00800c1)
+- Add ReloadSecureSettings endpoint [[75b32b2]](http://github.com/elasticsearch/elasticsearch-php/commit/75b32b2)
+- Remove obsolete Shutdown API [[c75d690]](http://github.com/elasticsearch/elasticsearch-php/commit/c75d690)
+- Fix: Restore::setBody() does not throw exceptions (#828) [[a96bb9c]](http://github.com/elasticsearch/elasticsearch-php/commit/a96bb9c)
+- Fixed php 7.3 compatibility for elasticsearch 6 (#827) [[77916b2]](http://github.com/elasticsearch/elasticsearch-php/commit/77916b2)
+- Fix issue with getting status of respository and snapshots. (#719) [[2d11682]](http://github.com/elasticsearch/elasticsearch-php/commit/2d11682)
+- fix DeleteByQuery param white list (#748) [[8d963c6]](http://github.com/elasticsearch/elasticsearch-php/commit/8d963c6)
+
+### Docs
+- [Docs] Update elasticsearch version (#743) [[043ad4f]](http://github.com/elasticsearch/elasticsearch-php/commit/043ad4f)
+- [DOCS] reuqest → request typo fix (#728) [[68db9f0]](http://github.com/elasticsearch/elasticsearch-php/commit/68db9f0)
+- [DOCS] Fix documentation example of upsert (#730) [[805329b]](http://github.com/elasticsearch/elasticsearch-php/commit/805329b)
+- [DOCS] Replace deprecated string type with keyword type for index operations (#736) [[a550507]](http://github.com/elasticsearch/elasticsearch-php/commit/a550507)
+
+### Testing
+
+- [TEST] Fix travis untarring [[0106351]](http://github.com/elasticsearch/elasticsearch-php/commit/0106351)
+- [TEST] Download artifacts directly, migrate off esvm [[1e9f06c]](http://github.com/elasticsearch/elasticsearch-php/commit/1e9f06c)
+- Update Travis Matrix [[aa32b12]](http://github.com/elasticsearch/elasticsearch-php/commit/aa32b12)
+- [TEST] Fix teardown in yaml runner [[098030e]](http://github.com/elasticsearch/elasticsearch-php/commit/098030e)
+- Add Indices/Split endpoint [[46d5a7a]](http://github.com/elasticsearch/elasticsearch-php/commit/46d5a7a)
+- [TEST] Blacklist some bad yml tests [[d5edab7]](http://github.com/elasticsearch/elasticsearch-php/commit/d5edab7)
+
 ## Release 6.0.1
 
 - Fix imports [[0106351]](http://github.com/elasticsearch/elasticsearch-php/commit/0106351)
