@@ -260,13 +260,14 @@ try {
 	$this->results = $this->searchclient->search($params);
         //print_r($this->results);
 } catch (Exception $e) {
-	$this->results = array();
-	$this->results['hits'] = array();
-	$this->results['hits']['total'] = 0;
-	$this->results['facets'] = array();
-	$this->results['facets']['type'] = array();
-	$this->results['facets']['type']['total'] = 0;
-	$this->results['facets']['type']['terms'] = array();
+  $this->results = array();
+  $this->results['hits'] = array();
+  $this->results['hits']['total'] = array();
+  $this->results['hits']['total']['value'] = 0;
+  $this->results['facets'] = array();
+  $this->results['facets']['type'] = array();
+  $this->results['facets']['type']['total'] = 0;
+  $this->results['facets']['type']['terms'] = array();
   $this->results['aggregations'] = array();
   $this->results['aggregations']['type'] = array();
   $this->results['aggregations']['type']['buckets'] = array();

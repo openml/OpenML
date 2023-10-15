@@ -3,7 +3,6 @@ class Cron extends CI_Controller {
 
   function __construct() {
     parent::__construct();
-
     $this->controller = strtolower(get_class ($this));
     if(!$this->input->is_cli_request()) {
       die('Cron Controller can only be accessed by CLI. ');

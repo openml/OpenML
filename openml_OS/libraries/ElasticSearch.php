@@ -27,9 +27,10 @@ class ElasticSearch {
         $this->db = $this->CI->Dataset;
         $this->userdb = $this->CI->Author;
 
-        $hosts = array(ES_URL);
-        //, http://'.ES_USERNAME.':'.ES_PASSWORD.'@'.ES_URL
-        $this->client = Elasticsearch\ClientBuilder::create()->setHosts($hosts)->build();
+        $this->client = Elastic\Elasticsearch\ClientBuilder::create()
+              ->setHosts([ES_URL])
+              ->setBasicAuthentication(ES_USERNAME, ES_PASSWORD)
+              ->build();
         $this->init_indexer = False;
     }
 
@@ -56,7 +57,8 @@ class ElasticSearch {
             'properties' => array(
                 'time' => array(
                     'type' => 'date',
-                    'format' => 'yyyy-MM-dd HH:mm:ss')
+                    'format' => 'yyyy-MM-dd HH:mm:ss'
+                )
             )
         );
 
@@ -81,10 +83,10 @@ class ElasticSearch {
                 'date' => array(
                     'type' => 'date',
                     'format' => 'yyyy-MM-dd HH:mm:ss',
-		    'fields' => array(
-            		'keyword' => array(
-			   'type' => 'keyword'))
-		),
+            'fields' => array(
+                    'keyword' => array(
+               'type' => 'keyword'))
+        ),
                 'uploader' => array(
                     'type' => 'text',
                     'analyzer' => 'keyword'
@@ -117,7 +119,7 @@ class ElasticSearch {
                     'analyzer' => 'standard')
             )
         );
-	$this->mappings['flow'] = array(
+    $this->mappings['flow'] = array(
             'properties' => array(
                 'date' => array(
                     'type' => 'date',
@@ -159,7 +161,7 @@ class ElasticSearch {
                 )
             )
         );
-	$this->mappings['user'] = array(
+    $this->mappings['user'] = array(
             'properties' => array(
                 'date' => array(
                     'type' => 'date',
@@ -175,7 +177,7 @@ class ElasticSearch {
                 )
             )
         );
-	$this->mappings['task'] = array(
+    $this->mappings['task'] = array(
             'properties' => array(
                 'date' => array(
                     'type' => 'date',
@@ -196,10 +198,10 @@ class ElasticSearch {
                         'type' => array('type' => 'text'))),
                 'task_id' => array('type' => 'long'),
                 'tasktype.tt_id' => array('type' => 'long'),
-		        'runs' => array('type' => 'long')
+                'runs' => array('type' => 'long')
             )
         );
-	$this->mappings['task_type'] = array(
+    $this->mappings['task_type'] = array(
             'properties' => array(
                 'description' => array(
                     'type' => 'text',
@@ -218,7 +220,7 @@ class ElasticSearch {
                 )
             )
         );
-	$this->mappings['run'] = array(
+    $this->mappings['run'] = array(
             'properties' => array(
                 'date' => array(
                     'type' => 'date',
@@ -254,7 +256,7 @@ class ElasticSearch {
                 )
             )
         );
-	$this->mappings['study'] = array(
+    $this->mappings['study'] = array(
             'properties' => array(
                 'name' => array(
                     'type' => 'text',
@@ -281,7 +283,7 @@ class ElasticSearch {
             )
         );
 
-	$this->mappings['measure'] = array(
+    $this->mappings['measure'] = array(
             'properties' => array(
                 'description' => array(
                     'type' => 'text',
@@ -313,7 +315,7 @@ class ElasticSearch {
 
     public function get_types() {
         $params['index'] = '_all';
-	$array_data = $this->client->indices()->getMapping($params);
+    $array_data = $this->client->indices()->getMapping($params);
         return array_keys($array_data);
     }
 
@@ -329,8 +331,8 @@ class ElasticSearch {
         if (method_exists($this, $method_name)) {
             try {
                 return $this->$method_name($id, $altmetrics, $verbosity);
-	    } catch (Exception $e) {
-		echo $e->getMessage();
+        } catch (Exception $e) {
+        echo $e->getMessage();
                 // TODO: log?
             }
         } else {
@@ -350,8 +352,8 @@ class ElasticSearch {
         if (method_exists($this, $method_name)) {
             try {
                 return $this->$method_name(false, $id, $altmetrics, $verbosity);
-	    } catch (Exception $e) {
-		echo $e->getMessage();
+        } catch (Exception $e) {
+        echo $e->getMessage();
                 // TODO: log?
             }
         } else {
@@ -362,7 +364,7 @@ class ElasticSearch {
     public function delete($type, $id = false) {
         $deleteParams = array();
         $deleteParams['index'] = $type;
-	$deleteParams['type'] = $type;
+    $deleteParams['type'] = $type;
         $deleteParams['id'] = $id;
         $response = $this->client->delete($deleteParams);
         return $response;
@@ -380,28 +382,27 @@ class ElasticSearch {
     public function initialize_index($t) {
         if(!$this->init_indexer)
              $this->initialize();
-	$createparams = array(
-	    'index' => $t,
-    	    'body' => array(
-        	'settings' => array(
-		    'index' => array(
-            		'number_of_shards' => 1,
-            		'number_of_replicas' => 0
-		    )
-		),
-		'mappings' => array(
+        $createparams = array(
+            'index' => $t,
+            'body' => array(
+                'settings' => array(
+                    'index' => array(
+                        'number_of_shards' => 1,
+                        'number_of_replicas' => 0
+                     )
+                 ),
+                 'mappings' => array(
                     $t => $this->mappings[$t]
-		)
-	    )
+                 )
+            )
         );
-	$this->client->indices()->create($createparams);
+    $this->client->indices()->create($createparams);
         return '[Initialized mapping for ' . $t. '] ';
     }
 
     public function index_downvote($id, $start_id = 0, $altmetrics=True, $verbosity=0){
 
         $params['index'] = 'downvote';
-	$params['type'] = 'downvote';
 
         $downvotes = $this->CI->Downvote->getDownvote($id);
 
@@ -426,7 +427,6 @@ class ElasticSearch {
     public function index_like($id, $start_id = 0, $altmetrics=True, $verbosity=0){
 
         $params['index'] = 'like';
-        $params['type'] = 'like';
         $likes = $this->db->query('select * from likes' . ($id ? ' where lid=' . $id : ''));
 
         if ($id and ! $likes)
@@ -477,7 +477,6 @@ class ElasticSearch {
 
     public function index_download($id, $start_id = 0, $altmetrics=True, $verbosity=0){
         $params['index'] = 'download';
-        $params['type'] = 'download';
         $downloads = $this->db->query('select * from downloads' . ($id ? ' where did=' . $id : ''));
 
         if ($id and ! $downloads)
@@ -516,7 +515,6 @@ class ElasticSearch {
     public function index_user($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
 
         $params['index'] = 'user';
-        $params['type'] = 'user';
         $users = $this->userdb->query('select id, first_name, last_name, email, company, country, bio, image, created_on, gamification_visibility from users where active="1"' . ($id ? ' and id=' . $id : ''));
 
         if ($id and ! $users)
@@ -736,7 +734,6 @@ class ElasticSearch {
     public function index_study($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
 
         $params['index'] = 'study';
-        $params['type'] = 'study';
         $studies = $this->db->query('select * from study' . ($id ? ' where id=' . $id : ''));
 
         if ($id and ! $studies)
@@ -832,7 +829,6 @@ class ElasticSearch {
 
     public function index_task($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
         $params['index'] = 'task';
-        $params['type'] = 'task';
         $taskmaxquery = $this->db->query('SELECT min(task_id) as mintask, max(task_id) as maxtask from task' . ($id ? ' where task_id=' . $id : ''));
         $taskcountquery = $this->db->query('SELECT count(task_id) as taskcount from task' . ($id ? ' where task_id=' . $id : ''));
         $taskmin = intval($taskmaxquery[0]->mintask);
@@ -1053,7 +1049,7 @@ class ElasticSearch {
 
     private function fetch_tasks($id = false) {
         $index = array();
-	$tasks = $this->db->query("SELECT t.task_id, t.embargo_end_date, tt.name as ttname, i.value AS did, d.name AS dname, ep.name AS epname FROM task_inputs i, task_type tt, dataset d, task t LEFT JOIN task_inputs i2 on (t.task_id = i2.task_id AND i2.input = 'estimation_procedure') LEFT JOIN estimation_procedure ep on ep.id = i2.value WHERE t.task_id = i.task_id AND i.input = 'source_data' AND t.ttid = tt.ttid AND d.did = i.value" . ($id ? ' and t.task_id=' . $id : ''));
+    $tasks = $this->db->query("SELECT t.task_id, t.embargo_end_date, tt.name as ttname, i.value AS did, d.name AS dname, ep.name AS epname FROM task_inputs i, task_type tt, dataset d, task t LEFT JOIN task_inputs i2 on (t.task_id = i2.task_id AND i2.input = 'estimation_procedure') LEFT JOIN estimation_procedure ep on ep.id = i2.value WHERE t.task_id = i.task_id AND i.input = 'source_data' AND t.ttid = tt.ttid AND d.did = i.value" . ($id ? ' and t.task_id=' . $id : ''));
         if ($tasks){
             if($id)
               $targets = $this->fetch_classes($tasks[0]->did);
@@ -1194,13 +1190,12 @@ class ElasticSearch {
     //update task, dataset, flow to make sure that their indexed run counts are up to date? Only needed for sorting on number of runs.
     private function update_runcounts($run) {
         $runparams['index'] = 'run';
-	$runparams['type'] = 'run';
+    $runparams['type'] = 'run';
         $runparams['body']['query']['match']['run_task.task_id'] = $run->task_id;
         $result = $this->client->search($runparams);
-        $runcount = $this->checkNumeric($result['hits']['total']);
+        $runcount = $this->checkNumeric($result['hits']['total']['value']);
 
         $params['index'] = 'task';
-        $params['type'] = 'task';
         $params['id'] = $run->task_id;
         $params['body'] = array('doc' => array('runs' => $runcount));
         $this->client->update($params);
@@ -1210,10 +1205,9 @@ class ElasticSearch {
         $runparams['type'] = 'run';
         $runparams['body']['query']['match']['run_flow.flow_id'] = $run->implementation_id;
         $result = $this->client->search($runparams);
-        $runcount = $this->checkNumeric($result['hits']['total']);
+        $runcount = $this->checkNumeric($result['hits']['total']['value']);
 
         $params['index'] = 'flow';
-        $params['type'] = 'flow';
         $params['id'] = $run->implementation_id;
         $params['body'] = array('doc' => array('runs' => $runcount));
         $this->client->update($params);
@@ -1240,7 +1234,6 @@ class ElasticSearch {
         }
 
         $params['index'] = $type;
-        $params['type'] = $type;
         $params['id'] = $id;
         $params['body'] = array('doc' => array('tags' => $ts));
         $this->client->update($params);
@@ -1260,7 +1253,6 @@ class ElasticSearch {
         }
 
         $params['index'] = 'data';
-        $params['type'] = 'data';
         $params['id'] = $id;
         $params['body'] = array('doc' => array('topics' => $ts));
         $this->client->update($params);
@@ -1269,7 +1261,6 @@ class ElasticSearch {
     private function index_single_run($id) {
 
         $params['index'] = 'run';
-        $params['type'] = 'run';
         $params['id'] = $id;
 
         $run = $this->db->query('SELECT rid, uploader, setup, implementation_id, task_id, start_time FROM run r, algorithm_setup s where s.sid=r.setup and rid=' . $id);
@@ -1293,7 +1284,6 @@ class ElasticSearch {
             return $this->index_single_run($id);
 
         $params['index'] = 'run';
-        $params['type'] = 'run';
   $setups = array();
         $tasks = array();
 
@@ -1463,7 +1453,6 @@ class ElasticSearch {
     public function index_task_type($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
 
         $params['index'] = 'task_type';
-        $params['type'] = 'task_type';
         $types = $this->db->query('SELECT tt.ttid, tt.name, tt.description, count(task_id) as tasks, tt.creationDate as date FROM task_type tt, task t where tt.ttid=t.ttid' . ($id ? ' and tt.ttid=' . $id : '') . ' group by tt.ttid');
 
         if ($id and ! $types)
@@ -1516,7 +1505,6 @@ class ElasticSearch {
     public function index_flow($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
 
         $params['index'] = 'flow';
-        $params['type'] = 'flow';
         $flows = $this->db->query('select i.*, count(rid) as runs from implementation i left join algorithm_setup s on (s.implementation_id=i.id) left join run r on (r.setup=s.sid)' . ($id ? ' where i.id=' . $id : '') . ' group by i.id');
 
 
@@ -1683,7 +1671,6 @@ class ElasticSearch {
     public function index_measure($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
 
         $params['index'] = 'measure';
-        $params['type'] = 'measure';
         $procs = $this->db->query('SELECT e.*, t.description FROM estimation_procedure e, estimation_procedure_type t WHERE e.type=t.name' . ($id ? ' and e.id=' . $id : ''));
         if ($procs)
             foreach ($procs as $d) {
@@ -1821,8 +1808,7 @@ class ElasticSearch {
 
     public function index_single_dataset($id) {
 
-      	$params['index'] = 'data';
-      	$params['type'] = 'data';
+          $params['index'] = 'data';
         $status_sql_variable = 'IFNULL(`s`.`status`, \'' . $this->CI->config->item('default_dataset_status') . '\')';
         $datasets = $this->db->query('select d.*, ' . $status_sql_variable . ' AS `status`, count(rid) as runs, GROUP_CONCAT(dp.error) as error_message from dataset d left join (SELECT `did`, MAX(`status`) AS `status` FROM `dataset_status` GROUP BY `did`) s ON s.did = d.did left join task_inputs t on (t.value=d.did and t.input="source_data") left join run r on (r.task_id=t.task_id) left join data_processed dp on (d.did=dp.did)' . ($id ? ' where d.did=' . $id : '') . ' group by d.did');
 
@@ -1855,7 +1841,6 @@ class ElasticSearch {
             return $this->index_single_dataset($id);
 
         $params['index'] = 'data';
-        $params['type'] = 'data';
         $datamaxquery = $this->db->query('SELECT max(did) as maxdata from dataset');
         $datacountquery = $this->db->query('SELECT count(did) as datacount from dataset');
         $datamax = intval($datamaxquery[0]->maxdata);
@@ -1896,19 +1881,20 @@ class ElasticSearch {
               $responses = $this->client->bulk($params);
               $submitted += sizeof($responses['items']);
 
-        //clean up, just to be sure
+               //clean up, just to be sure
               $params_del['index'] = 'data';
-        foreach(array_diff(range($did,$did+$incr-1),$valid_ids) as $delid){
-            $params_del['id'] = $delid;
-      try{
-        $this->client->delete($params_del);
-      }
-      catch (Exception $e) {
-        $result = json_decode($e);
-                    if($result['found']=='true' && $verbosity)
-                        echo "deleted_".$delid." ";
-                  }
-         }
+               foreach(array_diff(range($did,$did+$incr-1),$valid_ids) as $delid){
+                   $params_del['id'] = $delid;
+                   try{
+                     $this->client->delete($params_del);
+                   }
+                   catch (Exception $e) {
+                     if ($e->getCode() != 404){
+                         echo($e);
+                         die("unexpected exception");
+                     }
+                   }
+               }
             }
 
             $did += $incr;
@@ -1922,7 +1908,7 @@ class ElasticSearch {
         if(!$description_record){
            return 'Could not find description of dataset ' . $d->did;
         }
-	$headless_description = trim(preg_replace('/\s+/', ' ', preg_replace('/^\*{2,}.*/m', '', $description_record->description)));
+    $headless_description = trim(preg_replace('/\s+/', ' ', preg_replace('/^\*{2,}.*/m', '', $description_record->description)));
         $new_data = array(
             'data_id' => $d->did,
             'name' => $d->name,
