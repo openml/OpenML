@@ -1,0 +1,9 @@
+// docs/reindex.asciidoc:280
+
+[source, php]
+----
+$params = [
+    'index' => 'new_twitter',
+];
+$response = $client->search($params);
+----

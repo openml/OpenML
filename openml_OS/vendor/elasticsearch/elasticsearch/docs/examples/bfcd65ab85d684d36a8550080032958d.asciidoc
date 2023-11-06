@@ -1,0 +1,6 @@
+// search/request-body.asciidoc:65
+
+[source, php]
+----
+$response = $client->search();
+----

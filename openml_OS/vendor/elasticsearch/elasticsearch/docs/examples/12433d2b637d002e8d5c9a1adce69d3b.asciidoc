@@ -1,0 +1,9 @@
+// indices/put-mapping.asciidoc:89
+
+[source, php]
+----
+$params = [
+    'index' => 'publications',
+];
+$response = $client->indices()->create($params);
+----
