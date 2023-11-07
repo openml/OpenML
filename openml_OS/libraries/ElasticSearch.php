@@ -391,9 +391,7 @@ class ElasticSearch {
                         'number_of_replicas' => 0
                      )
                  ),
-                 'mappings' => array(
-                    $t => $this->mappings[$t]
-                 )
+                 'mappings' => $this->mappings[$t]
             )
         );
     $this->client->indices()->create($createparams);
