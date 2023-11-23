@@ -255,6 +255,8 @@ $this->apiErrors[473] = 'Entity already tagged by this tag. ';
 $this->apiErrors[474] = 'Database problem inserting tag. ';
 $this->apiErrors[475] = 'Tag not found.';
 $this->apiErrors[476] = 'Tag is not owned by you';
+$this->apiErrors[477] = 'Tags are restricted to length 64 alphanumeric and _-. characters';
+
 
 
 // openml.task.list

@@ -15,6 +15,10 @@ function safe( $unsafe ) {
   return preg_replace('/[^a-zA-Z0-9\s.,-_()]/', '', $unsafe );
 }
 
+function is_system_string( $unsafe ) {
+  return !preg_match('/[^a-zA-Z0-9._-]/', $unsafe );
+}
+
 function is_safe( $unsafe ) {
   return !preg_match('/[^a-zA-Z0-9\s.,-_()]/', $unsafe );
 }
