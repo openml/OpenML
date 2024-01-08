@@ -827,8 +827,11 @@ class Api_data extends MY_Api_Model {
       $dataset->status = $data_status->status;
     }
     if ($dataset->format != 'Sparse_ARFF') {
-      $dataset->parquet_url = 'http://openml1.win.tue.nl/dataset' . $data_id . '/dataset_' . $data_id . '.pq';      
-      $dataset->minio_url = 'http://openml1.win.tue.nl/dataset' . $data_id . '/dataset_' . $data_id . '.pq';
+      $bracket = sprintf('%04d', floor($data_id / 10000));
+      $padded_id = sprintf('%04d', $data_id);
+      $url = MINIO_URL . 'datasets/' . $bracket . '/' . $padded_id . '/dataset_' . $data_id . '.pq';
+      $dataset->parquet_url = $url;
+      $dataset->minio_url = $url;
     }
       $this->xmlContents( 'data-get', $this->version, $dataset );
   }
