@@ -4,8 +4,7 @@ Promise
 A lightweight implementation of
 [CommonJS Promises/A](http://wiki.commonjs.org/wiki/Promises/A) for PHP.
 
-[![Build Status](https://travis-ci.org/reactphp/promise.svg?branch=master)](http://travis-ci.org/reactphp/promise)
-[![Coverage Status](https://coveralls.io/repos/github/reactphp/promise/badge.svg?branch=master)](https://coveralls.io/github/reactphp/promise?branch=master)
+[![CI status](https://github.com/reactphp/promise/workflows/CI/badge.svg?branch=2.x)](https://github.com/reactphp/promise/actions)
 
 Table of Contents
 -----------------
@@ -173,9 +172,9 @@ Neither its state nor its result (or error) can be modified.
 #### Implementations
 
 * [Promise](#promise-2)
-* [FulfilledPromise](#fulfilledpromise)
-* [RejectedPromise](#rejectedpromise)
-* [LazyPromise](#lazypromise)
+* [FulfilledPromise](#fulfilledpromise) (deprecated)
+* [RejectedPromise](#rejectedpromise) (deprecated)
+* [LazyPromise](#lazypromise) (deprecated)
 
 #### PromiseInterface::then()
 
@@ -225,9 +224,9 @@ and utility methods which are not part of the Promises/A specification.
 #### Implementations
 
 * [Promise](#promise-1)
-* [FulfilledPromise](#fulfilledpromise)
-* [RejectedPromise](#rejectedpromise)
-* [LazyPromise](#lazypromise)
+* [FulfilledPromise](#fulfilledpromise) (deprecated)
+* [RejectedPromise](#rejectedpromise) (deprecated)
+* [LazyPromise](#lazypromise) (deprecated)
 
 #### ExtendedPromiseInterface::done()
 
@@ -357,9 +356,9 @@ a promise has no effect.
 #### Implementations
 
 * [Promise](#promise-1)
-* [FulfilledPromise](#fulfilledpromise)
-* [RejectedPromise](#rejectedpromise)
-* [LazyPromise](#lazypromise)
+* [FulfilledPromise](#fulfilledpromise) (deprecated)
+* [RejectedPromise](#rejectedpromise) (deprecated)
+* [LazyPromise](#lazypromise) (deprecated)
 
 ### Promise
 
@@ -409,6 +408,8 @@ once all consumers called the `cancel()` method of the promise.
 
 ### FulfilledPromise
 
+> Deprecated in v2.8.0: External usage of `FulfilledPromise` is deprecated, use `resolve()` instead.
+
 Creates a already fulfilled promise.
 
 ```php
@@ -420,6 +421,8 @@ Note, that `$value` **cannot** be a promise. It's recommended to use
 
 ### RejectedPromise
 
+> Deprecated in v2.8.0: External usage of `RejectedPromise` is deprecated, use `reject()` instead.
+
 Creates a already rejected promise.
 
 ```php
@@ -430,6 +433,8 @@ Note, that `$reason` **cannot** be a promise. It's recommended to use
 [reject()](#reject) for creating rejected promises.
 
 ### LazyPromise
+
+> Deprecated in v2.8.0: LazyPromise is deprecated and should not be used anymore.
 
 Creates a promise which will be lazily initialized by `$factory` once a consumer
 calls the `then()` method.
@@ -844,15 +849,14 @@ This project follows [SemVer](https://semver.org/).
 This will install the latest supported version:
 
 ```bash
-$ composer require react/promise:^2.7
+$ composer require react/promise:^2.9
 ```
 
 See also the [CHANGELOG](CHANGELOG.md) for details about version upgrades.
 
 This project aims to run on any platform and thus does not require any PHP
-extensions and supports running on legacy PHP 5.4 through current PHP 7+ and HHVM.
-It's *highly recommended to use PHP 7+* for this project due to its vast
-performance improvements.
+extensions and supports running on legacy PHP 5.4 through current PHP 8+ and HHVM.
+It's *highly recommended to use the latest supported PHP version* for this project.
 
 Credits
 -------

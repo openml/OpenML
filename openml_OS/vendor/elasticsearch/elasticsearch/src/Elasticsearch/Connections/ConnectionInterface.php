@@ -1,4 +1,20 @@
 <?php
+/**
+ * Elasticsearch PHP client
+ *
+ * @link      https://github.com/elastic/elasticsearch-php/
+ * @copyright Copyright (c) Elasticsearch B.V (https://www.elastic.co)
+ * @license   http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
+ * @license   https://www.gnu.org/licenses/lgpl-2.1.html GNU Lesser General Public License, Version 2.1 
+ * 
+ * Licensed to Elasticsearch B.V under one or more agreements.
+ * Elasticsearch B.V licenses this file to you under the Apache 2.0 License or
+ * the GNU Lesser General Public License, Version 2.1, at your option.
+ * See the LICENSE file in the project root for more information.
+ */
+
+
+declare(strict_types = 1);
 
 namespace Elasticsearch\Connections;
 
@@ -9,18 +25,11 @@ use Psr\Log\LoggerInterface;
 /**
  * Interface ConnectionInterface
  *
- * @category Elasticsearch
- * @package  Elasticsearch\Connections
- * @author   Zachary Tong <zach@elastic.co>
- * @license  http://www.apache.org/licenses/LICENSE-2.0 Apache2
- * @link     http://elastic.co
  */
 interface ConnectionInterface
 {
     /**
-     * Constructor
-     *
-     * @param $handler
+     * @param callable $handler
      * @param array $hostDetails
      * @param array $connectionParams connection-specific parameters
      * @param \Elasticsearch\Serializers\SerializerInterface $serializer
@@ -93,9 +102,9 @@ interface ConnectionInterface
     public function getLastRequestInfo();
 
     /**
-     * @param $method
-     * @param $uri
-     * @param null $params
+     * @param string $method
+     * @param string $uri
+     * @param array $params
      * @param null $body
      * @param array $options
      * @param \Elasticsearch\Transport $transport
@@ -103,6 +112,6 @@ interface ConnectionInterface
      */
 	// @codingStandardsIgnoreStart
 	// "Arguments with default values must be at the end of the argument list" - cannot change the interface
-    public function performRequest($method, $uri, $params = null, $body = null, $options = [], Transport $transport);
+    public function performRequest(string $method, string $uri, ?array $params = [], $body = null, array $options = [], Transport $transport = null);
 	// @codingStandardsIgnoreEnd
 }

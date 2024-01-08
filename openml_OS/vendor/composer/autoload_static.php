@@ -8,6 +8,7 @@ class ComposerStaticInit42a8ed1e61513be5513aa0cb72c34677
 {
     public static $files = array (
         'ad155f8f1cf0d418fe49e248db8c661b' => __DIR__ . '/..' . '/react/promise/src/functions_include.php',
+        '8592c7b0947d8a0965a9e8c3d16f9c24' => __DIR__ . '/..' . '/elasticsearch/elasticsearch/src/autoload.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -41,11 +42,11 @@ class ComposerStaticInit42a8ed1e61513be5513aa0cb72c34677
         ),
         'GuzzleHttp\\Stream\\' => 
         array (
-            0 => __DIR__ . '/..' . '/guzzlehttp/streams/src',
+            0 => __DIR__ . '/..' . '/ezimuel/guzzlestreams/src',
         ),
         'GuzzleHttp\\Ring\\' => 
         array (
-            0 => __DIR__ . '/..' . '/guzzlehttp/ringphp/src',
+            0 => __DIR__ . '/..' . '/ezimuel/ringphp/src',
         ),
         'Elasticsearch\\' => 
         array (
@@ -53,11 +54,27 @@ class ComposerStaticInit42a8ed1e61513be5513aa0cb72c34677
         ),
     );
 
+    public static $prefixesPsr0 = array (
+        'o' => 
+        array (
+            'org\\bovigo\\vfs' => 
+            array (
+                0 => __DIR__ . '/..' . '/mikey179/vfsstream/src/main/php',
+            ),
+        ),
+    );
+
+    public static $classMap = array (
+        'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
+    );
+
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
             $loader->prefixLengthsPsr4 = ComposerStaticInit42a8ed1e61513be5513aa0cb72c34677::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInit42a8ed1e61513be5513aa0cb72c34677::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit42a8ed1e61513be5513aa0cb72c34677::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit42a8ed1e61513be5513aa0cb72c34677::$classMap;
 
         }, null, ClassLoader::class);
     }
