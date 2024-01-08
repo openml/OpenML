@@ -15,6 +15,7 @@ class Api_data extends MY_Api_Model {
     $this->load->model('Dataset_topic');
     $this->load->model('Dataset_description');
     $this->load->model('Data_feature');
+    $this->load->model('Data_feature_description');
     $this->load->model('Data_feature_value');
     $this->load->model('Data_quality');
     $this->load->model('Feature_quality');
@@ -163,12 +164,74 @@ class Api_data extends MY_Api_Model {
       return;
     }
 
+    if (count($segments) == 3 && $segments[0] == 'feature' && $segments[1] == 'ontology' && $segments[2] == 'add' && $request_type == 'post') {
+      $this->data_feature_description($this->input->post('data_id'), $this->input->post('index'), $this->input->post('ontology'), 'ontology', true);
+      return;
+    }
+
+    if (count($segments) == 3 && $segments[0] == 'feature' && $segments[1] == 'ontology' && $segments[2] == 'remove' && $request_type == 'post') {
+      $this->data_feature_description($this->input->post('data_id'), $this->input->post('index'), $this->input->post('ontology'), 'ontology', false);
+      return;
+    }
+
     if (count($segments) == 2 && $segments[0] == 'status' && $segments[1] == 'update') {
       $this->status_update($this->input->post('data_id'), $this->input->post('status'));
       return;
     }
 
     $this->returnError(100, $this->version);
+  }
+    
+  private function data_feature_description($data_id, $feature_idx, $description, $description_type, $do_add) {
+    if ($data_id == false || feature_idx == false || $description == false) {
+      $this->returnError(1100, $this->version);
+      return false;
+    }
+    if ($do_add) {
+      $descriptions = $this->Data_feature_description->getColumnWhere('value', 'id = ' . $id . ' AND `type` = "' . $description_type . '"');
+      if($descriptions != false && in_array($description, $descriptions)) {
+        $this->returnError(1101, $this->version, 450, 'id=' . $id . '; description=' . $description);
+        return false;
+      }
+    
+      $description_data = array(
+        'did' => $data_id,
+        'index' => $feature_idx,
+        'type' => $description_type,
+        'value' => $description,
+        'uploader' => $this->user_id,
+        'date' => $currentTime
+      );
+      
+      $res = $this->Data_feature_description->insert($description_data);
+      if ($res == false) {
+        $this->returnError(1102, $this->version);
+        return false;
+      }
+    } else {
+      $descriptions = $this->Data_feature_description->getColumnWhere('value', 'id = ' . $id . ' AND `type` = "' . $description_type . '" AND `value` = "' . $description . '"');
+      if ($descriptions == false) {
+        $this->returnError(1103, $this->version);
+        return false;
+      }
+      $is_admin = $this->ion_auth->is_admin($this->user_id);
+      if ($tag_record->uploader != $this->user_id && $is_admin == false) {
+        $this->returnError(1104, $this->version);
+        return false;
+      }
+      $this->Data_feature_description->delete(array($id, $index, $description));
+    }
+    
+    $descriptions = $this->Data_feature_description->getColumnWhere('value', 'id = ' . $id . ' AND `type` = "' . $description_type . '"');
+    $this->xmlContents(
+      'data_feature_description',
+      $this->version,
+      array(
+        'id' => $id,
+        'description-type' => $description_type,
+        'xml_tag_name' => 'feature_description' . '_' . ($do_add ? 'add' : 'remove'),
+        'descriptions' => $descriptions)
+    );
   }
 
   /**
@@ -508,12 +571,6 @@ class Api_data extends MY_Api_Model {
       return;
     }
     
-    // create a copy of the latest description
-    $description_record = $this->Dataset_description->getWhereSingle('did =' . $data_id, 'version DESC');
-    $description_record->did = $new_data_id;
-    $description_record->version = "1";
-    $this->Dataset_description->insert($description_record);
-
     // create a copy of the latest description
     $description_record = $this->Dataset_description->getWhereSingle('did =' . $data_id, 'version DESC');
     $description_record->did = $new_data_id;
@@ -1642,6 +1699,14 @@ class Api_data extends MY_Api_Model {
       } else {
         $nominal_values = false;
       }
+      
+      //actual insert of the feature
+      if (array_key_exists('ontology', $feature)) {
+        $ontologies = $feature['ontology'];
+        unset($feature['ontology']);
+      } else {
+        $ontologies = false;
+      }
 
       $result = $this->Data_feature->insert($feature);
       if (!$result) {
@@ -1665,7 +1730,7 @@ class Api_data extends MY_Api_Model {
             return;
           }
         }
-
+        // situation where we are trying to add nominal values to a non-nominal attribute
         if ($feature['data_type'] != 'nominal') {
           // only allowed for nominal values
           $this->db->trans_rollback();
@@ -1673,10 +1738,28 @@ class Api_data extends MY_Api_Model {
           return;
         }
       } elseif ($feature['data_type'] == 'nominal') {
-        // required for nominal values.. missing so throw error
+        // nominal values now require this information.. since it is not there, throw the error
         $this->db->trans_rollback();
         $this->returnError(448, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature['name']);
         return;
+      }
+
+      if ($ontologies) {
+        // check the nominal value property
+        foreach ($ontologies as $ontology) {
+          $data = array(
+            'did' => $did,
+            'index' => $ontology['index'],
+            'description_type' => 'ontology',
+            'value' => $value
+          );
+          $result = $this->Data_feature_description->insert($data);
+          if (!$result) {
+            $this->db->trans_rollback();
+            $this->returnError(450, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature['name'] . ', value: ' . $value);
+            return;
+          }
+        }
       }
 
       // NOTE: this is commented out because not all datasets have targets, or they can have multiple ones. Targets should also be set more carefully.

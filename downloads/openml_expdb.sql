@@ -207,6 +207,19 @@ CREATE TABLE `data_feature` (
 -- Table structure for table `data_feature_value`
 --
 
+CREATE TABLE `data_feature_description` (
+  `did` int(10) UNSIGNED NOT NULL,
+  `index` int(10) UNSIGNED NOT NULL,
+  `uploader` mediumint(8) UNSIGNED NOT NULL,
+  `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `description_type` enum('plain','ontology') NOT NULL,
+  `value` varchar(256) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `data_feature_value`
+--
+
 CREATE TABLE `data_feature_value` (
   `did` int(10) UNSIGNED NOT NULL,
   `index` int(10) UNSIGNED NOT NULL,
@@ -949,6 +962,12 @@ ALTER TABLE `data_feature`
 --
 -- Indexes for table `data_feature_value`
 --
+ALTER TABLE `data_feature_description`
+  ADD KEY `did` (`did`,`index`);
+  
+--
+-- Indexes for table `data_feature_value`
+--
 ALTER TABLE `data_feature_value`
   ADD KEY `did` (`did`,`index`),
   ADD UNIQUE(`did`, `index`, `value`);
@@ -1429,6 +1448,13 @@ ALTER TABLE `data_feature`
 --
 ALTER TABLE `data_feature_value`
   ADD CONSTRAINT `data_feature_value_ibfk_1` FOREIGN KEY (`did`,`index`) REFERENCES `data_feature` (`did`, `index`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+
+--
+-- Constraints for table `data_feature_value`
+--
+ALTER TABLE `data_feature_description`
+  ADD CONSTRAINT `data_feature_description_ibfk_1` FOREIGN KEY (`did`,`index`) REFERENCES `data_feature` (`did`, `index`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `data_processed`

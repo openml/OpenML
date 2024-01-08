@@ -82,7 +82,7 @@ if(false === strpos($_SERVER['REQUEST_URI'],'type') && false !== strpos($_SERVER
 		$this->tt['index'] = 'task_type';
 		$this->tt['type'] = 'task_type';
 		$this->tt['id'] = $this->task['tasktype']['tt_id'];
-		$this->tasktype = $this->searchclient->get($this->tt)['_source'];
+		$this->tasktype = $this->searchclient->get($this->p)['_source'];
 
     $this->downvotes = $this->searchclient->search($this->down)['hits']['hits'];
     if ($this->ion_auth->logged_in()) {
