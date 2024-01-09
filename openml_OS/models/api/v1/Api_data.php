@@ -226,7 +226,7 @@ class Api_data extends MY_Api_Model {
     
     $descriptions = $this->Data_feature_description->getColumnWhere('value', 'did = ' . $data_id . ' AND `description_type` = "' . $description_type . '"');
     $this->xmlContents(
-      'data_feature_description',
+      'data-feature-description',
       $this->version,
       array(
         'id' => $data_id,
