@@ -197,10 +197,10 @@ class Api_data extends MY_Api_Model {
       $description_data = array(
         'did' => $data_id,
         'index' => $feature_idx,
-        'type' => $description_type,
+        'description_type' => $description_type,
         'value' => $description,
         'uploader' => $this->user_id,
-        'date' => $currentTime
+        'date' => now()
       );
       
       $res = $this->Data_feature_description->insert($description_data);
