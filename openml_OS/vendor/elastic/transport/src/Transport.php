@@ -48,7 +48,7 @@ use function strtolower;
 
 final class Transport implements ClientInterface, HttpAsyncClient
 {
-    const VERSION = "8.7.0";
+    const VERSION = "8.8.0";
 
     private ClientInterface $client;
     private LoggerInterface $logger;
@@ -213,12 +213,29 @@ final class Transport implements ClientInterface, HttpAsyncClient
     private function setupConnectionUri(Node $node, RequestInterface $request): RequestInterface
     {
         $uri = $node->getUri();
+        $path = $request->getUri()->getPath();
         
+        $nodePath = $uri->getPath();
+        // If the node has a path we need to use it as prefix for the existing path
+        // @see https://github.com/elastic/elastic-transport-php/pull/20
+        if (!empty($nodePath)) {
+            $path = sprintf("%s/%s", rtrim($nodePath, '/'), ltrim($path,'/'));
+        }
+        // If the user information is not in the request, we check if it is present in the node uri
+        // @see https://github.com/elastic/elastic-transport-php/issues/18
+        if (empty($request->getUri()->getUserInfo()) && !empty($uri->getUserInfo())) {
+            $userInfo = explode(':', $uri->getUserInfo());
+            $request = $request->withUri(
+                $request->getUri()
+                    ->withUserInfo($userInfo[0], $userInfo[1] ?? null)
+            );
+        }
         return $request->withUri(
             $request->getUri()
                 ->withHost($uri->getHost())
                 ->withPort($uri->getPort())
                 ->withScheme($uri->getScheme())
+                ->withPath($path)
         );
     }
 

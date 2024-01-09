@@ -25,7 +25,7 @@ define( 'BASE_URL', 'FILL_IN' );
 define( 'DATA_URL', BASE_URL . 'data/' );
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * MINIO_URL: MINIO Server URL. Currently this is 'http://openml1.win.tue.nl/'.
+ * MINIO_URL: MINIO Server URL. Currently this is 'https://openml1.win.tue.nl/'.
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 define( 'MINIO_URL', 'FILL_IN' );
 

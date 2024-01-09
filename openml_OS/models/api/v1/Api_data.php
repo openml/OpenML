@@ -514,6 +514,12 @@ class Api_data extends MY_Api_Model {
     $description_record->version = "1";
     $this->Dataset_description->insert($description_record);
 
+    // create a copy of the latest description
+    $description_record = $this->Dataset_description->getWhereSingle('did =' . $data_id, 'version DESC');
+    $description_record->did = $new_data_id;
+    $description_record->version = "1";
+    $this->Dataset_description->insert($description_record);
+
     // update elastic search index.  
     try {
       $this->elasticsearch->index('data', $new_data_id);
@@ -764,8 +770,11 @@ class Api_data extends MY_Api_Model {
       $dataset->status = $data_status->status;
     }
     if ($dataset->format != 'Sparse_ARFF') {
-      $dataset->parquet_url = 'http://openml1.win.tue.nl/dataset' . $data_id . '/dataset_' . $data_id . '.pq';      
-      $dataset->minio_url = 'http://openml1.win.tue.nl/dataset' . $data_id . '/dataset_' . $data_id . '.pq';
+      $bracket = sprintf('%04d', floor($data_id / 10000));
+      $padded_id = sprintf('%04d', $data_id);
+      $url = MINIO_URL . 'datasets/' . $bracket . '/' . $padded_id . '/dataset_' . $data_id . '.pq';
+      $dataset->parquet_url = $url;
+      $dataset->minio_url = $url;
     }
       $this->xmlContents( 'data-get', $this->version, $dataset );
   }
@@ -1175,7 +1184,7 @@ class Api_data extends MY_Api_Model {
 
     // handle tags
     $tags = array();
-    if (array_key_exists('tag', $dataset)) {
+    if (isset($dataset['tag'])) {
       $tags = str_getcsv($dataset['tag']);
       unset($dataset['tag']);
     }
@@ -1230,7 +1239,7 @@ class Api_data extends MY_Api_Model {
     }
 
     // create initial wiki page
-    $this->wiki->export_to_wiki($id);
+    //$this->wiki->export_to_wiki($id);
 
     // create
     $this->xmlContents('data-upload', $this->version, array('id' => $id));
@@ -1446,7 +1455,7 @@ class Api_data extends MY_Api_Model {
     $index_values = array();
     if ($dataset->features_values) {
       foreach($dataset->features_values as $val) {
-        if (!array_key_exists($val->index, $index_values)) {
+        if (!isset($index_values[$val->index])) {
           $index_values[$val->index] = array();
         }
         $index_values[$val->index][] = $val->value;
@@ -1627,7 +1636,7 @@ class Api_data extends MY_Api_Model {
       }
 
       //actual insert of the feature
-      if (array_key_exists('nominal_value', $feature)) {
+      if (isset($feature['nominal_value'])) {
         $nominal_values = $feature['nominal_value'];
         unset($feature['nominal_value']);
       } else {

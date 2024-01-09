@@ -1,5 +1,13 @@
 # Changelog
 
+## 8.8.0 (2023-11-08)
+
+- Support path in host connection URI
+  [#21](https://github.com/elastic/elastic-transport-php/pull/21)
+
+- Support userInfo in host connection URI
+  [#22](https://github.com/elastic/elastic-transport-php/pull/22)
+
 ## 8.7.0 (2023-05-23)
 
 - Allow installation of psr/http-message v2.0

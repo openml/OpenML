@@ -504,7 +504,12 @@ class Api_run extends MY_Api_Model {
     $user = $this->Author->getById($run->uploader);
     $run->user_name = $user->first_name . ' ' . $user->last_name;
     $run->flow_name = $this->Implementation->getById($run->setup->implementation_id)->fullName;
-    $run->task_evaluation = $this->Task_inputs->getWhere("task_id = " . $run->task_id . " and input = 'evaluation_measures'")[0];
+    $task_evaluations = $this->Task_inputs->getWhere("task_id = " . $run->task_id . " and input = 'evaluation_measures'");
+    if( $task_evaluations ) {
+      $run->task_evaluation = $task_evaluations[0];
+    } else {
+      $run->task_evaluation = "";
+    }
 
     $this->xmlContents( 'run-get', $this->version, array( 'source' => $run ) );
   }
@@ -789,12 +794,12 @@ class Api_run extends MY_Api_Model {
 
     $task_id = $run_xml['task_id'];
     $implementation_id = $run_xml['flow_id'];
-    $setup_string = array_key_exists('setup_string', $run_xml) ? $run_xml['setup_string'] : null;
-    $error_message = array_key_exists('error_message', $run_xml) ? $run_xml['error_message'] : false;
-    $run_details = array_key_exists('run_details', $run_xml) ? $run_xml['run_details'] : null;
-    $parameter_objects = array_key_exists('parameter_setting', $run_xml) ? $run_xml['parameter_setting'] : array();
-    $output_data = array_key_exists('output_data', $run_xml) ? $run_xml['output_data'] : array();
-    $tags = array_key_exists('tag', $run_xml) ? str_getcsv ($run_xml['tag']) : array();
+    $setup_string = isset($run_xml['setup_string']) ? $run_xml['setup_string'] : null;
+    $error_message = isset($run_xml['error_message']) ? $run_xml['error_message'] : false;
+    $run_details = isset($run_xml['run_details']) ? $run_xml['run_details'] : null;
+    $parameter_objects = isset($run_xml['parameter_setting']) ? $run_xml['parameter_setting'] : array();
+    $output_data = isset($run_xml['output_data']) ? $run_xml['output_data'] : array();
+    $tags = isset($run_xml['tag']) ? str_getcsv ($run_xml['tag']) : array();
 
     $predictionsUrl   = false;
 
@@ -882,11 +887,11 @@ class Api_run extends MY_Api_Model {
     }
 
     $task = $this->Task_inputs->getTaskValuesAssoc($task_id);
-    if (!array_key_exists('source_data', $task)) {
+    if (!isset($task['source_data'])) {
       $this->returnError(219, $this->version);
       return;
     }
-    if (!array_key_exists('estimation_procedure', $task)) {
+    if (!isset($task['estimation_procedure'])) {
       $this->returnError(220, $this->version);
       return;
     }
@@ -911,7 +916,7 @@ class Api_run extends MY_Api_Model {
     
     $supported_evaluation_measures = $this->Math_function->getColumnWhere('name', '`functionType` = "EvaluationFunction"');
     // the user can specify his own metrics. here we check whether these exists in the database.
-    if($output_data != false && array_key_exists('evaluation', $output_data)) {
+    if($output_data != false && isset($output_data['evaluation'])) {
       // php does not have a set data structure, use hashmap instead
       $used_evaluation_measures = array();
       $illegal_measures = array();
@@ -921,9 +926,9 @@ class Api_run extends MY_Api_Model {
         $used_evaluation_measures[$eval['name']] = true;
         // check whether it was a legal measure w.r.t. the estimation procedure
         // first add null values, in case a propoerty doesn't exist
-        $repeat_nr = array_key_exists('repeat', $eval) ? $eval['repeat'] : null;
-        $fold_nr = array_key_exists('fold', $eval) ? $eval['fold'] : null;
-        $sample_nr = array_key_exists('sample', $eval) ? $eval['sample'] : null;
+        $repeat_nr = isset($eval['repeat']) ? $eval['repeat'] : null;
+        $fold_nr = isset($eval['fold']) ? $eval['fold'] : null;
+        $sample_nr = isset($eval['sample']) ? $eval['sample'] : null;
         $num_inst = $num_instances_record->value;
         if (!$this->Estimation_procedure->check_legal($ep_record, $num_inst, $repeat_nr, $fold_nr, $sample_nr)) {
           $illegal_measures[] = $this->Estimation_procedure->eval_measure_to_string($eval['name'], $repeat_nr, $fold_nr, $sample_nr);
@@ -1338,7 +1343,7 @@ class Api_run extends MY_Api_Model {
     }
     
     $task = $this->Task_inputs->getTaskValuesAssoc($runRecord->task_id);
-    if (!array_key_exists('source_data', $task)) {
+    if (!isset($task['source_data'])) {
       // also add error in database
       $error_code = 429;
       $data['error'] = $this->load->apiErrors[$error_code];
@@ -1346,7 +1351,7 @@ class Api_run extends MY_Api_Model {
       $this->returnError($error_code, $this->version);
       return;
     }
-    if (!array_key_exists('estimation_procedure', $task)) {
+    if (!isset($task['estimation_procedure'])) {
       // also add error in database
       $error_code = 430;
       $data['error'] = $this->load->apiErrors[$error_code];
@@ -1408,9 +1413,9 @@ class Api_run extends MY_Api_Model {
     $illegal_measures = array();
     foreach($xml->children('oml', true)->{'evaluation'} as $e) {
       $eval = xml2assoc($e, true);
-      $repeat_nr = array_key_exists('repeat', $eval) ? $eval['repeat'] : null;
-      $fold_nr = array_key_exists('fold', $eval) ? $eval['fold'] : null;
-      $sample_nr = array_key_exists('sample', $eval) ? $eval['sample'] : null;
+      $repeat_nr = isset($eval['repeat']) ? $eval['repeat'] : null;
+      $fold_nr = isset($eval['fold']) ? $eval['fold'] : null;
+      $sample_nr = isset($eval['sample']) ? $eval['sample'] : null;
       $num_inst = $num_instances_record->value;
       if (!$this->Estimation_procedure->check_legal($ep_record, $num_inst, $repeat_nr, $fold_nr, $sample_nr)) {
         $illegal_measures[] = $this->Estimation_procedure->eval_measure_to_string($eval['name'], $repeat_nr, $fold_nr, $sample_nr);
@@ -1433,7 +1438,7 @@ class Api_run extends MY_Api_Model {
       $evaluation['evaluation_engine_id'] = $eval_engine_id;
 
       // TODO: this responsibility should be shifted to the evaluation engine
-      if (array_key_exists($evaluation['name'], $math_functions)) {
+      if (isset($math_functions[$evaluation['name']])) {
         $evaluation['function_id'] = $math_functions[$evaluation['name']];
       } else {
         // there will be a DB error due to the absence of 'function_id'
@@ -1441,10 +1446,10 @@ class Api_run extends MY_Api_Model {
       // unset function field
       unset($evaluation['name']);
 
-      if(array_key_exists('fold', $evaluation) && array_key_exists('repeat', $evaluation) &&  array_key_exists('sample', $evaluation)) {
+      if(isset($evaluation['fold']) && isset($evaluation['repeat']) &&  isset($evaluation['sample'])) {
         // evaluation_sample
         $this->Evaluation_sample->insert($evaluation);
-      } elseif(array_key_exists('fold', $evaluation) && array_key_exists('repeat', $evaluation)) {
+      } elseif(isset($evaluation['fold']) && isset($evaluation['repeat'])) {
         // evaluation_fold
         $this->Evaluation_fold->insert($evaluation);
       } else {
