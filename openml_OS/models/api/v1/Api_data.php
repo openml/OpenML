@@ -224,12 +224,12 @@ class Api_data extends MY_Api_Model {
       $this->Data_feature_description->delete(array($id, $index, $description));
     }
     
-    $descriptions = $this->Data_feature_description->getColumnWhere('value', 'did = ' . $id . ' AND `description_type` = "' . $description_type . '"');
+    $descriptions = $this->Data_feature_description->getColumnWhere('value', 'did = ' . $data_id . ' AND `description_type` = "' . $description_type . '"');
     $this->xmlContents(
       'data_feature_description',
       $this->version,
       array(
-        'id' => $id,
+        'id' => $data_id,
         'description-type' => $description_type,
         'xml_tag_name' => 'feature_description' . '_' . ($do_add ? 'add' : 'remove'),
         'descriptions' => $descriptions)
