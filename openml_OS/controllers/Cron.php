@@ -167,7 +167,7 @@ class Cron extends CI_Controller {
   function install_database() {
     // note that this one does not come from DATA folder, as they are stored in github
     $models = directory_map('data/sql/', 1);
-    $manipulated_order = array('file.sql', 'implementation.sql', 'algorithm_setup.sql', 'dataset.sql', 'task_type.sql', 'task.sql', 'study.sql', 'groups.sql', 'users.sql');
+    $manipulated_order = array('file.sql', 'implementation.sql', 'algorithm_setup.sql', 'dataset.sql', 'data_feature.sql', 'task_type.sql', 'task.sql', 'study.sql', 'groups.sql', 'users.sql');
 
     // moves elements of $manipulated_order to the start of the models array
     foreach (array_reverse($manipulated_order) as $name) {
