@@ -210,7 +210,7 @@ class Api_data extends MY_Api_Model {
         return false;
       }
     } else {
-      $descriptions = $this->Data_feature_description->getColumnWhere('value', 'did = ' . $id . ' AND `description_type` = "' . $description_type . '" AND `value` = "' . $description . '"');
+      $descriptions = $this->Data_feature_description->getColumnWhere('value', 'did = ' . $data_id . ' AND `description_type` = "' . $description_type . '" AND `value` = "' . $description . '"');
       if ($descriptions == false) {
         $this->returnError(1103, $this->version);
         return false;
@@ -221,7 +221,7 @@ class Api_data extends MY_Api_Model {
         $this->returnError(1104, $this->version);
         return false;
       }
-      $this->Data_feature_description->delete(array($id, $index, $description));
+      $this->Data_feature_description->delete(array($data_id, $index, $description));
     }
     
     $descriptions = $this->Data_feature_description->getColumnWhere('value', 'did = ' . $data_id . ' AND `description_type` = "' . $description_type . '"');
