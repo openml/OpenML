@@ -210,14 +210,14 @@ class Api_data extends MY_Api_Model {
         return false;
       }
     } else {
-      $descriptions = $this->Data_feature_description->getColumnWhere('value', 'did = ' . $data_id . ' AND `description_type` = "' . $description_type . '" AND `value` = "' . $description . '"');
-      if ($descriptions == false) {
+      $description_record = $this->Data_feature_description->getWhereSingle('did = ' . $data_id . ' AND index = "' . $index . '" AND `description_type` = "' . $description_type . '" AND `value` = "' . $description . '"');
+      if ($description_record == false) {
         $this->returnError(1103, $this->version);
         return false;
       }
       // todo discuss policy: who is allowed to remove ontology from a feature?
       $is_admin = $this->ion_auth->is_admin($this->user_id);
-      if ($tag_record->uploader != $this->user_id && $is_admin == false) {
+      if ($description_record->uploader != $this->user_id && $is_admin == false) {
         $this->returnError(1104, $this->version);
         return false;
       }
