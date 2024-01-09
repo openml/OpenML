@@ -230,7 +230,7 @@ class Api_data extends MY_Api_Model {
       $this->version,
       array(
         'id' => $data_id,
-        'description-type' => $description_type,
+        'description_type' => $description_type,
         'xml_tag_name' => 'feature_description' . '_' . ($do_add ? 'add' : 'remove'),
         'descriptions' => $descriptions)
     );
