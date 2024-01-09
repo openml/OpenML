@@ -1522,7 +1522,7 @@ class Api_data extends MY_Api_Model {
     $dataset->index_values = $index_values;
     
     // obtains possible ontologies for a feature (for now: only ontologies)
-    $dataset->features_descriptions = $this->Data_feature_description->getWhere('did = "' . $dataset->did . '" AND description_typ = "ontology"');
+    $dataset->features_descriptions = $this->Data_feature_description->getWhere('did = "' . $dataset->did . '" AND description_type = "ontology"');
     $index_ontologies = array();
     if ($dataset->features_descriptions) {
       foreach($dataset->features_descriptions as $val) {
