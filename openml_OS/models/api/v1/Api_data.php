@@ -210,7 +210,7 @@ class Api_data extends MY_Api_Model {
         return false;
       }
     } else {
-      $description_record = $this->Data_feature_description->getWhereSingle('did = ' . $data_id . ' AND index = "' . $index . '" AND `description_type` = "' . $description_type . '" AND `value` = "' . $description . '"');
+      $description_record = $this->Data_feature_description->getWhereSingle('did = ' . $data_id . ' AND index = "' . $feature_idx . '" AND `description_type` = "' . $description_type . '" AND `value` = "' . $description . '"');
       if ($description_record == false) {
         $this->returnError(1103, $this->version);
         return false;
