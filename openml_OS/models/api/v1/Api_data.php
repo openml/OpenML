@@ -188,7 +188,7 @@ class Api_data extends MY_Api_Model {
       return false;
     }
     if ($do_add) {
-      $descriptions = $this->Data_feature_description->getColumnWhere('value', 'id = ' . $data_id . ' AND `description_type` = "' . $description_type . '"');
+      $descriptions = $this->Data_feature_description->getColumnWhere('value', '`did` = ' . $data_id . ' AND `description_type` = "' . $description_type . '"');
       if($descriptions != false && in_array($description, $descriptions)) {
         $this->returnError(1101, $this->version, 450, 'id=' . $id . '; description=' . $description);
         return false;
