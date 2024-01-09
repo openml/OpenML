@@ -1506,8 +1506,9 @@ class Api_data extends MY_Api_Model {
       $this->returnError(273, $this->version);
       return;
     }
-
+    
     $dataset->features = $this->Data_feature->getWhere('did = "' . $dataset->did . '"');
+    // obtains possible values for a feature
     $dataset->features_values = $this->Data_feature_value->getWhere('did = "' . $dataset->did . '"');
     $index_values = array();
     if ($dataset->features_values) {
@@ -1519,6 +1520,21 @@ class Api_data extends MY_Api_Model {
       }
     }
     $dataset->index_values = $index_values;
+    
+    // obtains possible ontologies for a feature (for now: only ontologies)
+    $dataset->features_descriptions = $this->Data_feature_description->getWhere('did = "' . $dataset->did . '" AND description_typ = "ontology"');
+    $index_ontologies = array();
+    if ($dataset->features_descriptions) {
+      foreach($dataset->features_descriptions as $val) {
+        if ($val->description_type == 'ontology') { // this is guaranteed
+          if (!isset($index_ontologies[$val->index])) {
+            $index_ontologies[$val->index] = array();
+          }
+          $index_ontologies[$val->index][] = $val->value;
+        }
+      }
+    }
+    $dataset->index_ontologies = $index_ontologies;
 
     if ($data_processed->error && $dataset->features === false) {
       $this->returnError(274, $this->version);
