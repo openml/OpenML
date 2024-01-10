@@ -183,7 +183,7 @@ class Api_data extends MY_Api_Model {
   }
     
   private function data_feature_description($data_id, $feature_idx, $description, $description_type, $do_add) {
-    if ($data_id == false || $feature_idx == false || $description == false) {
+    if ($data_id === false || $feature_idx === false || $description === false) {
       $this->returnError(1100, $this->version);
       return false;
     }
