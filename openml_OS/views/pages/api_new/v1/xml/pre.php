@@ -546,6 +546,8 @@ $this->apiErrors[1100] = 'Please provide mandatory POST fields';
 $this->apiErrors[1101] = 'This description was already associated with this feature';
 $this->apiErrors[1102] = 'Failure to write to the database';
 $this->apiErrors[1103] = 'Could not find description in database';
-$this->apiErrors[1102] = 'Failure to write to the database';
+$this->apiErrors[1104] = 'Failure to write to the database';
+$this->apiErrors[1105] = 'Feature description too long';
+$this->apiErrors[1105] = 'Feature description meant as ontology, but is not a valid URL';
 
 ?>

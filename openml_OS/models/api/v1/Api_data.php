@@ -187,6 +187,16 @@ class Api_data extends MY_Api_Model {
       $this->returnError(1100, $this->version);
       return false;
     }
+    
+    if (len($description) > 256) {
+      $this->returnError(1105, $this->version);
+      return false;
+    }
+    if ($description_type == 'ontology' && !filter_var($description, FILTER_VALIDATE_URL)) {
+      $this->returnError(1106, $this->version);
+      return false;
+    }
+    
     if ($do_add) {
       $descriptions = $this->Data_feature_description->getColumnWhere('value', '`did` = "' . $data_id . '" AND `index` = "'. $feature_idx . '" AND `description_type` = "' . $description_type . '"');
       if($descriptions != false && in_array($description, $descriptions)) {
