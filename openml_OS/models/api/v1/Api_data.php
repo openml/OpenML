@@ -224,7 +224,7 @@ class Api_data extends MY_Api_Model {
       $this->Data_feature_description->delete(array($data_id, $feature_idx, $description));
     }
     
-    $descriptions = $this->Data_feature_description->getColumnWhere('value', 'did = ' . $data_id . ' AND `description_type` = "' . $description_type . '"');
+    $descriptions = $this->Data_feature_description->getColumnWhere('value', 'did = ' . $data_id . ' AND index = "' . $feature_idx . '" AND `description_type` = "' . $description_type . '"');
     $this->xmlContents(
       'data-feature-description',
       $this->version,
@@ -515,6 +515,12 @@ class Api_data extends MY_Api_Model {
            'FROM dataset d ' .
            'LEFT JOIN (SELECT `did`, MAX(`status`) AS `status` FROM `dataset_status` GROUP BY `did`) s ON d.did = s.did ' .
            'WHERE (visibility = "public" or uploader='.$this->user_id.') '. $where_total . $where_limit;
+    
+    // create a copy of the latest description
+    $description_record = $this->Dataset_description->getWhereSingle('did =' . $data_id, 'version DESC');
+    $description_record->did = $new_data_id;
+    $description_record->version = "1";
+    $this->Dataset_description->insert($description_record);
 
     $datasets_res = $this->Dataset->query($sql);
     if( is_array( $datasets_res ) == false || count( $datasets_res ) == 0 ) {
