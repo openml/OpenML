@@ -60,7 +60,7 @@ CREATE TABLE `file` (
   `creator` int(16) NOT NULL,
   `creation_date` datetime NOT NULL,
   `filepath` varchar(256) NOT NULL,
-  `filesize` int(64) NOT NULL,
+  `filesize` bigint(64) NOT NULL,
   `filename_original` varchar(256) NOT NULL,
   `extension` varchar(16) NOT NULL,
   `mime_type` varchar(32) NOT NULL,
