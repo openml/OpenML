@@ -15,6 +15,7 @@ class Api_data extends MY_Api_Model {
     $this->load->model('Dataset_topic');
     $this->load->model('Dataset_description');
     $this->load->model('Data_feature');
+    $this->load->model('Data_feature_description');
     $this->load->model('Data_feature_value');
     $this->load->model('Data_quality');
     $this->load->model('Feature_quality');
@@ -163,12 +164,86 @@ class Api_data extends MY_Api_Model {
       return;
     }
 
+    if (count($segments) == 3 && $segments[0] == 'feature' && $segments[1] == 'ontology' && $segments[2] == 'add' && $request_type == 'post') {
+      $this->data_feature_description($this->input->post('data_id'), $this->input->post('index'), $this->input->post('ontology'), 'ontology', true);
+      return;
+    }
+
+    if (count($segments) == 3 && $segments[0] == 'feature' && $segments[1] == 'ontology' && $segments[2] == 'remove' && $request_type == 'post') {
+      $this->data_feature_description($this->input->post('data_id'), $this->input->post('index'), $this->input->post('ontology'), 'ontology', false);
+      return;
+    }
+
     if (count($segments) == 2 && $segments[0] == 'status' && $segments[1] == 'update') {
       $this->status_update($this->input->post('data_id'), $this->input->post('status'));
       return;
     }
 
     $this->returnError(100, $this->version);
+  }
+    
+  private function data_feature_description($data_id, $feature_idx, $description, $description_type, $do_add) {
+    if ($data_id === false || $feature_idx === false || $description === false) {
+      $this->returnError(1100, $this->version);
+      return false;
+    }
+    
+    if (strlen($description) > 256) {
+      $this->returnError(1105, $this->version);
+      return false;
+    }
+    if ($description_type == 'ontology' && !filter_var($description, FILTER_VALIDATE_URL)) {
+      $this->returnError(1106, $this->version);
+      return false;
+    }
+    
+    if ($do_add) {
+      $descriptions = $this->Data_feature_description->getColumnWhere('value', '`did` = "' . $data_id . '" AND `index` = "'. $feature_idx . '" AND `description_type` = "' . $description_type . '"');
+      if($descriptions != false && in_array($description, $descriptions)) {
+        $this->returnError(1101, $this->version, 450, 'id=' . $data_id . '; description=' . $description);
+        return false;
+      }
+      // todo discuss policy: who is allowed to add ontology to a feature?
+    
+      $description_data = array(
+        'did' => $data_id,
+        'index' => $feature_idx,
+        'description_type' => $description_type,
+        'value' => $description,
+        'uploader' => $this->user_id,
+        'date' => now()
+      );
+      
+      $res = $this->Data_feature_description->insert($description_data);
+      if ($res == false) {
+        $this->returnError(1102, $this->version, 450, 'id=' . $data_id . '; description=' . $description);
+        return false;
+      }
+    } else {
+      $description_record = $this->Data_feature_description->getWhereSingle('did = ' . $data_id . ' AND index = "' . $feature_idx . '" AND `description_type` = "' . $description_type . '" AND `value` = "' . $description . '"');
+      if ($description_record == false) {
+        $this->returnError(1103, $this->version);
+        return false;
+      }
+      // todo discuss policy: who is allowed to remove ontology from a feature?
+      $is_admin = $this->ion_auth->is_admin($this->user_id);
+      if ($description_record->uploader != $this->user_id && $is_admin == false) {
+        $this->returnError(1104, $this->version);
+        return false;
+      }
+      $this->Data_feature_description->delete(array($data_id, $feature_idx, $description));
+    }
+    
+    $descriptions = $this->Data_feature_description->getColumnWhere('value', 'did = ' . $data_id . ' AND index = "' . $feature_idx . '" AND `description_type` = "' . $description_type . '"');
+    $this->xmlContents(
+      'data-feature-description',
+      $this->version,
+      array(
+        'id' => $data_id,
+        'description_type' => $description_type,
+        'xml_tag_name' => 'feature_description' . '_' . ($do_add ? 'add' : 'remove'),
+        'descriptions' => $descriptions)
+    );
   }
 
   /**
@@ -513,13 +588,7 @@ class Api_data extends MY_Api_Model {
     $description_record->did = $new_data_id;
     $description_record->version = "1";
     $this->Dataset_description->insert($description_record);
-
-    // create a copy of the latest description
-    $description_record = $this->Dataset_description->getWhereSingle('did =' . $data_id, 'version DESC');
-    $description_record->did = $new_data_id;
-    $description_record->version = "1";
-    $this->Dataset_description->insert($description_record);
-
+    
     // update elastic search index.  
     try {
       $this->elasticsearch->index('data', $new_data_id);
@@ -1449,8 +1518,9 @@ class Api_data extends MY_Api_Model {
       $this->returnError(273, $this->version);
       return;
     }
-
+    
     $dataset->features = $this->Data_feature->getWhere('did = "' . $dataset->did . '"');
+    // obtains possible values for a feature
     $dataset->features_values = $this->Data_feature_value->getWhere('did = "' . $dataset->did . '"');
     $index_values = array();
     if ($dataset->features_values) {
@@ -1462,6 +1532,21 @@ class Api_data extends MY_Api_Model {
       }
     }
     $dataset->index_values = $index_values;
+    
+    // obtains possible ontologies for a feature (for now: only ontologies)
+    $dataset->features_descriptions = $this->Data_feature_description->getWhere('did = "' . $dataset->did . '" AND description_type = "ontology"');
+    $index_ontologies = array();
+    if ($dataset->features_descriptions) {
+      foreach($dataset->features_descriptions as $val) {
+        if ($val->description_type == 'ontology') { // this is guaranteed
+          if (!isset($index_ontologies[$val->index])) {
+            $index_ontologies[$val->index] = array();
+          }
+          $index_ontologies[$val->index][] = $val->value;
+        }
+      }
+    }
+    $dataset->index_ontologies = $index_ontologies;
 
     if ($data_processed->error && $dataset->features === false) {
       $this->returnError(274, $this->version);
@@ -1642,6 +1727,14 @@ class Api_data extends MY_Api_Model {
       } else {
         $nominal_values = false;
       }
+      
+      //actual insert of the feature
+      if (array_key_exists('ontology', $feature)) {
+        $ontologies = $feature['ontology'];
+        unset($feature['ontology']);
+      } else {
+        $ontologies = false;
+      }
 
       $result = $this->Data_feature->insert($feature);
       if (!$result) {
@@ -1665,7 +1758,7 @@ class Api_data extends MY_Api_Model {
             return;
           }
         }
-
+        // situation where we are trying to add nominal values to a non-nominal attribute
         if ($feature['data_type'] != 'nominal') {
           // only allowed for nominal values
           $this->db->trans_rollback();
@@ -1673,10 +1766,28 @@ class Api_data extends MY_Api_Model {
           return;
         }
       } elseif ($feature['data_type'] == 'nominal') {
-        // required for nominal values.. missing so throw error
+        // nominal values now require this information.. since it is not there, throw the error
         $this->db->trans_rollback();
         $this->returnError(448, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature['name']);
         return;
+      }
+
+      if ($ontologies) {
+        // check the nominal value property
+        foreach ($ontologies as $ontology) {
+          $data = array(
+            'did' => $did,
+            'index' => $ontology['index'],
+            'description_type' => 'ontology',
+            'value' => $value
+          );
+          $result = $this->Data_feature_description->insert($data);
+          if (!$result) {
+            $this->db->trans_rollback();
+            $this->returnError(450, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature['name'] . ', value: ' . $value);
+            return;
+          }
+        }
       }
 
       // NOTE: this is commented out because not all datasets have targets, or they can have multiple ones. Targets should also be set more carefully.
