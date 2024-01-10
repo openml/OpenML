@@ -188,7 +188,7 @@ class Api_data extends MY_Api_Model {
       return false;
     }
     
-    if (len($description) > 256) {
+    if (strlen($description) > 256) {
       $this->returnError(1105, $this->version);
       return false;
     }
