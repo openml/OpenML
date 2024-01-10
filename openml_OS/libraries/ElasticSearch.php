@@ -2007,6 +2007,19 @@ class ElasticSearch {
                     'distinct' => $f->NumberOfDistinctValues,
                     'missing' => $f->NumberOfMissingValues
                 );
+                
+                $feature_descriptions = $this->db->query("SELECT * FROM `data_feature_description` WHERE `did` = " . $d->did . " AND `index` = " . $f->index);
+                if ($feature_descriptions != false) {
+                    $feat['descriptions'] = array();
+                    foreach ($feature_descriptions as $desc) {
+                        $current = array(
+                          'type' => $desc->description_type,
+                          'value' => $desc->value,
+                        );
+                        $feat['descriptions'][] = $current;
+                    }
+                }
+                
                 if ($f->is_target == "true")
                     $feat['target'] = "1";
                 if ($f->is_row_identifier == "true")
