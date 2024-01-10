@@ -234,6 +234,10 @@ class Api_data extends MY_Api_Model {
       $this->Data_feature_description->delete(array($data_id, $feature_idx, $description));
     }
     
+    try { 
+      $this->elasticsearch->index('data', $data_id);
+    } catch (Exception $e) { }
+    
     $descriptions = $this->Data_feature_description->getColumnWhere('value', 'did = ' . $data_id . ' AND index = "' . $feature_idx . '" AND `description_type` = "' . $description_type . '"');
     $this->xmlContents(
       'data-feature-description',
