@@ -842,7 +842,7 @@ class Api_data extends MY_Api_Model {
     if ($data_status != false) {
       $dataset->status = $data_status->status;
     }
-    if ($dataset->format != 'Sparse_ARFF') {
+    if ($dataset->format != 'Sparse_ARFF' && BASE_URL != "https://test.openml.org/") {
       $bracket = sprintf('%04d', floor($data_id / 10000));
       $padded_id = sprintf('%04d', $data_id);
       $url = MINIO_URL . 'datasets/' . $bracket . '/' . $padded_id . '/dataset_' . $data_id . '.pq';
