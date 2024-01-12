@@ -842,6 +842,9 @@ class Api_data extends MY_Api_Model {
     if ($data_status != false) {
       $dataset->status = $data_status->status;
     }
+    // The BASE_URL check prevents servering parquet urls from the test server,
+    // which is needed as long as the test server does not have its own dedicated
+    // MinIO with parquet files. TODO: Remove this after running MinIO on test
     if ($dataset->format != 'Sparse_ARFF' && BASE_URL != "https://test.openml.org/") {
       $bracket = sprintf('%04d', floor($data_id / 10000));
       $padded_id = sprintf('%04d', $data_id);
