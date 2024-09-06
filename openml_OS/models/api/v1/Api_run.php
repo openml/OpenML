@@ -814,7 +814,6 @@ class Api_run extends MY_Api_Model {
     }
 
     // check whether uploaded files are present.
-     
     foreach ($_FILES as $key => $value) {
       $message = '';
       $extension = getExtension($_FILES[$key]['name']);
@@ -915,10 +914,8 @@ class Api_run extends MY_Api_Model {
     
     $supported_evaluation_measures = $this->Math_function->getColumnWhere('name', '`functionType` = "EvaluationFunction"');
     // the user can specify his own metrics. here we check whether these exists in the database.
-        
     if($output_data != false && isset($output_data->evaluation)) {
       // php does not have a set data structure, use hashmap instead
-      
       $used_evaluation_measures = array();
       $illegal_measures = array();
       foreach($output_data->children('oml',true)->{'evaluation'} as $e) {
@@ -946,7 +943,6 @@ class Api_run extends MY_Api_Model {
         return;
       }
     }
-        
     // now create a run
     $runData = array(
       'uploader' => $this->user_id,
