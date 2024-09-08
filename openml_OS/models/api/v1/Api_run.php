@@ -747,7 +747,6 @@ class Api_run extends MY_Api_Model {
    *)
    */
   private function run_upload() {
-
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      * Everything that needs to be done for EVERY task,        *
      * Including the unsupported tasks                         *
@@ -757,7 +756,6 @@ class Api_run extends MY_Api_Model {
     // If changing something big, also test that function.
 
     $timestamps = array(microtime(true)); // profiling 0
-
     // check uploaded file
     $description = isset($_FILES['description']) ? $_FILES['description'] : false;
     $uploadError = '';
@@ -790,7 +788,8 @@ class Api_run extends MY_Api_Model {
 
     $run_xml = all_tags_from_xml(
       $xml->children('oml', true),
-      $this->xml_fields_run);
+      $this->xml_fields_run
+    );
 
     $task_id = $run_xml['task_id'];
     $implementation_id = $run_xml['flow_id'];
@@ -815,7 +814,6 @@ class Api_run extends MY_Api_Model {
     }
 
     // check whether uploaded files are present.
-
     foreach ($_FILES as $key => $value) {
       $message = '';
       $extension = getExtension($_FILES[$key]['name']);
@@ -916,7 +914,7 @@ class Api_run extends MY_Api_Model {
     
     $supported_evaluation_measures = $this->Math_function->getColumnWhere('name', '`functionType` = "EvaluationFunction"');
     // the user can specify his own metrics. here we check whether these exists in the database.
-    if($output_data != false && isset($output_data['evaluation'])) {
+    if($output_data != false && isset($output_data->evaluation)) {
       // php does not have a set data structure, use hashmap instead
       $used_evaluation_measures = array();
       $illegal_measures = array();
@@ -945,7 +943,6 @@ class Api_run extends MY_Api_Model {
         return;
       }
     }
-    
     // now create a run
     $runData = array(
       'uploader' => $this->user_id,
