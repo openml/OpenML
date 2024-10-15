@@ -1,0 +1,10 @@
+<oml:run_evaluation xmlns:oml="http://openml.org/openml">
+  <oml:run_id>1</oml:run_id>
+  <oml:evaluation_engine_id>1</oml:evaluation_engine_id>
+  <oml:evaluation>
+      <oml:name>Name of client-side evaluation measure(s)</oml:name>
+      <oml:value>Value measured in this run</oml:value>
+      <oml:repeat>0</oml:repeat>
+      <oml:fold>0</oml:fold>
+  </oml:evaluation>
+</oml:run_evaluation>
