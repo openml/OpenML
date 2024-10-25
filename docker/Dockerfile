@@ -4,14 +4,14 @@ RUN docker-php-source extract \
 	&& docker-php-ext-install mysqli \
 	&& docker-php-source delete
 
-RUN apt-get update \
-    && apt-get install -y git
+# Java is necessery for the direct calls to the evaluation engine (in Api_splits.php)
+RUN apt update \
+    && apt install -y --no-install-recommends openjdk-11-jre 
 
 COPY . /var/www/openml
-
 RUN mv /var/www/openml/openml_OS/config/BASE_CONFIG-BLANK.php /var/www/openml/openml_OS/config/BASE_CONFIG.php
 
-RUN mkdir /var/www/openml/logs
+RUN mkdir -p /var/www/openml/logs
 RUN mkdir /data
 
 

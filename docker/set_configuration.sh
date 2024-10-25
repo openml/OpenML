@@ -10,6 +10,8 @@ sed "s*'BASE_URL', 'FILL_IN'*'BASE_URL', '${BASE_URL:-https://test.openml.org/}'
 sed "s*'MINIO_URL', 'FILL_IN'*'MINIO_URL', '${MINIO_URL:-https://openml1.win.tue.nl/}'*g" --in-place ${BASE_CONFIG_PATH}
 sed "s*'PATH', 'FILL_IN'*'PATH', '${OPENML_PATH:-/var/www/}'*g" --in-place ${BASE_CONFIG_PATH}
 
+sed "s*'API_KEY', 'FILL_IN_KEY'*'API_KEY', '${API_KEY:-FILL_IN_KEY}'*g" --in-place ${BASE_CONFIG_PATH}
+
 sed "s*'DB_NAME_EXPDB', 'FILL_IN'*'DB_NAME_EXPDB', '${DB_NAME_EXPDB:-openml_expdb}'*g" --in-place ${BASE_CONFIG_PATH}
 sed "s*'DB_HOST_EXPDB', 'FILL_IN'*'DB_HOST_EXPDB', '${DB_HOST_EXPDB:-openml-test-database:3306}'*g" --in-place ${BASE_CONFIG_PATH}
 sed "s*'DB_USER_EXPDB_READ', 'FILL_IN'*'DB_USER_EXPDB_READ', '${DB_USER_EXPDB_READ:-root}'*g" --in-place ${BASE_CONFIG_PATH}
@@ -28,10 +30,11 @@ sed "s*'ES_PASSWORD', 'FILL_IN'*'ES_PASSWORD', '${ES_PASSWORD:-default}'*g" --in
 
 sed "s/define('ENVIRONMENT', '.*')/define('ENVIRONMENT', '${PHP_ENVIRONMENT:-production}')/" --in-place ${INDEX_PATH}
 
+
 indices=('downvote', 'study', 'data', 'task', 'download', 'user', 'like', 'measure', 'flow', 'task_type', 'run')
 for index in "${indices[@]}"
 do
-	curl -X DELETE http://localhost:9200/${index}?ignore_unavailable=true
+	curl -X DELETE ${ES_URL:-elasticsearch:9200}/${index}?ignore_unavailable=true
 done
 
 cd /var/www/openml
