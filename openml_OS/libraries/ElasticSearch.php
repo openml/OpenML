@@ -830,6 +830,46 @@ class ElasticSearch {
         return $study;
     }
 
+    public function update_study_description($study_id)
+    {
+        $new_description = $this->input->post('description');
+    
+        // make sure description is not empty
+        if (empty($new_description)) {
+            $this->returnError(400, $this->version, '400 - Study description cannot be empty.');
+            return;
+        }
+    
+        // retrieve the study record to check permissions
+        $query = $this->db->query("SELECT id, creator, description FROM study WHERE id = ?", array($study_id));
+        $study_record = $query->row();
+    
+        if ($study_record == false) {
+            $this->returnError(404, $this->version, '404 - Study not found.');
+            return;
+        }
+    
+        $is_admin = $this->ion_auth->is_admin($this->user_id);
+    
+        // checks if the user is not an admin or if the user is not the creator of the study
+        if (isset($study_record->creator) && $study_record->creator != $this->user_id && $is_admin == false) {
+            $this->returnError(403, $this->version, '403 - You are not authorized to edit this description.');
+            return;
+        }
+    
+        // update the study description
+        $data = array('description' => $new_description);
+        $this->db->where('id', $study_id);
+        $updated = $this->db->update('study', $data);
+    
+        // update result
+        if ($updated) {
+            $this->returnSuccess(200, $this->version, '200 - Study description updated successfully.');
+        } else {
+            $this->returnError(500, $this->version, '500 - Failed to update study description.');
+        }
+    }
+
     public function index_task($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
         $params['index'] = 'task';
         $params['type'] = 'task';
