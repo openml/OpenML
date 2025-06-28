@@ -542,7 +542,6 @@ class ElasticSearch {
             'user_id' => $d->id,
             'first_name' => $d->first_name,
             'last_name' => $d->last_name,
-            'email' => $d->email,
             'company' => $d->company,
             'country' => $d->country,
             'bio' => $d->bio,
