@@ -1,0 +1,1 @@
+* * * * * /usr/local/bin/php /var/www/openml/docker/garbage-collection/collect-garbage.php && /var/www/openml/docker/garbage-collection/sessionclean.sh >> /var/log/garbage-collection.log 2>&1

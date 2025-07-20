@@ -40,4 +40,5 @@ done
 cd /var/www/openml
 php index.php cron build_es_indices
 
+/usr/sbin/cron -l 4
 apache2-foreground
