@@ -529,7 +529,6 @@ $this->apiErrors[1070] = 'Data ID is required';
 $this->apiErrors[1071] = 'Unknown dataset';
 $this->apiErrors[1072] = 'Failed to insert record in database';
 
-
 //openml.data.topic
 $this->apiErrors[1080] = 'Please provide a dataset id and a topic.';
 $this->apiErrors[1081] = 'Unknown dataset.';
@@ -551,5 +550,4 @@ $this->apiErrors[1103] = 'Could not find description in database';
 $this->apiErrors[1104] = 'Failure to write to the database';
 $this->apiErrors[1105] = 'Feature description too long';
 $this->apiErrors[1106] = 'Feature description meant as ontology, but is not a valid URL';
-
 ?>
