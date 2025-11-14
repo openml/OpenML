@@ -1616,8 +1616,9 @@ class Api_data extends MY_Api_Model {
     }
 
     // get correct description
-    if (isset($_FILES['description']) == false || check_uploaded_file($_FILES['description']) == false) {
-      $this->returnError(442, $this->version);
+    $message = '';
+    if (isset($_FILES['description']) == false || check_uploaded_file($_FILES['description'], false, $message) == false) {
+      $this->returnError(442, $this->version, $this->openmlGeneralErrorCode, 'Error: ' . $message);
       return;
     }
 
