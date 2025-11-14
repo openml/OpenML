@@ -581,6 +581,7 @@ class Api_data extends MY_Api_Model {
     $latest_version = $this->Dataset-> getWhereSingle('`name` = "' . $dataset->name . '"', 'CAST(`version` AS DECIMAL) DESC');
     $dataset->version = $latest_version->version + 1;
     unset($dataset->did);
+
     $new_data_id = $this->Dataset->insert($dataset);
     if (!$new_data_id) {
       $this->returnError(1072, $this->version);
@@ -934,7 +935,6 @@ class Api_data extends MY_Api_Model {
    *	),
    *)
    */
-
   private function data_add_topic($id, $topic) {
     # Data id and topic are required
     if ($id == false || $topic == false) {
@@ -1281,6 +1281,7 @@ class Api_data extends MY_Api_Model {
       $this->returnError(134, $this->version);
       return;
     }
+
     $desc['did'] = $id;
     $desc_id = $this->Dataset_description->insert($desc);
     if (!$desc_id) {
@@ -1735,7 +1736,7 @@ class Api_data extends MY_Api_Model {
       } else {
         $nominal_values = false;
       }
-      
+
       //actual insert of the feature
       if (array_key_exists('ontology', $feature)) {
         $ontologies = $feature['ontology'];
