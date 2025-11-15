@@ -1,0 +1,9 @@
+INSERT INTO `data_feature` (`did`, `index`, `evaluation_engine_id`, `name`, `data_type`, `is_target`, `is_row_identifier`, `is_ignore`, `NumberOfDistinctValues`, `NumberOfUniqueValues`, `NumberOfMissingValues`, `NumberOfIntegerValues`, `NumberOfRealValues`, `NumberOfNominalValues`, `NumberOfValues`, `MaximumValue`, `MinimumValue`, `MeanValue`, `StandardDeviation`, `ClassDistribution`) VALUES
+(11, 0, 1, 'buying', 'nominal', 'false', 'false', 'false', 4, 0, 0, 1728, 0, '4', 1728, NULL, NULL, NULL, NULL, '[[\"vhigh\",\"high\",\"med\",\"low\"],[[360, 72, 0, 0],[324, 108, 0, 0],[268, 115, 23, 26],[258, 89, 46, 39]]]'),
+(11, 1, 1, 'maint', 'nominal', 'false', 'false', 'false', 4, 0, 0, 1728, 0, '4', 1728, NULL, NULL, NULL, NULL, '[[\"vhigh\",\"high\",\"med\",\"low\"],[[360, 72, 0, 0],[314, 105, 0, 13],[268, 115, 23, 26],[268, 92, 46, 26]]]'),
+(11, 2, 1, 'doors', 'nominal', 'false', 'false', 'false', 4, 0, 0, 1728, 0, '4', 1728, NULL, NULL, NULL, NULL, '[[\"2\",\"3\",\"4\",\"5more\"],[[326, 81, 15, 10],[300, 99, 18, 15],[292, 102, 18, 20],[292, 102, 18, 20]]]'),
+(11, 3, 1, 'persons', 'nominal', 'false', 'false', 'false', 3, 0, 0, 1728, 0, '3', 1728, NULL, NULL, NULL, NULL, '[[\"2\",\"4\",\"more\"],[[576, 0, 0, 0],[312, 198, 36, 30],[322, 186, 33, 35]]]'),
+(11, 4, 1, 'lug_boot', 'nominal', 'false', 'false', 'false', 3, 0, 0, 1728, 0, '3', 1728, NULL, NULL, NULL, NULL, '[[\"small\",\"med\",\"big\"],[[450, 105, 21, 0],[392, 135, 24, 25],[368, 144, 24, 40]]]'),
+(11, 5, 1, 'safety', 'nominal', 'false', 'false', 'false', 3, 0, 0, 1728, 0, '3', 1728, NULL, NULL, NULL, NULL, '[[\"low\",\"med\",\"high\"],[[576, 0, 0, 0],[357, 180, 39, 0],[277, 204, 30, 65]]]'),
+(11, 6, 1, 'class', 'nominal', 'true', 'false', 'false', 4, 0, 0, 1728, 0, '4', 1728, NULL, NULL, NULL, NULL, '[[\"unacc\",\"acc\",\"good\",\"vgood\"],[[1210, 0, 0, 0],[0, 384, 0, 0],[0, 0, 69, 0],[0, 0, 0, 65]]]')
+

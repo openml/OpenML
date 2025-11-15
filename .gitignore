@@ -3,5 +3,7 @@ data/*
 openml_OS/config/BASE_CONFIG.php
 openml_OS/third_party/OpenML/Java/old-evaluate.jar
 docs/site/
+*.icloud
+*.DS_store
 openml_OS/vendor/
 openapi/vendor/

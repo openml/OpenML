@@ -12,7 +12,10 @@ class Api_data extends MY_Api_Model {
     $this->load->model('Dataset');
     $this->load->model('Dataset_status');
     $this->load->model('Dataset_tag');
+    $this->load->model('Dataset_topic');
+    $this->load->model('Dataset_description');
     $this->load->model('Data_feature');
+    $this->load->model('Data_feature_description');
     $this->load->model('Data_feature_value');
     $this->load->model('Data_quality');
     $this->load->model('Feature_quality');
@@ -105,6 +108,11 @@ class Api_data extends MY_Api_Model {
       return;
     }
 
+    if (count($segments) == 3 && $segments[0] == 'description' && $segments[1] == 'list' && is_numeric($segments[2]) && in_array($request_type, $getpost)) {
+      $this->data_description_list($segments[2]);
+      return;
+    }
+
     if (count($segments) == 2 && $segments[0] == 'qualities' && is_numeric($segments[1]) && in_array($request_type, $getpost)) {
       $this->data_qualities($segments[1], $this->config->item('default_evaluation_engine_id'));
       return;
@@ -141,8 +149,28 @@ class Api_data extends MY_Api_Model {
       return;
     }
 
+    if ( $segments[0] == 'topicadd' && $request_type == 'post') {
+      $this->data_add_topic($this->input->post('data_id'), $this->input->post('topic'));
+      return;
+    }
+
+    if ( $segments[0] == 'topicdelete' && $request_type == 'post') {
+      $this->data_delete_topic($this->input->post('data_id'), $this->input->post('topic'));
+      return;
+    }
+    
     if (count($segments) == 2 && $segments[0] == 'tag' && $segments[1] == 'list') {
       $this->list_tags('dataset', 'data');
+      return;
+    }
+
+    if (count($segments) == 3 && $segments[0] == 'feature' && $segments[1] == 'ontology' && $segments[2] == 'add' && $request_type == 'post') {
+      $this->data_feature_description($this->input->post('data_id'), $this->input->post('index'), $this->input->post('ontology'), 'ontology', true);
+      return;
+    }
+
+    if (count($segments) == 3 && $segments[0] == 'feature' && $segments[1] == 'ontology' && $segments[2] == 'remove' && $request_type == 'post') {
+      $this->data_feature_description($this->input->post('data_id'), $this->input->post('index'), $this->input->post('ontology'), 'ontology', false);
       return;
     }
 
@@ -152,6 +180,74 @@ class Api_data extends MY_Api_Model {
     }
 
     $this->returnError(100, $this->version);
+  }
+    
+  private function data_feature_description($data_id, $feature_idx, $description, $description_type, $do_add) {
+    if ($data_id === false || $feature_idx === false || $description === false) {
+      $this->returnError(1100, $this->version);
+      return false;
+    }
+    
+    if (strlen($description) > 256) {
+      $this->returnError(1105, $this->version);
+      return false;
+    }
+    if ($description_type == 'ontology' && !filter_var($description, FILTER_VALIDATE_URL)) {
+      $this->returnError(1106, $this->version);
+      return false;
+    }
+    
+    if ($do_add) {
+      $descriptions = $this->Data_feature_description->getColumnWhere('value', '`did` = "' . $data_id . '" AND `index` = "'. $feature_idx . '" AND `description_type` = "' . $description_type . '"');
+      if($descriptions != false && in_array($description, $descriptions)) {
+        $this->returnError(1101, $this->version, 450, 'id=' . $data_id . '; description=' . $description);
+        return false;
+      }
+      // todo discuss policy: who is allowed to add ontology to a feature?
+    
+      $description_data = array(
+        'did' => $data_id,
+        'index' => $feature_idx,
+        'description_type' => $description_type,
+        'value' => $description,
+        'uploader' => $this->user_id,
+        'date' => now()
+      );
+      
+      $res = $this->Data_feature_description->insert($description_data);
+      if ($res == false) {
+        $this->returnError(1102, $this->version, 450, 'id=' . $data_id . '; description=' . $description);
+        return false;
+      }
+    } else {
+      $description_record = $this->Data_feature_description->getWhereSingle('did = ' . $data_id . ' AND index = "' . $feature_idx . '" AND `description_type` = "' . $description_type . '" AND `value` = "' . $description . '"');
+      if ($description_record == false) {
+        $this->returnError(1103, $this->version);
+        return false;
+      }
+      // todo discuss policy: who is allowed to remove ontology from a feature?
+      $is_admin = $this->ion_auth->is_admin($this->user_id);
+      if ($description_record->uploader != $this->user_id && $is_admin == false) {
+        $this->returnError(1104, $this->version);
+        return false;
+      }
+      $this->Data_feature_description->delete(array($data_id, $feature_idx, $description));
+    }
+    
+    try { 
+      $this->elasticsearch->index('data', $data_id);
+    } catch (Exception $e) { }
+    
+    $descriptions = $this->Data_feature_description->getColumnWhere('value', 'did = ' . $data_id . ' AND index = "' . $feature_idx . '" AND `description_type` = "' . $description_type . '"');
+    $this->xmlContents(
+      'data-feature-description',
+      $this->version,
+      array(
+        'id' => $data_id,
+        'description_type' => $description_type,
+        'xml_tag_name' => 'feature_description' . '_' . ($do_add ? 'add' : 'remove'),
+        'descriptions' => $descriptions)
+    );
   }
 
   /**
@@ -485,13 +581,29 @@ class Api_data extends MY_Api_Model {
     $latest_version = $this->Dataset-> getWhereSingle('`name` = "' . $dataset->name . '"', 'CAST(`version` AS DECIMAL) DESC');
     $dataset->version = $latest_version->version + 1;
     unset($dataset->did);
-    $data_id = $this->Dataset->insert($dataset);
-    if (!$data_id) {
+
+    $new_data_id = $this->Dataset->insert($dataset);
+    if (!$new_data_id) {
       $this->returnError(1072, $this->version);
       return;
     }
+    
+    // create a copy of the latest description
+    $description_record = $this->Dataset_description->getWhereSingle('did =' . $data_id, 'version DESC');
+    $description_record->did = $new_data_id;
+    $description_record->version = "1";
+    $this->Dataset_description->insert($description_record);
+    
+    // update elastic search index.  
+    try {
+      $this->elasticsearch->index('data', $new_data_id);
+    } catch (Exception $e) {
+      $this->returnError(105, $this->version, $this->openmlGeneralErrorCode, $e->getMessage());
+      return;
+    }
+
     // Return data id, for user to verify changes
-    $this->xmlContents( 'data-fork', $this->version, array( 'id' => $data_id) );
+    $this->xmlContents( 'data-fork', $this->version, array( 'id' => $new_data_id) );
   }
 
   private function data_edit() {
@@ -569,14 +681,53 @@ class Api_data extends MY_Api_Model {
       }
     }
 
-    $update_result = $this->Dataset->update($data_id, $update_fields);
-    // If result returns error    
-    if( $update_result == false ) {
-      $this->returnError( 1067, $this->version );
-      return;
+    // Add description in the description table as a new version
+    if (isset($update_fields['description'])) {
+      $description_record = $this->Dataset_description->getWhereSingle('did =' . $data_id, 'version DESC');
+      $version_new = $description_record->version + 1;
+      $desc = array(
+        'did'=>$data_id,
+        'version' => $version_new,
+        'description'=>$update_fields['description'],
+        'uploader' => $dataset->uploader
+      );
+      unset($update_fields['description']);
+      $desc_id = $this->Dataset_description->insert($desc);
+      if (!$desc_id) {
+        $this->returnError(1067, $this->version);
+        return;
+      }
     }
+
+    if ($update_fields) {
+      $update_result = $this->Dataset->update($data_id, $update_fields);
+      // If result returns error
+      if($update_result == false) {
+        $this->returnError(1068, $this->version);
+        return;
+      }
+    }
+    // update elastic search index.  
+    try {
+      $this->elasticsearch->index('data', $data_id);
+    } catch (Exception $e) {
+      $this->returnError(105, $this->version, $this->openmlGeneralErrorCode, $e->getMessage());
+    
+    }
+
     // Return data id, for user to verify changes    
     $this->xmlContents( 'data-edit', $this->version, array( 'id' => $data_id) );
+  }
+
+  private function data_description_list($data_id) {
+  // Get descriptions for given id
+    $description_records = $this->Dataset_description->getWhere('did =' . $data_id, 'version DESC');
+    if( is_array( $description_records ) == false || count( $description_records ) == 0 ) {
+      $this->returnError( 1090, $this->version );
+      return;
+    }
+    // Return history
+    $this->xmlContents( 'data-description-list', $this->version, array('descriptions' => $description_records));
   }
 
   /**
@@ -657,6 +808,7 @@ class Api_data extends MY_Api_Model {
       $dataset->url = BASE_URL . 'data/v1/download/' . $dataset->file_id . '/' . htmlspecialchars($dataset->name) . '.' . strtolower($dataset->format);
     }
 
+
     $file = $this->File->getById($dataset->file_id);
     if (!$file) {
       $this->returnError(113, $this->version);
@@ -667,6 +819,10 @@ class Api_data extends MY_Api_Model {
 
     $tags = $this->Dataset_tag->getColumnWhere('tag', 'id = ' . $dataset->did);
     $dataset->tag = $tags != false ? '"' . implode( '","', $tags ) . '"' : array();
+
+    $description_record = $this->Dataset_description->getWhereSingle('did =' . $data_id, 'version DESC');
+    $dataset->description_version = $description_record->version;
+    $dataset->description = $description_record->description;
 
     foreach( $this->xml_fields_dataset['csv'] as $field ) {
       $dataset->{$field} = getcsv( $dataset->{$field} );
@@ -687,8 +843,17 @@ class Api_data extends MY_Api_Model {
     if ($data_status != false) {
       $dataset->status = $data_status->status;
     }
-
-    $this->xmlContents( 'data-get', $this->version, $dataset );
+    // The BASE_URL check prevents servering parquet urls from the test server,
+    // which is needed as long as the test server does not have its own dedicated
+    // MinIO with parquet files. TODO: Remove this after running MinIO on test
+    if ($dataset->format != 'Sparse_ARFF' && BASE_URL != "https://test.openml.org/") {
+      $bracket = sprintf('%04d', floor($data_id / 10000));
+      $padded_id = sprintf('%04d', $data_id);
+      $url = MINIO_URL . 'datasets/' . $bracket . '/' . $padded_id . '/dataset_' . $data_id . '.pq';
+      $dataset->parquet_url = $url;
+      $dataset->minio_url = $url;
+    }
+      $this->xmlContents( 'data-get', $this->version, $dataset );
   }
 
   private function data_reset($data_id) {
@@ -709,6 +874,15 @@ class Api_data extends MY_Api_Model {
       $this->returnError(1023, $this->version);
       return;
     }
+    
+    // Temporary fix: makes sure that feature values are also removed when data is reset
+    // A new foreign key on Data_processed should be added to replace this
+    $result = $this->Data_feature_value->deleteWhere('`did` = "' . $dataset->did . '" ');
+    if ($result == false) {
+      $this->returnError(1023, $this->version);
+      return;
+    }
+    
     $this->xmlContents('data-reset', $this->version, array('dataset' => $dataset));
   }
 
@@ -761,6 +935,90 @@ class Api_data extends MY_Api_Model {
    *	),
    *)
    */
+  private function data_add_topic($id, $topic) {
+    # Data id and topic are required
+    if ($id == false || $topic == false) {
+      $this->returnError(1080, $this->version);
+      return false;
+    }
+    # If dataset does not exist
+    $dataset = $this->Dataset->getById($id);
+    if($dataset == false) {
+      $this->returnError(1081, $this->version);
+      return;
+    }
+    # Restrict only to admin
+    if(!$this->user_has_admin_rights) {
+      $this->returnError(1082, $this->version);
+      return;
+    }
+    # Check if topic and id combination exists
+    $topics = $this->Dataset_topic->getColumnWhere('topic', 'id = ' . $id);
+      if($topics != false && in_array($topic, $topics)) {
+        $this->returnError(1083, $this->version);
+        return false;
+    }
+    $currentTime = now();
+    $topic_data = array(
+      'id' => $id,
+      'topic' => $topic,
+      'uploader' => $this->user_id,
+      'date' => $currentTime
+    );
+    # Insert into DB
+    $res = $this->Dataset_topic->insert($topic_data);
+    if ($res == false) {
+        $this->returnError(1084, $this->version);
+        return false;
+      }
+
+     try {
+      //update index
+      $this->elasticsearch->update_topics($id);
+      
+    } catch (Exception $e) {
+      $this->returnError(105, $this->version, $this->openmlGeneralErrorCode, $e->getMessage(), false, $surpressOutput);
+      return false;
+    }
+    $this->xmlContents( 'data-topic', $this->version, array( 'id' => $id) );
+  }
+
+
+  private function data_delete_topic($id, $topic) {
+    # Data id and topic are required
+    if ($id == false || $topic == false) {
+      $this->returnError(1080, $this->version);
+      return false;
+    }
+    # If dataset does not exist
+    $dataset = $this->Dataset->getById($id);
+    if($dataset == false) {
+      $this->returnError(1081, $this->version);
+      return;
+    }
+    # Restrict only to admin
+    if(!$this->user_has_admin_rights) {
+      $this->returnError(1082, $this->version);
+      return;
+    }
+    $topic_record = $this->Dataset_topic->getWhereSingle('id = ' . $id . ' AND topic = "' . $topic . '"');
+    if ($topic_record == false) {
+      $this->returnError(1085, $this->version);
+      return false;
+    }
+   $this->Dataset_topic->delete(array($id, $topic));
+   try {
+      //update index
+      $this->elasticsearch->update_topics($id);
+      
+    } catch (Exception $e) {
+      $this->returnError(105, $this->version, $this->openmlGeneralErrorCode, $e->getMessage());
+      return false;
+    }
+    $this->xmlContents( 'data-topic', $this->version, array( 'id' => $id) );
+  }
+    
+    
   private function data_delete($data_id) {
 
     $dataset = $this->Dataset->getById( $data_id );
@@ -875,10 +1133,11 @@ class Api_data extends MY_Api_Model {
       // get description from string upload
       $description = $this->input->post('description', false);
       if(validateXml($description, $xsdFile, $xmlErrors, false ) == false) {
-        if (DEBUG) {
+        if (DEBUG_XSD_EMAIL) {
           $to = $this->user_email;
-          $subject = 'OpenML Data Upload DEBUG message. ';
-          $content = "Uploaded POST field \nXSD Validation Message: " . $xmlErrors . "\n=====BEGIN XML=====\n" . $description;
+          $server = 'Server:' . $_SERVER['SERVER_ADDR'] . ':' . $_SERVER['SERVER_PORT'];
+          $subject = 'OpenML Data Upload DEBUG message (' . $server . ')';
+          $content = $server . "\nUploaded Post Field\nXSD Validation Message: " . $xmlErrors . "\n=====BEGIN XML=====\n" . file_get_contents($description['tmp_name']);
           sendEmail($to, $subject, $content,'text');
         }
         $this->returnError(131, $this->version, $this->openmlGeneralErrorCode, $xmlErrors);
@@ -896,10 +1155,11 @@ class Api_data extends MY_Api_Model {
       $description = $_FILES['description'];
 
       if (validateXml($description['tmp_name'], $xsdFile, $xmlErrors) == false) {
-        if (DEBUG) {
+        if (DEBUG_XSD_EMAIL) {
           $to = $this->user_email;
-          $subject = 'OpenML Data Upload DEBUG message. ';
-          $content = 'Filename: ' . $description['name'] . "\nXSD Validation Message: " . $xmlErrors . "\n=====BEGIN XML=====\n" . file_get_contents($description['tmp_name']);
+          $server = 'Server:' . $_SERVER['SERVER_ADDR'] . ':' . $_SERVER['SERVER_PORT'];
+          $subject = 'OpenML Data Upload DEBUG message (' . $server . ')';
+          $content = $server . "\nFilename: " . $description['name'] . "\nXSD Validation Message: " . $xmlErrors . "\n=====BEGIN XML=====\n" . file_get_contents($description['tmp_name']);
           sendEmail($to, $subject, $content,'text');
         }
         $this->returnError(131, $this->version, $this->openmlGeneralErrorCode, $xmlErrors);
@@ -990,7 +1250,7 @@ class Api_data extends MY_Api_Model {
       'last_update' => now(),
       'uploader' => $this->user_id,
       'isOriginal' => 'true',
-      'file_id' => $file_id
+      'file_id' => $file_id,
     );
 
     // extract all other necessary info from the XML description
@@ -1000,16 +1260,31 @@ class Api_data extends MY_Api_Model {
 
     // handle tags
     $tags = array();
-    if (array_key_exists('tag', $dataset)) {
+    if (isset($dataset['tag'])) {
       $tags = str_getcsv($dataset['tag']);
       unset($dataset['tag']);
     }
 
+    $desc = array(
+      'version' => 1,
+      'description'=>$dataset['description'],
+      'uploader' => $this->user_id
+    );
+
+    unset($dataset['description']);
+ 
     /* * * *
      * THE ACTUAL INSERTION
      * * * */
     $id = $this->Dataset->insert($dataset);
     if (!$id) {
+      $this->returnError(134, $this->version);
+      return;
+    }
+
+    $desc['did'] = $id;
+    $desc_id = $this->Dataset_description->insert($desc);
+    if (!$desc_id) {
       $this->returnError(134, $this->version);
       return;
     }
@@ -1041,7 +1316,7 @@ class Api_data extends MY_Api_Model {
     }
 
     // create initial wiki page
-    $this->wiki->export_to_wiki($id);
+    //$this->wiki->export_to_wiki($id);
 
     // create
     $this->xmlContents('data-upload', $this->version, array('id' => $id));
@@ -1251,19 +1526,35 @@ class Api_data extends MY_Api_Model {
       $this->returnError(273, $this->version);
       return;
     }
-
+    
     $dataset->features = $this->Data_feature->getWhere('did = "' . $dataset->did . '"');
+    // obtains possible values for a feature
     $dataset->features_values = $this->Data_feature_value->getWhere('did = "' . $dataset->did . '"');
     $index_values = array();
     if ($dataset->features_values) {
       foreach($dataset->features_values as $val) {
-        if (!array_key_exists($val->index, $index_values)) {
+        if (!isset($index_values[$val->index])) {
           $index_values[$val->index] = array();
         }
         $index_values[$val->index][] = $val->value;
       }
     }
     $dataset->index_values = $index_values;
+    
+    // obtains possible ontologies for a feature (for now: only ontologies)
+    $dataset->features_descriptions = $this->Data_feature_description->getWhere('did = "' . $dataset->did . '" AND description_type = "ontology"');
+    $index_ontologies = array();
+    if ($dataset->features_descriptions) {
+      foreach($dataset->features_descriptions as $val) {
+        if ($val->description_type == 'ontology') { // this is guaranteed
+          if (!isset($index_ontologies[$val->index])) {
+            $index_ontologies[$val->index] = array();
+          }
+          $index_ontologies[$val->index][] = $val->value;
+        }
+      }
+    }
+    $dataset->index_ontologies = $index_ontologies;
 
     if ($data_processed->error && $dataset->features === false) {
       $this->returnError(274, $this->version);
@@ -1326,8 +1617,9 @@ class Api_data extends MY_Api_Model {
     }
 
     // get correct description
-    if (isset($_FILES['description']) == false || check_uploaded_file($_FILES['description']) == false) {
-      $this->returnError(442, $this->version);
+    $message = '';
+    if (isset($_FILES['description']) == false || check_uploaded_file($_FILES['description'], false, $message) == false) {
+      $this->returnError(442, $this->version, $this->openmlGeneralErrorCode, 'Error: ' . $message);
       return;
     }
 
@@ -1378,10 +1670,11 @@ class Api_data extends MY_Api_Model {
     if (validateXml($description['tmp_name'], xsd('openml.data.features', $this->controller, $this->version), $xmlErrors) == false) {
       $data['error'] = 'XSD does not comply. XSD errors: ' . $xmlErrors;
       $success = $this->Data_processed->replace($data);
-      if (DEBUG) {
+      if (DEBUG_XSD_EMAIL) {
         $to = $this->user_email;
-        $subject = 'OpenML Data Features Upload DEBUG message. ';
-        $content = 'Filename: ' . $description['name'] . "\nXSD Validation Message: " . $xmlErrors . "\n=====BEGIN XML=====\n" . file_get_contents($description['tmp_name']);
+        $server = 'Server:' . $_SERVER['SERVER_ADDR'] . ':' . $_SERVER['SERVER_PORT'];
+        $subject = 'OpenML Data Feature Upload DEBUG message (' . $server . ')';
+        $content = $server . "\nFilename: " . $description['name'] . "\nXSD Validation Message: " . $xmlErrors . "\n=====BEGIN XML=====\n" . file_get_contents($description['tmp_name']);
         sendEmail($to, $subject, $content, 'text');
       }
       $this->returnError(443, $this->version, $this->openmlGeneralErrorCode, $xmlErrors);
@@ -1437,11 +1730,19 @@ class Api_data extends MY_Api_Model {
       }
 
       //actual insert of the feature
-      if (array_key_exists('nominal_value', $feature)) {
+      if (isset($feature['nominal_value'])) {
         $nominal_values = $feature['nominal_value'];
         unset($feature['nominal_value']);
       } else {
         $nominal_values = false;
+      }
+
+      //actual insert of the feature
+      if (array_key_exists('ontology', $feature)) {
+        $ontologies = $feature['ontology'];
+        unset($feature['ontology']);
+      } else {
+        $ontologies = false;
       }
 
       $result = $this->Data_feature->insert($feature);
@@ -1466,7 +1767,7 @@ class Api_data extends MY_Api_Model {
             return;
           }
         }
-
+        // situation where we are trying to add nominal values to a non-nominal attribute
         if ($feature['data_type'] != 'nominal') {
           // only allowed for nominal values
           $this->db->trans_rollback();
@@ -1474,10 +1775,28 @@ class Api_data extends MY_Api_Model {
           return;
         }
       } elseif ($feature['data_type'] == 'nominal') {
-        // required for nominal values.. missing so throw error
+        // nominal values now require this information.. since it is not there, throw the error
         $this->db->trans_rollback();
         $this->returnError(448, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature['name']);
         return;
+      }
+
+      if ($ontologies) {
+        // check the nominal value property
+        foreach ($ontologies as $ontology) {
+          $data = array(
+            'did' => $did,
+            'index' => $ontology['index'],
+            'description_type' => 'ontology',
+            'value' => $value
+          );
+          $result = $this->Data_feature_description->insert($data);
+          if (!$result) {
+            $this->db->trans_rollback();
+            $this->returnError(450, $this->version, $this->openmlGeneralErrorCode, 'feature: ' . $feature['name'] . ', value: ' . $value);
+            return;
+          }
+        }
       }
 
       // NOTE: this is commented out because not all datasets have targets, or they can have multiple ones. Targets should also be set more carefully.

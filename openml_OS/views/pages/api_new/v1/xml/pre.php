@@ -38,6 +38,7 @@ $this->apiErrors[145] = 'Error parsing dataset ARFF file';
 // for function: openml.tasks.search
 $this->apiErrors[151] = 'Unknown task';
 $this->apiErrors[152] = 'Unknown task type';
+$this->apiErrors[153] = 'Deprecated task. This kind of task is no longer supported, please find or create a new task.';
 
 // for function: openml.tasks.inputs
 $this->apiErrors[156] = 'Unknown task';
@@ -254,6 +255,8 @@ $this->apiErrors[473] = 'Entity already tagged by this tag. ';
 $this->apiErrors[474] = 'Database problem inserting tag. ';
 $this->apiErrors[475] = 'Tag not found.';
 $this->apiErrors[476] = 'Tag is not owned by you';
+$this->apiErrors[477] = 'Tags are restricted to length 64 alphanumeric and _-. characters';
+
 
 
 // openml.task.list
@@ -518,12 +521,33 @@ $this->apiErrors[1063] = 'Unknown dataset';
 $this->apiErrors[1064] = 'Please provide atleast one field among description, creator, contributor, collection_date, language, citation, original_data_url, default_target_attribute, row_id_attribute, ignore_attribute or paper_url to edit. ';
 $this->apiErrors[1065] = 'Critical features default_target_attribute, row_id_attribute and ignore_attribute can be edited only by the owner. Fork the dataset if changes are required.';
 $this->apiErrors[1066] = 'Critical features default_target_attribute, row_id_attribute and ignore_attribute can only be edited for datasets without any tasks.';
-$this->apiErrors[1067] = 'Dataset update failed';
-
+$this->apiErrors[1067] = 'Data description insert failed';
+$this->apiErrors[1068] = 'Dataset update failed';
 
 //openml.data.edit
 $this->apiErrors[1070] = 'Data ID is required';
 $this->apiErrors[1071] = 'Unknown dataset';
 $this->apiErrors[1072] = 'Failed to insert record in database';
 
+//openml.data.topic
+$this->apiErrors[1080] = 'Please provide a dataset id and a topic.';
+$this->apiErrors[1081] = 'Unknown dataset.';
+$this->apiErrors[1082] = 'Topic can only be added/removed by admin.';
+$this->apiErrors[1083] = 'The topic you provided is already added for this dataset.';
+$this->apiErrors[1084] = 'Failed to insert record in database.';
+
+$this->apiErrors[1085] = 'Failed to find record in database.';
+
+//openml.list.data.description
+$this->apiErrors[1090] = 'Failed to find description versions for this dataset/Unknown dataset';
+
+
+//openml.data.feature.description
+$this->apiErrors[1100] = 'Please provide mandatory POST fields';
+$this->apiErrors[1101] = 'This description was already associated with this feature';
+$this->apiErrors[1102] = 'Failure to write to the database';
+$this->apiErrors[1103] = 'Could not find description in database';
+$this->apiErrors[1104] = 'Failure to write to the database';
+$this->apiErrors[1105] = 'Feature description too long';
+$this->apiErrors[1106] = 'Feature description meant as ontology, but is not a valid URL';
 ?>

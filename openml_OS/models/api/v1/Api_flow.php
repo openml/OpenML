@@ -567,10 +567,12 @@ class Api_flow extends MY_Api_Model {
       $description = $this->input->post('description');
       $xmlErrors = "";
       if( validateXml( $description, $xsd, $xmlErrors, false ) == false ) {
-        if (DEBUG) {
+        if (DEBUG_XSD_EMAIL) {
           $to = $this->user_email;
-          $subject = 'OpenML Flow Upload DEBUG message. ';
-          $content = "Uploaded by POST field.\nXSD Validation Message: " . $xmlErrors . "\n=====BEGIN XML=====\n" . $this->input->post('description');
+          $server = 'Server:' . $_SERVER['SERVER_ADDR'] . ':' . $_SERVER['SERVER_PORT'];
+          $content = $server . "\nFilename: " . $description['name'] . "\nXSD Validation Message: " . $xmlErrors . "\n=====BEGIN XML=====\n" . file_get_contents($description['tmp_name']);
+          $subject = 'OpenML Flow Upload DEBUG message (' . $server . ')';
+          $content = $server . "\nUploaded by POST field.\nXSD Validation Message: " . $xmlErrors . "\n=====BEGIN XML=====\n" . $this->input->post('description');
           sendEmail($to, $subject, $content,'text');
         }
 
@@ -583,10 +585,11 @@ class Api_flow extends MY_Api_Model {
       $description = $_FILES['description'];
 
       if (validateXml($description['tmp_name'], $xsd, $xmlErrors) == false) {
-        if (DEBUG) {
+        if (DEBUG_XSD_EMAIL) {
           $to = $this->user_email;
-          $subject = 'OpenML Flow Upload DEBUG message. ';
-          $content = 'Filename: ' . $_FILES['description']['name'] . "\nXSD Validation Message: " . $xmlErrors . "\n=====BEGIN XML=====\n" . file_get_contents($description['tmp_name']);
+          $server = 'Server:' . $_SERVER['SERVER_ADDR'] . ':' . $_SERVER['SERVER_PORT'];
+          $subject = 'OpenML Flow Upload DEBUG message (' . $server . ')';
+          $content = $server . "\nFilename: " . $_FILES['description']['name'] . "\nXSD Validation Message: " . $xmlErrors . "\n=====BEGIN XML=====\n" . file_get_contents($description['tmp_name']);
           sendEmail($to, $subject, $content,'text');
         }
 
@@ -816,17 +819,17 @@ class Api_flow extends MY_Api_Model {
     $implementation['fullName'] = $implementation['name'] . '(' . $version . ')';
     $implementation['version'] = $version;
 
-    if( array_key_exists( 'source_md5', $implementation ) ) {
-      if( array_key_exists( 'external_version', $implementation ) === false ) {
+    if( isset( $implementation['source_md5'] ) ) {
+      if( isset( $implementation['external_version'] ) === false ) {
         $implementation['external_version'] = $implementation['source_md5'];
       }
-    } elseif( array_key_exists( 'binary_md5', $implementation ) ) {
-      if( array_key_exists( 'external_version', $implementation ) === false ) {
+    } elseif( isset( $implementation['binary_md5'] ) ) {
+      if( isset( $implementation['external_version'] ) === false ) {
         $implementation['external_version'] = $implementation['binary_md5'];
       }
     }
 
-    if( array_key_exists( 'implements', $implementation ) ) {
+    if( isset( $implementation['implements'] ) ) {
       if( in_array( $implementation['implements'], $this->supportedMetrics ) == false &&
           in_array( $implementation['implements'], $this->supportedAlgorithms == false ) ) {
         return false;
@@ -839,7 +842,7 @@ class Api_flow extends MY_Api_Model {
 
     // tags also not insertable. but handled differently.
     $tags = array();
-    if( array_key_exists( 'tag', $implementation ) ) {
+    if( isset( $implementation['tag'] ) ) {
       $tags = str_getcsv( $implementation['tag'] );
       unset( $implementation['tag'] );
     }

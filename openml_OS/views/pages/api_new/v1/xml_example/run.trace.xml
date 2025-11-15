@@ -1,0 +1,27 @@
+<oml:trace xmlns:oml="http://openml.org/openml">
+    <oml:run_id>10587706</oml:run_id>
+    <oml:trace_iteration>
+        <oml:repeat>0</oml:repeat>
+        <oml:fold>0</oml:fold>
+        <oml:iteration>0</oml:iteration>
+        <oml:setup_string>{"parameter_poly__degree":"1","parameter_model__alpha":"0.0","parameter_feature_select__percentile":"20","parameter_model__max_iter":"200"}</oml:setup_string>
+        <oml:evaluation>-3.1176886333740415</oml:evaluation>
+        <oml:selected>false</oml:selected>
+    </oml:trace_iteration>
+    <oml:trace_iteration>
+        <oml:repeat>0</oml:repeat>
+        <oml:fold>0</oml:fold>
+        <oml:iteration>1</oml:iteration>
+        <oml:setup_string>{"parameter_poly__degree":"2","parameter_model__alpha":"0.0","parameter_feature_select__percentile":"20","parameter_model__max_iter":"200"}</oml:setup_string>
+        <oml:evaluation>-3.1465890143092965</oml:evaluation>
+        <oml:selected>false</oml:selected>
+    </oml:trace_iteration>
+    <oml:trace_iteration>
+        <oml:repeat>0</oml:repeat>
+        <oml:fold>0</oml:fold>
+        <oml:iteration>2</oml:iteration>
+        <oml:setup_string>{"parameter_poly__degree":"1","parameter_model__alpha":"0.0","parameter_feature_select__percentile":"20","parameter_model__max_iter":"500"}</oml:setup_string>
+        <oml:evaluation>-3.1176886333740415</oml:evaluation>
+        <oml:selected>false</oml:selected>
+    </oml:trace_iteration>
+</oml:trace>

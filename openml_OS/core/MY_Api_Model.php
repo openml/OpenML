@@ -243,6 +243,11 @@ class MY_Api_Model extends CI_Model {
         $this->returnError(473, $this->version, 450, 'id=' . $id . '; tag=' . $tag);
         return false;
       }
+      if(strlen($tag) > 64 || !is_system_string($tag)){
+        $this->returnError(477, $this->version, 450, 'id=' . $id . '; tag=' . $tag);
+        return false;
+      }
+      
       $tag_data = array(
         'id' => $id,
         'tag' => $tag,

@@ -95,7 +95,6 @@ CREATE TABLE `dataset` (
   `name` varchar(128) COLLATE utf8_unicode_ci NOT NULL,
   `version` varchar(64) COLLATE utf8_unicode_ci NOT NULL,
   `version_label` varchar(128) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `description` text CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `format` varchar(64) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'arff',
   `creator` text COLLATE utf8_unicode_ci,
   `contributor` text COLLATE utf8_unicode_ci,
@@ -106,6 +105,7 @@ CREATE TABLE `dataset` (
   `citation` text COLLATE utf8_unicode_ci,
   `collection` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
   `url` mediumtext CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `parquet_url` mediumtext CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
   `isOriginal` enum('true','false') CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
   `file_id` int(10) DEFAULT NULL,
   `default_target_attribute` varchar(1024) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -147,6 +147,33 @@ CREATE TABLE `dataset_tag` (
 
 -- --------------------------------------------------------
 
+
+--
+-- Table structure for table `dataset_description`
+--
+
+CREATE TABLE `dataset_description` (
+  `did` int(10) UNSIGNED NOT NULL,
+  `version` int(10) UNSIGNED NOT NULL,
+  `description` text CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `uploader` mediumint(8) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+
+-- Table structure for table `dataset_topic`
+--
+
+CREATE TABLE `dataset_topic` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `topic` varchar(255) NOT NULL,
+  `uploader` mediumint(8) UNSIGNED NOT NULL,
+  `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
 --
 -- Table structure for table `data_feature`
 --
@@ -180,10 +207,23 @@ CREATE TABLE `data_feature` (
 -- Table structure for table `data_feature_value`
 --
 
+CREATE TABLE `data_feature_description` (
+  `did` int(10) UNSIGNED NOT NULL,
+  `index` int(10) UNSIGNED NOT NULL,
+  `uploader` mediumint(8) UNSIGNED NOT NULL,
+  `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `description_type` enum('plain','ontology') NOT NULL,
+  `value` varchar(256) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `data_feature_value`
+--
+
 CREATE TABLE `data_feature_value` (
   `did` int(10) UNSIGNED NOT NULL,
   `index` int(10) UNSIGNED NOT NULL,
-  `value` varchar(256) NOT NULL
+  `value` varchar(256) NOT NULL COLLATE latin1_general_cs
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -898,6 +938,20 @@ ALTER TABLE `dataset_tag`
   ADD KEY `uploader` (`uploader`);
 
 --
+-- Indexes for table `dataset_description`
+--
+ALTER TABLE `dataset_description`
+  ADD PRIMARY KEY (`did`,`version`),
+  ADD KEY `uploader` (`uploader`);
+
+--
+-- Indexes for table `dataset_topic`
+--
+ALTER TABLE `dataset_topic`
+  ADD PRIMARY KEY (`id`,`topic`),
+  ADD KEY `uploader` (`uploader`);  
+  
+--
 -- Indexes for table `data_feature`
 --
 ALTER TABLE `data_feature`
@@ -908,8 +962,15 @@ ALTER TABLE `data_feature`
 --
 -- Indexes for table `data_feature_value`
 --
-ALTER TABLE `data_feature_value`
+ALTER TABLE `data_feature_description`
   ADD KEY `did` (`did`,`index`);
+  
+--
+-- Indexes for table `data_feature_value`
+--
+ALTER TABLE `data_feature_value`
+  ADD KEY `did` (`did`,`index`),
+  ADD UNIQUE(`did`, `index`, `value`);
 
 --
 -- Indexes for table `data_processed`
@@ -1354,11 +1415,25 @@ ALTER TABLE `dataset_status`
   ADD CONSTRAINT `dataset_status_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `openml`.`users` (`id`);
 
 --
+-- Constraints for table `dataset_description`
+--
+ALTER TABLE `dataset_description`
+  ADD CONSTRAINT `dataset_description_ibfk_1` FOREIGN KEY (`did`) REFERENCES `dataset` (`did`) ON DELETE CASCADE,
+  ADD CONSTRAINT `dataset_description_ibfk_2` FOREIGN KEY (`uploader`) REFERENCES `openml`.`users` (`id`);
+
+--
 -- Constraints for table `dataset_tag`
 --
 ALTER TABLE `dataset_tag`
   ADD CONSTRAINT `dataset_tag_ibfk_1` FOREIGN KEY (`uploader`) REFERENCES `openml`.`users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_dataset_tag` FOREIGN KEY (`id`) REFERENCES `dataset` (`did`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `dataset_topic`
+--
+ALTER TABLE `dataset_topic`
+  ADD CONSTRAINT `dataset_topic_ibfk_1` FOREIGN KEY (`uploader`) REFERENCES `openml`.`users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_dataset_topic` FOREIGN KEY (`id`) REFERENCES `dataset` (`did`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `data_feature`
@@ -1373,6 +1448,13 @@ ALTER TABLE `data_feature`
 --
 ALTER TABLE `data_feature_value`
   ADD CONSTRAINT `data_feature_value_ibfk_1` FOREIGN KEY (`did`,`index`) REFERENCES `data_feature` (`did`, `index`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+
+--
+-- Constraints for table `data_feature_value`
+--
+ALTER TABLE `data_feature_description`
+  ADD CONSTRAINT `data_feature_description_ibfk_1` FOREIGN KEY (`did`,`index`) REFERENCES `data_feature` (`did`, `index`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `data_processed`

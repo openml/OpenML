@@ -156,31 +156,23 @@ class Api_new extends CI_Controller {
         $this->Api_data->returnError(103, $this->version);
     } else if ($this->user_has_writing_rights == false && $request_type != 'get') {
       $this->Api_data->returnError(104, $this->version, $this->openmlGeneralErrorCode, 'API calls of the read-only user can only be of type GET. ');
-    } else if (file_exists(APPPATH.'models/api/' . $this->version . '/Api_' . $type . '.php') == false && $type != 'xsd' && $type != 'xml_example') {
+    } else if (file_exists(APPPATH.'models/api/' . $this->version . '/Api_' . $type . '.php') == false && $type != 'xsd' && $type != 'xml_example' && $type != 'arff_example') {
        $this->Api_data->returnError(100, $this->version);
     } else if($type == 'xsd') {
-      $this->xsd($segs[0], 'v1');
+      $this->server_document('xsd', $segs[0] . '.xsd', 'v1', 'Content-type: text/xml; charset=utf-8');
     } else if($type == 'xml_example') {
-      $this->xml_example($segs[0], 'v1');
+      $this->server_document('xml_example', $segs[0] . '.xml', 'v1', 'Content-type: text/xml; charset=utf-8');
+    } else if($type == 'arff_example') {
+      $this->server_document('arff_example', $segs[0] . '.arff', 'v1', 'Content-type: text/plain; charset=utf-8');
     } else {
       $this->{'Api_'.$type}->bootstrap($outputFormat, $segs, $request_type, $this->user_id);
     }
   }
 
-  private function xsd($filename,$version) {
-    $filepath = APPPATH.'views/pages/' . $this->controller . '/' . $version . '/xsd/' . $filename . '.xsd';
-    if(is_safe($filename) && file_exists($filepath)) {
-      header('Content-type: text/xml; charset=utf-8');
-      echo file_get_contents($filepath);
-    } else {
-      $this->error404();
-    }
-  }
-
-  private function xml_example($filename,$version) {
-    $filepath = APPPATH.'views/pages/' . $this->controller . '/' . $version . '/xml_example/' . $filename . '.xml';
-    if(is_safe($filename) && file_exists($filepath)) {
-      header('Content-type: text/xml; charset=utf-8');
+  private function server_document($type, $filename, $version, $header) {
+    $filepath = APPPATH.'views/pages/' . $this->controller . '/' . $version . '/' . $type . '/' . $filename;
+    if(is_safe($filename) && is_safe($type) && file_exists($filepath)) {
+      header($header);
       echo file_get_contents($filepath);
     } else {
       $this->error404();
