@@ -168,7 +168,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Run OSV Scanner
-      uses: google/osv-scanner-action@v1
+      uses: google/osv-scanner/actions/scanner@v1
       continue-on-error: true
       with:
         scan-args: |-
