@@ -169,6 +169,14 @@ class ElasticSearch {
                     'type' => 'date',
                     'format' => 'yyyy-MM-dd HH:mm:ss'
                 ),
+                'first_name' => array(
+                    'type' => 'keyword',
+                    'normalizer' => 'lowercase_normalizer'
+                ),
+                'last_name' => array(
+                    'type' => 'keyword',
+                    'normalizer' => 'lowercase_normalizer'
+                ),
                 'suggest' => array(
                     'type' => 'completion',
                     'analyzer' => 'standard'
@@ -387,6 +395,14 @@ class ElasticSearch {
 		    'index' => array(
             		'number_of_shards' => 1,
             		'number_of_replicas' => 0
+		    ),
+		    'analysis' => array(
+            		'normalizer' => array(
+                		'lowercase_normalizer' => array(
+                    		    'type' => 'custom',
+                    		    'filter' => array('lowercase')
+                		)
+            		)
 		    )
 		),
 		'mappings' => array(
