@@ -1,0 +1,203 @@
+name: Security Scanning
+
+on:
+  push:
+    branches: [ develop, master ]
+  pull_request:
+    branches: [ develop, master ]
+  schedule:
+    # Run weekly security scans every Monday at 9:00 AM UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+jobs:
+  codeql-analysis:
+    name: CodeQL Analysis
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'javascript', 'python' ]
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: ${{ matrix.language }}
+        config-file: ./.github/codeql/codeql-config.yml
+
+    - name: Autobuild
+      uses: github/codeql-action/autobuild@v3
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      with:
+        category: "/language:${{ matrix.language }}"
+
+  dependency-check:
+    name: Dependency Vulnerability Scanning
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+        severity: 'CRITICAL,HIGH,MEDIUM'
+
+    - name: Upload Trivy results to GitHub Security
+      uses: github/codeql-action/upload-sarif@v3
+      if: always()
+      with:
+        sarif_file: 'trivy-results.sarif'
+
+  secret-scanning:
+    name: Secret Scanning with Gitleaks
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Run Gitleaks
+      uses: gitleaks/gitleaks-action@v2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+
+  composer-security-audit:
+    name: Composer Security Audit
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.1'
+        coverage: none
+
+    - name: Validate composer.json and composer.lock
+      run: |
+        if [ -f "openml_OS/composer.json" ]; then
+          cd openml_OS
+          composer validate --strict
+        fi
+
+    - name: Install Composer dependencies
+      run: |
+        if [ -f "openml_OS/composer.json" ]; then
+          cd openml_OS
+          composer install --prefer-dist --no-progress --no-suggest
+        fi
+
+    - name: Run Composer Audit
+      run: |
+        if [ -f "openml_OS/composer.json" ]; then
+          cd openml_OS
+          composer audit --format=json || true
+        fi
+
+    - name: Check for known security vulnerabilities
+      run: |
+        if [ -f "openml_OS/composer.lock" ]; then
+          cd openml_OS
+          composer require --dev sensiolabs/security-checker
+          vendor/bin/security-checker security:check composer.lock || true
+        fi
+
+  npm-security-audit:
+    name: NPM Security Audit
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: Check for package.json
+      id: check-package
+      run: |
+        if [ -f "package.json" ]; then
+          echo "exists=true" >> $GITHUB_OUTPUT
+        else
+          echo "exists=false" >> $GITHUB_OUTPUT
+          echo "No package.json found, skipping NPM audit"
+        fi
+
+    - name: Install dependencies
+      if: steps.check-package.outputs.exists == 'true'
+      run: npm ci --legacy-peer-deps || npm install --legacy-peer-deps
+
+    - name: Run NPM Audit
+      if: steps.check-package.outputs.exists == 'true'
+      run: npm audit --audit-level=moderate || true
+
+    - name: Run NPM Audit Fix (dry-run)
+      if: steps.check-package.outputs.exists == 'true'
+      run: npm audit fix --dry-run || true
+
+  osv-scanner:
+    name: OSV Vulnerability Scanner
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Run OSV Scanner
+      uses: google/osv-scanner-action@v1
+      continue-on-error: true
+      with:
+        scan-args: |-
+          --recursive
+          --skip-git
+          ./
+
+  security-summary:
+    name: Security Scan Summary
+    runs-on: ubuntu-latest
+    needs: [codeql-analysis, dependency-check, secret-scanning, composer-security-audit, npm-security-audit, osv-scanner]
+    if: always()
+    
+    steps:
+    - name: Check security scan results
+      run: |
+        echo "=== Security Scanning Complete ==="
+        echo "CodeQL Analysis: ${{ needs.codeql-analysis.result }}"
+        echo "Dependency Check: ${{ needs.dependency-check.result }}"
+        echo "Secret Scanning: ${{ needs.secret-scanning.result }}"
+        echo "Composer Audit: ${{ needs.composer-security-audit.result }}"
+        echo "NPM Audit: ${{ needs.npm-security-audit.result }}"
+        echo "OSV Scanner: ${{ needs.osv-scanner.result }}"
+        
+        if [ "${{ needs.codeql-analysis.result }}" == "failure" ] || \
+           [ "${{ needs.dependency-check.result }}" == "failure" ] || \
+           [ "${{ needs.secret-scanning.result }}" == "failure" ]; then
+          echo "⚠️ Critical security checks failed!"
+          exit 1
+        else
+          echo "✅ All critical security checks passed"
+        fi
