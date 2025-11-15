@@ -1,0 +1,85 @@
+name: Security Vulnerability Report
+description: Report a security vulnerability (private and confidential)
+title: "[Security]: "
+labels: ["security", "needs-triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## ⚠️ Security Vulnerability Reporting
+        
+        **IMPORTANT:** If you've discovered a serious security vulnerability, please do NOT create a public issue.
+        Instead, please report it privately through GitHub's Security Advisories:
+        
+        1. Go to the [Security tab](https://github.com/openml/OpenML/security)
+        2. Click "Report a vulnerability"
+        3. Fill out the private vulnerability report form
+        
+        For non-critical security improvements or questions, you may continue with this form.
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity Level
+      description: How severe is this security issue?
+      options:
+        - Low - Minor security improvement suggestion
+        - Medium - Security enhancement needed
+        - High - Potential vulnerability (please report privately instead!)
+        - Critical - Active exploit possible (REPORT PRIVATELY!)
+      default: 0
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Security Issue Description
+      description: Describe the security concern (avoid technical exploitation details in public issues)
+      placeholder: "Describe the security concern at a high level"
+    validations:
+      required: true
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: Potential Impact
+      description: What could happen if this issue is exploited?
+      placeholder: "What systems or data could be affected?"
+    validations:
+      required: true
+
+  - type: textarea
+    id: affected-components
+    attributes:
+      label: Affected Components
+      description: Which parts of OpenML are affected?
+      placeholder: |
+        - API endpoints
+        - Database
+        - Authentication system
+        - etc.
+    validations:
+      required: false
+
+  - type: textarea
+    id: mitigation
+    attributes:
+      label: Suggested Mitigation
+      description: Do you have suggestions for addressing this issue?
+      placeholder: "Any recommendations for fixing or mitigating this issue?"
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: confirmation
+    attributes:
+      label: Responsible Disclosure
+      description: Please confirm
+      options:
+        - label: I understand that critical vulnerabilities should be reported privately
+          required: true
+        - label: This is a low-severity security improvement suggestion suitable for public discussion
+          required: false

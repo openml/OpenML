@@ -1,0 +1,106 @@
+name: Bug Report
+description: Report a bug or unexpected behavior in OpenML
+title: "[Bug]: "
+labels: ["bug", "needs-triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting a bug in OpenML!
+        
+        Please check if you're on the correct issue tracker:
+        - **Website/frontend issues** → [openml.org](https://github.com/openml/openml.org/issues)
+        - **Dataset issues** → [openml-data](https://github.com/openml/openml-data/issues)
+        - **Python API** → [openml-python](https://github.com/openml/openml-python/issues)
+        - **R API** → [openml-r](https://github.com/openml/openml-r/issues)
+        - **Java API** → [openml-java](https://github.com/openml/openml-java/issues)
+        - **WEKA bindings** → [openml-weka](https://github.com/openml/openml-weka/issues)
+        - **RapidMiner** → [openml-rapidminer](https://github.com/openml/openml-rapidminer/issues)
+        - **.NET API** → [openml-dotnet](https://github.com/openml/openml-dotnet/issues)
+        
+        For general API, database, or backend issues, you're in the right place!
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of what the bug is.
+      placeholder: |
+        Example: API crashes when calling GET /api/v1/xml/data/features/2
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Provide detailed steps or code to reproduce the behavior.
+      placeholder: |
+        1. Call API endpoint '...'
+        2. With parameters '...'
+        3. See error
+        
+        Or provide a code snippet:
+        ```
+        https://test.openml.org/api/v1/xml/data/features/2
+        ```
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+      placeholder: "Example: XML response with feature data should be returned"
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: What actually happened? Include error messages, stack traces, or screenshots.
+      placeholder: "Paste the actual output, error message, or describe what happened"
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Information about your environment
+      placeholder: |
+        - OS: [e.g., Ubuntu 22.04, Windows 11, macOS 13]
+        - Browser: [e.g., Chrome 119, Firefox 120] (if applicable)
+        - API Version: [e.g., v1]
+        - PHP Version: [if relevant]
+      value: |
+        - OS: 
+        - Browser: 
+        - API Version: 
+        - PHP Version: 
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Add any other context, screenshots, or relevant information about the problem.
+      placeholder: "Any additional information that might help us understand the issue better"
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Checklist
+      description: Please confirm the following
+      options:
+        - label: I have searched existing issues to avoid duplicates
+          required: true
+        - label: I am reporting this to the correct repository
+          required: true
