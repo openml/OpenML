@@ -26,3 +26,14 @@ Note that the protocol is `http` not `https`.
 ```bash
 docker build --tag openml/php-rest-api -f docker/Dockerfile .
 ```
+
+## Upload Limits
+
+The server is configured to support large dataset uploads:
+- **Maximum upload size**: 5GB per file
+- **Maximum POST size**: 5GB
+- **Execution timeout**: 3600 seconds (1 hour)
+
+These limits are set in `docker/config/php.ini`. If you need to change them, modify the file and rebuild the container.
+
+For uploading very large datasets (>2GB), see [LARGE_DATASET_UPLOAD_FIX.md](../LARGE_DATASET_UPLOAD_FIX.md) for client-side considerations.
