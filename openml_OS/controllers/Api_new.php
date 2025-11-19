@@ -141,23 +141,23 @@ class Api_new extends CI_Controller {
     
     // TODO: very important (for future versions of the API)! 
     if ($this->database_connection_error) {
-      $this->Api_data->returnError(107, $this->version);
+      $this->Api_data->returnError(107, $this->version, 412, null, false, false, $outputFormat);
       return;
     }
     
     $request_type = strtolower($_SERVER['REQUEST_METHOD']);
     if ($this->authenticated == false && $request_type != 'get') {
       if ($this->provided_hash) {
-        $this->Api_data->returnError(103, $this->version);
+        $this->Api_data->returnError(103, $this->version, 412, null, false, false, $outputFormat);
       } else {
-        $this->Api_data->returnError(102, $this->version);
+        $this->Api_data->returnError(102, $this->version, 412, null, false, false, $outputFormat);
       }
     } else if ($this->authenticated == false && $this->provided_hash) {
-        $this->Api_data->returnError(103, $this->version);
+      $this->Api_data->returnError(103, $this->version, 412, null, false, false, $outputFormat);
     } else if ($this->user_has_writing_rights == false && $request_type != 'get') {
-      $this->Api_data->returnError(104, $this->version, $this->openmlGeneralErrorCode, 'API calls of the read-only user can only be of type GET. ');
+      $this->Api_data->returnError(104, $this->version, $this->openmlGeneralErrorCode, 'API calls of the read-only user can only be of type GET. ', false, false, $outputFormat);
     } else if (file_exists(APPPATH.'models/api/' . $this->version . '/Api_' . $type . '.php') == false && $type != 'xsd' && $type != 'xml_example' && $type != 'arff_example') {
-       $this->Api_data->returnError(100, $this->version);
+       $this->Api_data->returnError(100, $this->version, 412, null, false, false, $outputFormat);
     } else if($type == 'xsd') {
       $this->server_document('xsd', $segs[0] . '.xsd', 'v1', 'Content-type: text/xml; charset=utf-8');
     } else if($type == 'xml_example') {
