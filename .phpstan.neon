@@ -1,0 +1,9 @@
+parameters:
+    level: 5
+    paths:
+        - openml_OS
+    excludePaths:
+        - openml_OS/libraries/*
+        - openml_OS/third_party/*
+        - openml_OS/vendor/*
+

@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<psalm errorLevel="5">
+  <projectFiles>
+    <directory name="openml_OS"/>
+    <ignoreFiles>
+      <directory name="openml_OS/libraries"/>
+      <directory name="openml_OS/third_party"/>
+      <directory name="openml_OS/vendor"/>
+    </ignoreFiles>
+  </projectFiles>
+</psalm>
+

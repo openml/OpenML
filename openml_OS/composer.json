@@ -18,6 +18,17 @@
 		"paragonie/random_compat": "Provides better randomness in PHP 5.x"
 	},
 	"require-dev": {
-		"mikey179/vfsstream": "1.6.*"
+		"mikey179/vfsstream": "1.6.*",
+		"phpstan/phpstan": "^1.12",
+		"vimeo/psalm": "^5.0",
+		"friendsofphp/php-cs-fixer": "^3.0",
+		"phpmd/phpmd": "^2.10"
+	},
+	"scripts": {
+		"cs:check": "php-cs-fixer fix --dry-run --diff",
+		"cs:fix": "php-cs-fixer fix",
+		"phpstan": "phpstan analyse -c .phpstan.neon",
+		"psalm": "psalm --output-format=summary",
+		"phpmd": "phpmd openml_OS text codesize,unusedcode,naming"
 	}
 }

@@ -1,0 +1,39 @@
+name: PHP Quality Checks
+
+on:
+  pull_request:
+  push:
+    branches: [main, develop]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.2
+          extensions: mbstring, intl
+
+      - name: Install composer deps
+        working-directory: openml_OS
+        run: composer install --prefer-dist --no-progress
+
+      - name: PHP-CS-Fixer check
+        working-directory: openml_OS
+        run: composer run cs:check
+
+      - name: PHPStan
+        working-directory: openml_OS
+        run: composer run phpstan
+
+      - name: Psalm
+        working-directory: openml_OS
+        run: composer run psalm
+
+      - name: PHPMD
+        working-directory: openml_OS
+        run: composer run phpmd
+
