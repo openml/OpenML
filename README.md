@@ -1,4 +1,9 @@
+
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
+
+> [!WARNING]
+> This repository is in maintenance-only mode. We're phasing out the PHP-based REST API in favor of a much more modern [FastAPI-based API](https://github.com/openml/server-api).
+
 
 OpenML: Open Machine Learning
 =============================
