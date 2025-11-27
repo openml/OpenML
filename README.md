@@ -3,6 +3,7 @@
 
 > [!WARNING]
 > This repository is in maintenance-only mode. We're phasing out the PHP-based REST API in favor of a much more modern [FastAPI-based API](https://github.com/openml/server-api).
+> For more details, please check the [contribution guide](https://github.com/openml).
 
 
 OpenML: Open Machine Learning
