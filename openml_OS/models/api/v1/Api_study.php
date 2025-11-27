@@ -629,9 +629,11 @@ class Api_study extends MY_Api_Model {
       if ($status != 'all') {
         $whereClause .= ' AND status = "' . $status . '"';
       }
-    } else {
+    } 
+    /** Don't enforce that status must be active by default since we don't have an automated status check
+      else {
       $whereClause .= ' AND status = "active"';
-    }
+    }*/
     $studies = $this->Study->getWhere($whereClause, null, $limit, $offset);
 
     if (!$studies) {
