@@ -27,7 +27,7 @@ class Api_data extends MY_Api_Model {
     $this->load->helper('file_upload');
     $this->db = $this->Database_singleton->getWriteConnection();
 
-    $this->legal_formats = array('arff', 'sparse_arff');
+    $this->legal_formats = array('arff', 'sparse_arff', 'parquet');
   }
 
   function bootstrap($format, $segments, $request_type, $user_id) {
@@ -853,6 +853,8 @@ class Api_data extends MY_Api_Model {
       $dataset->parquet_url = $url;
       $dataset->minio_url = $url;
     }
+    // expose parquet_url also in JSON/XML response for programmatic clients
+    }
       $this->xmlContents( 'data-get', $this->version, $dataset );
   }
 
@@ -1203,10 +1205,12 @@ class Api_data extends MY_Api_Model {
         return;
       }
 
-      $uploadedFileCheck = ARFFcheck($_FILES['dataset']['tmp_name'], 1000);
-      if ($uploadedFileCheck !== true) {
-        $this->returnError(145, $this->version, $this->openmlGeneralErrorCode, 'Arff error in dataset file: ' . $uploadedFileCheck);
-        return;
+      if ($format != 'parquet') {
+        $uploadedFileCheck = ARFFcheck($_FILES['dataset']['tmp_name'], 1000);
+        if ($uploadedFileCheck !== true) {
+          $this->returnError(145, $this->version, $this->openmlGeneralErrorCode, 'Arff error in dataset file: ' . $uploadedFileCheck);
+          return;
+        }
       }
 
       $to_folder = $this->data_folders['dataset'];
@@ -1221,13 +1225,18 @@ class Api_data extends MY_Api_Model {
     } elseif ($datasetUrlProvided) {
       $destinationUrl = '' . $xml->children('oml', true)->url;
 
-      $uploadedFileCheck = ARFFcheck($destinationUrl, 1000);
-      if ($uploadedFileCheck !== true) {
-        $this->returnError(145, $this->version, $this->openmlGeneralErrorCode, 'Arff error in dataset url: ' . $uploadedFileCheck);
-        return;
-      }
+      if ($format != 'parquet') {
+        $uploadedFileCheck = ARFFcheck($destinationUrl, 1000);
+        if ($uploadedFileCheck !== true) {
+          $this->returnError(145, $this->version, $this->openmlGeneralErrorCode, 'Arff error in dataset url: ' . $uploadedFileCheck);
+          return;
+        }
 
-      $file_id = $this->File->register_url($destinationUrl, $name . '.arff', 'arff', $this->user_id, $access_control);
+        $file_id = $this->File->register_url($destinationUrl, $name . '.arff', 'arff', $this->user_id, $access_control);
+      } else {
+        // parquet url provided
+        $file_id = $this->File->register_url($destinationUrl, $name . '.parquet', 'parquet', $this->user_id, $access_control);
+      }
       if ($file_id === false) {
         $this->returnError(136, $this->version);
         return;
@@ -1295,6 +1304,24 @@ class Api_data extends MY_Api_Model {
       $subdirectory = floor($id / $this->content_folder_modulo) * $this->content_folder_modulo;
       $to_folder = $this->data_folders['dataset'] . '/' . $subdirectory . '/' . $id . '/';
       $this->File->move_file($file_id, $to_folder);
+
+      // If parquet dataset, trigger transfer to MinIO using configured script
+      if ($format == 'parquet') {
+        // reload file record to get updated filepath
+        $file_record = $this->File->getById($file_id);
+        if ($file_record !== false) {
+          $local_file_path = DATA_PATH . $file_record->filepath;
+          $bracket = sprintf('%04d', floor($id / 10000));
+          $padded_id = sprintf('%04d', $id);
+          $minio_destination = 'datasets/' . $bracket . '/' . $padded_id . '/dataset_' . $id . '.pq';
+
+          if (defined('MINIO_TRANSFER_SCRIPT') && MINIO_TRANSFER_SCRIPT != '') {
+            $cmd = CMD_PREFIX . ' ' . escapeshellcmd(MINIO_TRANSFER_SCRIPT) . ' ' . escapeshellarg($local_file_path) . ' ' . escapeshellarg($minio_destination);
+            // run in background
+            @exec($cmd . ' > /dev/null 2>&1 &');
+          }
+        }
+      }
     }
 
     // try making the ES stuff

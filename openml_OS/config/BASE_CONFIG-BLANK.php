@@ -29,6 +29,15 @@ define( 'DATA_URL', BASE_URL . 'data/' );
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 define( 'MINIO_URL', 'FILL_IN' );
 
+/*
+ * MINIO_TRANSFER_SCRIPT: Optional server-side script that transfers a
+ * locally stored dataset file to the MinIO storage. The script should
+ * accept two arguments: the local file path and the destination path
+ * within MinIO (for example: "datasets/0000/0001/dataset_1.pq"). If
+ * empty, no automatic transfer is triggered by the API.
+ */
+define( 'MINIO_TRANSFER_SCRIPT', '' );
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * PATH: The directory on the hard disk where the instance of OpenML
  * can be found, with tailing slash. Typically, this would be
