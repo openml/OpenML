@@ -30,14 +30,17 @@ sed "s*'ES_PASSWORD', 'FILL_IN'*'ES_PASSWORD', '${ES_PASSWORD:-default}'*g" --in
 
 sed "s/define('ENVIRONMENT', '.*')/define('ENVIRONMENT', '${PHP_ENVIRONMENT:-production}')/" --in-place ${INDEX_PATH}
 
-
-indices=('downvote', 'study', 'data', 'task', 'download', 'user', 'like', 'measure', 'flow', 'task_type', 'run')
-for index in "${indices[@]}"
-do
-	curl -X DELETE ${ES_URL:-elasticsearch:9200}/${index}?ignore_unavailable=true
-done
-
 cd /var/www/openml
-php index.php cron build_es_indices
+
+INDEX_ES_DURING_STARTUP=${INDEX_ES_DURING_STARTUP:-true}
+if [ "$INDEX_ES_DURING_STARTUP" = true ] ; then
+	indices=('downvote', 'study', 'data', 'task', 'download', 'user', 'like', 'measure', 'flow', 'task_type', 'run')
+	for index in "${indices[@]}"
+	do
+		curl -X DELETE ${ES_URL:-elasticsearch:9200}/${index}?ignore_unavailable=true
+	done
+
+	php index.php cron build_es_indices
+fi
 
 apache2-foreground
