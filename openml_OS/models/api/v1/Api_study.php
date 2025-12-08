@@ -47,6 +47,12 @@ class Api_study extends MY_Api_Model {
       return;
     }
     
+    # NEW
+    if (count($segments) == 2 && is_numeric($segments[0]) && $segments[1] == 'edit' && $request_type == 'post') {
+      $this->study_edit($segments[0]);
+      return;
+    }
+    
     if (count($segments) == 1 || count($segments) == 2) {
       $type = null;
       if (count($segments) == 2) {
@@ -249,6 +255,124 @@ class Api_study extends MY_Api_Model {
     
     $this->xmlContents('study-status-update', $this->version, $template_vars);
   }
+
+    /**
+   *@OA\Post(
+   *  path="/study/{id}/edit",
+   *  tags={"study"},
+   *  summary="Edit study metadata",
+   *  description="Updates the name and/or description of an existing study.",
+   *  @OA\Parameter(
+   *    name="id",
+   *    in="path",
+   *    @OA\Schema(type="integer"),
+   *    description="Id of the study.",
+   *    required=true,
+   *  ),
+   *  @OA\Parameter(
+   *    name="name",
+   *    in="query",
+   *    @OA\Schema(type="string"),
+   *    description="New name for the study (optional).",
+   *    required=false,
+   *  ),
+   *  @OA\Parameter(
+   *    name="description",
+   *    in="query",
+   *    @OA\Schema(type="string"),
+   *    description="New description for the study (optional).",
+   *    required=false,
+   *  ),
+   *  @OA\Parameter(
+   *    name="api_key",
+   *    in="query",
+   *    @OA\Schema(type="string"),
+   *    description="Api key to authenticate the user",
+   *    required=true,
+   *  ),
+   *  @OA\Response(
+   *    response=200,
+   *    description="Updated study description",
+   *    @OA\JsonContent(ref="#/components/schemas/Study"),
+   *  ),
+   *  @OA\Response(
+   *    response=412,
+   *    description="Precondition failed. An error code and message are returned.",
+   *    @OA\JsonContent(ref="#/components/schemas/Error"),
+   *  ),
+   * )
+   */
+  private function study_edit($study_id) {
+    // Load study
+    $study = $this->Study->getById($study_id);
+    if ($study === false) {
+      // Unknown study
+      $this->returnError(601, $this->version);
+      return;
+    }
+
+    // Do not allow edits to legacy studies (mirror attach/detach behavior)
+    if ($study->legacy == 'y') {
+      $this->returnError(1042, $this->version);
+      return;
+    }
+
+    // Permission check: only creator or admin can edit
+    if ($study->creator != $this->user_id && !$this->user_has_admin_rights) {
+      // Re-use "permission" error like delete
+      $this->returnError(594, $this->version);
+      return;
+    }
+
+    // Read optional fields from POST
+    $name        = $this->input->post('name');
+    $description = $this->input->post('description');
+
+    $update_fields = array();
+    if ($name !== null && $name !== '') {
+      $update_fields['name'] = $name;
+    }
+    if ($description !== null) {
+      $update_fields['description'] = $description;
+    }
+
+    // Require at least one field
+    if (empty($update_fields)) {
+      $this->returnError(
+        1039,
+        $this->version,
+        $this->openmlGeneralErrorCode,
+        'Please provide at least one of the fields: name, description.'
+      );
+      return;
+    }
+
+    // Perform update
+    $result = $this->Study->update($study_id, $update_fields);
+    if ($result === false) {
+      $this->returnError(
+        1039,
+        $this->version,
+        $this->openmlGeneralErrorCode,
+        'Could not update study.'
+      );
+      return;
+    }
+
+    // Reload updated study
+    $study = $this->Study->getById($study_id);
+
+    // Best-effort ES update like other mutating endpoints
+    try {
+      $this->elasticsearch->index('study', $study_id);
+    } catch (Exception $e) {
+      // TODO: should log, but don't fail the API call
+    }
+
+    // Reuse existing response format for consistency
+    $this->_study_get($study, null);
+  }
+
 
   /**
    *@OA\Post(
@@ -532,6 +656,8 @@ class Api_study extends MY_Api_Model {
 
     $this->xmlContents('study-delete', $this->version, array('study' => $study));
   }
+
+
 
   /**
    *@OA\Get(
