@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -euxo pipefail
+
 # TODO: read credentials from secrets instead
 OPENML_PATH=${OPENML_PATH:-/var/www/}
 BASE_CONFIG_PATH=${OPENML_PATH}openml/openml_OS/config/BASE_CONFIG.php
