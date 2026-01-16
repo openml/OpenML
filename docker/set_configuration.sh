@@ -43,4 +43,5 @@ if [ "$INDEX_ES_DURING_STARTUP" = true ] ; then
 	php index.php cron build_es_indices
 fi
 
+/usr/sbin/cron -l 4
 apache2-foreground
