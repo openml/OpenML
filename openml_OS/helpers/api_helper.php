@@ -135,22 +135,28 @@ function get_arff_features( $datasetUrl, $class = false ) {
   $res = array();
   $code = 0;
 
-  $heap = '-Xmx' . ( $ci->input->is_cli_request() ?
-    $ci->config->item('java_heap_space_cli') :
-    $ci->config->item('java_heap_space_web') );
+  $heapSize = $ci->input->is_cli_request()
+    ? $ci->config->item('java_heap_space_cli')
+    : $ci->config->item('java_heap_space_web');
 
-  $command = "java $heap -jar $eval -f data_features -d $datasetUrl";
-  if($class != false)
-    $command .= ' -c ' . $class;
+  // Escape all arguments passed to the shell to prevent command injection.
+  $command = 'java ' . escapeshellarg('-Xmx' . $heapSize)
+           . ' -jar ' . escapeshellarg($eval)
+           . ' -f data_features'
+           . ' -d ' . escapeshellarg($datasetUrl);
+
+  if ($class != false) {
+    $command .= ' -c ' . escapeshellarg((string) $class);
+  }
 
   $ci->Log->cmd( 'ARFF Feature Extractor', $command );
 
-  if(function_enabled('exec') === false ) {
+  if (function_enabled('exec') === false) {
     return false;
   }
   exec( CMD_PREFIX . $command, $res, $code );
 
-  if( $code == 0 && is_array( $res ) ) {
+  if ( $code == 0 && is_array( $res ) ) {
     return json_decode( implode( "\n", $res ) );
   } else {
     return false;
@@ -180,11 +186,16 @@ function validate_arff( $to_folder, $filepath, $name, $did ) {
 
   exec( CMD_PREFIX . $command, $res, $code );
 
-  //Guess the id of the dataset and add it to the top of the file
-  $info = '% Data set "'.$name.'". For more information, see http:\/\/openml.org\/d\/'.$did;
-  $string = '1s/^/'.$info.'\n/';
-  $command2 = "sed -i -e '$string' $newUrl";
-  exec( CMD_PREFIX . $command2, $res, $code );
+  // Prepend dataset info comment using pure PHP file I/O.
+  // This replaces the previous `sed` shell invocation, eliminating the
+  // command-injection risk that existed when $name contained shell metacharacters.
+  $safeName = str_replace(["%", "\r", "\n"], ['', '', ''], $name);
+  $comment  = '% Data set "' . $safeName . '". For more information, see https://openml.org/d/' . (int) $did . "\n";
+  $original = file_get_contents($newUrl);
+  if ($original === false || file_put_contents($newUrl, $comment . $original) === false) {
+    return false;
+  }
+  $code = 0; // success — treat prepend as equivalent to sed exit code 0
 
   if( $code == 0 ) {
     return $newpath;

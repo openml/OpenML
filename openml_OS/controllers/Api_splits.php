@@ -35,7 +35,13 @@ class Api_splits extends CI_Controller {
     
     $task_id = $runs[0]->task_id;
     
-    $command = 'java -jar ' . $this->evaluation . ' -f "different_predictions" -t ' . $task_id . ' -r ' . $run_ids . $this->eval_engine_config;
+    // Escape all shell arguments to prevent command injection.
+    // is_safe() above is the first layer; escapeshellarg() is the second.
+    $command = 'java -jar ' . escapeshellarg($this->evaluation)
+             . ' -f ' . escapeshellarg('different_predictions')
+             . ' -t ' . escapeshellarg((string) $task_id)
+             . ' -r ' . escapeshellarg($run_ids)
+             . $this->eval_engine_config;
     
     $this->Log->cmd('API Splits::different_predictions(' . $run_ids . ')', $command);
     
@@ -59,7 +65,12 @@ class Api_splits extends CI_Controller {
     
     $task_id = $runs[0]->task_id;
     
-    $command = 'java -jar ' . $this->evaluation . ' -f "all_wrong" -t ' . $task_id . ' -r ' . $run_ids . $this->eval_engine_config;
+    // Escape all shell arguments to prevent command injection.
+    $command = 'java -jar ' . escapeshellarg($this->evaluation)
+             . ' -f ' . escapeshellarg('all_wrong')
+             . ' -t ' . escapeshellarg((string) $task_id)
+             . ' -r ' . escapeshellarg($run_ids)
+             . $this->eval_engine_config;
     
     $this->Log->cmd('API Splits::all_wrong(' . $run_ids . ')', $command);
     
@@ -81,10 +92,11 @@ class Api_splits extends CI_Controller {
     $offset = "";
     $size = "";
     if (is_numeric($offset_arg)) {
-      $offset = ' -o ' . $offset_arg . ' ';
+      // Cast to int so only a bare integer reaches the shell.
+      $offset = ' -o ' . escapeshellarg((string)(int) $offset_arg) . ' ';
       
       if (is_numeric($size_arg)) {
-        $size = ' -size ' . $size_arg . ' ';
+        $size = ' -size ' . escapeshellarg((string)(int) $size_arg) . ' ';
       }
     }
     
@@ -93,7 +105,14 @@ class Api_splits extends CI_Controller {
       die('Task not valid challenge.');
     }
     
-    $command = 'java -jar ' . $this->evaluation . ' -f "challenge" -t ' . $task_id . ' -mode "' . $testtrain . '" ' . $offset . $size . $this->eval_engine_config;
+    // Escape all shell arguments to prevent command injection.
+    // $testtrain is already validated against a whitelist above.
+    $command = 'java -jar ' . escapeshellarg($this->evaluation)
+             . ' -f ' . escapeshellarg('challenge')
+             . ' -t ' . escapeshellarg((string)(int) $task_id)
+             . ' -mode ' . escapeshellarg($testtrain)
+             . ' ' . $offset . $size
+             . $this->eval_engine_config;
     
     $this->Log->cmd('API Splits::challenge(' . $task_id . ', ' . $testtrain . ')', $command);
     
@@ -145,17 +164,22 @@ class Api_splits extends CI_Controller {
     // TODO: very important. sanity check input
     $testset_str = array_key_exists('custom_testset', $values) && is_cs_natural_numbers($values['custom_testset']) ? '-test "' . $values['custom_testset'] . '"' : '';
     
-    $command = 'java -jar ' . $this->evaluation . ' -f "' . $function . '" -id ' . $task_id . ' ' . $this->eval_engine_config;
+    // Escape all shell arguments to prevent command injection.
+    // $function is an internal string, but escaped as defence-in-depth.
+    $command = 'java -jar ' . escapeshellarg($this->evaluation)
+             . ' -f ' . escapeshellarg($function)
+             . ' -id ' . escapeshellarg((string)(int) $task_id)
+             . ' ' . $this->eval_engine_config;
     
-    if (array_key_exists('custom_testset', $values)) {
-      $command .= '-test "' . $values['custom_testset'] . '" ';
+    if (array_key_exists('custom_testset', $values) && is_cs_natural_numbers($values['custom_testset'])) {
+      $command .= '-test ' . escapeshellarg($values['custom_testset']) . ' ';
     }
     
     if (!file_exists(dirname($filepath))) {
       mkdir(dirname($filepath), 0755, true);
     }
     
-    $command .= ' -o ' . $filepath;
+    $command .= ' -o ' . escapeshellarg($filepath);
     
     if (function_enabled('exec')) {
       header('Content-type: text/plain');
