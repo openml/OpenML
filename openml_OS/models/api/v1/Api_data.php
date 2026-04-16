@@ -792,7 +792,7 @@ class Api_data extends MY_Api_Model {
 
     $dataset = $this->Dataset->getById( $data_id );
     if( $dataset === false ) {
-      $this->returnError( 111, $this->version );
+      $this->returnError(111, $this->version, 404);
       return;
     }
 
