@@ -1276,6 +1276,18 @@ class Api_data extends MY_Api_Model {
     /* * * *
      * THE ACTUAL INSERTION
      * * * */
+    // 🔍 Check for duplicate dataset using file_id
+    // 🔍 Check for duplicate dataset using file_id
+    $existing = $this->Dataset->getWhereSingle('file_id = ' . $file_id);
+    if ($existing != false) {
+      $this->returnError(
+        135,
+        $this->version,
+        $this->openmlGeneralErrorCode,
+        "Dataset with same file already exists"
+      );
+      return;
+    }
     $id = $this->Dataset->insert($dataset);
     if (!$id) {
       $this->returnError(134, $this->version);
