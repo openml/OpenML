@@ -660,6 +660,11 @@ class Api_data extends MY_Api_Model {
       return;
     }
 
+    if($dataset->uploader != $this->user_id and !$this->user_has_admin_rights) {
+      $this->returnError(1065, $this->version);
+      return;
+    }
+
     // If all the fields are false, there is nothing to update, return error 
     if(!$update_fields) {
       $this->returnError( 1064, $this->version );
@@ -669,10 +674,6 @@ class Api_data extends MY_Api_Model {
     // If critical fields need to be edited
     if (isset($update_fields['default_target_attribute']) || isset($update_fields['row_id_attribute']) || isset($update_fields['ignore_attribute'])) {
       # Only owner can edit critical features
-      if($dataset->uploader != $this->user_id and !$this->user_has_admin_rights) {
-        $this->returnError(1065, $this->version);
-        return;
-      }
       # Only datasets without tasks can allow critical feature edits
       $tasks = $this->Task->getTasksWithValue( array( 'source_data' => $dataset->did ) );
       if( $tasks !== false ) {
