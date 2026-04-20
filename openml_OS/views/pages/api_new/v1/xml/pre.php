@@ -506,6 +506,7 @@ $this->apiErrors[1044] = 'Please ensure that post field ids contains a list of n
 $this->apiErrors[1045] = 'Problem attaching entities. Please ensure to only attach entities that exist';
 $this->apiErrors[1046] = 'Problem detaching entities.';
 $this->apiErrors[1047] = 'Can only attach or detach if status is in preparation.';
+$this->apiErrors[1048] = 'Can only attach or detach if you are the owner.';
 
 // for function: openml.study.status update
 $this->apiErrors[1051] = 'Not legal status to update to';

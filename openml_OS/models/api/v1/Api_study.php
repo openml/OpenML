@@ -384,6 +384,11 @@ class Api_study extends MY_Api_Model {
       $this->returnError(1041, $this->version);
       return;
     }
+    if ($study->creator != $this->user_id and !$this->user_has_admin_rights) {
+      $this->returnError(1048, $this->version);
+      return;
+    }
+
     
     if ($study->legacy == 'y') {
       $this->returnError(1042, $this->version);
