@@ -594,6 +594,10 @@ class Api_setup extends MY_Api_Model {
       $this->returnError( 402, $this->version );
       return;
     }
+    if (!$this->user_has_admin_rights) {
+      $this->returnError(403, $this->version);
+      return;
+    }
 
     $runs = $this->Run->getWhere( 'setup = "' . $setup->sid . '"' );
     $schedules = $this->Schedule->getWhere( 'sid = "' . $setup->sid . '"' );

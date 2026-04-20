@@ -194,6 +194,7 @@ $this->apiErrors[400] = 'Please provide API key';
 // for function: openml.setup.delete
 $this->apiErrors[401] = 'Authentication failed';
 $this->apiErrors[402] = 'Setup does not exist';
+$this->apiErrors[403] = 'Must be administrator.';
 $this->apiErrors[404] = 'Setup is in use by other content (runs, schedules, etc). Can not be deleted';
 $this->apiErrors[405] = 'Deleting setup failed.';
 
