@@ -406,7 +406,7 @@ class Api_study extends MY_Api_Model {
       return;
     }
     
-    if (!$study->status == 'in_preparation') {
+    if ($study->status != 'in_preparation') {
       $this->returnError(1047, $this->version);
       return;
     }
