@@ -231,6 +231,8 @@ class MY_Api_Model extends CI_Model {
       if ($type == "dataset" || $type == "implementation" || $type == "run") {
         $owner = $entity->uploader;
       } else {
+        # Setups don't have either an owner or a creator, so this resolves to null,
+        # and access is only granted to the tag uploader or admins, as intended.
         $owner = $entity->creator;
       }
       $is_admin = $this->ion_auth->is_admin($this->user_id);

@@ -580,7 +580,7 @@ class Api_setup extends MY_Api_Model {
    *	),
    *	@OA\Response(
    *		response=412,
-   *		description="Precondition failed. An error code and message are returned.\n401 - Authentication failed. Please provide API key. In order to remove your content, please authenticate.\n402 - Setup does not exists. The setup ID could not be linked to an existing setup.\n404 - Setup deletion failed. Setup is in use by other content (runs, schedules, etc). Can not be deleted.\n405 - Setup deletion failed. Please try again later.\n",
+   *		description="Precondition failed. An error code and message are returned.\n401 - Authentication failed. Please provide API key. In order to remove your content, please authenticate.\n402 - Setup does not exists. The setup ID could not be linked to an existing setup.\n403 - Only an administrator can delete a setup.\n404 - Setup deletion failed. Setup is in use by other content (runs, schedules, etc). Can not be deleted.\n405 - Setup deletion failed. Please try again later.\n",
    *		@OA\JsonContent(
    *			ref="#/components/schemas/Error",
    *		),

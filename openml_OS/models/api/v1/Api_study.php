@@ -367,7 +367,7 @@ class Api_study extends MY_Api_Model {
    *	),
    *	@OA\Response(
    *		response=412,
-   *		description="Precondition failed. An error code and message are returned.\n1041 - Could not find study. Check the study ID in your request.\n1042 - Cannot attach entities to legacy studies.\n1043 - Please provide POST field 'ids'.\n1044 - Please ensure that the 'ids' in the POST field is a list of natural numbers.\n1046 - Could not detach entities from the study. It appears as if the entity does not exist.       \n",
+   *		description="Precondition failed. An error code and message are returned.\n1041 - Could not find study. Check the study ID in your request.\n1042 - Cannot attach entities to legacy studies.\n1043 - Please provide POST field 'ids'.\n1044 - Please ensure that the 'ids' in the POST field is a list of natural numbers.\n1046 - Could not detach entities from the study. It appears as if the entity does not exist.\n1047 - Can only attach or detach to study if it is in preparation.\n1048 - Only the study owner or an administrator can attach or detach entities.\n",
    *		@OA\JsonContent(
    *			ref="#/components/schemas/Error",
    *		),
