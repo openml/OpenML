@@ -194,6 +194,7 @@ $this->apiErrors[400] = 'Please provide API key';
 // for function: openml.setup.delete
 $this->apiErrors[401] = 'Authentication failed';
 $this->apiErrors[402] = 'Setup does not exist';
+$this->apiErrors[403] = 'Must be administrator.';
 $this->apiErrors[404] = 'Setup is in use by other content (runs, schedules, etc). Can not be deleted';
 $this->apiErrors[405] = 'Deleting setup failed.';
 
@@ -505,6 +506,7 @@ $this->apiErrors[1044] = 'Please ensure that post field ids contains a list of n
 $this->apiErrors[1045] = 'Problem attaching entities. Please ensure to only attach entities that exist';
 $this->apiErrors[1046] = 'Problem detaching entities.';
 $this->apiErrors[1047] = 'Can only attach or detach if status is in preparation.';
+$this->apiErrors[1048] = 'Can only attach or detach if you are the owner or an administrator.';
 
 // for function: openml.study.status update
 $this->apiErrors[1051] = 'Not legal status to update to';
@@ -519,7 +521,7 @@ $this->apiErrors[1061] = 'Please provide edit_parameters xml';
 $this->apiErrors[1062] = 'Data ID is required';
 $this->apiErrors[1063] = 'Unknown dataset';
 $this->apiErrors[1064] = 'Please provide atleast one field among description, creator, contributor, collection_date, language, citation, original_data_url, default_target_attribute, row_id_attribute, ignore_attribute or paper_url to edit. ';
-$this->apiErrors[1065] = 'Critical features default_target_attribute, row_id_attribute and ignore_attribute can be edited only by the owner. Fork the dataset if changes are required.';
+$this->apiErrors[1065] = 'Dataset can only be edited by the owner or an administrator. Fork the dataset if changes are required.';
 $this->apiErrors[1066] = 'Critical features default_target_attribute, row_id_attribute and ignore_attribute can only be edited for datasets without any tasks.';
 $this->apiErrors[1067] = 'Data description insert failed';
 $this->apiErrors[1068] = 'Dataset update failed';
