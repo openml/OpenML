@@ -1,7 +1,7 @@
+RewriteEngine on
+
 # The server-status path is reserved for the apache mod
 RewriteRule ^server-status$ - [L]
-
-RewriteEngine on
 
 # TODO: specific for main instance of OpenML site. Should do something better
 RewriteCond %{HTTP_HOST} ^api_new.openml.org
