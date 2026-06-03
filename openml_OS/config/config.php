@@ -213,7 +213,7 @@ $config['directory_trigger'] = 'd';
 | your log files will fill up very fast.
 |
 */
-$config['log_threshold'] = 0;
+$config['log_threshold'] = (int) getenv('OPENML_CI_LOG_THRESHOLD') ?: 1;
 
 /*
 |--------------------------------------------------------------------------
@@ -224,7 +224,7 @@ $config['log_threshold'] = 0;
 | application/logs/ directory. Use a full server path with trailing slash.
 |
 */
-$config['log_path'] = '';
+$config['log_path'] = getenv('OPENML_CI_LOG_PATH') ?: '/var/www/openml/logs/';
 
 /*
 |--------------------------------------------------------------------------
