@@ -179,7 +179,7 @@ class Api_evaluation extends MY_Api_Model {
    *)
    */
   private function evaluation_list($segs, $user_id, $show_params) {
-    $result_limit = 10000;
+    $result_limit = 1000;
     $legal_filters = array('task', 'setup', 'flow', 'uploader', 'run', 'tag', 'limit', 'offset', 'function', 'per_fold', 'sort_order', 'study');
     list($query_string, $illegal_filters) = $this->parse_filters($segs, $legal_filters);
     if (count($illegal_filters) > 0) {
