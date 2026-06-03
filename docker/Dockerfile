@@ -8,6 +8,8 @@ RUN docker-php-source extract \
 RUN apt update \
     && apt install -y --no-install-recommends openjdk-11-jre 
 
+ENV MAX_REQUEST_WORKERS=152
+
 COPY . /var/www/openml
 RUN mv /var/www/openml/openml_OS/config/BASE_CONFIG-BLANK.php /var/www/openml/openml_OS/config/BASE_CONFIG.php
 
@@ -20,6 +22,7 @@ COPY docker/config/*.load /etc/apache2/mods-enabled/
 COPY docker/config/api.conf /etc/apache2/sites-enabled/000-default.conf
 COPY docker/config/php.ini /usr/local/etc/php/
 COPY docker/config/.htaccess /var/www/openml/.htaccess
+COPY docker/config/mpm_prefork.conf /etc/apache2/mods-enabled/mpm_prefork.conf
 
 COPY docker/set_configuration.sh /scripts/
 
