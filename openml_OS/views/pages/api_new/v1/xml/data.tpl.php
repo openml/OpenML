@@ -5,7 +5,7 @@
     <oml:name><?php echo $data->name; ?></oml:name>
     <oml:version><?php echo $data->version; ?></oml:version>
     <?php if ($data->description != null):?>
-    <oml:description_160> echo substr($data->description, 0, 160); ?></oml:description_160>
+    <?php echo "<oml:description_160>" . htmlspecialchars(substr($data->description, 0, 160)) . "</oml:description_160>"; ?>
     <?php endif; ?>
     <oml:uploader><?php echo $data->uploader; ?></oml:uploader>
     <oml:status><?php echo $data->status; ?></oml:status>

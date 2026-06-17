@@ -525,11 +525,11 @@ class Api_data extends MY_Api_Model {
       $where_limit =  ' LIMIT ' . $offset . ',' . $limit;
     }
 
-    $sql = 'SELECT d.*, ' . $status_sql_variable . ' AS `status` '.
+    $sql = 'SELECT d.*, dd.description, ' . $status_sql_variable . ' AS `status` '.
            'FROM dataset d ' .
            'LEFT JOIN (SELECT `did`, MAX(`status`) AS `status` FROM `dataset_status` GROUP BY `did`) s ON d.did = s.did ' .
+           'LEFT JOIN (SELECT did, description FROM dataset_description WHERE (did,version) IN (SELECT did, MAX(version) FROM dataset_description GROUP BY did)) dd ON dd.did = d.did ' .
            'WHERE (visibility = "public" or uploader='.$this->user_id.') '. $where_total . $where_limit;
-
     $datasets_res = $this->Dataset->query($sql);
     if( is_array( $datasets_res ) == false || count( $datasets_res ) == 0 ) {
       $this->returnError( 372, $this->version );
