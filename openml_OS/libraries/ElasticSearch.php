@@ -331,7 +331,7 @@ class ElasticSearch {
                 return $this->$method_name($id, $altmetrics, $verbosity);
 	    } catch (Exception $e) {
 		echo $e->getMessage();
-                // TODO: log?
+                log_message('error', '[ElasticSearch] Indexing failed for type ' . $type . ' (id: ' . ($id ?: 'all') . '): ' . $e->getMessage());
             }
         } else {
             return 'No function exists to build index of type ' . $type;
@@ -352,7 +352,7 @@ class ElasticSearch {
                 return $this->$method_name(false, $id, $altmetrics, $verbosity);
 	    } catch (Exception $e) {
 		echo $e->getMessage();
-                // TODO: log?
+                log_message('error', '[ElasticSearch] Indexing from id failed for type ' . $type . ' (from id: ' . ($id ?: '0') . '): ' . $e->getMessage());
             }
         } else {
             return 'No function exists to build index of type ' . $type;
