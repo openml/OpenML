@@ -28,24 +28,25 @@ class Data_server extends CI_Model {
       return;
     }
 
-    if (!file_exists(DATA_PATH . $file->filepath) && $file->type != 'url') {
+    // in case of externally linked file, handle alternativelly
+    if ($file->{'type'} == 'url') {
+      header('Location: ' . $file->filepath);
+      return;
+    }
+
+    if (!file_exists(DATA_PATH . $file->filepath)) {
       $this->_error404();
       return;
     }
     
-    if (filesize(DATA_PATH . $file->filepath) != $file->filesize && $file->type != 'url') {
+    if (filesize(DATA_PATH . $file->filepath) != $file->filesize) {
       $this->_email_filesize_error($file);
       $this->_error404();
       return;
     }
 
-    // in case of externally linked file, handle alternativelly
-    if ($file->{'type'} == 'url') {
-      header('Location: ' . $file->filepath);
-    } else {
-      $this->_header_download($file->filename_original, $file->filesize, $file->extension, $file->mime_type);
-      readfile_chunked(DATA_PATH . $file->filepath);
-    }
+    $this->_header_download($file->filename_original, $file->filesize, $file->extension, $file->mime_type);
+    readfile_chunked(DATA_PATH . $file->filepath);
   }
 
   function view($id, $name = 'undefined') {
