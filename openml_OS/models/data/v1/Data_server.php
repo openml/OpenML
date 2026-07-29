@@ -28,24 +28,36 @@ class Data_server extends CI_Model {
       return;
     }
 
-    if (!file_exists(DATA_PATH . $file->filepath) && $file->type != 'url') {
+    // We can't quickly assess whether remote files exist and whether or not they
+    // have been modified, so we just "hope for the best" and redirect the client.
+    // Historically, remote files were always hosted by other parties, datasets uploaded
+    // to OpenML would be stored on disk. Since 2025ish we started migrating over these
+    // files from disk to our self-hosted MinIO server. To the PHP API, these are also
+    // considered "remote" files of the type 'url', so files that would meet this condition
+    // could be both something like "https://zenodo.org/..." but 
+    // also "https://data.openml.org/...". While MinIO can be probed for this data, we opted
+    // not to update the PHP API.
+    if ($file->{'type'} == 'url') {
+      header('Location: ' . $file->filepath);
+      return;
+    }
+
+    // Some files do not exist on MinIO and so are read from disk (a persistent k8s volume).
+    // This includes newly uploaded dataset and run files, as these are first written to disk
+    // by the PHP API. 
+    if (!file_exists(DATA_PATH . $file->filepath)) {
       $this->_error404();
       return;
     }
     
-    if (filesize(DATA_PATH . $file->filepath) != $file->filesize && $file->type != 'url') {
+    if (filesize(DATA_PATH . $file->filepath) != $file->filesize) {
       $this->_email_filesize_error($file);
       $this->_error404();
       return;
     }
 
-    // in case of externally linked file, handle alternativelly
-    if ($file->{'type'} == 'url') {
-      header('Location: ' . $file->filepath);
-    } else {
-      $this->_header_download($file->filename_original, $file->filesize, $file->extension, $file->mime_type);
-      readfile_chunked(DATA_PATH . $file->filepath);
-    }
+    $this->_header_download($file->filename_original, $file->filesize, $file->extension, $file->mime_type);
+    readfile_chunked(DATA_PATH . $file->filepath);
   }
 
   function view($id, $name = 'undefined') {
