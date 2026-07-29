@@ -28,12 +28,23 @@ class Data_server extends CI_Model {
       return;
     }
 
-    // in case of externally linked file, handle alternativelly
+    // We can't quickly assess whether remote files exist and whether or not they
+    // have been modified, so we just "hope for the best" and redirect the client.
+    // Historically, remote files were always hosted by other parties, datasets uploaded
+    // to OpenML would be stored on disk. Since 2025ish we started migrating over these
+    // files from disk to our self-hosted MinIO server. To the PHP API, these are also
+    // considered "remote" files of the type 'url', so files that would meet this condition
+    // could be both something like "https://zenodo.org/..." but 
+    // also "https://data.openml.org/...". While MinIO can be probed for this data, we opted
+    // not to update the PHP API.
     if ($file->{'type'} == 'url') {
       header('Location: ' . $file->filepath);
       return;
     }
 
+    // Some files do not exist on MinIO and so are read from disk (a persistent k8s volume).
+    // This includes newly uploaded dataset and run files, as these are first written to disk
+    // by the PHP API. 
     if (!file_exists(DATA_PATH . $file->filepath)) {
       $this->_error404();
       return;
