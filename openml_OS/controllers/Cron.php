@@ -77,14 +77,25 @@ class Cron extends CI_Controller {
       $this->elasticsearch->update_tags($type, $id);
   }
 
-  // initialize all es indexes
-  public function initialize_es_indices() {
-    foreach($this->es_indices as $index) {
-      $this->elasticsearch->initialize_index($index);
+  // Create an ES index without populating it.
+  // On failure, print an error without raising one.
+  public function initialize_es_index($index) {
+    try {
+      echo $this->elasticsearch->initialize_index($index);
+    } catch (Exception $e)  {
+      echo 'Error initializing '. $index . ': ' . $e->getMessage() . "\n";
     }
   }
 
-  // builds all es indexes
+  // Create all ES indices without populating them.
+  // If an error occurs, subsequent indices are still attempted to be created.
+  public function initialize_es_indices() {
+    foreach($this->es_indices as $index) {
+      $this->initialize_es_index($index);
+    }
+  }
+
+  // Initializes and populates es indexes, exits on first error.
   public function build_es_indices() {
     foreach($this->es_indices as $index) {
       $this->elasticsearch->initialize_index($index);
