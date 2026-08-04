@@ -54,6 +54,26 @@ class Data extends CI_Controller {
     $controller = array_shift($segs);
     $this->version = array_shift($segs);
     $function = array_shift($segs);
+
+    $function_whitelist = array('download', 'view', 'get_csv');
+
+    if (!in_array($function, $function_whitelist)) {
+      http_response_code(404);
+      echo 'Function not valid.';
+      return;
+    }
+
+    if (!$segs) {
+      http_response_code(400);
+      echo 'Missing value for argument id.';
+      return;
+    }
+
+    if (count($segs) > 2) {
+      http_response_code(400);
+      echo 'Expected at most two arguments: id (required) and name (optional).';
+      return;
+    }
     
     call_user_func_array(array($this->Data_server, $function), $segs);
   }
