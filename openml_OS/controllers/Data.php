@@ -39,7 +39,7 @@ class Data extends CI_Controller {
     }
   }
   
-  public function v1($type) {
+  public function v1(...$args) {
     $this->load->Model('data/v1/Data_server');
     $this->bootstrap('1');
   }

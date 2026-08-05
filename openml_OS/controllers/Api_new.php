@@ -117,7 +117,7 @@ class Api_new extends CI_Controller {
     $this->_show_webpage();
   }
 
-  public function v1($type) {
+  public function v1(...$args) {
     $this->bootstrap('1');
   }
 
