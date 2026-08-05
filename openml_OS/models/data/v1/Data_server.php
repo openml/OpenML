@@ -109,7 +109,17 @@ class Data_server extends CI_Model {
       $location = $file->filepath;
     }
 
-    $handle = fopen($location, 'r');
+    $handle = @fopen($location, 'r');
+
+    if (!$handle) {
+      log_message('debug', "Failed to read file " . (string)$id . " from '" . $location . "'");
+      $this->_error404();
+      return;
+    }
+
+    // Read the ARFF header -- everything before the @data marker. 
+    // The header data is discarded. 
+    // Our CSV only provides feature names which are queried from the database later.
     $position = -1;
     for ($i = 0; ($line = fgets($handle)) !== false; ++$i) {
       // process the line read.
@@ -121,6 +131,7 @@ class Data_server extends CI_Model {
 
     if ($position < 0) { # apparently we didn't find '@data'
       # TODO: more meaningfull error
+      log_message('debug', "Could not covert file " . (string)$id . " in '" . $location . "': no @data marker present.");
       $this->_error404();
       return;
     }
@@ -131,6 +142,7 @@ class Data_server extends CI_Model {
     $features = $this->Data_feature->getColumnWhere('name', 'did = "' . $dataset->did . '"', 'index ASC');
     if ($features < 2) {
       # TODO: more meaningfull error
+      log_message('debug', "Not enough features present for dataset " . $dataset->did . " aborting conversion to CSV.");
       $this->_error404();
       return;
     }
