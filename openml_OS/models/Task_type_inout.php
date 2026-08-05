@@ -50,7 +50,7 @@ class Task_type_inout extends MY_Database_Read_Model {
       $additional = $this->query($sql);
 
       if (empty($additional)) {
-        log_message('error', 'empty result set for query \'' . $sql . '\' for task ' . (string)$task_id);
+        log_message('debug', 'empty result set for query \'' . $sql . '\' for task ' . (string)$task_id);
         continue;
       }
       
