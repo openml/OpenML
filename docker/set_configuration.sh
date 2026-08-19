@@ -33,7 +33,7 @@ INDEX_PATH=${OPENML_PATH}openml/index.php
 sed "s/define('ENVIRONMENT', '.*')/define('ENVIRONMENT', '${PHP_ENVIRONMENT:-production}')/" --in-place ${INDEX_PATH}
 
 PHP_INI_PATH=/usr/local/etc/php/php.ini
-sed "s/mysqlnd.net_read_timeout = 600/mysqlnd.net_read_timeout = ${MYSQLND_NET_READ_TIMEOUT:-600}/" --in-place ${PHP_INI_PATH}
+sed "s/mysqlnd.net_read_timeout = MYSQLND_NET_READ_TIMEOUT/mysqlnd.net_read_timeout = ${MYSQLND_NET_READ_TIMEOUT:-600}/" --in-place ${PHP_INI_PATH}
 
 cd /var/www/openml
 
