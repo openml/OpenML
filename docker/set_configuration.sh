@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -euxo pipefail
+set -euo pipefail
 # TODO: read credentials from secrets instead
 
 OPENML_PATH=${OPENML_PATH:-/var/www/}
