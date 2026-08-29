@@ -1187,6 +1187,10 @@ class Api_data extends MY_Api_Model {
 
     // obtain some other fields
     $name = '' . $xml->children('oml', true)->{'name'};
+    if (empty(trim($name))) {
+    $this->returnError(135, $this->version, $this->openmlGeneralErrorCode, "Dataset name is required");
+    return;
+}
     $version = $this->Dataset->incrementVersionNumber($name);
 
     //check and register the data files, return url
