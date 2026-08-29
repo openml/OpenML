@@ -1,0 +1,66 @@
+name: PHP Quality Checks
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Static Analysis & Code Style
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup PHP 7.4
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          extensions: mbstring, intl, mysqli
+          coverage: none
+          tools: composer:v2
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+        working-directory: openml_OS
+
+      - name: Cache Composer packages
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('openml_OS/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Install Composer dependencies (including dev)
+        run: composer install --prefer-dist --no-progress --no-interaction
+        working-directory: openml_OS
+
+      - name: PHP-CS-Fixer — check code style (dry run)
+        run: composer run cs:check
+        working-directory: openml_OS
+
+      - name: PHPStan — static analysis (level 3)
+        run: composer run phpstan
+        working-directory: openml_OS
+
+      - name: Psalm — static analysis (level 8, informational)
+        # continue-on-error so Psalm reports issues without blocking PRs initially.
+        # Remove this once the codebase is clean enough to enforce.
+        continue-on-error: true
+        run: composer run psalm
+        working-directory: openml_OS
+
+      - name: PHPMD — code smell detection (informational)
+        # continue-on-error so PHPMD reports issues without blocking PRs initially.
+        # Remove this once the codebase is clean enough to enforce.
+        continue-on-error: true
+        run: composer run phpmd
+        working-directory: openml_OS
