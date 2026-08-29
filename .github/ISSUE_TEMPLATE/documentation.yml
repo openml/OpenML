@@ -1,0 +1,76 @@
+name: Documentation Improvement
+description: Suggest improvements to documentation
+title: "[Docs]: "
+labels: ["documentation"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for helping improve OpenML documentation!
+
+  - type: dropdown
+    id: doc-type
+    attributes:
+      label: Documentation Type
+      description: What type of documentation needs improvement?
+      options:
+        - API Documentation
+        - Code Comments
+        - README Files
+        - Setup/Installation Guide
+        - User Guide
+        - Developer Guide
+        - Other
+      default: 0
+    validations:
+      required: true
+
+  - type: textarea
+    id: location
+    attributes:
+      label: Documentation Location
+      description: Where is the documentation that needs improvement?
+      placeholder: |
+        - URL: https://docs.openml.org/...
+        - File: README.md, line 45
+        - API endpoint: /api/v1/...
+    validations:
+      required: true
+
+  - type: textarea
+    id: issue
+    attributes:
+      label: Current Issue
+      description: What's wrong or missing in the current documentation?
+      placeholder: |
+        Example: The API endpoint for data retrieval is not documented, making it difficult for new developers to integrate with OpenML.
+    validations:
+      required: true
+
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested Improvement
+      description: What should be changed or added?
+      placeholder: "Describe what you'd like to see in the documentation"
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Any other information, examples, or references?
+      placeholder: "Examples from other projects, screenshots, or code snippets"
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution
+      options:
+        - label: I am willing to submit a PR to improve this documentation
+          required: false
