@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<ruleset name="OpenML Coding Standards">
+    <description>PHP CodeSniffer configuration for OpenML</description>
+
+    <!-- Show progress and use colors -->
+    <arg value="p"/>
+    <arg name="colors"/>
+
+    <!-- Use PSR-12 as base standard -->
+    <rule ref="PSR12"/>
+
+    <!-- Check these directories -->
+    <file>openml_OS/controllers</file>
+    <file>openml_OS/models</file>
+    <file>openml_OS/helpers</file>
+    <file>openml_OS/libraries</file>
+    <file>openml_OS/core</file>
+
+    <!-- Exclude vendor and third-party directories -->
+    <exclude-pattern>*/vendor/*</exclude-pattern>
+    <exclude-pattern>*/third_party/*</exclude-pattern>
+    <exclude-pattern>*/cache/*</exclude-pattern>
+    <exclude-pattern>*/logs/*</exclude-pattern>
+    <exclude-pattern>*/system/*</exclude-pattern>
+
+    <!-- Relaxed rules for legacy CodeIgniter code -->
+    <rule ref="PSR1.Classes.ClassDeclaration.MissingNamespace">
+        <severity>0</severity>
+    </rule>
+
+    <!-- Allow CodeIgniter naming conventions -->
+    <rule ref="Squiz.Classes.ValidClassName.NotCamelCaps">
+        <severity>0</severity>
+    </rule>
+
+    <!-- Set encoding -->
+    <config name="encoding" value="utf-8"/>
+
+    <!-- Set tab width -->
+    <arg name="tab-width" value="4"/>
+</ruleset>

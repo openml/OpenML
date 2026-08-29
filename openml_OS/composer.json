@@ -18,6 +18,14 @@
 		"paragonie/random_compat": "Provides better randomness in PHP 5.x"
 	},
 	"require-dev": {
-		"mikey179/vfsstream": "1.6.*"
+		"mikey179/vfsstream": "1.6.*",
+		"squizlabs/php_codesniffer": "^3.7",
+		"friendsofphp/php-cs-fixer": "^3.40"
+	},
+	"scripts": {
+		"lint": "phpcs --standard=.phpcs.xml",
+		"lint:fix": "phpcbf --standard=.phpcs.xml",
+		"cs:check": "php-cs-fixer fix --dry-run --diff",
+		"cs:fix": "php-cs-fixer fix"
 	}
 }
