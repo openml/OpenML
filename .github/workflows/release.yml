@@ -1,0 +1,122 @@
+# This workflow creates GitHub releases automatically when a tag is pushed
+#
+# It generates release notes, creates a changelog, and uploads release artifacts.
+# Tags should follow semantic versioning (e.g., v1.2.3)
+
+name: 'Create Release'
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  discussions: write
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get Tag Information
+        id: tag_info
+        run: |
+          # Extract version from tag
+          TAG_NAME=${GITHUB_REF#refs/tags/}
+          VERSION=${TAG_NAME#v}
+          echo "tag_name=${TAG_NAME}" >> $GITHUB_OUTPUT
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          
+          # Check if it's a pre-release
+          if [[ $VERSION =~ -(alpha|beta|rc) ]]; then
+            echo "prerelease=true" >> $GITHUB_OUTPUT
+          else
+            echo "prerelease=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Get Previous Tag
+        id: previous_tag
+        run: |
+          PREVIOUS_TAG=$(git describe --abbrev=0 --tags ${GITHUB_REF}^ 2>/dev/null || echo "")
+          echo "previous_tag=${PREVIOUS_TAG}" >> $GITHUB_OUTPUT
+
+      - name: Generate Changelog
+        id: changelog
+        run: |
+          if [ -n "${{ steps.previous_tag.outputs.previous_tag }}" ]; then
+            CHANGELOG=$(git log ${{ steps.previous_tag.outputs.previous_tag }}..HEAD --pretty=format:"- %s (%h)" --no-merges)
+          else
+            CHANGELOG=$(git log --pretty=format:"- %s (%h)" --no-merges)
+          fi
+          
+          # Save changelog to file
+          echo "$CHANGELOG" > CHANGELOG.txt
+          
+          # Create release body
+          cat > RELEASE_BODY.md << EOF
+          ## 🚀 What's New in ${{ steps.tag_info.outputs.tag_name }}
+          
+          ### Changes
+          $CHANGELOG
+          
+          ### 📦 Installation
+          
+          See the [installation guide](https://www.openml.org/guide) for setup instructions.
+          
+          ### 🐛 Bug Reports
+          
+          If you encounter any issues, please [open an issue](https://github.com/${{ github.repository }}/issues/new).
+          
+          ### 📝 Full Changelog
+          
+          **Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ steps.previous_tag.outputs.previous_tag }}...${{ steps.tag_info.outputs.tag_name }}
+          EOF
+
+      - name: Create Archive
+        run: |
+          # Create a release archive (excluding .git and other unnecessary files)
+          tar -czf openml-${{ steps.tag_info.outputs.version }}.tar.gz \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='node_modules' \
+            --exclude='vendor' \
+            --exclude='.env' \
+            --exclude='*.log' \
+            .
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: OpenML ${{ steps.tag_info.outputs.tag_name }}
+          body_path: RELEASE_BODY.md
+          draft: false
+          prerelease: ${{ steps.tag_info.outputs.prerelease }}
+          generate_release_notes: true
+          files: |
+            openml-${{ steps.tag_info.outputs.version }}.tar.gz
+            CHANGELOG.txt
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update Release Notes
+        if: steps.tag_info.outputs.prerelease == 'false'
+        run: |
+          echo "✅ Release ${{ steps.tag_info.outputs.tag_name }} created successfully!"
+          echo "📦 Download URL: https://github.com/${{ github.repository }}/releases/tag/${{ steps.tag_info.outputs.tag_name }}"
+
+  notify-release:
+    needs: create-release
+    runs-on: ubuntu-latest
+    if: success()
+
+    steps:
+      - name: Post Release Notification
+        run: |
+          echo "🎉 New release published: ${{ github.ref_name }}"
+          echo "Check it out at: ${{ github.server_url }}/${{ github.repository }}/releases/tag/${{ github.ref_name }}"
