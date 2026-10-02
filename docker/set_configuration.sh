@@ -4,8 +4,17 @@ set -euxo pipefail
 
 # TODO: read credentials from secrets instead
 OPENML_PATH=${OPENML_PATH:-/var/www/}
-BASE_CONFIG_PATH=${OPENML_PATH}openml/openml_OS/config/BASE_CONFIG.php
+
 INDEX_PATH=${OPENML_PATH}openml/index.php
+BASE_CONFIG_PATH=${OPENML_PATH}openml/openml_OS/config/BASE_CONFIG.php
+
+# When using the image locally, a newer BASE_CONFIG-BLANK template might be present,
+# which we want to use instead to avoid needing to rebuild the image to test local changes.
+BASE_CONFIG_BLANK=${OPENML_PATH}openml/openml_OS/config/BASE_CONFIG-BLANK.php
+if [ -f "${BASE_CONFIG_BLANK}" ]; then
+        cp "${BASE_CONFIG_BLANK}" "${BASE_CONFIG_PATH}"
+fi
+
 
 # We expect some paths/urls to contain '/' characters, so we use '*' instead
 sed "s*'BASE_URL', 'FILL_IN'*'BASE_URL', '${BASE_URL:-https://test.openml.org/}'*g" --in-place ${BASE_CONFIG_PATH}
