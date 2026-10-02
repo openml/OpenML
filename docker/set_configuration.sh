@@ -26,6 +26,7 @@ sed "s*'DB_HOST_OPENML', 'FILL_IN'*'DB_HOST_OPENML', '${DB_HOST_OPENML:-openml-t
 sed "s*'DB_USER_OPENML', 'FILL_IN'*'DB_USER_OPENML', '${DB_USER_OPENML:-root}'*g" --in-place ${BASE_CONFIG_PATH}
 sed "s*'DB_PASS_OPENML', 'FILL_IN'*'DB_PASS_OPENML', '${DB_PASS_OPENML:-ok}'*g" --in-place ${BASE_CONFIG_PATH}
 
+sed "s*'ES_ENABLED', 'FILL_IN'*'ES_ENABLED', '${ES_ENABLED:-true}'*g" --in-place ${BASE_CONFIG_PATH}
 sed "s*'ES_URL', 'FILL_IN'*'ES_URL', '${ES_URL:-elasticsearch:9200}'*g" --in-place ${BASE_CONFIG_PATH}
 sed "s*'ES_USERNAME', 'FILL_IN'*'ES_USERNAME', '${ES_USERNAME:-elastic}'*g" --in-place ${BASE_CONFIG_PATH}
 sed "s*'ES_PASSWORD', 'FILL_IN'*'ES_PASSWORD', '${ES_PASSWORD:-default}'*g" --in-place ${BASE_CONFIG_PATH}
