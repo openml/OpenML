@@ -6,7 +6,7 @@ if (!defined('BASEPATH'))
 class ElasticSearch {
 
     public function __construct() {
-        $this->enabled = defined('ES_ENABLED') ? ES_ENABLED : true;
+        $this->enabled = defined('ES_ENABLED') ? filter_var(ES_ENABLED, FILTER_VALIDATE_BOOLEAN) : true;
 
         if (!$this->enabled) {
             return;
