@@ -1,11 +1,9 @@
 #!/bin/bash
 
-set -euxo pipefail
-
+set -euo pipefail
 # TODO: read credentials from secrets instead
 OPENML_PATH=${OPENML_PATH:-/var/www/}
 
-INDEX_PATH=${OPENML_PATH}openml/index.php
 BASE_CONFIG_PATH=${OPENML_PATH}openml/openml_OS/config/BASE_CONFIG.php
 
 # When using the image locally, a newer BASE_CONFIG-BLANK template might be present,
@@ -14,7 +12,6 @@ BASE_CONFIG_BLANK=${OPENML_PATH}openml/openml_OS/config/BASE_CONFIG-BLANK.php
 if [ -f "${BASE_CONFIG_BLANK}" ]; then
         cp "${BASE_CONFIG_BLANK}" "${BASE_CONFIG_PATH}"
 fi
-
 
 # We expect some paths/urls to contain '/' characters, so we use '*' instead
 sed "s*'BASE_URL', 'FILL_IN'*'BASE_URL', '${BASE_URL:-https://test.openml.org/}'*g" --in-place ${BASE_CONFIG_PATH}
@@ -40,7 +37,11 @@ sed "s*'ES_URL', 'FILL_IN'*'ES_URL', '${ES_URL:-elasticsearch:9200}'*g" --in-pla
 sed "s*'ES_USERNAME', 'FILL_IN'*'ES_USERNAME', '${ES_USERNAME:-elastic}'*g" --in-place ${BASE_CONFIG_PATH}
 sed "s*'ES_PASSWORD', 'FILL_IN'*'ES_PASSWORD', '${ES_PASSWORD:-default}'*g" --in-place ${BASE_CONFIG_PATH}
 
+INDEX_PATH=${OPENML_PATH}openml/index.php
 sed "s/define('ENVIRONMENT', '.*')/define('ENVIRONMENT', '${PHP_ENVIRONMENT:-production}')/" --in-place ${INDEX_PATH}
+
+PHP_INI_PATH=/usr/local/etc/php/php.ini
+sed "s/mysqlnd.net_read_timeout = MYSQLND_NET_READ_TIMEOUT/mysqlnd.net_read_timeout = ${MYSQLND_NET_READ_TIMEOUT:-600}/" --in-place ${PHP_INI_PATH}
 
 cd /var/www/openml
 

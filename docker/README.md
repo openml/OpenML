@@ -26,3 +26,31 @@ Note that the protocol is `http` not `https`.
 ```bash
 docker build --tag openml/php-rest-api -f docker/Dockerfile .
 ```
+
+## Configuration
+The following environment variables can be set (see also `set_configuration.sh`):
+
+| NAME | DEFAULT | FILE | NOTE |
+|------|---------|------|------|
+| `BASE_URL` | `https://test.openml.org/` | BASE_CONFIG.php | sets `BASE_URL` |
+| `MINIO_URL` | `https://openml1.win.tue.nl/` | BASE_CONFIG.php | sets `MINIO_URL` |
+| `OPENML_PATH` | `/var/www/` | BASE_CONFIG.php | sets `PATH` |
+| `API_KEY` | `FILL_IN_KEY` | BASE_CONFIG.php | sets `API_KEY` |
+| `DB_NAME_EXPDB` | `openml_expdb` | BASE_CONFIG.php | sets `DB_NAME_EXPDB` |
+| `DB_HOST_EXPDB` | `openml-test-database:3306` | BASE_CONFIG.php | sets `DB_HOST_EXPDB` |
+| `DB_USER_EXPDB_READ` | `root` | BASE_CONFIG.php | sets `DB_USER_EXPDB_READ` |
+| `DB_PASS_EXPDB_READ` | `ok` | BASE_CONFIG.php | sets `DB_PASS_EXPDB_READ` |
+| `DB_USER_EXPDB_WRITE` | `root` | BASE_CONFIG.php | sets `DB_USER_EXPDB_WRITE` |
+| `DB_PASS_EXPDB_WRITE` | `ok` | BASE_CONFIG.php | sets `DB_PASS_EXPDB_WRITE` |
+| `DB_NAME_OPENML` | `openml` | BASE_CONFIG.php | sets `DB_NAME_OPENML` |
+| `DB_HOST_OPENML` | `openml-test-database:3306` | BASE_CONFIG.php | sets `DB_HOST_OPENML` |
+| `DB_USER_OPENML` | `root` | BASE_CONFIG.php | sets `DB_USER_OPENML` |
+| `DB_PASS_OPENML` | `ok` | BASE_CONFIG.php | sets `DB_PASS_OPENML` |
+| `ES_URL` | `elasticsearch:9200` | BASE_CONFIG.php | sets `ES_URL` |
+| `ES_USERNAME` | `elastic` | BASE_CONFIG.php | sets `ES_USERNAME` |
+| `ES_PASSWORD` | `default` | BASE_CONFIG.php | sets `ES_PASSWORD` |
+| `PHP_ENVIRONMENT` | `production` | index.php | sets the `ENVIRONMENT` constant |
+| `MYSQLND_NET_READ_TIMEOUT` | `600` | php.ini | sets `mysqlnd.net_read_timeout` |
+| `INDEX_ES_DURING_STARTUP` | `true` | — | if `true`, deletes and rebuilds all Elasticsearch indices on startup |
+
+For information on what these variables do, reference the documentation of the respective files.
