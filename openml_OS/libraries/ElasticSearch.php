@@ -6,6 +6,12 @@ if (!defined('BASEPATH'))
 class ElasticSearch {
 
     public function __construct() {
+        $this->enabled = defined('ES_ENABLED') ? ES_ENABLED : true;
+
+        if (!$this->enabled) {
+            return;
+        }
+
         $this->CI = &get_instance();
         $this->CI->load->model('Dataset');
         $this->CI->load->model('Author');
@@ -34,6 +40,7 @@ class ElasticSearch {
     }
 
     public function initialize(){
+        if (!$this->enabled) { return; }
         $this->data_names = $this->CI->Dataset->getAssociativeArray('did', 'name', 'name IS NOT NULL');
         $this->flow_names = $this->CI->Implementation->getAssociativeArray('id', 'fullName', 'name IS NOT NULL');
         $this->procedure_names = $this->CI->Estimation_procedure->getAssociativeArray('id', 'name', 'name IS NOT NULL');
@@ -308,16 +315,19 @@ class ElasticSearch {
     }
 
     public function test() {
+        if (!$this->enabled) { return false; }
         return $this->client->ping();
     }
 
     public function get_types() {
+        if (!$this->enabled) { return array(); }
         $params['index'] = '_all';
 	$array_data = $this->client->indices()->getMapping($params);
         return array_keys($array_data);
     }
 
     public function index($type, $id = false, $altmetrics=True, $verbosity=0) {
+        if (!$this->enabled) { return; }
         //bootstrap
         $indexParams['index'] = $type;
         if(! $this->client->indices()->getMapping($indexParams))
@@ -339,6 +349,7 @@ class ElasticSearch {
     }
 
     public function index_from($type, $id = false, $verbosity=1, $altmetrics=False) {
+        if (!$this->enabled) { return; }
         //bootstrap
         $indexParams['index'] = $type;
         if(! $this->client->indices()->getMapping($indexParams))
@@ -360,6 +371,7 @@ class ElasticSearch {
     }
 
     public function delete($type, $id = false) {
+        if (!$this->enabled) { return; }
         $deleteParams = array();
         $deleteParams['index'] = $type;
 	$deleteParams['type'] = $type;
@@ -369,6 +381,7 @@ class ElasticSearch {
     }
 
     public function initialize_settings() {
+        if (!$this->enabled) { return; }
 
         $params['index'] = '_all';
         $params['body']['index']['analysis']['analyzer']['keyword-ci'] = array('tokenizer' => 'keyword', 'filter' => 'lowercase');
@@ -378,6 +391,7 @@ class ElasticSearch {
     }
 
     public function initialize_index($t) {
+        if (!$this->enabled) { return; }
         if(!$this->init_indexer)
              $this->initialize();
 	$createparams = array(
@@ -1220,6 +1234,7 @@ class ElasticSearch {
 
     //update tags for given type and id
     public function update_tags($type, $id) {
+        if (!$this->enabled) { return; }
         $tagtable = $this->CI->Run_tag;
         if($type == 'flow')
           $tagtable = $this->CI->Implementation_tag;
@@ -1247,6 +1262,7 @@ class ElasticSearch {
 
     //update topics for given type and id
     public function update_topics($id) {
+        if (!$this->enabled) { return; }
         $topictable = $this->CI->Dataset_topic;
         $ts = array();
         $topics = $topictable->getAssociativeArray('topic', 'uploader', 'id = ' . $id);
