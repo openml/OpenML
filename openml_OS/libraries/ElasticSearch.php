@@ -412,7 +412,7 @@ class ElasticSearch {
         return '[Initialized mapping for ' . $t. '] ';
     }
 
-    public function index_downvote($id, $start_id = 0, $altmetrics=True, $verbosity=0){
+    private function index_downvote($id, $start_id = 0, $altmetrics=True, $verbosity=0){
 
         $params['index'] = 'downvote';
 	$params['type'] = 'downvote';
@@ -437,7 +437,7 @@ class ElasticSearch {
         return 'Successfully indexed ' . sizeof($responses['items']) . ' out of ' . sizeof($downvotes) . ' downvotes.';
     }
 
-    public function index_like($id, $start_id = 0, $altmetrics=True, $verbosity=0){
+    private function index_like($id, $start_id = 0, $altmetrics=True, $verbosity=0){
 
         $params['index'] = 'like';
         $params['type'] = 'like';
@@ -489,7 +489,7 @@ class ElasticSearch {
         return $like;
     }
 
-    public function index_download($id, $start_id = 0, $altmetrics=True, $verbosity=0){
+    private function index_download($id, $start_id = 0, $altmetrics=True, $verbosity=0){
         $params['index'] = 'download';
         $params['type'] = 'download';
         $downloads = $this->db->query('select * from downloads' . ($id ? ' where did=' . $id : ''));
@@ -527,7 +527,7 @@ class ElasticSearch {
 
     }
 
-    public function index_user($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
+    private function index_user($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
 
         $params['index'] = 'user';
         $params['type'] = 'user';
@@ -746,7 +746,7 @@ class ElasticSearch {
         return $user;
     }
 
-    public function index_study($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
+    private function index_study($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
 
         $params['index'] = 'study';
         $params['type'] = 'study';
@@ -843,7 +843,7 @@ class ElasticSearch {
         return $study;
     }
 
-    public function index_task($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
+    private function index_task($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
         $params['index'] = 'task';
         $params['type'] = 'task';
         $taskmaxquery = $this->db->query('SELECT min(task_id) as mintask, max(task_id) as maxtask from task' . ($id ? ' where task_id=' . $id : ''));
@@ -1303,7 +1303,7 @@ class ElasticSearch {
         return 'Successfully indexed run '. $id;
     }
 
-    public function index_run($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
+    private function index_run($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
         if ($id)
             return $this->index_single_run($id);
 
@@ -1475,7 +1475,7 @@ class ElasticSearch {
         return $new_data;
     }
 
-    public function index_task_type($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
+    private function index_task_type($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
 
         $params['index'] = 'task_type';
         $params['type'] = 'task_type';
@@ -1528,7 +1528,7 @@ class ElasticSearch {
         return $new_data;
     }
 
-    public function index_flow($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
+    private function index_flow($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
 
         $params['index'] = 'flow';
         $params['type'] = 'flow';
@@ -1695,7 +1695,7 @@ class ElasticSearch {
         return $new_data;
     }
 
-    public function index_measure($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
+    private function index_measure($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
 
         $params['index'] = 'measure';
         $params['type'] = 'measure';
@@ -1834,7 +1834,7 @@ class ElasticSearch {
         );
     }
 
-    public function index_single_dataset($id) {
+    private function index_single_dataset($id) {
 
       	$params['index'] = 'data';
       	$params['type'] = 'data';
@@ -1865,7 +1865,7 @@ class ElasticSearch {
         return 'Successfully indexed dataset '.$id;
     }
 
-    public function index_data($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
+    private function index_data($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
         if ($id)
             return $this->index_single_dataset($id);
 
