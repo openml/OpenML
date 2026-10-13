@@ -119,6 +119,7 @@ define( 'API_KEY', 'FILL_IN_KEY' );
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * ES_USERNAME and ES_PASSWORD can be set by ElasticSearch or a protected proxy
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+define( 'ES_ENABLED', 'FILL_IN');
 define( 'ES_URL', 'FILL_IN' );
 define( 'ES_USERNAME', 'FILL_IN' );
 define( 'ES_PASSWORD', 'FILL_IN' );

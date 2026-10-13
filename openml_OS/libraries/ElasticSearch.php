@@ -6,6 +6,12 @@ if (!defined('BASEPATH'))
 class ElasticSearch {
 
     public function __construct() {
+        $this->enabled = defined('ES_ENABLED') ? filter_var(ES_ENABLED, FILTER_VALIDATE_BOOLEAN) : true;
+
+        if (!$this->enabled) {
+            return;
+        }
+
         $this->CI = &get_instance();
         $this->CI->load->model('Dataset');
         $this->CI->load->model('Author');
@@ -34,6 +40,7 @@ class ElasticSearch {
     }
 
     public function initialize(){
+        if (!$this->enabled) { return; }
         $this->data_names = $this->CI->Dataset->getAssociativeArray('did', 'name', 'name IS NOT NULL');
         $this->flow_names = $this->CI->Implementation->getAssociativeArray('id', 'fullName', 'name IS NOT NULL');
         $this->procedure_names = $this->CI->Estimation_procedure->getAssociativeArray('id', 'name', 'name IS NOT NULL');
@@ -308,16 +315,19 @@ class ElasticSearch {
     }
 
     public function test() {
+        if (!$this->enabled) { return false; }
         return $this->client->ping();
     }
 
     public function get_types() {
+        if (!$this->enabled) { return array(); }
         $params['index'] = '_all';
 	$array_data = $this->client->indices()->getMapping($params);
         return array_keys($array_data);
     }
 
     public function index($type, $id = false, $altmetrics=True, $verbosity=0) {
+        if (!$this->enabled) { return; }
         //bootstrap
         $indexParams['index'] = $type;
         if(! $this->client->indices()->getMapping($indexParams))
@@ -339,6 +349,7 @@ class ElasticSearch {
     }
 
     public function index_from($type, $id = false, $verbosity=1, $altmetrics=False) {
+        if (!$this->enabled) { return; }
         //bootstrap
         $indexParams['index'] = $type;
         if(! $this->client->indices()->getMapping($indexParams))
@@ -360,6 +371,7 @@ class ElasticSearch {
     }
 
     public function delete($type, $id = false) {
+        if (!$this->enabled) { return; }
         $deleteParams = array();
         $deleteParams['index'] = $type;
 	$deleteParams['type'] = $type;
@@ -369,6 +381,7 @@ class ElasticSearch {
     }
 
     public function initialize_settings() {
+        if (!$this->enabled) { return; }
 
         $params['index'] = '_all';
         $params['body']['index']['analysis']['analyzer']['keyword-ci'] = array('tokenizer' => 'keyword', 'filter' => 'lowercase');
@@ -378,6 +391,7 @@ class ElasticSearch {
     }
 
     public function initialize_index($t) {
+        if (!$this->enabled) { return; }
         if(!$this->init_indexer)
              $this->initialize();
 	$createparams = array(
@@ -398,7 +412,7 @@ class ElasticSearch {
         return '[Initialized mapping for ' . $t. '] ';
     }
 
-    public function index_downvote($id, $start_id = 0, $altmetrics=True, $verbosity=0){
+    private function index_downvote($id, $start_id = 0, $altmetrics=True, $verbosity=0){
 
         $params['index'] = 'downvote';
 	$params['type'] = 'downvote';
@@ -423,7 +437,7 @@ class ElasticSearch {
         return 'Successfully indexed ' . sizeof($responses['items']) . ' out of ' . sizeof($downvotes) . ' downvotes.';
     }
 
-    public function index_like($id, $start_id = 0, $altmetrics=True, $verbosity=0){
+    private function index_like($id, $start_id = 0, $altmetrics=True, $verbosity=0){
 
         $params['index'] = 'like';
         $params['type'] = 'like';
@@ -475,7 +489,7 @@ class ElasticSearch {
         return $like;
     }
 
-    public function index_download($id, $start_id = 0, $altmetrics=True, $verbosity=0){
+    private function index_download($id, $start_id = 0, $altmetrics=True, $verbosity=0){
         $params['index'] = 'download';
         $params['type'] = 'download';
         $downloads = $this->db->query('select * from downloads' . ($id ? ' where did=' . $id : ''));
@@ -513,7 +527,7 @@ class ElasticSearch {
 
     }
 
-    public function index_user($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
+    private function index_user($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
 
         $params['index'] = 'user';
         $params['type'] = 'user';
@@ -732,7 +746,7 @@ class ElasticSearch {
         return $user;
     }
 
-    public function index_study($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
+    private function index_study($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
 
         $params['index'] = 'study';
         $params['type'] = 'study';
@@ -829,7 +843,7 @@ class ElasticSearch {
         return $study;
     }
 
-    public function index_task($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
+    private function index_task($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
         $params['index'] = 'task';
         $params['type'] = 'task';
         $taskmaxquery = $this->db->query('SELECT min(task_id) as mintask, max(task_id) as maxtask from task' . ($id ? ' where task_id=' . $id : ''));
@@ -1220,6 +1234,7 @@ class ElasticSearch {
 
     //update tags for given type and id
     public function update_tags($type, $id) {
+        if (!$this->enabled) { return; }
         $tagtable = $this->CI->Run_tag;
         if($type == 'flow')
           $tagtable = $this->CI->Implementation_tag;
@@ -1247,6 +1262,7 @@ class ElasticSearch {
 
     //update topics for given type and id
     public function update_topics($id) {
+        if (!$this->enabled) { return; }
         $topictable = $this->CI->Dataset_topic;
         $ts = array();
         $topics = $topictable->getAssociativeArray('topic', 'uploader', 'id = ' . $id);
@@ -1287,7 +1303,7 @@ class ElasticSearch {
         return 'Successfully indexed run '. $id;
     }
 
-    public function index_run($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
+    private function index_run($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
         if ($id)
             return $this->index_single_run($id);
 
@@ -1459,7 +1475,7 @@ class ElasticSearch {
         return $new_data;
     }
 
-    public function index_task_type($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
+    private function index_task_type($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
 
         $params['index'] = 'task_type';
         $params['type'] = 'task_type';
@@ -1512,7 +1528,7 @@ class ElasticSearch {
         return $new_data;
     }
 
-    public function index_flow($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
+    private function index_flow($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
 
         $params['index'] = 'flow';
         $params['type'] = 'flow';
@@ -1679,7 +1695,7 @@ class ElasticSearch {
         return $new_data;
     }
 
-    public function index_measure($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
+    private function index_measure($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
 
         $params['index'] = 'measure';
         $params['type'] = 'measure';
@@ -1818,7 +1834,7 @@ class ElasticSearch {
         );
     }
 
-    public function index_single_dataset($id) {
+    private function index_single_dataset($id) {
 
       	$params['index'] = 'data';
       	$params['type'] = 'data';
@@ -1849,7 +1865,7 @@ class ElasticSearch {
         return 'Successfully indexed dataset '.$id;
     }
 
-    public function index_data($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
+    private function index_data($id, $start_id = 0, $altmetrics=True, $verbosity=0) {
         if ($id)
             return $this->index_single_dataset($id);
 
