@@ -5,8 +5,9 @@ RUN docker-php-source extract \
 	&& docker-php-source delete
 
 # Java is necessary for the direct calls to the evaluation engine (in Api_splits.php)
-RUN apt update \
-    && apt install -y --no-install-recommends openjdk-11-jre 
+RUN sed -i 's|deb.debian.org/debian-security|archive.debian.org/debian-security|g' /etc/apt/sources.list \
+    && apt update \
+    && apt install -y --no-install-recommends openjdk-11-jre
 
 ENV MAX_REQUEST_WORKERS=152
 
