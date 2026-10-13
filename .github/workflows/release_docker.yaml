@@ -62,3 +62,37 @@ jobs:
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
+
+  update-services:
+
+    needs: docker
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Extract version from tag
+        id: version
+        run: echo "tag=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
+
+      - name: Check out openml/services
+        uses: actions/checkout@v4
+        with:
+          repository: openml/services
+          token: ${{ secrets.SERVICES_PAT }}
+
+      - name: Update php-rest-api image version in docker-compose.yaml
+        run: |
+          sed -i "s|image: openml/php-rest-api:.*|image: openml/php-rest-api:${{ steps.version.outputs.tag }}|" docker-compose.yaml
+
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.SERVICES_PAT }}
+          commit-message: "Update php-rest-api to ${{ steps.version.outputs.tag }}"
+          branch: "update-php-rest-api-${{ steps.version.outputs.tag }}"
+          title: "Update php-rest-api to ${{ steps.version.outputs.tag }}"
+          body: |
+            Automated update of the `openml/php-rest-api` Docker image
+            to version `${{ steps.version.outputs.tag }}`, triggered by
+            a new tag push in [openml/OpenML](https://github.com/openml/OpenML).
+          base: main
