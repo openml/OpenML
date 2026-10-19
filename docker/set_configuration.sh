@@ -47,6 +47,7 @@ cd /var/www/openml
 
 INDEX_ES=${INDEX_ES:-false}
 if [ "$INDEX_ES" = "true" ] ; then
+  # Fix potential configuration issue rather than raise an error because the intention is clear here.
   export ES_ENABLED=true
 	indices=('downvote', 'study', 'data', 'task', 'download', 'user', 'like', 'measure', 'flow', 'task_type', 'run')
 	for index in "${indices[@]}"
