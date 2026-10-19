@@ -45,8 +45,9 @@ sed "s/mysqlnd.net_read_timeout = MYSQLND_NET_READ_TIMEOUT/mysqlnd.net_read_time
 
 cd /var/www/openml
 
-INDEX_ES_DURING_STARTUP=${INDEX_ES_DURING_STARTUP:-true}
-if [ "$INDEX_ES_DURING_STARTUP" = true ] ; then
+INDEX_ES=${INDEX_ES:-false}
+if [ "$INDEX_ES" = "true" ] ; then
+  export ES_ENABLED=true
 	indices=('downvote', 'study', 'data', 'task', 'download', 'user', 'like', 'measure', 'flow', 'task_type', 'run')
 	for index in "${indices[@]}"
 	do
@@ -54,6 +55,7 @@ if [ "$INDEX_ES_DURING_STARTUP" = true ] ; then
 	done
 
 	php index.php cron build_es_indices
+  exit 0
 fi
 
 apache2-foreground

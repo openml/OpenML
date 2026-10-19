@@ -49,8 +49,9 @@ The following environment variables can be set (see also `set_configuration.sh`)
 | `ES_URL` | `elasticsearch:9200` | BASE_CONFIG.php | sets `ES_URL` |
 | `ES_USERNAME` | `elastic` | BASE_CONFIG.php | sets `ES_USERNAME` |
 | `ES_PASSWORD` | `default` | BASE_CONFIG.php | sets `ES_PASSWORD` |
+| `ES_ENABLED` | `false` | — | determines whether document updates are sent to elasticsearch |
 | `PHP_ENVIRONMENT` | `production` | index.php | sets the `ENVIRONMENT` constant |
 | `MYSQLND_NET_READ_TIMEOUT` | `600` | php.ini | sets `mysqlnd.net_read_timeout` |
-| `INDEX_ES_DURING_STARTUP` | `true` | — | if `true`, deletes and rebuilds all Elasticsearch indices on startup |
+| `INDEX_ES` | `false` | — | if `true`, deletes and rebuilds all Elasticsearch indices instead of starting the REST API |
 
 For information on what these variables do, reference the documentation of the respective files.
