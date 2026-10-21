@@ -1,6 +1,6 @@
 FROM eclipse-temurin:11-jre AS builder
 
-FROM php:8.5.11-apache
+FROM php:8.5.12-apache
 
 RUN docker-php-source extract \
 	&& docker-php-ext-install mysqli \
