@@ -1,13 +1,14 @@
-FROM php:7.4.33-apache
+FROM eclipse-temurin:11-jre AS builder
+
+FROM php:8.5.11-apache
 
 RUN docker-php-source extract \
 	&& docker-php-ext-install mysqli \
 	&& docker-php-source delete
 
-# Java is necessary for the direct calls to the evaluation engine (in Api_splits.php)
-RUN sed -i 's|deb.debian.org/debian-security|archive.debian.org/debian-security|g' /etc/apt/sources.list \
-    && apt update \
-    && apt install -y --no-install-recommends openjdk-11-jre
+ENV JAVA_HOME=/opt/java/openjdk
+ENV PATH="${JAVA_HOME}/bin:${PATH}"
+COPY --from=builder $JAVA_HOME $JAVA_HOME
 
 ENV MAX_REQUEST_WORKERS=152
 
