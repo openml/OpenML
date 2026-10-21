@@ -1126,7 +1126,7 @@ class ElasticSearch {
     private function fetch_evaluations($min, $max, $include_folds=True) {
         $index = array();
   if($include_folds){
-        $folddata = $this->db->query('SELECT e.source, m.name AS function, e.fold, e.`repeat`, e.value FROM evaluation_fold e, math_function m WHERE e.function_id = m.id AND source >= ' . $min . ' and source < ' . $max);
+        $folddata = $this->db->query('SELECT e.source, m.name AS `function`, e.fold, e.`repeat`, e.value FROM evaluation_fold e, math_function m WHERE e.function_id = m.id AND source >= ' . $min . ' and source < ' . $max);
   $allfolds = array();
 
         if ($folddata) {
