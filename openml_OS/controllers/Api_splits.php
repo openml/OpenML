@@ -120,17 +120,38 @@ class Api_splits extends CI_Controller {
   }
   
   function get($task_id) {
+    # Splits are generated and cached on the fly. In case a request is writing the 
+    # splits to disk, a second request may see the partially written file. To avoid
+    # reading that partial file, we must acquire a lock during writing. Because the 
+    # split file is being written to from a Java subprocess, we lock a proxy file.
+
     $dir_idx = floor($task_id / $this->content_folder_modulo) * $this->content_folder_modulo;
     $directory = $this->directory . '/' . $dir_idx . '/' . $task_id;
-    
-    $filepath = $directory . '/splits.arff';
-    if (file_exists($filepath) == false) {
-      $this->generate("generate_folds", $task_id, $filepath);
+
+    # This is to avoid a race condition in the creation of the cache directory itself
+    if (!is_dir($directory) && !mkdir($directory, 0755, true) && !is_dir($directory)) {
+      log_message('error', "Failed to create task cache directory: " . $directory);
+      die("Unable to process request. Please contact the developers");
     }
     
+    $split_path = $directory . '/splits.arff';
+    $lock_path = $directory . '/splits.arff.lock';
+
+    $lock = fopen($lock_path, 'c');
+    if (!flock($lock, LOCK_EX)) {
+      fclose($lock);
+      log_message('error', "Failed to acquire lock on: " . $lock_path);
+      die("Unable to process request. Please contact the developers");
+    }
+
+    if (file_exists($split_path) == false) {
+      $this->generate("generate_folds", $task_id, $split_path);
+    }
+    fclose($lock);
+    
     header('Content-type: text/plain');
-    header('Content-Length: ' . filesize($filepath));
-    readfile_chunked($filepath);
+    header('Content-Length: ' . filesize($split_path));
+    readfile_chunked($split_path);
   }
   
   private function generate($function, $task_id, $filepath) {
@@ -149,10 +170,6 @@ class Api_splits extends CI_Controller {
     
     if (array_key_exists('custom_testset', $values)) {
       $command .= '-test "' . $values['custom_testset'] . '" ';
-    }
-    
-    if (!file_exists(dirname($filepath))) {
-      mkdir(dirname($filepath), 0755, true);
     }
     
     $command .= ' -o ' . $filepath;
