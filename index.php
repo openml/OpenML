@@ -322,6 +322,18 @@ if (!file_exists($base_config)) {
 
 	define('VIEWPATH', $view_folder.DIRECTORY_SEPARATOR);
 
+/* The codebase is written with the expectation that database errors
+ * are not raised as exceptions. Instead database errors are identified
+ * by transaction state or return values from database operations.
+ *
+ * This was the default behavior before PHP 8.1, info on the change:
+ * https://www.php.net/manual/en/migration81.incompatible.php#migration81.incompatible.mysqli
+ *
+ * Instead of adopting the code base to handle this new flow, we set
+ * the error reporting behavior back to the pre-8.1 default.
+ */
+mysqli_report(MYSQLI_REPORT_OFF);
+
 /*
  * --------------------------------------------------------------------
  * LOAD THE BOOTSTRAP FILE
