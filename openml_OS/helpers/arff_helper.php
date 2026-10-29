@@ -58,13 +58,14 @@ function ARFFcheck($filepath, $numLines = 100)
 
 	$isRemoteUrl = parse_url($filepath, PHP_URL_SCHEME) !== null;
 	$allowRemoteUrl = ini_get('allow_url_fopen');
-	if ($isRemoteUrl and !$allowRemoteUrl)
+	if ($isRemoteUrl && !$allowRemoteUrl)
 	{
 		log_message('error', 'Denied reading of ' . $filepath . ' because remote urls for files are disabled');
 		return "remote URLs for datasets are currently disabled";
 	}
 
-	$isAllowedLocalPath = str_starts_with($filepath, TMP_PATH);
+	$realPath = realpath($filepath);
+	$isAllowedLocalPath = str_starts_with($realPath, TMP_PATH);
 	if (!$isRemoteUrl && !$isAllowedLocalPath) {
 		log_message('error', 'Denied reading of ' . $filepath . ' because filepath is not whitelisted.');
 		return "provided data url is not valid.";
