@@ -60,13 +60,13 @@ function ARFFcheck($filepath, $numLines = 100)
 	if ($filehandle === false)
 	{
 		$isRemoteUrl = parse_url($filepath, PHP_URL_SCHEME) !== null;
-    $allowRemoteUrl = ini_get('allow_url_fopen');
+		$allowRemoteUrl = ini_get('allow_url_fopen');
 		if ($isRemoteUrl and !$allowRemoteUrl)
 		{
-      log_message('info', 'Denied reading of ' . $filepath . ' because remote urls for files are disabled');
+			log_message('info', 'Denied reading of ' . $filepath . ' because remote urls for files are disabled');
 			return "Remote URLs for datasets are currently disabled";
 		}
-    log_message('debug', 'Failed to open file ' . $filepath);
+		log_message('debug', 'Failed to open file ' . $filepath);
 		return "could not open file";
 	}
 	$line = '';
