@@ -56,19 +56,25 @@ function ARFFcheck($filepath, $numLines = 100)
 	$featureType = [];
 	$numberOfNonNumericFeatures = 0;
 
-	$filehandle = @fopen($filepath, "r");
-	if ($filehandle === false)
+	$isRemoteUrl = parse_url($filepath, PHP_URL_SCHEME) !== null;
+	$allowRemoteUrl = ini_get('allow_url_fopen');
+	if ($isRemoteUrl and !$allowRemoteUrl)
 	{
-		$isRemoteUrl = parse_url($filepath, PHP_URL_SCHEME) !== null;
-		$allowRemoteUrl = ini_get('allow_url_fopen');
-		if ($isRemoteUrl and !$allowRemoteUrl)
-		{
-			log_message('info', 'Denied reading of ' . $filepath . ' because remote urls for files are disabled');
-			return "Remote URLs for datasets are currently disabled";
-		}
-		log_message('debug', 'Failed to open file ' . $filepath);
+		log_message('error', 'Denied reading of ' . $filepath . ' because remote urls for files are disabled');
+		return "remote URLs for datasets are currently disabled";
+	}
+
+	$isAllowedLocalPath = str_starts_with($filepath, TMP_PATH);
+	if (!$isRemoteUrl && !$isAllowedLocalPath) {
+		log_message('error', 'Denied reading of ' . $filepath . ' because filepath is not whitelisted.');
+		return "provided data url is not valid.";
+	}
+
+	$filehandle = fopen($filepath, "r");
+	if ($filehandle === false){
 		return "could not open file";
 	}
+
 	$line = '';
 	$lineNumber = 0;   // actual line numbers start at 1
 	while (($line = fgets($filehandle)) !== false)
