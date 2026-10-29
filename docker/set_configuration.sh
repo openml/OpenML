@@ -42,6 +42,7 @@ sed "s/define('ENVIRONMENT', '.*')/define('ENVIRONMENT', '${PHP_ENVIRONMENT:-pro
 
 PHP_INI_PATH=/usr/local/etc/php/php.ini
 sed "s/mysqlnd.net_read_timeout = MYSQLND_NET_READ_TIMEOUT/mysqlnd.net_read_timeout = ${MYSQLND_NET_READ_TIMEOUT:-600}/" --in-place ${PHP_INI_PATH}
+sed "s/allow_url_fopen = ALLOW_URL_FOPEN/allow_url_fopen = ${ALLOW_URL_FOPEN:-Off}/" --in-place ${PHP_INI_PATH}
 
 cd /var/www/openml
 

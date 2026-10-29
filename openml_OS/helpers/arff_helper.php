@@ -55,7 +55,27 @@ function ARFFcheck($filepath, $numLines = 100)
 	// read header section
 	$featureType = [];
 	$numberOfNonNumericFeatures = 0;
+
+	$isRemoteUrl = parse_url($filepath, PHP_URL_SCHEME) !== null;
+	$allowRemoteUrl = ini_get('allow_url_fopen');
+	if ($isRemoteUrl && !$allowRemoteUrl)
+	{
+		log_message('error', 'Denied reading of ' . $filepath . ' because remote urls for files are disabled');
+		return "remote URLs for datasets are currently disabled";
+	}
+
+	$realPath = realpath($filepath);
+	$isAllowedLocalPath = str_starts_with($realPath, TMP_PATH);
+	if (!$isRemoteUrl && !$isAllowedLocalPath) {
+		log_message('error', 'Denied reading of ' . $filepath . ' because filepath is not whitelisted.');
+		return "provided data url is not valid.";
+	}
+
 	$filehandle = fopen($filepath, "r");
+	if ($filehandle === false){
+		return "could not open file";
+	}
+
 	$line = '';
 	$lineNumber = 0;   // actual line numbers start at 1
 	while (($line = fgets($filehandle)) !== false)
