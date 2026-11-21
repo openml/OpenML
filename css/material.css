@@ -5593,6 +5593,7 @@ legend {
   opacity: 0.9;
 }
 .navbar .navbar-toggle {
+  display: block;
   border: 0;
 }
 .navbar .navbar-toggle:hover,
@@ -5617,7 +5618,7 @@ legend {
   background-color: transparent;
   color: inherit;
 }
-@media (max-width: 767px) {
+@media (max-width: 1280px) {
   .navbar .navbar-nav .navbar-text {
     color: inherit;
     margin-top: 15px;
@@ -6596,7 +6597,7 @@ fieldset[disabled] .navbar .btn-link:focus {
 .navbar-inverse {
   background-color: #3f51b5;
 }
-@media (max-width: 1199px) {
+@media (max-width: 1280px) {
   .navbar .navbar-brand {
     height: 50px;
     padding: 10px 15px;
