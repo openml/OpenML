@@ -7,3 +7,7 @@ docs/site/
 *.DS_store
 openml_OS/vendor/
 openapi/vendor/
+
+# PHP linting cache files
+.php-cs-fixer.cache
+.phpcs-cache
