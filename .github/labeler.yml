@@ -1,0 +1,56 @@
+# Label PRs based on the paths of files being changed
+
+'documentation':
+  - '**/*.md'
+  - 'docs/**/*'
+
+'dependencies':
+  - '**/composer.json'
+  - '**/composer.lock'
+  - '**/package.json'
+  - '**/package-lock.json'
+
+'frontend':
+  - 'css/**/*'
+  - 'js/**/*'
+  - 'img/**/*'
+  - 'fonts/**/*'
+  - '**/*.css'
+  - '**/*.js'
+  - '**/*.html'
+
+'backend':
+  - 'openml_OS/**/*.php'
+  - 'system/**/*'
+
+'database':
+  - 'data/sql/**/*'
+  - '**/*.sql'
+
+'docker':
+  - 'docker/**/*'
+  - 'Dockerfile'
+  - 'docker-compose.yml'
+
+'ci/cd':
+  - '.github/**/*'
+
+'api':
+  - 'openapi/**/*'
+  - '**/*swagger*'
+  - '**/api/**/*'
+
+'security':
+  - '**/security/**/*'
+  - '.github/workflows/security.yml'
+
+'tests':
+  - '**/*test*'
+  - '**/*spec*'
+
+'configuration':
+  - '**/*.conf'
+  - '**/*.config'
+  - '**/*.yaml'
+  - '**/*.yml'
+  - '**/*.json'
