@@ -1,0 +1,72 @@
+name: "CodeQL Configuration for OpenML"
+
+# Disable default queries and use custom query suites
+disable-default-queries: false
+
+# Query suites to run
+queries:
+  - uses: security-extended
+  - uses: security-and-quality
+
+# Paths to exclude from analysis
+paths-ignore:
+  - '**/vendor/**'
+  - '**/node_modules/**'
+  - '**/third_party/**'
+  - '**/libs/**'
+  - '**/libraries/**'
+  - '**/bower_components/**'
+  - '**/*.min.js'
+  - '**/*.min.css'
+  - '**/dist/**'
+  - '**/build/**'
+  - '**/target/**'
+  - '**/cache/**'
+  - '**/logs/**'
+  - '**/temp/**'
+  - '**/tmp/**'
+  - '**/__pycache__/**'
+  - '**/*.pyc'
+  - '**/data/sql/**'
+  - '**/downloads/**'
+  - '**/system/**'
+  - '**/css/fonts/**'
+  - '**/fonts/**'
+  - '**/img/**'
+  - '**/images/**'
+  - '**/swf/**'
+  - '**/*.sql'
+  - '**/*.json'
+  - '**/*.yaml'
+  - '**/*.yml'
+  - '**/*.xml'
+  - '**/*.md'
+  - '**/*.txt'
+  - '**/LICENSE'
+  - '**/README*'
+
+# Paths to explicitly include (overrides ignore patterns)
+paths:
+  - 'openml_OS/**'
+  - 'js/**'
+  - 'index.php'
+  - 'scripts/**'
+
+# Python-specific configuration
+python:
+  # Specify Python source root
+  source-root: '.'
+  # Setup commands (if needed)
+  # setup-python-dependencies: |
+  #   pip install -r requirements.txt
+
+# JavaScript-specific configuration  
+javascript:
+  # Include TypeScript files
+  typescript: true
+  # Specify additional file extensions
+  # extensions:
+  #   - '.js'
+  #   - '.jsx'
+  #   - '.ts'
+  #   - '.tsx'

@@ -1,0 +1,70 @@
+# Gitleaks Configuration for OpenML
+# This file configures secret scanning to detect hardcoded credentials, API keys, and sensitive data
+
+title = "OpenML Gitleaks Configuration"
+
+[extend]
+# Use the default gitleaks config as a base
+useDefault = true
+
+# Allowlist - Paths and patterns to exclude from scanning
+[allowlist]
+description = "Allowlisted files and patterns"
+
+# Exclude test files, fixtures, and example data
+paths = [
+    '''\.md$''',
+    '''\.txt$''',
+    '''\.sql$''',
+    '''LICENSE''',
+    '''\.example$''',
+    '''\.sample$''',
+    '''data/sql/''',
+    '''downloads/''',
+]
+
+# Allowlist specific patterns that are false positives
+regexes = [
+    '''(?i)example''',
+    '''(?i)sample''',
+    '''(?i)test.*key''',
+    '''(?i)dummy''',
+    '''(?i)placeholder''',
+]
+
+# Custom rules for OpenML-specific secrets
+[[rules]]
+id = "openml-api-key"
+description = "OpenML API Key"
+regex = '''(?i)openml[_-]?api[_-]?key[\s:=]+['""]?([a-zA-Z0-9]{32,})'''
+tags = ["api", "openml"]
+
+[[rules]]
+id = "database-connection"
+description = "Database connection string with credentials"
+regex = '''(?i)(mysql|postgresql|mongodb)://[^:]+:([^@\s]+)@'''
+tags = ["database", "credentials"]
+
+[[rules]]
+id = "php-database-config"
+description = "PHP database configuration"
+regex = '''(?i)(['"])(password|passwd|pwd|db_pass)['"]\s*=>\s*['"]([^'"]{8,})'''
+tags = ["php", "database", "password"]
+
+[[rules]]
+id = "aws-access-key"
+description = "AWS Access Key"
+regex = '''AKIA[0-9A-Z]{16}'''
+tags = ["aws", "access-key"]
+
+[[rules]]
+id = "private-key"
+description = "Private key detection"
+regex = '''-----BEGIN (RSA |EC |DSA |OPENSSH )?PRIVATE KEY-----'''
+tags = ["key", "private"]
+
+[[rules]]
+id = "jwt-token"
+description = "JWT Token"
+regex = '''eyJ[A-Za-z0-9-_=]+\.eyJ[A-Za-z0-9-_=]+\.[A-Za-z0-9-_.+/=]+'''
+tags = ["jwt", "token"]
