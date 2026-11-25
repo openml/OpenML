@@ -492,6 +492,9 @@ class Api_data extends MY_Api_Model {
     $name = element('data_name', $query_string, null);
     $data_id = element('data_id', $query_string, null);
     $uploader = element('uploader', $query_string, null);
+    if ($uploader !== null) {
+      $uploader = (int) $uploader;
+    }
     $version = element('data_version', $query_string, null);
     $status = element('status', $query_string, null);
     $limit = element('limit', $query_string, null);
@@ -509,7 +512,7 @@ class Api_data extends MY_Api_Model {
     $where_tag = $tag === null ? '' : ' AND `d`.`did` IN (select id from dataset_tag where tag="' . $tag . '") ';
     $where_did = $data_id === null ? '' : ' AND `d`.`did` IN ('. $data_id . ') ';
     $where_name = $name === null ? '' : ' AND `name` = "' . $name . '"';
-    $where_uploader = $uploader === null ? '' : ' AND `uploader` IN ("' . $uploader . '")';
+    $where_uploader = $uploader === null ? '' : ' AND `uploader` = ' . $uploader . ' ';
     $where_version = $version === null ? '' : ' AND `version` = "' . $version . '" ';
     $where_insts = $nr_insts === null ? '' : ' AND `d`.`did` IN (select data from data_quality dq where quality="NumberOfInstances" and value ' . (strpos($nr_insts, '..') !== false ? 'BETWEEN ' . str_replace('..',' AND ',$nr_insts) : '= '. $nr_insts) . ') ';
     $where_feats = $nr_feats === null ? '' : ' AND `d`.`did` IN (select data from data_quality dq where quality="NumberOfFeatures" and value ' . (strpos($nr_feats, '..') !== false ? 'BETWEEN ' . str_replace('..',' AND ',$nr_feats) : '= '. $nr_feats) . ') ';
