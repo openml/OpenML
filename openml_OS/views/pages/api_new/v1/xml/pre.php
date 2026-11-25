@@ -257,6 +257,7 @@ $this->apiErrors[474] = 'Database problem inserting tag. ';
 $this->apiErrors[475] = 'Tag not found.';
 $this->apiErrors[476] = 'Tag is not owned by you';
 $this->apiErrors[477] = 'Tags are restricted to length 64 alphanumeric and _-. characters';
+$this->apiErrors[478] = 'Operation is not allowed as the tag belongs to a legacy study, and modifying those is no longer supported.';
 
 
 

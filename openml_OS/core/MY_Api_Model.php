@@ -214,11 +214,19 @@ class MY_Api_Model extends CI_Model {
     $model_name_entity = ucfirst($type);
     $model_name_tag = ucfirst($taggable[$type]);
     $currentTime = now();
+
+    $study_tags = $this->db->query('select study_id from study_tag where tag = "' . $tag . '"');
+    if ($study_tags->num_rows() > 0) {
+      $this->returnError(478, $this->version);
+      return false;
+    }
+
     $entity = $this->{$model_name_entity}->getById($id);
     if (!$entity) {
       $this->returnError(472, $this->version);
       return false;
     }
+
     if ($do_untag) {
       /* * * * * * * * * * *
        *     U N T A G     *
