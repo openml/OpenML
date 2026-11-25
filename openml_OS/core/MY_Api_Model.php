@@ -272,13 +272,6 @@ class MY_Api_Model extends CI_Model {
       if ($special_name != 'setup') { // setups can not be indexed
         $this->elasticsearch->update_tags($special_name, $id);
       }
-      //update studies
-      $studies_to_update = $this->Study_tag->studiesToUpdate($tag, $currentTime, $this->user_id);
-      if ($studies_to_update != false) {
-        foreach ($studies_to_update as $study_id) {
-          $this->elasticsearch->index('study', $study_id);
-        }
-      }
     } catch (Exception $e) {
       $this->returnError(105, $this->version, $this->openmlGeneralErrorCode, $e->getMessage(), false, $supress_output);
       return false;
