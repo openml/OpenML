@@ -1022,7 +1022,7 @@ class Api_run extends MY_Api_Model {
     try {
       $this->elasticsearch->index('run', $runId);
     } catch (Exception $e) {
-      // TODO: should log
+      log_message('error', '[Api_run] ElasticSearch indexing failed for run id ' . $runId . ': ' . $e->getMessage());
     }
 
     $timestamps[] = microtime(true); // profiling 4

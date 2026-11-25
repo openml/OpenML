@@ -1306,7 +1306,7 @@ class Api_data extends MY_Api_Model {
       // update counters
       $this->elasticsearch->index('user', $this->user_id);
     } catch (Exception $e) {
-      // TODO: should log
+      log_message('error', '[Api_data] ElasticSearch indexing failed for data id ' . $id . ': ' . $e->getMessage());
     }
 
     // insert tags. This relies on the ES record to exist.

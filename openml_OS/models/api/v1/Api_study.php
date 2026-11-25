@@ -210,7 +210,7 @@ class Api_study extends MY_Api_Model {
       // update counters
       $this->elasticsearch->index('user', $this->user_id);
     } catch (Exception $e) {
-      // TODO: should log
+      log_message('error', '[Api_study] ElasticSearch indexing failed for study id ' . $study_id . ': ' . $e->getMessage());
     }
     
     $this->xmlContents('study-upload', $this->version, array('study_id' => $study_id));

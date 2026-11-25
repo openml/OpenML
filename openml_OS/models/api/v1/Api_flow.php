@@ -655,7 +655,7 @@ class Api_flow extends MY_Api_Model {
       // update counters
       $this->elasticsearch->index('user', $this->user_id);
     } catch (Exception $e) {
-      // TODO: should be logged
+      log_message('error', '[Api_flow] ElasticSearch indexing failed for flow id ' . $impl . ': ' . $e->getMessage());
     }
 
     $this->xmlContents( 'implementation-upload', $this->version, $implementation );
@@ -855,7 +855,7 @@ class Api_flow extends MY_Api_Model {
     try {
       $this->elasticsearch->index('flow', $flow_id);
     } catch (Exception $e) {
-      // TODO should be logged
+      log_message('error', '[Api_flow] ElasticSearch indexing failed for flow id ' . $flow_id . ': ' . $e->getMessage());
     }
 
 
