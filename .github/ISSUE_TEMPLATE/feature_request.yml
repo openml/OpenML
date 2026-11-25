@@ -1,0 +1,122 @@
+name: Feature Request
+description: Suggest a new feature or enhancement for OpenML
+title: "[Feature]: "
+labels: ["enhancement", "needs-discussion"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for suggesting a feature for OpenML!
+        
+        Please check if you're on the correct issue tracker:
+        - **Website/frontend features** → [openml.org](https://github.com/openml/openml.org/issues)
+        - **Dataset requests** → [openml-data](https://github.com/openml/openml-data/issues)
+        - **Python API features** → [openml-python](https://github.com/openml/openml-python/issues)
+        - **R API features** → [openml-r](https://github.com/openml/openml-r/issues)
+        - **Java API features** → [openml-java](https://github.com/openml/openml-java/issues)
+        
+        For general API, database, or backend feature requests, you're in the right place!
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement
+      description: Is your feature request related to a problem? Describe the problem clearly.
+      placeholder: |
+        Example: It's difficult to filter tasks by multiple criteria simultaneously, which makes finding relevant experiments time-consuming.
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Describe the solution you'd like to see implemented.
+      placeholder: |
+        Example: Add a new API endpoint that accepts multiple filter parameters and returns paginated results with advanced search capabilities.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Describe any alternative solutions or features you've considered.
+      placeholder: "What other approaches could solve this problem?"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: feature-type
+    attributes:
+      label: Feature Type
+      description: What type of feature is this?
+      options:
+        - New API Endpoint
+        - API Enhancement
+        - Database Schema Change
+        - New Task Type
+        - Performance Improvement
+        - Security Enhancement
+        - Documentation
+        - Other
+      default: 0
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this feature to you?
+      options:
+        - Low - Nice to have
+        - Medium - Would improve workflow
+        - High - Blocking current work
+      default: 0
+    validations:
+      required: false
+
+  - type: textarea
+    id: use-cases
+    attributes:
+      label: Use Cases
+      description: Describe specific use cases or scenarios where this feature would be beneficial.
+      placeholder: |
+        1. Researchers analyzing multiple experiments could filter by algorithm family and dataset characteristics
+        2. API consumers could reduce the number of requests needed to gather relevant data
+    validations:
+      required: false
+
+  - type: textarea
+    id: implementation
+    attributes:
+      label: Implementation Ideas
+      description: If you have ideas about how this could be implemented, share them here (optional).
+      placeholder: "Any technical suggestions or implementation approaches?"
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Add any other context, mockups, examples, or references about the feature request.
+      placeholder: "Links to similar features in other projects, mockups, or any other relevant information"
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Checklist
+      description: Please confirm the following
+      options:
+        - label: I have searched existing issues to avoid duplicates
+          required: true
+        - label: I am suggesting this feature to the correct repository
+          required: true
+        - label: I am willing to help implement or test this feature
+          required: false

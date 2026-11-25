@@ -1,0 +1,14 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 💬 Community Discussion
+    url: https://github.com/openml/OpenML/discussions
+    about: For questions, ideas, and general discussions about OpenML
+  - name: 📚 Documentation
+    url: https://docs.openml.org
+    about: Visit our documentation for guides and API reference
+  - name: 🌐 Website Issues
+    url: https://github.com/openml/openml.org/issues
+    about: Report issues with the OpenML website or frontend
+  - name: 🐍 Python API Issues
+    url: https://github.com/openml/openml-python/issues
+    about: Report issues with the Python API or scikit-learn bindings
