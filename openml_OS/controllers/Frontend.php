@@ -32,7 +32,6 @@ class Frontend extends CI_Controller {
     $this->load->model('Users');
 
     $this->load->helper('table');
-    $this->load->helper('tasksearch');
 
     $this->load->Library('dataOverview');
     $this->load->Library('elasticSearch');

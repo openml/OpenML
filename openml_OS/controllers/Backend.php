@@ -22,7 +22,6 @@ class Backend extends CI_Controller {
     $this->load->model('Author');
 
     $this->load->helper('table');
-    $this->load->helper('tasksearch');
     $this->load->helper('directory');
 
     $this->load->Library('ion_auth');
