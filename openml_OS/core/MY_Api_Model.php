@@ -95,14 +95,21 @@ class MY_Api_Model extends CI_Model {
     );
   }
 
-  public function returnError($code, $version, $httpErrorCode = 412, $additionalInfo = null, $emailLog = false, $supress_output = false) {
+  public function returnError($code, $version, $httpErrorCode = 412, $additionalInfo = null, $emailLog = false, $supress_output = false, $outputFormat = null) {
     $this->Log->api_error('error', $_SERVER['REMOTE_ADDR'], $code, $_SERVER['QUERY_STRING'], $this->load->apiErrors[$code] . (($additionalInfo == null)?'':$additionalInfo) );
     $error['code'] = $code;
     $error['message'] = htmlentities( $this->load->apiErrors[$code] );
     $error['additional'] = htmlentities( $additionalInfo );
     if (!$supress_output) {
       http_response_code($httpErrorCode);
+      $originalFormat = $this->outputFormat;
+      if ($outputFormat !== null) {
+        $this->outputFormat = $outputFormat;
+      }
       $this->xmlContents('error-message', $version, $error);
+      if ($outputFormat !== null) {
+        $this->outputFormat = $originalFormat;
+      }
     }
     if ($emailLog && defined('EMAIL_API_LOG')) {
       $to = EMAIL_API_LOG;
