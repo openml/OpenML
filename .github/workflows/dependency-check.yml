@@ -1,0 +1,184 @@
+# This workflow checks for outdated dependencies and creates PRs to update them
+#
+# It runs on a schedule and checks both Composer (PHP) and NPM (JavaScript) dependencies
+# for security updates and newer versions.
+
+name: 'Dependency Updates'
+
+on:
+  schedule:
+    # Run every Monday at 8:00 UTC
+    - cron: '0 8 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  composer-updates:
+    name: Check Composer Dependencies
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          coverage: none
+
+      - name: Check for Outdated Composer Packages
+        run: |
+          if [ -f "openml_OS/composer.json" ]; then
+            cd openml_OS
+            composer install --no-interaction
+            composer outdated --direct --format=json > outdated.json || true
+            
+            if [ -s outdated.json ]; then
+              echo "### 📦 Outdated Composer Packages" >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "\`\`\`json" >> $GITHUB_STEP_SUMMARY
+              cat outdated.json >> $GITHUB_STEP_SUMMARY
+              echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            fi
+          fi
+
+  npm-updates:
+    name: Check NPM Dependencies
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Check for Outdated NPM Packages
+        if: hashFiles('**/package.json') != ''
+        run: |
+          npm install
+          npm outdated --json > outdated-npm.json || true
+          
+          if [ -s outdated-npm.json ]; then
+            echo "### 📦 Outdated NPM Packages" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`json" >> $GITHUB_STEP_SUMMARY
+            cat outdated-npm.json >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  dependabot-auto-merge:
+    name: Auto-merge Dependabot PRs
+    runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]'
+    
+    steps:
+      - name: Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Enable auto-merge for Dependabot PRs
+        if: steps.metadata.outputs.update-type == 'version-update:semver-patch' || steps.metadata.outputs.update-type == 'version-update:semver-minor'
+        run: gh pr merge --auto --merge "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  create-update-issue:
+    name: Create Update Summary Issue
+    runs-on: ubuntu-latest
+    needs: [composer-updates, npm-updates]
+    if: always()
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Create or Update Issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const date = new Date().toISOString().split('T')[0];
+            const title = `Dependency Update Report - ${date}`;
+            
+            // Search for existing open issue
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'dependencies,automated',
+              creator: 'github-actions[bot]'
+            });
+            
+            const body = `## 📦 Weekly Dependency Update Report
+            
+            **Date:** ${date}
+            **Status:** Automated dependency check completed
+            
+            ### Summary
+            
+            This is an automated report of outdated dependencies in the project.
+            
+            #### Composer Dependencies (PHP)
+            Check the [Composer Updates job](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}) for details.
+            
+            #### NPM Dependencies (JavaScript)
+            Check the [NPM Updates job](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}) for details.
+            
+            ### Recommendations
+            
+            1. Review the outdated packages in the job logs
+            2. Check for breaking changes in package changelogs
+            3. Update packages incrementally with testing
+            4. Consider enabling Dependabot for automated PRs
+            
+            ### Actions
+            
+            - [ ] Review outdated packages
+            - [ ] Test updates in development
+            - [ ] Create PRs for critical security updates
+            - [ ] Update dependencies
+            
+            ---
+            *This issue was automatically generated by the Dependency Updates workflow*
+            `;
+            
+            const existingIssue = issues.data.find(issue => 
+              issue.title.startsWith('Dependency Update Report')
+            );
+            
+            if (existingIssue) {
+              // Update existing issue
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existingIssue.number,
+                title: title,
+                body: body
+              });
+              
+              // Add comment
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existingIssue.number,
+                body: `🔄 Dependency check completed on ${date}. Issue updated with latest information.`
+              });
+            } else {
+              // Create new issue
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: title,
+                body: body,
+                labels: ['dependencies', 'automated']
+              });
+            }
