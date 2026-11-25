@@ -803,10 +803,11 @@ class ElasticSearch {
         $runs_tagged = NULL;
 
         if($d->legacy == 'y'){
-          $data_tagged = $this->db->query("select id from dataset_tag where tag='study_" . $d->id . "'");
-          $task_tagged = $this->db->query("select id from task_tag where tag='study_" . $d->id . "'");
-          $flows_tagged = $this->db->query("select id from implementation_tag where tag='study_" . $d->id . "'");
-          $runs_tagged = $this->db->query("select id from run_tag where tag='study_" . $d->id . "'");
+          $data_tagged = $this->db->query("select dataset_id from dataset_study where study_id=" . $d->id);
+          $task_tagged = $this->db->query("select task_id from task_study where study_id=" . $d->id);
+          $flows_tagged = $this->db->query("select implementation_id from implementation_study where study_id=" . $d->id);
+          $runs_tagged = $this->db->query("select run_id from run_study where study_id=" . $d->id);
+          $setups_tagged = $this->db->query("select setup_id from setup_study where setup_id=" . $d->id);
         } elseif ($d->main_entity_type == 'task') {
           $task_tagged = $this->db->query("select task_id as id from task_study where study_id=" . $d->id);
           $data_tagged = $this->db->query("select value as id from task_inputs where input='source_data' and task_id in (select task_id from task_study where study_id=" . $d->id . ")");
@@ -818,27 +819,15 @@ class ElasticSearch {
         }
         if ($data_tagged){
           $study['datasets_included'] = count($data_tagged);
-          foreach ($data_tagged as $t){
-              $this->index_data($t->id);
-            }
         }
         if ($task_tagged){
           $study['tasks_included'] = count($task_tagged);
-          foreach ($task_tagged as $t){
-              $this->index_task($t->id);
-            }
         }
         if ($flows_tagged){
           $study['flows_included'] = count($flows_tagged);
-          foreach ($flows_tagged as $t){
-              $this->index_flow($t->id);
-            }
         }
         if ($runs_tagged){
           $study['runs_included'] = count($runs_tagged);
-          foreach ($runs_tagged as $t){
-              $this->index_run($t->id);
-            }
         }
         return $study;
     }
