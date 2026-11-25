@@ -483,6 +483,14 @@ class Api_run extends MY_Api_Model {
    *	),
    *)
    */
+
+  private function get_run_object_prefix(int $run_id): string {
+    // example bucket for id: 142379 'runs/0000/0000/0014/2379'
+    $s = str_pad((string)$run_id, 16, "0", STR_PAD_LEFT);
+    $groups = str_split($s, 4);
+    return implode('/', $groups) . "/";
+  }
+
   private function run($run_id) {
     if( $run_id == false ) {
       $this->returnError( 235, $this->version );
@@ -510,6 +518,11 @@ class Api_run extends MY_Api_Model {
     } else {
       $run->task_evaluation = "";
     }
+
+
+    $url = MINIO_URL . 'runs/' . $this->get_run_object_prefix($run->rid);
+    $run->minio_url = $url;
+    $run->parquet_url = $url;
 
     $this->xmlContents( 'run-get', $this->version, array( 'source' => $run ) );
   }
