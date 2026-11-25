@@ -1,0 +1,16 @@
+parameters:
+    level: 3
+    paths:
+        - openml_OS
+    excludePaths:
+        - openml_OS/libraries/*
+        - openml_OS/third_party/*
+        - openml_OS/vendor/*
+        - openml_OS/cache/*
+        - openml_OS/logs/*
+    ignoreErrors:
+        # CodeIgniter magic properties are not resolvable by static analysis
+        - '#Access to an undefined property CI_Controller::#'
+        - '#Call to an undefined method CI_Controller::#'
+    checkMissingIterableValueType: false
+    reportUnmatchedIgnoredErrors: false

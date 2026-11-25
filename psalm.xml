@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<psalm
+    errorLevel="8"
+    resolveFromConfigFile="true"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="https://getpsalm.org/schema/config"
+    xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
+    findUnusedVariablesAndParams="false"
+    findUnusedCode="false"
+>
+    <!--
+        errorLevel 8 = most permissive (fewest errors reported).
+        Gradually lower this value (toward 1) as issues are fixed.
+        See: https://psalm.dev/docs/running_psalm/error_levels/
+    -->
+
+    <projectFiles>
+        <directory name="openml_OS"/>
+        <ignoreFiles>
+            <directory name="openml_OS/libraries"/>
+            <directory name="openml_OS/third_party"/>
+            <directory name="openml_OS/vendor"/>
+            <directory name="openml_OS/cache"/>
+            <directory name="openml_OS/logs"/>
+        </ignoreFiles>
+    </projectFiles>
+
+    <issueHandlers>
+        <!-- Suppress issues common in CodeIgniter 3 magic-property patterns -->
+        <UndefinedMagicPropertyFetch errorLevel="suppress"/>
+        <UndefinedMagicPropertyAssignment errorLevel="suppress"/>
+        <UndefinedMagicMethod errorLevel="suppress"/>
+        <MixedAssignment errorLevel="suppress"/>
+        <MixedReturnStatement errorLevel="suppress"/>
+        <MixedMethodCall errorLevel="suppress"/>
+    </issueHandlers>
+</psalm>
